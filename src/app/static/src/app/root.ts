@@ -1,5 +1,4 @@
 import {MutationPayload, Store, StoreOptions} from "vuex";
-import {Error} from "./generated";
 import {baseline, BaselineState, initialBaselineState} from "./store/baseline/baseline";
 import {projects, initialProjectsState, ProjectsState} from "./store/projects/projects";
 import {initialMetadataState, metadata, MetadataState} from "./store/metadata/metadata";
@@ -33,6 +32,7 @@ import { initialHintrVersionState, hintrVersion, HintrVersionState } from "./sto
 import {currentHintVersion} from "./hintVersion";
 import {ModelRunMutation, ModelRunUpdates} from "./store/modelRun/mutations";
 import {adr, ADRState, initialADRState} from "./store/adr/adr";
+import {adrUpload, ADRUploadState, initialADRUploadState} from "./store/adrUpload/adr";
 
 export interface TranslatableState {
     language: Language
@@ -41,6 +41,7 @@ export interface TranslatableState {
 export interface RootState extends TranslatableState {
     version: string,
     adr: ADRState,
+    adrUpload: ADRUploadState,
     hintrVersion: HintrVersionState,
     baseline: BaselineState,
     metadata: MetadataState,
@@ -61,7 +62,7 @@ export interface ReadyState {
     ready: boolean
 }
 
-const persistState = (store: Store<RootState>) => {
+const persistState = (store: Store<RootState>): void => {
     store.subscribe((mutation: MutationPayload, state: RootState) => {
         console.log(mutation.type);
         localStorageManager.saveState(state);
@@ -74,7 +75,7 @@ const persistState = (store: Store<RootState>) => {
     })
 };
 
-const resetState = (store: Store<RootState>) => {
+const resetState = (store: Store<RootState>): void => {
     store.subscribe((mutation: MutationPayload, state: RootState) => {
 
         if (state.baseline.ready
@@ -116,6 +117,7 @@ export const emptyState = (): RootState => {
         version: currentHintVersion,
         hintrVersion: initialHintrVersionState(),
         adr: initialADRState(),
+        adrUpload: initialADRUploadState(),
         baseline: initialBaselineState(),
         metadata: initialMetadataState(),
         surveyAndProgram: initialSurveyAndProgramState(),
@@ -136,6 +138,7 @@ export const storeOptions: StoreOptions<RootState> = {
     state: emptyState(),
     modules: {
         adr,
+        adrUpload,
         baseline,
         metadata,
         surveyAndProgram,

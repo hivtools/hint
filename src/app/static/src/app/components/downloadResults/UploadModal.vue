@@ -48,9 +48,8 @@
     import Modal from "../Modal.vue";
     import {Dict, UploadFile} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {formatDateTime, mapActionByName, mapStateProp, mapStateProps, mapMutationByName} from "../../utils";
-    import {ADRState} from "../../store/adr/adr";
-    import {ADRMutation} from "../../store/adr/mutations";
+    import {formatDateTime, mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+    import {ADRUploadState} from "../../store/adrUpload/adr";
 
     interface Methods {
         uploadFilesToADRAction: (uploadFilesPayload: UploadFile[]) => void;
@@ -89,8 +88,8 @@
         },
         methods: {
             uploadFilesToADRAction: mapActionByName<UploadFile[]>(
-                'adr',
-                'uploadFilesToADR'
+                "adrUpload",
+                "uploadFilesToADR"
             ),
             confirmUpload() {
                 const uploadFilesPayload: UploadFile[] = []
@@ -113,8 +112,8 @@
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
                 dataset: state => state.selectedDataset?.title
             }),
-            uploadFiles: mapStateProp<ADRState, Dict<UploadFile>>("adr",
-                (state: ADRState) => state.uploadFiles!
+            uploadFiles: mapStateProp<ADRUploadState, Dict<UploadFile>>("adrUpload",
+                (state) => state.uploadFiles!
             )
         },
         components: {

@@ -62,6 +62,7 @@
     import {RootState} from "../../root";
     import ErrorAlert from "../ErrorAlert.vue";
     import i18next from "i18next";
+    import {ADRUploadState} from "../../store/adrUpload/adr";
 
     interface Computed {
         modelCalibrateId: string,
@@ -104,7 +105,7 @@
             ...mapStateProps<ModelCalibrateState, keyof Computed>("modelCalibrate", {
                 modelCalibrateId: state => state.calibrateId
             }),
-            ...mapStateProps<ADRState, keyof Computed>("adr", {
+            ...mapStateProps<ADRUploadState, keyof Computed>("adrUpload", {
                 currentFileUploading: state => state.currentFileUploading,
                 totalFilesUploading: state => state.totalFilesUploading,
                 uploading: state => state.uploading,
@@ -140,7 +141,7 @@
                 this.uploadModalOpen = true
             },
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
-            getUploadFiles: mapActionByName("adr", "getUploadFiles")
+            getUploadFiles: mapActionByName("adrUpload", "getUploadFiles")
         },
         mounted() {
             this.getUserCanUpload();
