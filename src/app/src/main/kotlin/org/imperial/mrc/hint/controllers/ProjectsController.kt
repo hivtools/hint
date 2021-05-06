@@ -18,14 +18,15 @@ class ProjectsController(private val session: Session,
 {
     @PostMapping("/project/")
     @ResponseBody
-    fun newProject(@RequestParam("name") name: String): ResponseEntity<String>
+    fun newProject(@RequestParam("name") name: String,
+                   @RequestParam("note") note: String?): ResponseEntity<String>
     {
-        val projectId = projectRepository.saveNewProject(userId(), name)
+        val projectId = projectRepository.saveNewProject(userId(), name, note)
 
         //Generate new version id and set it as the session variable, and save new version to db
         val newVersionId = session.generateVersionId()
         session.setVersionId(newVersionId)
-        versionRepository.saveVersion(newVersionId, projectId)
+        versionRepository.saveVersion(newVersionId, projectId, note)
 
         val version = versionRepository.getVersion(newVersionId)
         val project = Project(projectId, name, listOf(version))
@@ -35,15 +36,16 @@ class ProjectsController(private val session: Session,
     @PostMapping("/project/{projectId}/clone")
     @ResponseBody
     fun cloneProjectToUser(@PathVariable("projectId") projectId: Int,
+                           @RequestParam("note") note: String,
                            @RequestParam("emails") emails: List<String>): ResponseEntity<String>
     {
 
         val userIds = emails.map { userLogic.getUser(it)?.id ?: throw UserException("userDoesNotExist") }
         val currentProject = projectRepository.getProject(projectId, userId())
         userIds.forEach {
-            val newProjectId = projectRepository.saveNewProject(it, currentProject.name, userId())
+            val newProjectId = projectRepository.saveNewProject(it, currentProject.name, userId(), note)
             currentProject.versions.forEach {
-                versionRepository.cloneVersion(it.id, session.generateVersionId(), newProjectId)
+                versionRepository.cloneVersion(it.id, session.generateVersionId(), newProjectId, note)
             }
         }
         return SuccessResponse(null).asResponseEntity()
@@ -51,11 +53,12 @@ class ProjectsController(private val session: Session,
 
     @PostMapping("/project/{projectId}/version/")
     fun newVersion(@PathVariable("projectId") projectId: Int,
+                   @RequestParam("note") note: String?,
                    @RequestParam("parent") parentVersionId: String): ResponseEntity<String>
     {
         val newVersionId = session.generateVersionId()
         session.setVersionId(newVersionId)
-        versionRepository.copyVersion(parentVersionId, newVersionId, projectId, userId())
+        versionRepository.copyVersion(parentVersionId, newVersionId, projectId, userId(), note)
         val newVersion = versionRepository.getVersion(newVersionId)
         return SuccessResponse(newVersion).asResponseEntity();
     }
@@ -75,15 +78,36 @@ class ProjectsController(private val session: Session,
     fun promoteVersion(
         @PathVariable("projectId") projectId: Int,
         @PathVariable("versionId") versionId: String,
+        @RequestParam("note") note: String,
         @RequestParam("name") name: String): ResponseEntity<String>
     {
-        val newProjectId = projectRepository.saveNewProject(userId(), name)
+        val newProjectId = projectRepository.saveNewProject(userId(), name, note)
         val newVersionId = session.generateVersionId()
         versionRepository.promoteVersion(versionId, newVersionId, newProjectId, userId())
 
         val version = versionRepository.getVersion(newVersionId)
         val project = Project(newProjectId, name, listOf(version))
         return SuccessResponse(project).asResponseEntity()
+    }
+
+    @PostMapping("/project/{projectId}/note")
+    @ResponseBody
+    fun saveProjectNote(
+            @PathVariable("projectId") projectId: Int,
+            @RequestParam("note") note: String): ResponseEntity<String>
+    {
+        projectRepository.saveProjectNote(projectId, userId(), note)
+        return EmptySuccessResponse.asResponseEntity()
+    }
+
+    @PostMapping("/project/{versionId}/note")
+    @ResponseBody
+    fun saveVersionNote(
+            @PathVariable("versionId") versionId: String,
+            @RequestParam("note") note: String): ResponseEntity<String>
+    {
+        versionRepository.saveVersionNote(versionId, note)
+        return EmptySuccessResponse.asResponseEntity()
     }
 
     @GetMapping("project/{projectId}/version/{versionId}")

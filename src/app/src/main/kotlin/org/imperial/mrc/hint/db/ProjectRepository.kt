@@ -2,7 +2,6 @@ package org.imperial.mrc.hint.db
 
 import org.imperial.mrc.hint.db.Tables.PROJECT
 import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
-import org.imperial.mrc.hint.db.tables.records.ProjectRecord
 import org.imperial.mrc.hint.exceptions.ProjectException
 import org.imperial.mrc.hint.models.Project
 import org.imperial.mrc.hint.models.Version
@@ -12,12 +11,13 @@ import org.springframework.stereotype.Component
 
 interface ProjectRepository
 {
-    fun saveNewProject(userId: String, projectName: String, sharedBy: String?= null): Int
+    fun saveNewProject(userId: String, projectName: String, sharedBy: String?= null, note: String?=null): Int
     fun getProjects(userId: String): List<Project>
     fun deleteProject(projectId: Int, userId: String)
     fun getProject(projectId: Int, userId: String): Project
     fun getProjectFromVersionId(versionId: String, userId: String): Project
     fun renameProject(projectId: Int, userId: String, newName: String)
+    fun saveProjectNote(projectId: Int, userId: String, note: String)
     
 }
 
@@ -31,6 +31,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                 PROJECT.ID,
                 PROJECT.NAME,
                 PROJECT.SHARED_BY,
+                PROJECT.NOTE,
                 PROJECT_VERSION.ID,
                 PROJECT_VERSION.CREATED,
                 PROJECT_VERSION.UPDATED,
@@ -63,10 +64,10 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
         return getProject(projectId[PROJECT_VERSION.PROJECT_ID], userId)
     }
 
-    override fun saveNewProject(userId: String, projectName: String, sharedBy: String?): Int
+    override fun saveNewProject(userId: String, projectName: String, sharedBy: String?, note: String?): Int
     {
-        val result = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME, PROJECT.SHARED_BY)
-                .values(userId, projectName, sharedBy)
+        val result = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME, PROJECT.SHARED_BY, PROJECT.NOTE)
+                .values(userId, projectName, sharedBy, note)
                 .returning(PROJECT.ID)
                 .fetchOne()
 
@@ -80,6 +81,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                         PROJECT.ID,
                         PROJECT.NAME,
                         PROJECT.SHARED_BY,
+                        PROJECT.NOTE,
                         PROJECT_VERSION.ID,
                         PROJECT_VERSION.CREATED,
                         PROJECT_VERSION.UPDATED,
@@ -115,6 +117,15 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
             .where(PROJECT.USER_ID.eq(userId))
             .and(PROJECT.ID.eq(projectId))
             .execute()
+    }
+
+    override fun saveProjectNote(projectId: Int, userId: String, note: String)
+    {
+        dsl.update(PROJECT)
+                .set(PROJECT.NOTE, note)
+                .where(PROJECT.USER_ID.eq(userId))
+                .and(PROJECT.ID.eq(projectId))
+                .execute()
     }
 
     private fun checkProjectExists(projectId: Int, userId: String)

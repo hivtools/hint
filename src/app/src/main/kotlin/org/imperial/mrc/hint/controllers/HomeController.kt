@@ -28,7 +28,7 @@ class HomeController(
     fun index(model: Model): String
     {
         val userProfile = session.getUserProfile()
-        versionRepository.saveVersion(session.getVersionId(), null)
+        versionRepository.saveVersion(session.getVersionId(), null, null)
         model["title"] = appProperties.applicationTitle
         model["user"] = userProfile.id
         return "index"
