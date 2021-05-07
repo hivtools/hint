@@ -2,6 +2,10 @@
 
 * Clear ADR upload success message where necessary
 
+# hint 1.33.1
+
+* Revert to master branch of hintr
+
 # hint 1.33.0
 
 * Include metadata when pushing file to ADR
