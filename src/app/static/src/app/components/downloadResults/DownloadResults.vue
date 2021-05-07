@@ -62,7 +62,7 @@
     import {RootState} from "../../root";
     import ErrorAlert from "../ErrorAlert.vue";
     import i18next from "i18next";
-    import {ADRUploadState} from "../../store/adrUpload/adr";
+    import {ADRUploadState} from "../../store/adrUpload/adrUpload";
 
     interface Computed {
         modelCalibrateId: string,

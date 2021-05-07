@@ -15,6 +15,7 @@ export interface ADRActions {
     getDatasets: (store: ActionContext<ADRState, RootState>) => void;
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
     getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
+    getAndSetDatasets: (store: ActionContext<ADRState, RootState>, selectedDatasetId: string) => void;
 }
 
 export const actions: ActionTree<ADRState, RootState> & ADRActions = {
@@ -61,12 +62,12 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async getUserCanUpload(context) {
-        const {rootState, commit} = context;
+        const {rootState, dispatch, commit} = context;
         const selectedDataset = rootState.baseline.selectedDataset;
 
         if (selectedDataset) {
             if (!selectedDataset.organization) {
-                await getAndSetDatasets(context, selectedDataset.id)
+                await dispatch("getAndSetDatasets", selectedDataset.id);
             }
             const selectedDatasetOrgId = rootState.baseline.selectedDataset!.organization.id
 
@@ -82,14 +83,13 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                     }
                 })
         }
-    }
-};
+    },
 
-async function getAndSetDatasets(context: ActionContext<ADRState, RootState>, selectedDatasetId: string){
-    const {state, commit} = context;
-    let datasets = state.datasets;
-    if (!datasets.length) {
-        await api(context)
+    async getAndSetDatasets(context, selectedDatasetId) {
+        const {state, commit} = context;
+        let datasets = state.datasets;
+        if (!datasets.length) {
+            await api(context)
                 .ignoreErrors()
                 .ignoreSuccess()
                 .get(`/adr/datasets/${selectedDatasetId}`)
@@ -98,9 +98,8 @@ async function getAndSetDatasets(context: ActionContext<ADRState, RootState>, se
                         datasets = [response.data];
                     }
                 });
+        }
+        const regenDataset = datasetFromMetadata(selectedDatasetId, datasets, state.schemas!);
+        commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
     }
-
-    const regenDataset = datasetFromMetadata(selectedDatasetId, datasets, state.schemas!);
-    commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
-}
-
+};

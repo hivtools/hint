@@ -49,7 +49,7 @@
     import {Dict, UploadFile} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
     import {formatDateTime, mapActionByName, mapStateProp, mapStateProps} from "../../utils";
-    import {ADRUploadState} from "../../store/adrUpload/adr";
+    import {ADRUploadState} from "../../store/adrUpload/adrUpload";
 
     interface Methods {
         uploadFilesToADRAction: (uploadFilesPayload: UploadFile[]) => void;

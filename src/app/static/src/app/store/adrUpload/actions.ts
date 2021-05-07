@@ -2,12 +2,11 @@ import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
 import qs from "qs";
-import {ADRUploadState} from "./adr";
+import {ADRUploadState} from "./adrUpload";
 import {ADRUploadMutation} from "./mutations";
-import {constructUploadFile, datasetFromMetadata} from "../../utils";
+import {constructUploadFile} from "../../utils";
 import {Dict, UploadFile} from "../../types";
 import {ADRMutation} from "../adr/mutations";
-import {BaselineMutation} from "../baseline/mutations";
 
 export interface ADRUploadActions {
     getUploadFiles: (store: ActionContext<ADRUploadState, RootState>) => void;
@@ -92,26 +91,7 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                 break
             }
         }
-        await getAndSetDatasets(context, selectedDatasetId)
+        await dispatch("adr/getAndSetDatasets", selectedDatasetId);
         dispatch("getUploadFiles");
     }
 };
-
-async function getAndSetDatasets(context: ActionContext<ADRUploadState, RootState>, selectedDatasetId: string) {
-    const {rootState, commit} = context;
-    let datasets = rootState.adr.datasets;
-    if (!datasets.length) {
-        await api(context)
-            .ignoreErrors()
-            .ignoreSuccess()
-            .get(`/adr/datasets/${selectedDatasetId}`)
-            .then((response) => {
-                if (response) {
-                    datasets = [response.data];
-                }
-            });
-    }
-
-    const regenDataset = datasetFromMetadata(selectedDatasetId, datasets, rootState.adr.schemas!);
-    commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
-}

@@ -41,7 +41,7 @@ import {initialProjectsState, ProjectsState} from "../app/store/projects/project
 import {initialModelCalibrateState, ModelCalibrateState} from "../app/store/modelCalibrate/modelCalibrate";
 import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrVersion/hintrVersion";
 import {ADRState, initialADRState} from "../app/store/adr/adr";
-import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adr";
+import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrUpload";
 
 export const mockAxios = new MockAdapter(axios);
 

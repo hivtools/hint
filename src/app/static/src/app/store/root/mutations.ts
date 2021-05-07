@@ -14,7 +14,7 @@ import {mutations as languageMutations} from "../language/mutations";
 import {initialProjectsState} from "../projects/projects";
 import {router} from '../../router';
 import {initialModelCalibrateState} from "../modelCalibrate/modelCalibrate";
-import {initialADRUploadState} from "../adrUpload/adr";
+import {initialADRUploadState} from "../adrUpload/adrUpload";
 
 export enum RootMutation {
     Reset = "Reset",
@@ -130,14 +130,7 @@ export const mutations: MutationTree<RootState> = {
             sapChoropleth: sapSelections,
             colourScales: colourScales
         });
-        Object.assign(state.adrUpload, {
-            currentFileUploading: null,
-            totalFilesUploading: null,
-            uploadError: null,
-            uploading: false,
-            uploadComplete: false,
-            uploadFiles: null
-        });
+        Object.assign(state.adrUpload, initialADRUploadState());
     },
 
     ...languageMutations

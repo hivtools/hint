@@ -32,7 +32,7 @@ import { initialHintrVersionState, hintrVersion, HintrVersionState } from "./sto
 import {currentHintVersion} from "./hintVersion";
 import {ModelRunMutation, ModelRunUpdates} from "./store/modelRun/mutations";
 import {adr, ADRState, initialADRState} from "./store/adr/adr";
-import {adrUpload, ADRUploadState, initialADRUploadState} from "./store/adrUpload/adr";
+import {adrUpload, ADRUploadState, initialADRUploadState} from "./store/adrUpload/adrUpload";
 
 export interface TranslatableState {
     language: Language

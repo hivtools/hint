@@ -1,12 +1,4 @@
-import {
-    mockADRState,
-    mockAxios,
-    mockBaselineState,
-    mockError,
-    mockFailure,
-    mockRootState,
-    mockSuccess
-} from "../mocks";
+import {mockADRState, mockAxios, mockBaselineState, mockError, mockFailure, mockRootState, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/adr/actions";
 import {ADRMutation} from "../../app/store/adr/mutations";
 
@@ -212,64 +204,67 @@ describe("ADR actions", () => {
         expect(commit.mock.calls[0][0].payload).toStrictEqual(mockError("test-error"));
     });
 
-    it("getUserCanUpload sets organisation on selectedDataset if necessary", async () => {
+    it("getUserCanUpload dispatches getAndSetDatasets to set organisation if necessary", async () => {
         const root = mockRootState({
             baseline: mockBaselineState({selectedDataset: {id: "test-dataset"}} as any)
         });
+        const organization = {id: "test-org"};
+        const adr = mockADRState({
+            datasets: [{id: "test-dataset", resources: [], organization}],
+            schemas: {baseUrl: "http://test"} as any
+        });
+        const dispatch = jest.fn().mockImplementation((mutation, payload) => {
+            if (mutation === "getAndSetDatasets") {
+                root.baseline.selectedDataset!.organization = organization;
+            }
+        });
+        const commit = jest.fn();
+
+        mockAxios.onGet(`adr/orgs?permission=update_dataset`)
+            .reply(200, mockSuccess([{id: "test-org"}]));
+
+        await actions.getUserCanUpload({commit, state: adr, rootState: root, dispatch} as any);
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]).toStrictEqual({type: "SetUserCanUpload", payload: true});
+    });
+
+    it("getAndSetDatasets sets dataset", async () => {
         const adr = mockADRState({
             datasets: [{id: "test-dataset", resources: [], organization: {id: "test-org"}}],
             schemas: {baseUrl: "http://test"} as any
         });
+        const commit = jest.fn();
 
-        //Give commit an implementation so it can really update the state on the SetDataset mutation to allow testing
-        //of action which required that state change
-        const commit = jest.fn().mockImplementation((mutation, payload) => {
-            if (mutation === "baseline/SetDataset") {
-                root.baseline.selectedDataset = payload
-            }
-        });
+        await actions.getAndSetDatasets({commit, state: adr} as any, adr.datasets[0].id);
 
-        mockAxios.onGet(`adr/orgs?permission=update_dataset`)
-            .reply(200, mockSuccess([{id: "test-org"}]));
-
-        await actions.getUserCanUpload({commit, state: adr, rootState: root} as any);
-
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]).toBe("baseline/SetDataset");
         expect(commit.mock.calls[0][1].id).toBe("test-dataset");
         expect(commit.mock.calls[0][1].organization).toStrictEqual({id: "test-org"});
         expect(commit.mock.calls[0][2]).toStrictEqual({root: true});
-        expect(commit.mock.calls[1][0]).toStrictEqual({type: "SetUserCanUpload", payload: true});
     });
 
-    it("getUserCanUpload fetches dataset metadata to get organization if necessary", async () => {
-        const commit = jest.fn().mockImplementation((mutation, payload) => {
-            if (mutation === "baseline/SetDataset") {
-                root.baseline.selectedDataset = payload
-            }
-        });
-        const root = mockRootState({
-            baseline: mockBaselineState({selectedDataset: {id: "test-dataset"}} as any)
-        });
+    it("getAndSetDatasets gets dataset metadata if necessary to set dataset", async () => {
+        const rootState = mockRootState()
         const adr = mockADRState({
-            datasets: [],
+            // datasets: [{id: "test-dataset", resources: [], organization: {id: "test-org"}}],
             schemas: {baseUrl: "http://test"} as any
         });
+        const commit = jest.fn();
 
         const datasetResponse = {id: "test-dataset", resources: [], organization: {id: "test-org"}}
         mockAxios.onGet(`adr/datasets/test-dataset`)
             .reply(200, mockSuccess(datasetResponse));
-        mockAxios.onGet(`adr/orgs?permission=update_dataset`)
-            .reply(200, mockSuccess([{id: "test-org"}]));
 
-        await actions.getUserCanUpload({commit, state: adr, rootState: root} as any);
+        await actions.getAndSetDatasets({commit, state: adr, rootState} as any, datasetResponse.id);
 
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]).toBe("baseline/SetDataset");
         expect(commit.mock.calls[0][1].id).toBe("test-dataset");
         expect(commit.mock.calls[0][1].organization).toStrictEqual({id: "test-org"});
         expect(commit.mock.calls[0][2]).toStrictEqual({root: true});
-        expect(commit.mock.calls[1][0]).toStrictEqual({type: "SetUserCanUpload", payload: true});
+        expect(mockAxios.history.get.length).toBe(1);
     });
 
 });

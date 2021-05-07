@@ -1,7 +1,7 @@
 import {MutationTree} from "vuex";
 import {Dict, PayloadWithType, UploadFile} from "../../types";
 import {Error} from "../../generated";
-import {ADRUploadState} from "./adr";
+import {ADRUploadState} from "./adrUpload";
 
 export enum ADRUploadMutation {
     SetUploadFiles = "SetUploadFiles",
