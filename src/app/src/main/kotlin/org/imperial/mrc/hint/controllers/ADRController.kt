@@ -9,6 +9,7 @@ import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.md5sum
+import org.imperial.mrc.hint.models.EmptySuccessResponse
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.nio.file.Files
 
 @RestController
@@ -169,98 +171,73 @@ class ADRController(private val encryption: Encryption,
     }
 
     @PostMapping("/datasets/{id}/resource/{resourceType}/{modelCalibrateId}")
-    @Suppress("ReturnCount")
+    @Suppress("ReturnCount", "LongParameterList", "UnsafeCallOnNullableType")
     fun pushFileToADR(@PathVariable id: String,
                       @PathVariable resourceType: String,
                       @PathVariable modelCalibrateId: String,
                       @RequestParam resourceFileName: String,
-                      @RequestParam resourceName: String,
-                      @RequestParam resourceId: String?): ResponseEntity<String>
+                      @RequestParam resourceId: String?,
+                      @RequestParam description: String) : ResponseEntity<String>
     {
-        // 1. If output file, download relevant artefact from hintr
-        val artefact: Pair<ResponseEntity<StreamingResponseBody>, String>? = when (resourceType)
+        return when (resourceType)
         {
-            appProperties.adrOutputZipSchema -> Pair(apiClient.downloadSpectrum(modelCalibrateId),
-                    "Naomi model outputs")
-            appProperties.adrOutputSummarySchema -> Pair(apiClient.downloadSummary(modelCalibrateId),
-                    "Naomi summary report")
-            appProperties.adrPJNZSchema, appProperties.adrShapeSchema, appProperties.adrPopSchema,
-            appProperties.adrSurveySchema, appProperties.adrARTSchema, appProperties.adrANCSchema -> null
+            appProperties.adrOutputSummarySchema,
+            appProperties.adrOutputZipSchema ->
+                pushOutputFileToADR(id, resourceType, modelCalibrateId, resourceFileName, resourceId, description)
+            appProperties.adrPJNZSchema,
+            appProperties.adrShapeSchema,
+            appProperties.adrPopSchema,
+            appProperties.adrSurveySchema,
+            appProperties.adrARTSchema,
+            appProperties.adrANCSchema ->
+                pushInputFileToADR(id, resourceType, resourceFileName, resourceId)
+            else -> return ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
+
+        }
+    }
+
+    private fun pushOutputFileToADR(datasetId: String,
+                                   resourceType: String,
+                                   modelCalibrateId: String,
+                                   resourceFileName: String,
+                                   resourceId: String?,
+                                   description: String): ResponseEntity<String>
+    {
+        // 1. Download relevant artefact from hintr
+        val artefact = when (resourceType)
+        {
+            appProperties.adrOutputZipSchema -> apiClient.downloadSpectrum(modelCalibrateId)
+            appProperties.adrOutputSummarySchema -> apiClient.downloadSummary(modelCalibrateId)
             else -> return ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
         }
 
-        // 2. Get the file ready to upload
-        val tmpDir = Files.createTempDirectory("adr").toFile()
-        val (file, errorDetail) = if (artefact != null)
-        {
-            makeOutputFileToPushToADR(artefact, tmpDir, resourceFileName)
-        }
-        else
-        {
-            makeInputFileToPushToADR(resourceType, resourceId, tmpDir)
-        }
-
-        if (errorDetail != null)
-        {
-           return errorDetail.toResponseEntity()
-        }
-
-        // 3. Checksum file and upload with metadata to ADR
-        @Suppress("UnsafeCallOnNullableType")
-        val filePart = Pair("upload", file!!)
-        val commonParameters =
-                mutableListOf("name" to resourceName, "hash" to file.md5sum(), "resource_type" to resourceType)
-
-        if (artefact != null)
-        {
-            commonParameters.add("description" to artefact.second)
-        }
-
-        val adr = adrClientBuilder.build()
-        return try
-        {
-            when (resourceId)
-            {
-                null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to id), filePart)
-                else -> adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
-            }
-        }
-        finally
-        {
-            tmpDir.deleteRecursively()
-        }
-    }
-
-    @Suppress("ReturnCount")
-    private fun makeOutputFileToPushToADR(artefact: Pair<ResponseEntity<StreamingResponseBody>, String>,
-                                          tmpDir: File,
-                                          resourceFileName: String): Pair<File?, ErrorDetail?>
-    {
-        // Return error if artefact can't be retrieved
-        if (!artefact.first.statusCode.is2xxSuccessful)
+        // 2. Return error if artefact can't be retrieved
+        if (!artefact.statusCode.is2xxSuccessful)
         {
             val baos = ByteArrayOutputStream()
-            artefact.first.body?.writeTo(baos)
-            return Pair(null, ErrorDetail(artefact.first.statusCode, baos.toString()))
+            artefact.body?.writeTo(baos)
+            return ErrorDetail(artefact.statusCode, baos.toString()).toResponseEntity()
         }
 
-        // Stream artefact to file
+        // 3. Stream artefact to file
+        val tmpDir = Files.createTempDirectory("adr").toFile()
         val file = File(tmpDir, resourceFileName)
         FileOutputStream(file).use { fis ->
-            artefact.first.body!!.writeTo(fis)
+            artefact.body!!.writeTo(fis)
         }
-        return Pair(file, null)
+
+        // 4. Checksum file and upload with metadata to ADR
+        return postFileToADR(file, datasetId, resourceType, resourceFileName, resourceId, description, tmpDir)
     }
 
-    @Suppress("ReturnCount")
-    private fun makeInputFileToPushToADR(resourceType: String,
-                                         resourceId: String?,
-                                         tmpDir: File): Pair<File?, ErrorDetail?>
+    private fun pushInputFileToADR(datasetId: String,
+                                   resourceType: String,
+                                   resourceFileName: String,
+                                   resourceId: String?): ResponseEntity<String>
     {
         if (resourceId == null)
         {
-            return Pair(null,
-                    ErrorDetail(HttpStatus.BAD_REQUEST, "resourceId must be provided for input resourceType"))
+            return ErrorDetail(HttpStatus.BAD_REQUEST, "resourceId must be provided for input resourceType").toResponseEntity()
         }
 
         // Map adr schema to version file type
@@ -277,12 +254,72 @@ class ADRController(private val encryption: Encryption,
 
         //Find input file on disk and copy to tmp dir with original file name
         val versionFile = fileManager.getFile(fileType)
-                ?: return Pair(null, ErrorDetail(HttpStatus.BAD_REQUEST, "File does not exist"))
+                ?: return ErrorDetail(HttpStatus.BAD_REQUEST, "File does not exist").toResponseEntity()
 
+        val tmpDir = Files.createTempDirectory("adr").toFile()
         val file = File(tmpDir, versionFile.filename)
         File(versionFile.path).copyTo(file)
-        return Pair(file, null)
+
+
+
+        return postFileToADR(file, datasetId, resourceType, resourceFileName, resourceId, null, tmpDir)
     }
+
+    private fun postFileToADR(file: File,
+                              datasetId: String,
+                              resourceType: String,
+                              resourceFileName: String,
+                              resourceId: String?,
+                              description: String?,
+                              tmpDir: File): ResponseEntity<String>
+    {
+        val filePart = Pair("upload", file)
+        val fileHash = file.md5sum()
+        val commonParameters =
+                listOfNotNull("name" to resourceFileName, "description" to description,
+                        "hash" to fileHash,"resource_type" to resourceType)
+
+        val adr = adrClientBuilder.build()
+        return try
+        {
+            when (resourceId)
+            {
+                null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to datasetId), filePart)
+                else ->
+                {
+                    if (uploadFileHasChanges(resourceId, fileHash))
+                    {
+                        adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
+                    }
+                    else
+                    {
+                        EmptySuccessResponse.asResponseEntity()
+                    }
+                }
+            }
+        }
+        catch (e: IOException)
+        {
+            ErrorDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.message!!).toResponseEntity()
+        }
+        finally
+        {
+            tmpDir.deleteRecursively()
+        }
+    }
+
+    fun uploadFileHasChanges(resourceId: String, newDatasetHash: String): Boolean
+    {
+        val adr = adrClientBuilder.build()
+        val response = adr.get("resource_show?id=${resourceId}")
+        if (response.statusCode.isError)
+        {
+            throw IOException("Unable to retrieve hash from ADR")
+        }
+        val hash = objectMapper.readTree(response.body!!)["data"]["hash"].asText()
+        return hash != newDatasetHash
+    }
+
 }
 
 
