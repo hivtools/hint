@@ -1,6 +1,35 @@
-# hint 1.30.0
+# hint 1.34.0
 
 * Support uploading edited input files, behind feature switch for now
+
+# hint 1.33.1
+
+* Revert to master branch of hintr
+
+# hint 1.33.0
+
+* Include metadata when pushing file to ADR
+
+# hint 1.32.0
+
+* Avoid re-uploading unchanged files to ADR
+
+# hint 1.31.1
+
+* Rebuild ADR uploadFiles with new resourceIds after upload new files
+
+# hint 1.31.0
+
+* Add accessibility statement
+
+# hint 1.30.0
+
+* Prevent ADR upload of output files from overwriting those from other projects
+
+# hint 1.29.2
+
+* Remove incorrectly committed debug code
+>>>>>>> master
 
 # hint 1.29.1
 
@@ -53,7 +82,6 @@
 # hint 1.18.0
 
 * add uncertainty ranges to choropleth tooltips
-
 
 # hint 1.16.1
 

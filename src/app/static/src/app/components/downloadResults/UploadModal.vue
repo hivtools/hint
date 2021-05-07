@@ -18,19 +18,12 @@
                         <label class="form-check-label"
                                :for="`id-${index}`"
                                v-translate="uploadFile.displayName"></label>
-
                         <small v-if="uploadFile.resourceId" class="text-danger row">
                         <span class="col-auto">
                         <span v-translate="'uploadFileOverwrite'"></span>{{ lastModified(uploadFile.lastModified) }}
                         </span>
                         </small>
                     </div>
-                </div>
-                <div class="mt-3">
-                    <label for="description-id" v-translate="'uploadFileDesc'"></label>
-                    <textarea v-model="uploadDescToAdr"
-                              class="form-control" rows="3"
-                              id="description-id"></textarea>
                 </div>
             </div>
             <template v-slot:footer>
@@ -97,7 +90,7 @@
         methods: {
             uploadFilesToADRAction: mapActionByName<UploadFile[]>(
                 'adr',
-                'uploadFilestoADR'
+                'uploadFilesToADR'
             ),
             confirmUpload() {
                 const uploadFilesPayload: UploadFile[] = [];
@@ -112,12 +105,8 @@
                 return formatDateTime(date)
             },
             setDefaultCheckedItems: function () {
-                const uploadFilesKeys = ["outputZip", "outputSummary"]
-                uploadFilesKeys.forEach(key => {
-                    if (this.uploadFiles.hasOwnProperty(key)) {
-                        this.uploadFilesToAdr.push(key)
-                    }
-                })
+                this.uploadFilesToAdr = ["outputZip", "outputSummary"]
+                    .filter(key => this.uploadFiles.hasOwnProperty(key))
             }
         },
         computed: {

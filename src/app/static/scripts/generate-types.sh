@@ -16,7 +16,7 @@ fi
 wget https://github.com/mrc-ide/hintr/archive/${branch}.zip
 unzip ${branch}
 
-rm ${target} -f
+rm -f ${target}
 mkdir types
 node generateTypes ${branch}
 
@@ -28,6 +28,6 @@ echo "/**
 */" >> ${target}
 
 cat types/*.d.ts >> ${target}
-rm types -rf
+rm -rf types
 rm ${branch}.zip
-rm hintr-${branch} -r
+rm -r hintr-${branch}

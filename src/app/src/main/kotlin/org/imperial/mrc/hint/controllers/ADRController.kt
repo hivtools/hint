@@ -177,20 +177,21 @@ class ADRController(private val encryption: Encryption,
                       @PathVariable modelCalibrateId: String,
                       @RequestParam resourceFileName: String,
                       @RequestParam resourceId: String?,
+                      @RequestParam resourceName: String,
                       @RequestParam description: String) : ResponseEntity<String>
     {
         return when (resourceType)
         {
             appProperties.adrOutputSummarySchema,
             appProperties.adrOutputZipSchema ->
-                pushOutputFileToADR(id, resourceType, modelCalibrateId, resourceFileName, resourceId, description)
+                pushOutputFileToADR(id, resourceType, modelCalibrateId, resourceFileName, resourceId, resourceName, description)
             appProperties.adrPJNZSchema,
             appProperties.adrShapeSchema,
             appProperties.adrPopSchema,
             appProperties.adrSurveySchema,
             appProperties.adrARTSchema,
             appProperties.adrANCSchema ->
-                pushInputFileToADR(id, resourceType, resourceFileName, resourceId)
+                pushInputFileToADR(id, resourceType, resourceFileName, resourceId, resourceName)
             else -> return ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
 
         }
@@ -201,6 +202,7 @@ class ADRController(private val encryption: Encryption,
                                    modelCalibrateId: String,
                                    resourceFileName: String,
                                    resourceId: String?,
+                                   resourceName: String,
                                    description: String): ResponseEntity<String>
     {
         // 1. Download relevant artefact from hintr
@@ -227,13 +229,14 @@ class ADRController(private val encryption: Encryption,
         }
 
         // 4. Checksum file and upload with metadata to ADR
-        return postFileToADR(file, datasetId, resourceType, resourceFileName, resourceId, description, tmpDir)
+        return postFileToADR(file, datasetId, resourceType, resourceName, resourceId, description, tmpDir)
     }
 
     private fun pushInputFileToADR(datasetId: String,
                                    resourceType: String,
                                    resourceFileName: String,
-                                   resourceId: String?): ResponseEntity<String>
+                                   resourceId: String?,
+                                   resourceName: String): ResponseEntity<String>
     {
         if (resourceId == null)
         {
@@ -262,13 +265,13 @@ class ADRController(private val encryption: Encryption,
 
 
 
-        return postFileToADR(file, datasetId, resourceType, resourceFileName, resourceId, null, tmpDir)
+        return postFileToADR(file, datasetId, resourceType, resourceName, resourceId, null, tmpDir)
     }
 
     private fun postFileToADR(file: File,
                               datasetId: String,
                               resourceType: String,
-                              resourceFileName: String,
+                              resourceName: String,
                               resourceId: String?,
                               description: String?,
                               tmpDir: File): ResponseEntity<String>
@@ -276,7 +279,7 @@ class ADRController(private val encryption: Encryption,
         val filePart = Pair("upload", file)
         val fileHash = file.md5sum()
         val commonParameters =
-                listOfNotNull("name" to resourceFileName, "description" to description,
+                listOfNotNull("name" to resourceName, "description" to description,
                         "hash" to fileHash,"resource_type" to resourceType)
 
         val adr = adrClientBuilder.build()
@@ -319,7 +322,6 @@ class ADRController(private val encryption: Encryption,
         val hash = objectMapper.readTree(response.body!!)["data"]["hash"].asText()
         return hash != newDatasetHash
     }
-
 }
 
 

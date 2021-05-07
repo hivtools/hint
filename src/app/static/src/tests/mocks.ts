@@ -319,6 +319,10 @@ export const mockCalibrateResultResponse = (props: Partial<CalibrateResultRespon
                 indicators: [], filters: []
             }
         },
+        uploadMetadata: {
+            outputSummary: {description: "Naomi output files"},
+            outputZip: {description:"Naomi output files"}
+        },
         data: [{
             area_id: "MWI",
             sex: "both",
