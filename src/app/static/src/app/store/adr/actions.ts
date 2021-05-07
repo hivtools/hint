@@ -180,19 +180,21 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             commit({type: ADRMutation.ADRUploadProgress, payload: i + 1});
             const { resourceType, resourceFilename, resourceName, resourceId } = uploadFilesPayload[i];
 
-            const requestParams: Dict<string> = {resourceFileName: resourceFilename, resourceName};
-            if (resourceId) {
-                requestParams["resourceId"] = resourceId
-            }
+            let description = "";
             if (resourceType === state.schemas?.outputSummary) {
-                requestParams["description"] = uploadMetadata
+                description = uploadMetadata
                     ? uploadMetadata.outputSummary.description
                     : "Naomi summary report uploaded from Naomi web app"
             }
             if (resourceType === state.schemas?.outputZip) {
-                requestParams["description"] = uploadMetadata
+                description = uploadMetadata
                     ? uploadMetadata.outputZip.description
                     : "Naomi output uploaded from Naomi web app"
+            }
+
+            const requestParams: Dict<string> = {resourceFileName: resourceFilename, resourceName, description};
+            if (resourceId) {
+                requestParams["resourceId"] = resourceId
             }
 
             let apiRequest = api<ADRMutation, ADRMutation>(context)

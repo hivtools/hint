@@ -191,7 +191,7 @@ class ADRController(private val encryption: Encryption,
             appProperties.adrSurveySchema,
             appProperties.adrARTSchema,
             appProperties.adrANCSchema ->
-                pushInputFileToADR(id, resourceType, resourceFileName, resourceId, resourceName)
+                pushInputFileToADR(id, resourceType, resourceId, resourceName)
             else -> return ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
 
         }
@@ -234,7 +234,6 @@ class ADRController(private val encryption: Encryption,
 
     private fun pushInputFileToADR(datasetId: String,
                                    resourceType: String,
-                                   resourceFileName: String,
                                    resourceId: String?,
                                    resourceName: String): ResponseEntity<String>
     {
@@ -263,8 +262,6 @@ class ADRController(private val encryption: Encryption,
         val file = File(tmpDir, versionFile.filename)
         File(versionFile.path).copyTo(file)
 
-
-
         return postFileToADR(file, datasetId, resourceType, resourceName, resourceId, null, tmpDir)
     }
 
@@ -278,9 +275,13 @@ class ADRController(private val encryption: Encryption,
     {
         val filePart = Pair("upload", file)
         val fileHash = file.md5sum()
+
         val commonParameters =
-                listOfNotNull("name" to resourceName, "description" to description,
-                        "hash" to fileHash,"resource_type" to resourceType)
+                mutableListOf("name" to resourceName, "hash" to fileHash,"resource_type" to resourceType)
+        if (description != null)
+        {
+            commonParameters.add("description" to description)
+        }
 
         val adr = adrClientBuilder.build()
         return try

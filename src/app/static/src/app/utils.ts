@@ -163,10 +163,11 @@ export const formatDateTime = (isoUTCString: string) => {
     return moment.utc(isoUTCString).local().format('DD/MM/YYYY HH:mm:ss');
 };
 
-export const findResource = (datasetWithResources: any, resourceType: string, resourceFilename?: string): DatasetResource | null => {
+export const findResource = (datasetWithResources: any, resourceType: string, resourceName?: string | null): DatasetResource | null => {
     let resources = datasetWithResources.resources;
-    if (resourceFilename) {
-        resources = resources.filter((r: any) => r.name === resourceFilename);
+
+    if (resourceName) {
+        resources = resources.filter((r: any) => r.name === resourceName);
     }
     const metadata = resources.find((r: any) => r.resource_type === resourceType);
     return metadata ? {
@@ -200,7 +201,7 @@ export const datasetFromMetadata = (id: string, datasets: any[], schemas: ADRSch
 
 export const constructUploadFile = (datasetWithResources: any, index: number, resourceType: string,
                              resourceFilename: string, resourceName: string | null,  displayName: string): UploadFile | null => {
-    const resource = findResource(datasetWithResources, resourceType);
+    const resource = findResource(datasetWithResources, resourceType, resourceName);
 
     const resourceId = resource ? resource.id : null;
     const lastModified = resource ? ([resource.lastModified, resource.metadataModified].sort()[1]) : null;
