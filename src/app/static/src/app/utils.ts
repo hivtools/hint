@@ -200,22 +200,31 @@ export const datasetFromMetadata = (id: string, datasets: any[], schemas: ADRSch
 };
 
 export const constructUploadFile = (datasetWithResources: any, index: number, resourceType: string,
-                             resourceFilename: string, resourceName: string | null,  displayName: string): UploadFile | null => {
-    const resource = findResource(datasetWithResources, resourceType, resourceName);
+                                 resourceFilename: string, displayName: string): UploadFile | null => {
+    const resource = findResource(datasetWithResources, resourceType, null);
+    // We expect to find resource name on the resource - return null if not found - file should
+    // not be uploadable.
+    if (resource) {
+        const resourceName = resource.name;
+        return getUploadFileFromResource(resource, resourceName, index, resourceType, resourceFilename, displayName);
+    } else {
+        return null;
+    }
+};
 
+export const constructUploadFileWithResourceName = (datasetWithResources: any, index: number, resourceType: string,
+                             resourceFilename: string, displayName: string, resourceName: string): UploadFile => {
+    const resource = findResource(datasetWithResources, resourceType, resourceName);
+    return getUploadFileFromResource(resource, resourceName, index, resourceType, resourceFilename, displayName);
+
+};
+
+function getUploadFileFromResource(resource: DatasetResource | null, resourceName: string, index: number,
+                                resourceType: string, resourceFilename: string, displayName: string): UploadFile
+{
     const resourceId = resource ? resource.id : null;
     const lastModified = resource ? ([resource.lastModified, resource.metadataModified].sort()[1]) : null;
     const resourceUrl = resource ? resource.url : null;
-
-    // If resource name not provided, we expect to find it on the resource - return null if not found - file should
-    // not be uploadable.
-    if (!resourceName) {
-        if (resource) {
-            resourceName = resource.name;
-        } else {
-            return null;
-        }
-    }
 
     return {
         index,

@@ -178,13 +178,14 @@ class ADRController(private val encryption: Encryption,
                       @RequestParam resourceFileName: String,
                       @RequestParam resourceId: String?,
                       @RequestParam resourceName: String,
-                      @RequestParam description: String) : ResponseEntity<String>
+                      @RequestParam description: String?) : ResponseEntity<String>
     {
         return when (resourceType)
         {
             appProperties.adrOutputSummarySchema,
             appProperties.adrOutputZipSchema ->
-                pushOutputFileToADR(id, resourceType, modelCalibrateId, resourceFileName, resourceId, resourceName, description)
+                pushOutputFileToADR(id, resourceType, modelCalibrateId, resourceFileName, resourceId, resourceName,
+                        description)
             appProperties.adrPJNZSchema,
             appProperties.adrShapeSchema,
             appProperties.adrPopSchema,
@@ -203,33 +204,41 @@ class ADRController(private val encryption: Encryption,
                                    resourceFileName: String,
                                    resourceId: String?,
                                    resourceName: String,
-                                   description: String): ResponseEntity<String>
+                                   description: String?): ResponseEntity<String>
     {
+        if (description == null)
+        {
+            return ErrorDetail(HttpStatus.BAD_REQUEST, "description must be provided for output resourceType")
+                    .toResponseEntity()
+        }
+
         // 1. Download relevant artefact from hintr
-        val artefact = when (resourceType)
+        val artefact: ResponseEntity<StreamingResponseBody> = when (resourceType)
         {
             appProperties.adrOutputZipSchema -> apiClient.downloadSpectrum(modelCalibrateId)
             appProperties.adrOutputSummarySchema -> apiClient.downloadSummary(modelCalibrateId)
-            else -> return ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
+            else -> throw IllegalArgumentException("$resourceType is not an output resource type")
         }
 
         // 2. Return error if artefact can't be retrieved
-        if (!artefact.statusCode.is2xxSuccessful)
+        return if (!artefact.statusCode.is2xxSuccessful)
         {
             val baos = ByteArrayOutputStream()
             artefact.body?.writeTo(baos)
-            return ErrorDetail(artefact.statusCode, baos.toString()).toResponseEntity()
+            ErrorDetail(artefact.statusCode, baos.toString()).toResponseEntity()
         }
+        else
+        {
+            // 3. Stream artefact to file
+            val tmpDir = Files.createTempDirectory("adr").toFile()
+            val file = File(tmpDir, resourceFileName)
+            FileOutputStream(file).use { fis ->
+                artefact.body!!.writeTo(fis)
+            }
 
-        // 3. Stream artefact to file
-        val tmpDir = Files.createTempDirectory("adr").toFile()
-        val file = File(tmpDir, resourceFileName)
-        FileOutputStream(file).use { fis ->
-            artefact.body!!.writeTo(fis)
+            // 4. Checksum file and upload with metadata to ADR
+            postFileToADR(file, datasetId, resourceType, resourceName, resourceId, description, tmpDir)
         }
-
-        // 4. Checksum file and upload with metadata to ADR
-        return postFileToADR(file, datasetId, resourceType, resourceName, resourceId, description, tmpDir)
     }
 
     private fun pushInputFileToADR(datasetId: String,
@@ -239,7 +248,8 @@ class ADRController(private val encryption: Encryption,
     {
         if (resourceId == null)
         {
-            return ErrorDetail(HttpStatus.BAD_REQUEST, "resourceId must be provided for input resourceType").toResponseEntity()
+            return ErrorDetail(HttpStatus.BAD_REQUEST, "resourceId must be provided for input resourceType")
+                    .toResponseEntity()
         }
 
         // Map adr schema to version file type
@@ -256,13 +266,18 @@ class ADRController(private val encryption: Encryption,
 
         //Find input file on disk and copy to tmp dir with original file name
         val versionFile = fileManager.getFile(fileType)
-                ?: return ErrorDetail(HttpStatus.BAD_REQUEST, "File does not exist").toResponseEntity()
+        return if (versionFile == null)
+        {
+            ErrorDetail(HttpStatus.BAD_REQUEST, "File does not exist").toResponseEntity()
+        }
+        else
+        {
+            val tmpDir = Files.createTempDirectory("adr").toFile()
+            val file = File(tmpDir, versionFile.filename)
+            File(versionFile.path).copyTo(file)
 
-        val tmpDir = Files.createTempDirectory("adr").toFile()
-        val file = File(tmpDir, versionFile.filename)
-        File(versionFile.path).copyTo(file)
-
-        return postFileToADR(file, datasetId, resourceType, resourceName, resourceId, null, tmpDir)
+            postFileToADR(file, datasetId, resourceType, resourceName, resourceId, null, tmpDir)
+        }
     }
 
     private fun postFileToADR(file: File,

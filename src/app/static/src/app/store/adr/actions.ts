@@ -4,7 +4,7 @@ import {api} from "../../apiService";
 import qs from "qs";
 import {ADRState} from "./adr";
 import {ADRMutation} from "./mutations";
-import {constructUploadFile, datasetFromMetadata} from "../../utils";
+import {constructUploadFile, constructUploadFileWithResourceName, datasetFromMetadata} from "../../utils";
 import {Organization, UploadFile, Dict} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
 import {switches} from "../../featureSwitches";
@@ -14,7 +14,7 @@ import {
     PopulationResponse,
     ProgrammeResponse,
     ShapeResponse,
-    SurveyResponse
+    SurveyResponse, ValidateInputResponse
 } from "../../generated";
 
 export interface ADRActions {
@@ -111,30 +111,29 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                         const metadata = response.data;
                         const schemas = state.schemas!;
 
-                        const uploadFiles =  {
-                            outputZip: constructUploadFile(
+                        const uploadFiles: Dict<UploadFile> =  {
+                            outputZip: constructUploadFileWithResourceName(
                                 metadata,
                                 0,
                                 schemas.outputZip,
                                 `${project.name}_naomi_outputs.zip`,
-                                `${project.name} Naomi Outputs`,
-                                "uploadFileOutputZip"),
-                            outputSummary: constructUploadFile(
+                                "uploadFileOutputZip",
+                                `${project.name} Naomi Outputs`),
+                            outputSummary: constructUploadFileWithResourceName(
                                 metadata,
                                 1,
                                 schemas.outputSummary,
                                 `${project.name}_naomi_summary.html`,
-                                `${project.name} Naomi Summary`,
-                                "uploadFileOutputSummary")
-                        } as Dict<UploadFile>;
+                                "uploadFileOutputSummary",
+                                `${project.name} Naomi Summary`)
+                        };
 
                         if (switches.adrPushInputs) {
 
                             const addLocalInputFileToUploads = (
                                 key: string,
                                 schema: string,
-                                response: PjnzResponse | ShapeResponse | PopulationResponse | SurveyResponse
-                                            | ProgrammeResponse | AncResponse,
+                                response: ValidateInputResponse,
                                 displayName: string) => {
                                 if (!response.fromADR) {
                                     const uploadFile = constructUploadFile(
@@ -142,13 +141,12 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                                         Object.keys(uploadFiles).length,
                                         schema,
                                         response.filename,
-                                        null,
                                         displayName
                                     );
                                     if (uploadFile) {
                                        uploadFiles[key] = uploadFile;
                                     }
-                               }
+                                }
                             };
 
                             const baseline = rootState.baseline;
@@ -180,19 +178,21 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             commit({type: ADRMutation.ADRUploadProgress, payload: i + 1});
             const { resourceType, resourceFilename, resourceName, resourceId } = uploadFilesPayload[i];
 
-            let description = "";
+            const requestParams: Dict<string> = {resourceFileName: resourceFilename, resourceName}
+            if (resourceId) {
+                requestParams["resourceId"] = resourceId
+            }
             if (resourceType === state.schemas?.outputSummary) {
-                description = uploadMetadata
+                requestParams["description"] = uploadMetadata
                     ? uploadMetadata.outputSummary.description
                     : "Naomi summary report uploaded from Naomi web app"
             }
             if (resourceType === state.schemas?.outputZip) {
-                description = uploadMetadata
+                requestParams["description"] = uploadMetadata
                     ? uploadMetadata.outputZip.description
                     : "Naomi output uploaded from Naomi web app"
             }
 
-            const requestParams: Dict<string> = {resourceFileName: resourceFilename, resourceName, description};
             if (resourceId) {
                 requestParams["resourceId"] = resourceId
             }

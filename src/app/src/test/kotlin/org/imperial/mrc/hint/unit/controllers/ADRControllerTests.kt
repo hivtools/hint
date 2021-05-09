@@ -357,7 +357,9 @@ class ADRControllerTests : HintrControllerTests()
             on { build() } doReturn mockClient
         }
         val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
-        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "Output zip",null)
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip",
+                "model1", "output1.zip", null, "Output zip",
+                "Naomi model outputs")
         verify(mockClient).postFile(any(), any(), argForWhich { first == "upload" && second.name == "output1.zip" })
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body!!).isEqualTo("whatever")
@@ -406,14 +408,16 @@ class ADRControllerTests : HintrControllerTests()
                             "resource_type" to resourceType,
                             "id" to "testResId")),
                     any()) } doReturn ResponseEntity.ok().body("whatever")
+            on { get("resource_show?id=testResId") } doReturn ResponseEntity.ok()
+                                                                .body("""{"data": {"hash": "xyz987"}}""")
         }
         val mockBuilder: ADRClientBuilder = mock {
             on { build() } doReturn mockClient
         }
 
-        val sut = ADRController(mock(), mock(), mockBuilder, mock(), mockProperties, mockFileManager, mock(), mock(), mock())
+        val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties, mockFileManager, mock(), mock(), mock())
         val result = sut.pushFileToADR("datasetId", resourceType, "calId",
-                "testResFilename.", "testResName", "testResId")
+                "testResFilename.", "testResId", "testResName", null)
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body!!).isEqualTo("whatever")
@@ -466,9 +470,19 @@ class ADRControllerTests : HintrControllerTests()
     {
         val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mock(), mock(), mock())
         val result = sut.pushFileToADR("datasetId", "adr-pjnz", "calId",
-                "testResFilename.", "testResName", null)
+                "testResFilename.", null, "testResName", null)
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(result.body!!).contains("resourceId must be provided for input resourceType")
+    }
+
+    @Test
+    fun `returns error on upload output file without description`()
+    {
+        val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mock(), mock(), mock())
+        val result = sut.pushFileToADR("datasetId", "adr-output-zip", "calId",
+                "testResFilename.", "testResName", "resId", null)
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(result.body!!).contains("description must be provided for output resourceType")
     }
 
     @Test
@@ -476,18 +490,18 @@ class ADRControllerTests : HintrControllerTests()
     {
         val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mock(), mock(), mock())
         val result = sut.pushFileToADR("datasetId", "adr-pjnz", "calId",
-                "testResFilename.", "testResName", "testResId")
+                "testResFilename.", "testResName", "testResId", null)
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(result.body!!).contains("File does not exist")
     }
 
     @Test
-    fun `throws exception on make input file to push to ADR if not input resource type`()
+    fun `throws exception on push input file to ADR if not input resource type`()
     {
         val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mock(), mock(), mock())
-        val makeInputFileMethod = sut::class.memberFunctions.find{ it.name == "makeInputFileToPushToADR" }
-        makeInputFileMethod!!.isAccessible = true
-        assertThatThrownBy{ makeInputFileMethod.call(sut, mockProperties.adrOutputZipSchema, "testResourceId", File("fakeFile")) }
+        val pushInputFileMethod = sut::class.memberFunctions.find{ it.name == "pushInputFileToADR" }
+        pushInputFileMethod!!.isAccessible = true
+        assertThatThrownBy{pushInputFileMethod.call(sut, "dataset1", mockProperties.adrOutputZipSchema, "testResId", "testResName") }
                 .isInstanceOf(InvocationTargetException::class.java)
                 .hasCauseInstanceOf(IllegalArgumentException::class.java)
     }
@@ -508,14 +522,15 @@ class ADRControllerTests : HintrControllerTests()
                             "description" to "Naomi model outputs",
                             "id" to "resource1")), any()) } doReturn ResponseEntity.ok().body("whatever")
 
-            on { get("resource_show?id=resource1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))r
+            on { get("resource_show?id=resource1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
         }
         val mockBuilder: ADRClientBuilder = mock {
             on { build() } doReturn mockClient
         }
 
         val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties, mock(), mockAPIClient, mock(), mock())
-        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1", "Naomi model outputs", "Naomi model outputs")
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1",
+                "output1.zip", "resource1", "Output zip", "Naomi model outputs")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body!!).isEqualTo("whatever")
     }
@@ -534,7 +549,9 @@ class ADRControllerTests : HintrControllerTests()
         }
 
         val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties, mock(), mockAPIClient, mock(), mock())
-        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1", "Naomi model outputs")
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip",
+                "model1", "output1.zip", "resource1",
+                "Naomi model outputs", "Naomi model outputs description")
         verify(mockClient, never()).postFile(any(), any(), any())
         assertThat(result.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         assertThat(objectMapper.readTree(result.body)["data"].textValue()).isEqualTo(null)
@@ -558,7 +575,9 @@ class ADRControllerTests : HintrControllerTests()
         val hasOldHash = sut.uploadFileHasChanges("resource1", "D41D8CD98F00B204E9800998ECF8427E")
         assertThat(hasOldHash).isFalse
 
-        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1", "Naomi model outputs")
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip",
+                "model1", "output1.zip", "resource1",
+                "Naomi model outputs", "Naomi model output description")
         verify(mockClient, never()).postFile(any(), any(), any())
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(objectMapper.readTree(result.body)["data"].textValue()).isEqualTo(null)
@@ -619,7 +638,9 @@ class ADRControllerTests : HintrControllerTests()
             on { downloadSpectrum("model1") } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(null)
         }
         val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mockAPIClient, mock(), mock())
-        val result = sut.pushFileToADR("dataset1", "adr-output-zip", "model1", "output1.zip", "resource1", "Naomi model outputs")
+        val result = sut.pushFileToADR("dataset1", "adr-output-zip",
+                "model1", "output1.zip", "resource1",
+                "Naomi model outputs", "Naomi output description")
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_GATEWAY)
     }
 

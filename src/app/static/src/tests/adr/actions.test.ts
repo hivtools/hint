@@ -215,15 +215,16 @@ describe("ADR actions", () => {
                 {
                     resource_type: "output-summary",
                     id: "456",
-                    name: "project2_naomi_summary.html",
+                    name: "project2 Naomi Summary",
                     last_modified: "2021-03-01",
                     metadata_modified: "2021-03-02",
-                    url: "http://test2"
+                    url: "http://test2",
+
                 },
                 {
                     resource_type: "output-summary",
                     id: "123",
-                    name: "project1_naomi_summary.html",
+                    name: "project1 Naomi Summary",
                     last_modified: "2021-03-01",
                     metadata_modified: "2021-03-02",
                     url: "http://test"
@@ -280,7 +281,8 @@ describe("ADR actions", () => {
                     id: "123",
                     last_modified: "2021-03-01",
                     metadata_modified: "2021-03-02",
-                    url: "http://test"
+                    url: "http://test",
+                    name: "project1 Naomi Summary"
                 },
                 {
                     resource_type: "adr-shape",
@@ -405,7 +407,8 @@ describe("ADR actions", () => {
                     id: "123",
                     last_modified: "2021-03-01",
                     metadata_modified: "2021-03-02",
-                    url: "http://test"
+                    url: "http://test",
+                    name: "project1 Naomi Summary"
                 },
                 {
                     resource_type: "adr-pjnz",
@@ -728,7 +731,7 @@ describe("ADR actions", () => {
                     resourceName: "resource1"
                 },
                 {
-                    resourceType: "type2",
+                    resourceType: "inputs-unaids-naomi-report",
                     resourceFilename: "file2",
                     resourceName: "resource2"
                 }
@@ -761,10 +764,10 @@ describe("ADR actions", () => {
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("getUploadFiles");
         expect(mockAxios.history.post.length).toBe(2);
-        expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceName=resource1&resourceId=id1");
-        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/type1/calId");
-        expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&resourceName=resource2");
-        expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/type2/calId");
+        expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceName=resource1&resourceId=id1&description=zip");
+        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId");
+        expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&resourceName=resource2&description=summary");
+        expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId");
         expect(mockAxios.history.get.length).toBe(1);
         expect(mockAxios.history.get[0]["url"]).toBe("/adr/datasets/datasetId");
     });
