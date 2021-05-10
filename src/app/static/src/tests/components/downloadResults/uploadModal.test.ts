@@ -2,7 +2,7 @@ import {mount, shallowMount} from "@vue/test-utils";
 import UploadModal from "../../../app/components/downloadResults/UploadModal.vue";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
-import {mockADRState, mockBaselineState, mockDatasetResource} from "../../mocks";
+import {mockADRUploadState, mockBaselineState, mockDatasetResource} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
 import Vue from 'vue';
@@ -64,9 +64,9 @@ describe(`uploadModal `, () => {
                                 }
                         })
                 },
-                adr: {
+                adrUpload: {
                     namespaced: true,
-                    state: mockADRState({uploadFiles: data}),
+                    state: mockADRUploadState({uploadFiles: data}),
                     actions: {
                         uploadFilesToADR: jest.fn()
                     },
@@ -140,7 +140,7 @@ describe(`uploadModal `, () => {
     it(`checkboxes are set by default`, async () => {
         const store = createStore({})
         const wrapper = shallowMount(UploadModal, {store})
-        store.state.adr.uploadFiles = fakeMetadata
+        store.state.adrUpload.uploadFiles = fakeMetadata
         await Vue.nextTick()
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)

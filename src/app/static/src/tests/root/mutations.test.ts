@@ -1,4 +1,4 @@
-import {mutations, RootMutation} from "../../app/store/root/mutations";
+import {mutations} from "../../app/store/root/mutations";
 import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 import {initialModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 
@@ -209,12 +209,14 @@ describe("Root mutations", () => {
 
         state.plottingSelections.barchart.xAxisId = "test";
         state.plottingSelections.outputChoropleth.detail = 4;
+        state.adrUpload.uploadComplete = true;
 
         //These should not be reset
         state.plottingSelections.sapChoropleth.detail = 2;
         state.plottingSelections.colourScales.anc = {
             testIndicator: {type: ScaleType.Custom} as any
         };
+        state.adr.key = "abc";
 
         mutations.ResetOutputs(state);
         expect(state.modelRun).toStrictEqual({...initialModelRunState(), ready: true});
@@ -226,6 +228,9 @@ describe("Root mutations", () => {
         expect(state.plottingSelections.colourScales.anc.testIndicator.type).toBe(ScaleType.Custom);
 
         expect(state.modelCalibrate).toStrictEqual({...initialModelCalibrateState(), ready: true})
+
+        expect(state.adrUpload.uploadComplete).toBe(false);
+        expect(state.adr.key).toBe("abc")
     });
 
     it("can change language", () => {
