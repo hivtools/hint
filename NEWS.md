@@ -1,3 +1,7 @@
+# hint 1.34.0
+
+* Clear ADR upload success message where necessary
+
 # hint 1.33.1
 
 * Revert to master branch of hintr
