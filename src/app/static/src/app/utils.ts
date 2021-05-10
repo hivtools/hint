@@ -236,7 +236,7 @@ function getUploadFileFromResource(resource: DatasetResource | null, resourceNam
         resourceUrl,
         lastModified
     }
-};
+}
 
 const emailRegex = RegExp("^([\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})(,[\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})*$")
 
