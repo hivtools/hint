@@ -61,6 +61,21 @@ class ProjectRepositoryTests
     }
 
     @Test
+    fun `can get project notes`()
+    {
+        val uid = setupUser()
+
+        val projectId = sut.saveNewProject(uid, "testProjectRepo", note = "notes")
+        versionRepo.saveVersion("v1", projectId, "notes")
+        val project = sut.getProject(projectId, uid)
+        assertThat(project.name).isEqualTo("testProjectRepo")
+        assertThat(project.note).isEqualTo("notes")
+        assertThat(project.id).isEqualTo(projectId)
+        assertThat(project.versions[0].id).isEqualTo("v1")
+        assertThat(project.versions[0].note).isEqualTo("notes")
+    }
+
+    @Test
     fun `can get project when cloned`()
     {
         val uid = setupUser()
@@ -105,11 +120,12 @@ class ProjectRepositoryTests
     {
         val uid = setupUser()
 
-        val projectId = sut.saveNewProject(uid, "testProjectRepo")
-        versionRepo.saveVersion("v1", projectId)
+        val projectId = sut.saveNewProject(uid, "testProjectRepo", note = "notes")
+        versionRepo.saveVersion("v1", projectId, "notes")
         val project = sut.getProjectFromVersionId("v1", uid)
         assertThat(project.name).isEqualTo("testProjectRepo")
         assertThat(project.sharedBy).isEqualTo(null)
+        assertThat(project.note).isEqualTo("notes")
         assertThat(project.id).isEqualTo(projectId)
         assertThat(project.versions.count()).isEqualTo(1)
         assertThat(project.versions[0].versionNumber).isEqualTo(1)

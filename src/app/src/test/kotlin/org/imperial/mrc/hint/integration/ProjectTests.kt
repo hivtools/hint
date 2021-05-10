@@ -531,6 +531,7 @@ class ProjectTests : VersionFileTests()
     {
         val map = LinkedMultiValueMap<String, String>()
         map.add("name", "testProject")
+        map.add("note", "notes")
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         val httpEntity = HttpEntity(map, headers)
