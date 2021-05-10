@@ -507,6 +507,18 @@ class ADRControllerTests : HintrControllerTests()
     }
 
     @Test
+    fun `throws exception on push output file to ADR if not output resource type`()
+    {
+        val sut = ADRController(mock(), mock(), mock(), mock(), mockProperties, mock(), mock(), mock(), mock())
+        val pushOutputFileMethod = sut::class.memberFunctions.find{ it.name == "pushOutputFileToADR" }
+        pushOutputFileMethod!!.isAccessible = true
+        assertThatThrownBy{pushOutputFileMethod.call(sut, "dataset1", mockProperties.adrPJNZSchema,
+                "testCalId", "testOutput.zip", "testResId", "testResName", "testDesc") }
+                .isInstanceOf(InvocationTargetException::class.java)
+                .hasCauseInstanceOf(IllegalArgumentException::class.java)
+    }
+
+    @Test
     fun `pushes updated file to ADR`()
     {
         val hash = mapOf("hash" to "D41D8CD98F00B204E9800998ECF8427EXXXXX")
