@@ -339,5 +339,3 @@ class ADRController(private val encryption: Encryption,
         return hash != newDatasetHash
     }
 }
-
-
