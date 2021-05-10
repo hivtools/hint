@@ -113,7 +113,7 @@ class ProjectsControllerTests
     fun `gets Projects`()
     {
         val mockVersions = listOf(Version("testVersion", "createdTime", "updatedTime", 1, "version notes"))
-        val mockProjects = listOf(Project(99, "testProject", mockVersions))
+        val mockProjects = listOf(Project(99, "testProject", mockVersions, note= "notes"))
         val mockProjectRepo = mock<ProjectRepository> {
             on { getProjects("testUser") } doReturn mockProjects
         }
@@ -125,6 +125,7 @@ class ProjectsControllerTests
         val projects = resultJson as ArrayNode
         assertThat(projects.count()).isEqualTo(1)
         assertThat(projects[0]["id"].asInt()).isEqualTo(99)
+        assertThat(projects[0]["note"].asText()).isEqualTo("notes")
         assertThat(projects[0]["name"].asText()).isEqualTo("testProject")
         assertThat(projects[0]["sharedBy"].asText()).isEqualTo("")
         val versions = projects[0]["versions"] as ArrayNode
