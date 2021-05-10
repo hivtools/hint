@@ -94,7 +94,7 @@
             confirmUpload() {
                 const uploadFilesPayload: UploadFile[] = []
                 this.uploadFilesToAdr.forEach(value => uploadFilesPayload.push(this.uploadFiles[value]))
-                this.uploadFilesToADRAction(uploadFilesPayload)
+                this.uploadFilesToADRAction(uploadFilesPayload);
                 this.$emit("close")
             },
             handleCancel() {
