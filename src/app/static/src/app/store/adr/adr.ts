@@ -1,7 +1,7 @@
 import {Module} from "vuex";
 import {RootState} from "../../root";
 import {Error} from "../../generated";
-import {ADRSchemas, Dict, UploadFile} from "../../types";
+import {ADRSchemas} from "../../types";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
 
@@ -12,13 +12,7 @@ export interface ADRState {
     keyError: Error | null,
     adrError: Error | null,
     schemas: ADRSchemas | null,
-    currentFileUploading: number | null,
-    totalFilesUploading: number | null,
-    userCanUpload: boolean,
-    uploadError: Error | null,
-    uploading: boolean,
-    uploadComplete: boolean,
-    uploadFiles: Dict<UploadFile> | null
+    userCanUpload: boolean
 }
 
 export const initialADRState = (): ADRState => {
@@ -29,13 +23,7 @@ export const initialADRState = (): ADRState => {
         adrError: null,
         schemas: null,
         fetchingDatasets: false,
-        currentFileUploading: null,
-        totalFilesUploading: null,
-        userCanUpload: false,
-        uploadError: null,
-        uploading: false,
-        uploadComplete: false,
-        uploadFiles: null
+        userCanUpload: false
     }
 };
 

@@ -1,6 +1,18 @@
-# hint 1.34.0
+# hint 1.36.0
 
 * Update Project and Version Repository and controllers to implement notes column
+
+# hint 1.35.0
+
+* Roll-back making login email case insensitive (mrc-2210)
+
+# hint 1.34.0
+
+* Clear ADR upload success message where necessary
+
+# hint 1.33.1
+
+* Revert to master branch of hintr
 
 # hint 1.33.0
 
