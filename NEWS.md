@@ -1,3 +1,7 @@
+# hint 1.35.0
+
+* Roll-back making login email case insensitive (mrc-2210)
+
 # hint 1.34.0
 
 * Clear ADR upload success message where necessary
