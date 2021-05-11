@@ -1,3 +1,7 @@
+# hint 1.34.0
+
+* Update Project and Version Repository and controllers to implement notes column
+
 # hint 1.33.0
 
 * Include metadata when pushing file to ADR
