@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.database
 
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy
 import org.imperial.mrc.hint.FileType
@@ -7,6 +8,7 @@ import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
 import org.imperial.mrc.hint.db.Tables.VERSION_FILE
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.db.tables.Project
 import org.imperial.mrc.hint.exceptions.VersionException
 import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.logic.UserLogic
@@ -69,6 +71,25 @@ class VersionRepositoryTests
         assertThat(version[PROJECT_VERSION.ID]).isEqualTo(versionId)
         assertThat(version[PROJECT_VERSION.PROJECT_ID]).isEqualTo(projectId)
         assertThat(version[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(1)
+    }
+
+    @Test
+    fun `can save version note`()
+    {
+        val uid = setupUser()
+
+        val projectId = setupProject(uid)
+        val versionId = "testVersion"
+        sut.saveVersion(versionId, projectId)
+
+        sut.saveVersionNote(versionId, projectId, uid, "notes")
+
+        val versionNote = dsl.select(PROJECT_VERSION.NOTE)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq(versionId))
+                .fetchOne()
+
+        assertThat(versionNote[PROJECT_VERSION.NOTE]).isEqualTo("notes")
     }
 
     @Test

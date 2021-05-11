@@ -241,6 +241,24 @@ class ProjectRepositoryTests
     }
 
     @Test
+    fun `can save project note`()
+    {
+        val uid = setupUser()
+
+        val projectId = sut.saveNewProject(uid, "testProjectRepo")
+        val versionId1 = "testVersion"
+        versionRepo.saveVersion(versionId1, projectId)
+
+        sut.saveProjectNote(projectId, uid, "notes")
+
+        val savedNote = dsl.selectFrom(PROJECT)
+                .where(PROJECT.ID.eq(projectId))
+                .and(PROJECT.USER_ID.eq(uid))
+                .fetchOne()
+        assertThat(savedNote[PROJECT.NOTE]).isEqualTo("notes")
+    }
+
+    @Test
     fun `can get projects for user`()
     {
         val userId = setupUser()
