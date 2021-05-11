@@ -23,7 +23,7 @@
         <button
             class="btn btn-red"
             :class="selectedDataset && 'ml-2'"
-            @click="selectedDataset? confirmEditing($event) : toggleModal()"
+            @click.prevent="openModal"
         >
             {{ selectText }}
         </button>
@@ -70,12 +70,11 @@
                     type="button"
                     class="btn btn-white"
                     v-translate="'cancel'"
-                    @click="toggleModal"
+                    @click="closeModal"
                 ></button>
             </template>
         </modal>
         <reset-confirmation v-if="showConfirmation"
-                            :dataset-change="true"
                             :continue-editing="continueEditing"
                             :cancel-editing="cancelEditing"
                             :open="showConfirmation"></reset-confirmation>
@@ -108,7 +107,9 @@
         getDatasets: () => void;
         setDataset: (dataset: Dataset) => void;
         importDataset: () => void;
-        toggleModal: () => void;
+        // toggleModal: () => void;
+        openModal: () => void;
+        closeModal: () => void;
         importPJNZ: (url: string) => Promise<void>;
         importShape: (url: string) => Promise<void>;
         importPopulation: (url: string) => Promise<void>;
@@ -121,7 +122,7 @@
         startPolling: () => void;
         stopPolling: () => void;
         continueEditing: () => void
-        confirmEditing: (e: Event) => void;
+        // confirmEditing: (e: Event) => void;
         cancelEditing: () => void;
     }
 
@@ -317,13 +318,23 @@
 
                 this.startPolling();
             },
-            toggleModal() {
-                this.open = !this.open;
+            openModal(){
+                if (this.selectedDataset){
+                    this.showConfirmation = true;
+                } else {
+                    this.open = true;
+                }
             },
-            confirmEditing(e: Event) {
-                e.preventDefault();
-                this.showConfirmation = true;
+            closeModal(){
+                this.open = false;
             },
+            // toggleModal() {
+            //     this.open = !this.open;
+            // },
+            // confirmEditing(e: Event) {
+            //     e.preventDefault();
+            //     this.showConfirmation = true;
+            // },
             continueEditing() {
                 this.showConfirmation = false;
                 this.open = true;

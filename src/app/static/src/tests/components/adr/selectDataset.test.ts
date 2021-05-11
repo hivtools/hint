@@ -163,6 +163,14 @@ describe("select dataset", () => {
         importANC: jest.fn()
     }
 
+    const mockGetters = {
+        editsRequireConfirmation: () => false,
+        changesToRelevantSteps: () => [{number: 4, textKey: "fitModel"}]
+    };
+
+    // let currentProject = {id: 1, name: "v1", versions: []}
+    let currentVersion = {id: "version-id", created: "", updated: "", versionNumber: 1}
+
     const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}) => {
         const store = new Vuex.Store({
             state: mockRootState(),
@@ -188,15 +196,24 @@ describe("select dataset", () => {
                         [BaselineMutation.MarkDatasetResourcesUpdated]: markResourcesUpdatedMock
                     }
                 },
+                stepper: {
+                    namespaced: true,
+                    getters: mockGetters
+                },
                 errors: {
                     namespaced: true,
                     state: mockErrorsState(),
                 },
                 projects: {
                     namespaced: true,
-                    state: mockProjectsState({currentProject: {id: 1, name: "v1", versions: []}}),
+                    state: mockProjectsState({currentProject: {id: 1, name: "v1", versions: []}, currentVersion}),
                     actions: {
-                        newVersion: jest.fn()
+                        newVersion: jest.fn().mockImplementation(() => {
+                            // if (mutation === "baseline/SetDataset") {
+                            //     root.baseline.selectedDataset = payload
+                            // }
+                            currentVersion = {id: "version-id2", created: "", updated: "", versionNumber: 2}
+                        })
                     },
                 },
                 surveyAndProgram: {
@@ -561,19 +578,25 @@ describe("select dataset", () => {
         expect(rendered.find(ResetConfirmation).exists()).toBe(true);
         expect(rendered.find(ResetConfirmation).props("open")).toBe(true);
         expect(rendered.find(Modal).props("open")).toBe(false);
-        expect(rendered.findAll("p").length).toBe(2);
-        expectTranslated(rendered.findAll("p").at(0),
-            "Changing the selected dataset will result in changes to all subsequent steps being discarded.",
-            "La modification de l'ensemble de données sélectionné entraînera la suppression des modifications de toutes les étapes suivantes.",
-            store);
-        expectTranslated(rendered.findAll("p").at(1),
-            "These steps will automatically be saved in a version. You will be able to reload this version from the Projects page.",
-            "Ces étapes seront automatiquement sauvegardées dans une version. Vous pourrez recharger cette version depuis la page Projets.",
-            store);
+        // expect(rendered.findAll("p").length).toBe(2);
+        // expectTranslated(rendered.findAll("p").at(0),
+        //     "Changing the selected dataset will result in changes to all subsequent steps being discarded.",
+        //     "La modification de l'ensemble de données sélectionné entraînera la suppression des modifications de toutes les étapes suivantes.",
+        //     store);
+        // expectTranslated(rendered.findAll("p").at(1),
+        //     "These steps will automatically be saved in a version. You will be able to reload this version from the Projects page.",
+        //     "Ces étapes seront automatiquement sauvegardées dans une version. Vous pourrez recharger cette version depuis la page Projets.",
+        //     store);
         const buttons = rendered.findAll("button");
         expectTranslated(buttons.at(3), "Save version and keep editing",
             "Sauvegarder la version et continuer à modifier", store);
-        expectTranslated(buttons.at(4), "Cancel editing", "Annuler l'édition", store);
+        buttons.at(3).trigger("click");
+        await Vue.nextTick();
+        await Vue.nextTick();
+        expect(rendered.find(ResetConfirmation).props("open")).toBe(false);
+        // expect(rendered.find(ResetConfirmation).exists()).toBe(false);
+        // expect(rendered.find(Modal).props("open")).toBe(true);
+        // expectTranslated(buttons.at(4), "Cancel editing", "Annuler l'édition", store);
     });
 
     it("imports baseline files if they exist", async () => {
