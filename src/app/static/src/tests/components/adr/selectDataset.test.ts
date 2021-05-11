@@ -212,6 +212,7 @@ describe("select dataset", () => {
                             // if (mutation === "baseline/SetDataset") {
                             //     root.baseline.selectedDataset = payload
                             // }
+                            store.
                             currentVersion = {id: "version-id2", created: "", updated: "", versionNumber: 2}
                         })
                     },
