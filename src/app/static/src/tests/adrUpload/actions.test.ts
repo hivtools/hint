@@ -66,10 +66,10 @@ describe("ADR actions", () => {
 
         await actions.getUploadFiles({commit, state, rootState: root} as any);
 
-        expect(commit.mock.calls[0][0].type).toBe("ADRError");
+        expect(commit.mock.calls[0][0].type).toBe("SetADRUploadError");
         expect(commit.mock.calls[0][0].payload).toBeNull();
 
-        expect(commit.mock.calls[1][0].type).toBe("ADRError");
+        expect(commit.mock.calls[1][0].type).toBe("SetADRUploadError");
         expect(commit.mock.calls[1][0].payload).toStrictEqual(mockError("test error"));
     });
 
@@ -106,7 +106,7 @@ describe("ADR actions", () => {
 
         await actions.getUploadFiles({commit, rootState: root} as any);
 
-        expect(commit.mock.calls[0][0].type).toBe("ADRError");
+        expect(commit.mock.calls[0][0].type).toBe("SetADRUploadError");
         expect(commit.mock.calls[0][0].payload).toBeNull();
 
         expect(commit.mock.calls[1][0].type).toBe("SetUploadFiles");

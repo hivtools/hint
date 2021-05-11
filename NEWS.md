@@ -1,3 +1,7 @@
+# hint 1.35.1
+
+* Correctly scope ADR mutations/actions in upload logic
+
 # hint 1.35.0
 
 * Roll-back making login email case insensitive (mrc-2210)
