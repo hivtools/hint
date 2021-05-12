@@ -46,6 +46,6 @@ describe("ADR non-dataset actions", () => {
 
         expect(commit.mock.calls[0][0]["type"]).toBe(ADRMutation.SetSchemas);
         const payload = commit.mock.calls[0][0]["payload"] as ADRSchemas;
-        expect(payload.baseUrl).toBe("https://dev.adr.fjelltopp.org/")
+        expect(payload.baseUrl).toBe("https://sbx-adr.fjelltopp.org/")
     });
 });
