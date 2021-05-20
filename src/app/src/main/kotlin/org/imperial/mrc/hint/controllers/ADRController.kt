@@ -193,7 +193,7 @@ class ADRController(private val encryption: Encryption,
             appProperties.adrARTSchema,
             appProperties.adrANCSchema ->
                 pushInputFileToADR(id, resourceType, resourceId, resourceName)
-            else -> return ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
+            else -> ErrorDetail(HttpStatus.BAD_REQUEST, "Invalid resourceType").toResponseEntity()
 
         }
     }

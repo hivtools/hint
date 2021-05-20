@@ -113,10 +113,6 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                     : "Naomi output uploaded from Naomi web app"
             }
 
-            if (resourceId) {
-                requestParams["resourceId"] = resourceId
-            }
-
             let apiRequest = api<ADRUploadMutation, ADRUploadMutation>(context)
                 .withError(ADRUploadMutation.SetADRUploadError);
             if (i === uploadFilesPayload.length - 1) {

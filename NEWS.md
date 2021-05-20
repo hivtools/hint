@@ -33,7 +33,6 @@
 # hint 1.29.2
 
 * Remove incorrectly committed debug code
->>>>>>> master
 
 # hint 1.29.1
 

@@ -17,6 +17,7 @@ export interface ADRActions {
     getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
     getAndSetDatasets: (store: ActionContext<ADRState, RootState>, selectedDatasetId: string) => void;
 }
+
 export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     async fetchKey(context) {
         await api<ADRMutation, ADRMutation>(context)
