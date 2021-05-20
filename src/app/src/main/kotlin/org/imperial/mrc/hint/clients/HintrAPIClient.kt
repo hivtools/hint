@@ -26,7 +26,6 @@ interface HintrAPIClient
     fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
-    fun calibrate(id: String, calibrationOptions: ModelOptions): ResponseEntity<String>
     fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     fun downloadSpectrum(id: String): ResponseEntity<StreamingResponseBody>
     fun downloadCoarseOutput(id: String): ResponseEntity<StreamingResponseBody>
@@ -119,12 +118,6 @@ class HintrFuelAPIClient(
     override fun getResult(id: String): ResponseEntity<String>
     {
         return get("model/result/${id}")
-    }
-
-    override fun calibrate(id: String, calibrationOptions: ModelOptions): ResponseEntity<String>
-    {
-        val json = objectMapper.writeValueAsString(calibrationOptions)
-        return postJson("model/calibrate/${id}", json)
     }
 
     override fun calibrateSubmit(runId: String, calibrationOptions: ModelOptions): ResponseEntity<String>
