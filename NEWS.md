@@ -1,6 +1,10 @@
-# hint 1.35.0
+# hint 1.36.0
 
 * Support uploading edited input files, behind feature switch for now
+
+# hint 1.35.0
+
+* Roll-back making login email case insensitive (mrc-2210)
 
 # hint 1.34.0
 
