@@ -29,6 +29,7 @@ import {DomUtil} from "leaflet";
 import get = DomUtil.get;
 import {getters as rootGetters} from "../../../app/store/root/getters";
 import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
+// import {mutations as versionsMutations} from "../../../app/store/projects/mutations";
 
 describe("select dataset", () => {
 
@@ -208,14 +209,16 @@ describe("select dataset", () => {
                     namespaced: true,
                     state: mockProjectsState({currentProject: {id: 1, name: "v1", versions: []}, currentVersion}),
                     actions: {
-                        newVersion: jest.fn().mockImplementation(() => {
-                            // if (mutation === "baseline/SetDataset") {
-                            //     root.baseline.selectedDataset = payload
-                            // }
-                            store.
-                            currentVersion = {id: "version-id2", created: "", updated: "", versionNumber: 2}
-                        })
+                        newVersion: jest.fn()
+                        // newVersion: jest.fn().mockImplementation(() => {
+                        //     // if (mutation === "baseline/SetDataset") {
+                        //     //     root.baseline.selectedDataset = payload
+                        //     // }
+                        //     store
+                        //     // currentVersion = {id: "version-id2", created: "", updated: "", versionNumber: 2}
+                        // })
                     },
+                    // mutations: versionsMutations
                 },
                 surveyAndProgram: {
                     namespaced: true,
@@ -572,6 +575,7 @@ describe("select dataset", () => {
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]
         });
+        // const spy = jest.spyOn(rendered.vm, 'continueEditing')
         rendered.find("button").trigger("click");
 
         await Vue.nextTick();
@@ -591,9 +595,11 @@ describe("select dataset", () => {
         const buttons = rendered.findAll("button");
         expectTranslated(buttons.at(3), "Save version and keep editing",
             "Sauvegarder la version et continuer à modifier", store);
-        buttons.at(3).trigger("click");
+        // buttons.at(3).trigger("click");
+        const event = { preventDefault: () => {} };
+        rendered.find(ResetConfirmation).vm.$emit("continueEditing", event)
         await Vue.nextTick();
-        await Vue.nextTick();
+        // expect(rendered.vm.continueEditing).toHaveBeenCalledTimes(1)
         expect(rendered.find(ResetConfirmation).props("open")).toBe(false);
         // expect(rendered.find(ResetConfirmation).exists()).toBe(false);
         // expect(rendered.find(Modal).props("open")).toBe(true);
