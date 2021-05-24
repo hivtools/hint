@@ -174,15 +174,13 @@ describe("ADR actions", () => {
         ] as UploadFile[]
 
         const success = {response: "success"}
-        const success2 = {response: "success2"}
-        const success3 = {response: "success3", data: {id: "datasetId"}}
 
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId`)
-            .reply(200, mockSuccess(success));
+            .reply(200, mockSuccess(null));
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId`)
-            .reply(200, mockSuccess(success2));
+            .reply(200, mockSuccess(success));
         mockAxios.onGet(`adr/datasets/datasetId`)
-            .reply(200, mockSuccess(success3));
+            .reply(200, mockSuccess(null));
 
         await actions.uploadFilesToADR({commit, dispatch, rootState: root} as any, uploadFilesPayload);
 
@@ -194,7 +192,7 @@ describe("ADR actions", () => {
         expect(commit.mock.calls[2][0]["type"]).toBe("ADRUploadProgress");
         expect(commit.mock.calls[2][0]["payload"]).toBe(2);
         expect(commit.mock.calls[3][0]["type"]).toBe("ADRUploadCompleted");
-        expect(commit.mock.calls[3][0]["payload"]).toEqual(success2);
+        expect(commit.mock.calls[3][0]["payload"]).toEqual(success);
         expect(dispatch.mock.calls.length).toBe(2);
         expect(dispatch.mock.calls[0][0]).toBe("adr/getAndSetDatasets");
         expect(dispatch.mock.calls[0][1]).toBe("datasetId");
