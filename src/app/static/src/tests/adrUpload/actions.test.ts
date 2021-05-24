@@ -197,6 +197,8 @@ describe("ADR actions", () => {
         expect(commit.mock.calls[3][0]["payload"]).toEqual(success2);
         expect(dispatch.mock.calls.length).toBe(2);
         expect(dispatch.mock.calls[0][0]).toBe("adr/getAndSetDatasets");
+        expect(dispatch.mock.calls[0][1]).toBe("datasetId");
+        expect(dispatch.mock.calls[0][2]).toEqual({root: true});
         expect(dispatch.mock.calls[1][0]).toBe("getUploadFiles");
         expect(mockAxios.history.post.length).toBe(2);
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=zip");
