@@ -49,14 +49,6 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
         return apiClient.cancelModelRun(id)
     }
 
-    @PostMapping("/calibrate/{id}")
-    @ResponseBody
-    fun calibrate(@PathVariable("id") id: String, @RequestBody calibrationOptions: ModelOptions)
-            : ResponseEntity<String>
-    {
-        return apiClient.calibrate(id, calibrationOptions)
-    }
-
     @GetMapping("/options/")
     @ResponseBody
     fun options(): ResponseEntity<String>
