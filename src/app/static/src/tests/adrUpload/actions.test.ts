@@ -12,7 +12,12 @@ import {
     mockSuccess
 } from "../mocks";
 import {actions} from "../../app/store/adrUpload/actions";
+import {mutations} from "../../app/store/adrUpload/mutations";
+import {actions as adrActions} from "../../app/store/adr/actions";
+import {mutations as baselineMutations} from "../../app/store/baseline/mutations";
 import {UploadFile} from "../../app/types";
+import Vuex from "vuex";
+import {RootState} from "../../app/root";
 
 describe("ADR actions", () => {
     const state = mockADRState();
@@ -133,34 +138,6 @@ describe("ADR actions", () => {
     });
 
     it("uploadFilesToADR uploads files sequentially to adr and commits complete on upload of final file", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
-        const root = mockRootState({
-            adr: mockADRState({
-                datasets: [],
-                schemas: {
-                    baseUrl: "http://test",
-                    outputZip: "inputs-unaids-naomi-output-zip",
-                    outputSummary: "inputs-unaids-naomi-report"
-                } as any
-            }),
-            modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
-            modelRun: mockModelRunState(
-                {
-                    result: mockCalibrateResultResponse({
-                        uploadMetadata: {
-                            outputSummary: {description: "summary"},
-                            outputZip: {description: "zip"}
-                        }
-                    })
-                }),
-            baseline: mockBaselineState({
-                selectedDataset: {
-                    id: "datasetId"
-                }
-            } as any)
-        });
-
         const uploadFilesPayload = [
             {
                 resourceType: "inputs-unaids-naomi-output-zip",
@@ -173,36 +150,62 @@ describe("ADR actions", () => {
             }
         ] as UploadFile[]
 
-        const success = {response: "success"}
-
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId`)
             .reply(200, mockSuccess(null));
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId`)
-            .reply(200, mockSuccess(success));
-        mockAxios.onGet(`adr/datasets/datasetId`)
             .reply(200, mockSuccess(null));
+        mockAxios.onGet(`adr/datasets/datasetId`)
+            .reply(200, mockSuccess({id: "datasetId", resources: [], organization: {id: null}, title: "datasetTitle"}));
 
-        await actions.uploadFilesToADR({commit, dispatch, rootState: root} as any, uploadFilesPayload);
+        const store = new Vuex.Store<RootState>({
+            state: mockRootState({
+                modelCalibrate: mockModelCalibrateState({
+                    calibrateId: "calId"
+                }),
+                projects: {
+                    currentProject: {name: "project1"} as any
+                } as any
+            }),
+            modules: {
+                adrUpload: {
+                    namespaced: true,
+                    actions,
+                    mutations
+                },
+                adr: {
+                    namespaced: true,
+                    actions: adrActions,
+                    state: mockADRState({
+                        datasets: [],
+                        schemas: {baseUrl: "whatever"} as any
+                    })
+                },
+                baseline: {
+                    namespaced: true,
+                    mutations: baselineMutations,
+                    state: mockBaselineState({
+                        selectedDataset: {
+                            id: "datasetId"
+                        }
+                    } as any)
+                }
+            }
+        });
 
-        expect(commit.mock.calls.length).toBe(4);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadStarted");
-        expect(commit.mock.calls[0][0]["payload"]).toBe(2);
-        expect(commit.mock.calls[1][0]["type"]).toBe("ADRUploadProgress");
-        expect(commit.mock.calls[1][0]["payload"]).toBe(1);
-        expect(commit.mock.calls[2][0]["type"]).toBe("ADRUploadProgress");
-        expect(commit.mock.calls[2][0]["payload"]).toBe(2);
-        expect(commit.mock.calls[3][0]["type"]).toBe("ADRUploadCompleted");
-        expect(commit.mock.calls[3][0]["payload"]).toEqual(success);
-        expect(dispatch.mock.calls.length).toBe(2);
-        expect(dispatch.mock.calls[0][0]).toBe("adr/getAndSetDatasets");
-        expect(dispatch.mock.calls[0][1]).toBe("datasetId");
-        expect(dispatch.mock.calls[0][2]).toEqual({root: true});
-        expect(dispatch.mock.calls[1][0]).toBe("getUploadFiles");
+        expect(store.state.baseline.selectedDataset?.title).toBeUndefined();
+        expect(store.state.adrUpload.uploadFiles).toBeUndefined();
+
+        await store.dispatch("adrUpload/uploadFilesToADR", uploadFilesPayload);
+
+        expect(store.state.adrUpload.uploadComplete).toBe(true);
         expect(mockAxios.history.post.length).toBe(2);
-        expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=zip");
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId");
-        expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&description=summary");
         expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId");
+        // adr/getAndSetDatasets
+        expect(store.state.baseline.selectedDataset?.title).toEqual("datasetTitle");
+        // getUploadFiles
+        expect(store.state.adrUpload.uploadFiles).toHaveProperty("outputSummary.resourceFilename", "project1_naomi_summary.html");
+        expect(store.state.adrUpload.uploadFiles).toHaveProperty("outputZip.resourceFilename", "project1_naomi_outputs.zip");
     });
 
     it("uploadFilesToADR sets upload failure and prevents subsequent uploads", async () => {
