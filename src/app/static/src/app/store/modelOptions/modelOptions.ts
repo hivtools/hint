@@ -37,6 +37,7 @@ export const modelOptionsGetters = {
         return state.valid
     },
     hasChanges: (state: ModelOptionsState) => {
+        console.log("changes", state.changes)
         return state.changes
     }
 };

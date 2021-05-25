@@ -170,7 +170,7 @@ describe("select dataset", () => {
 
     let currentVersion = {id: "version-id", created: "", updated: "", versionNumber: 1}
 
-    const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}) => {
+    const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}, requireConfirmation: boolean = false) => {
         const store = new Vuex.Store({
             state: mockRootState(),
             getters: rootGetters,
@@ -197,7 +197,7 @@ describe("select dataset", () => {
                 },
                 stepper: {
                     namespaced: true,
-                    getters: mockGetters
+                    getters: {...mockGetters, editsRequireConfirmation: () => requireConfirmation}
                 },
                 errors: {
                     namespaced: true,
@@ -560,7 +560,7 @@ describe("select dataset", () => {
         let store = getStore({
             selectedDataset: fakeDataset
         },
-            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
+            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}, true
         )
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]
@@ -583,11 +583,28 @@ describe("select dataset", () => {
         expect(rendered.find(Modal).props("open")).toBe(true);
     });
 
-    it("renders reset confirmation dialog when changing selected dataset and closes if click cancel", async () => {
+    it("doesn't render reset confirmation dialog when changing selected dataset if edits do not require confirmation", async () => {
         let store = getStore({
             selectedDataset: fakeDataset
         },
             {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
+        )
+        const rendered = mount(SelectDataset, {
+            store, stubs: ["tree-select"]
+        });
+        rendered.find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.find(ResetConfirmation).exists()).toBe(false);
+        expect(rendered.find(Modal).props("open")).toBe(true);
+    });
+
+    it("renders reset confirmation dialog when changing selected dataset and closes if click cancel", async () => {
+        let store = getStore({
+            selectedDataset: fakeDataset
+        },
+            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}, true
         )
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]

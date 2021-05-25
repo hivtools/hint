@@ -85,7 +85,7 @@
     import {Language} from "../../store/translations/locales";
     import Vue from "vue";
     import TreeSelect from "@riophae/vue-treeselect";
-    import {datasetFromMetadata, mapActionByName, mapMutationByName, mapStateProp} from "../../utils";
+    import {datasetFromMetadata, mapActionByName, mapMutationByName, mapStateProp, mapGetterByName} from "../../utils";
     import {RootState} from "../../root";
     import Modal from "../Modal.vue";
     import {BaselineMutation} from "../../store/baseline/mutations";
@@ -136,7 +136,8 @@
         outOfDateResources: { [k in keyof DatasetResourceSet]?: true }
         hasShapeFile: boolean,
         currentLanguage: Language,
-        select: string
+        select: string,
+        editsRequireConfirmation: boolean
     }
 
     interface Data {
@@ -171,6 +172,7 @@
         components: {Modal, TreeSelect, LoadingSpinner, InfoIcon, ResetConfirmation},
         directives: {tooltip: VTooltip},
         computed: {
+            editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
             hasShapeFile: mapStateProp<BaselineState, boolean>(
                 "baseline",
                 (state: BaselineState) => !!state.shape
@@ -317,7 +319,7 @@
                 this.startPolling();
             },
             openModal(){
-                if (this.selectedDataset){
+                if (this.selectedDataset && this.editsRequireConfirmation){
                     this.showConfirmation = true;
                 } else {
                     this.open = true;
