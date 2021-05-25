@@ -46,6 +46,30 @@ class ProjectTests : VersionFileTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `can save project note`(isAuthorized: IsAuthorized)
+    {
+        val result = createProject()
+        assertSecureWithSuccess(isAuthorized,result,null)
+
+        if(isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = getResponseData(result)
+            assertThat(data["id"].asInt()).isGreaterThan(0)
+            assertThat(data["name"].asText()).isEqualTo("testProject")
+            val projectId = data["id"].asInt()
+
+            val savedProject = dsl.select(PROJECT.NOTE,
+                    PROJECT.NAME)
+                    .from(PROJECT)
+                    .where(PROJECT.ID.eq(projectId))
+                    .fetchOne()
+
+            assertThat(savedProject[PROJECT_VERSION.NOTE]).isEqualTo("notes")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can update project note`(isAuthorized: IsAuthorized)
     {
         val result = createProject()
