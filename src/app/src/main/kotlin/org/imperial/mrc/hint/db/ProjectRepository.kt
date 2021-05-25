@@ -124,8 +124,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
         checkProjectExists(projectId, userId)
         dsl.update(PROJECT)
                 .set(PROJECT.NOTE, note)
-                .where(PROJECT.USER_ID.eq(userId))
-                .and(PROJECT.ID.eq(projectId))
+                .where(PROJECT.ID.eq(projectId))
                 .execute()
     }
 

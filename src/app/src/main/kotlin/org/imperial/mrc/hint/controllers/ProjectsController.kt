@@ -26,7 +26,7 @@ class ProjectsController(private val session: Session,
         //Generate new version id and set it as the session variable, and save new version to db
         val newVersionId = session.generateVersionId()
         session.setVersionId(newVersionId)
-        versionRepository.saveVersion(newVersionId, projectId, note)
+        versionRepository.saveVersion(newVersionId, projectId)
 
         val version = versionRepository.getVersion(newVersionId)
         val project = Project(projectId, name, listOf(version))
@@ -89,7 +89,7 @@ class ProjectsController(private val session: Session,
         return SuccessResponse(project).asResponseEntity()
     }
 
-    @PostMapping("/project/{projectId}/metadata")
+    @PostMapping("/project/{projectId}/note")
     @ResponseBody
     fun saveProjectNote(
             @PathVariable("projectId") projectId: Int,
@@ -99,7 +99,7 @@ class ProjectsController(private val session: Session,
         return EmptySuccessResponse.asResponseEntity()
     }
 
-    @PostMapping("project/{projectId}/version/{versionId}/metadata")
+    @PostMapping("project/{projectId}/version/{versionId}/note")
     @ResponseBody
     fun saveVersionNote(
             @PathVariable("versionId") versionId: String,

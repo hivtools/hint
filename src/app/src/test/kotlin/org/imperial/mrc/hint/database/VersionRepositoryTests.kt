@@ -1,6 +1,5 @@
 package org.imperial.mrc.hint.database
 
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy
 import org.imperial.mrc.hint.FileType
@@ -8,7 +7,6 @@ import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
 import org.imperial.mrc.hint.db.Tables.VERSION_FILE
 import org.imperial.mrc.hint.db.VersionRepository
-import org.imperial.mrc.hint.db.tables.Project
 import org.imperial.mrc.hint.exceptions.VersionException
 import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.logic.UserLogic
@@ -74,7 +72,7 @@ class VersionRepositoryTests
     }
 
     @Test
-    fun `can save version note`()
+    fun `can save version and note`()
     {
         val uid = setupUser()
 
@@ -95,7 +93,6 @@ class VersionRepositoryTests
     @Test
     fun `saveVersion is idempotent`()
     {
-
         sut.saveVersion(versionId, null)
         sut.saveVersion(versionId, null)
         val version = dsl.selectFrom(PROJECT_VERSION)
@@ -291,6 +288,63 @@ class VersionRepositoryTests
         val originalVersionDetails = sut.getVersionDetails(originalVersionId, originalProject, uid)
         val clonedVersionDetails = sut.getVersionDetails(clonedVersionId, clonedProject, uid2)
         assertThat(originalVersionDetails).isEqualToComparingFieldByFieldRecursively(clonedVersionDetails)
+    }
+
+    @Test
+    fun `can clone version and note to new project`()
+    {
+        val uid = setupUser()
+        val uid2 = setupUser("another.user@email.com")
+
+        val originalProject = projectRepo.saveNewProject(uid, "p1")
+        val originalVersionId = "v1"
+        sut.saveVersion(originalVersionId, originalProject)
+        sut.saveVersionState(originalVersionId, originalProject, uid, "{'something': 1}")
+        setUpHashAndVersionFile("survey_hash", "survey_file", originalVersionId, "survey", false)
+
+        val clonedProject = projectRepo.saveNewProject(uid2, "p1", note = "test note")
+        val clonedVersionId = "v2"
+        sut.cloneVersion(originalVersionId, clonedVersionId, clonedProject)
+
+        val originalVersionDetails = sut.getVersionDetails(originalVersionId, originalProject, uid)
+        val clonedVersionDetails = sut.getVersionDetails(clonedVersionId, clonedProject, uid2)
+        assertThat(originalVersionDetails).isEqualToComparingFieldByFieldRecursively(clonedVersionDetails)
+    }
+
+    @Test
+    fun `can copy version and note`()
+    {
+        val now = LocalDateTime.now(ZoneOffset.UTC)
+        val soon = now.plusSeconds(5)
+
+        val uid = setupUser()
+        val projectId = setupProject(uid)
+        sut.saveVersion(versionId, projectId)
+        setUpHashAndVersionFile("pjnz_hash", "pjnz_file", versionId, "pjnz", false)
+        setUpHashAndVersionFile("survey_hash", "survey_file", versionId, "survey", false)
+        sut.saveVersionState(versionId, projectId, uid, "TEST STATE")
+
+        sut.copyVersion(versionId, "newVersionId", projectId, uid, "test note")
+
+        val newVersion = sut.getVersion("newVersionId")
+        assertThat(newVersion.id).isEqualTo("newVersionId")
+        assertThat(newVersion.note).isEqualTo("test note")
+        val created = LocalDateTime.parse(newVersion.created, ISO_LOCAL_DATE_TIME)
+        assertThat(created).isBetween(now, soon)
+
+        val updated = LocalDateTime.parse(newVersion.updated, ISO_LOCAL_DATE_TIME)
+        assertThat(updated).isBetween(now, soon)
+
+        val newVersionRecord =
+                dsl.select(PROJECT_VERSION.STATE, PROJECT_VERSION.PROJECT_ID, PROJECT_VERSION.VERSION_NUMBER, PROJECT_VERSION.NOTE)
+                        .from(PROJECT_VERSION)
+                        .where(PROJECT_VERSION.ID.eq("newVersionId"))
+                        .fetchOne()
+
+        assertThat(newVersionRecord[PROJECT_VERSION.STATE]).isEqualTo("TEST STATE")
+        assertThat(newVersionRecord[PROJECT_VERSION.PROJECT_ID]).isEqualTo(projectId)
+        assertThat(newVersionRecord[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(2)
+        assertThat(newVersionRecord[PROJECT_VERSION.NOTE]).isEqualTo("test note")
     }
 
     @Test
