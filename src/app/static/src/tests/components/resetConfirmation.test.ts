@@ -106,22 +106,6 @@ describe("Reset confirmation modal", () => {
         expect(rendered.find(LoadingSpinner).exists()).toBe(false);
     });
 
-    it("renders as expected for user trying to change their adr dataset", () => {
-        const store = createStore();
-        const rendered = mount(ResetConfirmation, {
-            propsData: {
-                datasetChange: true,
-                continueEditing: jest.fn(),
-                cancelEditing: jest.fn()
-            },
-            store
-        });
-        expectTranslated(rendered.findAll("p").at(0),
-            "Changing this will result in the following steps being discarded:",
-            "Si vous modifiez ce paramètre, les étapes suivantes seront abandonnées :", store);
-    });
-
-
     it("renders as expected for someone rerunning the model", () => {
         const stepperGetter = {
             changesToRelevantSteps: () => [

@@ -47,7 +47,6 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
         } else return state.steps.filter((s: StepDescription) => s.number > activeStep && getters.hasChanges[s.number]);
     },
     editsRequireConfirmation: (state: StepperState, getters: any) => {
-        console.log("changesToRelevantSteps", getters.changesToRelevantSteps)
         return getters.changesToRelevantSteps.length > 0;
     }
 };
