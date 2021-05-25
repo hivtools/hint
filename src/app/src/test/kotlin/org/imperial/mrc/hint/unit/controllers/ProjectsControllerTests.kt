@@ -83,7 +83,7 @@ class ProjectsControllerTests
 
         val result = sut.newProject("testProject", "notes")
         verify(mockProjectRepo).saveNewProject("testUser", "testProject",null, "notes")
-        verify(mockVersionRepo).saveVersion("testVersion", 99, "notes")
+        verify(mockVersionRepo).saveVersion("testVersion", 99, null)
 
         val resultJson = parser.readTree(result.body)["data"]
 
@@ -396,7 +396,7 @@ class ProjectsControllerTests
         val sut = ProjectsController(mockSession, mock(), mockRepo, mock())
         val result = sut.saveProjectNote(1, "notes")
 
-        verify(mockRepo).saveProjectNote(1, "testUser", "notes")
+        verify(mockRepo).saveProjectNote(1, "notes", "testUser")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 

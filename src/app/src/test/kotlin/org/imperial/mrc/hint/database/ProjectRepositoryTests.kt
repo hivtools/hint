@@ -249,7 +249,7 @@ class ProjectRepositoryTests
         val versionId1 = "testVersion"
         versionRepo.saveVersion(versionId1, projectId)
 
-        sut.saveProjectNote(projectId, uid, "notes")
+        sut.saveProjectNote(projectId, "notes", uid)
 
         val savedNote = dsl.selectFrom(PROJECT)
                 .where(PROJECT.ID.eq(projectId))
