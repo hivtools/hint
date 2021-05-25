@@ -117,8 +117,8 @@ describe("Reset confirmation modal", () => {
             store
         });
         expectTranslated(rendered.findAll("p").at(0),
-            "Changing the selected dataset will result in changes to all subsequent steps being discarded.",
-            "La modification de l'ensemble de données sélectionné entraînera la suppression des modifications de toutes les étapes suivantes.", store);
+            "Changing this will result in the following steps being discarded:",
+            "Si vous modifiez ce paramètre, les étapes suivantes seront abandonnées :", store);
     });
 
 

@@ -107,7 +107,6 @@
         getDatasets: () => void;
         setDataset: (dataset: Dataset) => void;
         importDataset: () => void;
-        // toggleModal: () => void;
         openModal: () => void;
         closeModal: () => void;
         importPJNZ: (url: string) => Promise<void>;
@@ -122,7 +121,6 @@
         startPolling: () => void;
         stopPolling: () => void;
         continueEditing: () => void
-        // confirmEditing: (e: Event) => void;
         cancelEditing: () => void;
     }
 
@@ -328,13 +326,6 @@
             closeModal(){
                 this.open = false;
             },
-            // toggleModal() {
-            //     this.open = !this.open;
-            // },
-            // confirmEditing(e: Event) {
-            //     e.preventDefault();
-            //     this.showConfirmation = true;
-            // },
             continueEditing() {
                 this.showConfirmation = false;
                 this.open = true;
