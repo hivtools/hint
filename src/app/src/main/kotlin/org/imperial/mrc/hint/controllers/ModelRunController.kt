@@ -85,4 +85,11 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
     {
         return apiClient.getCalibrateResult(id)
     }
+
+    @GetMapping("/calibrate/estimates/{id}")
+    @ResponseBody
+    fun calibrateEstimates(@PathVariable("id") id: String): ResponseEntity<String>
+    {
+        return apiClient.getCalibrateEstimates(id)
+    }
 }

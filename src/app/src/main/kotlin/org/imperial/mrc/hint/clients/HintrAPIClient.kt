@@ -34,6 +34,7 @@ interface HintrAPIClient
     fun calibrateSubmit(runId: String, calibrationOptions: ModelOptions): ResponseEntity<String>
     fun getCalibrateStatus(id: String): ResponseEntity<String>
     fun getCalibrateResult(id: String): ResponseEntity<String>
+    fun getCalibrateEstimates(id: String): ResponseEntity<String>
     fun cancelModelRun(id: String): ResponseEntity<String>
     fun getVersion(): ResponseEntity<String>
     fun downloadSummary(id: String): ResponseEntity<StreamingResponseBody>
@@ -134,6 +135,11 @@ class HintrFuelAPIClient(
     override fun getCalibrateResult(id: String): ResponseEntity<String>
     {
         return get("calibrate/result/${id}")
+    }
+
+    override fun getCalibrateEstimates(id: String): ResponseEntity<String>
+    {
+        return get("calibrate/estimates/${id}")
     }
 
     override fun getPlottingMetadata(iso3: String): ResponseEntity<String>
