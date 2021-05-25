@@ -165,6 +165,10 @@ describe("ModelCalibrate actions", () => {
                         selected_filter_options: {"test_name": "test_value"}
                     }
                 }
+            },
+            uploadMetadata: {
+                outputZip: {description: "spectrum output info"},
+                outputSummary: {description: "summary output info"}
             }
         };
         mockAxios.onGet(`/model/calibrate/result/1234`)

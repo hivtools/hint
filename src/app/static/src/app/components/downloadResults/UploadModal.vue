@@ -18,19 +18,12 @@
                         <label class="form-check-label"
                                :for="`id-${index}`"
                                v-translate="uploadFile.displayName"></label>
-
                         <small v-if="uploadFile.resourceId" class="text-danger row">
                         <span class="col-auto">
                         <span v-translate="'uploadFileOverwrite'"></span>{{ lastModified(uploadFile.lastModified) }}
                         </span>
                         </small>
                     </div>
-                </div>
-                <div class="mt-3">
-                    <label for="description-id" v-translate="'uploadFileDesc'"></label>
-                    <textarea v-model="uploadDescToAdr"
-                              class="form-control" rows="3"
-                              id="description-id"></textarea>
                 </div>
             </div>
             <template v-slot:footer>
@@ -55,9 +48,8 @@
     import Modal from "../Modal.vue";
     import {Dict, UploadFile} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {formatDateTime, mapActionByName, mapStateProp, mapStateProps, mapMutationByName} from "../../utils";
-    import {ADRState} from "../../store/adr/adr";
-    import {ADRMutation} from "../../store/adr/mutations";
+    import {formatDateTime, mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+    import {ADRUploadState} from "../../store/adrUpload/adrUpload";
 
     interface Methods {
         uploadFilesToADRAction: (uploadFilesPayload: UploadFile[]) => void;
@@ -96,8 +88,8 @@
         },
         methods: {
             uploadFilesToADRAction: mapActionByName<UploadFile[]>(
-                'adr',
-                'uploadFilestoADR'
+                "adrUpload",
+                "uploadFilesToADR"
             ),
             confirmUpload() {
                 const uploadFilesPayload: UploadFile[] = []
@@ -112,20 +104,16 @@
                 return formatDateTime(date)
             },
             setDefaultCheckedItems: function () {
-                const uploadFilesKeys = ["outputZip", "outputSummary"]
-                uploadFilesKeys.forEach(key => {
-                    if (this.uploadFiles.hasOwnProperty(key)) {
-                        this.uploadFilesToAdr.push(key)
-                    }
-                })
+                this.uploadFilesToAdr = ["outputZip", "outputSummary"]
+                    .filter(key => this.uploadFiles.hasOwnProperty(key))
             }
         },
         computed: {
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
                 dataset: state => state.selectedDataset?.title
             }),
-            uploadFiles: mapStateProp<ADRState, Dict<UploadFile>>("adr",
-                (state: ADRState) => state.uploadFiles!
+            uploadFiles: mapStateProp<ADRUploadState, Dict<UploadFile>>("adrUpload",
+                (state) => state.uploadFiles!
             )
         },
         components: {

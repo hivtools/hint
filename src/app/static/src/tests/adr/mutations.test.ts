@@ -1,5 +1,5 @@
-import {mockError, mockADRState} from "../mocks";
-import {mutations, ADRMutation} from "../../app/store/adr/mutations";
+import {mockADRState, mockError} from "../mocks";
+import {ADRMutation, mutations} from "../../app/store/adr/mutations";
 
 describe("ADR mutations", () => {
     it("can update key", () => {
@@ -47,57 +47,10 @@ describe("ADR mutations", () => {
         expect(state.schemas).toEqual({baseUrl: "adr.com"});
     });
 
-    it("can set upload files", () => {
+    it("can set user can upload", () => {
         const state = mockADRState();
-        const payload = {
-            outputZip: {
-                index: 1,
-                displayName: "test",
-                resourceType: "testType",
-                resourceFilename: "testFile",
-                resourceId: "123",
-                lastModified: "2021-03-02",
-                url: "https://test"
-            }
-        };
-        mutations[ADRMutation.SetUploadFiles](state, {payload});
-        expect(state.uploadFiles).toBe(payload);
+        mutations[ADRMutation.SetUserCanUpload](state, {payload: true});
+        expect(state.userCanUpload).toBe(true);
     });
 
-    it("can set upload error", () => {
-        const state = mockADRState();
-        mutations[ADRMutation.SetADRUploadError](state, {payload: mockError("error detail")});
-        expect(state.uploadError!!.detail).toBe("error detail");
-        expect(state.uploading).toBe(false);
-
-        mutations[ADRMutation.SetADRUploadError](state, {payload: null});
-        expect(state.uploadError).toBe(null);
-        expect(state.uploading).toBe(false);
-        expect(state.currentFileUploading).toBe(null);
-        expect(state.totalFilesUploading).toBe(null);
-    });
-
-    it("can set upload started", () => {
-        const state = mockADRState();
-        mutations[ADRMutation.ADRUploadStarted](state, {payload: 2});
-        expect(state.uploadError).toBe(null);
-        expect(state.uploading).toBe(true);
-        expect(state.uploadComplete).toBe(false);
-        expect(state.totalFilesUploading).toBe(2);
-    });
-
-    it("can set upload progress", () => {
-        const state = mockADRState();
-        mutations[ADRMutation.ADRUploadProgress](state, {payload: 1});
-        expect(state.currentFileUploading).toBe(1);
-    });
-
-    it("can set upload completed", () => {
-        const state = mockADRState();
-        mutations[ADRMutation.ADRUploadCompleted](state);
-        expect(state.uploading).toBe(false);
-        expect(state.uploadComplete).toBe(true);
-        expect(state.currentFileUploading).toBe(null);
-        expect(state.totalFilesUploading).toBe(null);
-    });
 });

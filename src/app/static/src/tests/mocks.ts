@@ -41,6 +41,7 @@ import {initialProjectsState, ProjectsState} from "../app/store/projects/project
 import {initialModelCalibrateState, ModelCalibrateState} from "../app/store/modelCalibrate/modelCalibrate";
 import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrVersion/hintrVersion";
 import {ADRState, initialADRState} from "../app/store/adr/adr";
+import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrUpload";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -54,6 +55,13 @@ export const mockPasswordState = (props?: Partial<PasswordState>): PasswordState
 export const mockADRState =  (props?: Partial<ADRState>): ADRState => {
     return {
         ...initialADRState(),
+        ...props
+    }
+};
+
+export const mockADRUploadState =  (props?: Partial<ADRUploadState>): ADRUploadState => {
+    return {
+        ...initialADRUploadState(),
         ...props
     }
 };
@@ -132,6 +140,7 @@ export const mockLoadState = (props?: Partial<LoadState>): LoadState => {
 export const mockModelOutputState = (props?: Partial<ModelOutputState>): ModelOutputState => {
     return {
         ...initialModelOutputState(),
+        ...props
     }
 }
 
@@ -285,7 +294,8 @@ export const mockPopulationResponse = (props: Partial<PopulationResponse> = {}):
 
 export const mockValidateBaselineResponse = (props: Partial<ValidateBaselineResponse> = {}): ValidateBaselineResponse => {
     return {
-        consistent: true
+        consistent: true,
+        ...props
     }
 };
 
@@ -318,6 +328,10 @@ export const mockCalibrateResultResponse = (props: Partial<CalibrateResultRespon
             choropleth: {
                 indicators: [], filters: []
             }
+        },
+        uploadMetadata: {
+            outputSummary: {description: "Naomi output files"},
+            outputZip: {description:"Naomi output files"}
         },
         data: [{
             area_id: "MWI",

@@ -9,7 +9,6 @@ import {
     Error,
     VersionInfo
 } from "../../generated";
-import {ModelRunState} from "../modelRun/modelRun";
 
 export enum ModelCalibrateMutation {
     FetchingModelCalibrateOptions = "FetchingModelCalibrateOptions",
@@ -84,7 +83,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
 
     [ModelCalibrateMutation.PollingForStatusStarted](state: ModelCalibrateState, action: PayloadWithType<number>) {
         state.statusPollId = action.payload;
-    },
+    }
 };
 
 const stopPolling = (state: ModelCalibrateState) => {

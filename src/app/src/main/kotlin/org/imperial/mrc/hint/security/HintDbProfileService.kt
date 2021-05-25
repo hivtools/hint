@@ -25,11 +25,4 @@ class HintDbProfileService(dataSource: DataSource, passwordEncoder: PasswordEnco
             throw BadCredentialsException("Username and password must be provided")
         }
     }
-
-    override fun read(names: List<String?>?, key: String, value: String?): List<Map<String?, Any?>?>?
-    {
-        val attributesList = buildAttributesList(names)
-        val query = "select $attributesList from $usersTable where lower($key) = lower(:$key)"
-        return query(query, key, value)
-    }
 }

@@ -1,6 +1,30 @@
-# hint 1.31.1
+# hint 1.35.1
 
 * Bug fix: Importing from adr after fitting model should prompt new version behaviour
+
+# hint 1.35.0
+
+* Roll-back making login email case insensitive (mrc-2210)
+
+# hint 1.34.0
+
+* Clear ADR upload success message where necessary
+
+# hint 1.33.1
+
+* Revert to master branch of hintr
+
+# hint 1.33.0
+
+* Include metadata when pushing file to ADR
+
+# hint 1.32.0
+
+* Avoid re-uploading unchanged files to ADR
+
+# hint 1.31.1
+
+* Rebuild ADR uploadFiles with new resourceIds after upload new files
 
 # hint 1.31.0
 
