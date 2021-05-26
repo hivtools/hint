@@ -29,6 +29,7 @@ import {DomUtil} from "leaflet";
 import get = DomUtil.get;
 import {getters as rootGetters} from "../../../app/store/root/getters";
 import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
+import {actions as projectsActions} from "../../../app/store/projects/actions"
 
 describe("select dataset", () => {
 
@@ -206,9 +207,7 @@ describe("select dataset", () => {
                 projects: {
                     namespaced: true,
                     state: mockProjectsState({currentProject: {id: 1, name: "v1", versions: []}, currentVersion}),
-                    actions: {
-                        newVersion: jest.fn()
-                    }
+                    actions: projectsActions
                 },
                 surveyAndProgram: {
                     namespaced: true,
@@ -565,11 +564,7 @@ describe("select dataset", () => {
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]
         });
-        rendered.find("button").trigger("click");
-
-        await Vue.nextTick();
-
-        expect(rendered.find(ResetConfirmation).exists()).toBe(true);
+        await rendered.find("button").trigger("click");
         expect(rendered.find(ResetConfirmation).props("open")).toBe(true);
         expect(rendered.find(Modal).props("open")).toBe(false);
         const buttons = rendered.findAll("button");
@@ -578,12 +573,11 @@ describe("select dataset", () => {
         buttons.at(3).trigger("click");
         await buttons.at(3).trigger("click");
         store.state.projects.currentVersion = {id: "id1"} as any;
-        await Vue.nextTick();
         expect(rendered.find(ResetConfirmation).exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(true);
     });
 
-    it("doesn't render reset confirmation dialog when changing selected dataset if edits do not require confirmation", async () => {
+    it("renders select modal not reset confirmation dialog when changing selected dataset if edits do not require confirmation", async () => {
         let store = getStore({
             selectedDataset: fakeDataset
         },
@@ -592,10 +586,7 @@ describe("select dataset", () => {
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]
         });
-        rendered.find("button").trigger("click");
-
-        await Vue.nextTick();
-
+        await rendered.find("button").trigger("click");
         expect(rendered.find(ResetConfirmation).exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(true);
     });
@@ -609,19 +600,13 @@ describe("select dataset", () => {
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]
         });
-        rendered.find("button").trigger("click");
-
-        await Vue.nextTick();
-
-        expect(rendered.find(ResetConfirmation).exists()).toBe(true);
+        await rendered.find("button").trigger("click");
         expect(rendered.find(ResetConfirmation).props("open")).toBe(true);
         expect(rendered.find(Modal).props("open")).toBe(false);
         const buttons = rendered.findAll("button");
         expectTranslated(buttons.at(4), "Cancel editing",
             "Annuler l'édition", store);
-        buttons.at(3).trigger("click");
         await buttons.at(4).trigger("click");
-        await Vue.nextTick();
         expect(rendered.find(ResetConfirmation).exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
