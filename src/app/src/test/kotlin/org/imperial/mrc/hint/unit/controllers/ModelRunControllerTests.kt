@@ -124,15 +124,15 @@ class ModelRunControllerTests
     }
 
     @Test
-    fun `can get calibrate estimates`()
+    fun `can get calibrate plot`()
     {
         val mockFileManager = mock<FileManager>()
         val mockAPIClient = mock<HintrAPIClient> {
-            on { getCalibrateEstimates("testId") } doReturn mockResponse
+            on { getCalibratePlot("testId") } doReturn mockResponse
         }
         val sut = ModelRunController(mockFileManager, mockAPIClient)
 
-        val result = sut.calibrateEstimates("testId")
+        val result = sut.calibratePlot("testId")
         assertThat(result).isSameAs(mockResponse)
     }
 
