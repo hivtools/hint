@@ -36,7 +36,7 @@ interface VersionRepository
 
     fun deleteVersion(versionId: String, projectId: Int, userId: String)
     fun versionExists(versionId: String, userId: String): Boolean
-    fun saveVersionNote(versionId: String, projectId: Int, userId: String, note: String)
+    fun updateVersionNote(versionId: String, projectId: Int, userId: String, note: String)
 }
 
 @Component
@@ -207,7 +207,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
                 .execute()
     }
 
-    override fun saveVersionNote(versionId: String, projectId: Int, userId: String, note: String)
+    override fun updateVersionNote(versionId: String, projectId: Int, userId: String, note: String)
     {
         checkVersionExists(versionId, projectId, userId)
         dsl.update(PROJECT_VERSION)

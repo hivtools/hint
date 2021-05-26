@@ -394,9 +394,9 @@ class ProjectsControllerTests
             on { getProjectFromVersionId("testVersion", "testUser") } doReturn Project(123, "project", listOf())
         }
         val sut = ProjectsController(mockSession, mock(), mockRepo, mock())
-        val result = sut.saveProjectNote(1, "notes")
+        val result = sut.updateProjectNote(1, "notes")
 
-        verify(mockRepo).saveProjectNote(1, "notes", "testUser")
+        verify(mockRepo).updateProjectNote(1, "testUser", "notes")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -410,9 +410,9 @@ class ProjectsControllerTests
         }
 
         val sut = ProjectsController(mockSession, mockRepo, mockProjectRepo, mock())
-        val result = sut.saveVersionNote("testVersion", 99, "notes")
+        val result = sut.updateVersionNote("testVersion", 99, "notes")
 
-        verify(mockRepo).saveVersionNote("testVersion", 99, "testUser", "notes")
+        verify(mockRepo).updateVersionNote("testVersion", 99, "testUser", "notes")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 

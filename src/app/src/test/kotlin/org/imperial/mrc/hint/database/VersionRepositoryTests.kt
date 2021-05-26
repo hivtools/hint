@@ -72,6 +72,22 @@ class VersionRepositoryTests
     }
 
     @Test
+    fun `can save version with note`()
+    {
+        val uid = setupUser()
+        val projectId = setupProject(uid)
+        sut.saveVersion(versionId, projectId, "test notes")
+
+        val version = dsl.selectFrom(PROJECT_VERSION)
+                .fetchOne()
+
+        assertThat(version[PROJECT_VERSION.ID]).isEqualTo(versionId)
+        assertThat(version[PROJECT_VERSION.PROJECT_ID]).isEqualTo(projectId)
+        assertThat(version[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(1)
+        assertThat(version[PROJECT_VERSION.NOTE]).isEqualTo("test notes")
+    }
+
+    @Test
     fun `can save version and note`()
     {
         val uid = setupUser()
@@ -80,14 +96,14 @@ class VersionRepositoryTests
         val versionId = "testVersion"
         sut.saveVersion(versionId, projectId)
 
-        sut.saveVersionNote(versionId, projectId, uid, "notes")
+        sut.updateVersionNote(versionId, projectId, uid, "notes")
 
-        val versionNote = dsl.select(PROJECT_VERSION.NOTE)
+        val version = dsl.select(PROJECT_VERSION.NOTE)
                 .from(PROJECT_VERSION)
                 .where(PROJECT_VERSION.ID.eq(versionId))
                 .fetchOne()
 
-        assertThat(versionNote[PROJECT_VERSION.NOTE]).isEqualTo("notes")
+        assertThat(version[PROJECT_VERSION.NOTE]).isEqualTo("notes")
     }
 
     @Test
@@ -302,9 +318,11 @@ class VersionRepositoryTests
         sut.saveVersionState(originalVersionId, originalProject, uid, "{'something': 1}")
         setUpHashAndVersionFile("survey_hash", "survey_file", originalVersionId, "survey", false)
 
-        val clonedProject = projectRepo.saveNewProject(uid2, "p1", note = "test note")
+        val clonedProject = projectRepo.saveNewProject(uid2, "p1")
         val clonedVersionId = "v2"
-        sut.cloneVersion(originalVersionId, clonedVersionId, clonedProject)
+        sut.cloneVersion(originalVersionId, clonedVersionId, clonedProject, note = "test note")
+
+        assertThat(sut.getVersion(clonedVersionId).note).isEqualTo("test note")
 
         val originalVersionDetails = sut.getVersionDetails(originalVersionId, originalProject, uid)
         val clonedVersionDetails = sut.getVersionDetails(clonedVersionId, clonedProject, uid2)

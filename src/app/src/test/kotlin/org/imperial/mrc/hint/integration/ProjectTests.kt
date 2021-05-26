@@ -70,6 +70,40 @@ class ProjectTests : VersionFileTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `can save version note`(isAuthorized: IsAuthorized)
+    {
+        val result = createProject()
+        assertSecureWithSuccess(isAuthorized,result,null)
+
+        if(isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = getResponseData(result)
+            assertThat(data["id"].asInt()).isGreaterThan(0)
+            assertThat(data["name"].asText()).isEqualTo("testProject")
+            val projectId = data["id"].asInt()
+
+            val map = LinkedMultiValueMap<String, String>()
+            map.add("note", "test version note")
+            val headers = HttpHeaders()
+            val httpEntity = HttpEntity(map, headers)
+
+            val versionResult = testRestTemplate.getForEntity<String>("/project/${projectId}/version", httpEntity)
+            assertThat(versionResult.statusCode).isEqualTo(HttpStatus.OK)
+
+            val versionData = getResponseData(versionResult)
+            val versionId = versionData["id"].asText()
+
+            val version = dsl.select(PROJECT_VERSION.NOTE)
+                    .from(PROJECT_VERSION)
+                    .where(PROJECT_VERSION.ID.eq(versionId))
+                    .fetchOne()
+
+            assertThat(version[PROJECT_VERSION.NOTE]).isEqualTo("test version note")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can update project note`(isAuthorized: IsAuthorized)
     {
         val result = createProject()
@@ -118,7 +152,6 @@ class ProjectTests : VersionFileTests()
                     .from(PROJECT_VERSION)
                     .where(PROJECT_VERSION.ID.eq(versionId))
                     .fetchOne()
-            println(savedVersion)
 
             assertThat(savedVersion[PROJECT_VERSION.NOTE]).isEqualTo("test note")
         }

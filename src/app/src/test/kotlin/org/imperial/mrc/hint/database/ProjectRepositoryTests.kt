@@ -41,7 +41,6 @@ class ProjectRepositoryTests
     private lateinit var dsl: DSLContext
 
     private val testEmail = "test@test.com"
-
     @Test
     fun `can get project`()
     {
@@ -65,14 +64,14 @@ class ProjectRepositoryTests
     {
         val uid = setupUser()
 
-        val projectId = sut.saveNewProject(uid, "testProjectRepo", note = "notes")
-        versionRepo.saveVersion("v1", projectId, "notes")
+        val projectId = sut.saveNewProject(uid, "testProjectRepo", note = "test project notes")
+        versionRepo.saveVersion("v1", projectId, "test version notes")
         val project = sut.getProject(projectId, uid)
         assertThat(project.name).isEqualTo("testProjectRepo")
-        assertThat(project.note).isEqualTo("notes")
+        assertThat(project.note).isEqualTo("test project notes")
         assertThat(project.id).isEqualTo(projectId)
         assertThat(project.versions[0].id).isEqualTo("v1")
-        assertThat(project.versions[0].note).isEqualTo("notes")
+        assertThat(project.versions[0].note).isEqualTo("test version notes")
     }
 
     @Test
@@ -249,13 +248,13 @@ class ProjectRepositoryTests
         val versionId1 = "testVersion"
         versionRepo.saveVersion(versionId1, projectId)
 
-        sut.saveProjectNote(projectId, "notes", uid)
+        sut.updateProjectNote(projectId, uid, "test project notes")
 
-        val savedNote = dsl.selectFrom(PROJECT)
+        val project = dsl.selectFrom(PROJECT)
                 .where(PROJECT.ID.eq(projectId))
                 .and(PROJECT.USER_ID.eq(uid))
                 .fetchOne()
-        assertThat(savedNote[PROJECT.NOTE]).isEqualTo("notes")
+        assertThat(project[PROJECT.NOTE]).isEqualTo("test project notes")
     }
 
     @Test

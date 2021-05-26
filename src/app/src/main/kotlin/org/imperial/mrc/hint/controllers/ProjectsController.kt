@@ -77,10 +77,9 @@ class ProjectsController(private val session: Session,
     fun promoteVersion(
         @PathVariable("projectId") projectId: Int,
         @PathVariable("versionId") versionId: String,
-        @RequestParam("name") name: String,
-        @RequestParam("note") note: String?): ResponseEntity<String>
+        @RequestParam("name") name: String): ResponseEntity<String>
     {
-        val newProjectId = projectRepository.saveNewProject(userId(), name, note)
+        val newProjectId = projectRepository.saveNewProject(userId(), name)
         val newVersionId = session.generateVersionId()
         versionRepository.promoteVersion(versionId, newVersionId, newProjectId, userId())
 
@@ -91,22 +90,22 @@ class ProjectsController(private val session: Session,
 
     @PostMapping("/project/{projectId}/note")
     @ResponseBody
-    fun saveProjectNote(
+    fun updateProjectNote(
             @PathVariable("projectId") projectId: Int,
             @RequestParam("note") note: String): ResponseEntity<String>
     {
-        projectRepository.saveProjectNote(projectId, note, userId())
+        projectRepository.updateProjectNote(projectId, userId(), note)
         return EmptySuccessResponse.asResponseEntity()
     }
 
-    @PostMapping("project/{projectId}/version/{versionId}/note")
+    @PostMapping("/project/{projectId}/version/{versionId}/note")
     @ResponseBody
-    fun saveVersionNote(
+    fun updateVersionNote(
             @PathVariable("versionId") versionId: String,
             @PathVariable("projectId") projectId: Int,
             @RequestParam("note") note: String): ResponseEntity<String>
     {
-        versionRepository.saveVersionNote(versionId, projectId, userId(), note)
+        versionRepository.updateVersionNote(versionId, projectId, userId(), note)
         return EmptySuccessResponse.asResponseEntity()
     }
 
