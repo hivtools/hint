@@ -1,3 +1,7 @@
+# hint 1.36.0
+
+* Create an endpoint for model calibrate bar chart
+
 # hint 1.35.0
 
 * Roll-back making login email case insensitive (mrc-2210)
