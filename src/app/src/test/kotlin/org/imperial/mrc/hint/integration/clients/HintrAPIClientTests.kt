@@ -119,8 +119,8 @@ class HintrApiClientTests
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.getCalibratePlot("1234")
-        assertThat(result.statusCodeValue).isEqualTo(404) // the endpoint has not been implemented on hintr yet
-        JSONValidator().validateError(result.body!!, "NOT_FOUND")
+        assertThat(result.statusCodeValue).isEqualTo(200)
+        JSONValidator().validateSuccess(result.body!!, "CalibratePlotResponse")
     }
 
     @Test
