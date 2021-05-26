@@ -14,6 +14,11 @@
             <p v-if="isGuest" v-translate="'savePrompt'"></p>
             <p v-if="!isGuest" v-translate="'savePromptLoggedIn'"></p>
 
+            <div class="form-group">
+                <label for="note">Note (What is your reason for saving as a new version?)</label>
+                <textarea class="form-control" id="note" v-model="note" rows="3"></textarea>
+            </div>
+
             <template v-if="!waitingForVersion" v-slot:footer>
                 <button type="button"
                         class="btn btn-red"
@@ -39,16 +44,19 @@
     import Vue from "vue";
     import {mapGetters} from 'vuex';
     import Modal from "./Modal.vue";
-    import {mapActionByName, mapGetterByName, mapStateProp} from "../utils";
+    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProp} from "../utils";
     import {StepDescription} from "../store/stepper/stepper";
     import LoadingSpinner from "./LoadingSpinner.vue";
     import {ProjectsState} from "../store/projects/projects";
     import {ErrorsState} from "../store/errors/errors";
+    import {ADRState} from "../store/adr/adr";
+    import {Dict, UploadFile} from "../types";
 
     interface Computed {
         changesToRelevantSteps: StepDescription[],
         currentVersionId: string | null,
-        errorsCount: number
+        errorsCount: number,
+        note: string
     }
 
     interface Props {
@@ -76,7 +84,15 @@
             ...mapGetters(["isGuest"]),
             errorsCount: mapStateProp<ErrorsState, number>("errors", state => {
                 return state.errors ? state.errors.length : 0;
-            })
+            }),
+            note: {
+                get() {
+                    return this.$store.state.currentProject?.note
+                },
+                set(note: string) {
+                    this.updateNote(note)
+                }
+            }
         },
         methods: {
             handleConfirm: function () {
@@ -87,7 +103,8 @@
                     this.newVersion();
                 }
             },
-            newVersion: mapActionByName("projects", "newVersion")
+            newVersion: mapActionByName("projects", "newVersion"),
+            updateNote: mapActionByName("projects", "updateProjectNote")
         },
         watch: {
             currentVersionId: function () {

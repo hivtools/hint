@@ -1,6 +1,6 @@
 import {RootMutation} from "../root/mutations";
 import {ErrorsMutation} from "../errors/mutations";
-import {ActionContext, ActionTree, Commit} from "vuex";
+import {ActionContext, ActionTree} from "vuex";
 import {ProjectsState} from "./projects";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
@@ -32,6 +32,8 @@ export interface ProjectsActions {
     userExists: (store: ActionContext<ProjectsState, RootState>, email: string) => Promise<boolean>
     cloneProject: (store: ActionContext<ProjectsState, RootState>, payload: CloneProjectPayload) => void
     renameProject: (store: ActionContext<ProjectsState, RootState>, projectPayload: projectPayload) => void
+    updateProjectNote: (store: ActionContext<ProjectsState, RootState>, note: string) => void
+    updateVersionNote: (store: ActionContext<ProjectsState, RootState>, note: string) => void
 }
 
 export interface CloneProjectPayload {
@@ -204,6 +206,39 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
                 dispatch("getProjects");
             });
     },
+
+    async updateProjectNote(context, note) {
+        const {state, dispatch} = context
+        const projectId = state.currentProject && state.currentProject.id;
+
+        await api<ProjectsMutations, ErrorsMutation>(context)
+            .ignoreSuccess()
+            .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
+            .postAndReturn(`/project/${projectId}/note`, qs.stringify({note}))
+            .then(() => {
+                if (state.currentProject && state.currentProject.id === projectId) {
+                    dispatch("getCurrentProject")
+                }
+                dispatch("getProjects");
+            });
+    },
+
+    async updateVersionNote(context, note) {
+        const {state, dispatch} = context
+        const projectId = state.currentProject && state.currentProject.id;
+        const versionId = state.currentVersion && state.currentVersion.id;
+
+        await api<ProjectsMutations, ErrorsMutation>(context)
+            .ignoreSuccess()
+            .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
+            .postAndReturn(`/project/${projectId}/version/${versionId}/note`, qs.stringify({note}))
+            .then(() => {
+                if (state.currentProject && state.currentProject.id === projectId) {
+                    dispatch("getCurrentProject")
+                }
+                dispatch("getProjects");
+            });
+    }
 };
 
 async function immediateUploadVersionState(context: ActionContext<ProjectsState, RootState>) {
