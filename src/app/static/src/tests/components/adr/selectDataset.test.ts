@@ -570,7 +570,6 @@ describe("select dataset", () => {
         const buttons = rendered.findAll("button");
         expectTranslated(buttons.at(3), "Save version and keep editing",
             "Sauvegarder la version et continuer à modifier", store);
-        buttons.at(3).trigger("click");
         await buttons.at(3).trigger("click");
         store.state.projects.currentVersion = {id: "id1"} as any;
         expect(rendered.find(ResetConfirmation).exists()).toBe(false);
