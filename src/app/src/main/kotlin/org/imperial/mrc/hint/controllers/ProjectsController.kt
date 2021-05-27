@@ -77,9 +77,10 @@ class ProjectsController(private val session: Session,
     fun promoteVersion(
         @PathVariable("projectId") projectId: Int,
         @PathVariable("versionId") versionId: String,
-        @RequestParam("name") name: String): ResponseEntity<String>
+        @RequestParam("name") name: String,
+        @RequestParam("note") note: String?): ResponseEntity<String>
     {
-        val newProjectId = projectRepository.saveNewProject(userId(), name)
+        val newProjectId = projectRepository.saveNewProject(userId(), name, note = note)
         val newVersionId = session.generateVersionId()
         versionRepository.promoteVersion(versionId, newVersionId, newProjectId, userId())
 

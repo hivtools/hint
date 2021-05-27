@@ -366,10 +366,10 @@ class ProjectsControllerTests
                     Version("v2", "createdTime", "updatedTime", 1)))
         }
         val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock())
-        val result = sut.promoteVersion(1, "testVersion", "newProjectName", null)
+        val result = sut.promoteVersion(1, "testVersion", "newProjectName", "test promoted note")
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
-        verify(mockProjectRepo).saveNewProject("testUser", "newProjectName")
+        verify(mockProjectRepo).saveNewProject("testUser", "newProjectName", note = "test promoted note")
         verify(mockVersionRepo).promoteVersion("testVersion", "testVersion", 0, "testUser")
         verify(mockVersionRepo).getVersion("testVersion")
     }

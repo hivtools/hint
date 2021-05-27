@@ -131,6 +131,43 @@ class ProjectTests : VersionFileTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `can promote project note`(isAuthorized: IsAuthorized)
+    {
+        val result = createProject()
+        assertSecureWithSuccess(isAuthorized,result,null)
+
+        if(isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = getResponseData(result)
+            assertThat(data["id"].asInt()).isGreaterThan(0)
+            assertThat(data["name"].asText()).isEqualTo("testProject")
+
+            val projectId = data["id"].asInt()
+            val versions = data["versions"] as ArrayNode
+            val versionId = versions[0]["id"].asText()
+
+            val map = LinkedMultiValueMap<String, String>()
+            map.add("name", "newProject")
+            map.add("note", "test promote project note")
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+            val httpEntity = HttpEntity(map, headers)
+
+            testRestTemplate.postForEntity<String>("/project/$projectId/version/$versionId/promote", httpEntity)
+
+            val savedProject = dsl.select(PROJECT.NOTE,
+                    PROJECT.NAME)
+                    .from(PROJECT)
+                    .where(PROJECT.ID.eq(projectId))
+                    .fetchOne()
+
+            assertThat(savedProject[PROJECT.NAME]).isEqualTo("newProject")
+            assertThat(savedProject[PROJECT.NOTE]).isEqualTo("test promote project note")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can update version note`(isAuthorized: IsAuthorized)
     {
         val result = createProject()
