@@ -82,8 +82,12 @@ class ProjectTests : VersionFileTests()
             assertThat(data["name"].asText()).isEqualTo("testProject")
             val projectId = data["id"].asInt()
 
+            val versions = data["versions"] as ArrayNode
+            val parentVersionId = versions[0]["id"].asText()
+
             val map = LinkedMultiValueMap<String, String>()
             map.add("note", "test version note")
+            map.add("parentVersionId", parentVersionId)
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
             val httpEntity = HttpEntity(map, headers)
