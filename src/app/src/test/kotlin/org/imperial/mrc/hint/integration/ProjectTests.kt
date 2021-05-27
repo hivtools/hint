@@ -83,23 +83,23 @@ class ProjectTests : VersionFileTests()
             val projectId = data["id"].asInt()
 
             val versions = data["versions"] as ArrayNode
-            val parentVersionId = versions[0]["id"].asText()
+            val versionId = versions[0]["id"].asText()
 
             val map = LinkedMultiValueMap<String, String>()
             map.add("note", "test version note")
-            map.add("parentVersionId", parentVersionId)
+            map.add("parent", versionId)
             val headers = HttpHeaders()
             headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
             val httpEntity = HttpEntity(map, headers)
 
-            val versionResult = testRestTemplate.getForEntity<String>("/project/${projectId}/version", httpEntity)
+            val newVersionResult = testRestTemplate.getForEntity<String>("/project/${projectId}/version", httpEntity)
 
-            val versionData = getResponseData(versionResult)
-            val versionId = versionData["id"].asText()
+            val newVersionData = getResponseData(newVersionResult)
+            val newVersionId = newVersionData["id"].asText()
 
             val version = dsl.select(PROJECT_VERSION.NOTE)
                     .from(PROJECT_VERSION)
-                    .where(PROJECT_VERSION.ID.eq(versionId))
+                    .where(PROJECT_VERSION.ID.eq(newVersionId))
                     .fetchOne()
 
             assertThat(version[PROJECT_VERSION.NOTE]).isEqualTo("test version note")
@@ -157,15 +157,18 @@ class ProjectTests : VersionFileTests()
             headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
             val httpEntity = HttpEntity(map, headers)
 
-            testRestTemplate.postForEntity<String>("/project/$projectId/version/$versionId/promote", httpEntity)
+            val promoteProjectResult = testRestTemplate.postForEntity<String>("/project/$projectId/version/$versionId/promote", httpEntity)
+
+            val promoteProjData = getResponseData(promoteProjectResult)
+            val promoteProjId = promoteProjData["id"].asInt()
 
             val savedProject = dsl.select(PROJECT.NOTE,
                     PROJECT.NAME)
                     .from(PROJECT)
-                    .where(PROJECT.ID.eq(projectId))
+                    .where(PROJECT.ID.eq(promoteProjId))
                     .fetchOne()
 
-            assertThat(savedProject[PROJECT.NAME]).isEqualTo("testProject")
+            assertThat(savedProject[PROJECT.NAME]).isEqualTo("newProject")
             assertThat(savedProject[PROJECT.NOTE]).isEqualTo("test promote project note")
         }
     }
