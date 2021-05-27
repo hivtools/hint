@@ -65,13 +65,12 @@ class ProjectRepositoryTests
         val uid = setupUser()
 
         val projectId = sut.saveNewProject(uid, "testProjectRepo", note = "test project notes")
-        versionRepo.saveVersion("v1", projectId, "test version notes")
+        versionRepo.saveVersion("v11", projectId)
         val project = sut.getProject(projectId, uid)
         assertThat(project.name).isEqualTo("testProjectRepo")
         assertThat(project.note).isEqualTo("test project notes")
         assertThat(project.id).isEqualTo(projectId)
-        assertThat(project.versions[0].id).isEqualTo("v1")
-        assertThat(project.versions[0].note).isEqualTo("test version notes")
+        assertThat(project.versions[0].id).isEqualTo("v11")
     }
 
     @Test
@@ -79,11 +78,12 @@ class ProjectRepositoryTests
     {
         val uid = setupUser()
 
-        val projectId = sut.saveNewProject(uid, "testProjectRepo", uid)
+        val projectId = sut.saveNewProject(uid, "testProjectRepo", uid, "test cloned note")
         versionRepo.saveVersion("v1", projectId)
         val project = sut.getProject(projectId, uid)
         assertThat(project.name).isEqualTo("testProjectRepo")
         assertThat(project.sharedBy).isEqualTo(uid)
+        assertThat(project.note).isEqualTo("test cloned note")
         assertThat(project.id).isEqualTo(projectId)
         assertThat(project.versions.count()).isEqualTo(1)
         assertThat(project.versions[0].versionNumber).isEqualTo(1)
@@ -173,7 +173,7 @@ class ProjectRepositoryTests
     {
         val uid = setupUser()
 
-        val projectId = sut.saveNewProject(uid, "testProjectRepo", uid)
+        val projectId = sut.saveNewProject(uid, "testProjectRepo", uid, "test note")
 
         val project = dsl.selectFrom(PROJECT)
                 .where(PROJECT.ID.eq(projectId))
@@ -182,6 +182,7 @@ class ProjectRepositoryTests
         assertThat(project[PROJECT.USER_ID]).isEqualTo(uid)
         assertThat(project[PROJECT.NAME]).isEqualTo("testProjectRepo")
         assertThat(project[PROJECT.SHARED_BY]).isEqualTo(uid)
+        assertThat(project[PROJECT.NOTE]).isEqualTo("test note")
     }
 
     @Test
@@ -245,9 +246,6 @@ class ProjectRepositoryTests
         val uid = setupUser()
 
         val projectId = sut.saveNewProject(uid, "testProjectRepo")
-        val versionId1 = "testVersion"
-        versionRepo.saveVersion(versionId1, projectId)
-
         sut.updateProjectNote(projectId, uid, "test project notes")
 
         val project = dsl.selectFrom(PROJECT)

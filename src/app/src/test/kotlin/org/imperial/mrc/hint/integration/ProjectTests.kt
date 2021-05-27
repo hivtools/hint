@@ -85,10 +85,10 @@ class ProjectTests : VersionFileTests()
             val map = LinkedMultiValueMap<String, String>()
             map.add("note", "test version note")
             val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
             val httpEntity = HttpEntity(map, headers)
 
             val versionResult = testRestTemplate.getForEntity<String>("/project/${projectId}/version", httpEntity)
-            assertThat(versionResult.statusCode).isEqualTo(HttpStatus.OK)
 
             val versionData = getResponseData(versionResult)
             val versionId = versionData["id"].asText()
@@ -161,7 +161,7 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT.ID.eq(projectId))
                     .fetchOne()
 
-            assertThat(savedProject[PROJECT.NAME]).isEqualTo("newProject")
+            assertThat(savedProject[PROJECT.NAME]).isEqualTo("testProject")
             assertThat(savedProject[PROJECT.NOTE]).isEqualTo("test promote project note")
         }
     }
