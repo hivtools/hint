@@ -92,7 +92,7 @@ class ProjectTests : VersionFileTests()
             headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
             val httpEntity = HttpEntity(map, headers)
 
-            val newVersionResult = testRestTemplate.getForEntity<String>("/project/${projectId}/version", httpEntity)
+            val newVersionResult = testRestTemplate.postForEntity<String>("/project/${projectId}/version/", httpEntity)
 
             val newVersionData = getResponseData(newVersionResult)
             val newVersionId = newVersionData["id"].asText()
