@@ -13,6 +13,7 @@ export interface ModelCalibrateActions {
     submit: (store: ActionContext<ModelCalibrateState, RootState>, options: DynamicFormData) => void
     poll: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getResult: (store: ActionContext<ModelCalibrateState, RootState>) => void
+    getCalibratePlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
 }
 
 export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrateActions = {
@@ -57,7 +58,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     },
 
     async getResult(context) {
-        const {commit, state} = context;
+        const {commit, dispatch, state} = context;
         const calibrateId = state.calibrateId;
 
         if (state.status.done) {
@@ -85,9 +86,27 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                         {root: true});
                 }
                 commit(ModelCalibrateMutation.Calibrated);
+                dispatch("getCalibratePlot");
             }
         }
         commit(ModelCalibrateMutation.Ready);
+    },
+
+    async getCalibratePlot(context){
+        const {commit, state} = context;
+        const calibrateId = state.calibrateId;
+        console.log('getCalibratePlot fired')
+
+        const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
+                .ignoreSuccess()
+                .withError(ModelCalibrateMutation.SetError)
+                // .freezeResponse()
+                .get<ModelResultResponse>(`model/calibrate/plot/${calibrateId}`);
+
+        if (response) {
+            console.log("Calibrate plot returned:", response)
+            commit(ModelCalibrateMutation.CalibrationPlotGenerated);
+        }
     }
 };
 
@@ -100,6 +119,7 @@ export const getCalibrateStatus = async function(context: ActionContext<ModelCal
         .get<ModelStatusResponse>(`model/calibrate/status/${calibrateId}`)
         .then(() => {
             if (state.status && state.status.done) {
+                console.log("reached here")
                 dispatch("getResult");
             }
         });

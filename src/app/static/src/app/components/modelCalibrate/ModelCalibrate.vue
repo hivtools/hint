@@ -59,6 +59,7 @@
         loading: boolean
         calibrating: boolean
         complete: boolean
+        generatingCalibrationPlot: boolean,
         currentLanguage: Language
         selectText: string
         requiredText: string,
@@ -85,6 +86,7 @@
             ...mapStateProps<ModelCalibrateState, keyof Computed>(namespace, {
                 loading: s => s.fetching,
                 calibrating: s => s.calibrating,
+                generatingCalibrationPlot: s => s.generatingCalibrationPlot,
                 error: s => s.error,
                 progressMessage: s => {
                     if (s.status && s.status.progress && s.status.progress.length > 0) {
