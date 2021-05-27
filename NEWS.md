@@ -1,6 +1,3 @@
-# hint 1.37.0
-
-* Update Project and Version Repository to reflect changes 
 
 # hint 1.36.0
 
