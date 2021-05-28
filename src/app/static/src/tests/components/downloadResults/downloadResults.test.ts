@@ -1,6 +1,6 @@
 import {createLocalVue, shallowMount, mount} from '@vue/test-utils';
 import Vuex from 'vuex';
-import {mockADRState, mockModelCalibrateState} from "../../mocks";
+import {mockADRState, mockADRUploadState, mockModelCalibrateState} from "../../mocks";
 import DownloadResults from "../../../app/components/downloadResults/DownloadResults.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
@@ -21,13 +21,21 @@ describe("Download Results component", () => {
                 },
                 adr: {
                     namespaced: true,
-                    state: mockADRState({userCanUpload: hasUploadPermission, 
-                        uploading, uploadComplete, uploadError, 
-                        currentFileUploading: 1, 
+                    state: mockADRState({userCanUpload: hasUploadPermission}),
+                    actions: {
+                        getUserCanUpload
+                    }
+                },
+                adrUpload: {
+                    namespaced: true,
+                    state: mockADRUploadState({
+                        uploading,
+                        uploadComplete,
+                        uploadError,
+                        currentFileUploading: 1,
                         totalFilesUploading: 2
                     }),
                     actions: {
-                        getUserCanUpload,
                         getUploadFiles: jest.fn()
                     }
                 }
