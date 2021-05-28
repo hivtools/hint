@@ -72,9 +72,43 @@ class VersionRepositoryTests
     }
 
     @Test
+    fun `can save version with note`()
+    {
+        val uid = setupUser()
+        val projectId = setupProject(uid)
+        sut.saveVersion(versionId, projectId, "test notes")
+
+        val version = dsl.selectFrom(PROJECT_VERSION)
+                .fetchOne()
+
+        assertThat(version[PROJECT_VERSION.ID]).isEqualTo(versionId)
+        assertThat(version[PROJECT_VERSION.PROJECT_ID]).isEqualTo(projectId)
+        assertThat(version[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(1)
+        assertThat(version[PROJECT_VERSION.NOTE]).isEqualTo("test notes")
+    }
+
+    @Test
+    fun `can save version and note`()
+    {
+        val uid = setupUser()
+
+        val projectId = setupProject(uid)
+        val versionId = "testVersion"
+        sut.saveVersion(versionId, projectId)
+
+        sut.updateVersionNote(versionId, projectId, uid, "notes")
+
+        val version = dsl.select(PROJECT_VERSION.NOTE)
+                .from(PROJECT_VERSION)
+                .where(PROJECT_VERSION.ID.eq(versionId))
+                .fetchOne()
+
+        assertThat(version[PROJECT_VERSION.NOTE]).isEqualTo("notes")
+    }
+
+    @Test
     fun `saveVersion is idempotent`()
     {
-
         sut.saveVersion(versionId, null)
         sut.saveVersion(versionId, null)
         val version = dsl.selectFrom(PROJECT_VERSION)
@@ -270,6 +304,65 @@ class VersionRepositoryTests
         val originalVersionDetails = sut.getVersionDetails(originalVersionId, originalProject, uid)
         val clonedVersionDetails = sut.getVersionDetails(clonedVersionId, clonedProject, uid2)
         assertThat(originalVersionDetails).isEqualToComparingFieldByFieldRecursively(clonedVersionDetails)
+    }
+
+    @Test
+    fun `can clone version and note to new project`()
+    {
+        val uid = setupUser()
+        val uid2 = setupUser("another.user@email.com")
+
+        val originalProject = projectRepo.saveNewProject(uid, "p1")
+        val originalVersionId = "v1"
+        sut.saveVersion(originalVersionId, originalProject)
+        sut.saveVersionState(originalVersionId, originalProject, uid, "{'something': 1}")
+        setUpHashAndVersionFile("survey_hash", "survey_file", originalVersionId, "survey", false)
+
+        val clonedProject = projectRepo.saveNewProject(uid2, "p1")
+        val clonedVersionId = "v2"
+        sut.cloneVersion(originalVersionId, clonedVersionId, clonedProject, note = "test note")
+
+        assertThat(sut.getVersion(clonedVersionId).note).isEqualTo("test note")
+
+        val originalVersionDetails = sut.getVersionDetails(originalVersionId, originalProject, uid)
+        val clonedVersionDetails = sut.getVersionDetails(clonedVersionId, clonedProject, uid2)
+        assertThat(originalVersionDetails).isEqualToComparingFieldByFieldRecursively(clonedVersionDetails)
+    }
+
+    @Test
+    fun `can copy version and note`()
+    {
+        val now = LocalDateTime.now(ZoneOffset.UTC)
+        val soon = now.plusSeconds(5)
+
+        val uid = setupUser()
+        val projectId = setupProject(uid)
+        sut.saveVersion(versionId, projectId)
+        setUpHashAndVersionFile("pjnz_hash", "pjnz_file", versionId, "pjnz", false)
+        setUpHashAndVersionFile("survey_hash", "survey_file", versionId, "survey", false)
+        sut.saveVersionState(versionId, projectId, uid, "TEST STATE")
+
+        sut.copyVersion(versionId, "newVersionId", projectId, uid, "test note")
+
+        val newVersion = sut.getVersion("newVersionId")
+        assertThat(newVersion.id).isEqualTo("newVersionId")
+        assertThat(newVersion.note).isEqualTo("test note")
+        val created = LocalDateTime.parse(newVersion.created, ISO_LOCAL_DATE_TIME)
+        assertThat(created).isBetween(now, soon)
+
+        val updated = LocalDateTime.parse(newVersion.updated, ISO_LOCAL_DATE_TIME)
+        assertThat(updated).isBetween(now, soon)
+
+        val newVersionRecord =
+                dsl.select(PROJECT_VERSION.STATE, PROJECT_VERSION.PROJECT_ID, PROJECT_VERSION.VERSION_NUMBER, PROJECT_VERSION.NOTE)
+                        .from(PROJECT_VERSION)
+                        .where(PROJECT_VERSION.ID.eq("newVersionId"))
+                        .fetchOne()
+
+        assertThat(newVersionRecord[PROJECT_VERSION.STATE]).isEqualTo("TEST STATE")
+        assertThat(newVersionRecord[PROJECT_VERSION.PROJECT_ID]).isEqualTo(projectId)
+        assertThat(newVersionRecord[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(2)
+        assertThat(newVersionRecord[PROJECT_VERSION.NOTE]).isEqualTo("test note")
     }
 
     @Test
