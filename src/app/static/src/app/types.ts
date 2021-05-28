@@ -76,7 +76,7 @@ export interface Version {
     created: string,
     updated: string,
     versionNumber: number,
-    notes?: string
+    note?: string
 }
 
 export interface Project {

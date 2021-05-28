@@ -49,14 +49,13 @@
     import LoadingSpinner from "./LoadingSpinner.vue";
     import {ProjectsState} from "../store/projects/projects";
     import {ErrorsState} from "../store/errors/errors";
-    import {ADRState} from "../store/adr/adr";
-    import {Dict, UploadFile} from "../types";
 
     interface Computed {
         changesToRelevantSteps: StepDescription[],
         currentVersionId: string | null,
         errorsCount: number,
-        note: string
+        note: string,
+        projectVersionNote: string | null | undefined
     }
 
     interface Props {
@@ -67,13 +66,15 @@
 
     interface Data {
         waitingForVersion: boolean
+        versionNote: string
     }
 
     export default Vue.extend<Data, unknown, Computed, any>({
         props: ["open", "continueEditing", "cancelEditing"],
         data: function () {
             return {
-                waitingForVersion: false
+                waitingForVersion: false,
+                versionNote: ""
             }
         },
         computed: {
@@ -81,16 +82,19 @@
             currentVersionId: mapStateProp<ProjectsState, string | null>("projects", state => {
                 return state.currentVersion && state.currentVersion.id;
             }),
+            projectVersionNote: mapStateProp<ProjectsState, string | null | undefined>("projects", state => {
+                return state.currentVersion && state.currentVersion?.note;
+            }),
             ...mapGetters(["isGuest"]),
             errorsCount: mapStateProp<ErrorsState, number>("errors", state => {
                 return state.errors ? state.errors.length : 0;
             }),
             note: {
                 get() {
-                    return this.$store.state.currentProject?.note
+                    return this.projectVersionNote ? this.projectVersionNote : ""
                 },
                 set(note: string) {
-                    this.updateNote(note)
+                    this.versionNote = note
                 }
             }
         },
@@ -100,11 +104,10 @@
                     this.continueEditing();
                 } else {
                     this.waitingForVersion = true;
-                    this.newVersion();
+                    this.newVersion(this.versionNote);
                 }
             },
-            newVersion: mapActionByName("projects", "newVersion"),
-            updateNote: mapActionByName("projects", "updateProjectNote")
+            newVersion: mapActionByName("projects", "newVersion")
         },
         watch: {
             currentVersionId: function () {
