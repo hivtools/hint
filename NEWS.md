@@ -1,6 +1,6 @@
 # hint 1.37.0
 
-* Add notes text area to confirmation dialog when editing 
+* Add note field to confirmation dialog when saving new vaersion 
 
 # hint 1.36.0
 
