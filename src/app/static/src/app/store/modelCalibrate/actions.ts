@@ -101,12 +101,14 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
                 .ignoreSuccess()
                 .withError(ModelCalibrateMutation.SetError)
-                // .freezeResponse()
+                .freezeResponse()
                 .get<ModelResultResponse>(`model/calibrate/plot/${calibrateId}`);
 
         if (response) {
-            console.log("Calibrate plot returned:", response)
+            const data = freezer.deepFreeze(response.data);
+            console.log("Calibrate plot returned:", data)
             commit(ModelCalibrateMutation.CalibrationPlotGenerated);
+            commit(ModelCalibrateMutation.SetPlotData, response);
         }
     }
 };
