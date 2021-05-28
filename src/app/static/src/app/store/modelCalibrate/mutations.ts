@@ -67,8 +67,8 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.calibrating = false
     },
 
-    [ModelCalibrateMutation.CalibrationPlotStarted](state: ModelCalibrateState, action: PayloadWithType<CalibrateSubmitResponse>) {
-        state.calibrateId = action.payload.id;
+    [ModelCalibrateMutation.CalibrationPlotStarted](state: ModelCalibrateState) {
+        // state.calibrateId = action.payload.id;
         state.generatingCalibrationPlot = true;
         state.calibrationPlotGenerated = false;
         state.error = null;
@@ -91,6 +91,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     [ModelCalibrateMutation.SetError](state: ModelCalibrateState, action: PayloadWithType<Error>) {
         state.error = action.payload;
         state.calibrating = false;
+        state.generatingCalibrationPlot = false;
         if (state.statusPollId > -1) {
             stopPolling(state);
         }

@@ -28,6 +28,11 @@
             <h4 class="d-inline" id="calibrate-complete" v-translate="'calibrationComplete'"></h4>
             <tick color="#e31837" width="20px"></tick>
         </div>
+        <div v-if="generatingCalibrationPlot" id="genCalibResults" class="mt-3">
+            <loading-spinner size="xs"></loading-spinner>
+            <span v-translate="'genCalibResults'"></span>
+        </div>
+        <calibration-results v-if="calibrationPlotGenerated"></calibration-results>
     </div>
 
 </template>
@@ -46,6 +51,7 @@
     import {Language} from "../../store/translations/locales";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
     import ErrorAlert from "../ErrorAlert.vue";
+    import CalibrationResults from "./CalibrationResults.vue";
 
     interface Methods {
         fetchOptions: () => void
@@ -60,6 +66,7 @@
         calibrating: boolean
         complete: boolean
         generatingCalibrationPlot: boolean,
+        calibrationPlotGenerated: boolean,
         currentLanguage: Language
         selectText: string
         requiredText: string,
@@ -87,6 +94,7 @@
                 loading: s => s.fetching,
                 calibrating: s => s.calibrating,
                 generatingCalibrationPlot: s => s.generatingCalibrationPlot,
+                calibrationPlotGenerated: s => s.calibrationPlotGenerated,
                 error: s => s.error,
                 progressMessage: s => {
                     if (s.status && s.status.progress && s.status.progress.length > 0) {
@@ -129,6 +137,7 @@
             }
         },
         components: {
+            CalibrationResults,
             DynamicForm,
             LoadingSpinner,
             Tick,
