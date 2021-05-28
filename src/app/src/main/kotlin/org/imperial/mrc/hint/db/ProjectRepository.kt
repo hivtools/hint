@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component
 
 interface ProjectRepository
 {
-    fun saveNewProject(userId: String, projectName: String, sharedBy: String?= null, note: String?=null): Int
+    fun saveNewProject(userId: String, projectName: String, sharedBy: String? = null, note: String? = null): Int
     fun getProjects(userId: String): List<Project>
     fun deleteProject(projectId: Int, userId: String)
     fun getProject(projectId: Int, userId: String): Project
     fun getProjectFromVersionId(versionId: String, userId: String): Project
     fun renameProject(projectId: Int, userId: String, newName: String)
-    fun saveProjectNote(projectId: Int, userId: String, note: String)
+    fun updateProjectNote(projectId: Int, userId: String, note: String)
     
 }
 
@@ -119,12 +119,12 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
             .execute()
     }
 
-    override fun saveProjectNote(projectId: Int, userId: String, note: String)
+    override fun updateProjectNote(projectId: Int, userId: String, note: String)
     {
+        checkProjectExists(projectId, userId)
         dsl.update(PROJECT)
                 .set(PROJECT.NOTE, note)
-                .where(PROJECT.USER_ID.eq(userId))
-                .and(PROJECT.ID.eq(projectId))
+                .where(PROJECT.ID.eq(projectId))
                 .execute()
     }
 
@@ -140,14 +140,14 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
     private fun mapProject(versions: List<Record>): Project
     {
         return Project(versions[0][PROJECT.ID], versions[0][PROJECT.NAME],
-                     mapVersion(versions), versions[0][PROJECT.SHARED_BY])
+                     mapVersion(versions), versions[0][PROJECT.SHARED_BY], versions[0][PROJECT.NOTE])
     }
 
     private fun mapVersion(records: List<Record>): List<Version>
     {
         return records.map { v ->
             Version(v[PROJECT_VERSION.ID], v[PROJECT_VERSION.CREATED],
-                    v[PROJECT_VERSION.UPDATED], v[PROJECT_VERSION.VERSION_NUMBER])
+                    v[PROJECT_VERSION.UPDATED], v[PROJECT_VERSION.VERSION_NUMBER], v[PROJECT_VERSION.NOTE])
         }
     }
 

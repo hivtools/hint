@@ -198,7 +198,7 @@
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
     import {VTooltip} from 'v-tooltip';
-    import {projects} from "../../store/projects/projects";
+    import {projects, ProjectsState} from "../../store/projects/projects";
 
     const namespace = "projects";
 
@@ -210,6 +210,7 @@
         versionToPromote: VersionIds | null;
         newProjectName: string;
         selectedVersionNumber: string;
+        versionNote: string;
     }
 
     interface Computed {
@@ -218,6 +219,7 @@
         currentLanguage: Language;
         promoteVersionHeader: string;
         note: string;
+        projectVersionNote: string | null | undefined;
     }
 
     interface Methods {
@@ -248,6 +250,7 @@
         cancelRename: () => void;
         confirmRename: (name: string) => void;
         getTranslatedValue: (key: string) => string;
+        updateVersionNote: (note: string) => void
     }
 
     export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
@@ -259,7 +262,8 @@
                 newProjectName: "",
                 selectedVersionNumber: "",
                 projectToRename: null,
-                renamedProjectName: ''
+                renamedProjectName: '',
+                versionNote: ""
             };
         },
         computed: {
@@ -279,13 +283,15 @@
                 null,
                 (state: RootState) => state.language
             ),
+            projectVersionNote: mapStateProp<ProjectsState, string | null | undefined>(namespace, state => {
+                return state.currentVersion && state.currentVersion?.note;
+            }),
             note: {
                 get() {
-                    //return this.projectVersionNote ? this.projectVersionNote : ""
-                    return "tester"
+                    return this.projectVersionNote ? this.projectVersionNote : ""
                 },
                 set(note: string) {
-                    // this.versionNote = note
+                    this.versionNote = note
                 }
             }
         },
@@ -343,6 +349,7 @@
                 })
                 this.versionToPromote = {projectId, versionId};
                 this.selectedVersionNumber = `v${versionNumber}`;
+                this.updateVersionNote(this.versionNote)
             },
             cancelPromotion() {
                 this.versionToPromote = null;
@@ -372,6 +379,7 @@
                     this.newProjectName = "";
                 }
             },
+            updateVersionNote: mapActionByName(namespace, "updateVersionNote"),
             renameProjectAction: mapActionByName<projectPayload>(
                 namespace,
                 "renameProject"

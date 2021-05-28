@@ -1,10 +1,10 @@
 import Vue from "vue";
-import {mount, shallowMount, Wrapper} from "@vue/test-utils";
+import {mount, Wrapper} from "@vue/test-utils";
 import ResetConfirmation from "../../app/components/ResetConfirmation.vue";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 import Vuex from "vuex";
 import registerTranslations from "../../app/store/translations/registerTranslations";
-import {emptyState, storeOptions, RootState} from "../../app/root";
+import {RootState} from "../../app/root";
 import {mockErrorsState, mockProjectsState, mockRootState} from "../mocks";
 import {mutations as versionsMutations} from "../../app/store/projects/mutations";
 import {mutations as errorMutations} from "../../app/store/errors/mutations";
@@ -32,7 +32,7 @@ const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState
             },
             projects: {
                 namespaced: true,
-                state: mockProjectsState({currentProject: {id: 1, name: "v1", versions: []}}),
+                state: mockProjectsState({currentProject: {id: 1, name: "v1", note: "test note", versions: []}}),
                 actions: {
                     newVersion
                 },
@@ -148,6 +148,33 @@ describe("Reset confirmation modal", () => {
 
         rendered.findAll("button").at(0).trigger("click");
         expect(mockContinueEdit.mock.calls.length).toBe(1);
+    });
+
+    it("can pre-populate note element", () => {
+
+        const mockContinueEdit = jest.fn();
+        const mockNewVersion = jest.fn();
+        const rendered = mount(ResetConfirmation, {
+            propsData: {
+                continueEditing: mockContinueEdit,
+                cancelEditing: jest.fn()
+            },
+            computed: {
+                projectVersionNote() {
+                    return "textarea value"
+                }
+            },
+            store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
+        });
+
+        const store = rendered.vm.$store
+        const noteLabel = rendered.find("#projectNote label")
+        expectTranslated(noteLabel, "Note (Your reason for saving as a new version)",
+            "Remarque (la raison de l'enregistrement en tant que nouvelle version)", store)
+
+        expect((rendered.vm as any).note).toBe("textarea value");
+        const textarea = rendered.find("#projectNoteControl").element as HTMLTextAreaElement;
+        expect(textarea.value).toBe("textarea value")
     });
 
     it("continue button sets waitingForVersion to true and invokes newVersion action for logged in user", () => {

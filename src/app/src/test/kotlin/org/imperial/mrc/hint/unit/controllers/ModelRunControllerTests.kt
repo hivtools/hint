@@ -83,20 +83,6 @@ class ModelRunControllerTests
     }
 
     @Test
-    fun `can calibrate`()
-    {
-        val modelCalibrationOptions = ModelOptions(mapOf(), mapOf())
-        val mockAPIClient = mock<HintrAPIClient> {
-            on { calibrate("testId", modelCalibrationOptions) } doReturn mockResponse
-        }
-        val sut = ModelRunController(mock(), mockAPIClient)
-
-        val result = sut.calibrate("testId", modelCalibrationOptions)
-        assertThat(result).isSameAs(mockResponse)
-
-    }
-
-    @Test
     fun `can submit calibrate`()
     {
         val modelCalibrationOptions = ModelOptions(mapOf(), mapOf())
