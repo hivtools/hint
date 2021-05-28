@@ -44,7 +44,7 @@
     import Vue from "vue";
     import {mapGetters} from 'vuex';
     import Modal from "./Modal.vue";
-    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProp} from "../utils";
+    import {mapActionByName, mapGetterByName, mapStateProp} from "../utils";
     import {StepDescription} from "../store/stepper/stepper";
     import LoadingSpinner from "./LoadingSpinner.vue";
     import {ProjectsState} from "../store/projects/projects";
