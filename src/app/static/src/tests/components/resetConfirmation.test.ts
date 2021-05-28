@@ -167,9 +167,13 @@ describe("Reset confirmation modal", () => {
             store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
         });
 
-        expect((rendered.vm as any).note).toBe("textarea value");
+        const store = rendered.vm.$store
+        const noteLabel = rendered.find("#projectNote label")
+        expectTranslated(noteLabel, "Note (Your reason for saving as a new version)",
+            "Remarque (la raison de l'enregistrement en tant que nouvelle version)", store)
 
-        const textarea = rendered.find("#note").element as HTMLTextAreaElement;
+        expect((rendered.vm as any).note).toBe("textarea value");
+        const textarea = rendered.find("#projectNoteControl").element as HTMLTextAreaElement;
         expect(textarea.value).toBe("textarea value")
     });
 

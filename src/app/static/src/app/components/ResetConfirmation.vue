@@ -14,9 +14,9 @@
             <p v-if="isGuest" v-translate="'savePrompt'"></p>
             <p v-if="!isGuest" v-translate="'savePromptLoggedIn'"></p>
 
-            <div class="form-group">
-                <label for="note">Note (What is your reason for saving as a new version?)</label>
-                <textarea class="form-control" id="note" v-model="note" rows="3"></textarea>
+            <div id="projectNote" class="form-group">
+                <label for="projectNoteControl"><span v-translate="'projectNote'"></span></label>
+                <textarea class="form-control" id="projectNoteControl" v-model="note" rows="3"></textarea>
             </div>
 
             <template v-if="!waitingForVersion" v-slot:footer>
