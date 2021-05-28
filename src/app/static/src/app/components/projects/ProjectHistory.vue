@@ -145,6 +145,10 @@
                    v-translate:placeholder="'projectName'"
                    @keyup.enter="confirmPromotion(newProjectName)"
                    v-model="newProjectName"/>
+            <div id="promoteNote" class="form-group pt-3">
+                <label for="promoteNoteControl"><span v-translate="'projectNote'"></span></label>
+                <textarea class="form-control" id="promoteNoteControl" v-model="note" rows="3"></textarea>
+            </div>
             <template v-slot:footer>
                 <button type="button"
                         class="btn btn-red"
@@ -213,6 +217,7 @@
         disableRename: boolean;
         currentLanguage: Language;
         promoteVersionHeader: string;
+        note: string;
     }
 
     interface Methods {
@@ -273,7 +278,16 @@
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
-            )
+            ),
+            note: {
+                get() {
+                    //return this.projectVersionNote ? this.projectVersionNote : ""
+                    return "tester"
+                },
+                set(note: string) {
+                    // this.versionNote = note
+                }
+            }
         },
         methods: {
             format(date: string) {
