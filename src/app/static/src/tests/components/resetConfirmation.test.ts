@@ -163,9 +163,9 @@ describe("Reset confirmation modal", () => {
         });
 
         const store = rendered.vm.$store
-        const noteLabel = rendered.find("#projectNote label")
-        expectTranslated(noteLabel, "Note (Your reason for saving as a new version)",
-            "Remarque (la raison de l'enregistrement en tant que nouvelle version)", store)
+        const noteLabel = rendered.find("#noteHeader label")
+        expectTranslated(noteLabel, "Notes: (your reason for saving as a new version)",
+            "Remarques: (la raison pour laquelle vous enregistrez en tant que nouvelle version)", store)
     });
 
     it("can set and get note value", async() => {
@@ -177,12 +177,16 @@ describe("Reset confirmation modal", () => {
                 continueEditing: mockContinueEdit,
                 cancelEditing: jest.fn()
             },
+            computed: {
+                currentVersionNote() {
+                    return "textarea value"
+                }
+            },
             store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
         });
 
-        await rendered.find("#projectNoteControl").setValue("new version note")
-        const textarea = rendered.find("#projectNoteControl").element as HTMLTextAreaElement;
-        expect(textarea.value).toBe("new version note")
+        const textarea = rendered.find("#versionNoteControl").element as HTMLTextAreaElement;
+        expect(textarea.value).toBe("textarea value")
     });
 
     it("continue button sets waitingForVersion to true and invokes newVersion action for logged in user", () => {
