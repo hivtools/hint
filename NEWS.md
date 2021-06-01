@@ -1,6 +1,10 @@
-# hint 1.35.1
+# hint 1.36.1
 
 * Correctly scope ADR mutations/actions in upload logic
+
+# hint 1.36.0
+
+* Update Project and Version Repository and controllers to implement notes column
 
 # hint 1.35.0
 
