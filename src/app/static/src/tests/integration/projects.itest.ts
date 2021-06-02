@@ -174,7 +174,8 @@ describe("Projects actions", () => {
         state.currentVersion = createdProject.versions[0];
         const versionPayload = {
             version: {projectId: state.currentProject!.id, versionId: state.currentVersion!.id},
-            name: 'newProject'
+            name: 'newProject',
+            note: "new note"
         };
 
         const newCommit = jest.fn();
