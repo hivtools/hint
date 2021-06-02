@@ -14,9 +14,9 @@
             <p v-if="isGuest" v-translate="'savePrompt'"></p>
             <p v-if="!isGuest" v-translate="'savePromptLoggedIn'"></p>
 
-            <div id="projectNote" class="form-group">
-                <label for="projectNoteControl"><span v-translate="'projectNote'"></span></label>
-                <textarea class="form-control" id="projectNoteControl" v-model="note" rows="3"></textarea>
+            <div id="noteHeader" class="form-group">
+                <label for="versionNoteControl"><span v-translate="'noteHeader'"></span></label>
+                <textarea class="form-control" id="versionNoteControl" v-model="handleVersionNote" rows="3"></textarea>
             </div>
 
             <template v-if="!waitingForVersion" v-slot:footer>
@@ -54,8 +54,8 @@
         changesToRelevantSteps: StepDescription[],
         currentVersionId: string | null,
         errorsCount: number,
-        note: string,
-        projectVersionNote: string | null | undefined
+        handleVersionNote: string,
+        currentVersionNote: string | null
     }
 
     interface Props {
@@ -82,19 +82,19 @@
             currentVersionId: mapStateProp<ProjectsState, string | null>("projects", state => {
                 return state.currentVersion && state.currentVersion.id;
             }),
-            projectVersionNote: mapStateProp<ProjectsState, string | null | undefined>("projects", state => {
-                return state.currentVersion && state.currentVersion?.note;
+            currentVersionNote: mapStateProp<ProjectsState, string | null>("projects", state => {
+                return state.currentVersion?.note || "";
             }),
             ...mapGetters(["isGuest"]),
             errorsCount: mapStateProp<ErrorsState, number>("errors", state => {
                 return state.errors ? state.errors.length : 0;
             }),
-            note: {
+            handleVersionNote: {
                 get() {
-                    return this.projectVersionNote ? this.projectVersionNote : ""
+                    return this.currentVersionNote || ""
                 },
                 set(note: string) {
-                    this.versionNote = note
+                    this.versionNote = note;
                 }
             }
         },

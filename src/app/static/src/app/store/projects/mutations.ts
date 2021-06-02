@@ -14,7 +14,8 @@ export enum ProjectsMutations {
     ClearCurrentVersion = "ClearCurrentVersion",
     CloneProjectError = "CloneProjectError",
     CloningProject = "CloningProject",
-    SetCurrentProject = "SetCurrentProject"
+    SetCurrentProject = "SetCurrentProject",
+    SelectedVersion = "SelectedVersion"
 }
 
 export const mutations: MutationTree<ProjectsState> = {
@@ -67,5 +68,8 @@ export const mutations: MutationTree<ProjectsState> = {
         {
             router.push('/projects');
         }
-    }
+    },
+    [ProjectsMutations.SelectedVersion](state: ProjectsState, action: PayloadWithType<Version>) {
+        state.selectedVersion = action.payload;
+    },
 };

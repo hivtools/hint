@@ -16,7 +16,7 @@ export interface ProjectsState {
     versionTime: Date | null,
     cloneProjectError: Error | null,
     cloningProject: boolean,
-    updateNote: string | null
+    selectedVersion: Version | null
 }
 
 export const initialProjectsState = (): ProjectsState => {
@@ -30,7 +30,7 @@ export const initialProjectsState = (): ProjectsState => {
         versionTime: null,
         cloneProjectError: null,
         cloningProject: false,
-        updateNote: null
+        selectedVersion: null
     }
 };
 

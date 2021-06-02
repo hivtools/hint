@@ -150,7 +150,25 @@ describe("Reset confirmation modal", () => {
         expect(mockContinueEdit.mock.calls.length).toBe(1);
     });
 
-    it("can pre-populate note element", () => {
+    it("can render translated version note label", () => {
+
+        const mockContinueEdit = jest.fn();
+        const mockNewVersion = jest.fn();
+        const rendered = mount(ResetConfirmation, {
+            propsData: {
+                continueEditing: mockContinueEdit,
+                cancelEditing: jest.fn()
+            },
+            store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
+        });
+
+        const store = rendered.vm.$store
+        const noteLabel = rendered.find("#noteHeader label")
+        expectTranslated(noteLabel, "Notes: (your reason for saving as a new version)",
+            "Remarques: (la raison pour laquelle vous enregistrez en tant que nouvelle version)", store)
+    });
+
+    it("can set and get note value", async() => {
 
         const mockContinueEdit = jest.fn();
         const mockNewVersion = jest.fn();
@@ -160,20 +178,14 @@ describe("Reset confirmation modal", () => {
                 cancelEditing: jest.fn()
             },
             computed: {
-                projectVersionNote() {
+                currentVersionNote() {
                     return "textarea value"
                 }
             },
             store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
         });
 
-        const store = rendered.vm.$store
-        const noteLabel = rendered.find("#projectNote label")
-        expectTranslated(noteLabel, "Note (Your reason for saving as a new version)",
-            "Remarque (la raison de l'enregistrement en tant que nouvelle version)", store)
-
-        expect((rendered.vm as any).note).toBe("textarea value");
-        const textarea = rendered.find("#projectNoteControl").element as HTMLTextAreaElement;
+        const textarea = rendered.find("#versionNoteControl").element as HTMLTextAreaElement;
         expect(textarea.value).toBe("textarea value")
     });
 

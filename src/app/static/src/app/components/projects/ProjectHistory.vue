@@ -146,8 +146,8 @@
                    @keyup.enter="confirmPromotion(newProjectName)"
                    v-model="newProjectName"/>
             <div id="promoteNote" class="form-group pt-3">
-                <label for="promoteNoteControl"><span v-translate="'projectNote'"></span></label>
-                <textarea class="form-control" id="promoteNoteControl" v-model="note" rows="3"></textarea>
+                <label class="h5" for="promoteNoteControl"><span v-translate="'copyNoteHeader'"></span></label>
+                <textarea class="form-control" id="promoteNoteControl" v-model="handleVersionNote" rows="3"></textarea>
             </div>
             <template v-slot:footer>
                 <button type="button"
@@ -218,8 +218,8 @@
         disableRename: boolean;
         currentLanguage: Language;
         promoteVersionHeader: string;
-        note: string | null;
-        projectVersionNote: Project[] | null
+        handleVersionNote: string | null;
+        projects: Project[] | null
     }
 
     interface Methods {
@@ -282,15 +282,15 @@
                 null,
                 (state: RootState) => state.language
             ),
-            projectVersionNote: mapStateProp<ProjectsState, Project[] | null>(namespace, state => {
-                return state.previousProjects
+            projects: mapStateProp<ProjectsState, Project[] | null>(namespace, state => {
+                return state.previousProjects!
             }),
-            note: {
+            handleVersionNote: {
                 get() {
-                    return this.projectVersionNote?.filter(project => project.id === this.versionToPromote?.projectId)
+                    return this.projects.filter(project => project.id === this.versionToPromote?.projectId)
                         .map(p => {
-                            return p.versions.filter(version => version.id === this.versionToPromote?.versionId).map(v => v.note)
-                        }).toString() || ""
+                            return p.versions.filter(version => version.id === this.versionToPromote?.versionId)
+                                .map(v => v.note)}).toString() || ""
                 },
                 set(note: string) {
                     this.versionNote = note
