@@ -32,7 +32,8 @@ const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState
             },
             projects: {
                 namespaced: true,
-                state: mockProjectsState({currentProject: {id: 1, name: "v1", note: "test note", versions: []}}),
+                state: mockProjectsState({currentProject: {id: 1, name: "v1", note: "test note", versions: []},
+                    currentVersion: {id: "version1", created: "", note: "textarea value", updated: "", versionNumber: 1}}),
                 actions: {
                     newVersion
                 },
@@ -176,11 +177,6 @@ describe("Reset confirmation modal", () => {
             propsData: {
                 continueEditing: mockContinueEdit,
                 cancelEditing: jest.fn()
-            },
-            computed: {
-                currentVersionNote() {
-                    return "textarea value"
-                }
             },
             store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
         });
