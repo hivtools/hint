@@ -218,8 +218,8 @@
         disableRename: boolean;
         currentLanguage: Language;
         promoteVersionHeader: string;
-        note: string;
-        projectVersionNote: string | null | undefined;
+        note: string | null;
+        projectVersionNote: Project[] | null
     }
 
     interface Methods {
@@ -250,7 +250,6 @@
         cancelRename: () => void;
         confirmRename: (name: string) => void;
         getTranslatedValue: (key: string) => string;
-        updateVersionNote: (note: string) => void
     }
 
     export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
@@ -283,12 +282,15 @@
                 null,
                 (state: RootState) => state.language
             ),
-            projectVersionNote: mapStateProp<ProjectsState, string | null | undefined>(namespace, state => {
-                return state.currentVersion && state.currentVersion?.note;
+            projectVersionNote: mapStateProp<ProjectsState, Project[] | null>(namespace, state => {
+                return state.previousProjects
             }),
             note: {
                 get() {
-                    return this.projectVersionNote ? this.projectVersionNote : ""
+                    return this.projectVersionNote?.filter(project => project.id === this.versionToPromote?.projectId)
+                        .map(p => {
+                            return p.versions.filter(version => version.id === this.versionToPromote?.versionId).map(v => v.note)
+                        }).toString() || ""
                 },
                 set(note: string) {
                     this.versionNote = note
@@ -349,7 +351,6 @@
                 })
                 this.versionToPromote = {projectId, versionId};
                 this.selectedVersionNumber = `v${versionNumber}`;
-                this.updateVersionNote(this.versionNote)
             },
             cancelPromotion() {
                 this.versionToPromote = null;
@@ -373,13 +374,13 @@
                     const versionPayload: versionPayload = {
                         version: this.versionToPromote!,
                         name: this.newProjectName,
+                        note: this.versionNote
                     };
                     this.promoteVersionAction(versionPayload);
                     this.versionToPromote = null;
                     this.newProjectName = "";
                 }
             },
-            updateVersionNote: mapActionByName(namespace, "updateVersionNote"),
             renameProjectAction: mapActionByName<projectPayload>(
                 namespace,
                 "renameProject"

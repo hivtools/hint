@@ -11,7 +11,8 @@ import {CurrentProject, Project, VersionDetails, VersionIds} from "../../types";
 
 export interface versionPayload {
     version: VersionIds,
-    name: string
+    name: string,
+    note: string
 }
 
 export interface projectPayload {
@@ -197,11 +198,12 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         const {state, dispatch} = context;
         const {projectId, versionId} = versionPayload.version
         const name = versionPayload.name
+        const note = versionPayload.note
 
         await api<ProjectsMutations, ErrorsMutation>(context)
             .ignoreSuccess()
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`/project/${projectId}/version/${versionId}/promote`, qs.stringify({name}))
+            .postAndReturn(`/project/${projectId}/version/${versionId}/promote`, qs.stringify({name, note}))
             .then(() => {
                 dispatch("getProjects");
             });
