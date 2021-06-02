@@ -1,0 +1,5 @@
+apply plugin: 'application'
+mainClassName = "org.imperial.mrc.hint.migrate.AppKt"
+dependencies {
+    compile project(":app")
+}
