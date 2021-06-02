@@ -83,7 +83,7 @@
                 return state.currentVersion && state.currentVersion.id;
             }),
             currentVersionNote: mapStateProp<ProjectsState, string | null>("projects", state => {
-                return state.currentVersion?.note;
+                return state.currentVersion?.note || "";
             }),
             ...mapGetters(["isGuest"]),
             errorsCount: mapStateProp<ErrorsState, number>("errors", state => {
