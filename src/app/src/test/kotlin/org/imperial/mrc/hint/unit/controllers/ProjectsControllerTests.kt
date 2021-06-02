@@ -130,6 +130,7 @@ class ProjectsControllerTests
         assertThat(projects[0]["sharedBy"].asText()).isEqualTo("")
         val versions = projects[0]["versions"] as ArrayNode
         assertThat(versions.count()).isEqualTo(1)
+        assertThat(versions[0]["note"].asText()).isEqualTo("version notes")
         assertExpectedVersion(versions[0])
     }
 
