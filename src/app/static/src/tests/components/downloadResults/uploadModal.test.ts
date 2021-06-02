@@ -204,5 +204,32 @@ describe(`uploadModal `, () => {
         expect(okBtn.text()).toBe("OK")
         await okBtn.trigger("click")
         expect(wrapper.emitted("close").length).toBe(1)
-    })
+    });
+
+    it("does not render file section header when no input files", () => {
+        const wrapper = mount(UploadModal, {store: createStore()});
+        expect(wrapper.find("h5").exists()).toBe(false);
+    });
+
+    it("renders file section headers when there are input files", () => {
+        const metadataWithInput = {
+            ...fakeMetadata,
+            population: {
+                index: 3,
+                displayName: "population",
+                resourceType: "inputs-unaids-population",
+                resourceFilename: "naomi-model-outputs-population.zip",
+                resourceId: 123,
+                resourceUrl: null,
+                lastModified: "2021-06-01",
+                resourceName: "TestPopulation"
+            }
+        };
+        const store = createStore(metadataWithInput);
+        const wrapper = mount(UploadModal, {store});
+        const headers = wrapper.findAll("h5");
+        expect(headers.length).toBe(2);
+        expectTranslated(headers.at(0), "Output Files", "Fichiers de sortie", store);
+        expectTranslated(headers.at(1), "Input Files", "Fichiers d'entrée", store);
+    });
 })

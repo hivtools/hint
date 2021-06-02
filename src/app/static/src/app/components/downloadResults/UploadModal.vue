@@ -126,14 +126,18 @@
                 (state) => state.uploadFiles!
             ),
             uploadFileSections() {
-                return  Object.keys(this.uploadFiles).reduce((sections, key) => {
-                    if (outputFileTypes.includes(key)) {
-                        sections[0][key] = this.uploadFiles[key];
-                    } else {
-                        sections[1][key] = this.uploadFiles[key];
-                    }
-                    return sections;
-                }, [{} as any, {} as any]);
+                if (this.uploadFiles) {
+                    return Object.keys(this.uploadFiles).reduce((sections, key) => {
+                        if (outputFileTypes.includes(key)) {
+                            sections[0][key] = this.uploadFiles[key];
+                        } else {
+                            sections[1][key] = this.uploadFiles[key];
+                        }
+                        return sections;
+                    }, [{} as any, {} as any]);
+                } else {
+                    return [];
+                }
             }
         },
         components: {
