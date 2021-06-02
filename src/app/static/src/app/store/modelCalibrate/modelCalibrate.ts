@@ -43,6 +43,25 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
     }
 };
 
+// const outputPlotFilters = (rootState: RootState) => {
+//     let filters = [...rootState.modelCalibrate.chartData!.plottingMetadata.barchart.filters];
+//     const area = filters.find((f: any) => f.id == "area");
+//     if (area && area.use_shape_regions) {
+//         const regions: FilterOption[] = rootState.baseline.shape!.filters!.regions ?
+//             [rootState.baseline.shape!.filters!.regions] : [];
+
+//         //remove old, frozen area filter, add new one with regions from shape
+//         filters = [
+//             {...area, options: regions},
+//             ...filters.filter((f: any) => f.id != "area")
+//         ];
+//     }
+
+//     return [
+//         ...filters
+//     ];
+// };
+
 const namespaced = true;
 
 const existingState = localStorageManager.getState();
