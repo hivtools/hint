@@ -505,7 +505,8 @@ describe("Projects actions", () => {
 
         const versionPayload = {
             version: {projectId: 1, versionId: "testVersion"},
-            name: "newProject"
+            name: "newProject",
+            note: "editable note"
         }
         actions.promoteVersion({commit, state, rootState, dispatch} as any, versionPayload);
 

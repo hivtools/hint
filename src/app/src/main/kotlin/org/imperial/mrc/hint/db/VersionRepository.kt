@@ -29,7 +29,12 @@ interface VersionRepository
     fun setFilesForVersion(versionId: String, files: Map<String, VersionFile?>)
     fun saveVersionState(versionId: String, projectId: Int, userId: String, state: String)
     fun copyVersion(parentVersionId: String, newVersionId: String, projectId: Int, userId: String, note: String? = null)
-    fun promoteVersion(parentVersionId: String, newVersionId: String, newProjectId: Int, userId: String, note: String? = null)
+    fun promoteVersion(
+            parentVersionId: String,
+            newVersionId: String,
+            newProjectId: Int,
+            userId: String,
+            note: String? = null)
     fun cloneVersion(parentVersionId: String, newVersionId: String, newProjectId: Int, note: String? = null)
 
     fun getVersionDetails(versionId: String, projectId: Int, userId: String): VersionDetails
@@ -265,7 +270,12 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
         setFilesForVersion(newVersionId, files)
     }
 
-    override fun promoteVersion(parentVersionId: String, newVersionId: String, newProjectId: Int, userId: String, note: String?)
+    override fun promoteVersion(
+            parentVersionId: String,
+            newVersionId: String,
+            newProjectId: Int,
+            userId: String,
+            note: String?)
     {
         val versionNumber = getNextVersionNumber(newProjectId)
         dsl.insertInto(PROJECT_VERSION)

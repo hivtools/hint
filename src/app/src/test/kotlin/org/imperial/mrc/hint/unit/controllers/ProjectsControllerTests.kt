@@ -369,8 +369,8 @@ class ProjectsControllerTests
         val result = sut.promoteVersion(1, "testVersion", "newProjectName", "test promoted note")
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
-        verify(mockProjectRepo).saveNewProject("testUser", "newProjectName", note = "test promoted note")
-        verify(mockVersionRepo).promoteVersion("testVersion", "testVersion", 0, "testUser")
+        verify(mockProjectRepo).saveNewProject("testUser", "newProjectName")
+        verify(mockVersionRepo).promoteVersion("testVersion", "testVersion", 0, "testUser", "test promoted note")
         verify(mockVersionRepo).getVersion("testVersion")
     }
 
