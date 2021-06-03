@@ -2,6 +2,10 @@
 
 * User can create a new project when enter key event is pressed
 
+# hint 1.36.1
+
+* Correctly scope ADR mutations/actions in upload logic
+
 # hint 1.36.0
 
 * Update Project and Version Repository and controllers to implement notes column
