@@ -11,7 +11,7 @@ import {CurrentProject, Project, VersionDetails, VersionIds} from "../../types";
 
 export interface versionPayload {
     version: VersionIds,
-    name: string,
+    name?: string,
     note: string
 }
 
@@ -33,7 +33,7 @@ export interface ProjectsActions {
     userExists: (store: ActionContext<ProjectsState, RootState>, email: string) => Promise<boolean>
     cloneProject: (store: ActionContext<ProjectsState, RootState>, payload: CloneProjectPayload) => void
     renameProject: (store: ActionContext<ProjectsState, RootState>, projectPayload: projectPayload) => void
-    updateVersionNote: (store: ActionContext<ProjectsState, RootState>, note: string) => void
+    updateVersionNote: (store: ActionContext<ProjectsState, RootState>, versionPayload: versionPayload) => void
 }
 
 export interface CloneProjectPayload {
@@ -119,10 +119,10 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         }
     },
 
-    async updateVersionNote(context, note) {
+    async updateVersionNote(context, versionPayload: versionPayload) {
         const {state, dispatch} = context
-        const projectId = state.currentProject && state.currentProject.id;
-        const versionId = state.currentVersion && state.currentVersion.id;
+        const {projectId, versionId} = versionPayload.version
+        const note = versionPayload.note
 
         await api<ProjectsMutations, ErrorsMutation>(context)
             .ignoreSuccess()

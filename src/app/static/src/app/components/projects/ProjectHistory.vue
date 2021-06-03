@@ -32,8 +32,12 @@
                 <div class="col-md-3 project-cell name-cell">
                     <a href="#"
                     @click="loadVersion($event, p.id, p.versions[0].id)">
-                    {{ p.name }}
+                        {{ p.name }}
                     </a>
+                    <button href="#" class=" btn btn-sm btn-red-icons pl-2" v-tooltip ="getTranslatedValue('editNote')"
+                       @click.prevent="handleEditVersionNote(p.id, p.versions[0].id, p.versions[0].versionNumber)">
+                        <file-text-icon size="20"></file-text-icon>
+                    </button>
                     <small v-if="p.sharedBy" class="text-muted d-flex" >{{getTranslatedValue("sharedBy")}}: {{p.sharedBy}}</small>
                 </div>
                 <div class="col-md-1 project-cell version-count-cell">
@@ -84,7 +88,13 @@
                      :id="`v-${v.id}`"
                      :key="v.id"
                      class="row font-italic bg-light py-2">
-                    <div class="col-md-4 version-cell"></div>
+                    <div class="col-md-1 version-cell"></div>
+                    <div class="col-md-3 version-cell">
+                        <button href="#" class="btn btn-sm btn-red-icons" v-tooltip ="getTranslatedValue('editNote')"
+                                @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
+                            <file-text-icon size="20"></file-text-icon>
+                        </button>
+                    </div>
                     <div class="col-md-1 version-cell version-label-cell">
                         {{ versionLabel(v) }}
                     </div>
@@ -182,6 +192,27 @@
                 </button>
             </template>
         </modal>
+
+        <modal :open="versionNoteToEdit">
+            <h4 v-translate="'editVersionNoteHeader'"></h4>
+            <span v-html="editVersionNoteHeader" id="editVersionNoteHeader"></span>
+            <span v-html="editVersionNoteSubHeader" id="editVersionNoteSubHeader"></span>
+            <textarea class="form-control" placeholder="Notes"
+                      v-model="editedVersionNote"></textarea>
+            <template v-slot:footer>
+                <button type="button"
+                        class="btn btn-red"
+                        :disabled="disableNoteEditing"
+                        @click="confirmNoteEditing()"
+                        v-translate="'ok'">
+                </button>
+                <button type="button"
+                        class="btn btn-white"
+                        @click="cancelNoteEditing"
+                        v-translate="'cancel'">
+                </button>
+            </template>
+        </modal>
     </div>
 </template>
 
@@ -189,7 +220,7 @@
     import i18next from "i18next";
     import {Project, Version, VersionIds} from "../../types";
     import {BCollapse, VBToggle} from "bootstrap-vue";
-    import {ChevronDownIcon, ChevronRightIcon, Trash2Icon, CopyIcon, RefreshCwIcon, EditIcon} from "vue-feather-icons";
+    import {ChevronDownIcon, ChevronRightIcon, Trash2Icon, CopyIcon, RefreshCwIcon, EditIcon, FileTextIcon} from "vue-feather-icons";
     import Modal from "../Modal.vue";
     import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
     import {versionPayload, projectPayload} from "../../store/projects/actions";
@@ -211,6 +242,8 @@
         newProjectName: string;
         selectedVersionNumber: string;
         versionNote: string;
+        versionNoteToEdit: VersionIds | null;
+        editedVersionNote: string;
     }
 
     interface Computed {
@@ -219,12 +252,16 @@
         currentLanguage: Language;
         promoteVersionHeader: string;
         handleVersionNote: string | null;
-        projects: Project[] | null
+        projects: Project[] | null,
+        disableNoteEditing: boolean,
+        editVersionNoteHeader: string,
+        editVersionNoteSubHeader: string
     }
 
     interface Methods {
         format: (date: string) => void;
         loadVersion: (event: Event, projectId: number, versionId: string) => void;
+        handleEditVersionNote: (projectId: number, versionId: string, versionNumber: number) => void;
         loadAction: (version: VersionIds) => void;
         versionCountLabel: (project: Project) => string;
         deleteProject: (event: Event, projectId: number) => void;
@@ -249,7 +286,10 @@
         renameProject: (event: Event, projectId: number) => void;
         cancelRename: () => void;
         confirmRename: (name: string) => void;
+        cancelNoteEditing: () => void;
+        confirmNoteEditing: () => void;
         getTranslatedValue: (key: string) => string;
+        updateVersionNoteAction: (versionPayload: versionPayload) => void
     }
 
     export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
@@ -262,6 +302,8 @@
                 selectedVersionNumber: "",
                 projectToRename: null,
                 renamedProjectName: '',
+                versionNoteToEdit: null,
+                editedVersionNote: "",
                 versionNote: ""
             };
         },
@@ -272,11 +314,20 @@
             disableRename: function () {
                 return !this.renamedProjectName;
             },
+            disableNoteEditing: function () {
+                return !this.editedVersionNote;
+            },
             promoteVersionHeader: function () {
                 return i18next.t("promoteVersionHeader", {
                     version: this.selectedVersionNumber,
                     lng: this.currentLanguage,
                 });
+            },
+            editVersionNoteHeader: function (){
+                return "version 1"
+            },
+            editVersionNoteSubHeader: function (){
+                return "named project"
             },
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
@@ -305,6 +356,16 @@
                 event.preventDefault();
                 this.loadAction({projectId, versionId});
             },
+            handleEditVersionNote(projectId: number, versionId: string, versionNumber: number) {
+                this.projects.filter(project => {
+                    if (project.id === projectId) {
+                        this.editedVersionNote = project.versions
+                            .filter(version => version.versionNumber === versionNumber)
+                            .map(v => v.note).toString()
+                    }
+                })
+                this.versionNoteToEdit = {projectId, versionId}
+            },
             renameProject(event: Event, projectId: number) {
                 event.preventDefault();
                 this.projects.filter(project => {
@@ -327,6 +388,21 @@
                     this.renameProjectAction(projectPayload);
                     this.projectToRename = null;
                     this.renamedProjectName = "";
+                }
+            },
+            cancelNoteEditing() {
+                this.versionNoteToEdit = null;
+                this.editedVersionNote = "";
+            },
+            async confirmNoteEditing() {
+                if (this.versionNoteToEdit) {
+                    const versionPayload: versionPayload = {
+                        version: this.versionNoteToEdit!,
+                        note: this.editedVersionNote
+                    };
+                    this.updateVersionNoteAction(versionPayload);
+                    this.versionNoteToEdit = null;
+                    this.editedVersionNote = "";
                 }
             },
             deleteProject(event: Event, projectId: number) {
@@ -381,6 +457,7 @@
                     this.newProjectName = "";
                 }
             },
+            updateVersionNoteAction: mapActionByName<projectPayload>(namespace, "updateVersionNote"),
             renameProjectAction: mapActionByName<projectPayload>(
                 namespace,
                 "renameProject"
@@ -421,6 +498,7 @@
             ChevronRightIcon,
             CopyIcon,
             Trash2Icon,
+            FileTextIcon,
             RefreshCwIcon,
             EditIcon,
             Modal,
