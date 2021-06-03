@@ -32,7 +32,8 @@ const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState
             },
             projects: {
                 namespaced: true,
-                state: mockProjectsState({currentProject: {id: 1, name: "v1", note: "test note", versions: []}}),
+                state: mockProjectsState({currentProject: {id: 1, name: "v1", note: "test note", versions: []},
+                    currentVersion: {id: "version1", created: "", note: "textarea value", updated: "", versionNumber: 1}}),
                 actions: {
                     newVersion
                 },
@@ -168,7 +169,7 @@ describe("Reset confirmation modal", () => {
             "Remarques: (la raison pour laquelle vous enregistrez en tant que nouvelle version)", store)
     });
 
-    it("can set and get note value", async() => {
+    it("can set and get note value", () => {
 
         const mockContinueEdit = jest.fn();
         const mockNewVersion = jest.fn();
@@ -177,16 +178,31 @@ describe("Reset confirmation modal", () => {
                 continueEditing: mockContinueEdit,
                 cancelEditing: jest.fn()
             },
-            computed: {
-                currentVersionNote() {
-                    return "textarea value"
-                }
-            },
             store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
         });
 
         const textarea = rendered.find("#versionNoteControl").element as HTMLTextAreaElement;
         expect(textarea.value).toBe("textarea value")
+    });
+
+    it("can set note value and invokes newVersion action for logged in user", async () => {
+        const mockContinueEdit = jest.fn();
+        const mockNewVersion = jest.fn();
+        const rendered = mount(ResetConfirmation, {
+            propsData: {
+                continueEditing: mockContinueEdit,
+                cancelEditing: jest.fn()
+            },
+            store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
+        });
+
+        rendered.find("#versionNoteControl").setValue("new value")
+        rendered.findAll("button").at(0).trigger("click");
+
+        expect(mockContinueEdit.mock.calls.length).toBe(0);
+        expect((rendered.vm as any).waitingForVersion).toBe(true);
+        expect(mockNewVersion.mock.calls.length).toBe(1);
+        expect(mockNewVersion.mock.calls[0][1]).toBe("new value");
     });
 
     it("continue button sets waitingForVersion to true and invokes newVersion action for logged in user", () => {
