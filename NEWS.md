@@ -1,3 +1,6 @@
+# hint 1.38.0
+
+* Add note icon(s) and dialogs to project history for project/version
 
 # hint 1.36.0
 
