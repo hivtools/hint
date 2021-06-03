@@ -47,7 +47,26 @@ import { RootState } from "../../root";
 
 const namespace = "modelCalibrate";
 
-export default Vue.extend({
+    interface Methods {
+        formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => string,
+        keysToCamel: (value: any) => any
+    }
+
+    interface Computed {
+        barchartFilters: Filter[],
+        barchartIndicators: BarchartIndicator[],
+        allData: any,
+        shape: any,
+        convertedData: any,
+        chartData: any,
+        filterConfig: any,
+        filtersArray: any,
+        selections: any,
+        indicators: any,
+        filteredIndicators: any
+    }
+
+export default Vue.extend<unknown, Methods, Computed, unknown>({
     name: "CalibrationResults",
     components: {
         BarChartWithFilters,
@@ -142,32 +161,32 @@ export default Vue.extend({
             ).toString();
         },
         keysToCamel(o: any) {
-            const toCamel = (s: any): any => {
-                return s.replace(/([-_][a-z])/gi, ($1: any) => {
-                    return $1.toUpperCase().replace("-", "").replace("_", "");
-                });
-            };
-            const isArray = function (a: any) {
-                return Array.isArray(a);
-            };
-            const isObject = function (o: any) {
-                return (
-                    o === Object(o) && !isArray(o) && typeof o !== "function"
-                );
-            };
-            if (isObject(o)) {
-                const n = {};
+            // const toCamel = (s: string): string => {
+            //     return s.replace(/([-_][a-z])/gi, ($1: string) => {
+            //         return $1.toUpperCase().replace("-", "").replace("_", "");
+            //     });
+            // };
+            // const isArray = function (a: any) {
+            //     return Array.isArray(a);
+            // };
+            // const isObject = function (o: any) {
+            //     return (
+            //         o === Object(o) && !isArray(o) && typeof o !== "function"
+            //     );
+            // };
+            // if (isObject(o)) {
+            //     const n = {};
 
-                Object.keys(o).forEach((k: any) => {
-                    n[toCamel(k)] = this.keysToCamel(o[k]);
-                });
+            //     Object.keys(o).forEach((k: string) => {
+            //         n[toCamel(k)] = this.keysToCamel(o[k]) as any;
+            //     });
 
-                return n;
-            } else if (isArray(o)) {
-                return o.map((i: any) => {
-                    return this.keysToCamel(i);
-                });
-            }
+            //     return n;
+            // } else if (isArray(o)) {
+            //     return o.map((i: any) => {
+            //         return this.keysToCamel(i);
+            //     });
+            // }
 
             return o;
         },
