@@ -24,7 +24,7 @@ describe("Projects actions", () => {
     const mockProject: Project = {
         id: 1,
         name: "testProject",
-        versions: [{id: "version-id", created: "", updated: "", versionNumber: 1}]
+        versions: [{id: "version-id", created: "", updated: "", note: "version note", versionNumber: 1}]
     };
 
     it("updates CloningProject on successful clone", async () => {
@@ -314,12 +314,12 @@ describe("Projects actions", () => {
         mockAxios.onPost(stateUrl)
             .reply(200, mockSuccess("OK"));
 
-        const newVersion = {id: "new-version-id", created: "new time", updated: "new time"};
-        const url = "project/1/version/?parent=version-id";
+        const newVersion = {id: "new-version-id", note: "newVersionNote", created: "new time", updated: "new time"};
+        const url = "project/1/version/?parent=version-id&note=newVersionNote";
         mockAxios.onPost(url)
             .reply(200, mockSuccess(newVersion));
 
-        actions.newVersion({commit, state, rootState} as any);
+        actions.newVersion({commit, state, rootState} as any, "newVersionNote");
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(2);
 
@@ -351,11 +351,11 @@ describe("Projects actions", () => {
         mockAxios.onPost(stateUrl)
             .reply(200, mockSuccess("OK"));
 
-        const url = "project/1/version/?parent=version-id";
+        const url = "project/1/version/?parent=version-id&note=versionNote";
         mockAxios.onPost(url)
             .reply(500, mockFailure("TEST ERROR"));
 
-        actions.newVersion({commit, state, rootState} as any);
+        actions.newVersion({commit, state, rootState} as any, "versionNote");
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(2);
 
@@ -505,7 +505,8 @@ describe("Projects actions", () => {
 
         const versionPayload = {
             version: {projectId: 1, versionId: "testVersion"},
-            name: "newProject"
+            name: "newProject",
+            note: ""
         }
         actions.promoteVersion({commit, state, rootState, dispatch} as any, versionPayload);
 
@@ -528,7 +529,8 @@ describe("Projects actions", () => {
 
         const versionPayload = {
             version: {projectId: 1, versionId: "testVersion"},
-            name: "newProject"
+            name: "newProject",
+            note: "new editable note"
         }
         actions.promoteVersion({commit, dispatch, state, rootState} as any, versionPayload);
         setTimeout(() => {

@@ -80,9 +80,9 @@ class ProjectsController(private val session: Session,
         @RequestParam("name") name: String,
         @RequestParam("note") note: String?): ResponseEntity<String>
     {
-        val newProjectId = projectRepository.saveNewProject(userId(), name, note = note)
+        val newProjectId = projectRepository.saveNewProject(userId(), name)
         val newVersionId = session.generateVersionId()
-        versionRepository.promoteVersion(versionId, newVersionId, newProjectId, userId())
+        versionRepository.promoteVersion(versionId, newVersionId, newProjectId, userId(), note)
 
         val version = versionRepository.getVersion(newVersionId)
         val project = Project(newProjectId, name, listOf(version))

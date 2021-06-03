@@ -1,6 +1,12 @@
-# hint 1.38.0
+
+# hint 1.39.0
 
 * Add note icon(s) and dialogs to project history for project/version
+
+# hint 1.37.0
+
+* Add note field to confirmation dialog when saving new version 
+>>>>>>> mrc-2384
 
 # hint 1.36.0
 

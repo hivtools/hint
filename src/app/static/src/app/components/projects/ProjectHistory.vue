@@ -145,6 +145,10 @@
                    v-translate:placeholder="'projectName'"
                    @keyup.enter="confirmPromotion(newProjectName)"
                    v-model="newProjectName"/>
+            <div id="promoteNote" class="form-group pt-3">
+                <label class="h5" for="promoteNoteControl"><span v-translate="'copyNoteHeader'"></span></label>
+                <textarea class="form-control" id="promoteNoteControl" v-model="handleVersionNote" rows="3"></textarea>
+            </div>
             <template v-slot:footer>
                 <button type="button"
                         class="btn btn-red"
@@ -194,7 +198,7 @@
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
     import {VTooltip} from 'v-tooltip';
-    import {projects} from "../../store/projects/projects";
+    import {projects, ProjectsState} from "../../store/projects/projects";
 
     const namespace = "projects";
 
@@ -206,6 +210,7 @@
         versionToPromote: VersionIds | null;
         newProjectName: string;
         selectedVersionNumber: string;
+        versionNote: string;
     }
 
     interface Computed {
@@ -213,6 +218,8 @@
         disableRename: boolean;
         currentLanguage: Language;
         promoteVersionHeader: string;
+        handleVersionNote: string | null;
+        projects: Project[] | null
     }
 
     interface Methods {
@@ -254,7 +261,8 @@
                 newProjectName: "",
                 selectedVersionNumber: "",
                 projectToRename: null,
-                renamedProjectName: ''
+                renamedProjectName: '',
+                versionNote: ""
             };
         },
         computed: {
@@ -273,7 +281,21 @@
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
-            )
+            ),
+            projects: mapStateProp<ProjectsState, Project[] | null>(namespace, state => {
+                return state.previousProjects!
+            }),
+            handleVersionNote: {
+                get() {
+                    return this.projects.filter(project => project.id === this.versionToPromote?.projectId)
+                        .map(p => {
+                            return p.versions.filter(version => version.id === this.versionToPromote?.versionId)
+                                .map(v => v.note)}).toString() || ""
+                },
+                set(note: string) {
+                    this.versionNote = note
+                }
+            }
         },
         methods: {
             format(date: string) {
@@ -352,6 +374,7 @@
                     const versionPayload: versionPayload = {
                         version: this.versionToPromote!,
                         name: this.newProjectName,
+                        note: this.versionNote
                     };
                     this.promoteVersionAction(versionPayload);
                     this.versionToPromote = null;
