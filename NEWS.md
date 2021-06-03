@@ -1,3 +1,6 @@
+# hint 1.36.1
+
+* Correctly scope ADR mutations/actions in upload logic
 
 # hint 1.36.0
 
