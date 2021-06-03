@@ -181,7 +181,7 @@ describe("Reset confirmation modal", () => {
             store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
         });
 
-        const textarea = rendered.find("#versionNoteControl").element as HTMLTextAreaElement;
+        const textarea = rendered.find("#resetVersionNoteControl").element as HTMLTextAreaElement;
         expect(textarea.value).toBe("textarea value")
     });
 
@@ -196,7 +196,7 @@ describe("Reset confirmation modal", () => {
             store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
         });
 
-        rendered.find("#versionNoteControl").setValue("new value")
+        rendered.find("#resetVersionNoteControl").setValue("new value")
         rendered.findAll("button").at(0).trigger("click");
 
         expect(mockContinueEdit.mock.calls.length).toBe(0);

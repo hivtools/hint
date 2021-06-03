@@ -15,8 +15,8 @@
             <p v-if="!isGuest" v-translate="'savePromptLoggedIn'"></p>
 
             <div id="noteHeader" class="form-group">
-                <label for="versionNoteControl"><span v-translate="'noteHeader'"></span></label>
-                <textarea class="form-control" id="versionNoteControl" v-model="handleVersionNote" rows="3"></textarea>
+                <label for="resetVersionNoteControl"><span v-translate="'noteHeader'"></span></label>
+                <textarea class="form-control" id="resetVersionNoteControl" v-model="handleVersionNote" rows="3"></textarea>
             </div>
 
             <template v-if="!waitingForVersion" v-slot:footer>
@@ -91,7 +91,6 @@
             }),
             handleVersionNote: {
                 get() {
-                    this.versionNote = this.currentVersionNote!
                     return this.currentVersionNote!
                 },
                 set(note: string) {
@@ -105,7 +104,10 @@
                     this.continueEditing();
                 } else {
                     this.waitingForVersion = true;
-                    this.newVersion(this.versionNote);
+                    if(this.currentVersionNote && !this.versionNote) {
+                        this.versionNote = this.currentVersionNote
+                    }
+                    this.newVersion(this.versionNote)
                 }
             },
             newVersion: mapActionByName("projects", "newVersion")
