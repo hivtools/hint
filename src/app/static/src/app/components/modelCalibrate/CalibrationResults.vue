@@ -47,24 +47,27 @@ import { RootState } from "../../root";
 
 const namespace = "modelCalibrate";
 
-    interface Methods {
-        formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => string,
-        keysToCamel: (value: any) => any
-    }
+interface Methods {
+    formatBarchartValue: (
+        value: string | number,
+        indicator: BarchartIndicator
+    ) => string;
+    keysToCamel: (value: any) => any;
+}
 
-    interface Computed {
-        barchartFilters: Filter[],
-        barchartIndicators: BarchartIndicator[],
-        allData: any,
-        shape: any,
-        convertedData: any,
-        chartData: any,
-        filterConfig: any,
-        filtersArray: any,
-        selections: any,
-        indicators: any,
-        filteredIndicators: any
-    }
+interface Computed {
+    barchartFilters: Filter[];
+    barchartIndicators: BarchartIndicator[];
+    allData: any;
+    shape: any;
+    convertedData: any;
+    chartData: any;
+    filterConfig: any;
+    filtersArray: any;
+    selections: any;
+    indicators: any;
+    filteredIndicators: any;
+}
 
 export default Vue.extend<unknown, Methods, Computed, unknown>({
     name: "CalibrationResults",
@@ -105,10 +108,10 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
             let filters = [
                 ...this.convertedData.plottingMetadata.barchart.filters,
             ];
-            filters[0]["id"] = "spectrumRegion";
-            filters[0]["columnId"] = "spectrumRegionCode";
-            filters[1]["columnId"] = "calendarQuarter";
-            filters[3]["columnId"] = "ageGroup";
+            // filters[0]["id"] = "spectrumRegion";
+            // filters[0]["columnId"] = "spectrumRegionCode";
+            // filters[1]["columnId"] = "calendarQuarter";
+            // filters[3]["columnId"] = "ageGroup";
             // return filters
 
             const area = filters.find((f: any) => f.id == "area");
@@ -128,8 +131,8 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
         selections() {
             // return this.convertedData.plottingMetadata.barchart.defaults;
             const data = this.convertedData.plottingMetadata.barchart.defaults;
-            data.disaggregateById = "dataType";
-            data.xAxisId = "spectrumRegionCode";
+            // data.disaggregateById = "dataType";
+            // data.xAxisId = "spectrumRegionCode";
             return data;
             // return this.$store.state.plottingSelections.barchart;
         },
@@ -188,7 +191,111 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
             //     });
             // }
 
-            return o;
+            // return o;
+
+            return {
+                data: [
+                    {
+                        dataType: "spectrum",
+                        spectrumRegionCode: "0",
+                        spectrumRegionName: "Northern",
+                        sex: "male",
+                        ageGroup: "Y000_004",
+                        calendarQuarter: "CY2016Q1",
+                        indicator: "plhiv",
+                        mean: 11050.3017,
+                        lower: null,
+                        upper: null,
+                    },
+                    {
+                        dataType: "unadjusted",
+                        spectrumRegionCode: "0",
+                        spectrumRegionName: "Northern",
+                        sex: "male",
+                        ageGroup: "Y000_004",
+                        calendarQuarter: "CY2016Q1",
+                        indicator: "plhiv",
+                        mean: 28519.5216,
+                        lower: null,
+                        upper: null,
+                    },
+                    {
+                        dataType: "calibrated",
+                        spectrumRegionCode: "0",
+                        spectrumRegionName: "Northern",
+                        sex: "male",
+                        ageGroup: "Y000_004",
+                        calendarQuarter: "CY2016Q1",
+                        indicator: "plhiv",
+                        mean: 12038.9245,
+                        lower: null,
+                        upper: null,
+                    },
+                ],
+                plottingMetadata: {
+                    barchart: {
+                        indicators: [
+                            {
+                                indicator: "plhiv",
+                                valueColumn: "mean",
+                                errorLowColumn: "lower",
+                                errorHighColumn: "upper",
+                                indicatorColumn: "indicator",
+                                indicatorValue: "plhiv",
+                                name: "PLHIV",
+                                scale: 1,
+                                accuracy: null,
+                                format: "0.0%",
+                            },
+                        ],
+                        filters: [
+                            {
+                                id: "spectrumRegion",
+                                columnId: "spectrumRegionCode",
+                                label: "Period",
+                                options: [
+                                    { id: "CY2018Q4", label: "December 2018" },
+                                    { id: "CY2016Q1", label: "March 2016" },
+                                ],
+                            },
+                            {
+                                id: "sex",
+                                columnId: "calendarQuarter",
+                                label: "Sex",
+                                options: [
+                                    { id: "male", label: "Male" },
+                                    { id: "female", label: "Female" },
+                                ],
+                            },
+                            {
+                                id: "age",
+                                columnId: "ageGroup",
+                                label: "Age",
+                                options: [
+                                    { id: "Y000_004", label: "0-4" },
+                                    { id: "Y005_009", label: "5-9" },
+                                    { id: "Y010_014", label: "10-14" },
+                                ],
+                            },
+                        ],
+                        defaults: {
+                            indicatorId: "plhiv",
+                            xAxisId: "spectrumRegionName",
+                            disaggregateById: "dataType",
+                            selectedFilterOptions: {
+                                quarter: [
+                                    { id: "CY2016Q1", label: "March 2016" },
+                                ],
+                                sex: [
+                                    { id: "male", label: "Male" },
+                                    { id: "female", label: "Female" },
+                                ],
+                                age: [{ id: "Y000_004", label: "0-4" }],
+                            },
+                        },
+                    },
+                },
+            };
         },
     },
     mounted() {
