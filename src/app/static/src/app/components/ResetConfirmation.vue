@@ -91,7 +91,8 @@
             }),
             handleVersionNote: {
                 get() {
-                    return this.currentVersionNote || ""
+                    this.versionNote = this.currentVersionNote!
+                    return this.currentVersionNote!
                 },
                 set(note: string) {
                     this.versionNote = note;
