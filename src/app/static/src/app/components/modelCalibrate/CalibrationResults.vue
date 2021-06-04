@@ -108,10 +108,13 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
             let filters = [
                 ...this.convertedData.plottingMetadata.barchart.filters,
             ];
-            // filters[0]["id"] = "spectrumRegion";
-            // filters[0]["columnId"] = "spectrumRegionCode";
-            // filters[1]["columnId"] = "calendarQuarter";
-            // filters[3]["columnId"] = "ageGroup";
+            filters[0] = {
+                ...filters[0],
+                id: "spectrumRegion",
+                column_id: "spectrumRegionCode",
+            };
+            filters[1] = { ...filters[1], column_id: "sex" };
+            filters[2] = { ...filters[2], column_id: "ageGroup" };
             // return filters
 
             const area = filters.find((f: any) => f.id == "area");
@@ -130,12 +133,18 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
         },
         selections() {
             // return this.convertedData.plottingMetadata.barchart.defaults;
-            const data = this.convertedData.plottingMetadata.barchart.defaults;
-            // data.disaggregateById = "dataType";
-            // data.xAxisId = "spectrumRegionCode";
+            const defaults = this.convertedData.plottingMetadata.barchart.defaults;
+            const data = {
+                ...defaults,
+                indicatorId: defaults.indicator_id,
+                xAxisId: defaults.x_axis_id,
+                disaggregateById: defaults.disaggregate_by_id,
+                selectedFilterOptions: defaults.selected_filter_options,
+            };
             return data;
             // return this.$store.state.plottingSelections.barchart;
         },
+
         indicators() {
             return this.convertedData.plottingMetadata.barchart.indicators;
         },
@@ -164,36 +173,36 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
             ).toString();
         },
         keysToCamel(o: any) {
-            // const toCamel = (s: string): string => {
-            //     return s.replace(/([-_][a-z])/gi, ($1: string) => {
-            //         return $1.toUpperCase().replace("-", "").replace("_", "");
-            //     });
-            // };
-            // const isArray = function (a: any) {
-            //     return Array.isArray(a);
-            // };
-            // const isObject = function (o: any) {
-            //     return (
-            //         o === Object(o) && !isArray(o) && typeof o !== "function"
-            //     );
-            // };
-            // if (isObject(o)) {
-            //     const n = {};
+            const toCamel = (s: string): string => {
+                return s.replace(/([-_][a-z])/gi, ($1: string) => {
+                    return $1.toUpperCase().replace("-", "").replace("_", "");
+                });
+            };
+            const isArray = function (a: any) {
+                return Array.isArray(a);
+            };
+            const isObject = function (o: any) {
+                return (
+                    o === Object(o) && !isArray(o) && typeof o !== "function"
+                );
+            };
+            if (isObject(o)) {
+                const n = {};
 
-            //     Object.keys(o).forEach((k: string) => {
-            //         n[toCamel(k)] = this.keysToCamel(o[k]) as any;
-            //     });
+                Object.keys(o).forEach((k: string) => {
+                    n[toCamel(k)] = this.keysToCamel(o[k]) as any;
+                });
 
-            //     return n;
-            // } else if (isArray(o)) {
-            //     return o.map((i: any) => {
-            //         return this.keysToCamel(i);
-            //     });
-            // }
+                return n;
+            } else if (isArray(o)) {
+                return o.map((i: any) => {
+                    return this.keysToCamel(i);
+                });
+            }
 
-            // return o;
+            return o;
 
-            return {
+            const data = {
                 data: [
                     {
                         dataType: "spectrum",
@@ -296,6 +305,7 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
                     },
                 },
             };
+            // return data
         },
     },
     mounted() {
