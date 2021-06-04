@@ -169,7 +169,7 @@ describe("Reset confirmation modal", () => {
             "Remarques: (la raison pour laquelle vous enregistrez en tant que nouvelle version)", store)
     });
 
-    it("can set and get note value", () => {
+    it("can set and get note value", async () => {
 
         const mockContinueEdit = jest.fn();
         const mockNewVersion = jest.fn();
@@ -181,8 +181,9 @@ describe("Reset confirmation modal", () => {
             store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
         });
 
+        await rendered.setProps({open: true});
         const textarea = rendered.find("#resetVersionNoteControl").element as HTMLTextAreaElement;
-        expect(textarea.value).toBe("textarea value")
+        expect(textarea.value).toBe("textarea value");
     });
 
     it("can set note value and invokes newVersion action for logged in user", async () => {
@@ -196,13 +197,13 @@ describe("Reset confirmation modal", () => {
             store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
         });
 
-        rendered.find("#resetVersionNoteControl").setValue("new value")
+        rendered.find("#resetVersionNoteControl").setValue("newValue")
         rendered.findAll("button").at(0).trigger("click");
 
         expect(mockContinueEdit.mock.calls.length).toBe(0);
         expect((rendered.vm as any).waitingForVersion).toBe(true);
         expect(mockNewVersion.mock.calls.length).toBe(1);
-        expect(mockNewVersion.mock.calls[0][1]).toBe("new value");
+        expect(mockNewVersion.mock.calls[0][1]).toBe("newValue");
     });
 
     it("continue button sets waitingForVersion to true and invokes newVersion action for logged in user", () => {

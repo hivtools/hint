@@ -16,7 +16,7 @@
 
             <div id="noteHeader" class="form-group">
                 <label for="resetVersionNoteControl"><span v-translate="'noteHeader'"></span></label>
-                <textarea class="form-control" id="resetVersionNoteControl" v-model="handleVersionNote" rows="3"></textarea>
+                <textarea class="form-control" id="resetVersionNoteControl" v-model="versionNote" rows="3"></textarea>
             </div>
 
             <template v-if="!waitingForVersion" v-slot:footer>
@@ -54,8 +54,7 @@
         changesToRelevantSteps: StepDescription[],
         currentVersionId: string | null,
         errorsCount: number,
-        handleVersionNote: string,
-        currentVersionNote: string | null
+        currentVersionNote: string
     }
 
     interface Props {
@@ -82,21 +81,13 @@
             currentVersionId: mapStateProp<ProjectsState, string | null>("projects", state => {
                 return state.currentVersion && state.currentVersion.id;
             }),
-            currentVersionNote: mapStateProp<ProjectsState, string | null>("projects", state => {
+            currentVersionNote: mapStateProp<ProjectsState, string>("projects", state => {
                 return state.currentVersion?.note || "";
             }),
             ...mapGetters(["isGuest"]),
             errorsCount: mapStateProp<ErrorsState, number>("errors", state => {
                 return state.errors ? state.errors.length : 0;
-            }),
-            handleVersionNote: {
-                get() {
-                    return this.currentVersionNote!
-                },
-                set(note: string) {
-                    this.versionNote = note;
-                }
-            }
+            })
         },
         methods: {
             handleConfirm: function () {
@@ -104,10 +95,7 @@
                     this.continueEditing();
                 } else {
                     this.waitingForVersion = true;
-                    if(this.currentVersionNote && !this.versionNote) {
-                        this.versionNote = this.currentVersionNote
-                    }
-                    this.newVersion(this.versionNote)
+                    this.newVersion(escape(this.versionNote));
                 }
             },
             newVersion: mapActionByName("projects", "newVersion")
@@ -123,6 +111,11 @@
                 if (this.waitingForVersion && (newVal > oldVal)) {
                     this.waitingForVersion = false;
                     this.cancelEditing();
+                }
+            },
+            open: function () {
+                if (this.open) {
+                    this.versionNote = this.currentVersionNote;
                 }
             }
         },
