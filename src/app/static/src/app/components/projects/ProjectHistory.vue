@@ -336,9 +336,9 @@
                     if (project.id === projectId) {
                         this.newProjectName = project.name
 
-                        this.versionNote = unescape(project.versions
+                        this.versionNote = project.versions
                             .filter(version => version.id === versionId)
-                            .map(v => v.note).toString())
+                            .map(v => v.note).toString()
                     }
                 })
                 this.versionToPromote = {projectId, versionId};
@@ -366,7 +366,7 @@
                     const versionPayload: versionPayload = {
                         version: this.versionToPromote!,
                         name: this.newProjectName,
-                        note: escape(this.versionNote)
+                        note: encodeURIComponent(this.versionNote)
                     };
                     this.promoteVersionAction(versionPayload);
                     this.versionToPromote = null;
