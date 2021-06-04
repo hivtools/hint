@@ -11,7 +11,7 @@ import {CurrentProject, Project, VersionDetails, VersionIds} from "../../types";
 
 export interface versionPayload {
     version: VersionIds,
-    name?: string,
+    name: string,
     note?: string
 }
 
