@@ -612,7 +612,7 @@ describe("Project history component", () => {
         expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
             {
                 "name": "newProject",
-                "note": "editable%20note",
+                "note": "editable note",
                 "version": {
                     "projectId": 1,
                     "versionId": "s11",
