@@ -89,7 +89,7 @@
                      :key="v.id"
                      class="row font-italic bg-light py-2">
                     <div class="col-md-1 version-cell"></div>
-                    <div class="col-md-3 version-cell">
+                    <div class="col-md-3 version-cell edit-cell">
                         <button href="#" class="btn btn-sm btn-red-icons" v-tooltip ="getTranslatedValue('editNote')"
                                 @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
                             <file-text-icon size="20"></file-text-icon>
@@ -157,7 +157,7 @@
                    v-model="newProjectName"/>
             <div id="promoteNote" class="form-group pt-3">
                 <label class="h5" for="promoteNoteControl"><span v-translate="'copyNoteHeader'"></span></label>
-                <textarea class="form-control" id="promoteNoteControl" v-model="versionNote" rows="3"></textarea>
+                <textarea class="form-control" id="promoteNoteControl" v-model="versionNote" rows="4"></textarea>
             </div>
             <template v-slot:footer>
                 <button type="button"
@@ -442,7 +442,7 @@
                 }
             },
             async confirmPromotion(name) {
-                if (this.versionToPromote) {
+                if (this.versionToPromote && this.newProjectName) {
                     const versionPayload: versionPayload = {
                         version: this.versionToPromote!,
                         name: this.newProjectName,

@@ -543,6 +543,59 @@ describe("Projects actions", () => {
         });
     });
 
+    it("updateVersionNote action adds/edits a project's note", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = mockProjectsState({
+            currentProject: mockProject,
+            currentVersion: mockProject.versions[0]
+        });
+
+        const stateUrl = "/project/1/version/version-id/note";
+        mockAxios.onPost(stateUrl, "note=edit version + note")
+            .reply(200, mockSuccess("OK"));
+
+        const versionPayload = {
+            version: {projectId: state.currentProject!.id, versionId: state.currentVersion!.id},
+            note: 'edit version note'
+        };
+
+        actions.updateVersionNote({commit, state, rootState, dispatch} as any, versionPayload);
+
+        setTimeout(() => {
+            const posted = mockAxios.history.post[0].data;
+            expect(posted).toEqual("note=edit%20version%20note");
+            expect(dispatch.mock.calls.length).toBe(2);
+            expect(dispatch.mock.calls[0][0]).toBe("getCurrentProject");
+            expect(dispatch.mock.calls[1][0]).toBe("getProjects");
+            done();
+        });
+    });
+
+    it("updateVersionNote action ErrorAdded on failure", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = {};
+
+        mockAxios.onPost("project/1/version/testVersion/note")
+            .reply(500, mockFailure("TEST ERROR"));
+
+        const versionPayload = {
+            version: {projectId: 1, versionId: "testVersion"},
+            name: "newProject",
+            note: "new editable note"
+        }
+        actions.promoteVersion({commit, dispatch, state, rootState} as any, versionPayload);
+        setTimeout(() => {
+            const expectedError = {detail: "TEST ERROR", error: "OTHER_ERROR"};
+            expect(commit.mock.calls[0][0]).toStrictEqual({
+                type: `errors/${ErrorsMutation.ErrorAdded}`,
+                payload: expectedError
+            });
+            done();
+        });
+    });
+
     it("renameProject changes a project's name", async (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
