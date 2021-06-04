@@ -366,7 +366,7 @@
                     const versionPayload: versionPayload = {
                         version: this.versionToPromote!,
                         name: this.newProjectName,
-                        note: encodeURIComponent(this.versionNote)
+                        note: this.versionNote
                     };
                     this.promoteVersionAction(versionPayload);
                     this.versionToPromote = null;
