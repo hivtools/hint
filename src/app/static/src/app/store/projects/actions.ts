@@ -12,7 +12,7 @@ import {CurrentProject, Project, VersionDetails, VersionIds} from "../../types";
 export interface versionPayload {
     version: VersionIds,
     name?: string,
-    note: string
+    note?: string
 }
 
 export interface projectPayload {
@@ -118,7 +118,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             }
         }
     },
-
+    
     async updateVersionNote(context, versionPayload: versionPayload) {
         const {state, dispatch} = context
         const {projectId, versionId} = versionPayload.version

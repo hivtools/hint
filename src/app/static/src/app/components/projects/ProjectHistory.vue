@@ -157,7 +157,7 @@
                    v-model="newProjectName"/>
             <div id="promoteNote" class="form-group pt-3">
                 <label class="h5" for="promoteNoteControl"><span v-translate="'copyNoteHeader'"></span></label>
-                <textarea class="form-control" id="promoteNoteControl" v-model="handleVersionNote" rows="3"></textarea>
+                <textarea class="form-control" id="promoteNoteControl" v-model="versionNote" rows="3"></textarea>
             </div>
             <template v-slot:footer>
                 <button type="button"
@@ -194,15 +194,13 @@
         </modal>
 
         <modal :open="versionNoteToEdit">
-            <h4 v-translate="'editVersionNoteHeader'"></h4>
-            <span v-html="editVersionNoteHeader" id="editVersionNoteHeader"></span>
-            <span v-html="editVersionNoteSubHeader" id="editVersionNoteSubHeader"></span>
+            <h4 v-html="editVersionNoteHeader" id="editVersionNoteHeader"></h4>
+            <div class="pb-3" v-html="editVersionNoteSubHeader" id="editVersionNoteSubHeader"></div>
             <textarea class="form-control" placeholder="Notes"
                       v-model="editedVersionNote"></textarea>
             <template v-slot:footer>
                 <button type="button"
                         class="btn btn-red"
-                        :disabled="disableNoteEditing"
                         @click="confirmNoteEditing()"
                         v-translate="'ok'">
                 </button>
@@ -244,6 +242,7 @@
         versionNote: string;
         versionNoteToEdit: VersionIds | null;
         editedVersionNote: string;
+        displayProjectName: string;
     }
 
     interface Computed {
@@ -251,9 +250,7 @@
         disableRename: boolean;
         currentLanguage: Language;
         promoteVersionHeader: string;
-        handleVersionNote: string | null;
         projects: Project[] | null,
-        disableNoteEditing: boolean,
         editVersionNoteHeader: string,
         editVersionNoteSubHeader: string
     }
@@ -304,7 +301,8 @@
                 renamedProjectName: '',
                 versionNoteToEdit: null,
                 editedVersionNote: "",
-                versionNote: ""
+                versionNote: "",
+                displayProjectName: ""
             };
         },
         computed: {
@@ -314,9 +312,6 @@
             disableRename: function () {
                 return !this.renamedProjectName;
             },
-            disableNoteEditing: function () {
-                return !this.editedVersionNote;
-            },
             promoteVersionHeader: function () {
                 return i18next.t("promoteVersionHeader", {
                     version: this.selectedVersionNumber,
@@ -324,10 +319,16 @@
                 });
             },
             editVersionNoteHeader: function (){
-                return "version 1"
+                return i18next.t("editVersionNoteHeader", {
+                    version: this.selectedVersionNumber,
+                    lng: this.currentLanguage,
+                });
             },
             editVersionNoteSubHeader: function (){
-                return "named project"
+                return i18next.t("editVersionNoteSubHeader", {
+                    projectName: this.displayProjectName,
+                    lng: this.currentLanguage,
+                });
             },
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
@@ -335,18 +336,7 @@
             ),
             projects: mapStateProp<ProjectsState, Project[] | null>(namespace, state => {
                 return state.previousProjects!
-            }),
-            handleVersionNote: {
-                get() {
-                    return this.projects.filter(project => project.id === this.versionToPromote?.projectId)
-                        .map(p => {
-                            return p.versions.filter(version => version.id === this.versionToPromote?.versionId)
-                                .map(v => v.note)}).toString() || ""
-                },
-                set(note: string) {
-                    this.versionNote = note
-                }
-            }
+            })
         },
         methods: {
             format(date: string) {
@@ -359,12 +349,14 @@
             handleEditVersionNote(projectId: number, versionId: string, versionNumber: number) {
                 this.projects.filter(project => {
                     if (project.id === projectId) {
-                        this.editedVersionNote = project.versions
+                        this.displayProjectName = project.name
+                        this.editedVersionNote = unescape(project.versions
                             .filter(version => version.versionNumber === versionNumber)
-                            .map(v => v.note).toString()
+                            .map(v => v.note).toString())
                     }
                 })
                 this.versionNoteToEdit = {projectId, versionId}
+                this.selectedVersionNumber = `v${versionNumber}`;
             },
             renameProject(event: Event, projectId: number) {
                 event.preventDefault();
@@ -398,7 +390,7 @@
                 if (this.versionNoteToEdit) {
                     const versionPayload: versionPayload = {
                         version: this.versionNoteToEdit!,
-                        note: this.editedVersionNote
+                        note: escape(this.editedVersionNote)
                     };
                     this.updateVersionNoteAction(versionPayload);
                     this.versionNoteToEdit = null;
@@ -423,6 +415,10 @@
                 this.projects.filter(project => {
                     if (project.id === projectId) {
                         this.newProjectName = project.name
+
+                        this.versionNote = unescape(project.versions
+                            .filter(version => version.id === versionId)
+                            .map(v => v.note).toString())
                     }
                 })
                 this.versionToPromote = {projectId, versionId};
@@ -450,7 +446,7 @@
                     const versionPayload: versionPayload = {
                         version: this.versionToPromote!,
                         name: this.newProjectName,
-                        note: this.versionNote
+                        note: escape(this.versionNote)
                     };
                     this.promoteVersionAction(versionPayload);
                     this.versionToPromote = null;
@@ -507,7 +503,7 @@
         directives: {
             "b-toggle": VBToggle,
             "tooltip": VTooltip
-        },
+        }
     });
 </script>
 
