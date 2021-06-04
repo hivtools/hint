@@ -15,8 +15,7 @@ export interface ProjectsState {
     versionUploadPending: boolean,
     versionTime: Date | null,
     cloneProjectError: Error | null,
-    cloningProject: boolean,
-    selectedVersion: Version | null
+    cloningProject: boolean
 }
 
 export const initialProjectsState = (): ProjectsState => {
@@ -29,8 +28,7 @@ export const initialProjectsState = (): ProjectsState => {
         versionUploadPending: false,
         versionTime: null,
         cloneProjectError: null,
-        cloningProject: false,
-        selectedVersion: null
+        cloningProject: false
     }
 };
 

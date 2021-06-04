@@ -1,6 +1,6 @@
 import {MutationTree} from "vuex";
 import {ProjectsState} from "./projects";
-import {PayloadWithType, Version, Project, VersionIds, CurrentProject} from "../../types";
+import {PayloadWithType, Version, Project, CurrentProject} from "../../types";
 import {Error} from "../../generated";
 import {router} from "../../router";
 
@@ -14,8 +14,7 @@ export enum ProjectsMutations {
     ClearCurrentVersion = "ClearCurrentVersion",
     CloneProjectError = "CloneProjectError",
     CloningProject = "CloningProject",
-    SetCurrentProject = "SetCurrentProject",
-    SelectedVersion = "SelectedVersion"
+    SetCurrentProject = "SetCurrentProject"
 }
 
 export const mutations: MutationTree<ProjectsState> = {
@@ -68,8 +67,5 @@ export const mutations: MutationTree<ProjectsState> = {
         {
             router.push('/projects');
         }
-    },
-    [ProjectsMutations.SelectedVersion](state: ProjectsState, action: PayloadWithType<Version>) {
-        state.selectedVersion = action.payload;
-    },
+    }
 };
