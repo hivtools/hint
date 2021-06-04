@@ -115,7 +115,7 @@
             },
             open: function () {
                 if (this.open) {
-                    this.versionNote = this.currentVersionNote;
+                    this.versionNote = unescape(this.currentVersionNote);
                 }
             }
         },
