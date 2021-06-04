@@ -6,7 +6,6 @@ import {ADRUploadState} from "./adrUpload";
 import {ADRUploadMutation} from "./mutations";
 import {constructUploadFile} from "../../utils";
 import {Dict, UploadFile} from "../../types";
-import {ADRMutation} from "../adr/mutations";
 
 export interface ADRUploadActions {
     getUploadFiles: (store: ActionContext<ADRUploadState, RootState>) => void;
@@ -20,9 +19,9 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
         const project = rootState.projects.currentProject;
 
         if (selectedDataset && project) {
-            context.commit({type: ADRMutation.SetADRError, payload: null});
+            commit({type: ADRUploadMutation.SetADRUploadError, payload: null});
             await api(context)
-                .withError(ADRMutation.SetADRError)
+                .withError(ADRUploadMutation.SetADRUploadError)
                 .ignoreSuccess()
                 .get(`/adr/datasets/${selectedDataset.id}`)
                 .then((response) => {
@@ -91,7 +90,7 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                 break
             }
         }
-        await dispatch("adr/getAndSetDatasets", selectedDatasetId);
-        dispatch("getUploadFiles");
+        await dispatch("adr/getAndSetDatasets", selectedDatasetId, {root: true});
+        await dispatch("getUploadFiles");
     }
 };
