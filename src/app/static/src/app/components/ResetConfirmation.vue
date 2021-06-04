@@ -95,7 +95,7 @@
                     this.continueEditing();
                 } else {
                     this.waitingForVersion = true;
-                    this.newVersion(escape(this.versionNote));
+                    this.newVersion(encodeURIComponent(this.versionNote));
                 }
             },
             newVersion: mapActionByName("projects", "newVersion")
@@ -115,7 +115,7 @@
             },
             open: function () {
                 if (this.open) {
-                    this.versionNote = unescape(this.currentVersionNote);
+                    this.versionNote = this.currentVersionNote;
                 }
             }
         },
