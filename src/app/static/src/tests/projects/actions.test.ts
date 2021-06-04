@@ -506,16 +506,16 @@ describe("Projects actions", () => {
         const versionPayload = {
             version: {projectId: 1, versionId: "testVersion"},
             name: "newProject",
-            note: ""
+            note: "test"
         }
         actions.promoteVersion({commit, state, rootState, dispatch} as any, versionPayload);
 
         setTimeout(() => {
             const posted = mockAxios.history.post[0].data;
-            expect(posted).toEqual("name=newProject");
+            expect(posted).toEqual("name=newProject&note=test");
 
             expect(dispatch.mock.calls[0][0]).toBe("getProjects");
-            expect(commit.mock.calls.length).toBe(0);
+            expect(commit.mock.calls.length).toBe(1);
             done();
         });
     });

@@ -147,7 +147,7 @@
                    v-model="newProjectName"/>
             <div id="promoteNote" class="form-group pt-3">
                 <label class="h5" for="promoteNoteControl"><span v-translate="'copyNoteHeader'"></span></label>
-                <textarea class="form-control" id="promoteNoteControl" v-model="handleVersionNote" rows="3"></textarea>
+                <textarea class="form-control" id="promoteNoteControl" v-model="versionNote" rows="3"></textarea>
             </div>
             <template v-slot:footer>
                 <button type="button"
@@ -218,7 +218,6 @@
         disableRename: boolean;
         currentLanguage: Language;
         promoteVersionHeader: string;
-        handleVersionNote: string | null;
         projects: Project[] | null
     }
 
@@ -284,18 +283,7 @@
             ),
             projects: mapStateProp<ProjectsState, Project[] | null>(namespace, state => {
                 return state.previousProjects!
-            }),
-            handleVersionNote: {
-                get() {
-                    return this.projects.filter(project => project.id === this.versionToPromote?.projectId)
-                        .map(p => {
-                            return p.versions.filter(version => version.id === this.versionToPromote?.versionId)
-                                .map(v => v.note)}).toString() || ""
-                },
-                set(note: string) {
-                    this.versionNote = note
-                }
-            }
+            })
         },
         methods: {
             format(date: string) {
@@ -347,6 +335,10 @@
                 this.projects.filter(project => {
                     if (project.id === projectId) {
                         this.newProjectName = project.name
+
+                        this.versionNote = unescape(project.versions
+                            .filter(version => version.id === versionId)
+                            .map(v => v.note).toString())
                     }
                 })
                 this.versionToPromote = {projectId, versionId};
@@ -374,7 +366,7 @@
                     const versionPayload: versionPayload = {
                         version: this.versionToPromote!,
                         name: this.newProjectName,
-                        note: this.versionNote
+                        note: escape(this.versionNote)
                     };
                     this.promoteVersionAction(versionPayload);
                     this.versionToPromote = null;
@@ -429,7 +421,7 @@
         directives: {
             "b-toggle": VBToggle,
             "tooltip": VTooltip
-        },
+        }
     });
 </script>
 
