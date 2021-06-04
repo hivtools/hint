@@ -94,6 +94,7 @@ class ADRTests : SecureIntegrationTests()
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
+    @Disabled("mrc-2439")
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can save population from ADR`(isAuthorized: IsAuthorized)
@@ -114,6 +115,7 @@ class ADRTests : SecureIntegrationTests()
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
+    @Disabled("mrc-2439")
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can save survey from ADR`(isAuthorized: IsAuthorized)
@@ -126,6 +128,7 @@ class ADRTests : SecureIntegrationTests()
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
+    @Disabled("mrc-2439")
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can save ANC from ADR`(isAuthorized: IsAuthorized)
@@ -138,6 +141,7 @@ class ADRTests : SecureIntegrationTests()
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
+    @Disabled("mrc-2439")
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can save programme from ADR`(isAuthorized: IsAuthorized)

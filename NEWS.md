@@ -1,6 +1,14 @@
-# hint 1.36.0
+# hint 1.37.0
 
 * Support uploading edited input files, behind feature switch for now
+
+# hint 1.36.1
+
+* Correctly scope ADR mutations/actions in upload logic
+
+# hint 1.36.0
+
+* Update Project and Version Repository and controllers to implement notes column
 
 # hint 1.35.0
 
