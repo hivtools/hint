@@ -443,7 +443,7 @@ describe("Project history component", () => {
         expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
             {
                 "name": "newProject",
-                "note": "pre-populated%20notes",
+                "note": "pre-populated notes",
                 "version": {
                     "projectId": 1,
                     "versionId": "s11",
@@ -468,7 +468,7 @@ describe("Project history component", () => {
         expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
             {
                 "name": "newProject",
-                "note": "pre-populated%20notes",
+                "note": "pre-populated notes",
                 "version": {
                     "projectId": 1,
                     "versionId": "s11"
@@ -495,7 +495,7 @@ describe("Project history component", () => {
         expect(mockUpdateVersion.mock.calls.length).toBe(1);
         expect(mockUpdateVersion.mock.calls[0][1]).toStrictEqual(
             {
-                "note": "new%20notes",
+                "note": "new notes",
                 "version": {
                     "projectId": 1,
                     "versionId": "s11"
@@ -693,7 +693,7 @@ describe("Project history component", () => {
         expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
             {
                 "name": "newProject",
-                "note": "editable%20note",
+                "note": "editable note",
                 "version": {
                     "projectId": 1,
                     "versionId": "s11",

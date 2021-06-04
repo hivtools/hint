@@ -572,30 +572,6 @@ describe("Projects actions", () => {
         });
     });
 
-    it("updateVersionNote action ErrorAdded on failure", async (done) => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
-        const state = {};
-
-        mockAxios.onPost("project/1/version/testVersion/note")
-            .reply(500, mockFailure("TEST ERROR"));
-
-        const versionPayload = {
-            version: {projectId: 1, versionId: "testVersion"},
-            name: "newProject",
-            note: "new editable note"
-        }
-        actions.promoteVersion({commit, dispatch, state, rootState} as any, versionPayload);
-        setTimeout(() => {
-            const expectedError = {detail: "TEST ERROR", error: "OTHER_ERROR"};
-            expect(commit.mock.calls[0][0]).toStrictEqual({
-                type: `errors/${ErrorsMutation.ErrorAdded}`,
-                payload: expectedError
-            });
-            done();
-        });
-    });
-
     it("renameProject changes a project's name", async (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();

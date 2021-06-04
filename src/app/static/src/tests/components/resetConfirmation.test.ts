@@ -197,13 +197,13 @@ describe("Reset confirmation modal", () => {
             store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
         });
 
-        rendered.find("#resetVersionNoteControl").setValue("newValue")
+        rendered.find("#resetVersionNoteControl").setValue("new Value")
         rendered.findAll("button").at(0).trigger("click");
 
         expect(mockContinueEdit.mock.calls.length).toBe(0);
         expect((rendered.vm as any).waitingForVersion).toBe(true);
         expect(mockNewVersion.mock.calls.length).toBe(1);
-        expect(mockNewVersion.mock.calls[0][1]).toBe("newValue");
+        expect(mockNewVersion.mock.calls[0][1]).toBe("new%20Value");
     });
 
     it("continue button sets waitingForVersion to true and invokes newVersion action for logged in user", () => {
