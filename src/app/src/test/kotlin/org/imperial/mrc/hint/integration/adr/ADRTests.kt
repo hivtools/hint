@@ -191,7 +191,7 @@ class ADRTests : SecureIntegrationTests()
         if (isAuthorized == IsAuthorized.TRUE) {
             val modelCalibrationId = waitForModelRunResult()
             testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
-            val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrOutputZipSchema}/$modelCalibrationId?resourceFileName=output.zip&description=test"
+            val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrOutputSummarySchema}/$modelCalibrationId?resourceFileName=output.html&description=test"
             val createResult = testRestTemplate.postForEntity<String>(url)
             assertSuccess(createResult)
             val resourceId = ObjectMapper().readTree(createResult.body!!)["data"]["id"].textValue()
@@ -233,7 +233,8 @@ class ADRTests : SecureIntegrationTests()
             testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
             val resultWithResources = testRestTemplate.getForEntity<String>("/adr/datasets?showInaccessible=false")
             val data = ObjectMapper().readTree(resultWithResources.body!!)["data"]
-            val resource = data[0]["resources"].find { it["resource_type"].textValue() == type }
+            val dataset = data.find { it["name"].textValue() == "antarctica-inputs-unaids-estimates-2021" }
+            val resource = dataset!!["resources"].find { it["resource_type"].textValue() == type }
             resource!!["url"].textValue()
         }
         else
