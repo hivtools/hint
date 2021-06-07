@@ -75,14 +75,16 @@ export interface Version {
     id: string,
     created: string,
     updated: string,
-    versionNumber: number
+    versionNumber: number,
+    note?: string
 }
 
 export interface Project {
     id: number,
     name: string,
     versions: Version[],
-    sharedBy?: string
+    sharedBy?: string,
+    note?: string
 }
 
 export interface CurrentProject {

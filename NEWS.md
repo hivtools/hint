@@ -1,6 +1,10 @@
-# hint 1.37.0
+# hint 1.38.0
 
 * Support uploading edited input files, behind feature switch for now
+
+# hint 1.37.0
+
+* Add note field to confirmation dialog when saving new version 
 
 # hint 1.36.1
 
