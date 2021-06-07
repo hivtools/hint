@@ -108,7 +108,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             const data = freezer.deepFreeze(response.data);
             console.log("Calibrate plot returned:", data)
             commit(ModelCalibrateMutation.CalibrationPlotGenerated);
-            commit(ModelCalibrateMutation.SetPlotData, response);
+            commit(ModelCalibrateMutation.SetPlotData, data);
         }
     }
 };

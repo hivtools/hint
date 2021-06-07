@@ -57,6 +57,15 @@ export interface ScaleSettings {
     customMax: number
 }
 
+export const initialCalibratePlotSelections = (): BarchartSelections => {
+    return {
+        indicatorId: "",
+        xAxisId: "",
+        disaggregateById: "",
+        selectedFilterOptions: {}
+    }
+};
+
 export const initialBarchartSelections = (): BarchartSelections => {
     return {
         indicatorId: "",

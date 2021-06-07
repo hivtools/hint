@@ -15,11 +15,11 @@
             :formatFunction="formatBarchartValue"
             @update="updateBarchartSelections({ payload: $event })"
         ></bar-chart-with-filters> -->
-        <p v-if="convertedData.data">This should render</p>
+        <!-- <p v-if="convertedData.data">This should render</p>
         <div>Filter config: {{JSON.stringify(filterConfig)}}</div>
         <div>Indicators: {{JSON.stringify(indicators)}}</div>
         <div>Selections: {{JSON.stringify(selections)}}</div>
-        <div>Data: {{JSON.stringify(chartData)}}</div>
+        <div>Data: {{JSON.stringify(chartData)}}</div> -->
         <bar-chart-with-filters
             :chart-data="chartData"
             :filter-config="filterConfig"
@@ -31,6 +31,8 @@
 
 <script lang="ts">
 import Vue from "vue";
+import i18next from "i18next";
+import {Language, Translations} from "../../store/translations/locales";
 import { BarchartIndicator, Filter } from "@reside-ic/vue-charts/src/bar/types";
 import {
     BarChartWithFilters,
@@ -50,24 +52,28 @@ import { RootState } from "../../root";
 
 const namespace = "modelCalibrate";
 
-    interface Methods {
-        formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => string,
-        keysToCamel: (value: any) => any
-    }
+interface Methods {
+    formatBarchartValue: (
+        value: string | number,
+        indicator: BarchartIndicator
+    ) => string;
+    // keysToCamel: (value: any) => any
+}
 
-    interface Computed {
-        barchartFilters: Filter[],
-        barchartIndicators: BarchartIndicator[],
-        allData: any,
-        shape: any,
-        convertedData: any,
-        chartData: any,
-        filterConfig: any,
-        filtersArray: any,
-        selections: any,
-        indicators: any,
-        filteredIndicators: any
-    }
+interface Computed {
+    barchartFilters: Filter[];
+    barchartIndicators: BarchartIndicator[];
+    allData: any;
+    shape: any;
+    // convertedData: any,
+    chartData: any;
+    filterConfig: any;
+    filters: any;
+    selections: any;
+    indicators: any;
+    filteredIndicators: any;
+    currentLanguage: Language;
+}
 
 export default Vue.extend<unknown, Methods, Computed, unknown>({
     name: "CalibrationResults",
@@ -75,87 +81,92 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
         BarChartWithFilters,
     },
     computed: {
-        ...mapGettersByNames("modelOutput", [
-            "barchartFilters",
-            "barchartIndicators",
-        ]),
+        ...mapGettersByNames(namespace, ["indicators", "filters"]),
         allData: mapStateProp<ModelCalibrateState, any>(namespace, (state) => {
             // console.log("chart data1", state.chartData);
-            if (state.chartData) {
-                return state.chartData.data ? state.chartData.data : [];
-            } else return [];
+            // if (state.calibratePlotResult) {
+            return state.calibratePlotResult ? state.calibratePlotResult : [];
+            // } else return [];
         }),
         shape: mapStateProp<RootState, any>("root", (state) => {
             return state.baseline.shape;
         }),
-        convertedData() {
-            return this.allData.data ? this.keysToCamel(this.allData) : [];
-        },
-        chartData() {
-            return this.convertedData.data;
-        },
+        // convertedData() {
+        //     return this.allData.data ? this.keysToCamel(this.allData) : [];
+        // },
+        chartData: mapStateProp<ModelCalibrateState, any>(
+            namespace,
+            (state) => {
+                return state.calibratePlotResult
+                    ? state.calibratePlotResult.data
+                    : [];
+            }
+        ),
         filterConfig() {
             return {
-                filterLabel: "filters",
-                indicatorLabel: "indicator",
-                xAxisLabel: "xaxis",
-                disaggLabel: "disagg",
+                filterLabel: i18next.t("filters", this.currentLanguage),
+                indicatorLabel: i18next.t("indicator", this.currentLanguage),
+                xAxisLabel: i18next.t("xAxis", this.currentLanguage),
+                disaggLabel: i18next.t("disaggBy", this.currentLanguage),
                 // filters: this.convertedData.plottingMetadata.barchart.filters,
-                filters: this.filtersArray,
+                filters: this.filters,
             };
         },
-        filtersArray() {
-            let filters = [
-                ...this.convertedData.plottingMetadata.barchart.filters,
-            ];
+        // filtersArray() {
+        //     let filters = [
+        //         ...this.allData.plottingMetadata.barchart.filters,
+        //     ];
 
-            filters.push({
-                id: "dataType", //could be snake case like the column_id, but just distinguishing here
-                label: "Data Type",
-                column_id: "data_type",
-                options: [
-                    {id: "spectrum", label: "spectrum"},
-                    {id: "unadjusted", label: "unadjusted"},
-                    {id: "calibrated", label: "calibrated"}
-                    ]
-            });
+        //     filters.push({
+        //         id: "dataType", //could be snake case like the column_id, but just distinguishing here
+        //         label: "Data Type",
+        //         column_id: "data_type",
+        //         options: [
+        //             {id: "spectrum", label: "spectrum"},
+        //             {id: "unadjusted", label: "unadjusted"},
+        //             {id: "calibrated", label: "calibrated"}
+        //             ]
+        //     });
 
-            filters.push({
-                id: "spectrumRegionName",
-                label: "Spectrum Region Name",
-                column_id: "spectrum_region_name",
-                options: [{id: "Northern", label: "Northern"}, {id: "Southern", label: "Southern"}]
-            });
+        //     filters.push({
+        //         id: "spectrumRegionName",
+        //         label: "Spectrum Region Name",
+        //         column_id: "spectrum_region_name",
+        //         options: [{id: "Northern", label: "Northern"}, {id: "Southern", label: "Southern"}]
+        //     });
 
-            return [...filters];
-        },
+        //     return [...filters];
+        // },
         selections() {
             // return this.convertedData.plottingMetadata.barchart.defaults;
-            const defaults = this.convertedData.plottingMetadata.barchart.defaults;
+            const defaults = this.allData.plottingMetadata.barchart.defaults;
             const data = {
-                ...this.convertedData.plottingMetadata.barchart.defaults,
+                ...this.allData.plottingMetadata.barchart.defaults,
                 indicatorId: defaults.indicator_id,
-                xAxisId: "spectrumRegionName",//defaults.x_axis_id,
-                disaggregateById: "dataType" //defaults.disaggregate_by_id
+                xAxisId: "spectrumRegionName", //defaults.x_axis_id,
+                disaggregateById: "dataType", //defaults.disaggregate_by_id
             };
 
-            data.selectedFilterOptions = {...defaults.selected_filter_options};
-            data.selectedFilterOptions["sex"] = [{id:"male", label:"Male"}];
+            data.selectedFilterOptions = {
+                ...defaults.selected_filter_options,
+            };
+            data.selectedFilterOptions["sex"] = [{ id: "male", label: "Male" }];
             data.selectedFilterOptions["dataType"] = [
-                {id: "spectrum", label: "spectrum"},
-                {id: "unadjusted", label: "unadjusted"},
-                {id: "calibrated", label: "calibrated"}
-             ];
-            data.selectedFilterOptions["spectrumRegionName"] =  [
-                {id: "Northern", label: "Northern"}, {id: "Southern", label: "Southern"}
+                { id: "spectrum", label: "spectrum" },
+                { id: "unadjusted", label: "unadjusted" },
+                { id: "calibrated", label: "calibrated" },
+            ];
+            data.selectedFilterOptions["spectrumRegionName"] = [
+                { id: "Northern", label: "Northern" },
+                { id: "Southern", label: "Southern" },
             ];
 
             return data;
             // return this.$store.state.plottingSelections.barchart;
         },
-        indicators() {
-            return this.convertedData.plottingMetadata.barchart.indicators;
-        },
+        // indicators() {
+        //     return this.allData.plottingMetadata.barchart.indicators;
+        // },
         filteredIndicators() {
             // if (this.indicators) {
             return this.indicators.filter(
@@ -164,6 +175,8 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
             );
             // } else return this.indicators;
         },
+        currentLanguage: mapStateProp<RootState, Language>(null,
+                (state: RootState) => state.language),
     },
     methods: {
         ...mapMutationsByNames("plottingSelections", [
@@ -180,48 +193,48 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
                 indicator.accuracy
             ).toString();
         },
-        keysToCamel(o: any) {
-            // const toCamel = (s: string): string => {
-            //     return s.replace(/([-_][a-z])/gi, ($1: string) => {
-            //         return $1.toUpperCase().replace("-", "").replace("_", "");
-            //     });
-            // };
-            // const isArray = function (a: any) {
-            //     return Array.isArray(a);
-            // };
-            // const isObject = function (o: any) {
-            //     return (
-            //         o === Object(o) && !isArray(o) && typeof o !== "function"
-            //     );
-            // };
-            // if (isObject(o)) {
-            //     const n = {};
+        // keysToCamel(o: any) {
+        //     // const toCamel = (s: string): string => {
+        //     //     return s.replace(/([-_][a-z])/gi, ($1: string) => {
+        //     //         return $1.toUpperCase().replace("-", "").replace("_", "");
+        //     //     });
+        //     // };
+        //     // const isArray = function (a: any) {
+        //     //     return Array.isArray(a);
+        //     // };
+        //     // const isObject = function (o: any) {
+        //     //     return (
+        //     //         o === Object(o) && !isArray(o) && typeof o !== "function"
+        //     //     );
+        //     // };
+        //     // if (isObject(o)) {
+        //     //     const n = {};
 
-            //     Object.keys(o).forEach((k: string) => {
-            //         n[toCamel(k)] = this.keysToCamel(o[k]) as any;
-            //     });
+        //     //     Object.keys(o).forEach((k: string) => {
+        //     //         n[toCamel(k)] = this.keysToCamel(o[k]) as any;
+        //     //     });
 
-            //     return n;
-            // } else if (isArray(o)) {
-            //     return o.map((i: any) => {
-            //         return this.keysToCamel(i);
-            //     });
-            // }
+        //     //     return n;
+        //     // } else if (isArray(o)) {
+        //     //     return o.map((i: any) => {
+        //     //         return this.keysToCamel(i);
+        //     //     });
+        //     // }
 
-            return o;
-        },
+        //     return o;
+        // },
     },
     mounted() {
         // console.log("to camel", this.keysToCamel({ test_one: "test", test_two_three: [{test_four: "test"}] }));
         console.log("alldata", this.allData);
-        console.log("convertedData", this.convertedData);
+        // console.log("convertedData", this.convertedData);
         // console.log("chart should appear", this.convertedData.data ? true : false);
         console.log("chartData", this.chartData);
         console.log("indicators", this.indicators);
         console.log("filtered indicators", this.filteredIndicators);
         console.log("filterConfig", this.filterConfig);
         console.log("selections", this.selections);
-        console.log("filtersArray", this.filtersArray);
+        console.log("filters", this.filters);
         // console.log("plotting metadata", JSON.stringify(this.convertedData.plottingMetadata));
     },
 });

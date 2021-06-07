@@ -21,6 +21,9 @@ export interface PlottingSelectionsMutations {
 }
 
 export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectionsMutations = {
+    updateCalibratePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
+        state.barchart = {...state.barchart, ...action.payload};
+    },
     updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
         state.barchart = {...state.barchart, ...action.payload};
     },

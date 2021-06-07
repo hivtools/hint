@@ -5,6 +5,7 @@ import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
 import {actions} from "./actions";
 import {VersionInfo, Error, CalibrateStatusResponse} from "../../generated";
+import {BarchartIndicator, Filter} from "../../types";
 
 export interface ModelCalibrateState extends ReadyState {
     optionsFormMeta: DynamicFormMeta
@@ -18,7 +19,7 @@ export interface ModelCalibrateState extends ReadyState {
     generatingCalibrationPlot: boolean
     // fetchingCalibrationPlot: boolean
     calibrationPlotGenerated: boolean
-    chartData: any,
+    calibratePlotResult: any,
     version: VersionInfo
     error: Error | null
 }
@@ -37,30 +38,46 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
         generatingCalibrationPlot: false,
         // fetchingCalibrationPlot: false,
         calibrationPlotGenerated: false,
-        chartData: null,
+        calibratePlotResult: null,
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
         error: null
     }
 };
 
-// const outputPlotFilters = (rootState: RootState) => {
-//     let filters = [...rootState.modelCalibrate.chartData!.plottingMetadata.barchart.filters];
-//     const area = filters.find((f: any) => f.id == "area");
-//     if (area && area.use_shape_regions) {
-//         const regions: FilterOption[] = rootState.baseline.shape!.filters!.regions ?
-//             [rootState.baseline.shape!.filters!.regions] : [];
+export const modelCalibrateGetters = {
+    indicators: (state: ModelCalibrateState, getters: any, rootState: RootState): BarchartIndicator[] => {
+        return rootState.modelCalibrate.calibratePlotResult!.plottingMetadata.barchart.indicators;
+    },
+    filters: (state: ModelCalibrateState, getters: any, rootState: RootState): Filter[] => {
+        return calibratePlotFilters(rootState);
+    }
+};
 
-//         //remove old, frozen area filter, add new one with regions from shape
-//         filters = [
-//             {...area, options: regions},
-//             ...filters.filter((f: any) => f.id != "area")
-//         ];
-//     }
+const calibratePlotFilters = (rootState: RootState) => {
+    let filters = [
+        ...rootState.modelCalibrate.calibratePlotResult!.plottingMetadata.barchart.filters,
+    ];
 
-//     return [
-//         ...filters
-//     ];
-// };
+    filters.push({
+        id: "dataType", //could be snake case like the column_id, but just distinguishing here
+        label: "Data Type",
+        column_id: "data_type",
+        options: [
+            {id: "spectrum", label: "spectrum"},
+            {id: "unadjusted", label: "unadjusted"},
+            {id: "calibrated", label: "calibrated"}
+            ]
+    });
+
+    filters.push({
+        id: "spectrumRegionName",
+        label: "Spectrum Region Name",
+        column_id: "spectrum_region_name",
+        options: [{id: "Northern", label: "Northern"}, {id: "Southern", label: "Southern"}]
+    });
+
+    return [...filters];
+}
 
 const namespaced = true;
 
@@ -69,6 +86,7 @@ const existingState = localStorageManager.getState();
 export const modelCalibrate: Module<ModelCalibrateState, RootState> = {
     namespaced,
     state: {...initialModelCalibrateState(), ...existingState && existingState.modelCalibrate, ready: false},
+    getters: modelCalibrateGetters,
     mutations,
     actions
 };
