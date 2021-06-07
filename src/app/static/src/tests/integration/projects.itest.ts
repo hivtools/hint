@@ -225,6 +225,7 @@ describe("Projects actions", () => {
         state.currentVersion = createdProject.versions[0];
         const projectPayload = {
             projectId: state.currentProject!.id,
+            note: "rename project test",
             name: 'renamedProject'
         };
 
