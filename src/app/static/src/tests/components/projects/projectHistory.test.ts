@@ -54,8 +54,8 @@ describe("Project history component", () => {
 
     const testProjects = [
         {
-            id: 1, name: "proj1", sharedBy : "shared@email.com", versions: [
-                {id: "s11", created: isoDates[0], updated: isoDates[1], versionNumber: 1, note: "pre-populated notes"},
+            id: 1, name: "proj1", sharedBy : "shared@email.com", note: "project notes", versions: [
+                {id: "s11", created: isoDates[0], updated: isoDates[1], versionNumber: 1, note: "version notes"},
                 {id: "s12", created: isoDates[1], updated: isoDates[2], versionNumber: 2}]
         },
         {
@@ -345,6 +345,9 @@ describe("Project history component", () => {
         expectTranslated(modal.find(".modal-body h4"), "Please enter a new name for the project",
             "Veuillez entrer un nouveau nom pour le projet", store);
 
+        expectTranslated(modal.find(".modal-body label"), "Notes: (your reason for renaming the project)",
+            "Remarques : (la raison pour laquelle vous avez renommé le projet)", store);
+
         const input = modal.find("input")
         expectTranslated(input, "Project name", "Nom du projet", store, "placeholder");
         const buttons = modal.find(".modal-footer").findAll("button");
@@ -443,7 +446,7 @@ describe("Project history component", () => {
         expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
             {
                 "name": "newProject",
-                "note": "pre-populated notes",
+                "note": "version notes",
                 "version": {
                     "projectId": 1,
                     "versionId": "s11",
@@ -468,7 +471,7 @@ describe("Project history component", () => {
         expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
             {
                 "name": "newProject",
-                "note": "pre-populated notes",
+                "note": "version notes",
                 "version": {
                     "projectId": 1,
                     "versionId": "s11"
@@ -511,7 +514,7 @@ describe("Project history component", () => {
 
         const modal = wrapper.findAll(".modal").at(3);
         const noteText = modal.find("textarea").element as HTMLTextAreaElement
-        expect(noteText.value).toBe("pre-populated notes")
+        expect(noteText.value).toBe("version notes")
     });
 
     it("cancels versionNote modal when cancel button is triggered", async () => {
@@ -579,8 +582,10 @@ describe("Project history component", () => {
 
         const modal = wrapper.findAll(".modal").at(2);
         const input = modal.find("input");
+        const textarea = modal.find("textarea");
         const renameBtn = modal.find(".modal-footer").findAll("button").at(0);
         input.setValue("renamedProject");
+        textarea.setValue("renamed for no reason")
         expect(renameBtn.attributes("disabled")).toBe(undefined);
         expect(vm.projectToRename).toBe(1);
         expect(vm.renamedProjectName).toBe("renamedProject");
@@ -592,6 +597,7 @@ describe("Project history component", () => {
         expect(mockRenameProject.mock.calls[0][1]).toStrictEqual(
             {
                 "name": "renamedProject",
+                "note": "renamed for no reason",
                 "projectId": 1
             });
         expect(vm.projectToRename).toBe(null);
@@ -634,6 +640,7 @@ describe("Project history component", () => {
             expect(mockRenameProject.mock.calls[0][1]).toStrictEqual(
                 {
                     "name": "renamedProject",
+                    "note": "project notes",
                     "projectId": 1
                 });
             expect(vm.projectToRename).toBe(null);
