@@ -17,10 +17,10 @@
                                    type="checkbox"
                                    :value="key"
                                    v-model="uploadFilesToAdr"
-                                   :id="`id-${index}`">
+                                   :id="`id-${sectionIndex}-${index}`">
 
                             <label class="form-check-label"
-                                   :for="`id-${index}`"
+                                   :for="`id-${sectionIndex}-${index}`"
                                    v-translate="uploadFile.displayName"></label>
                             <small v-if="uploadFile.resourceId" class="text-danger row">
                             <span class="col-auto">
@@ -67,9 +67,7 @@
     interface Computed {
         dataset: string
         uploadFiles: Dict<UploadFile>,
-        uploadFileSections: Array<Dict<UploadFile>>,
-        outputUploadFiles: Dict<UploadFile>,
-        inputUploadFiles: Dict<UploadFile>
+        uploadFileSections: Array<Dict<UploadFile>>
     }
 
     interface Data {
