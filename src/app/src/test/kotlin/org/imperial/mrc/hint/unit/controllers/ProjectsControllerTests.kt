@@ -389,19 +389,6 @@ class ProjectsControllerTests
     }
 
     @Test
-    fun `can rename project without notes`()
-    {
-        val mockRepo = mock<ProjectRepository>() {
-            on { getProjectFromVersionId("testVersion", "testUser") } doReturn Project(123, "project", listOf())
-        }
-        val sut = ProjectsController(mockSession, mock(), mockRepo, mock())
-        val result = sut.renameProject(1, "renamedProject", null)
-
-        verify(mockRepo).renameProject(1, "testUser", "renamedProject", null)
-        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
-    }
-
-    @Test
     fun `can save project note`()
     {
         val mockRepo = mock<ProjectRepository>() {
