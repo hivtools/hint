@@ -74,7 +74,7 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
             throw UserException("invalidEmail")
         }
 
-        val caseInsensitiveEmail = Regex("(?i)${email}")
+        val caseInsensitiveEmail = Regex(email)
 
         val username = userRepository.getAllUserNames()
                 .find { caseInsensitiveEmail.matches(it) }
