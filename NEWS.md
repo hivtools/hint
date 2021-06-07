@@ -1,3 +1,8 @@
+
+# hint 1.37.0
+
+* Add note field to confirmation dialog when saving new version 
+
 # hint 1.36.1
 
 * Correctly scope ADR mutations/actions in upload logic
