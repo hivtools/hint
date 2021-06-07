@@ -514,8 +514,8 @@ describe("Projects actions", () => {
             const posted = mockAxios.history.post[0].data;
             expect(posted).toEqual("name=newProject&note=test");
 
-            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
             expect(commit.mock.calls.length).toBe(1);
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
             done();
         });
     });
