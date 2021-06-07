@@ -17,7 +17,8 @@ export interface versionPayload {
 
 export interface projectPayload {
     projectId: number,
-    name: string
+    name: string,
+    note?: string
 }
 
 export interface ProjectsActions {
@@ -211,12 +212,12 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 
     async renameProject(context, projectPayload: projectPayload) {
         const {state, dispatch} = context;
-        const {projectId, name} = projectPayload
+        const {projectId, name, note} = projectPayload
 
         await api<ProjectsMutations, ErrorsMutation>(context)
             .ignoreSuccess()
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
-            .postAndReturn(`/project/${projectId}/rename`, qs.stringify({name}))
+            .postAndReturn(`/project/${projectId}/rename`, qs.stringify({name: name, note: note}))
             .then(() => {
                 if (state.currentProject && state.currentProject.id === projectId) {
                     dispatch("getCurrentProject")
