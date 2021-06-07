@@ -1,3 +1,6 @@
+# hint 1.38.0
+
+* Add note text area for copy dialog in project history
 
 # hint 1.37.0
 
