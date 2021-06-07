@@ -1,6 +1,10 @@
-# hint 1.38.0
+# hint 1.39.0
 
 * Add note icon(s) and dialogs to project history for project/version
+
+# hint 1.38.0
+
+* Add note text area for copy dialog in project history
 
 # hint 1.37.0
 

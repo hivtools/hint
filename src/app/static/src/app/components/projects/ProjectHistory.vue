@@ -335,7 +335,7 @@
                 (state: RootState) => state.language
             ),
             projects: mapStateProp<ProjectsState, Project[] | null>(namespace, state => {
-                return state.previousProjects!
+                return state.previousProjects
             })
         },
         methods: {
@@ -351,8 +351,7 @@
                     if (project.id === projectId) {
                         this.displayProjectName = project.name
                         this.editedVersionNote = project.versions
-                            .filter(version => version.versionNumber === versionNumber)
-                            .map(v => v.note).toString()
+                            .find(version => version.versionNumber === versionNumber)!.note || ""
                     }
                 })
                 this.versionNoteToEdit = {projectId, versionId}
@@ -415,10 +414,7 @@
                 this.projects.filter(project => {
                     if (project.id === projectId) {
                         this.newProjectName = project.name
-
-                        this.versionNote = project.versions
-                            .filter(version => version.id === versionId)
-                            .map(v => v.note).toString()
+                        this.versionNote = project.versions.find(version => version.id === versionId)!.note || "";
                     }
                 })
                 this.versionToPromote = {projectId, versionId};
