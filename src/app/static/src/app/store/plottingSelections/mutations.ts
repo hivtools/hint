@@ -11,6 +11,7 @@ import {DataType} from "../surveyAndProgram/surveyAndProgram";
 type PlottingSelectionsMutation = Mutation<PlottingSelectionsState>
 
 export interface PlottingSelectionsMutations {
+    updateCalibratePlotSelections: PlottingSelectionsMutation,
     updateBarchartSelections: PlottingSelectionsMutation,
     updateBubblePlotSelections: PlottingSelectionsMutation,
     updateSAPChoroplethSelections: PlottingSelectionsMutation,
@@ -22,7 +23,8 @@ export interface PlottingSelectionsMutations {
 
 export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectionsMutations = {
     updateCalibratePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
-        state.barchart = {...state.barchart, ...action.payload};
+        console.log("plotting selections mutation", action.payload)
+        state.calibratePlot = {...state.calibratePlot, ...action.payload};
     },
     updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
         state.barchart = {...state.barchart, ...action.payload};

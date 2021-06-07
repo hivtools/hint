@@ -25,6 +25,7 @@
             :filter-config="filterConfig"
             :indicators="indicators"
             :selections="selections"
+            @update="updateCalibratePlotSelections({ payload: $event })"
         ></bar-chart-with-filters>
     </div>
 </template>
@@ -32,7 +33,7 @@
 <script lang="ts">
 import Vue from "vue";
 import i18next from "i18next";
-import {Language, Translations} from "../../store/translations/locales";
+import { Language, Translations } from "../../store/translations/locales";
 import { BarchartIndicator, Filter } from "@reside-ic/vue-charts/src/bar/types";
 import {
     BarChartWithFilters,
@@ -46,13 +47,19 @@ import {
     mapStateProp,
     mapStateProps,
 } from "../../utils";
+import {
+    PlottingSelectionsState,
+    BarchartSelections,
+} from "../../store/plottingSelections/plottingSelections";
 import { ModelCalibrateState } from "../../store/modelCalibrate/modelCalibrate";
 import { formatOutput } from "../plots/utils";
 import { RootState } from "../../root";
+import {PayloadWithType} from "../../types";
 
 const namespace = "modelCalibrate";
 
 interface Methods {
+    updateCalibratePlotSelections: (data: { payload: BarchartSelections }) => void;
     formatBarchartValue: (
         value: string | number,
         indicator: BarchartIndicator
@@ -63,6 +70,7 @@ interface Methods {
 interface Computed {
     barchartFilters: Filter[];
     barchartIndicators: BarchartIndicator[];
+    calibratePlotDefaultSelections: any;
     allData: any;
     shape: any;
     // convertedData: any,
@@ -82,6 +90,13 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
     },
     computed: {
         ...mapGettersByNames(namespace, ["indicators", "filters"]),
+        ...mapGettersByNames("plottingSelections", ["calibratePlotDefaultSelections"]),
+        ...mapStateProps<PlottingSelectionsState, keyof Computed>(
+            "plottingSelections",
+            {
+                selections: (state) => state.calibratePlot,
+            }
+        ),
         allData: mapStateProp<ModelCalibrateState, any>(namespace, (state) => {
             // console.log("chart data1", state.chartData);
             // if (state.calibratePlotResult) {
@@ -91,9 +106,6 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
         shape: mapStateProp<RootState, any>("root", (state) => {
             return state.baseline.shape;
         }),
-        // convertedData() {
-        //     return this.allData.data ? this.keysToCamel(this.allData) : [];
-        // },
         chartData: mapStateProp<ModelCalibrateState, any>(
             namespace,
             (state) => {
@@ -112,61 +124,32 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
                 filters: this.filters,
             };
         },
-        // filtersArray() {
-        //     let filters = [
-        //         ...this.allData.plottingMetadata.barchart.filters,
-        //     ];
-
-        //     filters.push({
-        //         id: "dataType", //could be snake case like the column_id, but just distinguishing here
-        //         label: "Data Type",
-        //         column_id: "data_type",
-        //         options: [
-        //             {id: "spectrum", label: "spectrum"},
-        //             {id: "unadjusted", label: "unadjusted"},
-        //             {id: "calibrated", label: "calibrated"}
-        //             ]
-        //     });
-
-        //     filters.push({
-        //         id: "spectrumRegionName",
-        //         label: "Spectrum Region Name",
-        //         column_id: "spectrum_region_name",
-        //         options: [{id: "Northern", label: "Northern"}, {id: "Southern", label: "Southern"}]
-        //     });
-
-        //     return [...filters];
-        // },
         selections() {
-            // return this.convertedData.plottingMetadata.barchart.defaults;
-            const defaults = this.allData.plottingMetadata.barchart.defaults;
-            const data = {
-                ...this.allData.plottingMetadata.barchart.defaults,
-                indicatorId: defaults.indicator_id,
-                xAxisId: "spectrumRegionName", //defaults.x_axis_id,
-                disaggregateById: "dataType", //defaults.disaggregate_by_id
-            };
+            // const defaults = this.allData.plottingMetadata.barchart.defaults;
+            // const data = {
+            //     ...this.allData.plottingMetadata.barchart.defaults,
+            //     indicatorId: defaults.indicator_id,
+            //     xAxisId: "spectrumRegionName", //defaults.x_axis_id,
+            //     disaggregateById: "dataType", //defaults.disaggregate_by_id
+            // };
 
-            data.selectedFilterOptions = {
-                ...defaults.selected_filter_options,
-            };
-            data.selectedFilterOptions["sex"] = [{ id: "male", label: "Male" }];
-            data.selectedFilterOptions["dataType"] = [
-                { id: "spectrum", label: "spectrum" },
-                { id: "unadjusted", label: "unadjusted" },
-                { id: "calibrated", label: "calibrated" },
-            ];
-            data.selectedFilterOptions["spectrumRegionName"] = [
-                { id: "Northern", label: "Northern" },
-                { id: "Southern", label: "Southern" },
-            ];
+            // data.selectedFilterOptions = {
+            //     ...defaults.selected_filter_options,
+            // };
+            // data.selectedFilterOptions["sex"] = [{ id: "male", label: "Male" }];
+            // data.selectedFilterOptions["dataType"] = [
+            //     { id: "spectrum", label: "spectrum" },
+            //     { id: "unadjusted", label: "unadjusted" },
+            //     { id: "calibrated", label: "calibrated" },
+            // ];
+            // data.selectedFilterOptions["spectrumRegionName"] = [
+            //     { id: "Northern", label: "Northern" },
+            //     { id: "Southern", label: "Southern" },
+            // ];
 
-            return data;
-            // return this.$store.state.plottingSelections.barchart;
+            // return data;
+            return this.$store.state.plottingSelections.calibratePlot;
         },
-        // indicators() {
-        //     return this.allData.plottingMetadata.barchart.indicators;
-        // },
         filteredIndicators() {
             // if (this.indicators) {
             return this.indicators.filter(
@@ -175,12 +158,14 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
             );
             // } else return this.indicators;
         },
-        currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
+        currentLanguage: mapStateProp<RootState, Language>(
+            null,
+            (state: RootState) => state.language
+        ),
     },
     methods: {
         ...mapMutationsByNames("plottingSelections", [
-            "updateBarchartSelections",
+            "updateCalibratePlotSelections",
         ]),
         formatBarchartValue: (
             value: string | number,
@@ -193,38 +178,31 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
                 indicator.accuracy
             ).toString();
         },
-        // keysToCamel(o: any) {
-        //     // const toCamel = (s: string): string => {
-        //     //     return s.replace(/([-_][a-z])/gi, ($1: string) => {
-        //     //         return $1.toUpperCase().replace("-", "").replace("_", "");
-        //     //     });
-        //     // };
-        //     // const isArray = function (a: any) {
-        //     //     return Array.isArray(a);
-        //     // };
-        //     // const isObject = function (o: any) {
-        //     //     return (
-        //     //         o === Object(o) && !isArray(o) && typeof o !== "function"
-        //     //     );
-        //     // };
-        //     // if (isObject(o)) {
-        //     //     const n = {};
-
-        //     //     Object.keys(o).forEach((k: string) => {
-        //     //         n[toCamel(k)] = this.keysToCamel(o[k]) as any;
-        //     //     });
-
-        //     //     return n;
-        //     // } else if (isArray(o)) {
-        //     //     return o.map((i: any) => {
-        //     //         return this.keysToCamel(i);
-        //     //     });
-        //     // }
-
-        //     return o;
-        // },
     },
     mounted() {
+        // const defaults = this.allData.plottingMetadata.barchart.defaults;
+        const data: BarchartSelections = {
+            ...this.calibratePlotDefaultSelections,
+            indicatorId: this.calibratePlotDefaultSelections.indicator_id,
+            xAxisId: "spectrumRegionName", //defaults.x_axis_id,
+            disaggregateById: "dataType", //defaults.disaggregate_by_id
+        };
+
+        data.selectedFilterOptions = {
+            ...this.calibratePlotDefaultSelections.selected_filter_options,
+        };
+        data.selectedFilterOptions["sex"] = [{ id: "male", label: "Male" }];
+        data.selectedFilterOptions["dataType"] = [
+            { id: "spectrum", label: "spectrum" },
+            { id: "unadjusted", label: "unadjusted" },
+            { id: "calibrated", label: "calibrated" },
+        ];
+        data.selectedFilterOptions["spectrumRegionName"] = [
+            { id: "Northern", label: "Northern" },
+            { id: "Southern", label: "Southern" },
+        ];
+        this.updateCalibratePlotSelections({ payload: data });
+        // this.updateCalibratePlotSelections(data);
         // console.log("to camel", this.keysToCamel({ test_one: "test", test_two_three: [{test_four: "test"}] }));
         console.log("alldata", this.allData);
         // console.log("convertedData", this.convertedData);

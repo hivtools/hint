@@ -1,12 +1,13 @@
 import {FilterOption} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 import {Module} from "vuex";
-import {RootState} from "../../root";
+import {RootState, storeOptions} from "../../root";
 import {mutations} from "./mutations";
 import {getters} from "./getters";
 import {Dict} from "../../types";
 
 export interface PlottingSelectionsState {
+    calibratePlot: BarchartSelections,
     barchart: BarchartSelections,
     bubble: BubblePlotSelections,
     sapChoropleth: ChoroplethSelections,
@@ -119,12 +120,19 @@ export const initialBubbleSizeScalesState = (): BubbleSizeScalesState => {
 
 export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
     return {
+        calibratePlot: initialCalibratePlotSelections(),
         barchart: initialBarchartSelections(),
         bubble: initialBubblePlotSelections(),
         sapChoropleth: initialChorplethSelections(),
         outputChoropleth: initialChorplethSelections(),
         colourScales: initialColourScalesState(),
         bubbleSizeScales: initialBubbleSizeScalesState()
+    }
+};
+
+export const plottingSelectionsGetters = {
+    calibratePlotDefaultSelections: (state: PlottingSelectionsState, getters: any, rootState: RootState): BarchartSelections => {
+        return rootState.modelCalibrate.calibratePlotResult!.plottingMetadata.barchart.defaults;
     }
 };
 
@@ -135,7 +143,7 @@ export const plottingSelections: Module<PlottingSelectionsState, RootState> = {
     namespaced,
     state: {...initialPlottingSelectionsState(), ...existingState && existingState.plottingSelections},
     mutations,
-    getters
+    getters: plottingSelectionsGetters
 };
 
 
