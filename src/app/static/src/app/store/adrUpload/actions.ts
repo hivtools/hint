@@ -4,8 +4,11 @@ import {api} from "../../apiService";
 import qs from "qs";
 import {ADRUploadState} from "./adrUpload";
 import {ADRUploadMutation} from "./mutations";
-import {constructUploadFile} from "../../utils";
+import {constructUploadFile, constructUploadFileWithResourceName} from "../../utils";
 import {Dict, UploadFile} from "../../types";
+import {ADRMutation} from "../adr/mutations";
+import {switches} from "../../featureSwitches";
+import {ValidateInputResponse} from "../../generated";
 
 export interface ADRUploadActions {
     getUploadFiles: (store: ActionContext<ADRUploadState, RootState>) => void;
@@ -29,20 +32,53 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                         const metadata = response.data;
                         const schemas = rootState.adr.schemas!;
 
-                        const uploadFiles = {
-                            outputZip: constructUploadFile(
+                        const uploadFiles: Dict<UploadFile> =  {
+                            outputZip: constructUploadFileWithResourceName(
                                 metadata,
                                 0,
                                 schemas.outputZip,
                                 `${project.name}_naomi_outputs.zip`,
-                                "uploadFileOutputZip"),
-                            outputSummary: constructUploadFile(
+                                "uploadFileOutputZip",
+                                `${project.name} Naomi Outputs`),
+                            outputSummary: constructUploadFileWithResourceName(
                                 metadata,
                                 1,
                                 schemas.outputSummary,
                                 `${project.name}_naomi_summary.html`,
-                                "uploadFileOutputSummary")
+                                "uploadFileOutputSummary",
+                                `${project.name} Naomi Summary`)
                         };
+
+                        if (switches.adrPushInputs) {
+                            const addLocalInputFileToUploads = (
+                                key: string,
+                                schema: string,
+                                response: ValidateInputResponse,
+                                displayName: string) => {
+                                if (!response.fromADR) {
+                                    const uploadFile = constructUploadFile(
+                                        metadata,
+                                        Object.keys(uploadFiles).length,
+                                        schema,
+                                        response.filename,
+                                        displayName
+                                    );
+                                    if (uploadFile) {
+                                        uploadFiles[key] = uploadFile;
+                                    }
+                                }
+                            };
+
+                            const baseline = rootState.baseline;
+                            addLocalInputFileToUploads("pjnz", schemas.pjnz, baseline.pjnz!, "PJNZ");
+                            addLocalInputFileToUploads("shape", schemas.shape, baseline.shape!, "shape");
+                            addLocalInputFileToUploads("population",  schemas.population, baseline.population!, "population");
+
+                            const sap = rootState.surveyAndProgram;
+                            addLocalInputFileToUploads("survey", schemas.survey, sap.survey!, "survey");
+                            addLocalInputFileToUploads("programme", schemas.programme, sap.program!, "ART");
+                            addLocalInputFileToUploads("anc", schemas.anc, sap.anc!, "ANC");
+                        }
 
                         commit({type: ADRUploadMutation.SetUploadFiles, payload: uploadFiles});
                     }
@@ -60,9 +96,9 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
 
         for (let i = 0; i < uploadFilesPayload.length; i++) {
             commit({type: ADRUploadMutation.ADRUploadProgress, payload: i + 1});
-            const {resourceType, resourceFilename, resourceId} = uploadFilesPayload[i]
+            const { resourceType, resourceFilename, resourceName, resourceId } = uploadFilesPayload[i];
 
-            const requestParams: Dict<string> = {resourceFileName: resourceFilename}
+            const requestParams: Dict<string> = {resourceFileName: resourceFilename, resourceName};
             if (resourceId) {
                 requestParams["resourceId"] = resourceId
             }

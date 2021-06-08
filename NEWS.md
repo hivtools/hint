@@ -1,3 +1,6 @@
+# hint 1.38.0
+
+* Support uploading edited input files, behind feature switch for now
 
 # hint 1.37.0
 

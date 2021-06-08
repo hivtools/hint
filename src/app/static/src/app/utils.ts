@@ -1,6 +1,6 @@
 import * as CryptoJS from 'crypto-js';
 import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
-import {ADRSchemas, DatasetResource, Dict, Version} from "./types";
+import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 import moment from 'moment';
 import {DynamicControlGroup, DynamicControlSection, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
@@ -163,14 +163,16 @@ export const formatDateTime = (isoUTCString: string) => {
     return moment.utc(isoUTCString).local().format('DD/MM/YYYY HH:mm:ss');
 };
 
-export const findResource = (datasetWithResources: any, resourceType: string, resourceFilename?: string): DatasetResource | null => {
+export const findResource = (datasetWithResources: any, resourceType: string, resourceName?: string | null): DatasetResource | null => {
     let resources = datasetWithResources.resources;
-    if (resourceFilename) {
-        resources = resources.filter((r: any) => r.name === resourceFilename);
+
+    if (resourceName) {
+        resources = resources.filter((r: any) => r.name === resourceName);
     }
     const metadata = resources.find((r: any) => r.resource_type === resourceType);
     return metadata ? {
         id: metadata.id,
+        name: metadata.name,
         url: metadata.url,
         lastModified: metadata.last_modified,
         metadataModified: metadata.metadata_modified,
@@ -198,8 +200,28 @@ export const datasetFromMetadata = (id: string, datasets: any[], schemas: ADRSch
 };
 
 export const constructUploadFile = (datasetWithResources: any, index: number, resourceType: string,
-                             resourceFilename: string, displayName: string) => {
-    const resource = findResource(datasetWithResources, resourceType, resourceFilename);
+                                 resourceFilename: string, displayName: string): UploadFile | null => {
+    const resource = findResource(datasetWithResources, resourceType, null);
+    // We expect to find resource name on the resource - return null if not found - file should
+    // not be uploadable.
+    if (resource) {
+        const resourceName = resource.name;
+        return getUploadFileFromResource(resource, resourceName, index, resourceType, resourceFilename, displayName);
+    } else {
+        return null;
+    }
+};
+
+export const constructUploadFileWithResourceName = (datasetWithResources: any, index: number, resourceType: string,
+                             resourceFilename: string, displayName: string, resourceName: string): UploadFile => {
+    const resource = findResource(datasetWithResources, resourceType, resourceName);
+    return getUploadFileFromResource(resource, resourceName, index, resourceType, resourceFilename, displayName);
+
+};
+
+function getUploadFileFromResource(resource: DatasetResource | null, resourceName: string, index: number,
+                                resourceType: string, resourceFilename: string, displayName: string): UploadFile
+{
     const resourceId = resource ? resource.id : null;
     const lastModified = resource ? ([resource.lastModified, resource.metadataModified].sort()[1]) : null;
     const resourceUrl = resource ? resource.url : null;
@@ -209,11 +231,12 @@ export const constructUploadFile = (datasetWithResources: any, index: number, re
         displayName,
         resourceType,
         resourceFilename,
+        resourceName,
         resourceId,
         resourceUrl,
         lastModified
     }
-};
+}
 
 const emailRegex = RegExp("^([\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})(,[\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})*$")
 
