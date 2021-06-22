@@ -7,22 +7,27 @@
                     <span v-translate="'uploadFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
                 <div id="instructions" class="mt-3" v-translate="'uploadFileInstruction'"></div>
-                <div id="output-file-id" class="mt-3" v-for="(uploadFile, key, index) in uploadFiles" :key="uploadFile.index">
-                    <div class="mt-3 form-check">
-                        <input class="form-check-input"
-                               type="checkbox"
-                               :value="key"
-                               v-model="uploadFilesToAdr"
-                               :id="`id-${index}`">
+                <div v-for="(uploadFileSection, sectionIndex) in uploadFileSections" :key="sectionIndex">
+                    <h5 v-if="Object.keys(uploadFileSections[1]).length > 0"
+                        v-translate="sectionIndex === 0 ? 'outputFiles' : 'inputFiles'"
+                        class="mt-3"></h5>
+                    <div id="output-file-id" class="mt-3" v-for="(uploadFile, key, index) in uploadFileSection" :key="uploadFile.index">
+                        <div class="mt-3 form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   :value="key"
+                                   v-model="uploadFilesToAdr"
+                                   :id="`id-${sectionIndex}-${index}`">
 
-                        <label class="form-check-label"
-                               :for="`id-${index}`"
-                               v-translate="uploadFile.displayName"></label>
-                        <small v-if="uploadFile.resourceId" class="text-danger row">
-                        <span class="col-auto">
-                        <span v-translate="'uploadFileOverwrite'"></span>{{ lastModified(uploadFile.lastModified) }}
-                        </span>
-                        </small>
+                            <label class="form-check-label"
+                                   :for="`id-${sectionIndex}-${index}`"
+                                   v-translate="uploadFile.displayName"></label>
+                            <small v-if="uploadFile.resourceId" class="text-danger row">
+                            <span class="col-auto">
+                            <span v-translate="'uploadFileOverwrite'"></span>{{ lastModified(uploadFile.lastModified) }}
+                            </span>
+                            </small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -61,7 +66,8 @@
 
     interface Computed {
         dataset: string
-        uploadFiles: Dict<UploadFile>
+        uploadFiles: Dict<UploadFile>,
+        uploadFileSections: Array<Dict<UploadFile>>
     }
 
     interface Data {
@@ -72,6 +78,8 @@
     interface Props {
         open: boolean
     }
+
+    const outputFileTypes = ["outputZip", "outputSummary"];
 
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "UploadModal",
@@ -104,7 +112,7 @@
                 return formatDateTime(date)
             },
             setDefaultCheckedItems: function () {
-                this.uploadFilesToAdr = ["outputZip", "outputSummary"]
+                this.uploadFilesToAdr = outputFileTypes
                     .filter(key => this.uploadFiles.hasOwnProperty(key))
             }
         },
@@ -114,7 +122,21 @@
             }),
             uploadFiles: mapStateProp<ADRUploadState, Dict<UploadFile>>("adrUpload",
                 (state) => state.uploadFiles!
-            )
+            ),
+            uploadFileSections() {
+                if (this.uploadFiles) {
+                    return Object.keys(this.uploadFiles).reduce((sections, key) => {
+                        if (outputFileTypes.includes(key)) {
+                            sections[0][key] = this.uploadFiles[key];
+                        } else {
+                            sections[1][key] = this.uploadFiles[key];
+                        }
+                        return sections;
+                    }, [{} as any, {} as any]);
+                } else {
+                    return [];
+                }
+            }
         },
         components: {
             Modal

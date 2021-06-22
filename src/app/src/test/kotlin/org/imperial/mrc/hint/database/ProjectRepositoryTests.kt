@@ -242,6 +242,25 @@ class ProjectRepositoryTests
     }
 
     @Test
+    fun `can rename project with empty note`()
+    {
+        val uid = setupUser()
+
+        val projectId = sut.saveNewProject(uid, "testProjectRepo")
+        val versionId1 = "testVersion"
+        versionRepo.saveVersion(versionId1, projectId)
+
+        sut.renameProject(projectId, uid, "renamedProject")
+
+        val renamedProject = dsl.selectFrom(PROJECT)
+                .where(PROJECT.ID.eq(projectId))
+                .and(PROJECT.USER_ID.eq(uid))
+                .fetchOne()
+        assertThat(renamedProject[PROJECT.NAME]).isEqualTo("renamedProject")
+        assertThat(renamedProject[PROJECT.NOTE]).isEqualTo(null)
+    }
+
+    @Test
     fun `can save project note`()
     {
         val uid = setupUser()
@@ -270,7 +289,7 @@ class ProjectRepositoryTests
         val ago_4h = now().minus(4, ChronoUnit.HOURS)
 
 
-        val v1Id = insertProject("v1", userId, "another.user@example.com")
+        val v1Id = insertProject("v1", userId, "another.user@example.com", "test project note")
         val v2Id = insertProject("v2", userId)
         val anotherProject = insertProject("v2", anotherUserId) //should not be returned
 
@@ -299,6 +318,7 @@ class ProjectRepositoryTests
         assertThat(p1.id).isEqualTo(v1Id)
         assertThat(p1.name).isEqualTo("v1")
         assertThat(p1.sharedBy).isEqualTo("another.user@example.com")
+        assertThat(p1.note).isEqualTo("test project note")
         assertThat(p1.versions.count()).isEqualTo(2)
         assertThat(p1.versions[0].id).isEqualTo("v1s2")
         assertThat(p1.versions[0].created).isEqualTo(format(ago_2h))
@@ -322,10 +342,10 @@ class ProjectRepositoryTests
         return formatter.format(LocalDateTime.ofInstant(time, ZoneId.systemDefault()))
     }
 
-    private fun insertProject(name: String, userId: String, sharedBy: String? = null): Int
+    private fun insertProject(name: String, userId: String, sharedBy: String? = null, note: String? = null): Int
     {
-        val saved = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME, PROJECT.SHARED_BY)
-                .values(userId, name, sharedBy)
+        val saved = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME, PROJECT.SHARED_BY, PROJECT.NOTE)
+                .values(userId, name, sharedBy, note)
                 .returning(PROJECT.ID)
                 .fetchOne()
 
