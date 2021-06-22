@@ -7,19 +7,6 @@
             calibrated to spectrum results as specified in calibration options
             above. ​
         </p>
-        <!-- <bar-chart-with-filters
-            :chart-data="allData.data"
-            :filter-config="allData.plottingMetadata.barchart"
-            :indicators="allData.plottingMetadata.barchart.indicators"
-            :selections="selections"
-            :formatFunction="formatBarchartValue"
-            @update="updateBarchartSelections({ payload: $event })"
-        ></bar-chart-with-filters> -->
-        <!-- <p v-if="convertedData.data">This should render</p>
-        <div>Filter config: {{JSON.stringify(filterConfig)}}</div>
-        <div>Indicators: {{JSON.stringify(indicators)}}</div>
-        <div>Selections: {{JSON.stringify(selections)}}</div>
-        <div>Data: {{JSON.stringify(chartData)}}</div> -->
         <bar-chart-with-filters
             :chart-data="chartData"
             :filter-config="filterConfig"
@@ -68,16 +55,11 @@ interface Methods {
         value: string | number,
         indicator: BarchartIndicator
     ) => string;
-    // keysToCamel: (value: any) => any
 }
 
 interface Computed {
-    // barchartFilters: Filter[];
-    // barchartIndicators: BarchartIndicator[];
     calibratePlotDefaultSelections: UnadjustedBarchartSelections;
     allData: any;
-    // shape: any;
-    // convertedData: any,
     chartData: any;
     filterConfig: FilterConfig;
     filters: Filter[];
@@ -104,14 +86,8 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
             }
         ),
         allData: mapStateProp<ModelCalibrateState, any>(namespace, (state) => {
-            // console.log("chart data1", state.chartData);
-            // if (state.calibratePlotResult) {
             return state.calibratePlotResult ? state.calibratePlotResult : [];
-            // } else return [];
         }),
-        // shape: mapStateProp<RootState, any>("root", (state) => {
-        //     return state.baseline.shape;
-        // }),
         chartData: mapStateProp<ModelCalibrateState, any>(
             namespace,
             (state) => {
@@ -126,43 +102,17 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
                 indicatorLabel: i18next.t("indicator", this.currentLanguage),
                 xAxisLabel: i18next.t("xAxis", this.currentLanguage),
                 disaggLabel: i18next.t("disaggBy", this.currentLanguage),
-                // filters: this.convertedData.plottingMetadata.barchart.filters,
                 filters: this.filters,
             };
         },
         selections() {
-            // const defaults = this.allData.plottingMetadata.barchart.defaults;
-            // const data = {
-            //     ...this.allData.plottingMetadata.barchart.defaults,
-            //     indicatorId: defaults.indicator_id,
-            //     xAxisId: "spectrumRegionName", //defaults.x_axis_id,
-            //     disaggregateById: "dataType", //defaults.disaggregate_by_id
-            // };
-
-            // data.selectedFilterOptions = {
-            //     ...defaults.selected_filter_options,
-            // };
-            // data.selectedFilterOptions["sex"] = [{ id: "male", label: "Male" }];
-            // data.selectedFilterOptions["dataType"] = [
-            //     { id: "spectrum", label: "spectrum" },
-            //     { id: "unadjusted", label: "unadjusted" },
-            //     { id: "calibrated", label: "calibrated" },
-            // ];
-            // data.selectedFilterOptions["spectrumRegionName"] = [
-            //     { id: "Northern", label: "Northern" },
-            //     { id: "Southern", label: "Southern" },
-            // ];
-
-            // return data;
             return this.$store.state.plottingSelections.calibratePlot;
         },
         filteredIndicators() {
-            // if (this.indicators) {
             return this.indicators.filter(
                 (val: BarchartIndicator) =>
                     val.indicator === this.selections.indicatorId
             );
-            // } else return this.indicators;
         },
         currentLanguage: mapStateProp<RootState, Language>(
             null,
@@ -177,7 +127,6 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
             value: string | number,
             indicator: BarchartIndicator
         ) => {
-            // console.log("format barchart indicator", value, indicator)
             return formatOutput(
                 value,
                 indicator.format,
@@ -187,7 +136,6 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
         },
     },
     mounted() {
-        // const defaults = this.allData.plottingMetadata.barchart.defaults;
         const data: BarchartSelections = {
             ...this.calibratePlotDefaultSelections,
             selectedFilterOptions: {
@@ -197,10 +145,6 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
             xAxisId: "spectrumRegionName", //defaults.x_axis_id,
             disaggregateById: "dataType", //defaults.disaggregate_by_id
         };
-
-        // data.selectedFilterOptions = {
-        //     ...this.calibratePlotDefaultSelections.selected_filter_options,
-        // };
         data.selectedFilterOptions["sex"] = [{ id: "male", label: "Male" }];
         data.selectedFilterOptions["dataType"] = [
             { id: "spectrum", label: "spectrum" },
@@ -212,18 +156,13 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
             { id: "Southern", label: "Southern" },
         ];
         this.updateCalibratePlotSelections({ payload: data });
-        // this.updateCalibratePlotSelections(data);
-        // console.log("to camel", this.keysToCamel({ test_one: "test", test_two_three: [{test_four: "test"}] }));
-        console.log("alldata", this.allData);
-        // console.log("convertedData", this.convertedData);
-        // console.log("chart should appear", this.convertedData.data ? true : false);
-        console.log("chartData", this.chartData);
-        console.log("indicators", this.indicators);
-        console.log("filtered indicators", this.filteredIndicators);
-        console.log("filterConfig", this.filterConfig);
-        console.log("selections", this.selections);
-        console.log("filters", this.filters);
-        // console.log("plotting metadata", JSON.stringify(this.convertedData.plottingMetadata));
+        // console.log("alldata", this.allData);
+        // console.log("chartData", this.chartData);
+        // console.log("indicators", this.indicators);
+        // console.log("filtered indicators", this.filteredIndicators);
+        // console.log("filterConfig", this.filterConfig);
+        // console.log("selections", this.selections);
+        // console.log("filters", this.filters);
     },
 });
 </script>

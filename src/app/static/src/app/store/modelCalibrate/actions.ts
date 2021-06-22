@@ -96,7 +96,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const {commit, state} = context;
         const calibrateId = state.calibrateId;
         commit(ModelCalibrateMutation.CalibrationPlotStarted);
-        console.log('getCalibratePlot fired')
+        // console.log('getCalibratePlot fired')
 
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
                 .ignoreSuccess()
@@ -106,7 +106,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
 
         if (response) {
             const data = freezer.deepFreeze(response.data);
-            console.log("Calibrate plot returned:", data)
+            // console.log("Calibrate plot returned:", data)
             commit(ModelCalibrateMutation.CalibrationPlotGenerated);
             commit(ModelCalibrateMutation.SetPlotData, data);
         }

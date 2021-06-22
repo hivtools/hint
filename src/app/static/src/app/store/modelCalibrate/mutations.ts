@@ -69,11 +69,9 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     },
 
     [ModelCalibrateMutation.CalibrationPlotStarted](state: ModelCalibrateState) {
-        // state.calibrateId = action.payload.id;
         state.generatingCalibrationPlot = true;
         state.calibrationPlotGenerated = false;
         state.error = null;
-        // state.status = {} as CalibrateStatusResponse;
     },
 
     [ModelCalibrateMutation.CalibrationPlotGenerated](state: ModelCalibrateState) {
@@ -82,7 +80,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     },
 
     [ModelCalibrateMutation.SetPlotData](state: ModelCalibrateState, action: PayloadWithType<any>) {
-        console.log('payload', action)
+        // console.log('payload', action)
         state.calibratePlotResult = action;
     },
 
