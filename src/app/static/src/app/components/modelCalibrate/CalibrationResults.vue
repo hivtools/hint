@@ -25,6 +25,7 @@
             :filter-config="filterConfig"
             :indicators="indicators"
             :selections="selections"
+            :formatFunction="formatBarchartValue"
             @update="updateCalibratePlotSelections({ payload: $event })"
         ></bar-chart-with-filters>
     </div>
@@ -54,12 +55,14 @@ import {
 import { ModelCalibrateState } from "../../store/modelCalibrate/modelCalibrate";
 import { formatOutput } from "../plots/utils";
 import { RootState } from "../../root";
-import {PayloadWithType} from "../../types";
+import { PayloadWithType } from "../../types";
 
 const namespace = "modelCalibrate";
 
 interface Methods {
-    updateCalibratePlotSelections: (data: { payload: BarchartSelections }) => void;
+    updateCalibratePlotSelections: (data: {
+        payload: BarchartSelections;
+    }) => void;
     formatBarchartValue: (
         value: string | number,
         indicator: BarchartIndicator
@@ -90,7 +93,9 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
     },
     computed: {
         ...mapGettersByNames(namespace, ["indicators", "filters"]),
-        ...mapGettersByNames("plottingSelections", ["calibratePlotDefaultSelections"]),
+        ...mapGettersByNames("plottingSelections", [
+            "calibratePlotDefaultSelections",
+        ]),
         ...mapStateProps<PlottingSelectionsState, keyof Computed>(
             "plottingSelections",
             {
@@ -171,6 +176,7 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
             value: string | number,
             indicator: BarchartIndicator
         ) => {
+            console.log("format barchart indicator", value, indicator)
             return formatOutput(
                 value,
                 indicator.format,
