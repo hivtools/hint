@@ -45,7 +45,7 @@
                 <error-alert v-if="uploadError" :error="uploadError"></error-alert>
             </div>
         </div>
-        <upload-modal id="modal" :open="uploadModalOpen" @close="uploadModalOpen = false"></upload-modal>
+        <upload-modal id="upload-modal" :open="uploadModalOpen" @close="uploadModalOpen = false"></upload-modal>
     </div>
 </template>
 

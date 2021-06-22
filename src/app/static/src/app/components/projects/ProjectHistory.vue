@@ -196,7 +196,7 @@
         <modal :open="versionNoteToEdit">
             <h4 v-html="editVersionNoteHeader" id="editVersionNoteHeader"></h4>
             <div class="pb-3" v-html="editVersionNoteSubHeader" id="editVersionNoteSubHeader"></div>
-            <textarea class="form-control" placeholder="Notes"
+            <textarea id="edit-version-note-id" class="form-control" placeholder="Notes"
                       v-model="editedVersionNote"></textarea>
             <template v-slot:footer>
                 <button type="button"
@@ -250,7 +250,6 @@
         disableRename: boolean;
         currentLanguage: Language;
         promoteVersionHeader: string;
-        projects: Project[] | null,
         editVersionNoteHeader: string,
         editVersionNoteSubHeader: string
     }
@@ -333,10 +332,7 @@
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
-            ),
-            projects: mapStateProp<ProjectsState, Project[] | null>(namespace, state => {
-                return state.previousProjects
-            })
+            )
         },
         methods: {
             format(date: string) {

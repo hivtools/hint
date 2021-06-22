@@ -104,6 +104,7 @@ export interface VersionIds {
 
 export interface DatasetResource {
     id: string,
+    name: string,
     lastModified: string,
     metadataModified: string,
     url: string
@@ -148,6 +149,7 @@ export interface UploadFile {
     displayName: string,
     resourceType: string,
     resourceFilename: string,
+    resourceName: string,
     resourceId: string | null,
     resourceUrl: string | null,
     lastModified: string | null
