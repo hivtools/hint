@@ -51,6 +51,7 @@ import {
 import {
     PlottingSelectionsState,
     BarchartSelections,
+    UnadjustedBarchartSelections,
 } from "../../store/plottingSelections/plottingSelections";
 import { ModelCalibrateState } from "../../store/modelCalibrate/modelCalibrate";
 import { formatOutput } from "../plots/utils";
@@ -71,18 +72,18 @@ interface Methods {
 }
 
 interface Computed {
-    barchartFilters: Filter[];
-    barchartIndicators: BarchartIndicator[];
-    calibratePlotDefaultSelections: any;
+    // barchartFilters: Filter[];
+    // barchartIndicators: BarchartIndicator[];
+    calibratePlotDefaultSelections: UnadjustedBarchartSelections;
     allData: any;
-    shape: any;
+    // shape: any;
     // convertedData: any,
     chartData: any;
-    filterConfig: any;
-    filters: any;
-    selections: any;
-    indicators: any;
-    filteredIndicators: any;
+    filterConfig: FilterConfig;
+    filters: Filter[];
+    selections: BarchartSelections;
+    indicators: BarchartIndicator[];
+    filteredIndicators: BarchartIndicator[];
     currentLanguage: Language;
 }
 
@@ -108,9 +109,9 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
             return state.calibratePlotResult ? state.calibratePlotResult : [];
             // } else return [];
         }),
-        shape: mapStateProp<RootState, any>("root", (state) => {
-            return state.baseline.shape;
-        }),
+        // shape: mapStateProp<RootState, any>("root", (state) => {
+        //     return state.baseline.shape;
+        // }),
         chartData: mapStateProp<ModelCalibrateState, any>(
             namespace,
             (state) => {
@@ -176,7 +177,7 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
             value: string | number,
             indicator: BarchartIndicator
         ) => {
-            console.log("format barchart indicator", value, indicator)
+            // console.log("format barchart indicator", value, indicator)
             return formatOutput(
                 value,
                 indicator.format,
@@ -189,14 +190,17 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
         // const defaults = this.allData.plottingMetadata.barchart.defaults;
         const data: BarchartSelections = {
             ...this.calibratePlotDefaultSelections,
+            selectedFilterOptions: {
+                ...this.calibratePlotDefaultSelections.selected_filter_options,
+            },
             indicatorId: this.calibratePlotDefaultSelections.indicator_id,
             xAxisId: "spectrumRegionName", //defaults.x_axis_id,
             disaggregateById: "dataType", //defaults.disaggregate_by_id
         };
 
-        data.selectedFilterOptions = {
-            ...this.calibratePlotDefaultSelections.selected_filter_options,
-        };
+        // data.selectedFilterOptions = {
+        //     ...this.calibratePlotDefaultSelections.selected_filter_options,
+        // };
         data.selectedFilterOptions["sex"] = [{ id: "male", label: "Male" }];
         data.selectedFilterOptions["dataType"] = [
             { id: "spectrum", label: "spectrum" },

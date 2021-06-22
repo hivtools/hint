@@ -24,6 +24,13 @@ export interface BarchartSelections {
 
 }
 
+export interface UnadjustedBarchartSelections {
+    indicator_id: string,
+    xAxisId: string,
+    disaggregateById: string,
+    selected_filter_options: Dict<FilterOption[]>
+}
+
 export interface BubblePlotSelections {
     colorIndicatorId: string,
     sizeIndicatorId: string,
