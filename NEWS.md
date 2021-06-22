@@ -1,3 +1,7 @@
+# hint 1.37.0
+
+* Add bar chart to model calibrate page
+
 # hint 1.36.0
 
 * Create an endpoint for model calibrate bar chart
