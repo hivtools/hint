@@ -1,12 +1,8 @@
 <template>
     <div>
         <hr />
-        <h3>Review calibration results</h3>
-        <p class="text-muted">
-            Comparison of unadjusted estimates (uncalibrated) to model estimates
-            calibrated to spectrum results as specified in calibration options
-            above. ​
-        </p>
+        <h3 v-translate="'calibrateResultsHeader'"></h3>
+        <p class="text-muted" v-translate="'calibrateResultsDesc'"></p>
         <bar-chart-with-filters
             :chart-data="chartData"
             :filter-config="filterConfig"
@@ -136,6 +132,8 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
         },
     },
     mounted() {
+        // console.log("pre selections", this.selections)
+        // console.log("pre default selections", this.calibratePlotDefaultSelections)
         const data: BarchartSelections = {
             ...this.calibratePlotDefaultSelections,
             selectedFilterOptions: {
@@ -156,6 +154,8 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
             { id: "Southern", label: "Southern" },
         ];
         this.updateCalibratePlotSelections({ payload: data });
+        // console.log("post selections", this.selections)
+        // console.log("post default selections", this.calibratePlotDefaultSelections)
         // console.log("alldata", this.allData);
         // console.log("chartData", this.chartData);
         // console.log("indicators", this.indicators);
