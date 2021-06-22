@@ -218,7 +218,6 @@
         disableRename: boolean;
         currentLanguage: Language;
         promoteVersionHeader: string;
-        projects: Project[] | null
     }
 
     interface Methods {
@@ -280,10 +279,7 @@
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
-            ),
-            projects: mapStateProp<ProjectsState, Project[] | null>(namespace, state => {
-                return state.previousProjects
-            })
+            )
         },
         methods: {
             format(date: string) {
