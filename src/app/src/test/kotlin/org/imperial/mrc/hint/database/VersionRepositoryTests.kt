@@ -262,6 +262,24 @@ class VersionRepositoryTests
     }
 
     @Test
+    fun `can promote a version to a new project with empty notes`() {
+        val uid = setupUser()
+        val projectId = setupProject(uid)
+        val newProjectId = setupProject(uid)
+        sut.saveVersion(versionId, projectId)
+        setUpHashAndVersionFile("pjnz_hash", "pjnz_file", versionId, "pjnz", false)
+        setUpHashAndVersionFile("survey_hash", "survey_file", versionId, "survey", false)
+        sut.saveVersionState(versionId, projectId, uid, "TEST STATE")
+
+        sut.promoteVersion(versionId, "newVersionId", newProjectId, uid)
+
+        val newVersion = sut.getVersion("newVersionId")
+        assertThat(newVersion.id).isEqualTo("newVersionId")
+        assertThat(newVersion.note).isEqualTo(null)
+    }
+
+
+    @Test
     fun `copy version throws error if version does not exist`() {
         val uid = setupUser()
         val projectId = setupProject(uid)
