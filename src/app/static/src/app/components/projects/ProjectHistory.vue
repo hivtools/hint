@@ -301,8 +301,7 @@
                 editedVersionNote: "",
                 versionNote: "",
                 displayProjectName: "",
-                renamedProjectName: "",
-                versionNote: ""
+                renamedProjectName: ""
             };
         },
         computed: {
