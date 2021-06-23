@@ -81,6 +81,7 @@ describe("model calibrate actions integration", () => {
         expect(commit.mock.calls[0][0]).toBe("CalibrationPlotStarted");
         expect(commit.mock.calls[1][0]).toBe("CalibrationPlotGenerated");
         expect(commit.mock.calls[2][0]).toBe("SetPlotData");
-        // expect(commit.mock.calls[2][1]).toStrictEqual({ data: "TEST DATA" }); // this currently talks to a dummy endpoint in hintr so will always return the same data
+        // this currently talks to a dummy endpoint in hintr so will always return the same data
+        // expect(commit.mock.calls[2][1]).toStrictEqual({ data: "TEST DATA" }); 
     });
 });

@@ -132,8 +132,6 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
         },
     },
     mounted() {
-        // console.log("pre selections", this.selections)
-        // console.log("pre default selections", this.calibratePlotDefaultSelections)
         const data: BarchartSelections = {
             ...this.calibratePlotDefaultSelections,
             selectedFilterOptions: {
@@ -154,15 +152,6 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
             { id: "Southern", label: "Southern" },
         ];
         this.updateCalibratePlotSelections({ payload: data });
-        // console.log("post selections", this.selections)
-        // console.log("post default selections", this.calibratePlotDefaultSelections)
-        // console.log("alldata", this.allData);
-        // console.log("chartData", this.chartData);
-        // console.log("indicators", this.indicators);
-        // console.log("filtered indicators", this.filteredIndicators);
-        // console.log("filterConfig", this.filterConfig);
-        // console.log("selections", this.selections);
-        // console.log("filters", this.filters);
     },
 });
 </script>

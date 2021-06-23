@@ -80,7 +80,6 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     },
 
     [ModelCalibrateMutation.SetPlotData](state: ModelCalibrateState, action: PayloadWithType<any>) {
-        // console.log('payload', action)
         state.calibratePlotResult = action;
     },
 

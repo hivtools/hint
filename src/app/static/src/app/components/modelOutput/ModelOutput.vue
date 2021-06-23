@@ -236,18 +236,6 @@
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
             }
         },
-        // mounted(){
-        //     console.log("chartdata output", this.chartdata);
-        //     console.log(
-        //         "indicators output",
-        //         this.barchartIndicators
-        //     );
-        //     console.log("filterConfig output", this.filterConfig);
-        //     console.log(
-        //         "selections output",
-        //         this.barchartSelections
-        //     );
-        // },
         components: {
             BarChartWithFilters,
             BubblePlot,

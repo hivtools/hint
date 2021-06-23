@@ -67,9 +67,6 @@ declare let currentUser: string;
 currentUser = "guest";
 
 describe("CalibrateResults component", () => {
-    // beforeAll(async () => {
-    //     inactiveFeatures.splice(0, inactiveFeatures.length);
-    // });
 
     it("renders title and text", () => {
         const store = getStore();
