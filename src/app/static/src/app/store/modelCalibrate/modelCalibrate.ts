@@ -52,7 +52,7 @@ export const modelCalibrateGetters = {
 };
 
 const calibratePlotFilters = (rootState: RootState) => {
-    let filters = [
+    const filters = [
         ...rootState.modelCalibrate.calibratePlotResult!.plottingMetadata.barchart.filters,
     ];
 
