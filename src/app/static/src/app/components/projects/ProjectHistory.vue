@@ -198,7 +198,7 @@
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
     import {VTooltip} from 'v-tooltip';
-    import {projects, ProjectsState} from "../../store/projects/projects";
+    import {projects} from "../../store/projects/projects";
 
     const namespace = "projects";
 
@@ -259,7 +259,7 @@
                 newProjectName: "",
                 selectedVersionNumber: "",
                 projectToRename: null,
-                renamedProjectName: '',
+                renamedProjectName: "",
                 versionNote: ""
             };
         },
