@@ -112,6 +112,13 @@ describe("ModelCalibrate mutations", () => {
         expect(spy).toHaveBeenCalledWith(99);
     });
 
+    it("sets error stops calibration plot being generated", () => {
+        const state = mockModelCalibrateState({ generatingCalibrationPlot: true });
+        const error = mockError("TEST ERROR");
+        mutations[ModelCalibrateMutation.SetError](state, {payload: error});
+        expect(state.generatingCalibrationPlot).toBe(false);
+    });
+
     it("sets options", () => {
         const state = mockModelCalibrateState();
         const options = { "testOption": "testValue" };
@@ -123,5 +130,27 @@ describe("ModelCalibrate mutations", () => {
         const state = mockModelCalibrateState();
         mutations[ModelCalibrateMutation.PollingForStatusStarted](state, {payload: 99});
         expect(state.statusPollId).toBe(99);
+    });
+
+    it("sets calibration plot started and resets error and previous plot", () => {
+        const state = mockModelCalibrateState({error: mockError("TEST ERROR"), calibrationPlotGenerated: true});
+        mutations[ModelCalibrateMutation.CalibrationPlotStarted](state);
+        expect(state.generatingCalibrationPlot).toBe(true);
+        expect(state.calibrationPlotGenerated).toBe(false);
+        expect(state.error).toBe(null);
+    });
+
+    it("sets calibration plot generated", () => {
+        const state = mockModelCalibrateState({generatingCalibrationPlot: true});
+        mutations[ModelCalibrateMutation.CalibrationPlotGenerated](state);
+        expect(state.generatingCalibrationPlot).toBe(false);
+        expect(state.calibrationPlotGenerated).toBe(true);
+    });
+
+    it("sets calibration plot data", () => {
+        const state = mockModelCalibrateState();
+        const payload = { data: "TEST DATA" };
+        mutations[ModelCalibrateMutation.SetPlotData](state, {payload});
+        expect(state.calibratePlotResult).toStrictEqual({ payload });
     });
 });

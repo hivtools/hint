@@ -5,6 +5,7 @@ import {RootState} from "../../../app/root";
 import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";;
 import {mount, shallowMount} from "@vue/test-utils";
 import ModelCalibrate from "../../../app/components/modelCalibrate/ModelCalibrate.vue";
+import CalibrationResults from "../../../app/components/modelCalibrate/CalibrationResults.vue";
 import {DynamicControlType, DynamicForm} from "@reside-ic/vue-dynamic-form";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {expectTranslated} from "../../testHelpers";
@@ -165,5 +166,19 @@ describe("Model calibrate component", () => {
         wrapper.find("button").trigger("click");
         expect(mockSubmit.mock.calls.length).toBe(1);
 
+    });
+
+    it("renders generating calibration results message", () => {
+        const store = getStore({complete: true, generatingCalibrationPlot: true});
+        const wrapper = getWrapper(store);
+        expect(wrapper.find("#genCalibResults").find(LoadingSpinner).exists()).toBe(true);
+        expectTranslated(wrapper.find("#genCalibResults span"), "Generating calibration results",
+        "Générer des résultats d'étalonnage", store);
+    });
+
+    it("renders calibration plot", () => {
+        const store = getStore({complete: true, calibrationPlotGenerated: true});
+        const wrapper = getWrapper(store);
+        expect(wrapper.find(CalibrationResults).exists()).toBe(true);
     });
 });

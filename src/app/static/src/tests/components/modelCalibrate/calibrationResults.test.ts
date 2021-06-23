@@ -71,6 +71,15 @@ describe("CalibrateResults component", () => {
     //     inactiveFeatures.splice(0, inactiveFeatures.length);
     // });
 
+    it("renders title and text", () => {
+        const store = getStore();
+        const wrapper = shallowMount(CalibrationResults, {localVue, store});
+        const title = wrapper.find("h3");
+        // expectTranslated(title, "Review calibration results", "Examiner les résultats de l'étalonnage", store);
+        // const text = wrapper.find("p");
+        // expectTranslated(text, "Comparison of unadjusted estimates (uncalibrated) to model estimates calibrated to spectrum results as specified in calibration options above.", "Comparaison des estimations non ajustées (non calibrées) aux estimations du modèle calées sur les résultats du spectre comme spécifié dans les options de calage ci-dessus.", store);
+    });
+
     it("renders barchart", async () => {
         const store = getStore();
         const wrapper = shallowMount(CalibrationResults, {localVue, store});
