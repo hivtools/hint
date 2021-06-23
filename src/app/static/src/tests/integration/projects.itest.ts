@@ -78,7 +78,7 @@ describe("Projects actions", () => {
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
-        await actions.newVersion({commit, rootState: emptyState(), state} as any);
+        await actions.newVersion({commit, rootState: emptyState(), state} as any, "version note");
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(5);
             expect(commit.mock.calls[2][0]["type"]).toBe(ProjectsMutations.SetVersionUploadPending);
