@@ -1,10 +1,14 @@
-# hint 1.40.0
+# hint 1.41.0
 
 * Add bar chart to model calibrate page
 
-# hint 1.39.0
+# hint 1.40.0
 
 * Create an endpoint for model calibrate bar chart
+
+# hint 1.39.0
+
+* Add note text area for copy dialog in project history
 
 # hint 1.38.0
 

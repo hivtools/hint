@@ -85,6 +85,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                         PROJECT_VERSION.ID,
                         PROJECT_VERSION.CREATED,
                         PROJECT_VERSION.UPDATED,
+                        PROJECT_VERSION.NOTE,
                         PROJECT_VERSION.VERSION_NUMBER)
                         .from(PROJECT)
                         .join(PROJECT_VERSION)

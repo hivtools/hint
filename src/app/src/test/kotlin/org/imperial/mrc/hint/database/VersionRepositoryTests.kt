@@ -228,10 +228,11 @@ class VersionRepositoryTests
         setUpHashAndVersionFile("survey_hash", "survey_file", versionId, "survey", false)
         sut.saveVersionState(versionId, projectId, uid, "TEST STATE")
 
-        sut.promoteVersion(versionId, "newVersionId", newProjectId, uid)
+        sut.promoteVersion(versionId, "newVersionId", newProjectId, uid, "version note")
 
         val newVersion = sut.getVersion("newVersionId")
         assertThat(newVersion.id).isEqualTo("newVersionId")
+        assertThat(newVersion.note).isEqualTo("version note")
         val created = LocalDateTime.parse(newVersion.created, ISO_LOCAL_DATE_TIME)
         assertThat(created).isBetween(now, soon)
 
@@ -239,7 +240,10 @@ class VersionRepositoryTests
         assertThat(updated).isBetween(now, soon)
 
         val newVersionRecord =
-                dsl.select(PROJECT_VERSION.STATE, PROJECT_VERSION.PROJECT_ID, PROJECT_VERSION.VERSION_NUMBER)
+                dsl.select(PROJECT_VERSION.STATE,
+                        PROJECT_VERSION.PROJECT_ID,
+                        PROJECT_VERSION.VERSION_NUMBER,
+                        PROJECT_VERSION.NOTE)
                         .from(PROJECT_VERSION)
                         .where(PROJECT_VERSION.ID.eq("newVersionId"))
                         .fetchOne()
@@ -247,6 +251,7 @@ class VersionRepositoryTests
         assertThat(newVersionRecord[PROJECT_VERSION.STATE]).isEqualTo("TEST STATE")
         assertThat(newVersionRecord[PROJECT_VERSION.PROJECT_ID]).isEqualTo(newProjectId)
         assertThat(newVersionRecord[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(1)
+        assertThat(newVersionRecord[PROJECT_VERSION.NOTE]).isEqualTo("version note")
 
         val files = sut.getVersionFiles("newVersionId")
         assertThat(files.keys.count()).isEqualTo(2)
@@ -255,6 +260,24 @@ class VersionRepositoryTests
         assertThat(files["survey"]!!.hash).isEqualTo("survey_hash")
         assertThat(files["survey"]!!.filename).isEqualTo("survey_file")
     }
+
+    @Test
+    fun `can promote a version to a new project with empty notes`() {
+        val uid = setupUser()
+        val projectId = setupProject(uid)
+        val newProjectId = setupProject(uid)
+        sut.saveVersion(versionId, projectId)
+        setUpHashAndVersionFile("pjnz_hash", "pjnz_file", versionId, "pjnz", false)
+        setUpHashAndVersionFile("survey_hash", "survey_file", versionId, "survey", false)
+        sut.saveVersionState(versionId, projectId, uid, "TEST STATE")
+
+        sut.promoteVersion(versionId, "newVersionId", newProjectId, uid)
+
+        val newVersion = sut.getVersion("newVersionId")
+        assertThat(newVersion.id).isEqualTo("newVersionId")
+        assertThat(newVersion.note).isEqualTo(null)
+    }
+
 
     @Test
     fun `copy version throws error if version does not exist`() {
