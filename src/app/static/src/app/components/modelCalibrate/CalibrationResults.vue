@@ -55,7 +55,6 @@ interface Methods {
 
 interface Computed {
     calibratePlotDefaultSelections: UnadjustedBarchartSelections;
-    allData: any;
     chartData: any;
     filterConfig: FilterConfig;
     filters: Filter[];
@@ -81,9 +80,6 @@ export default Vue.extend<unknown, Methods, Computed, unknown>({
                 selections: (state) => state.calibratePlot,
             }
         ),
-        allData: mapStateProp<ModelCalibrateState, any>(namespace, (state) => {
-            return state.calibratePlotResult ? state.calibratePlotResult : [];
-        }),
         chartData: mapStateProp<ModelCalibrateState, any>(
             namespace,
             (state) => {
