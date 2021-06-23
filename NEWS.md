@@ -1,3 +1,8 @@
+
+# hint 1.39.0
+
+* Add note text area for copy dialog in project history
+
 # hint 1.38.0
 
 * Support uploading edited input files, behind feature switch for now

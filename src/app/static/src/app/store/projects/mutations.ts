@@ -1,6 +1,6 @@
 import {MutationTree} from "vuex";
 import {ProjectsState} from "./projects";
-import {PayloadWithType, Version, Project, VersionIds, CurrentProject} from "../../types";
+import {PayloadWithType, Version, Project, CurrentProject} from "../../types";
 import {Error} from "../../generated";
 import {router} from "../../router";
 
