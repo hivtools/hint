@@ -508,7 +508,7 @@ const fr: Partial<Translations> = {
     axeTechnicalHeading: "Informations techniques sur l'accessibilité de ce site Web",
     axeTechnicalParagraph1: "Nous nous engageons à rendre son site Web accessible conformément aux\n" +
         "                    Organismes sectoriels (sites Web et applications mobiles) (No. 2) Règlement sur l'accessibilité 2018.",
-    axeTechnicalParagraph2: "Ce site Web est partiellement conforme au <a href=\"https://www.w3.org/Translations/WCAG20-fr/\" target='_blank' rel='noopener noreferrer'> Web Content Accessibility Guidelines version 2.0\n" +
+    axeTechnicalParagraph2: "Ce site Web est partiellement conforme au <a href=\"https://www.w3.org/Translations/WCAG20-fr/\" target='_blank' rel='noopener noreferrer'> Web Content Accessibility Guidelines version 2.1\n" +
         "                    </a> Norme AA, en raison des problèmes connus énumérés ci-dessus.",
     axeReportingHeading: "Signaler des problèmes d'accessibilité",
     axeReportingParagraph1: "Si vous avez besoin d'informations sur ce site Web dans un format différent, tel que PDF accessible, gros caractères, facile\n" +
@@ -716,6 +716,11 @@ const pt: Partial<Translations> = {
     add: "adicionar",
     adjustScale: "Ajustar a escala",
     adrKey: "Chave de acesso ADR",
+    adrAccessLevel: "Nível de acesso ADR:",
+    adrRead: "Apenas leitura",
+    adrReadTooltip: "Não tem actualmente permissões de escrita para este conjunto de dados e não poderá carregar ficheiros para o ADR",
+    adrReadWrite: "Ler & Escrever",
+    adrReadWriteTooltip: "Tem permissões de leitura e escrita para este conjunto de dados e pode empurrar os ficheiros de saída para ADR",
     adrTooltip: "Para importar dados do ADR, tem de fornecer a sua chave de acesso ADR. " +
         "Isto pode ser encontrado na sua página de perfil ADR",
     age: "Idade",
@@ -724,6 +729,49 @@ const pt: Partial<Translations> = {
     ART: "TARV",
     apiCouldNotParseError: "Não foi possível analisar a resposta da API. Por favor, contacte o apoio.",
     apiMissingError: "A resposta da API falhou mas não continha qualquer informação de erro. Por favor, contacte o apoio.",
+    axe: "Acessibilidade",
+    axeOnNaomiHeading: "Acessibilidade na Naomi",
+    axeOnNaomiParagraph1: "Esta declaração aplica-se ao conteúdo publicado em <a href=\"https://naomi.unaids.org/\" target='_blank' rel='noopener noreferrer'> naomi.unaids.org </a>",
+    axeOnNaomiParagraph2: "Queremos que o maior número possível de pessoas possa utilizar este website. Por exemplo, isso significa que deverá ser capaz de o fazer:",
+    axeOnNaomiPurposeList: "<li>Redimensionar a sua janela com o conteúdo a ser reformatado de forma apropriada</li>\n" +
+    "                       <li>Ajuste o tamanho do seu texto sem que o site se torne menos utilizável</li>\n" +
+    "                       <li>Ler texto facilmente devido ao contraste suficiente entre o primeiro plano e os elementos de fundo</li>",
+    axeOnNaomiParagraph3: "<a href=\"https://mcmw.abilitynet.org.uk/\" target='_blank' rel='noopener noreferrer'>AbilityNet</a> \n" +
+    "                      tem conselhos para tornar o seu dispositivo mais fácil de usar se tiver uma deficiência.",
+    axeHowHeading: "Como é acessível o sítio web",
+    axeHowContent: "Partes deste website podem não ser totalmente acessíveis. Por exemplo:",
+    axeHowExampleList: "<li>Pode não ser inteiramente navegável pelo teclado</li>\n" +
+    "                   <li>Alguns gráficos e tabelas podem não ser correctamente interpretados pelos leitores de ecrã</li>\n" +
+    "                   <li>Alguns elementos do formulário podem carecer de nomes descritivos ou rótulos</li>\n" +
+    "                   <li>Algumas frases podem não ter sido traduzidas correctamente</li>\n" +
+    "                   <li>Alguns elementos da forma podem não ter contrastes de cor suficientes</li>\n" +
+    "                   <li>Algumas páginas podem não ter a opção de saltar a navegação e saltar para o conteúdo</li>",
+    axeWhatHeading: "O que fazemos sobre questões conhecidas",
+    axeWhatContent: "Trabalhamos para atingir e manter as normas <a href=\"https://www.w3.org/TR/WCAG21/\" target='_blank' rel='noopener noreferrer'> WCAG 2.1 AA </a>,\n" +
+    "                mas nem sempre é possível que todo o nosso\n" +
+    "                conteúdo seja acessível. Quando o conteúdo não é acessível, iremos declarar uma razão, avisar os utilizadores e\n"+
+    "                oferecer alternativas.",
+    axeTechnicalHeading: "Informação técnica sobre a acessibilidade deste sítio web",
+    axeTechnicalParagraph1: "Estamos empenhados em tornar este sítio Web acessível de acordo com os\n" +
+    "                        Organismos do Sector Público (Sítios Web e Aplicações Móveis) (No. 2) Regulamentos de Acessibilidade de 2018.",
+    axeTechnicalParagraph2: "Este website está parcialmente em conformidade com as <a href=\"https://www.w3.org/TR/WCAG21/\" target='_blank' rel='noopener noreferrer'>\n" +
+    "                        Web Content Accessibility Guidelines version 2.1</a> norma AA, devido às questões conhecidas acima enumeradas.",
+    axeReportingHeading: "Comunicação de questões de acessibilidade",
+    axeReportingParagraph1: "Se necessitar de informação neste sítio web num formato diferente como PDF acessível, impressão grande, leitura \n" +
+    "                        fácil, gravação áudio ou braille, ou se encontrar algum problema de acessibilidade não listado nesta página, \n" +
+    "                        por favor contacte <a href=\"mailto:reside@imperial.ac.uk\"> reside@imperial.ac.uk </a>.",
+    axeReportingParagraph2: "Consideraremos o seu pedido e responder-lhe-emos dentro de 7 dias.",
+    axeEnforcementHeading: "Procedimento de execução",
+    axeEnforcementParagraph: "A Comissão de Igualdade e Direitos Humanos (EHRC) é responsável pela aplicação dos Organismos do Sector Público\n" +
+    "                        (Sítios Web e Aplicações Móveis) (No. 2) Regulamentos de Acessibilidade 2018 (os\n" +
+    "                        'regulamentos de acessibilidade'). Se não estiver satisfeito com a forma como respondemos à sua queixa,\n" +
+    "                        <a href = \"https://www.equalityadvisoryservice.com/\" target='_blank' rel='noopener noreferrer'>contacte o Equality Advisory and Support\n" +
+    "                        Service (EASS)</a>.",
+    axeTestHeading: "Como testamos este sítio web",
+    axeTestParagraph: "Este sítio Web foi testado pela última vez quanto à conformidade de acessibilidade em 24 de Fevereiro de 2021, e estes testes\n" +
+    "                  foram realizados internamente utilizando as ferramentas <a href=\"https://accessibilityinsights.io/en/\" target='_blank' rel='noopener noreferrer'>Accessibility Insights</a>.",
+    axeUpdateHeading: "Última actualização",
+    axeUpdateParagraph: "Esta declaração foi preparada a 24 de Fevereiro de 2021. Foi actualizada pela última vez a 26 de Fevereiro de 2021.",
     badUsernamePassword: "O nome de utilizador ou palavra-passe está incorreto.",
     bar: "Bar",
     back: "voltar",
@@ -744,6 +792,7 @@ const pt: Partial<Translations> = {
     contact: "Contacto",
     continue: "continuar",
     copyLatestToNewProject: "Copiar última atualização para um novo projeto",
+    copyNoteHeader: "Notas: (a sua razão para copiar o projecto)",
     copyToNewProject: "Copiar para um novo projeto",
     copyToNewProjectHistoryHeader: "Copiar para",
     couldNotParse: "Não foi possível analisar a resposta da API. Por favor, contacte o apoio.",
@@ -795,6 +844,7 @@ const pt: Partial<Translations> = {
     importingFiles: "Importação de ficheiros - isto pode demorar vários minutos. Por favor, não feche o seu navegador.",
     indicator: "Indicador",
     initialisingFit: "Inicialização do ajuste do modelo",
+    inputFiles: "Ficheiros de entrada",
     invalidPassword: "Por favor, introduza uma nova palavra-passe com pelo menos 6 caracteres.",
     lastSaved: "Último projeto guardada",
     lastUpdated: "Última atualização",
@@ -821,6 +871,7 @@ const pt: Partial<Translations> = {
     noMapData: "Não existem dados disponíveis para a combinação selecionada. Por favor, reveja a combinação dos valores de filtro selecionados.",
     noneProvided: "nenhum dado fornecido",
     noRecords: " 'Não há registos que correspondam ao seu pedido'",
+    noteHeader: "Notas: (a sua razão para salvar como uma nova versão)",
     notUsed: "Não utilizado",
     ok: "OK",
     or: "ou",
@@ -886,6 +937,7 @@ const pt: Partial<Translations> = {
     uniqueProjectName: "Por favor, escolha um nome único",
     updatePassword: "Atualizar palavra-passe",
     upload: "Carregar",
+    uploadingStatus: "Carregamento {{ fileNumber }} de {{ totalFiles }} (isto pode demorar um pouco)",
     uploadBaseline: "Carregar dados de base",
     uploadComplete: "Carregamento concluído",
     uploadFileOutputSummary: "Relatório de síntese",
