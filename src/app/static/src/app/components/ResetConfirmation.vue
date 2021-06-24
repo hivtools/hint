@@ -14,6 +14,11 @@
             <p v-if="isGuest" v-translate="'savePrompt'"></p>
             <p v-if="!isGuest" v-translate="'savePromptLoggedIn'"></p>
 
+            <div id="noteHeader" class="form-group">
+                <label for="resetVersionNoteControl"><span v-translate="'noteHeader'"></span></label>
+                <textarea class="form-control" id="resetVersionNoteControl" v-model="versionNote" rows="3"></textarea>
+            </div>
+
             <template v-if="!waitingForVersion" v-slot:footer>
                 <button type="button"
                         class="btn btn-red"
@@ -48,7 +53,8 @@
     interface Computed {
         changesToRelevantSteps: StepDescription[],
         currentVersionId: string | null,
-        errorsCount: number
+        errorsCount: number,
+        currentVersionNote: string
     }
 
     interface Props {
@@ -59,19 +65,24 @@
 
     interface Data {
         waitingForVersion: boolean
+        versionNote: string
     }
 
     export default Vue.extend<Data, unknown, Computed, any>({
         props: ["open", "continueEditing", "cancelEditing"],
         data: function () {
             return {
-                waitingForVersion: false
+                waitingForVersion: false,
+                versionNote: ""
             }
         },
         computed: {
             changesToRelevantSteps: mapGetterByName("stepper", "changesToRelevantSteps"),
             currentVersionId: mapStateProp<ProjectsState, string | null>("projects", state => {
                 return state.currentVersion && state.currentVersion.id;
+            }),
+            currentVersionNote: mapStateProp<ProjectsState, string>("projects", state => {
+                return state.currentVersion?.note || "";
             }),
             ...mapGetters(["isGuest"]),
             errorsCount: mapStateProp<ErrorsState, number>("errors", state => {
@@ -84,7 +95,7 @@
                     this.continueEditing();
                 } else {
                     this.waitingForVersion = true;
-                    this.newVersion();
+                    this.newVersion(encodeURIComponent(this.versionNote));
                 }
             },
             newVersion: mapActionByName("projects", "newVersion")
@@ -100,6 +111,11 @@
                 if (this.waitingForVersion && (newVal > oldVal)) {
                     this.waitingForVersion = false;
                     this.cancelEditing();
+                }
+            },
+            open: function () {
+                if (this.open) {
+                    this.versionNote = this.currentVersionNote;
                 }
             }
         },

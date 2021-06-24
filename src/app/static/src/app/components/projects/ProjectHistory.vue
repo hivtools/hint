@@ -145,6 +145,10 @@
                    v-translate:placeholder="'projectName'"
                    @keyup.enter="confirmPromotion(newProjectName)"
                    v-model="newProjectName"/>
+            <div id="promoteNote" class="form-group pt-3">
+                <label class="h5" for="promoteNoteControl"><span v-translate="'copyNoteHeader'"></span></label>
+                <textarea class="form-control" id="promoteNoteControl" v-model="versionNote" rows="3"></textarea>
+            </div>
             <template v-slot:footer>
                 <button type="button"
                         class="btn btn-red"
@@ -206,6 +210,7 @@
         versionToPromote: VersionIds | null;
         newProjectName: string;
         selectedVersionNumber: string;
+        versionNote: string;
     }
 
     interface Computed {
@@ -254,7 +259,8 @@
                 newProjectName: "",
                 selectedVersionNumber: "",
                 projectToRename: null,
-                renamedProjectName: ''
+                renamedProjectName: "",
+                versionNote: ""
             };
         },
         computed: {
@@ -325,6 +331,7 @@
                 this.projects.filter(project => {
                     if (project.id === projectId) {
                         this.newProjectName = project.name
+                        this.versionNote = project.versions.find(version => version.id === versionId)!.note || "";
                     }
                 })
                 this.versionToPromote = {projectId, versionId};
@@ -352,6 +359,7 @@
                     const versionPayload: versionPayload = {
                         version: this.versionToPromote!,
                         name: this.newProjectName,
+                        note: this.versionNote
                     };
                     this.promoteVersionAction(versionPayload);
                     this.versionToPromote = null;
@@ -406,7 +414,7 @@
         directives: {
             "b-toggle": VBToggle,
             "tooltip": VTooltip
-        },
+        }
     });
 </script>
 

@@ -38,7 +38,7 @@ class ProjectsControllerTests
         on { getVersionId() } doReturn "testVersion"
     }
 
-    private val mockVersion = Version("testVersion", "createdTime", "updatedTime", 1)
+    private val mockVersion = Version("testVersion", "createdTime", "updatedTime", 1, "version notes")
 
     private val parser = ObjectMapper()
 
@@ -55,9 +55,35 @@ class ProjectsControllerTests
 
         val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock())
 
-        val result = sut.newProject("testProject")
+        val result = sut.newProject("testProject", null)
 
         verify(mockVersionRepo).saveVersion("testVersion", 99)
+
+        val resultJson = parser.readTree(result.body)["data"]
+
+        assertThat(resultJson["id"].asInt()).isEqualTo(99)
+        assertThat(resultJson["name"].asText()).isEqualTo("testProject")
+        val versions = resultJson["versions"] as ArrayNode
+        assertThat(versions.count()).isEqualTo(1)
+        assertExpectedVersion(versions[0])
+    }
+
+    @Test
+    fun `creates new project and add notes`()
+    {
+        val mockVersionRepo = mock<VersionRepository> {
+            on { getVersion("testVersion") } doReturn mockVersion
+        }
+
+        val mockProjectRepo = mock<ProjectRepository> {
+            on { saveNewProject("testUser", "testProject", null, "notes") } doReturn 99
+        }
+
+        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock())
+
+        val result = sut.newProject("testProject", "notes")
+        verify(mockProjectRepo).saveNewProject("testUser", "testProject",null, "notes")
+        verify(mockVersionRepo).saveVersion("testVersion", 99, null)
 
         val resultJson = parser.readTree(result.body)["data"]
 
@@ -75,9 +101,9 @@ class ProjectsControllerTests
             on { getVersion("testVersion") } doReturn mockVersion
         }
         val sut = ProjectsController(mockSession, mockVersionRepo, mock(), mock())
-        val result = sut.newVersion(99, "parentVersion")
+        val result = sut.newVersion(99, "parentVersion", "version notes")
 
-        verify(mockVersionRepo).copyVersion("parentVersion", "testVersion", 99, "testUser")
+        verify(mockVersionRepo).copyVersion("parentVersion", "testVersion", 99, "testUser", "version notes")
 
         val resultJson = parser.readTree(result.body)["data"]
         assertExpectedVersion(resultJson)
@@ -86,8 +112,8 @@ class ProjectsControllerTests
     @Test
     fun `gets Projects`()
     {
-        val mockVersions = listOf(Version("testVersion", "createdTime", "updatedTime", 1))
-        val mockProjects = listOf(Project(99, "testProject", mockVersions))
+        val mockVersions = listOf(Version("testVersion", "createdTime", "updatedTime", 1, "version notes"))
+        val mockProjects = listOf(Project(99, "testProject", mockVersions, note= "notes"))
         val mockProjectRepo = mock<ProjectRepository> {
             on { getProjects("testUser") } doReturn mockProjects
         }
@@ -99,10 +125,12 @@ class ProjectsControllerTests
         val projects = resultJson as ArrayNode
         assertThat(projects.count()).isEqualTo(1)
         assertThat(projects[0]["id"].asInt()).isEqualTo(99)
+        assertThat(projects[0]["note"].asText()).isEqualTo("notes")
         assertThat(projects[0]["name"].asText()).isEqualTo("testProject")
         assertThat(projects[0]["sharedBy"].asText()).isEqualTo("")
         val versions = projects[0]["versions"] as ArrayNode
         assertThat(versions.count()).isEqualTo(1)
+        assertThat(versions[0]["note"].asText()).isEqualTo("version notes")
         assertExpectedVersion(versions[0])
     }
 
@@ -232,7 +260,7 @@ class ProjectsControllerTests
         assertThatThrownBy { sut.cloneProjectToUser(1, userList) }
                 .isInstanceOf(UserException::class.java)
                 .hasMessageContaining("userDoesNotExist")
-        verify(mockRepo, Times(0)).saveNewProject(any(), any(),any())
+        verify(mockRepo, Times(0)).saveNewProject(any(), any(), any(), any())
 
     }
 
@@ -339,11 +367,11 @@ class ProjectsControllerTests
                     Version("v2", "createdTime", "updatedTime", 1)))
         }
         val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock())
-        val result = sut.promoteVersion(1, "testVersion", "newProjectName")
+        val result = sut.promoteVersion(1, "testVersion", "newProjectName", "test promoted note")
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         verify(mockProjectRepo).saveNewProject("testUser", "newProjectName")
-        verify(mockVersionRepo).promoteVersion("testVersion", "testVersion", 0, "testUser")
+        verify(mockVersionRepo).promoteVersion("testVersion", "testVersion", 0, "testUser", "test promoted note")
         verify(mockVersionRepo).getVersion("testVersion")
     }
 
@@ -360,11 +388,40 @@ class ProjectsControllerTests
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
+    @Test
+    fun `can save project note`()
+    {
+        val mockRepo = mock<ProjectRepository>() {
+            on { getProjectFromVersionId("testVersion", "testUser") } doReturn Project(123, "project", listOf())
+        }
+        val sut = ProjectsController(mockSession, mock(), mockRepo, mock())
+        val result = sut.updateProjectNote(1, "notes")
+
+        verify(mockRepo).updateProjectNote(1, "testUser", "notes")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
+    fun `can save version note`()
+    {
+        val mockProjectRepo = mock<ProjectRepository>()
+        val mockDetails = VersionDetails("TEST STATE", mapOf("pjnz" to VersionFile("hash1", "filename1", false)))
+        val mockRepo = mock<VersionRepository> {
+            on { getVersionDetails("testVersion", 99, "testUser") } doReturn mockDetails
+        }
+
+        val sut = ProjectsController(mockSession, mockRepo, mockProjectRepo, mock())
+        val result = sut.updateVersionNote("testVersion", 99, "notes")
+
+        verify(mockRepo).updateVersionNote("testVersion", 99, "testUser", "notes")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+    }
 
     private fun assertExpectedVersion(node: JsonNode)
     {
         assertThat(node["id"].asText()).isEqualTo("testVersion")
         assertThat(node["created"].asText()).isEqualTo("createdTime")
         assertThat(node["updated"].asText()).isEqualTo("updatedTime")
+        assertThat(node["note"].asText()).isEqualTo("version notes")
     }
 }

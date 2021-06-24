@@ -41,7 +41,6 @@ class ProjectRepositoryTests
     private lateinit var dsl: DSLContext
 
     private val testEmail = "test@test.com"
-
     @Test
     fun `can get project`()
     {
@@ -61,15 +60,30 @@ class ProjectRepositoryTests
     }
 
     @Test
+    fun `can get project notes`()
+    {
+        val uid = setupUser()
+
+        val projectId = sut.saveNewProject(uid, "testProjectRepo", note = "test project notes")
+        versionRepo.saveVersion("v11", projectId)
+        val project = sut.getProject(projectId, uid)
+        assertThat(project.name).isEqualTo("testProjectRepo")
+        assertThat(project.note).isEqualTo("test project notes")
+        assertThat(project.id).isEqualTo(projectId)
+        assertThat(project.versions[0].id).isEqualTo("v11")
+    }
+
+    @Test
     fun `can get project when cloned`()
     {
         val uid = setupUser()
 
-        val projectId = sut.saveNewProject(uid, "testProjectRepo", uid)
+        val projectId = sut.saveNewProject(uid, "testProjectRepo", uid, "test cloned note")
         versionRepo.saveVersion("v1", projectId)
         val project = sut.getProject(projectId, uid)
         assertThat(project.name).isEqualTo("testProjectRepo")
         assertThat(project.sharedBy).isEqualTo(uid)
+        assertThat(project.note).isEqualTo("test cloned note")
         assertThat(project.id).isEqualTo(projectId)
         assertThat(project.versions.count()).isEqualTo(1)
         assertThat(project.versions[0].versionNumber).isEqualTo(1)
@@ -105,11 +119,12 @@ class ProjectRepositoryTests
     {
         val uid = setupUser()
 
-        val projectId = sut.saveNewProject(uid, "testProjectRepo")
-        versionRepo.saveVersion("v1", projectId)
+        val projectId = sut.saveNewProject(uid, "testProjectRepo", note = "notes")
+        versionRepo.saveVersion("v1", projectId, "notes")
         val project = sut.getProjectFromVersionId("v1", uid)
         assertThat(project.name).isEqualTo("testProjectRepo")
         assertThat(project.sharedBy).isEqualTo(null)
+        assertThat(project.note).isEqualTo("notes")
         assertThat(project.id).isEqualTo(projectId)
         assertThat(project.versions.count()).isEqualTo(1)
         assertThat(project.versions[0].versionNumber).isEqualTo(1)
@@ -158,7 +173,7 @@ class ProjectRepositoryTests
     {
         val uid = setupUser()
 
-        val projectId = sut.saveNewProject(uid, "testProjectRepo", uid)
+        val projectId = sut.saveNewProject(uid, "testProjectRepo", uid, "test note")
 
         val project = dsl.selectFrom(PROJECT)
                 .where(PROJECT.ID.eq(projectId))
@@ -167,6 +182,7 @@ class ProjectRepositoryTests
         assertThat(project[PROJECT.USER_ID]).isEqualTo(uid)
         assertThat(project[PROJECT.NAME]).isEqualTo("testProjectRepo")
         assertThat(project[PROJECT.SHARED_BY]).isEqualTo(uid)
+        assertThat(project[PROJECT.NOTE]).isEqualTo("test note")
     }
 
     @Test
@@ -225,6 +241,21 @@ class ProjectRepositoryTests
     }
 
     @Test
+    fun `can save project note`()
+    {
+        val uid = setupUser()
+
+        val projectId = sut.saveNewProject(uid, "testProjectRepo")
+        sut.updateProjectNote(projectId, uid, "test project notes")
+
+        val project = dsl.selectFrom(PROJECT)
+                .where(PROJECT.ID.eq(projectId))
+                .and(PROJECT.USER_ID.eq(uid))
+                .fetchOne()
+        assertThat(project[PROJECT.NOTE]).isEqualTo("test project notes")
+    }
+
+    @Test
     fun `can get projects for user`()
     {
         val userId = setupUser()
@@ -238,7 +269,7 @@ class ProjectRepositoryTests
         val ago_4h = now().minus(4, ChronoUnit.HOURS)
 
 
-        val v1Id = insertProject("v1", userId, "another.user@example.com")
+        val v1Id = insertProject("v1", userId, "another.user@example.com", "test project note")
         val v2Id = insertProject("v2", userId)
         val anotherProject = insertProject("v2", anotherUserId) //should not be returned
 
@@ -267,6 +298,7 @@ class ProjectRepositoryTests
         assertThat(p1.id).isEqualTo(v1Id)
         assertThat(p1.name).isEqualTo("v1")
         assertThat(p1.sharedBy).isEqualTo("another.user@example.com")
+        assertThat(p1.note).isEqualTo("test project note")
         assertThat(p1.versions.count()).isEqualTo(2)
         assertThat(p1.versions[0].id).isEqualTo("v1s2")
         assertThat(p1.versions[0].created).isEqualTo(format(ago_2h))
@@ -290,10 +322,10 @@ class ProjectRepositoryTests
         return formatter.format(LocalDateTime.ofInstant(time, ZoneId.systemDefault()))
     }
 
-    private fun insertProject(name: String, userId: String, sharedBy: String? = null): Int
+    private fun insertProject(name: String, userId: String, sharedBy: String? = null, note: String? = null): Int
     {
-        val saved = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME, PROJECT.SHARED_BY)
-                .values(userId, name, sharedBy)
+        val saved = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME, PROJECT.SHARED_BY, PROJECT.NOTE)
+                .values(userId, name, sharedBy, note)
                 .returning(PROJECT.ID)
                 .fetchOne()
 

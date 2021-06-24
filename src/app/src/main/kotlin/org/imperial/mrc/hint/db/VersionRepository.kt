@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
 
 interface VersionRepository
 {
-    fun saveVersion(versionId: String, projectId: Int?)
+    fun saveVersion(versionId: String, projectId: Int?, note: String? = null)
     fun getVersion(versionId: String): Version
 
     // returns true if a new hash is saved, false if it already exists
@@ -28,21 +28,27 @@ interface VersionRepository
     fun getVersionFiles(versionId: String): Map<String, VersionFile>
     fun setFilesForVersion(versionId: String, files: Map<String, VersionFile?>)
     fun saveVersionState(versionId: String, projectId: Int, userId: String, state: String)
-    fun copyVersion(parentVersionId: String, newVersionId: String, projectId: Int, userId: String)
-    fun promoteVersion(parentVersionId: String, newVersionId: String, newProjectId: Int, userId: String)
-    fun cloneVersion(parentVersionId: String, newVersionId: String, newProjectId: Int)
+    fun copyVersion(parentVersionId: String, newVersionId: String, projectId: Int, userId: String, note: String? = null)
+    fun promoteVersion(
+            parentVersionId: String,
+            newVersionId: String,
+            newProjectId: Int,
+            userId: String,
+            note: String? = null)
+    fun cloneVersion(parentVersionId: String, newVersionId: String, newProjectId: Int, note: String? = null)
 
     fun getVersionDetails(versionId: String, projectId: Int, userId: String): VersionDetails
 
     fun deleteVersion(versionId: String, projectId: Int, userId: String)
     fun versionExists(versionId: String, userId: String): Boolean
+    fun updateVersionNote(versionId: String, projectId: Int, userId: String, note: String)
 }
 
 @Component
 class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
 {
 
-    override fun saveVersion(versionId: String, projectId: Int?)
+    override fun saveVersion(versionId: String, projectId: Int?, note: String?)
     {
         val version = dsl.selectFrom(PROJECT_VERSION)
                 .where(PROJECT_VERSION.ID.eq(versionId))
@@ -53,6 +59,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
             val versionNumber = getNextVersionNumber(projectId)
             dsl.insertInto(PROJECT_VERSION)
                     .set(PROJECT_VERSION.ID, versionId)
+                    .set(PROJECT_VERSION.NOTE, note)
                     .set(PROJECT_VERSION.PROJECT_ID, projectId)
                     .set(PROJECT_VERSION.VERSION_NUMBER, versionNumber)
                     .execute()
@@ -64,13 +71,14 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
         val result = dsl.select(PROJECT_VERSION.ID,
                 PROJECT_VERSION.CREATED,
                 PROJECT_VERSION.UPDATED,
+                PROJECT_VERSION.NOTE,
                 PROJECT_VERSION.VERSION_NUMBER)
                 .from(PROJECT_VERSION)
                 .where(PROJECT_VERSION.ID.eq(versionId))
                 .fetchOne()
 
         return Version(result[PROJECT_VERSION.ID], result[PROJECT_VERSION.CREATED],
-                result[PROJECT_VERSION.UPDATED], result[PROJECT_VERSION.VERSION_NUMBER])
+                result[PROJECT_VERSION.UPDATED], result[PROJECT_VERSION.VERSION_NUMBER], result[PROJECT_VERSION.NOTE])
     }
 
     override fun getVersionDetails(versionId: String, projectId: Int, userId: String): VersionDetails
@@ -204,18 +212,29 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
                 .execute()
     }
 
-    override fun cloneVersion(parentVersionId: String, newVersionId: String, newProjectId: Int)
+    override fun updateVersionNote(versionId: String, projectId: Int, userId: String, note: String)
+    {
+        checkVersionExists(versionId, projectId, userId)
+        dsl.update(PROJECT_VERSION)
+                .set(PROJECT_VERSION.NOTE, note)
+                .where(PROJECT_VERSION.ID.eq(versionId))
+                .execute()
+    }
+
+    override fun cloneVersion(parentVersionId: String, newVersionId: String, newProjectId: Int, note: String?)
     {
 
         dsl.insertInto(PROJECT_VERSION,
                 PROJECT_VERSION.PROJECT_ID,
                 PROJECT_VERSION.ID,
+                PROJECT_VERSION.NOTE,
                 PROJECT_VERSION.VERSION_NUMBER,
                 PROJECT_VERSION.STATE,
                 PROJECT_VERSION.CREATED,
                 PROJECT_VERSION.UPDATED)
                 .select(dsl.select(`val`(newProjectId),
                         `val`(newVersionId),
+                        `val`(note),
                         PROJECT_VERSION.VERSION_NUMBER,
                         PROJECT_VERSION.STATE,
                         PROJECT_VERSION.CREATED,
@@ -228,12 +247,18 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
         setFilesForVersion(newVersionId, files)
     }
 
-    override fun copyVersion(parentVersionId: String, newVersionId: String, projectId: Int, userId: String)
+    override fun copyVersion(
+            parentVersionId: String,
+            newVersionId: String,
+            projectId: Int,
+            userId: String,
+            note: String?)
     {
         checkVersionExists(parentVersionId, projectId, userId)
         val versionNumber = getNextVersionNumber(projectId)
         dsl.insertInto(PROJECT_VERSION)
                 .set(PROJECT_VERSION.ID, newVersionId)
+                .set(PROJECT_VERSION.NOTE, note)
                 .set(PROJECT_VERSION.PROJECT_ID, projectId)
                 .set(PROJECT_VERSION.VERSION_NUMBER, versionNumber)
                 .set(PROJECT_VERSION.STATE, dsl.select(PROJECT_VERSION.STATE)
@@ -245,12 +270,18 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
         setFilesForVersion(newVersionId, files)
     }
 
-    override fun promoteVersion(parentVersionId: String, newVersionId: String, newProjectId: Int, userId: String)
+    override fun promoteVersion(
+            parentVersionId: String,
+            newVersionId: String,
+            newProjectId: Int,
+            userId: String,
+            note: String?)
     {
         val versionNumber = getNextVersionNumber(newProjectId)
         dsl.insertInto(PROJECT_VERSION)
                 .set(PROJECT_VERSION.ID, newVersionId)
                 .set(PROJECT_VERSION.PROJECT_ID, newProjectId)
+                .set(PROJECT_VERSION.NOTE, note)
                 .set(PROJECT_VERSION.VERSION_NUMBER, versionNumber)
                 .set(PROJECT_VERSION.STATE, dsl.select(PROJECT_VERSION.STATE)
                         .from(PROJECT_VERSION)

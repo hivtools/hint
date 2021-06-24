@@ -438,6 +438,7 @@ describe("Project history component", () => {
         expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
             {
                 "name": "newProject",
+                "note": "",
                 "version": {
                     "projectId": 1,
                     "versionId": "s11",
@@ -462,9 +463,10 @@ describe("Project history component", () => {
         expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
             {
                 "name": "newProject",
+                "note": "",
                 "version": {
                     "projectId": 1,
-                    "versionId": "s11",
+                    "versionId": "s11"
                 }
             });
     });
@@ -588,6 +590,47 @@ describe("Project history component", () => {
         const v = wrapper.find(`#p-2`).findAll(".project-cell");
 
         expect(v.at(1).findAll("small").length).toBe(0)
+    });
+
+    it("invokes promoteVersion action when confirm copy with note payload", async () => {
+        const wrapper = getWrapper(testProjects);
+        const copyLink = wrapper.find("#v-s11").find(".version-cell.copy-cell").find("button");
+        copyLink.trigger("click");
+        await Vue.nextTick();
+
+        const modal = wrapper.findAll(".modal").at(1);
+        const input = modal.find("input");
+        const copyBtn = modal.find(".modal-footer").findAll("button").at(0);
+        input.setValue("newProject");
+        wrapper.find("#promoteNote textarea").setValue("editable note")
+
+        expect(copyBtn.attributes("disabled")).toBe(undefined);
+        copyBtn.trigger("click");
+
+        await Vue.nextTick();
+        expect(mockPromoteVersion.mock.calls.length).toBe(1);
+        expect(mockPromoteVersion.mock.calls[0][1]).toStrictEqual(
+            {
+                "name": "newProject",
+                "note": "editable note",
+                "version": {
+                    "projectId": 1,
+                    "versionId": "s11",
+                }
+            });
+    });
+
+    it("can render translated copy project notes", async () => {
+        const wrapper = getWrapper(testProjects);
+        const store = wrapper.vm.$store
+        const copyLink = wrapper.find("#v-s11").find(".version-cell.copy-cell").find("button");
+        copyLink.trigger("click");
+        await Vue.nextTick();
+
+        const modal = wrapper.findAll(".modal").at(1);
+        const textarea = modal.find("#promoteNote label");
+        expectTranslated(textarea, "Notes: (your reason for copying project)",
+            "Remarques : (la raison de la copie du projet)" , store)
     });
 
 });
