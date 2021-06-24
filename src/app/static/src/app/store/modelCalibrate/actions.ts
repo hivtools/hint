@@ -7,6 +7,7 @@ import {ModelCalibrateMutation} from "./mutations";
 import {ModelRunMutation} from "../modelRun/mutations";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {freezer} from "../../utils";
+import {switches} from "../../featureSwitches";
 
 export interface ModelCalibrateActions {
     fetchModelCalibrateOptions: (store: ActionContext<ModelCalibrateState, RootState>) => void
@@ -86,7 +87,9 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                         {root: true});
                 }
                 commit(ModelCalibrateMutation.Calibrated);
-                dispatch("getCalibratePlot");
+                if (switches.modelCalibratePlot) {
+                    dispatch("getCalibratePlot");
+                }
             }
         }
         commit(ModelCalibrateMutation.Ready);

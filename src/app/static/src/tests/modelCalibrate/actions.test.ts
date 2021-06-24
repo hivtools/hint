@@ -10,6 +10,7 @@ import {
 import {actions} from "../../app/store/modelCalibrate/actions";
 import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {freezer} from "../../app/utils";
+import {switches} from "../../app/featureSwitches";
 
 const rootState = mockRootState();
 describe("ModelCalibrate actions", () => {
@@ -154,6 +155,7 @@ describe("ModelCalibrate actions", () => {
     });
 
     it("getResult commits result when successfully fetched, sets default plotting selections, and dispatches getCalibratePlot", async () => {
+        switches.modelCalibratePlot = "true";
         const testResult = {
             data: "TEST DATA",
             plottingMetadata: {
@@ -203,6 +205,43 @@ describe("ModelCalibrate actions", () => {
         expect(commit.mock.calls[2][0]).toBe("Calibrated");
         expect(commit.mock.calls[3][0]).toBe("Ready");
         expect(dispatch.mock.calls[0][0]).toBe("getCalibratePlot");
+    });
+
+    it("getResult does not dispatch getCalibratePlot when switches if off", async () => {
+        switches.modelCalibratePlot = "";
+        const testResult = {
+            data: "TEST DATA",
+            plottingMetadata: {
+                barchart: {
+                    defaults: {
+                        indicator_id: "test indicator",
+                        x_axis_id: "test_x",
+                        disaggregate_by_id: "test_dis",
+                        selected_filter_options: {"test_name": "test_value"}
+                    }
+                }
+            },
+            uploadMetadata: {
+                outputZip: {description: "spectrum output info"},
+                outputSummary: {description: "summary output info"}
+            }
+        };
+        mockAxios.onGet(`/model/calibrate/result/1234`)
+            .reply(200, mockSuccess(testResult));
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = mockModelCalibrateState({
+            calibrateId: "1234",
+            status: {
+                success: true,
+                done: true
+            } as any
+        });
+
+        await actions.getResult({commit, state, rootState, dispatch} as any);
+
+        expect(dispatch.mock.calls.length).toBe(0);
     });
 
     it("getResult commits error when unsuccessful fetch", async () => {
