@@ -3,15 +3,26 @@ package org.imperial.mrc.hint.models
 import java.sql.Timestamp
 import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
-data class Project (val id: Int, val name: String, val versions: List<Version>, val sharedBy: String?="")
+data class Project (
+        val id: Int,
+        val name: String,
+        val versions: List<Version>,
+        val sharedBy: String? = "",
+        val note: String? = null)
 
 private val formatter = ISO_LOCAL_DATE_TIME
 
-data class Version(val id: String, val created: String, val updated: String, val versionNumber: Int)
+data class Version(
+        val id: String,
+        val created: String,
+        val updated: String,
+        val versionNumber: Int,
+        val note: String? = null)
 {
-    constructor(id: String, created: Timestamp, updated: Timestamp, versionNumber: Int)
+    constructor(id: String, created: Timestamp, updated: Timestamp, versionNumber: Int, note: String?)
             : this(id,
             formatter.format(created.toLocalDateTime()),
             formatter.format(updated.toLocalDateTime()),
-            versionNumber)
+            versionNumber,
+            note)
 }

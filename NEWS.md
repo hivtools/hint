@@ -1,6 +1,26 @@
-# hint 1.35.1
+# hint 1.39.1
 
 * Bug fix: Importing from adr after fitting model should prompt new version behaviour
+
+# hint 1.39.0
+
+* Add note text area for copy dialog in project history
+
+# hint 1.38.0
+
+* Support uploading edited input files, behind feature switch for now
+
+# hint 1.37.0
+
+* Add note field to confirmation dialog when saving new version 
+
+# hint 1.36.1
+
+* Correctly scope ADR mutations/actions in upload logic
+
+# hint 1.36.0
+
+* Update Project and Version Repository and controllers to implement notes column
 
 # hint 1.35.0
 

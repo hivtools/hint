@@ -2,7 +2,6 @@ package org.imperial.mrc.hint.db
 
 import org.imperial.mrc.hint.db.Tables.PROJECT
 import org.imperial.mrc.hint.db.Tables.PROJECT_VERSION
-import org.imperial.mrc.hint.db.tables.records.ProjectRecord
 import org.imperial.mrc.hint.exceptions.ProjectException
 import org.imperial.mrc.hint.models.Project
 import org.imperial.mrc.hint.models.Version
@@ -12,12 +11,13 @@ import org.springframework.stereotype.Component
 
 interface ProjectRepository
 {
-    fun saveNewProject(userId: String, projectName: String, sharedBy: String?= null): Int
+    fun saveNewProject(userId: String, projectName: String, sharedBy: String? = null, note: String? = null): Int
     fun getProjects(userId: String): List<Project>
     fun deleteProject(projectId: Int, userId: String)
     fun getProject(projectId: Int, userId: String): Project
     fun getProjectFromVersionId(versionId: String, userId: String): Project
     fun renameProject(projectId: Int, userId: String, newName: String)
+    fun updateProjectNote(projectId: Int, userId: String, note: String)
     
 }
 
@@ -31,6 +31,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                 PROJECT.ID,
                 PROJECT.NAME,
                 PROJECT.SHARED_BY,
+                PROJECT.NOTE,
                 PROJECT_VERSION.ID,
                 PROJECT_VERSION.CREATED,
                 PROJECT_VERSION.UPDATED,
@@ -63,10 +64,10 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
         return getProject(projectId[PROJECT_VERSION.PROJECT_ID], userId)
     }
 
-    override fun saveNewProject(userId: String, projectName: String, sharedBy: String?): Int
+    override fun saveNewProject(userId: String, projectName: String, sharedBy: String?, note: String?): Int
     {
-        val result = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME, PROJECT.SHARED_BY)
-                .values(userId, projectName, sharedBy)
+        val result = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME, PROJECT.SHARED_BY, PROJECT.NOTE)
+                .values(userId, projectName, sharedBy, note)
                 .returning(PROJECT.ID)
                 .fetchOne()
 
@@ -80,9 +81,11 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                         PROJECT.ID,
                         PROJECT.NAME,
                         PROJECT.SHARED_BY,
+                        PROJECT.NOTE,
                         PROJECT_VERSION.ID,
                         PROJECT_VERSION.CREATED,
                         PROJECT_VERSION.UPDATED,
+                        PROJECT_VERSION.NOTE,
                         PROJECT_VERSION.VERSION_NUMBER)
                         .from(PROJECT)
                         .join(PROJECT_VERSION)
@@ -117,6 +120,15 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
             .execute()
     }
 
+    override fun updateProjectNote(projectId: Int, userId: String, note: String)
+    {
+        checkProjectExists(projectId, userId)
+        dsl.update(PROJECT)
+                .set(PROJECT.NOTE, note)
+                .where(PROJECT.ID.eq(projectId))
+                .execute()
+    }
+
     private fun checkProjectExists(projectId: Int, userId: String)
     {
         dsl.select(PROJECT.ID)
@@ -129,14 +141,14 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
     private fun mapProject(versions: List<Record>): Project
     {
         return Project(versions[0][PROJECT.ID], versions[0][PROJECT.NAME],
-                     mapVersion(versions), versions[0][PROJECT.SHARED_BY])
+                     mapVersion(versions), versions[0][PROJECT.SHARED_BY], versions[0][PROJECT.NOTE])
     }
 
     private fun mapVersion(records: List<Record>): List<Version>
     {
         return records.map { v ->
             Version(v[PROJECT_VERSION.ID], v[PROJECT_VERSION.CREATED],
-                    v[PROJECT_VERSION.UPDATED], v[PROJECT_VERSION.VERSION_NUMBER])
+                    v[PROJECT_VERSION.UPDATED], v[PROJECT_VERSION.VERSION_NUMBER], v[PROJECT_VERSION.NOTE])
         }
     }
 

@@ -18,7 +18,7 @@ Requirements:
 and [hintr](https://github.com/mrc-ide/hintr) and add a test user with username `test.user@example.com`
  and password `password`.
 1. Run `npm run build` from `src/app/static` to compile front-end dependencies.
-1. Run app from your IDE or by `cd src && ./gradlew :app:bootRun` to serve the app on port 8080
+1. Run app from your IDE or by `./src/gradlew -p src :app:bootRun` to serve the app on port 8080
 
 For more information about developing the front-end see [src/app/static/README](https://github.com/mrc-ide/hint/blob/master/src/app/static/README.md)
 
@@ -26,9 +26,15 @@ For more information about developing the front-end see [src/app/static/README](
 
 Ensure dependencies are running and then execute tests on the command line or through IntelliJ
 1. `./scripts/run-development-dependencies.sh`
-1. `./src/gradlew -p src app::test`
+1. `./src/gradlew -p src :app:test`
 
-To run a specific test alone, add `--test` + the [fully qualified class name](https://docs.gradle.org/current/userguide/java_testing.html#full_qualified_name_pattern) to the command. For example, the command for running ProjectsControllerTests.kt would be: `./src/gradlew -p src app::test --tests org.imperial.mrc.hint.unit.controllers.ProjectsControllerTests`
+To run a specific test alone, add `--test` + the [fully qualified class name](https://docs.gradle.org/current/userguide/java_testing.html#full_qualified_name_pattern) to the command. For example, the command for running ProjectsControllerTests.kt would be: `./src/gradlew -p src :app:test --tests org.imperial.mrc.hint.unit.controllers.ProjectsControllerTests`
+
+### Linting
+
+```shell
+./src/gradlew -p src :app:detektMain
+```
 
 ### Database Interface
 

@@ -46,6 +46,163 @@ class ProjectTests : VersionFileTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `can save project note`(isAuthorized: IsAuthorized)
+    {
+        val result = createProject()
+        assertSecureWithSuccess(isAuthorized,result,null)
+
+        if(isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = getResponseData(result)
+            assertThat(data["id"].asInt()).isGreaterThan(0)
+            assertThat(data["name"].asText()).isEqualTo("testProject")
+            val projectId = data["id"].asInt()
+
+            val savedProject = dsl.select(PROJECT.NOTE,
+                    PROJECT.NAME)
+                    .from(PROJECT)
+                    .where(PROJECT.ID.eq(projectId))
+                    .fetchOne()
+
+            assertThat(savedProject[PROJECT_VERSION.NOTE]).isEqualTo("notes")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can save version note`(isAuthorized: IsAuthorized)
+    {
+        val result = createProject()
+        assertSecureWithSuccess(isAuthorized,result,null)
+
+        if(isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = getResponseData(result)
+            assertThat(data["id"].asInt()).isGreaterThan(0)
+            assertThat(data["name"].asText()).isEqualTo("testProject")
+            val projectId = data["id"].asInt()
+
+            val versions = data["versions"] as ArrayNode
+            val versionId = versions[0]["id"].asText()
+
+            val map = LinkedMultiValueMap<String, String>()
+            map.add("note", "test version note")
+            map.add("parent", versionId)
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+            val httpEntity = HttpEntity(map, headers)
+
+            val newVersionResult = testRestTemplate.postForEntity<String>("/project/${projectId}/version/", httpEntity)
+
+            val newVersionData = getResponseData(newVersionResult)
+            val newVersionId = newVersionData["id"].asText()
+
+            val version = dsl.select(PROJECT_VERSION.NOTE)
+                    .from(PROJECT_VERSION)
+                    .where(PROJECT_VERSION.ID.eq(newVersionId))
+                    .fetchOne()
+
+            assertThat(version[PROJECT_VERSION.NOTE]).isEqualTo("test version note")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can update project note`(isAuthorized: IsAuthorized)
+    {
+        val result = createProject()
+        assertSecureWithSuccess(isAuthorized,result,null)
+
+        if(isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = getResponseData(result)
+            assertThat(data["id"].asInt()).isGreaterThan(0)
+            assertThat(data["name"].asText()).isEqualTo("testProject")
+
+            val projectId = data["id"].asInt()
+            val results = saveProjectNote(projectId)
+            assertThat(results.statusCode).isEqualTo(HttpStatus.OK)
+
+            val savedProject = dsl.select(PROJECT.NOTE,
+                    PROJECT.NAME)
+                    .from(PROJECT)
+                    .where(PROJECT.ID.eq(projectId))
+                    .fetchOne()
+
+            assertThat(savedProject[PROJECT_VERSION.NOTE]).isEqualTo("test note")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can promote project note`(isAuthorized: IsAuthorized)
+    {
+        val result = createProject()
+        assertSecureWithSuccess(isAuthorized,result,null)
+
+        if(isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = getResponseData(result)
+            assertThat(data["id"].asInt()).isGreaterThan(0)
+            assertThat(data["name"].asText()).isEqualTo("testProject")
+
+            val projectId = data["id"].asInt()
+            val versions = data["versions"] as ArrayNode
+            val versionId = versions[0]["id"].asText()
+
+            val map = LinkedMultiValueMap<String, String>()
+            map.add("name", "newProject")
+            map.add("note", "test promote project note")
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+            val httpEntity = HttpEntity(map, headers)
+
+            val promoteProjectResult = testRestTemplate.postForEntity<String>("/project/$projectId/version/$versionId/promote", httpEntity)
+
+            val promoteProjData = getResponseData(promoteProjectResult)
+
+            val promotedVersions = promoteProjData["versions"] as ArrayNode
+            val promoteProjId = promotedVersions[0]["id"].asText()
+
+            val savedProjectVersion = dsl.select(PROJECT_VERSION.NOTE)
+                    .from(PROJECT_VERSION)
+                    .where(PROJECT_VERSION.ID.eq(promoteProjId))
+                    .fetchOne()
+
+            assertThat(savedProjectVersion[PROJECT_VERSION.NOTE]).isEqualTo("test promote project note")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can update version note`(isAuthorized: IsAuthorized)
+    {
+        val result = createProject()
+        assertSecureWithSuccess(isAuthorized,result,null)
+
+        if(isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = getResponseData(result)
+            assertThat(data["id"].asInt()).isGreaterThan(0)
+            assertThat(data["name"].asText()).isEqualTo("testProject")
+
+            val projectId = data["id"].asInt()
+            val versions = data["versions"] as ArrayNode
+            val versionId = versions[0]["id"].asText()
+            val results = saveVersionNote(projectId, versionId)
+            assertThat(results.statusCode).isEqualTo(HttpStatus.OK)
+
+            val savedVersion = dsl.select(PROJECT_VERSION.NOTE)
+                    .from(PROJECT_VERSION)
+                    .where(PROJECT_VERSION.ID.eq(versionId))
+                    .fetchOne()
+
+            assertThat(savedVersion[PROJECT_VERSION.NOTE]).isEqualTo("test note")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can create new version from parent`(isAuthorized: IsAuthorized)
     {
         val createResult = createProject()
@@ -194,7 +351,6 @@ class ProjectTests : VersionFileTests()
     @EnumSource(IsAuthorized::class)
     fun `can get current project`(isAuthorized: IsAuthorized)
     {
-
         val createResult = createProject()
         val result = testRestTemplate.getForEntity<String>("/project/current")
         assertSecureWithSuccess(isAuthorized,createResult,null)
@@ -531,6 +687,7 @@ class ProjectTests : VersionFileTests()
     {
         val map = LinkedMultiValueMap<String, String>()
         map.add("name", "testProject")
+        map.add("note", "notes")
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         val httpEntity = HttpEntity(map, headers)
@@ -553,6 +710,30 @@ class ProjectTests : VersionFileTests()
 
         val httpEntity = HttpEntity(state, headers)
         val url = "/project/$projectId/version/$versionId/state/"
+        return testRestTemplate.postForEntity<String>(url, httpEntity)
+    }
+
+    private fun saveProjectNote(projectId: Int): ResponseEntity<String>
+    {
+        val headers = HttpHeaders()
+        val map = LinkedMultiValueMap<String, String>()
+        map.add("note", "test note")
+
+        val httpEntity = HttpEntity(map, headers)
+        val url = "/project/$projectId/note"
+        return testRestTemplate.postForEntity<String>(url, httpEntity)
+    }
+
+    private fun saveVersionNote(projectId: Int, versionId: String): ResponseEntity<String>
+    {
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+
+        val map = LinkedMultiValueMap<String, String>()
+        map.add("note", "test note")
+
+        val httpEntity = HttpEntity(map, headers)
+        val url = "/project/$projectId/version/$versionId/note"
         return testRestTemplate.postForEntity<String>(url, httpEntity)
     }
 

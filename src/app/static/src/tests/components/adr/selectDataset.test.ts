@@ -50,42 +50,48 @@ describe("select dataset", () => {
         resource_type: schemas.pjnz,
         url: "pjnz.pjnz",
         last_modified: "2020-11-01",
-        metadata_modified: "2020-11-02"
+        metadata_modified: "2020-11-02",
+        name: "PJNZ resource"
     }
     const shape = {
         id: "2",
         resource_type: schemas.shape,
         url: "shape.geojson",
         last_modified: "2020-11-03",
-        metadata_modified: "2020-11-04"
+        metadata_modified: "2020-11-04",
+        name: "Shape Resource"
     }
     const pop = {
         id: "3",
         resource_type: schemas.population,
         url: "pop.csv",
         last_modified: "2020-11-05",
-        metadata_modified: "2020-11-06"
+        metadata_modified: "2020-11-06",
+        name: "Population Resource"
     }
     const survey = {
         id: "4",
         resource_type: schemas.survey,
         url: "survey.csv",
         last_modified: "2020-11-07",
-        metadata_modified: "2020-11-08"
+        metadata_modified: "2020-11-08",
+        name: "Survey Resource"
     }
     const program = {
         id: "5",
         resource_type: schemas.programme,
         url: "program.csv",
         last_modified: "2020-11-07",
-        metadata_modified: "2020-11-08"
+        metadata_modified: "2020-11-08",
+        name: "Program Resource"
     }
     const anc = {
         id: "6",
         resource_type: schemas.anc,
         url: "anc.csv",
         last_modified: "2020-11-09",
-        metadata_modified: "2020-11-10"
+        metadata_modified: "2020-11-10",
+        name: "ANC Resource"
     }
 
 
@@ -121,11 +127,12 @@ describe("select dataset", () => {
             shape: mockDatasetResource({
                 url: "shape.geojson",
                 lastModified: "2020-11-03",
-                metadataModified: "2020-11-04"
+                metadataModified: "2020-11-04",
+                name: "Shape Resource"
             }),
             anc: null
         }
-    }
+    };
 
     const fakeDataset2 = {
         id: "id2",
@@ -141,11 +148,12 @@ describe("select dataset", () => {
                 id: "2",
                 url: "shape.geojson",
                 lastModified: "2020-11-03",
-                metadataModified: "2020-11-04"
+                metadataModified: "2020-11-04",
+                name: "Shape Resource"
             }),
             anc: null
         }
-    }
+    };
 
     const setDatasetMock = jest.fn();
     const markResourcesUpdatedMock = jest.fn();

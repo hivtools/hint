@@ -120,7 +120,7 @@
         markResourcesUpdated: () => void;
         startPolling: () => void;
         stopPolling: () => void;
-        continueEditing: () => void
+        continueEditing: () => void;
         cancelEditing: () => void;
     }
 

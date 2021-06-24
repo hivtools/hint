@@ -75,14 +75,16 @@ export interface Version {
     id: string,
     created: string,
     updated: string,
-    versionNumber: number
+    versionNumber: number,
+    note?: string
 }
 
 export interface Project {
     id: number,
     name: string,
     versions: Version[],
-    sharedBy?: string
+    sharedBy?: string,
+    note?: string
 }
 
 export interface CurrentProject {
@@ -102,6 +104,7 @@ export interface VersionIds {
 
 export interface DatasetResource {
     id: string,
+    name: string,
     lastModified: string,
     metadataModified: string,
     url: string
@@ -146,6 +149,7 @@ export interface UploadFile {
     displayName: string,
     resourceType: string,
     resourceFilename: string,
+    resourceName: string,
     resourceId: string | null,
     resourceUrl: string | null,
     lastModified: string | null
