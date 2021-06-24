@@ -34,8 +34,8 @@
                     @click="loadVersion($event, p.id, p.versions[0].id)">
                         {{ p.name }}
                     </a>
-                    <button href="#" class=" btn btn-sm btn-red-icons pl-2" v-tooltip ="getTranslatedValue('editNote')"
-                       @click.prevent="handleEditVersionNote(p.id, p.versions[0].id, p.versions[0].versionNumber)">
+                    <button href="#" class=" btn btn-sm btn-red-icons pl-2" v-tooltip="getTranslatedValue('editNote')"
+                            @click.prevent="handleEditProjectNote(p.id)">
                         <file-text-icon size="20"></file-text-icon>
                     </button>
                     <small v-if="p.sharedBy" class="text-muted d-flex" >{{getTranslatedValue("sharedBy")}}: {{p.sharedBy}}</small>
@@ -193,11 +193,11 @@
             </template>
         </modal>
 
-        <modal :open="versionNoteToEdit">
+        <modal :open="versionNoteToEdit || projectNoteToEdit">
             <h4 v-html="editVersionNoteHeader" id="editVersionNoteHeader"></h4>
             <div class="pb-3" v-html="editVersionNoteSubHeader" id="editVersionNoteSubHeader"></div>
             <textarea id="edit-version-note-id" class="form-control" placeholder="Notes"
-                      v-model="editedVersionNote"></textarea>
+                      v-model="editedNote"></textarea>
             <template v-slot:footer>
                 <button type="button"
                         class="btn btn-red"
@@ -241,8 +241,10 @@
         selectedVersionNumber: string;
         versionNote: string;
         versionNoteToEdit: VersionIds | null;
-        editedVersionNote: string;
+        editedNote: string;
         displayProjectName: string;
+        projectNoteToEdit: number | null;
+        editedProjectNote: string;
     }
 
     interface Computed {
@@ -258,6 +260,7 @@
         format: (date: string) => void;
         loadVersion: (event: Event, projectId: number, versionId: string) => void;
         handleEditVersionNote: (projectId: number, versionId: string, versionNumber: number) => void;
+        handleEditProjectNote: (projectId: number) => void;
         loadAction: (version: VersionIds) => void;
         versionCountLabel: (project: Project) => string;
         deleteProject: (event: Event, projectId: number) => void;
@@ -284,8 +287,10 @@
         confirmRename: (name: string) => void;
         cancelNoteEditing: () => void;
         confirmNoteEditing: () => void;
+        confirmProjectNoteEditing: () => void;
         getTranslatedValue: (key: string) => string;
         updateVersionNoteAction: (versionPayload: versionPayload) => void
+        updateProjectNoteAction: (payload: projectPayload) => void
     }
 
     export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
@@ -298,10 +303,12 @@
                 selectedVersionNumber: "",
                 projectToRename: null,
                 versionNoteToEdit: null,
-                editedVersionNote: "",
+                editedNote: "",
                 versionNote: "",
                 displayProjectName: "",
-                renamedProjectName: ""
+                renamedProjectName: "",
+                editedProjectNote: "",
+                projectNoteToEdit: null
             };
         },
         computed: {
@@ -346,12 +353,16 @@
                 this.projects.filter(project => {
                     if (project.id === projectId) {
                         this.displayProjectName = project.name
-                        this.editedVersionNote = project.versions
+                        this.editedNote = project.versions
                             .find(version => version.versionNumber === versionNumber)!.note || ""
                     }
                 })
                 this.versionNoteToEdit = {projectId, versionId}
                 this.selectedVersionNumber = `v${versionNumber}`;
+            },
+            handleEditProjectNote(projectId: number) {
+                this.editedNote = this.projects.find(project => project.id === projectId)!.note || ""
+                this.projectNoteToEdit = projectId
             },
             renameProject(event: Event, projectId: number) {
                 event.preventDefault();
@@ -378,18 +389,38 @@
                 }
             },
             cancelNoteEditing() {
-                this.versionNoteToEdit = null;
-                this.editedVersionNote = "";
+                if (this.versionNoteToEdit) {
+                    this.versionNoteToEdit = null;
+                    this.editedNote = "";
+                }
+
+                if (this.projectNoteToEdit) {
+                    this.editedNote = "";
+                    this.projectNoteToEdit = null
+                }
             },
+            async confirmProjectNoteEditing() {
+            },
+
             async confirmNoteEditing() {
                 if (this.versionNoteToEdit) {
                     const versionPayload: versionPayload = {
                         version: this.versionNoteToEdit!,
-                        note: this.editedVersionNote
+                        note: this.editedNote
                     };
                     this.updateVersionNoteAction(versionPayload);
                     this.versionNoteToEdit = null;
-                    this.editedVersionNote = "";
+                    this.editedNote = "";
+                }
+
+                if (this.projectNoteToEdit) {
+                    const payload: projectPayload = {
+                        projectId: this.projectNoteToEdit!,
+                        note: this.editedNote
+                    };
+                    this.updateProjectNoteAction(payload);
+                    this.projectNoteToEdit = null;
+                    this.editedNote = "";
                 }
             },
             deleteProject(event: Event, projectId: number) {
@@ -446,6 +477,7 @@
                 }
             },
             updateVersionNoteAction: mapActionByName<projectPayload>(namespace, "updateVersionNote"),
+            updateProjectNoteAction: mapActionByName<projectPayload>(namespace, "updateProjectNote"),
             renameProjectAction: mapActionByName<projectPayload>(
                 namespace,
                 "renameProject"
