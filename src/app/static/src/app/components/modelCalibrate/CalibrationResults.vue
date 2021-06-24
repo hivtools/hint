@@ -29,7 +29,6 @@
         mapMutationByName,
         mapMutationsByNames,
         mapStateProp,
-        mapStateProps,
     } from "../../utils";
     import {
         PlottingSelectionsState,
@@ -60,7 +59,6 @@
         filters: Filter[];
         selections: BarchartSelections;
         indicators: BarchartIndicator[];
-        filteredIndicators: BarchartIndicator[];
         currentLanguage: Language;
     }
 
@@ -74,12 +72,6 @@
             ...mapGettersByNames("plottingSelections", [
                 "calibratePlotDefaultSelections",
             ]),
-            ...mapStateProps<PlottingSelectionsState, keyof Computed>(
-                "plottingSelections",
-                {
-                    selections: (state) => state.calibratePlot,
-                }
-            ),
             chartData: mapStateProp<ModelCalibrateState, any>(
                 namespace,
                 (state) => {
@@ -99,12 +91,6 @@
             },
             selections() {
                 return this.$store.state.plottingSelections.calibratePlot;
-            },
-            filteredIndicators() {
-                return this.indicators.filter(
-                    (val: BarchartIndicator) =>
-                        val.indicator === this.selections.indicatorId
-                );
             },
             currentLanguage: mapStateProp<RootState, Language>(
                 null,

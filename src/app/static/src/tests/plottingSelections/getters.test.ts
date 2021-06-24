@@ -1,6 +1,19 @@
 import {getters} from "../../app/store/plottingSelections/getters";
-import {mockColourScales, mockPlottingSelections, mockRootState} from "../mocks";
+import {plottingSelectionsGetters} from "../../app/store/plottingSelections/plottingSelections";
+import {mockColourScales, mockPlottingSelections, mockRootState, mockModelCalibrateState} from "../mocks";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
+
+const rootState = mockRootState({
+    modelCalibrate: mockModelCalibrateState({
+        calibratePlotResult: {
+            plottingMetadata: {
+                barchart: {
+                    defaults: "test",
+                }
+            }
+        }
+    })
+});
 
 describe("PlottingSelections getters", () => {
     it("selectedSAPColourScales returns correct colourScales", () => {
@@ -30,5 +43,10 @@ describe("PlottingSelections getters", () => {
         rootState.surveyAndProgram.selectedDataType = 99 as DataType;
         const unknown = getters.selectedSAPColourScales(state, null, rootState);
         expect(unknown).toStrictEqual({});
+    });
+
+    it("gets calibratePlotDefaultSelections", async () => {
+        const result = plottingSelectionsGetters.calibratePlotDefaultSelections(mockPlottingSelections(), null, rootState);
+        expect(result).toBe(rootState.modelCalibrate.calibratePlotResult.plottingMetadata.barchart.defaults);
     });
 });
