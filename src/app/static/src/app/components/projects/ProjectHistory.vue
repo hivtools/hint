@@ -31,14 +31,17 @@
                 </div>
                 <div class="col-md-3 project-cell name-cell">
                     <a href="#"
-                    @click="loadVersion($event, p.id, p.versions[0].id)">
+                       @click="loadVersion($event, p.id, p.versions[0].id)">
                         {{ p.name }}
                     </a>
-                    <button href="#" class=" btn btn-sm btn-red-icons pl-2" v-tooltip="getTranslatedValue('editNote')"
+                    <span class="float-right">
+                    <button href="#" class=" btn btn-sm btn-red-icons"
+                            v-tooltip="getTranslatedValue('editProjectNote')"
                             @click.prevent="handleEditProjectNote(p.id)">
                         <file-text-icon size="20"></file-text-icon>
                     </button>
-                    <small v-if="p.sharedBy" class="text-muted d-flex" >{{getTranslatedValue("sharedBy")}}: {{p.sharedBy}}</small>
+                    </span>
+                    <small v-if="p.sharedBy" class="text-muted d-flex">{{ getTranslatedValue("sharedBy") }}: {{ p.sharedBy }}</small>
                 </div>
                 <div class="col-md-1 project-cell version-count-cell">
                     <small class="text-muted">{{ versionCountLabel(p) }}</small>
@@ -90,10 +93,13 @@
                      class="row font-italic bg-light py-2">
                     <div class="col-md-1 version-cell"></div>
                     <div class="col-md-3 version-cell edit-cell">
-                        <button href="#" class="btn btn-sm btn-red-icons" v-tooltip ="getTranslatedValue('editNote')"
-                                @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
+                        <span class="float-right">
+                            <button href="#" class="btn btn-sm btn-red-icons"
+                                    v-tooltip="getTranslatedValue('editVersionNote')"
+                                    @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
                             <file-text-icon size="20"></file-text-icon>
-                        </button>
+                            </button>
+                        </span>
                     </div>
                     <div class="col-md-1 version-cell version-label-cell">
                         {{ versionLabel(v) }}
@@ -195,7 +201,14 @@
 
         <modal :open="versionNoteToEdit || projectNoteToEdit">
             <h4 v-html="editVersionNoteHeader" id="editVersionNoteHeader"></h4>
-            <div class="pb-3" v-html="editVersionNoteSubHeader" id="editVersionNoteSubHeader"></div>
+            <div v-if="versionNoteToEdit" class="pb-3"
+                 v-html="editVersionNoteSubHeader"
+                 id="editVersionNoteSubHeader"></div>
+
+            <div v-if="projectNoteToEdit" class="pb-3"
+                 v-html="editProjectNoteSubHeader"
+                 id="editProjectNoteSubHeader"></div>
+
             <textarea id="edit-version-note-id" class="form-control" placeholder="Notes"
                       v-model="editedNote"></textarea>
             <template v-slot:footer>
@@ -254,6 +267,7 @@
         promoteVersionHeader: string;
         editVersionNoteHeader: string,
         editVersionNoteSubHeader: string
+        editProjectNoteSubHeader: string
     }
 
     interface Methods {
@@ -287,7 +301,6 @@
         confirmRename: (name: string) => void;
         cancelNoteEditing: () => void;
         confirmNoteEditing: () => void;
-        confirmProjectNoteEditing: () => void;
         getTranslatedValue: (key: string) => string;
         updateVersionNoteAction: (versionPayload: versionPayload) => void
         updateProjectNoteAction: (payload: projectPayload) => void
@@ -330,8 +343,15 @@
                     lng: this.currentLanguage,
                 });
             },
-            editVersionNoteSubHeader: function (){
+
+            editVersionNoteSubHeader: function () {
                 return i18next.t("editVersionNoteSubHeader", {
+                    projectName: this.displayProjectName,
+                    lng: this.currentLanguage,
+                });
+            },
+            editProjectNoteSubHeader: function () {
+                return i18next.t("editProjectNoteSubHeader", {
                     projectName: this.displayProjectName,
                     lng: this.currentLanguage,
                 });
@@ -361,7 +381,10 @@
                 this.selectedVersionNumber = `v${versionNumber}`;
             },
             handleEditProjectNote(projectId: number) {
-                this.editedNote = this.projects.find(project => project.id === projectId)!.note || ""
+                const project = this.projects.find(project => project.id === projectId)
+                this.displayProjectName = project!.name || ""
+                this.editedNote = project!.note || ""
+
                 this.projectNoteToEdit = projectId
             },
             renameProject(event: Event, projectId: number) {
@@ -395,13 +418,10 @@
                 }
 
                 if (this.projectNoteToEdit) {
-                    this.editedNote = "";
                     this.projectNoteToEdit = null
+                    this.editedNote = "";
                 }
             },
-            async confirmProjectNoteEditing() {
-            },
-
             async confirmNoteEditing() {
                 if (this.versionNoteToEdit) {
                     const versionPayload: versionPayload = {

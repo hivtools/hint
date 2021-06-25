@@ -122,6 +122,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     },
     
     async updateVersionNote(context, versionPayload: versionPayload) {
+        const {commit} = context;
         const {projectId, versionId} = versionPayload.version
         const note = versionPayload.note
 
@@ -149,7 +150,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         await api<ProjectsMutations, ProjectsMutations>(context)
             .withSuccess(ProjectsMutations.SetPreviousProjects)
             .withError(ProjectsMutations.ProjectError)
-            .postAndReturn(`project/${projectId}/note/`, qs.stringify({note}))
+            .postAndReturn(`project/${projectId}/note`, qs.stringify({note}))
     },
 
     async loadVersion(context, version) {

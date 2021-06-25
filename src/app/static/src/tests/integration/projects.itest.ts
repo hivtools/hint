@@ -200,14 +200,38 @@ describe("Projects actions", () => {
         state.currentVersion = createdProject.versions[0];
         const versionPayload = {
             version: {projectId: state.currentProject!.id, versionId: state.currentVersion!.id},
-            note: 'updated Project note'
+            note: 'updated Version note'
         };
 
         await actions.updateVersionNote({commit, dispatch, state, rootState} as any, versionPayload);
         setTimeout(() => {
-            expect(dispatch.mock.calls.length).toBe(2);
-            expect(dispatch.mock.calls[0][0]).toBe("getCurrentProject");
-            expect(dispatch.mock.calls[1][0]).toBe("getProjects");
+            expect(commit.mock.calls.length).toBe(3);
+            expect(commit.mock.calls[2][0].type).toBe(ProjectsMutations.SetPreviousProjects);
+            expect(commit.mock.calls[2][0].payload).toBeInstanceOf(Array)
+            done();
+        });
+    });
+
+    it("can update project note", async (done) => {
+        const state = initialProjectsState();
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        await actions.createProject({commit, rootState, state} as any, "v1");
+        expect(commit.mock.calls.length).toBe(2);
+
+        const createdProject = commit.mock.calls[1][0]["payload"];
+        state.currentProject = createdProject;
+        const projectPayload = {
+            projectId: state.currentProject!.id,
+            note: 'updated Project note'
+        };
+
+        await actions.updateProjectNote({commit, dispatch, state, rootState} as any, projectPayload);
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(3);
+            expect(commit.mock.calls[2][0].type).toBe(ProjectsMutations.SetPreviousProjects);
+            expect(commit.mock.calls[2][0].payload).toBeInstanceOf(Array)
             done();
         });
     });
