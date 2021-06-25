@@ -9,8 +9,8 @@
             :indicators="indicators"
             :selections="selections"
             :formatFunction="formatBarchartValue"
-            :xAxisConfig="config"
-            :disaggregateByConfig="config"
+            :x-axis-config="config"
+            :disaggregate-by-config="config"
             @update="updateCalibratePlotSelections({ payload: $event })"
         ></bar-chart-with-filters>
     </div>
@@ -128,25 +128,16 @@
             },
         },
         mounted() {
+            const { selected_filter_options, indicator_id, x_axis_id, disaggregate_by_id } = this.calibratePlotDefaultSelections
             const data: BarchartSelections = {
                 ...this.calibratePlotDefaultSelections,
                 selectedFilterOptions: {
-                    ...this.calibratePlotDefaultSelections.selected_filter_options,
+                    ...selected_filter_options,
                 },
-                indicatorId: this.calibratePlotDefaultSelections.indicator_id,
-                xAxisId: "spectrumRegionName", //defaults.x_axis_id,
-                disaggregateById: "dataType", //defaults.disaggregate_by_id
+                indicatorId: indicator_id,
+                xAxisId: x_axis_id,
+                disaggregateById: disaggregate_by_id,
             };
-            data.selectedFilterOptions["sex"] = [{ id: "male", label: "Male" }];
-            data.selectedFilterOptions["dataType"] = [
-                { id: "spectrum", label: "spectrum" },
-                { id: "unadjusted", label: "unadjusted" },
-                { id: "calibrated", label: "calibrated" },
-            ];
-            data.selectedFilterOptions["spectrumRegionName"] = [
-                { id: "Northern", label: "Northern" },
-                { id: "Southern", label: "Southern" },
-            ];
             this.updateCalibratePlotSelections({ payload: data });
         },
     });

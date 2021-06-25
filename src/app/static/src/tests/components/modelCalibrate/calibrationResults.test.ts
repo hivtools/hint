@@ -102,24 +102,15 @@ describe("CalibrateResults component", () => {
         const store = getStore();
         const wrapper = shallowMount(CalibrationResults, {store, localVue});
         const vm = (wrapper as any).vm;
+        const { selected_filter_options, indicator_id, x_axis_id, disaggregate_by_id } = defaultSelections
 
         expect(vm.selections).toStrictEqual({
             ...defaultSelections,
-            indicatorId: "TestIndicator",
-            xAxisId: "spectrumRegionName",
-            disaggregateById: "dataType",
+            indicatorId: indicator_id,
+            xAxisId: x_axis_id,
+            disaggregateById: disaggregate_by_id,
             selectedFilterOptions: {
-                ...defaultSelections.selected_filter_options,
-                sex: [{ id: "male", label: "Male" }],
-                dataType: [
-                    { id: "spectrum", label: "spectrum" },
-                    { id: "unadjusted", label: "unadjusted" },
-                    { id: "calibrated", label: "calibrated" },
-                ],
-                spectrumRegionName: [
-                    { id: "Northern", label: "Northern" },
-                    { id: "Southern", label: "Southern" },
-                ]
+                ...selected_filter_options
             }
         });
     });

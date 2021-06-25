@@ -19,8 +19,8 @@ const rootState = mockRootState({
         calibratePlotResult: {
             plottingMetadata: {
                 barchart: {
-                    indicators: ["indicator"],
-                    filters: []
+                    indicators: ["testIndicators"],
+                    filters: ["testFilters"]
                 }
             }
         }
@@ -35,25 +35,10 @@ it("loads initial state from local storage", () => {
 it("gets barchart indicators", async () => {
     const result = modelCalibrateGetters.indicators(mockModelCalibrateState(), null, rootState);
     expect(result.length).toEqual(1);
-    expect(result).toBe(rootState.modelCalibrate.calibratePlotResult.plottingMetadata.barchart.indicators);
+    expect(result).toStrictEqual(["testIndicators"]);
 });
 
 it("gets barchart filters", async () => {
     const result = modelCalibrateGetters.filters(mockModelCalibrateState(), null, rootState);
-    expect(result).toStrictEqual([{
-        id: "dataType", //could be snake case like the column_id, but just distinguishing here
-        label: "Data Type",
-        column_id: "data_type",
-        options: [
-            {id: "spectrum", label: "spectrum"},
-            {id: "unadjusted", label: "unadjusted"},
-            {id: "calibrated", label: "calibrated"}
-            ]
-    },
-    {
-        id: "spectrumRegionName",
-        label: "Spectrum Region Name",
-        column_id: "spectrum_region_name",
-        options: [{id: "Northern", label: "Northern"}, {id: "Southern", label: "Southern"}]
-    }]);
+    expect(result).toStrictEqual(["testFilters"]);
 });

@@ -51,6 +51,9 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.calibrateId = action.payload.id;
         state.calibrating = true;
         state.complete = false;
+        state.generatingCalibrationPlot = false;
+        state.calibrationPlotGenerated = false;
+        state.calibratePlotResult = null;
         state.error = null;
         state.status = {} as CalibrateStatusResponse;
     },

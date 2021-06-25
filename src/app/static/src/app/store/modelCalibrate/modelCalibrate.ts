@@ -47,35 +47,9 @@ export const modelCalibrateGetters = {
         return rootState.modelCalibrate.calibratePlotResult!.plottingMetadata.barchart.indicators;
     },
     filters: (state: ModelCalibrateState, getters: any, rootState: RootState): Filter[] => {
-        return calibratePlotFilters(rootState);
+        return rootState.modelCalibrate.calibratePlotResult!.plottingMetadata.barchart.filters;
     }
 };
-
-const calibratePlotFilters = (rootState: RootState) => {
-    const filters = [
-        ...rootState.modelCalibrate.calibratePlotResult!.plottingMetadata.barchart.filters,
-    ];
-
-    filters.push({
-        id: "dataType", //could be snake case like the column_id, but just distinguishing here
-        label: "Data Type",
-        column_id: "data_type",
-        options: [
-            {id: "spectrum", label: "spectrum"},
-            {id: "unadjusted", label: "unadjusted"},
-            {id: "calibrated", label: "calibrated"}
-            ]
-    });
-
-    filters.push({
-        id: "spectrumRegionName",
-        label: "Spectrum Region Name",
-        column_id: "spectrum_region_name",
-        options: [{id: "Northern", label: "Northern"}, {id: "Southern", label: "Southern"}]
-    });
-
-    return [...filters];
-}
 
 const namespaced = true;
 

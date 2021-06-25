@@ -26,8 +26,8 @@ export interface BarchartSelections {
 
 export interface UnadjustedBarchartSelections {
     indicator_id: string,
-    xAxisId: string,
-    disaggregateById: string,
+    x_axis_id: string,
+    disaggregate_by_id: string,
     selected_filter_options: Dict<FilterOption[]>
 }
 
