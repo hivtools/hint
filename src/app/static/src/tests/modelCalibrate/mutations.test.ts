@@ -54,6 +54,9 @@ describe("ModelCalibrate mutations", () => {
         expect(state.error).toBeNull();
         expect(state.complete).toBe(false);
         expect(state.status).toStrictEqual({});
+        expect(state.generatingCalibrationPlot).toBe(false);
+        expect(state.calibrationPlotGenerated).toBe(false);
+        expect(state.calibratePlotResult).toBe(null);
     });
 
     it("CalibrateStatusUpdate sets status, resets error", () => {
