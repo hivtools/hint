@@ -154,3 +154,8 @@ export interface UploadFile {
     resourceUrl: string | null,
     lastModified: string | null
 }
+
+export interface BarchartConfig {
+    fixed: boolean,
+    hideFilter: boolean,
+}

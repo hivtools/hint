@@ -9,6 +9,8 @@
             :indicators="indicators"
             :selections="selections"
             :formatFunction="formatBarchartValue"
+            :xAxisConfig="config"
+            :disaggregateByConfig="config"
             @update="updateCalibratePlotSelections({ payload: $event })"
         ></bar-chart-with-filters>
     </div>
@@ -38,9 +40,13 @@
     import { ModelCalibrateState } from "../../store/modelCalibrate/modelCalibrate";
     import { formatOutput } from "../plots/utils";
     import { RootState } from "../../root";
-    import { PayloadWithType } from "../../types";
+    import { PayloadWithType, BarchartConfig } from "../../types";
 
     const namespace = "modelCalibrate";
+
+    interface Data {
+        config: BarchartConfig
+    }
 
     interface Methods {
         updateCalibratePlotSelections: (data: {
@@ -66,6 +72,14 @@
         name: "CalibrationResults",
         components: {
             BarChartWithFilters,
+        },
+        data() {
+            return {
+                config: {
+                    fixed: true,
+                    hideFilter: true,
+                },
+            };
         },
         computed: {
             ...mapGettersByNames(namespace, ["indicators", "filters"]),
