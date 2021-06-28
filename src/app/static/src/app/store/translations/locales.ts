@@ -505,7 +505,7 @@ const fr: Partial<Translations> = {
         "            de les maintenir, mais il n’est pas toujours possible de rendre accessible la totalité de notre contenu.\n" +
         "            Lorsque le contenu n’est pas accessible, nous en expliquons la raison, avertissons les utilisateurs et \n" +
         "            proposons des solutions alternatives.",
-    axeTechnicalHeading: "Informations techniques sur l’accessibilité de ce site Web",
+    axeTechnicalHeading: "Informations techniques sur l'accessibilité de ce site Web",
     axeTechnicalParagraph1: "Nous nous engageons à rendre ce site Web accessible conformément au règlement de 2018 \n" +
         "                    sur l’accessibilité des organismes du secteur public (sites Web et applications mobiles) (No. 2).",
     axeTechnicalParagraph2: "Ce site Web est partiellement conforme aux <a href=\"https://www.w3.org/Translations/WCAG20-fr/\" target='_blank' rel='noopener noreferrer'> directives d’accessibilité aux contenus Web, version 2.1 AA\n" +
