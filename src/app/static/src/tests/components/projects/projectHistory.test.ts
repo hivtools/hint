@@ -487,6 +487,7 @@ describe("Project history component", () => {
         await Vue.nextTick();
 
         const modal = wrapper.findAll(".modal").at(3);
+        expect(modal.element.style.getPropertyValue("display")).toBe("block")
         const textarea = modal.find("textarea");
         textarea.setValue("new notes");
 
@@ -497,6 +498,8 @@ describe("Project history component", () => {
         const okBtn = modal.find(".modal-footer").findAll("button").at(0);
         await okBtn.trigger("click");
 
+        expect(modal.element.style.getPropertyValue("display")).toBe("none")
+        expect(mockUpdateProjectNote.mock.calls.length).toBe(0);
         expect(mockUpdateVersion.mock.calls.length).toBe(1);
         expect(mockUpdateVersion.mock.calls[0][1]).toStrictEqual(
             {
@@ -515,6 +518,7 @@ describe("Project history component", () => {
         await Vue.nextTick();
 
         const modal = wrapper.findAll(".modal").at(3);
+        expect(modal.element.style.getPropertyValue("display")).toBe("block")
         const textarea = modal.find("textarea");
         textarea.setValue("new notes");
 
@@ -525,6 +529,8 @@ describe("Project history component", () => {
         const okBtn = modal.find(".modal-footer").findAll("button").at(0);
         await okBtn.trigger("click");
 
+        expect(modal.element.style.getPropertyValue("display")).toBe("none")
+        expect(mockUpdateVersion.mock.calls.length).toBe(0);
         expect(mockUpdateProjectNote.mock.calls.length).toBe(1);
         expect(mockUpdateProjectNote.mock.calls[0][1]).toStrictEqual(
             {
@@ -622,6 +628,10 @@ describe("Project history component", () => {
         const editProjectNoteSubHeader = modal.find("#editProjectNoteSubHeader")
         expectTranslated(editProjectNoteSubHeader, "Add or edit project notes for proj1",
             "Ajouter ou modifier des notes de projet pour proj1", store)
+
+        const editProjectNoteHeader = modal.find("#editProjectNoteHeader")
+        expectTranslated(editProjectNoteHeader, "Project notes",
+            "Notes de projet", store)
 
         const buttons = modal.find(".modal-footer").findAll("button");
         expectTranslated(buttons.at(0), "OK", "OK", store)

@@ -200,14 +200,18 @@
         </modal>
 
         <modal :open="versionNoteToEdit || projectNoteToEdit">
-            <h4 v-html="editVersionNoteHeader" id="editVersionNoteHeader"></h4>
-            <div v-if="versionNoteToEdit" class="pb-3"
-                 v-html="editVersionNoteSubHeader"
-                 id="editVersionNoteSubHeader"></div>
-
-            <div v-if="projectNoteToEdit" class="pb-3"
-                 v-html="editProjectNoteSubHeader"
-                 id="editProjectNoteSubHeader"></div>
+            <div v-if="versionNoteToEdit">
+                <h4 v-html="editVersionNoteHeader" id="editVersionNoteHeader"></h4>
+                <div class="pb-3"
+                     v-html="editVersionNoteSubHeader"
+                     id="editVersionNoteSubHeader"></div>
+            </div>
+            <div v-if="projectNoteToEdit">
+                <h4 v-translate="'editProjectNoteHeader'" id="editProjectNoteHeader"></h4>
+                <div class="pb-3"
+                     v-html="editProjectNoteSubHeader"
+                     id="editProjectNoteSubHeader"></div>
+            </div>
 
             <textarea id="edit-version-note-id" class="form-control"
                       v-model="editedNote"></textarea>
@@ -265,9 +269,10 @@
         disableRename: boolean;
         currentLanguage: Language;
         promoteVersionHeader: string;
-        editVersionNoteHeader: string,
-        editVersionNoteSubHeader: string
-        editProjectNoteSubHeader: string
+        editVersionNoteHeader: string;
+        editVersionNoteSubHeader: string;
+        editProjectNoteSubHeader: string;
+        editProjectNoteHeader: string;
     }
 
     interface Methods {
@@ -356,6 +361,11 @@
                     lng: this.currentLanguage,
                 });
             },
+            editProjectNoteHeader: function () {
+                return i18next.t("editProjectNoteHeader", {
+                    lng: this.currentLanguage,
+                });
+            },
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
@@ -370,24 +380,20 @@
                 this.loadAction({projectId, versionId});
             },
             handleEditVersionNote(projectId: number, versionId: string, versionNumber: number) {
-                this.projects.filter(project => {
-                    if (project.id === projectId) {
-                        this.displayProjectName = project.name
-                        this.editedNote = project.versions
-                            .find(version => version.versionNumber === versionNumber)!.note || ""
-                    }
-                })
-                this.versionNoteToEdit = {projectId, versionId}
+                const project = this.projects.find(project => project.id === projectId)!
+                this.displayProjectName = project.name;
+                this.editedNote = project.versions
+                    .find(version => version.versionNumber === versionNumber)!.note || "";
+
+                this.versionNoteToEdit = {projectId, versionId};
                 this.selectedVersionNumber = `v${versionNumber}`;
             },
             handleEditProjectNote(projectId: number) {
-                this.projects.find(project => {
-                    if (project.id === projectId) {
-                        this.displayProjectName = project.name
-                        this.editedNote = project.note || ""
-                    }
-                })
-                this.projectNoteToEdit = projectId
+                const project = this.projects.find(project => project.id === projectId)!;
+                this.displayProjectName = project.name;
+                this.editedNote = project.note || "";
+
+                this.projectNoteToEdit = projectId;
             },
             renameProject(event: Event, projectId: number) {
                 event.preventDefault();
@@ -417,9 +423,8 @@
                 if (this.versionNoteToEdit) {
                     this.versionNoteToEdit = null;
                     this.editedNote = "";
-                }
 
-                if (this.projectNoteToEdit) {
+                } else if (this.projectNoteToEdit) {
                     this.projectNoteToEdit = null
                     this.editedNote = "";
                 }
@@ -433,9 +438,8 @@
                     this.updateVersionNoteAction(versionPayload);
                     this.versionNoteToEdit = null;
                     this.editedNote = "";
-                }
 
-                if (this.projectNoteToEdit) {
+                } else if (this.projectNoteToEdit) {
                     const payload: projectPayload = {
                         projectId: this.projectNoteToEdit!,
                         note: this.editedNote
