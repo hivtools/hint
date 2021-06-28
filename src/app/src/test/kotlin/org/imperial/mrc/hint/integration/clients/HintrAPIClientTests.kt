@@ -115,6 +115,15 @@ class HintrApiClientTests
     }
 
     @Test
+    fun `can get calibrate plot`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val result = sut.getCalibratePlot("1234")
+        assertThat(result.statusCodeValue).isEqualTo(200)
+        JSONValidator().validateSuccess(result.body!!, "CalibratePlotResponse")
+    }
+
+    @Test
     fun `can get model calibration options`()
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())

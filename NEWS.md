@@ -1,6 +1,11 @@
-# hintr 1.40.0
+
+# hintr 1.41.0
 
 * Add Portuguese translations
+
+# hint 1.40.0
+
+* Create an endpoint for model calibrate bar chart
 
 # hint 1.39.0
 
