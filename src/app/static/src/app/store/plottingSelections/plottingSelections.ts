@@ -1,7 +1,7 @@
 import {FilterOption} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 import {Module} from "vuex";
-import {RootState, storeOptions} from "../../root";
+import {RootState} from "../../root";
 import {mutations} from "./mutations";
 import {getters} from "./getters";
 import {Dict} from "../../types";
@@ -137,12 +137,6 @@ export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
     }
 };
 
-export const plottingSelectionsGetters = {
-    calibratePlotDefaultSelections: (state: PlottingSelectionsState, getters: any, rootState: RootState): BarchartSelections => {
-        return rootState.modelCalibrate.calibratePlotResult!.plottingMetadata.barchart.defaults;
-    }
-};
-
 const namespaced = true;
 const existingState = localStorageManager.getState();
 
@@ -150,7 +144,7 @@ export const plottingSelections: Module<PlottingSelectionsState, RootState> = {
     namespaced,
     state: {...initialPlottingSelectionsState(), ...existingState && existingState.plottingSelections},
     mutations,
-    getters: plottingSelectionsGetters
+    getters
 };
 
 

@@ -177,8 +177,10 @@ describe("Model calibrate component", () => {
     });
 
     it("renders calibration plot", () => {
-        const store = getStore({complete: true, calibrationPlotGenerated: true});
+        const store = getStore({complete: true, calibratePlotResult: {}});
         const wrapper = getWrapper(store);
         expect(wrapper.find(CalibrationResults).exists()).toBe(true);
+        expectTranslated(wrapper.find("#reviewResults"), "(Review results below)",
+        "(Consultez les résultats ci-dessous)", store);
     });
 });

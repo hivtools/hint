@@ -1,5 +1,4 @@
 import {getters} from "../../app/store/plottingSelections/getters";
-import {plottingSelectionsGetters} from "../../app/store/plottingSelections/plottingSelections";
 import {mockColourScales, mockPlottingSelections, mockRootState, mockModelCalibrateState} from "../mocks";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 
@@ -46,7 +45,7 @@ describe("PlottingSelections getters", () => {
     });
 
     it("gets calibratePlotDefaultSelections", async () => {
-        const result = plottingSelectionsGetters.calibratePlotDefaultSelections(mockPlottingSelections(), null, rootState);
+        const result = getters.calibratePlotDefaultSelections(mockPlottingSelections(), null, rootState);
         expect(result).toBe(rootState.modelCalibrate.calibratePlotResult.plottingMetadata.barchart.defaults);
     });
 });

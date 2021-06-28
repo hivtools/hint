@@ -304,11 +304,10 @@ describe("ModelCalibrate actions", () => {
 
         await actions.getCalibratePlot({commit, state, rootState} as any);
 
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toStrictEqual("CalibrationPlotStarted");
-        expect(commit.mock.calls[1][0]).toStrictEqual("CalibrationPlotGenerated");
-        expect(commit.mock.calls[2][0]).toBe("SetPlotData");
-        expect(commit.mock.calls[2][1]).toStrictEqual({ data: "TEST DATA" });
+        expect(commit.mock.calls[1][0]).toBe("SetPlotData");
+        expect(commit.mock.calls[1][1]).toStrictEqual({ data: "TEST DATA" });
         expect(mockAxios.history.get.length).toBe(1);
     });
 

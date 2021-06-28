@@ -23,7 +23,6 @@ export enum ModelCalibrateMutation {
     PollingForStatusStarted = "PollingForStatusStarted",
     Ready = "Ready",
     CalibrationPlotStarted = "CalibrationPlotStarted",
-    CalibrationPlotGenerated = "CalibrationPlotGenerated",
     SetPlotData = "SetPlotData"
 }
 
@@ -52,7 +51,6 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.calibrating = true;
         state.complete = false;
         state.generatingCalibrationPlot = false;
-        state.calibrationPlotGenerated = false;
         state.calibratePlotResult = null;
         state.error = null;
         state.status = {} as CalibrateStatusResponse;
@@ -73,16 +71,12 @@ export const mutations: MutationTree<ModelCalibrateState> = {
 
     [ModelCalibrateMutation.CalibrationPlotStarted](state: ModelCalibrateState) {
         state.generatingCalibrationPlot = true;
-        state.calibrationPlotGenerated = false;
+        state.calibratePlotResult = null;
         state.error = null;
     },
 
-    [ModelCalibrateMutation.CalibrationPlotGenerated](state: ModelCalibrateState) {
-        state.calibrationPlotGenerated = true;
-        state.generatingCalibrationPlot = false
-    },
-
     [ModelCalibrateMutation.SetPlotData](state: ModelCalibrateState, action: PayloadWithType<any>) {
+        state.generatingCalibrationPlot = false;
         state.calibratePlotResult = action;
     },
 

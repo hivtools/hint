@@ -17,7 +17,6 @@ export interface ModelCalibrateState extends ReadyState {
     calibrating: boolean
     complete: boolean
     generatingCalibrationPlot: boolean
-    calibrationPlotGenerated: boolean
     calibratePlotResult: any,
     version: VersionInfo
     error: Error | null
@@ -35,7 +34,6 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
         calibrating: false,
         complete: false,
         generatingCalibrationPlot: false,
-        calibrationPlotGenerated: false,
         calibratePlotResult: null,
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
         error: null

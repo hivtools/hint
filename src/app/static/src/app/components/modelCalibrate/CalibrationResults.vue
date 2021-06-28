@@ -20,7 +20,11 @@
     import Vue from "vue";
     import i18next from "i18next";
     import { Language, Translations } from "../../store/translations/locales";
-    import { BarchartIndicator, Filter } from "@reside-ic/vue-charts/src/bar/types";
+    import {
+        BarchartIndicator,
+        Filter,
+        AxisConfig,
+    } from "@reside-ic/vue-charts/src/bar/types";
     import {
         BarChartWithFilters,
         FilterConfig,
@@ -40,12 +44,17 @@
     import { ModelCalibrateState } from "../../store/modelCalibrate/modelCalibrate";
     import { formatOutput } from "../plots/utils";
     import { RootState } from "../../root";
-    import { PayloadWithType, BarchartConfig } from "../../types";
+    import { PayloadWithType } from "../../types";
 
     const namespace = "modelCalibrate";
 
+    // const barchartConfig: AxisConfig = {
+    //     fixed: true,
+    //     hideFilter: true,
+    // };
+
     interface Data {
-        config: BarchartConfig
+        config: AxisConfig
     }
 
     interface Methods {
@@ -68,7 +77,15 @@
         currentLanguage: Language;
     }
 
-    export default Vue.extend<unknown, Methods, Computed, unknown>({
+    // interface ReadOnly {
+    //     config: AxisConfig
+    // }
+
+    // interface ReadOnly {
+    //     config: { fixed: true; hideFilter: true };
+    // }
+
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         name: "CalibrationResults",
         components: {
             BarChartWithFilters,
@@ -127,13 +144,18 @@
                 ).toString();
             },
         },
+        // created() {
+        //     this.config = barchartConfig;
+        // },
         mounted() {
-            const { selected_filter_options, indicator_id, x_axis_id, disaggregate_by_id } = this.calibratePlotDefaultSelections
+            const {
+                selected_filter_options,
+                indicator_id,
+                x_axis_id,
+                disaggregate_by_id,
+            } = this.calibratePlotDefaultSelections;
             const data: BarchartSelections = {
-                ...this.calibratePlotDefaultSelections,
-                selectedFilterOptions: {
-                    ...selected_filter_options,
-                },
+                selectedFilterOptions: selected_filter_options,
                 indicatorId: indicator_id,
                 xAxisId: x_axis_id,
                 disaggregateById: disaggregate_by_id,
