@@ -384,7 +384,7 @@
                 this.projects.find(project => {
                     if (project.id === projectId) {
                         this.displayProjectName = project.name
-                        this.editedNote = project!.note || ""
+                        this.editedNote = project.note || ""
                     }
                 })
                 this.projectNoteToEdit = projectId
