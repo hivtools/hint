@@ -876,6 +876,7 @@ const pt: Partial<Translations> = {
     ok: "OK",
     or: "ou",
     optionsValid: "As opções são válidas",
+    outputFiles: "Ficheiros de saída",
     password: "Palavra-passe",
     passwordValidation: "Por favor, introduza a sua palavra-passe.",
     passwordWasReset: "Obrigado, a sua palavra-passe foi atualizada. Clique <a href=\"/\">aqui</a> para iniciar sessão.",
