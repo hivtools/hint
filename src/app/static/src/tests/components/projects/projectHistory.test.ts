@@ -492,6 +492,8 @@ describe("Project history component", () => {
 
         const noteText = textarea.element as HTMLTextAreaElement
         expect(noteText.value).toBe("new notes")
+        expect(wrapper.vm.$data.versionNoteToEdit).toEqual({"projectId": 1, "versionId": "s11"})
+        expect(wrapper.vm.$data.editedNote).toBe("new notes")
 
         const okBtn = modal.find(".modal-footer").findAll("button").at(0);
         await okBtn.trigger("click");
@@ -519,6 +521,8 @@ describe("Project history component", () => {
 
         const noteText = textarea.element as HTMLTextAreaElement
         expect(noteText.value).toBe("new notes")
+        expect(wrapper.vm.$data.projectNoteToEdit).toBe(1)
+        expect(wrapper.vm.$data.editedNote).toBe("new notes")
 
         const okBtn = modal.find(".modal-footer").findAll("button").at(0);
         await okBtn.trigger("click");
