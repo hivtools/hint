@@ -40,6 +40,9 @@ interface HintrAPIClient
     fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions):
             ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
+    fun getDownloadSubmit(id: String, type:String): ResponseEntity<String>
+    fun getDownloadSubmitStatus(id: String): ResponseEntity<String>
+    fun getDownloadSubmitResult(id: String): ResponseEntity<StreamingResponseBody>
 }
 
 @Component
@@ -191,6 +194,23 @@ class HintrFuelAPIClient(
     override fun downloadCoarseOutput(id: String): ResponseEntity<StreamingResponseBody>
     {
         return "$baseUrl/download/coarse-output/${id}"
+                .httpDownload()
+                .getStreamingResponseEntity(::head)
+    }
+
+    override fun getDownloadSubmit(id: String, type:String): ResponseEntity<String>
+    {
+        return get("$baseUrl/download/${type}/${id}")
+    }
+
+    override fun getDownloadSubmitStatus(id: String): ResponseEntity<String>
+    {
+        return get("$baseUrl/download/status/${id}")
+    }
+
+    override fun getDownloadSubmitResult(id: String): ResponseEntity<StreamingResponseBody>
+    {
+        return "$baseUrl/download/result/${id}"
                 .httpDownload()
                 .getStreamingResponseEntity(::head)
     }
