@@ -209,7 +209,7 @@
                  v-html="editProjectNoteSubHeader"
                  id="editProjectNoteSubHeader"></div>
 
-            <textarea id="edit-version-note-id" class="form-control" placeholder="Notes"
+            <textarea id="edit-version-note-id" class="form-control"
                       v-model="editedNote"></textarea>
             <template v-slot:footer>
                 <button type="button"
@@ -381,10 +381,12 @@
                 this.selectedVersionNumber = `v${versionNumber}`;
             },
             handleEditProjectNote(projectId: number) {
-                const project = this.projects.find(project => project.id === projectId)
-                this.displayProjectName = project!.name || ""
-                this.editedNote = project!.note || ""
-
+                this.projects.find(project => {
+                    if (project.id === projectId) {
+                        this.displayProjectName = project.name
+                        this.editedNote = project!.note || ""
+                    }
+                })
                 this.projectNoteToEdit = projectId
             },
             renameProject(event: Event, projectId: number) {
