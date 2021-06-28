@@ -492,7 +492,6 @@ describe("Project history component", () => {
 
         const noteText = textarea.element as HTMLTextAreaElement
         expect(noteText.value).toBe("new notes")
-        expect(wrapper.vm.$data.versionNoteToEdit).toEqual({"projectId": 1, "versionId": "s11"})
         expect(wrapper.vm.$data.editedNote).toBe("new notes")
 
         const okBtn = modal.find(".modal-footer").findAll("button").at(0);
@@ -521,7 +520,6 @@ describe("Project history component", () => {
 
         const noteText = textarea.element as HTMLTextAreaElement
         expect(noteText.value).toBe("new notes")
-        expect(wrapper.vm.$data.projectNoteToEdit).toBe(1)
         expect(wrapper.vm.$data.editedNote).toBe("new notes")
 
         const okBtn = modal.find(".modal-footer").findAll("button").at(0);
@@ -555,6 +553,23 @@ describe("Project history component", () => {
         const modal = wrapper.findAll(".modal").at(3);
         const noteText = modal.find("textarea").element as HTMLTextAreaElement
         expect(noteText.value).toBe("project notes")
+    });
+
+    it("cancels projectNote modal when cancel button is triggered", async () => {
+        const wrapper = getWrapper(testProjects);
+        const copyLink = wrapper.find("#p-1").find(".project-cell.name-cell").find("button");
+        copyLink.trigger("click");
+        await Vue.nextTick();
+        const modal = wrapper.findAll(".modal").at(3);
+        expect(modal.element.style.getPropertyValue("display")).toBe("block")
+        expect(wrapper.vm.$data.projectNoteToEdit).toBe( 1)
+
+        const cancelBtn = modal.find(".modal-footer").findAll("button").at(1);
+        await cancelBtn.trigger("click");
+
+        expect(wrapper.vm.$data.projectNoteToEdit).toBe(null)
+        expect(modal.element.style.getPropertyValue("display")).toBe("none")
+        expect(mockUpdateVersion.mock.calls.length).toBe(0);
     });
 
     it("cancels versionNote modal when cancel button is triggered", async () => {
