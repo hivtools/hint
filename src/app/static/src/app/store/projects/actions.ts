@@ -122,7 +122,6 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     },
     
     async updateVersionNote(context, versionPayload: versionPayload) {
-        const {commit} = context;
         const {projectId, versionId} = versionPayload.version
         const note = versionPayload.note
 

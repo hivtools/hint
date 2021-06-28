@@ -549,7 +549,7 @@ describe("Projects actions", () => {
         const state = mockProjectsState()
 
         const stateUrl = "/project/1/version/version-id/note";
-        mockAxios.onPost(stateUrl, "note=edit version note")
+        mockAxios.onPost(stateUrl, "note=edit%20version%20note")
             .reply(200, mockSuccess(testProjects));
 
         const versionPayload = {
@@ -559,7 +559,7 @@ describe("Projects actions", () => {
 
         actions.updateVersionNote({commit, state, rootState} as any, versionPayload);
 
-        setTimeout(() => {
+        setTimeout( () => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].url).toBe(stateUrl);
 
@@ -580,7 +580,7 @@ describe("Projects actions", () => {
         const state = mockProjectsState();
 
         const stateUrl = "project/1/note";
-        mockAxios.onPost(stateUrl, "note=test project + note")
+        mockAxios.onPost(stateUrl, "note=test%20project%20note")
             .reply(200, mockSuccess(testProjects));
 
         const projectPayload = {
@@ -608,7 +608,7 @@ describe("Projects actions", () => {
         const state = mockProjectsState({error: "TEST ERROR" as any});
 
         const stateUrl = "project/1/note";
-        mockAxios.onPost(stateUrl, "note=test project note")
+        mockAxios.onPost(stateUrl, "note=test%20project%20note")
             .reply(500, mockFailure("TestError"));
 
         const projectPayload = {
@@ -616,6 +616,31 @@ describe("Projects actions", () => {
             note: "test project note"
         }
         actions.updateProjectNote({commit, state, rootState} as any, projectPayload);
+        setTimeout(() => {
+            const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
+            expect(commit.mock.calls[0][0]).toStrictEqual({
+                type: ProjectsMutations.ProjectError,
+                payload: expectedError
+            });
+            done();
+        });
+    });
+
+    it("update version notes commits Project Error on failure", async (done) => {
+        const commit = jest.fn();
+        const state = mockProjectsState({error: "TEST ERROR" as any});
+
+        const stateUrl = "/project/1/version/version-id/note";
+        mockAxios.onPost(stateUrl, "note=test%20version%20note")
+            .reply(500, mockFailure("TestError"));
+
+        const versionPayload = {
+            version: {projectId: mockProject.id, versionId: mockProject.versions[0].id},
+            note: 'test version note'
+        };
+
+        actions.updateVersionNote({commit, state, rootState} as any, versionPayload);
+
         setTimeout(() => {
             const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
             expect(commit.mock.calls[0][0]).toStrictEqual({
