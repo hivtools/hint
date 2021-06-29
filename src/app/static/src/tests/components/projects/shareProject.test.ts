@@ -94,7 +94,8 @@ describe("ShareProject", () => {
         const text = modal.find(".text-danger")
         expect(text.classes()).not.toContain("d-none");
         expectTranslated(text, "This email address is not registered with Naomi",
-            "Cette adresse e-mail n'est pas enregistrée dans Naomi", store as any)
+            "Cette adresse e-mail n'est pas enregistrée dans Naomi",
+            "Este endereço de e-mail não está registado na Naomi", store as any)
         expect(modal.find("button").attributes("disabled")).toBe("disabled");
         expect(modal.find(".help-text").isVisible()).toBe(true);
     });
@@ -120,7 +121,8 @@ describe("ShareProject", () => {
         const text = modal.find(".text-danger")
         expect(text.classes()).not.toContain("d-none");
         expectTranslated(text, "Projects cannot be shared with the user's own account",
-            "Les projets ne peuvent pas être partagés avec le propre compte de l'utilisateur", store as any)
+            "Les projets ne peuvent pas être partagés avec le propre compte de l'utilisateur",
+            "Os projetos não podem ser partilhados com a conta do próprio utilizador", store as any)
         expect(modal.find("button").attributes("disabled")).toBe("disabled");
         expect(modal.find(".help-text").isVisible()).toBe(true);
     });
@@ -146,7 +148,8 @@ describe("ShareProject", () => {
         const text = modal.find(".text-danger")
         expect(text.classes()).not.toContain("d-none");
         expectTranslated(text, "Projects cannot be shared with the user's own account",
-            "Les projets ne peuvent pas être partagés avec le propre compte de l'utilisateur", store as any)
+            "Les projets ne peuvent pas être partagés avec le propre compte de l'utilisateur",
+            "Os projetos não podem ser partilhados com a conta do próprio utilizador", store as any)
         expect(modal.find("button").attributes("disabled")).toBe("disabled");
         expect(modal.find(".help-text").isVisible()).toBe(true);
     });
@@ -181,7 +184,8 @@ describe("ShareProject", () => {
             const text = modal.find(".text-danger");
             expect(text.classes()).not.toContain("d-none");
             expectTranslated(text, "Please remove duplicate emails from the list",
-                "Veuillez supprimer les e-mails en double de la liste", store as any)
+                "Veuillez supprimer les e-mails en double de la liste",
+                "Por favor, remova os e-mails duplicados da lista", store as any)
             expect(modal.find("button").attributes("disabled")).toBe("disabled");
             expect(modal.find(".help-text").isVisible()).toBe(true);
         });
@@ -217,7 +221,8 @@ describe("ShareProject", () => {
             const text = modal.find(".text-danger");
             expect(text.classes()).not.toContain("d-none");
             expectTranslated(text, "Please remove duplicate emails from the list",
-                "Veuillez supprimer les e-mails en double de la liste", store as any)
+                "Veuillez supprimer les e-mails en double de la liste",
+                "Por favor, remova os e-mails duplicados da lista", store as any)
             expect(modal.find("button").attributes("disabled")).toBe("disabled");
             expect(modal.find(".help-text").isVisible()).toBe(true);
         });
@@ -538,7 +543,8 @@ describe("ShareProject", () => {
 
         const link = wrapper.find("button");
         link.trigger("click");
-        expectTranslated(wrapper.find(Modal).find("h4"), "Share project", "Partager ce project", store);
+        expectTranslated(wrapper.find(Modal).find("h4"), "Share project",
+            "Partager ce project", "Partilhar projeto", store);
     });
 
     it("translates instructions", () => {
@@ -560,7 +566,12 @@ describe("ShareProject", () => {
             "Veuillez entrer les adresses e-mails " +
             "avec lesquelles vous souhaitez partager ce projet. Appuyez sur Enter pour ajouter une autre adresse. Ces adresses e-mails doivent être déjà enregistrées dans Naomi."
 
-        expectTranslated(wrapper.find(Modal).find("#instructions"), expectedEnglish, expectedFrench, store);
+        const expectedPortuguese = "Isto irá criar uma cópia de p1 para os utilizadores em causa." +
+            " Por favor, introduza os endereços de e-mail com os quais gostaria de partilhar este projeto. " +
+            "Prima Enter para adicionar um novo endereço. Estes endereços de e-mail já devem estar registados na Naomi.";
+
+
+        expectTranslated(wrapper.find(Modal).find("#instructions"), expectedEnglish, expectedFrench, expectedPortuguese, store);
     });
 
     it("translates button text", () => {
@@ -576,8 +587,8 @@ describe("ShareProject", () => {
         link.trigger("click");
         const buttons = wrapper.find(Modal).findAll("button");
 
-        expectTranslated(buttons.at(0), "OK", "OK", store);
-        expectTranslated(buttons.at(1), "Cancel", "Annuler", store);
+        expectTranslated(buttons.at(0), "OK", "OK", "OK", store);
+        expectTranslated(buttons.at(1), "Cancel", "Annuler", "Cancelar", store);
     });
 
     it("translates help text", () => {
@@ -594,7 +605,8 @@ describe("ShareProject", () => {
         const helpText = wrapper.find(Modal).find(".help-text");
 
         expectTranslated(helpText, "Please correct or remove invalid email addresses",
-            "Veuillez corriger ou supprimer les adresses e-mails non-valides", store);
+            "Veuillez corriger ou supprimer les adresses e-mails non-valides",
+            "Por favor, corrija ou remova endereços de e-mail inválidos", store);
     });
 
     it("can render tooltips without an error", () => {

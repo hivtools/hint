@@ -921,7 +921,7 @@ const pt: Partial<Translations> = {
     sharedBy: "Partilhado por",
     shareProject: "Partilhar projeto",
     shareProjectInstructions: "<p>" +
-        "Isto irá criar uma cópia de {{ projeto }} para os utilizadores em causa." +
+        "Isto irá criar uma cópia de {{ project }} para os utilizadores em causa." +
         "</p>" +
         "<p>" +
         " Por favor, introduza os endereços de e-mail com os quais gostaria de partilhar este projeto. " +
