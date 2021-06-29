@@ -655,30 +655,6 @@ describe("Project history component", () => {
         expect(mockPromoteVersion.mock.calls.length).toBe(0);
     });
 
-    it("does not use carriage return to invoke promoteVersion action when input is empty", async () => {
-
-        const projects = [
-            {
-                id: 1, name: "", sharedBy: "shared@email.com", note: "project notes", versions: [
-                    {id: "s11", created: isoDates[0], updated: isoDates[1], versionNumber: 1, note: "version notes"},
-                    {id: "s12", created: isoDates[1], updated: isoDates[2], versionNumber: 2}]
-            }]
-        const wrapper = getWrapper(projects);
-        const vm = wrapper.vm as any
-        const copyLink = wrapper.find("#v-s11").find(".version-cell.copy-cell").find("button");
-        copyLink.trigger("click");
-        await Vue.nextTick();
-
-        const modal = wrapper.findAll(".modal").at(2);
-        const input = modal.find("input");
-        const renameBtn = modal.find(".modal-footer").findAll("button").at(0);
-        await input.setValue("");
-        expect(renameBtn.attributes("disabled")).toBe("disabled");
-        await input.trigger("keyup.enter")
-
-        expect(mockPromoteVersion.mock.calls.length).toBe(0);
-    });
-
     it("invokes renameProject action when confirm rename", async () => {
         const wrapper = getWrapper(testProjects);
         const vm = wrapper.vm as any
