@@ -7,12 +7,14 @@ import {ModelCalibrateMutation} from "./mutations";
 import {ModelRunMutation} from "../modelRun/mutations";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {freezer} from "../../utils";
+import {switches} from "../../featureSwitches";
 
 export interface ModelCalibrateActions {
     fetchModelCalibrateOptions: (store: ActionContext<ModelCalibrateState, RootState>) => void
     submit: (store: ActionContext<ModelCalibrateState, RootState>, options: DynamicFormData) => void
     poll: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getResult: (store: ActionContext<ModelCalibrateState, RootState>) => void
+    getCalibratePlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
 }
 
 export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrateActions = {
@@ -57,7 +59,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     },
 
     async getResult(context) {
-        const {commit, state} = context;
+        const {commit, dispatch, state} = context;
         const calibrateId = state.calibrateId;
 
         if (state.status.done) {
@@ -85,9 +87,29 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                         {root: true});
                 }
                 commit(ModelCalibrateMutation.Calibrated);
+                if (switches.modelCalibratePlot) {
+                    dispatch("getCalibratePlot");
+                }
             }
         }
         commit(ModelCalibrateMutation.Ready);
+    },
+
+    async getCalibratePlot(context){
+        const {commit, state} = context;
+        const calibrateId = state.calibrateId;
+        commit(ModelCalibrateMutation.CalibrationPlotStarted);
+
+        const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
+                .ignoreSuccess()
+                .withError(ModelCalibrateMutation.SetError)
+                .freezeResponse()
+                .get<ModelResultResponse>(`model/calibrate/plot/${calibrateId}`);
+
+        if (response) {
+            const data = freezer.deepFreeze(response.data);
+            commit(ModelCalibrateMutation.SetPlotData, data);
+        }
     }
 };
 

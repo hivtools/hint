@@ -1,6 +1,10 @@
-# hint 1.40.1
+# hint 1.42.0
 
 * Make login email case insensitive again
+
+# hint 1.41.0
+
+* Add bar chart to model calibrate page
 
 # hint 1.40.0
 
