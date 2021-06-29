@@ -17,32 +17,28 @@ class DownloadTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `can download Spectrum results`()
+    fun `can request for download submit`()
     {
         val id = waitForModelRunResult()
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/spectrum/$id")
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/submit/spectrum/$id")
         assertSuccess(responseEntity)
-        assertResponseHasExpectedDownloadHeaders(responseEntity)
-
     }
 
     @Test
-    fun `can download summary data`()
+    fun `can request for download submit status`()
     {
         val id = waitForModelRunResult()
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/summary/$id")
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/submit/status/$id")
         assertSuccess(responseEntity)
-        assertResponseHasExpectedDownloadHeaders(responseEntity)
     }
 
     @Test
-    fun `can download coarse output results`()
+    fun `downloads submit result`()
     {
         val id = waitForModelRunResult()
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/coarse-output/$id")
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/submit/result/$id")
         assertSuccess(responseEntity)
         assertResponseHasExpectedDownloadHeaders(responseEntity)
-
     }
 
     fun assertResponseHasExpectedDownloadHeaders(response: ResponseEntity<ByteArray>)
