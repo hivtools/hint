@@ -88,9 +88,9 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .postAndReturn<string>("/project/", qs.stringify({name}));
     },
 
-    async getProjects(context) {
+    async getProjects(context, isLoading: boolean = true) {
         const {commit} = context;
-        commit({type: ProjectsMutations.SetLoading, payload: true});
+        commit({type: ProjectsMutations.SetLoading, payload: isLoading});
         await api<ProjectsMutations, ProjectsMutations>(context)
             .withSuccess(ProjectsMutations.SetPreviousProjects)
             .withError(ProjectsMutations.ProjectError)
@@ -122,13 +122,17 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     },
     
     async updateVersionNote(context, versionPayload: versionPayload) {
+        const {dispatch} = context
         const {projectId, versionId} = versionPayload.version
         const note = versionPayload.note
 
-        await api<ProjectsMutations, ProjectsMutations>(context)
-            .withSuccess(ProjectsMutations.SetPreviousProjects)
-            .withError(ProjectsMutations.ProjectError)
-            .postAndReturn(`/project/${projectId}/version/${versionId}/note`, qs.stringify({note}));
+        await api<ProjectsMutations, ErrorsMutation>(context)
+            .ignoreSuccess()
+            .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
+            .postAndReturn(`/project/${projectId}/version/${versionId}/note`, qs.stringify({note}))
+            .then(() => {
+                dispatch("getProjects", false);
+            });
     },
 
     async newVersion(context, note) {
@@ -144,12 +148,16 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     },
 
     async updateProjectNote(context, payload) {
+        const {dispatch} = context
         const projectId = payload.projectId
         const note = payload.note
-        await api<ProjectsMutations, ProjectsMutations>(context)
-            .withSuccess(ProjectsMutations.SetPreviousProjects)
-            .withError(ProjectsMutations.ProjectError)
+        await api<ProjectsMutations, ErrorsMutation>(context)
+            .ignoreSuccess()
+            .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`project/${projectId}/note`, qs.stringify({note}))
+            .then(() => {
+                dispatch("getProjects", false);
+            });
     },
 
     async loadVersion(context, version) {

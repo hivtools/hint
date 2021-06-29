@@ -545,6 +545,7 @@ describe("Projects actions", () => {
 
     it("updateVersionNote action adds/edits a project's note", async (done) => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const testProjects = [{id: 1, name: "v1", versions: []}];
         const state = mockProjectsState()
 
@@ -557,18 +558,13 @@ describe("Projects actions", () => {
             note: 'edit version note'
         };
 
-        actions.updateVersionNote({commit, state, rootState} as any, versionPayload);
+        actions.updateVersionNote({commit, dispatch, state, rootState} as any, versionPayload);
 
-        setTimeout( () => {
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.post[0].url).toBe(stateUrl);
-
+        setTimeout(() => {
             const posted = mockAxios.history.post[0].data;
             expect(posted).toEqual("note=edit%20version%20note");
-            expect(commit.mock.calls[0][0]).toEqual({
-                type: ProjectsMutations.SetPreviousProjects,
-                payload: testProjects
-            });
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
+            expect(dispatch.mock.calls.length).toBe(1);
             done();
         });
     });
@@ -589,22 +585,17 @@ describe("Projects actions", () => {
         }
         actions.updateProjectNote({commit, dispatch, state, rootState} as any, projectPayload);
         setTimeout(() => {
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.post[0].url).toBe("project/1/note");
-
             const posted = mockAxios.history.post[0].data;
             expect(posted).toEqual("note=test%20project%20note");
-
-            expect(commit.mock.calls[0][0]).toEqual({
-                type: ProjectsMutations.SetPreviousProjects,
-                payload: testProjects
-            });
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
+            expect(dispatch.mock.calls.length).toBe(1);
             done();
         });
     });
 
     it("update project notes commits Project Error on failure", async (done) => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const state = mockProjectsState({error: "TEST ERROR" as any});
 
         const stateUrl = "project/1/note";
@@ -615,11 +606,11 @@ describe("Projects actions", () => {
             projectId: 1,
             note: "test project note"
         }
-        actions.updateProjectNote({commit, state, rootState} as any, projectPayload);
+        actions.updateProjectNote({commit, dispatch, state, rootState} as any, projectPayload);
         setTimeout(() => {
             const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
             expect(commit.mock.calls[0][0]).toStrictEqual({
-                type: ProjectsMutations.ProjectError,
+                type: `errors/${ErrorsMutation.ErrorAdded}`,
                 payload: expectedError
             });
             done();
@@ -628,6 +619,7 @@ describe("Projects actions", () => {
 
     it("update version notes commits Project Error on failure", async (done) => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const state = mockProjectsState({error: "TEST ERROR" as any});
 
         const stateUrl = "/project/1/version/version-id/note";
@@ -639,12 +631,12 @@ describe("Projects actions", () => {
             note: 'test version note'
         };
 
-        actions.updateVersionNote({commit, state, rootState} as any, versionPayload);
+        actions.updateVersionNote({commit, dispatch, state, rootState} as any, versionPayload);
 
         setTimeout(() => {
             const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
             expect(commit.mock.calls[0][0]).toStrictEqual({
-                type: ProjectsMutations.ProjectError,
+                type: `errors/${ErrorsMutation.ErrorAdded}`,
                 payload: expectedError
             });
             done();

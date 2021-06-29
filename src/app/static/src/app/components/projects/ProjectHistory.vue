@@ -159,7 +159,7 @@
             <input type="text"
                    class="form-control"
                    v-translate:placeholder="'projectName'"
-                   @keyup.enter="confirmPromotion(newProjectName)"
+                   @keyup.enter.prevent="confirmPromotion(newProjectName)"
                    v-model="newProjectName"/>
             <div id="promoteNote" class="form-group pt-3">
                 <label class="h5" for="promoteNoteControl"><span v-translate="'copyNoteHeader'"></span></label>
@@ -423,7 +423,7 @@
                     this.editedNote = "";
                 }
             },
-            async confirmNoteEditing() {
+            confirmNoteEditing() {
                 if (this.versionNoteToEdit) {
                     const versionPayload: versionPayload = {
                         version: this.versionNoteToEdit!,
