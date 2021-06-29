@@ -88,7 +88,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .postAndReturn<string>("/project/", qs.stringify({name}));
     },
 
-    async getProjects(context, isLoading: boolean = true) {
+    async getProjects(context, isLoading = true) {
         const {commit} = context;
         commit({type: ProjectsMutations.SetLoading, payload: isLoading});
         await api<ProjectsMutations, ProjectsMutations>(context)
