@@ -205,9 +205,8 @@ describe("Projects actions", () => {
 
         await actions.updateVersionNote({commit, dispatch, state, rootState} as any, versionPayload);
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(3);
-            expect(commit.mock.calls[2][0].type).toBe(ProjectsMutations.SetPreviousProjects);
-            expect(commit.mock.calls[2][0].payload).toBeInstanceOf(Array)
+            expect(dispatch.mock.calls.length).toBe(1);
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
             done();
         });
     });
@@ -229,9 +228,8 @@ describe("Projects actions", () => {
 
         await actions.updateProjectNote({commit, dispatch, state, rootState} as any, projectPayload);
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(3);
-            expect(commit.mock.calls[2][0].type).toBe(ProjectsMutations.SetPreviousProjects);
-            expect(commit.mock.calls[2][0].payload).toBeInstanceOf(Array)
+            expect(dispatch.mock.calls.length).toBe(1);
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
             done();
         });
     });
