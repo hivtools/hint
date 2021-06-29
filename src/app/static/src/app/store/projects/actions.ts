@@ -90,7 +90,11 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 
     async getProjects(context, isLoading = true) {
         const {commit} = context;
-        commit({type: ProjectsMutations.SetLoading, payload: isLoading});
+
+        if (isLoading) {
+            commit({type: ProjectsMutations.SetLoading, payload: true});
+        }
+
         await api<ProjectsMutations, ProjectsMutations>(context)
             .withSuccess(ProjectsMutations.SetPreviousProjects)
             .withError(ProjectsMutations.ProjectError)

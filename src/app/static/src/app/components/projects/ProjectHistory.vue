@@ -159,7 +159,7 @@
             <input type="text"
                    class="form-control"
                    v-translate:placeholder="'projectName'"
-                   @keyup.enter.prevent="confirmPromotion(newProjectName)"
+                   @keyup.enter="confirmPromotion(newProjectName)"
                    v-model="newProjectName"/>
             <div id="promoteNote" class="form-group pt-3">
                 <label class="h5" for="promoteNoteControl"><span v-translate="'copyNoteHeader'"></span></label>
