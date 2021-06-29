@@ -272,7 +272,6 @@
         editVersionNoteHeader: string;
         editVersionNoteSubHeader: string;
         editProjectNoteSubHeader: string;
-        editProjectNoteHeader: string;
     }
 
     interface Methods {
@@ -358,11 +357,6 @@
             editProjectNoteSubHeader: function () {
                 return i18next.t("editProjectNoteSubHeader", {
                     projectName: this.displayProjectName,
-                    lng: this.currentLanguage,
-                });
-            },
-            editProjectNoteHeader: function () {
-                return i18next.t("editProjectNoteHeader", {
                     lng: this.currentLanguage,
                 });
             },
