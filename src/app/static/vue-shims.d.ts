@@ -6,3 +6,4 @@ declare module "*.vue" {
 
 declare module '@riophae/vue-treeselect';
 declare module 'chartjs-plugin-error-bars';
+declare module '@reside-ic/vue-charts';

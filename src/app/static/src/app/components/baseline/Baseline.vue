@@ -64,31 +64,31 @@
         name: "Baseline",
         computed: {
             ...mapState<BaselineState>(namespace, {
-                country: state => state.country,
-                pjnz: state => ({
+                country: (state: BaselineState) => state.country,
+                pjnz: (state: BaselineState) => ({
                     valid: !!state.country,
                     error: state.pjnzError,
                     fromADR: !!state.pjnz?.fromADR,
                     existingFileName: (state.pjnz && state.pjnz.filename) || state.pjnzErroredFile
                 } as PartialFileUploadProps),
-                shape: state => ({
+                shape: (state: BaselineState) => ({
                     valid: state.shape != null,
                     error: state.shapeError,
                     fromADR: !!state.shape?.fromADR,
                     existingFileName: (state.shape && state.shape.filename) || state.shapeErroredFile
                 } as PartialFileUploadProps),
-                population: state => ({
+                population: (state: BaselineState) => ({
                     valid: state.population != null,
                     error: state.populationError,
                     fromADR: !!state.population?.fromADR,
                     existingFileName: (state.population && state.population.filename) || state.populationErroredFile
                 } as PartialFileUploadProps),
-                hasBaselineError: state => !!state.baselineError,
-                baselineError: state => state.baselineError,
-                validating: state => state.validating
+                hasBaselineError: (state: BaselineState) => !!state.baselineError,
+                baselineError: (state: BaselineState) => state.baselineError,
+                validating: (state: BaselineState) => state.validating
             }),
             ...mapState<MetadataState>("metadata", {
-                plottingMetadataError: state => state.plottingMetadataError
+                plottingMetadataError: (state: MetadataState) => state.plottingMetadataError
             })
         },
         methods: {
