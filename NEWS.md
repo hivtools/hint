@@ -1,3 +1,7 @@
+# hint 1.40.1
+
+* Make login email case insensitive again
+
 # hint 1.40.0
 
 * Create an endpoint for model calibrate bar chart
