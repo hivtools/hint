@@ -30,4 +30,11 @@ class DownloadController(val apiClient: HintrAPIClient)
     {
         return apiClient.getDownloadSubmitResult(id)
     }
+
+    @GetMapping("/meta/adr/{id}")
+    @ResponseBody
+    fun uploadMetadata(@PathVariable("id") id: String): ResponseEntity<String>
+    {
+        return apiClient.getUploadMetadata(id)
+    }
 }

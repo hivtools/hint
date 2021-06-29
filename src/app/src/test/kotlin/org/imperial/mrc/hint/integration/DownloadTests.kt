@@ -17,23 +17,31 @@ class DownloadTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `can request for download submit`()
+    fun `can request for upload to ADR metadata`()
     {
         val id = waitForModelRunResult()
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/submit/spectrum/$id")
+        val responseEntity = testRestTemplate.getForEntity<String>("/meta/adr/$id")
         assertSuccess(responseEntity)
     }
 
     @Test
-    fun `can request for download submit status`()
+    fun `can make a request to download submit`()
     {
         val id = waitForModelRunResult()
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/submit/status/$id")
+        val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/spectrum/$id")
         assertSuccess(responseEntity)
     }
 
     @Test
-    fun `downloads submit result`()
+    fun `can make a request to download submit status`()
+    {
+        val id = waitForModelRunResult()
+        val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/status/$id")
+        assertSuccess(responseEntity)
+    }
+
+    @Test
+    fun `can make a request to download submit result`()
     {
         val id = waitForModelRunResult()
         val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/submit/result/$id")

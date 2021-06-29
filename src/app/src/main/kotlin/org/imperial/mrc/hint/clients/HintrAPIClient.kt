@@ -43,6 +43,7 @@ interface HintrAPIClient
     fun getDownloadSubmit(id: String, type:String): ResponseEntity<String>
     fun getDownloadSubmitStatus(id: String): ResponseEntity<String>
     fun getDownloadSubmitResult(id: String): ResponseEntity<StreamingResponseBody>
+    fun getUploadMetadata(id: String): ResponseEntity<String>
 }
 
 @Component
@@ -215,5 +216,9 @@ class HintrFuelAPIClient(
                 .getStreamingResponseEntity(::head)
     }
 
+    override fun getUploadMetadata(id: String): ResponseEntity<String>
+    {
+        return get("$baseUrl/meta/adr/${id}")
+    }
 
 }

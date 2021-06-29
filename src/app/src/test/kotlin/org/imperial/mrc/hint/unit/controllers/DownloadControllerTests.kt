@@ -93,4 +93,17 @@ class DownloadControllerTests
         val result = sut.getSubmitResult("id1")
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
+
+    @Test
+    fun `can get upload to ADR metadata`()
+    {
+        val mockResponse = mock<ResponseEntity<String>>()
+        val mockAPIClient = mock<HintrAPIClient> {
+            on { getUploadMetadata("id1") } doReturn mockResponse
+        }
+
+        val sut = DownloadController(mockAPIClient)
+        val result = sut.uploadMetadata("id1")
+        Assertions.assertThat(result).isSameAs(mockResponse)
+    }
 }
