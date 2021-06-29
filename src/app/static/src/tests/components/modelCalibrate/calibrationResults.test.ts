@@ -68,9 +68,10 @@ currentUser = "guest";
 
 describe("CalibrateResults component", () => {
 
-    it("renders title and text", () => {
+    it("renders title and text", async () => {
         const store = getStore();
         const wrapper = shallowMount(CalibrationResults, {localVue, store});
+        await Vue.nextTick();
         const title = wrapper.find("h3");
         expectTranslated(title, "Review calibration results", "Examiner les résultats de l'étalonnage", store);
         const text = wrapper.find("p");

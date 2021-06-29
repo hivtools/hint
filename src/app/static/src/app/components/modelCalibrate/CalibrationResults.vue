@@ -9,8 +9,14 @@
             :indicators="indicators"
             :selections="selections"
             :formatFunction="formatBarchartValue"
-            :x-axis-config="config"
-            :disaggregate-by-config="config"
+            :x-axis-config="{
+                    fixed: true,
+                    hideFilter: true,
+                }"
+            :disaggregate-by-config="{
+                    fixed: true,
+                    hideFilter: true,
+                }"
             @update="updateCalibratePlotSelections({ payload: $event })"
         ></bar-chart-with-filters>
     </div>
@@ -22,8 +28,7 @@
     import { Language, Translations } from "../../store/translations/locales";
     import {
         BarchartIndicator,
-        Filter,
-        AxisConfig,
+        Filter
     } from "@reside-ic/vue-charts/src/bar/types";
     import {
         BarChartWithFilters,
@@ -48,15 +53,6 @@
 
     const namespace = "modelCalibrate";
 
-    // const barchartConfig: AxisConfig = {
-    //     fixed: true,
-    //     hideFilter: true,
-    // };
-
-    interface Data {
-        config: AxisConfig
-    }
-
     interface Methods {
         updateCalibratePlotSelections: (data: {
             payload: BarchartSelections;
@@ -77,26 +73,10 @@
         currentLanguage: Language;
     }
 
-    // interface ReadOnly {
-    //     config: AxisConfig
-    // }
-
-    // interface ReadOnly {
-    //     config: { fixed: true; hideFilter: true };
-    // }
-
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default Vue.extend<unknown, Methods, Computed, unknown>({
         name: "CalibrationResults",
         components: {
             BarChartWithFilters,
-        },
-        data() {
-            return {
-                config: {
-                    fixed: true,
-                    hideFilter: true,
-                },
-            };
         },
         computed: {
             ...mapGettersByNames(namespace, ["indicators", "filters"]),
@@ -144,9 +124,6 @@
                 ).toString();
             },
         },
-        // created() {
-        //     this.config = barchartConfig;
-        // },
         mounted() {
             const {
                 selected_filter_options,
