@@ -96,7 +96,7 @@ class ProjectsController(private val session: Session,
             @RequestParam("note") note: String): ResponseEntity<String>
     {
         projectRepository.updateProjectNote(projectId, userId(), note)
-        return SuccessResponse(projectRepository.getProjects(userId())).asResponseEntity()
+        return EmptySuccessResponse.asResponseEntity()
     }
 
     @PostMapping("/project/{projectId}/version/{versionId}/note")
@@ -107,7 +107,7 @@ class ProjectsController(private val session: Session,
             @RequestParam("note") note: String): ResponseEntity<String>
     {
         versionRepository.updateVersionNote(versionId, projectId, userId(), note)
-        return SuccessResponse(projectRepository.getProjects(userId())).asResponseEntity()
+        return EmptySuccessResponse.asResponseEntity()
     }
 
     @GetMapping("project/{projectId}/version/{versionId}")
