@@ -127,4 +127,25 @@ describe("Plotting selections mutations", () => {
         expect(testState.colourScales.program).toStrictEqual({});
         expect(testState.colourScales.anc).toStrictEqual({});
     });
+
+    it("updates calibrate plot selections", () => {
+        const testState = mockPlottingSelections();
+        const newBarchartSelections = {
+            indicatorId: "test-indicator",
+            disaggregateById: "test-disagg",
+            selectedFilterOptions: {
+                testFilter: []
+            }
+        };
+        mutations.updateCalibratePlotSelections(testState, {payload: newBarchartSelections});
+
+        expect(testState.calibratePlot).toStrictEqual({
+            indicatorId: "test-indicator",
+            disaggregateById: "test-disagg",
+            xAxisId: "",
+            selectedFilterOptions: {
+                testFilter: []
+            }
+        });
+    });
 });

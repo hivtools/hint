@@ -1,6 +1,14 @@
-# hint 1.39.1
+# hint 1.41.1
 
 * Bug fix: Importing from adr after fitting model should prompt new version behaviour
+
+# hint 1.41.0
+
+* Add bar chart to model calibrate page
+
+# hint 1.40.0
+
+* Create an endpoint for model calibrate bar chart
 
 # hint 1.39.0
 
