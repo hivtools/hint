@@ -41,9 +41,9 @@ interface HintrAPIClient
     fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions):
             ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
-    fun getDownloadSubmit(type:String, id: String): ResponseEntity<String>
-    fun getDownloadSubmitStatus(id: String): ResponseEntity<String>
-    fun getDownloadSubmitResult(id: String): ResponseEntity<StreamingResponseBody>
+    fun downloadOutput(type:String, id: String): ResponseEntity<String>
+    fun downloadOutputStatus(id: String): ResponseEntity<String>
+    fun downloadOutputResult(): ResponseEntity<StreamingResponseBody>
     fun getUploadMetadata(id: String): ResponseEntity<String>
 }
 
@@ -205,26 +205,26 @@ class HintrFuelAPIClient(
                 .getStreamingResponseEntity(::head)
     }
 
-    override fun getDownloadSubmit(type:String, id: String): ResponseEntity<String>
+    override fun downloadOutput(type:String, id: String): ResponseEntity<String>
     {
-        return get("$baseUrl/download/submit/${type}/${id}")
+        return get("download/submit/${type}/${id}")
     }
 
-    override fun getDownloadSubmitStatus(id: String): ResponseEntity<String>
+    override fun downloadOutputStatus(id: String): ResponseEntity<String>
     {
-        return get("$baseUrl/download/status/${id}")
+        return get("download/status/${id}")
     }
 
-    override fun getDownloadSubmitResult(id: String): ResponseEntity<StreamingResponseBody>
+    override fun downloadOutputResult(): ResponseEntity<StreamingResponseBody>
     {
-        return "$baseUrl/download/result/${id}"
+        return "$baseUrl/download/result"
                 .httpDownload()
                 .getStreamingResponseEntity(::head)
     }
 
     override fun getUploadMetadata(id: String): ResponseEntity<String>
     {
-        return get("$baseUrl/meta/adr/${id}")
+        return get("meta/adr/${id}")
     }
 
 }

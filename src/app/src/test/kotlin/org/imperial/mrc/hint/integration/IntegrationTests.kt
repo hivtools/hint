@@ -105,6 +105,22 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         return id
     }
 
+    protected fun waitForDownloadResult(calibrateId: String): String
+    {
+        val response = testRestTemplate.getForEntity<String>("/download/submit/spectrum/$calibrateId")
+        assertSuccess(response, "DownloadSubmitResponse")
+        val bodyJSON = ObjectMapper().readTree(response.body)
+        val responseId = bodyJSON["data"]["id"].asText()
+
+        do
+        {
+            Thread.sleep(500)
+            val statusResponse = testRestTemplate.getForEntity<String>("/download/status/$responseId")
+        } while (statusResponse.body != null && statusResponse.body!!.contains("\"status\":\"RUNNING\""))
+
+        return responseId
+    }
+
     fun assertSecureWithHttpStatus(isAuthorized: IsAuthorized,
                                    responseEntity: ResponseEntity<String>,
                                    schemaName: String?, httpStatus: HttpStatus)

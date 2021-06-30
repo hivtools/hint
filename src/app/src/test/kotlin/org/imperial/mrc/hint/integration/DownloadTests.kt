@@ -22,7 +22,7 @@ class DownloadTests : SecureIntegrationTests()
     {
         val id = waitForModelRunResult()
         val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/coarse-output/$id")
-        assertSuccess(responseEntity)
+        assertSuccess(responseEntity, "DownloadSubmitResponse")
     }
 
     @Test
@@ -30,7 +30,7 @@ class DownloadTests : SecureIntegrationTests()
     {
         val id = waitForModelRunResult()
         val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/summary/$id")
-        assertSuccess(responseEntity)
+        assertSuccess(responseEntity, "DownloadSubmitResponse")
     }
 
     @Test
@@ -38,7 +38,7 @@ class DownloadTests : SecureIntegrationTests()
     {
         val id = waitForModelRunResult()
         val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/spectrum/$id")
-        assertSuccess(responseEntity)
+        assertSuccess(responseEntity, "DownloadSubmitResponse")
     }
 
     @Test
@@ -46,14 +46,13 @@ class DownloadTests : SecureIntegrationTests()
     {
         val responseId = downloadSubmitResponse()
         val responseEntity = testRestTemplate.getForEntity<String>("/download/status/$responseId")
-        assertSuccess(responseEntity)
+        assertSuccess(responseEntity, "DownloadStatusResponse")
     }
 
     @Test
-    fun `can make a request to download submit result`()
+    fun `can download submit result`()
     {
-        val responseId = downloadSubmitResponse()
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/result/$responseId")
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/result")
         assertSuccess(responseEntity)
         assertResponseHasExpectedDownloadHeaders(responseEntity)
     }
@@ -74,6 +73,7 @@ class DownloadTests : SecureIntegrationTests()
     {
         val calibrateId = waitForModelRunResult()
         val response = testRestTemplate.getForEntity<String>("/download/submit/spectrum/$calibrateId")
+
         val bodyJSON = ObjectMapper().readTree(response.body)
         return bodyJSON["data"]["id"].asText()
     }

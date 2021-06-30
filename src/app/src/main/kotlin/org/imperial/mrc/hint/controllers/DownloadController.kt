@@ -11,23 +11,23 @@ class DownloadController(val apiClient: HintrAPIClient)
 {
     @GetMapping("/submit/{type}/{id}")
     @ResponseBody
-    fun getSubmit(@PathVariable("type") type: String,
+    fun getDownloadOutput(@PathVariable("type") type: String,
                   @PathVariable("id") id: String): ResponseEntity<String>
     {
-        return apiClient.getDownloadSubmit(type, id)
+        return apiClient.downloadOutput(type, id)
     }
 
     @GetMapping("/status/{id}")
     @ResponseBody
-    fun getSubmitStatus(@PathVariable("id") id: String): ResponseEntity<String>
+    fun getDownloadOutputStatus(@PathVariable("id") id: String): ResponseEntity<String>
     {
-        return apiClient.getDownloadSubmitStatus(id)
+        return apiClient.downloadOutputStatus(id)
     }
 
-    @GetMapping("/result/{id}")
+    @GetMapping("/result")
     @ResponseBody
-    fun getSubmitResult(@PathVariable("id") id: String): ResponseEntity<StreamingResponseBody>
+    fun getDownloadOutputResult(): ResponseEntity<StreamingResponseBody>
     {
-        return apiClient.getDownloadSubmitResult(id)
+        return apiClient.downloadOutputResult()
     }
 }
