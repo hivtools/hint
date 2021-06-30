@@ -87,7 +87,7 @@ describe("Manage file component", () => {
         const wrapper = createSut({
             existingFileName: "existing-name.csv"
         }, undefined, store);
-        expectTranslated(wrapper.find("label.file-name strong"), "File", "Fichier", store);
+        expectTranslated(wrapper.find("label.file-name strong"), "File", "Fichier", "Ficheiro", store);
         expect(wrapper.find("label.file-name").text()).toContain("existing-name.csv");
     });
 
@@ -138,7 +138,7 @@ describe("Manage file component", () => {
         expect(removeLink.text()).toBe("remove");
 
         //should not render File label if no existing filename
-        expectTranslated(wrapper.find(".file-name"), "remove", "supprimer", wrapper.vm.$store);
+        expectTranslated(wrapper.find(".file-name"), "remove", "supprimer", "remover", wrapper.vm.$store);
 
         removeLink.trigger("click");
 

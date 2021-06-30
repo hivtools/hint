@@ -91,7 +91,7 @@ describe("Model options component", () => {
         expect(rendered.findAll(DynamicForm).length).toBe(0);
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
         expectTranslated(rendered.find("#loading-message"), "Loading options",
-            "Chargement de vos options.", store);
+            "Chargement de vos options.", "Opções de carregamento", store);
     });
 
     it("renders as expected while validating", () => {
@@ -99,14 +99,14 @@ describe("Model options component", () => {
         const rendered = shallowMount(ModelOptions, {store});
         expect(rendered.find("#validating").find(LoadingSpinner).exists()).toBe(true);
         expectTranslated(rendered.find("#validating"), "Validating...",
-            "Validation en cours...", store);
+            "Validation en cours...", "A validar...", store);
     });
 
     it("displays tick and message if valid is true", () => {
         const store = createStore({valid: true});
         const rendered = shallowMount(ModelOptions, {store});
         expectTranslated(rendered.find("h4"), "Options are valid",
-            "Les options sont valides", store);
+            "Les options sont valides", "As opções são válidas", store);
         expect(rendered.findAll(Tick).length).toBe(1);
         expect(rendered.find("#validating").exists()).toBe(false);
     });

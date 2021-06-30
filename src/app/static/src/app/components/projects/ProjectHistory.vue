@@ -4,7 +4,7 @@
         <div id="headers" class="row font-weight-bold pt-2">
             <div class="col-md-1 header-cell"></div>
             <div class="col-md-3 header-cell" v-translate="'projectName'"></div>
-            <div class="col-md-1 header-cell">Versions</div>
+            <div class="col-md-1 header-cell" v-translate="'versions'"></div>
             <div class="col-md-2 header-cell" v-translate="'lastUpdated'"></div>
             <div class="col-md-1 header-cell" v-translate="'load'"></div>
             <div class="col-md-1 header-cell" v-translate="'renameProjectHistoryHeader'"></div>

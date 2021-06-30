@@ -200,7 +200,8 @@ describe("Model run component", () => {
         const wrapper = mount(ModelRun, {store, localVue});
         expect(wrapper.find(Modal).props().open).toBe(true);
         expectTranslated(wrapper.find(Modal).find("h4"), "Initialising model fitting",
-            "Initialisation de l'ajustement du modèle", store);
+            "Initialisation de l'ajustement du modèle",
+            "Inicialização do ajuste do modelo", store);
         expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.find(Modal).findAll(ProgressBar).length).toBe(0);
     });
@@ -286,7 +287,7 @@ describe("Model run component", () => {
         });
         const wrapper = shallowMount(ModelRun, {store, localVue});
         expectTranslated(wrapper.find("#model-run-complete"), "Model fitting complete",
-            "Ajustement du modèle terminé", store);
+            "Ajustement du modèle terminé", "Ajuste de modelo concluído", store);
         expect(wrapper.findAll(Tick).length).toBe(1);
     });
 

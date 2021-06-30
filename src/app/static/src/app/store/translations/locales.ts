@@ -212,6 +212,7 @@ export interface Translations {
     usernameValidation: string,
     validate: string,
     validating: string,
+    versions: string,
     xAxis: string,
     year: string
 }
@@ -462,6 +463,7 @@ const en: Translations = {
     usernameValidation: "Please enter your username",
     validate: "Validate",
     validating: "Validating...",
+    versions: "Versions",
     xAxis: "X Axis",
     year: "Year"
 };
@@ -708,6 +710,7 @@ const fr: Partial<Translations> = {
     usernameValidation: "Veuillez entrer votre nom d’utilisateur",
     validate: "Valider",
     validating: "Validation en cours...",
+    versions: "Versions",
     xAxis: "Axe X",
     year: "An"
 };
@@ -891,7 +894,7 @@ const pt: Partial<Translations> = {
     projectsHeaderCreate: "Criar um novo projeto",
     projectsHeaderReturn: "regressar ao projeto atual",
     projectsNoSelfShare: "Os projetos não podem ser partilhados com a conta do próprio utilizador",
-    promoteVersionHeader: "A copiar versão {{ versão }} para um novo projeto",
+    promoteVersionHeader: "A copiar versão {{ version }} para um novo projeto",
     refresh: "Atualizar",
     remove: "remover",
     renameProject: "Mudar o nome do projeto",
@@ -911,7 +914,7 @@ const pt: Partial<Translations> = {
     saveVersionConfirm: "Guardar versão e continuar a editar",
     select: "Selecionar...",
     selectADR: "Selecionar conjunto de dados do ADR",
-    selectedDataset: "Conjunto de dados selecionado,",
+    selectedDataset: "Conjunto de dados selecionado:",
     selectNewFile: "Selecionar novo ficheiro",
     sessionExpired: "A sua sessão expirou. Por favor, atualize a página e inicie sessão novamente. Pode guardar o seu trabalho antes de atualizar.",
     sessionExpiredLogin: "A sua sessão expirou. Por favor, inicie sessão novamente.",
@@ -943,7 +946,7 @@ const pt: Partial<Translations> = {
     uploadComplete: "Carregamento concluído",
     uploadFileOutputSummary: "Relatório de síntese",
     uploadFileOutputZip: "Saídas modelo",
-    uploadFileDataset: "Conjunto de dados,",
+    uploadFileDataset: "Conjunto de dados:",
     uploadFileDesc: "Descrição (isto será anexado aos metadados do ficheiro):",
     uploadFileInstruction: "Por favor, selecione os ficheiros novos ou modificados que devem ser carregados",
     uploadFileOverwrite: "Este ficheiro já existe no ADR e será substituído. O ficheiro foi atualizado ",
@@ -953,6 +956,7 @@ const pt: Partial<Translations> = {
     usernameValidation: "Por favor, introduza o seu nome de utilizador",
     validate: "Validar",
     validating: "A validar...",
+    versions: "Versões",
     xAxis: "Eixo X",
     year: "Ano"
 };

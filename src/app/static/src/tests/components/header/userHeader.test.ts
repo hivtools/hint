@@ -61,7 +61,7 @@ describe("user header", () => {
         const wrapper = getWrapper(currentUser, store);
         const loginInfo = wrapper.find("span");
         expectTranslated(loginInfo, "Logged in as someone@email.com",
-            "Connecté en tant que someone@email.com", "Sessão iniciada como", store);
+            "Connecté en tant que someone@email.com", "Sessão iniciada como someone@email.com", store);
     });
 
     it("contains login link if user is guest", () => {

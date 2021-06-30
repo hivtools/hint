@@ -220,7 +220,8 @@ describe("select dataset", () => {
     it("renders select dataset button when no dataset is selected", () => {
         let store = getStore()
         const rendered = shallowMount(SelectDataset, {store});
-        expectTranslated(rendered.find("button"), "Select ADR dataset", "Sélectionner l’ensemble de données ADR", store);
+        expectTranslated(rendered.find("button"), "Select ADR dataset",
+            "Sélectionner l’ensemble de données ADR", "Selecionar conjunto de dados do ADR", store);
     });
 
     it("renders edit dataset button when dataset is already selected", () => {
@@ -228,7 +229,7 @@ describe("select dataset", () => {
             selectedDataset: fakeDataset
         })
         const rendered = shallowMount(SelectDataset, {store});
-        expectTranslated(rendered.find("button"), "Edit", "Éditer", store);
+        expectTranslated(rendered.find("button"), "Edit", "Éditer", "Editar", store);
     });
 
     it("does not render refresh button or info icon when no resources are out of date", () => {
@@ -252,8 +253,8 @@ describe("select dataset", () => {
             stubs: ["tree-select"]
         });
         const buttons = rendered.findAll("button");
-        expectTranslated(buttons.at(0), "Refresh", "Rafraîchir", store);
-        expectTranslated(buttons.at(1), "Edit", "Éditer", store);
+        expectTranslated(buttons.at(0), "Refresh", "Rafraîchir", "Atualizar", store);
+        expectTranslated(buttons.at(1), "Edit", "Éditer", "Editar", store);
 
         expect(rendered.findAll(InfoIcon).length).toBe(1);
 
@@ -345,8 +346,10 @@ describe("select dataset", () => {
         expect(modal.props("open")).toBe(true);
         expectTranslated(modal.find("#fetch-error div"),
             "There was an error fetching datasets from ADR",
-            "Une erreur s'est produite lors de la récupération des ensembles de données à partir d'ADR", store);
-        expectTranslated(modal.find("#fetch-error button"), "Try again", "Réessayer", store);
+            "Une erreur s'est produite lors de la récupération des ensembles de données à partir d'ADR",
+            "Ocorreu um erro ao obter conjuntos de dados do ADR", store);
+        expectTranslated(modal.find("#fetch-error button"), "Try again", "Réessayer",
+            "Tente novamente", store);
     });
 
     it("Try again button invokes getDatasets action", async () => {
@@ -423,7 +426,8 @@ describe("select dataset", () => {
             selectedDataset: fakeDataset
         })
         const rendered = shallowMount(SelectDataset, {store});
-        expectTranslated(rendered.find(".font-weight-bold"), "Selected dataset:", "Ensemble de données sélectionné :", store);
+        expectTranslated(rendered.find(".font-weight-bold"), "Selected dataset:",
+            "Ensemble de données sélectionné :", "Conjunto de dados selecionado:", store);
         expect(rendered.find("a").text()).toBe("Some data");
         expect(rendered.find("a").attributes("href")).toBe("www.adr.com/naomi-data/some-data");
     });
@@ -494,7 +498,7 @@ describe("select dataset", () => {
 
         expect(rendered.find("#fetching-datasets").find(LoadingSpinner).attributes("size")).toBe("xs");
         expectTranslated(rendered.find("#fetching-datasets span"),
-            "Loading datasets", "Chargement de vos ensembles de données", store);
+            "Loading datasets", "Chargement de vos ensembles de données", "A carregar conjuntos de dados", store);
     });
 
     it("sets current dataset", async () => {
@@ -511,7 +515,7 @@ describe("select dataset", () => {
         expect(rendered.findAll(TreeSelect).length).toBe(1);
         expect(rendered.find(Modal).findAll("button").length).toBe(2);
         expect(rendered.findAll("p").length).toBe(0);
-        expectTranslated(rendered.find("h4"), "Browse ADR", "Parcourir ADR", store);
+        expectTranslated(rendered.find("h4"), "Browse ADR", "Parcourir ADR", "Procurar no ADR", store);
 
         rendered.setData({newDatasetId: "id2"});
         rendered.find(Modal).find("button").trigger("click");
@@ -527,6 +531,7 @@ describe("select dataset", () => {
         expectTranslated(rendered.find("p"),
             "Importing files - this may take several minutes. Please do not close your browser.",
             "Importation de fichiers - cela peut prendre plusieurs minutes. Veuillez ne pas fermer votre navigateur.",
+            "Importação de ficheiros - isto pode demorar vários minutos. Por favor, não feche o seu navegador.",
             store);
         expect(rendered.findAll("h4").length).toBe(0);
 
