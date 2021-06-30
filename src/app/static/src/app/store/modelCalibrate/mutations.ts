@@ -21,7 +21,9 @@ export enum ModelCalibrateMutation {
     SetOptionsData = "SetOptionsData",
     SetError = "SetError",
     PollingForStatusStarted = "PollingForStatusStarted",
-    Ready = "Ready"
+    Ready = "Ready",
+    CalibrationPlotStarted = "CalibrationPlotStarted",
+    SetPlotData = "SetPlotData"
 }
 
 export const mutations: MutationTree<ModelCalibrateState> = {
@@ -48,6 +50,8 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.calibrateId = action.payload.id;
         state.calibrating = true;
         state.complete = false;
+        state.generatingCalibrationPlot = false;
+        state.calibratePlotResult = null;
         state.error = null;
         state.status = {} as CalibrateStatusResponse;
     },
@@ -65,6 +69,17 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.calibrating = false
     },
 
+    [ModelCalibrateMutation.CalibrationPlotStarted](state: ModelCalibrateState) {
+        state.generatingCalibrationPlot = true;
+        state.calibratePlotResult = null;
+        state.error = null;
+    },
+
+    [ModelCalibrateMutation.SetPlotData](state: ModelCalibrateState, action: PayloadWithType<any>) {
+        state.generatingCalibrationPlot = false;
+        state.calibratePlotResult = action;
+    },
+
     [ModelCalibrateMutation.SetModelCalibrateOptionsVersion](state: ModelCalibrateState, action: PayloadWithType<VersionInfo>) {
         state.version = action.payload;
     },
@@ -76,6 +91,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     [ModelCalibrateMutation.SetError](state: ModelCalibrateState, action: PayloadWithType<Error>) {
         state.error = action.payload;
         state.calibrating = false;
+        state.generatingCalibrationPlot = false;
         if (state.statusPollId > -1) {
             stopPolling(state);
         }

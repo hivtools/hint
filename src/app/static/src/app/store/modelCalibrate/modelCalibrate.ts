@@ -5,6 +5,7 @@ import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
 import {actions} from "./actions";
 import {VersionInfo, Error, CalibrateStatusResponse} from "../../generated";
+import {BarchartIndicator, Filter} from "../../types";
 
 export interface ModelCalibrateState extends ReadyState {
     optionsFormMeta: DynamicFormMeta
@@ -15,6 +16,8 @@ export interface ModelCalibrateState extends ReadyState {
     status: CalibrateStatusResponse
     calibrating: boolean
     complete: boolean
+    generatingCalibrationPlot: boolean
+    calibratePlotResult: any,
     version: VersionInfo
     error: Error | null
 }
@@ -30,8 +33,19 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
         status: {} as CalibrateStatusResponse,
         calibrating: false,
         complete: false,
+        generatingCalibrationPlot: false,
+        calibratePlotResult: null,
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
         error: null
+    }
+};
+
+export const modelCalibrateGetters = {
+    indicators: (state: ModelCalibrateState, getters: any, rootState: RootState): BarchartIndicator[] => {
+        return rootState.modelCalibrate.calibratePlotResult!.plottingMetadata.barchart.indicators;
+    },
+    filters: (state: ModelCalibrateState, getters: any, rootState: RootState): Filter[] => {
+        return rootState.modelCalibrate.calibratePlotResult!.plottingMetadata.barchart.filters;
     }
 };
 
@@ -42,6 +56,7 @@ const existingState = localStorageManager.getState();
 export const modelCalibrate: Module<ModelCalibrateState, RootState> = {
     namespaced,
     state: {...initialModelCalibrateState(), ...existingState && existingState.modelCalibrate, ready: false},
+    getters: modelCalibrateGetters,
     mutations,
     actions
 };
