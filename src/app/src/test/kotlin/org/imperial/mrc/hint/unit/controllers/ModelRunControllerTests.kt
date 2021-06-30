@@ -124,6 +124,19 @@ class ModelRunControllerTests
     }
 
     @Test
+    fun `can get calibrate plot`()
+    {
+        val mockFileManager = mock<FileManager>()
+        val mockAPIClient = mock<HintrAPIClient> {
+            on { getCalibratePlot("testId") } doReturn mockResponse
+        }
+        val sut = ModelRunController(mockFileManager, mockAPIClient)
+
+        val result = sut.calibratePlot("testId")
+        assertThat(result).isSameAs(mockResponse)
+    }
+
+    @Test
     fun `can get options`()
     {
         val mockFiles: Map<String, VersionFileWithPath> = mapOf()

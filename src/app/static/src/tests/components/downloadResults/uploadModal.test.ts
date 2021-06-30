@@ -19,7 +19,8 @@ describe(`uploadModal `, () => {
                 resourceFilename: "naomi-model-outputs-project1.zip",
                 resourceId: null,
                 resourceUrl: null,
-                lastModified: null
+                lastModified: null,
+                resourceName: "Naomi Output Zip"
             },
         outputSummary:
             {
@@ -29,9 +30,24 @@ describe(`uploadModal `, () => {
                 resourceFilename: "string",
                 resourceId: "value",
                 resourceUrl: null,
-                lastModified: "2021-01-25T06:34:12.375649"
+                lastModified: "2021-01-25T06:34:12.375649",
+                resourceName: "Naomi Output Zip"
             }
     }
+
+    const metadataWithInput = {
+        ...fakeMetadata,
+        population: {
+            index: 3,
+            displayName: "population",
+            resourceType: "inputs-unaids-population",
+            resourceFilename: "naomi-model-outputs-population.zip",
+            resourceId: 123,
+            resourceUrl: null,
+            lastModified: "2021-06-01",
+            resourceName: "TestPopulation"
+        }
+    };
 
     const mockResources = {
         pjnz: mockDatasetResource(),
@@ -127,9 +143,13 @@ describe(`uploadModal `, () => {
 
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
+        expect(inputs.at(0).attributes("id")).toBe("id-0-0");
+        expect(inputs.at(1).attributes("id")).toBe("id-0-1");
 
         const label = wrapper.findAll("label.form-check-label")
         expect(label.length).toBe(2)
+        expect(label.at(0).attributes("for")).toBe("id-0-0");
+        expect(label.at(1).attributes("for")).toBe("id-0-1");
 
         expectTranslated(label.at(0), "Model outputs", "Résultats du modèle", store)
         expectTranslated(label.at(1), "Summary report", "Rapport sommaire", store)
@@ -202,5 +222,39 @@ describe(`uploadModal `, () => {
         expect(okBtn.text()).toBe("OK")
         await okBtn.trigger("click")
         expect(wrapper.emitted("close").length).toBe(1)
-    })
+    });
+
+    it("does not render file section header when no input files", () => {
+        const wrapper = mount(UploadModal, {store: createStore()});
+        expect(wrapper.find("h5").exists()).toBe(false);
+    });
+
+    it("renders file section headers when there are input files", () => {
+        const store = createStore(metadataWithInput);
+        const wrapper = mount(UploadModal, {store});
+        const headers = wrapper.findAll("h5");
+        expect(headers.length).toBe(2);
+        expectTranslated(headers.at(0), "Output Files", "Fichiers de sortie", store);
+        expectTranslated(headers.at(1), "Input Files", "Fichiers d'entrée", store);
+    });
+
+    it("renders input controls as expected when there are input files", () => {
+        const store = createStore(metadataWithInput);
+        const wrapper = mount(UploadModal, {store});
+
+        const inputs = wrapper.findAll("input.form-check-input");
+        expect(inputs.length).toBe(3);
+        expect(inputs.at(0).attributes("id")).toBe("id-0-0");
+        expect(inputs.at(0).attributes("value")).toBe("outputZip");
+        expect(inputs.at(1).attributes("id")).toBe("id-0-1");
+        expect(inputs.at(1).attributes("value")).toBe("outputSummary");
+        expect(inputs.at(2).attributes("id")).toBe("id-1-0");
+        expect(inputs.at(2).attributes("value")).toBe("population");
+
+        const labels = wrapper.findAll("label.form-check-label");
+        expect(labels.length).toBe(3);
+        expect(labels.at(0).attributes("for")).toBe("id-0-0");
+        expect(labels.at(1).attributes("for")).toBe("id-0-1");
+        expect(labels.at(2).attributes("for")).toBe("id-1-0");
+    });
 })

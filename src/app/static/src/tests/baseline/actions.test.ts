@@ -434,13 +434,13 @@ describe("Baseline actions", () => {
         mockAxios.onGet("/adr/datasets/1234")
             .reply(200, mockSuccess({
                 resources: [
-                    {id: "1", url: "something.com", last_modified: "2020-11-01", metadata_modified: "2020-11-02", resource_type: "pop"},
-                    {id: "2", url: "something.com", last_modified: "2020-11-03", metadata_modified: "2020-11-04", resource_type: "pjnz"},
-                    {id: "3", url: "something.com", last_modified: "2020-11-05", metadata_modified: "2020-11-06", resource_type: "shape"},
-                    {id: "4", url: "something.com", last_modified: "2020-11-07", metadata_modified: "2020-11-08", resource_type: "survey"},
-                    {id: "5", url: "something.com", last_modified: "2020-11-09", metadata_modified: "2020-11-10", resource_type: "program"},
-                    {id: "6", url: "something.com", last_modified: "2020-11-11", metadata_modified: "2020-11-12", resource_type: "anc"},
-                    {id: "7", url: "something.com", last_modified: "2020-10-01", metadata_modified: "2020-10-02", resource_type: "random"},
+                    {id: "1", url: "something.com", last_modified: "2020-11-01", metadata_modified: "2020-11-02", resource_type: "pop", name: "Pop resource"},
+                    {id: "2", url: "something.com", last_modified: "2020-11-03", metadata_modified: "2020-11-04", resource_type: "pjnz", name: "PJNZ resource"},
+                    {id: "3", url: "something.com", last_modified: "2020-11-05", metadata_modified: "2020-11-06", resource_type: "shape", name: "Shape resource"},
+                    {id: "4", url: "something.com", last_modified: "2020-11-07", metadata_modified: "2020-11-08", resource_type: "survey", name: "Survey resource"},
+                    {id: "5", url: "something.com", last_modified: "2020-11-09", metadata_modified: "2020-11-10", resource_type: "program", name: "Program resource"},
+                    {id: "6", url: "something.com", last_modified: "2020-11-11", metadata_modified: "2020-11-12", resource_type: "anc", name: "ANC resource"},
+                    {id: "7", url: "something.com", last_modified: "2020-10-01", metadata_modified: "2020-10-02", resource_type: "random", name: "Random resource"},
 
                 ]
             }))
@@ -454,12 +454,12 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls[0][0]).toBe(BaselineMutation.UpdateDatasetResources);
         expect(commit.mock.calls[0][1]).toEqual({
-            pjnz: mockDatasetResource({id: "2", url: "something.com", lastModified: "2020-11-03", metadataModified: "2020-11-04",}),
-            shape: mockDatasetResource({id: "3", url: "something.com", lastModified: "2020-11-05", metadataModified: "2020-11-06"}),
-            pop: mockDatasetResource({id: "1", url: "something.com", lastModified: "2020-11-01", metadataModified: "2020-11-02"}),
-            survey: mockDatasetResource({id: "4", url: "something.com", lastModified: "2020-11-07", metadataModified: "2020-11-08"}),
-            program: mockDatasetResource({id: "5", url: "something.com", lastModified: "2020-11-09", metadataModified: "2020-11-10"}),
-            anc: mockDatasetResource({id: "6", url: "something.com", lastModified: "2020-11-11", metadataModified: "2020-11-12",})
+            pjnz: mockDatasetResource({id: "2", url: "something.com", lastModified: "2020-11-03", metadataModified: "2020-11-04", name: "PJNZ resource"}),
+            shape: mockDatasetResource({id: "3", url: "something.com", lastModified: "2020-11-05", metadataModified: "2020-11-06", name: "Shape resource"}),
+            pop: mockDatasetResource({id: "1", url: "something.com", lastModified: "2020-11-01", metadataModified: "2020-11-02", name: "Pop resource"}),
+            survey: mockDatasetResource({id: "4", url: "something.com", lastModified: "2020-11-07", metadataModified: "2020-11-08", name: "Survey resource"}),
+            program: mockDatasetResource({id: "5", url: "something.com", lastModified: "2020-11-09", metadataModified: "2020-11-10", name: "Program resource"}),
+            anc: mockDatasetResource({id: "6", url: "something.com", lastModified: "2020-11-11", metadataModified: "2020-11-12", name: "ANC resource"})
         });
     });
 

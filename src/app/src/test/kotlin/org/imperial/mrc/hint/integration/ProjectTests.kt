@@ -160,16 +160,16 @@ class ProjectTests : VersionFileTests()
             val promoteProjectResult = testRestTemplate.postForEntity<String>("/project/$projectId/version/$versionId/promote", httpEntity)
 
             val promoteProjData = getResponseData(promoteProjectResult)
-            val promoteProjId = promoteProjData["id"].asInt()
 
-            val savedProject = dsl.select(PROJECT.NOTE,
-                    PROJECT.NAME)
-                    .from(PROJECT)
-                    .where(PROJECT.ID.eq(promoteProjId))
+            val promotedVersions = promoteProjData["versions"] as ArrayNode
+            val promoteProjId = promotedVersions[0]["id"].asText()
+
+            val savedProjectVersion = dsl.select(PROJECT_VERSION.NOTE)
+                    .from(PROJECT_VERSION)
+                    .where(PROJECT_VERSION.ID.eq(promoteProjId))
                     .fetchOne()
 
-            assertThat(savedProject[PROJECT.NAME]).isEqualTo("newProject")
-            assertThat(savedProject[PROJECT.NOTE]).isEqualTo("test promote project note")
+            assertThat(savedProjectVersion[PROJECT_VERSION.NOTE]).isEqualTo("test promote project note")
         }
     }
 

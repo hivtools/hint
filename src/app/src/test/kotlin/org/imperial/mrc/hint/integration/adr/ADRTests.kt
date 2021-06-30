@@ -1,8 +1,10 @@
 package org.imperial.mrc.hint.integration.adr
 
+import com.github.kittinunf.fuel.httpPost
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.clients.FuelClient
 import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.integration.SecureIntegrationTests
 import org.junit.jupiter.api.Disabled
@@ -21,6 +23,8 @@ import org.springframework.util.LinkedMultiValueMap
 // so are prone to flakiness when the ADR dev server goes down
 class ADRTests : SecureIntegrationTests()
 {
+    val ADR_KEY = "4c69b103-4532-4b30-8a37-27a15e56c0bb"
+
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can get ADR datasets`(isAuthorized: IsAuthorized)
@@ -90,7 +94,6 @@ class ADRTests : SecureIntegrationTests()
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
-    @Disabled("mrc-2439")
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can save population from ADR`(isAuthorized: IsAuthorized)
@@ -111,7 +114,6 @@ class ADRTests : SecureIntegrationTests()
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
-    @Disabled("mrc-2439")
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can save survey from ADR`(isAuthorized: IsAuthorized)
@@ -124,7 +126,6 @@ class ADRTests : SecureIntegrationTests()
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
-    @Disabled("mrc-2439")
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can save ANC from ADR`(isAuthorized: IsAuthorized)
@@ -137,7 +138,6 @@ class ADRTests : SecureIntegrationTests()
         assertSecureWithSuccess(isAuthorized, result, "ValidateInputResponse")
     }
 
-    @Disabled("mrc-2439")
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `can save programme from ADR`(isAuthorized: IsAuthorized)
@@ -190,12 +190,13 @@ class ADRTests : SecureIntegrationTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
-    fun `can push file to ADR`(isAuthorized: IsAuthorized)
+    fun `can push output file to ADR`(isAuthorized: IsAuthorized)
     {
         if (isAuthorized == IsAuthorized.TRUE) {
             val modelCalibrationId = waitForModelRunResult()
             testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
-            val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrOutputZipSchema}/$modelCalibrationId?resourceFileName=output.zip&description=test"
+
+            val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrOutputSummarySchema}/$modelCalibrationId?resourceFileName=output.html&resourceName=TestZip&description=test"
             val createResult = testRestTemplate.postForEntity<String>(url)
             assertSuccess(createResult)
             val resourceId = ObjectMapper().readTree(createResult.body!!)["data"]["id"].textValue()
@@ -204,11 +205,32 @@ class ADRTests : SecureIntegrationTests()
         }
     }
 
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can push input file to ADR`(isAuthorized: IsAuthorized)
+    {
+        if (isAuthorized == IsAuthorized.TRUE) {
+
+            val modelCalibrationId = waitForModelRunResult()
+            testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
+
+            val resourceType = ConfiguredAppProperties().adrPJNZSchema
+            //We need to create a resource directly on ADR as our endpoint requires input resources to pre-exist
+            val resourceId = createTestADRResource(resourceType)
+
+            val qs = "resourceFileName=input.pjnz&resourceName=TestPJNZ&resourceId=$resourceId"
+            val url = "/adr/datasets/hint_test/resource/${resourceType}/$modelCalibrationId?$qs"
+
+            val updateResult = testRestTemplate.postForEntity<String>(url)
+            assertSuccess(updateResult)
+        }
+    }
+
     private fun getPostEntityWithKey(): HttpEntity<LinkedMultiValueMap<String, String>>
     {
         val map = LinkedMultiValueMap<String, String>()
         // this key is for a test user who has access to 1 fake dataset
-        map.add("key", "4c69b103-4532-4b30-8a37-27a15e56c0bb")
+        map.add("key", ADR_KEY)
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         return HttpEntity(map, headers)
@@ -237,12 +259,29 @@ class ADRTests : SecureIntegrationTests()
             testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
             val resultWithResources = testRestTemplate.getForEntity<String>("/adr/datasets?showInaccessible=false")
             val data = ObjectMapper().readTree(resultWithResources.body!!)["data"]
-            val resource = data[0]["resources"].find { it["resource_type"].textValue() == type }
+            val dataset = data.find { it["name"].textValue() == "antarctica-inputs-unaids-estimates-2021" }
+            val resource = dataset!!["resources"].find { it["resource_type"].textValue() == type }
             resource!!["url"].textValue()
         }
         else
         {
             "fake"
         }
+    }
+
+    private fun createTestADRResource(resourceType: String): String
+    {
+        val response = "${ConfiguredAppProperties().adrUrl}api/3/action/resource_create".httpPost()
+                .timeout(60000)
+                .timeoutRead(60000)
+                .header("Content-Type" to "application/json")
+                .header("Authorization" to ADR_KEY)
+                .body("""{"package_id": "hint_test", "resource_type": "$resourceType"}""")
+                .response()
+                .second
+
+        val body = response.body().asString("application/json")
+        val json = ObjectMapper().readTree(body)
+        return json["result"]["id"].asText()
     }
 }

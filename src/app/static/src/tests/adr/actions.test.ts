@@ -12,10 +12,6 @@ describe("ADR actions", () => {
         mockAxios.reset();
     });
 
-    afterEach(() => {
-        (console.log as jest.Mock).mockClear();
-    });
-
     it("fetches key", async () => {
         mockAxios.onGet(`/adr/key/`)
             .reply(200, mockSuccess("1234"));
