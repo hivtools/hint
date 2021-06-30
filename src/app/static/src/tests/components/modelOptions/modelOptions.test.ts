@@ -74,15 +74,25 @@ describe("Model options component", () => {
         const form = rendered.find(DynamicForm);
         expect(form.props("requiredText")).toBe("required");
         expect(form.props("selectText")).toBe("Select...");
+        expect(form.props("submitText")).toBe("Validate");
         expect(rendered.findAll(LoadingSpinner).length).toBe(0);
         expect(rendered.find("#validating").exists()).toBe(false);
     });
 
-    it("translates required text and select text", () => {
+    it("translates required, select and validate text into French", () => {
         const store = createStore({}, mockMutations, mockActions, {language: Language.fr});
         const wrapper = shallowMount(ModelOptions, {store});
         expect(wrapper.find(DynamicForm).props("requiredText")).toBe("obligatoire");
         expect(wrapper.find(DynamicForm).props("selectText")).toBe("Sélectionner...");
+        expect(wrapper.find(DynamicForm).props("submitText")).toBe("Valider");
+    });
+
+    it("translates required, select and validate text into Portuguese", () => {
+        const store = createStore({}, mockMutations, mockActions, {language: Language.pt});
+        const wrapper = shallowMount(ModelOptions, {store});
+        expect(wrapper.find(DynamicForm).props("requiredText")).toBe("necessário");
+        expect(wrapper.find(DynamicForm).props("selectText")).toBe("Selecionar...");
+        expect(wrapper.find(DynamicForm).props("submitText")).toBe("Validar");
     });
 
     it("displays loading spinner while fetching is true", () => {

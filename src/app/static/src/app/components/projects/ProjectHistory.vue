@@ -377,9 +377,10 @@
             createProject: mapActionByName(namespace, "createProject"),
             getProjects: mapActionByName(namespace, "getProjects"),
             versionCountLabel(project: Project) {
+                const lng = this.currentLanguage;
                 return project.versions.length == 1
-                    ? "1 version"
-                    : `${project.versions.length} versions`;
+                    ? `1 ${i18next.t("versionCountLabelSingle", {lng})}`
+                    : `${project.versions.length} ${i18next.t("versionCountLabelPlural", {lng})}`;
             },
             versionLabel(version: Version) {
                 return versionLabel(version);

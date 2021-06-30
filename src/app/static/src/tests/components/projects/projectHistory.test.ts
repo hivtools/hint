@@ -113,7 +113,11 @@ describe("Project history component", () => {
         expect(svg.at(1).classes()).toContain("when-open");
         expect(svg.at(1).classes()).toContain("feather-chevron-down");
         expect(v.at(1).find("a").text()).toContain(name);
-        expect(v.at(2).text()).toBe(versionsCount === 1 ? "1 version" : `${versionsCount} versions`);
+
+        const versionCountLabel = versionsCount === 1 ? "1 version" : `${versionsCount} versions`;
+        const ptVersionCountLabel = versionsCount === 1 ? "1 versão" : `${versionsCount} versões`;
+        expectTranslated(v.at(2), versionCountLabel, versionCountLabel, ptVersionCountLabel, wrapper.vm.$store);
+
         expect(v.at(3).text()).toBe(formatDateTime(updatedIsoDate));
         expect(v.at(4).classes()).toContain("load-cell");
         expect(v.at(5).classes()).toContain("rename-cell");

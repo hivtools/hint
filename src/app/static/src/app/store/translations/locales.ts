@@ -212,6 +212,8 @@ export interface Translations {
     usernameValidation: string,
     validate: string,
     validating: string,
+    versionCountLabelPlural: string,
+    versionCountLabelSingle: string,
     versions: string,
     xAxis: string,
     year: string
@@ -463,6 +465,8 @@ const en: Translations = {
     usernameValidation: "Please enter your username",
     validate: "Validate",
     validating: "Validating...",
+    versionCountLabelPlural: "versions",
+    versionCountLabelSingle: "version",
     versions: "Versions",
     xAxis: "X Axis",
     year: "Year"
@@ -710,6 +714,8 @@ const fr: Partial<Translations> = {
     usernameValidation: "Veuillez entrer votre nom d’utilisateur",
     validate: "Valider",
     validating: "Validation en cours...",
+    versionCountLabelPlural: "versions",
+    versionCountLabelSingle: "version",
     versions: "Versions",
     xAxis: "Axe X",
     year: "An"
@@ -956,6 +962,8 @@ const pt: Partial<Translations> = {
     usernameValidation: "Por favor, introduza o seu nome de utilizador",
     validate: "Validar",
     validating: "A validar...",
+    versionCountLabelPlural: "versões",
+    versionCountLabelSingle: "versão",
     versions: "Versões",
     xAxis: "Eixo X",
     year: "Ano"
