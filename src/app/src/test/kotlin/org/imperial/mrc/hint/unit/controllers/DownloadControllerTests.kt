@@ -69,11 +69,11 @@ class DownloadControllerTests
         val mockResponse = mock<ResponseEntity<StreamingResponseBody>>()
         val mockApiClient = mock<HintrAPIClient>
         {
-            on { downloadOutputResult() } doReturn mockResponse
+            on { downloadOutputResult("id1") } doReturn mockResponse
         }
 
         val sut = DownloadController(mockApiClient)
-        val result = sut.getDownloadOutputResult()
+        val result = sut.getDownloadOutputResult("id1")
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
 }

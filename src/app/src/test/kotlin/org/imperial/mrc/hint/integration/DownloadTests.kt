@@ -42,17 +42,39 @@ class DownloadTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `can get download data status`()
+    fun `can download output status`()
     {
-        val responseId = downloadSubmitResponse()
+        val responseId = downloadOutputResponseId()
         val responseEntity = testRestTemplate.getForEntity<String>("/download/status/$responseId")
         assertSuccess(responseEntity, "DownloadStatusResponse")
     }
 
     @Test
-    fun `can download submit result`()
+    fun `can download spectrum output result`()
     {
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/result")
+        val calibrateId = waitForModelRunResult()
+        val responseId = waitForDownloadResult(calibrateId, "spectrum")
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/result/$responseId")
+        assertSuccess(responseEntity)
+        assertResponseHasExpectedDownloadHeaders(responseEntity)
+    }
+
+    @Test
+    fun `can download coarse output result`()
+    {
+        val calibrateId = waitForModelRunResult()
+        val responseId = waitForDownloadResult(calibrateId, "coarse-output")
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/result/$responseId")
+        assertSuccess(responseEntity)
+        assertResponseHasExpectedDownloadHeaders(responseEntity)
+    }
+
+    @Test
+    fun `can download summary output result`()
+    {
+        val calibrateId = waitForModelRunResult()
+        val responseId = waitForDownloadResult(calibrateId, "summary")
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/result/$responseId")
         assertSuccess(responseEntity)
         assertResponseHasExpectedDownloadHeaders(responseEntity)
     }
@@ -69,7 +91,7 @@ class DownloadTests : SecureIntegrationTests()
         assertThat(headers["Connection"]?.first()).isNotEqualTo("keep-alive")
     }
 
-    fun downloadSubmitResponse(): String
+    fun downloadOutputResponseId(): String
     {
         val calibrateId = waitForModelRunResult()
         val response = testRestTemplate.getForEntity<String>("/download/submit/spectrum/$calibrateId")

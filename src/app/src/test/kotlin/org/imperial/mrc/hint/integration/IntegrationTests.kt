@@ -105,9 +105,9 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         return id
     }
 
-    protected fun waitForDownloadResult(calibrateId: String): String
+    protected fun waitForDownloadResult(calibrateId: String, type: String): String
     {
-        val response = testRestTemplate.getForEntity<String>("/download/submit/spectrum/$calibrateId")
+        val response = testRestTemplate.getForEntity<String>("/download/submit/$type/$calibrateId")
         assertSuccess(response, "DownloadSubmitResponse")
         val bodyJSON = ObjectMapper().readTree(response.body)
         val responseId = bodyJSON["data"]["id"].asText()

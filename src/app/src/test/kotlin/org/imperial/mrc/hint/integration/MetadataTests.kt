@@ -1,7 +1,5 @@
 package org.imperial.mrc.hint.integration
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import kotlinx.coroutines.delay
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.getForEntity
@@ -34,7 +32,7 @@ class MetadataTests : SecureIntegrationTests()
     fun `can get uploadToADR metadata`()
     {
         val calibrateId = waitForModelRunResult()
-        val responseId =  waitForDownloadResult(calibrateId)
+        val responseId =  waitForDownloadResult(calibrateId, "spectrum")
 
         val responseEntity = testRestTemplate.getForEntity<String>("/meta/adr/$responseId")
         assertSuccess(responseEntity, "AdrMetadataResponse")

@@ -24,10 +24,10 @@ class DownloadController(val apiClient: HintrAPIClient)
         return apiClient.downloadOutputStatus(id)
     }
 
-    @GetMapping("/result")
+    @GetMapping("/result/{id}")
     @ResponseBody
-    fun getDownloadOutputResult(): ResponseEntity<StreamingResponseBody>
+    fun getDownloadOutputResult(@PathVariable("id") id: String): ResponseEntity<StreamingResponseBody>
     {
-        return apiClient.downloadOutputResult()
+        return apiClient.downloadOutputResult(id)
     }
 }
