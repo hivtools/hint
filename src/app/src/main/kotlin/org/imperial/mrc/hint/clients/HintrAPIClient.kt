@@ -40,7 +40,7 @@ interface HintrAPIClient
     fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions):
             ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
-    fun getDownloadSubmit(id: String, type:String): ResponseEntity<String>
+    fun getDownloadSubmit(type:String, id: String): ResponseEntity<String>
     fun getDownloadSubmitStatus(id: String): ResponseEntity<String>
     fun getDownloadSubmitResult(id: String): ResponseEntity<StreamingResponseBody>
     fun getUploadMetadata(id: String): ResponseEntity<String>
@@ -199,9 +199,9 @@ class HintrFuelAPIClient(
                 .getStreamingResponseEntity(::head)
     }
 
-    override fun getDownloadSubmit(id: String, type:String): ResponseEntity<String>
+    override fun getDownloadSubmit(type:String, id: String): ResponseEntity<String>
     {
-        return get("$baseUrl/download/${type}/${id}")
+        return get("$baseUrl/download/submit/${type}/${id}")
     }
 
     override fun getDownloadSubmitStatus(id: String): ResponseEntity<String>

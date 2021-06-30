@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.integration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -17,15 +18,23 @@ class DownloadTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `can request for upload to ADR metadata`()
+    fun `can download coarse output data`()
     {
         val id = waitForModelRunResult()
-        val responseEntity = testRestTemplate.getForEntity<String>("/meta/adr/$id")
+        val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/coarse-output/$id")
         assertSuccess(responseEntity)
     }
 
     @Test
-    fun `can make a request to download submit`()
+    fun `can download summary data`()
+    {
+        val id = waitForModelRunResult()
+        val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/summary/$id")
+        assertSuccess(responseEntity)
+    }
+
+    @Test
+    fun `can download spectrum data`()
     {
         val id = waitForModelRunResult()
         val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/spectrum/$id")
@@ -33,18 +42,18 @@ class DownloadTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `can make a request to download submit status`()
+    fun `can get download data status`()
     {
-        val id = waitForModelRunResult()
-        val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/status/$id")
+        val responseId = downloadSubmitResponse()
+        val responseEntity = testRestTemplate.getForEntity<String>("/download/status/$responseId")
         assertSuccess(responseEntity)
     }
 
     @Test
     fun `can make a request to download submit result`()
     {
-        val id = waitForModelRunResult()
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/submit/result/$id")
+        val responseId = downloadSubmitResponse()
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/result/$responseId")
         assertSuccess(responseEntity)
         assertResponseHasExpectedDownloadHeaders(responseEntity)
     }
@@ -59,5 +68,13 @@ class DownloadTests : SecureIntegrationTests()
         val bodyLength = response.body?.count()
         assertThat(contentLength).isEqualTo(bodyLength)
         assertThat(headers["Connection"]?.first()).isNotEqualTo("keep-alive")
+    }
+
+    fun downloadSubmitResponse(): String
+    {
+        val calibrateId = waitForModelRunResult()
+        val response = testRestTemplate.getForEntity<String>("/download/submit/spectrum/$calibrateId")
+        val bodyJSON = ObjectMapper().readTree(response.body)
+        return bodyJSON["data"]["id"].asText()
     }
 }
