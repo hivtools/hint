@@ -27,8 +27,4 @@
   .custom-file-label:not(.uploading)::after {
     content: "Navegar" !important;
   }
-
-  .custom-file-label.uploading::after {
-    width: 90px;
-  }
 }
