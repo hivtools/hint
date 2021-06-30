@@ -10,6 +10,7 @@ import {
 import {actions} from "../../app/store/modelCalibrate/actions";
 import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {freezer} from "../../app/utils";
+import {switches} from "../../app/featureSwitches";
 
 const rootState = mockRootState();
 describe("ModelCalibrate actions", () => {
@@ -153,7 +154,8 @@ describe("ModelCalibrate actions", () => {
         }, 2100);
     });
 
-    it("getResult commits result when successfully fetched, and sets default plotting selections", async () => {
+    it("getResult commits result when successfully fetched, sets default plotting selections, and dispatches getCalibratePlot", async () => {
+        switches.modelCalibratePlot = "true";
         const testResult = {
             data: "TEST DATA",
             plottingMetadata: {
@@ -175,6 +177,7 @@ describe("ModelCalibrate actions", () => {
             .reply(200, mockSuccess(testResult));
 
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const state = mockModelCalibrateState({
             calibrateId: "1234",
             status: {
@@ -183,7 +186,7 @@ describe("ModelCalibrate actions", () => {
             } as any
         });
 
-        await actions.getResult({commit, state, rootState} as any);
+        await actions.getResult({commit, state, rootState, dispatch} as any);
 
         expect(commit.mock.calls.length).toBe(4);
         expect(commit.mock.calls[0][0]).toStrictEqual({
@@ -201,6 +204,44 @@ describe("ModelCalibrate actions", () => {
         });
         expect(commit.mock.calls[2][0]).toBe("Calibrated");
         expect(commit.mock.calls[3][0]).toBe("Ready");
+        expect(dispatch.mock.calls[0][0]).toBe("getCalibratePlot");
+    });
+
+    it("getResult does not dispatch getCalibratePlot when switches if off", async () => {
+        switches.modelCalibratePlot = "";
+        const testResult = {
+            data: "TEST DATA",
+            plottingMetadata: {
+                barchart: {
+                    defaults: {
+                        indicator_id: "test indicator",
+                        x_axis_id: "test_x",
+                        disaggregate_by_id: "test_dis",
+                        selected_filter_options: {"test_name": "test_value"}
+                    }
+                }
+            },
+            uploadMetadata: {
+                outputZip: {description: "spectrum output info"},
+                outputSummary: {description: "summary output info"}
+            }
+        };
+        mockAxios.onGet(`/model/calibrate/result/1234`)
+            .reply(200, mockSuccess(testResult));
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = mockModelCalibrateState({
+            calibrateId: "1234",
+            status: {
+                success: true,
+                done: true
+            } as any
+        });
+
+        await actions.getResult({commit, state, rootState, dispatch} as any);
+
+        expect(dispatch.mock.calls.length).toBe(0);
     });
 
     it("getResult commits error when unsuccessful fetch", async () => {
@@ -245,5 +286,53 @@ describe("ModelCalibrate actions", () => {
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]).toBe("Ready");
+    });
+
+    it("getCalibratePlot fetches the calibrate plot data and sets it when successful", async () => {
+        const testResult = { data: "TEST DATA" };
+        mockAxios.onGet(`/model/calibrate/plot/1234`)
+            .reply(200, mockSuccess(testResult));
+
+        const commit = jest.fn();
+        const state = mockModelCalibrateState({
+            calibrateId: "1234",
+            status: {
+                success: true,
+                done: true
+            } as any
+        });
+
+        await actions.getCalibratePlot({commit, state, rootState} as any);
+
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]).toStrictEqual("CalibrationPlotStarted");
+        expect(commit.mock.calls[1][0]).toBe("SetPlotData");
+        expect(commit.mock.calls[1][1]).toStrictEqual({ data: "TEST DATA" });
+        expect(mockAxios.history.get.length).toBe(1);
+    });
+
+    it("getCalibratePlot commits error with unsuccessful fetch", async () => {
+        const testResult = { data: "TEST DATA" };
+        mockAxios.onGet(`/model/calibrate/plot/1234`)
+            .reply(500, mockFailure("Test Error"));
+
+        const commit = jest.fn();
+        const state = mockModelCalibrateState({
+            calibrateId: "1234",
+            status: {
+                success: true,
+                done: true
+            } as any
+        });
+
+        await actions.getCalibratePlot({commit, state, rootState} as any);
+
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]).toStrictEqual("CalibrationPlotStarted");
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "SetError",
+            payload: mockError("Test Error")
+        });
+        expect(mockAxios.history.get.length).toBe(1);
     });
 });

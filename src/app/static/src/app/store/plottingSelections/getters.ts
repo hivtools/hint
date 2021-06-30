@@ -1,6 +1,6 @@
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
 import {RootState} from "../../root";
-import {ScaleSelections, PlottingSelectionsState} from "./plottingSelections";
+import {ScaleSelections, PlottingSelectionsState, BarchartSelections} from "./plottingSelections";
 
 export const getters = {
     selectedSAPColourScales: (state: PlottingSelectionsState, getters: any, rootState: RootState): ScaleSelections => {
@@ -15,5 +15,8 @@ export const getters = {
             default:
                 return {}
         }
+    },
+    calibratePlotDefaultSelections: (state: PlottingSelectionsState, getters: any, rootState: RootState): BarchartSelections => {
+        return rootState.modelCalibrate.calibratePlotResult!.plottingMetadata.barchart.defaults;
     }
 };
