@@ -26,6 +26,16 @@ class DownloadTests : SecureIntegrationTests()
     }
 
     @Test
+    fun `can download coarse output result`()
+    {
+        val calibrateId = waitForModelRunResult()
+        val responseId = waitForDownloadResult(calibrateId, "coarse-output")
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/result/$responseId")
+        assertSuccess(responseEntity)
+        assertResponseHasExpectedDownloadHeaders(responseEntity)
+    }
+
+    @Test
     fun `can download summary data`()
     {
         val id = waitForModelRunResult()
@@ -34,19 +44,21 @@ class DownloadTests : SecureIntegrationTests()
     }
 
     @Test
+    fun `can download summary output result`()
+    {
+        val calibrateId = waitForModelRunResult()
+        val responseId = waitForDownloadResult(calibrateId, "summary")
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/result/$responseId")
+        assertSuccess(responseEntity)
+        assertResponseHasExpectedDownloadHeaders(responseEntity)
+    }
+
+    @Test
     fun `can download spectrum data`()
     {
         val id = waitForModelRunResult()
         val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/spectrum/$id")
         assertSuccess(responseEntity, "DownloadSubmitResponse")
-    }
-
-    @Test
-    fun `can download output status`()
-    {
-        val responseId = downloadOutputResponseId()
-        val responseEntity = testRestTemplate.getForEntity<String>("/download/status/$responseId")
-        assertSuccess(responseEntity, "DownloadStatusResponse")
     }
 
     @Test
@@ -60,23 +72,11 @@ class DownloadTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `can download coarse output result`()
+    fun `can download output status`()
     {
-        val calibrateId = waitForModelRunResult()
-        val responseId = waitForDownloadResult(calibrateId, "coarse-output")
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/result/$responseId")
-        assertSuccess(responseEntity)
-        assertResponseHasExpectedDownloadHeaders(responseEntity)
-    }
-
-    @Test
-    fun `can download summary output result`()
-    {
-        val calibrateId = waitForModelRunResult()
-        val responseId = waitForDownloadResult(calibrateId, "summary")
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/result/$responseId")
-        assertSuccess(responseEntity)
-        assertResponseHasExpectedDownloadHeaders(responseEntity)
+        val responseId = downloadOutputResponseId()
+        val responseEntity = testRestTemplate.getForEntity<String>("/download/status/$responseId")
+        assertSuccess(responseEntity, "DownloadStatusResponse")
     }
 
     fun assertResponseHasExpectedDownloadHeaders(response: ResponseEntity<ByteArray>)
