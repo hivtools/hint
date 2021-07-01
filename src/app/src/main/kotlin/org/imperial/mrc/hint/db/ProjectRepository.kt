@@ -16,9 +16,8 @@ interface ProjectRepository
     fun deleteProject(projectId: Int, userId: String)
     fun getProject(projectId: Int, userId: String): Project
     fun getProjectFromVersionId(versionId: String, userId: String): Project
-    fun renameProject(projectId: Int, userId: String, newName: String)
+    fun renameProject(projectId: Int, userId: String, name: String)
     fun updateProjectNote(projectId: Int, userId: String, note: String)
-    
 }
 
 @Component

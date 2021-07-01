@@ -402,6 +402,41 @@ class ProjectsControllerTests
     }
 
     @Test
+    fun `can save project notes`()
+    {
+        val mockVersions = listOf(Version("testVersion", "createdTime", "updatedTime", 1, "version notes"))
+        val mockProjects = listOf(Project(1, "testProject", mockVersions, note= "project notes"))
+        val mockProjectRepo = mock<ProjectRepository> {
+            on { getProjects("testUser") } doReturn mockProjects
+        }
+        val sut = ProjectsController(mockSession, mock(), mockProjectRepo, mock())
+        val result = sut.updateProjectNote(1, "updated project notes")
+
+        verify(mockProjectRepo).updateProjectNote(1, "testUser", "updated project notes")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
+    fun `can save version notes`()
+    {
+        val mockVersions = listOf(Version("testVersion", "createdTime", "updatedTime", 1, "version notes"))
+        val mockProjects = listOf(Project(1, "testProject", mockVersions, note= "project notes"))
+        val mockProjectRepo = mock<ProjectRepository> {
+            on { getProjects("testUser") } doReturn mockProjects
+        }
+
+        val mockDetails = VersionDetails("TEST STATE", mapOf("pjnz" to VersionFile("hash1", "filename1", false)))
+        val mockRepo = mock<VersionRepository> {
+            on { getVersionDetails("testVersion", 1, "testUser") } doReturn mockDetails
+        }
+
+        val sut = ProjectsController(mockSession, mockRepo, mockProjectRepo, mock())
+        val result = sut.updateVersionNote("testVersion", 1, "updated version notes")
+        verify(mockRepo).updateVersionNote("testVersion", 1, "testUser", "updated version notes")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+    }
+
+    @Test
     fun `can save version note`()
     {
         val mockProjectRepo = mock<ProjectRepository>()
