@@ -1,6 +1,14 @@
-# hint 1.41.1
+# hint 1.43.1
 
 * Bug fix: Importing from adr after fitting model should prompt new version behaviour
+
+# hint 1.43.0
+
+* Add note icon(s) and dialogs to project history for project/version
+
+# hint 1.42.0
+
+* Make login email case insensitive again
 
 # hint 1.41.0
 
@@ -20,7 +28,7 @@
 
 # hint 1.37.0
 
-* Add note field to confirmation dialog when saving new version 
+* Add note field to confirmation dialog when saving new version
 
 # hint 1.36.1
 

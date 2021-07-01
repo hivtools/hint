@@ -28,4 +28,9 @@ describe("Password actions", () => {
         });
     });
 
+    it("can login with upper-case username", async () => {
+        // this throws an exception if login fails
+        await login("Test.USER@Example.com", "password");
+    });
+
 });
