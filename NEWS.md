@@ -1,3 +1,7 @@
+# hint 1.44.0
+
+* Use async endpoints for Just-In-time generation of download files from HINT frontend
+
 # hint 1.41.0
 
 * Add bar chart to model calibrate page

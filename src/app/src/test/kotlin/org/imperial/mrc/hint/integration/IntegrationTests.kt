@@ -54,7 +54,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         val versionJson = parser.readTree(optionsResponseEntity.body!!)["version"]
         val version = parser.treeToValue<Map<String, String>>(versionJson)
 
-        val modelRunOptions = ModelOptions(emptyMap(), version)
+        val modelRunOptions = ModelOptions(getMockOptions(), version)
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val jsonString = ObjectMapper().writeValueAsString(modelRunOptions)
@@ -105,7 +105,21 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         return id
     }
 
-    protected fun waitForDownloadResult(calibrateId: String, type: String): String
+    protected fun waitForCalibrationResult(modelId: String): String {
+        val entity = getModelRunEntity()
+        val responseEntity = testRestTemplate.postForEntity<String>("/model/calibrate/submit/$modelId", entity)
+        val id = ObjectMapper().readValue<JsonNode>(responseEntity.body!!)["data"]["id"].textValue()
+
+        do
+        {
+            Thread.sleep(500)
+            val statusResponse = testRestTemplate.getForEntity<String>("/model/calibrate/status/$id")
+        } while (statusResponse.body != null && statusResponse.body!!.contains("\"status\":\"RUNNING\""))
+
+        return id
+    }
+
+    protected fun waitForDownloadOutputResult(calibrateId: String, type: String): String
     {
         val response = testRestTemplate.getForEntity<String>("/download/submit/$type/$calibrateId")
         assertSuccess(response, "DownloadSubmitResponse")
