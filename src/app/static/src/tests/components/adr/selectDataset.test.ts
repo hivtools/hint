@@ -487,19 +487,19 @@ describe("select dataset", () => {
                 id: "id1",
                 label: "Some data",
                 customLabel: `Some data
-                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                        (some-data)<br/>
-                        <span class="font-weight-bold">org</span>
-                    </div>`
+                        <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                            (some-data)<br/>
+                            <span class="font-weight-bold">org</span>
+                        </div>`
             },
             {
                 id: "id2",
                 label: "Some data 2",
                 customLabel: `Some data 2
-                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                        (some-data)<br/>
-                        <span class="font-weight-bold">org</span>
-                    </div>`
+                        <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                            (some-data)<br/>
+                            <span class="font-weight-bold">org</span>
+                        </div>`
             }
         ]
 
@@ -563,7 +563,7 @@ describe("select dataset", () => {
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
     
-    it("renders reset confirmation dialog when changing selected dataset and then modal if click save", async () => {
+    it("renders reset confirmation dialog when importing a new dataset and then saves new version and imports if click save", async () => {
         let store = getStore({
             selectedDataset: fakeDataset
         },
@@ -572,30 +572,26 @@ describe("select dataset", () => {
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]
         });
-        await rendered.find("button").trigger("click");
+        const editBtn = rendered.find("button")
+        await editBtn.trigger("click");
+        expect(rendered.find(Modal).props("open")).toBe(true);
+        rendered.setData({newDatasetId: "id2"});
+        const importBtn = rendered.find(Modal).find("button")
+        await importBtn.trigger("click");
         expect(rendered.find(ResetConfirmation).props("open")).toBe(true);
-        expect(rendered.find(Modal).props("open")).toBe(false);
-        const buttons = rendered.findAll("button");
-        expectTranslated(buttons.at(3), "Save version and keep editing",
+        const saveBtn = rendered.find(ResetConfirmation).find("button");
+        expectTranslated(saveBtn, "Save version and keep editing",
             "Sauvegarder la version et continuer à modifier", store);
-        await buttons.at(3).trigger("click");
+        await saveBtn.trigger("click");
         store.state.projects.currentVersion = {id: "id1"} as any;
         expect(rendered.find(ResetConfirmation).exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(true);
-    });
+        expect(rendered.find("#loading-dataset").find(LoadingSpinner).exists()).toBe(true);
+        await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
 
-    it("renders select modal not reset confirmation dialog when changing selected dataset if edits do not require confirmation", async () => {
-        let store = getStore({
-            selectedDataset: fakeDataset
-        },
-            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
-        )
-        const rendered = mount(SelectDataset, {
-            store, stubs: ["tree-select"]
-        });
-        await rendered.find("button").trigger("click");
-        expect(rendered.find(ResetConfirmation).exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(true);
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
+        expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
     it("renders reset confirmation dialog when changing selected dataset and closes if click cancel", async () => {
@@ -607,15 +603,20 @@ describe("select dataset", () => {
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]
         });
-        await rendered.find("button").trigger("click");
+        const editBtn = rendered.find("button")
+        await editBtn.trigger("click");
+        expect(rendered.find(Modal).props("open")).toBe(true);
+        rendered.setData({newDatasetId: "id2"});
+        const importBtn = rendered.find(Modal).find("button")
+        await importBtn.trigger("click");
         expect(rendered.find(ResetConfirmation).props("open")).toBe(true);
-        expect(rendered.find(Modal).props("open")).toBe(false);
-        const buttons = rendered.findAll("button");
-        expectTranslated(buttons.at(4), "Cancel editing",
+        const cancelBtn = rendered.find(ResetConfirmation).findAll("button").at(1);
+        expectTranslated(cancelBtn, "Cancel editing",
             "Annuler l'édition", store);
-        await buttons.at(4).trigger("click");
+        await cancelBtn.trigger("click");
         expect(rendered.find(ResetConfirmation).exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
+        expect(rendered.find(Modal).props("open")).toBe(true);
     });
 
     it("imports baseline files if they exist", async () => {
