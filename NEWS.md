@@ -1,8 +1,13 @@
-# hint 1.42.0
+# hint 1.43.0
 
 * Add note icon(s) and dialogs to project history for project/version
 
+# hint 1.42.0
+
+* Make login email case insensitive again
+
 # hint 1.41.0
+
 * Add bar chart to model calibrate page
 
 # hint 1.40.0
