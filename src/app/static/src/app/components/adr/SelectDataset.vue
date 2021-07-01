@@ -1,18 +1,21 @@
 <template>
     <div class="d-flex">
         <div v-if="selectedDataset" style="margin-top: 8px">
-            <span class="font-weight-bold" v-translate="'selectedDataset'"></span>
+            <span
+                class="font-weight-bold"
+                v-translate="'selectedDataset'"
+            ></span>
             <a :href="selectedDataset.url" target="_blank">
-              {{selectedDataset.title}}
-                    </a>
+                {{ selectedDataset.title }}
+            </a>
             <span class="color-red">
-        <info-icon
-            size="20"
-            v-if="outOfDateMessage"
-            v-tooltip="outOfDateMessage"
-            style="vertical-align: text-bottom"
-        ></info-icon>
-      </span>
+                <info-icon
+                    size="20"
+                    v-if="outOfDateMessage"
+                    v-tooltip="outOfDateMessage"
+                    style="vertical-align: text-bottom"
+                ></info-icon>
+            </span>
         </div>
         <button
             v-if="outOfDateMessage"
@@ -23,7 +26,7 @@
         <button
             class="btn btn-red"
             :class="selectedDataset && 'ml-2'"
-            @click.prevent="openModal"
+            @click="toggleModal"
         >
             {{ selectText }}
         </button>
@@ -46,13 +49,21 @@
                     >
                     </label>
                 </tree-select>
-                <div :class="fetchingDatasets ? 'visible' : 'invisible'" style="margin-top:15px;" id="fetching-datasets">
+                <div
+                    :class="fetchingDatasets ? 'visible' : 'invisible'"
+                    style="margin-top: 15px"
+                    id="fetching-datasets"
+                >
                     <loading-spinner size="xs"></loading-spinner>
                     <span v-translate="'loadingDatasets'"></span>
                 </div>
                 <div v-if="adrError" id="fetch-error">
                     <div v-translate="'errorFetchingDatasetsFromADR'"></div>
-                    <button @click="getDatasets" class="btn btn-red float-right" v-translate="'tryAgain'"></button>
+                    <button
+                        @click="getDatasets"
+                        class="btn btn-red float-right"
+                        v-translate="'tryAgain'"
+                    ></button>
                 </div>
             </div>
             <div class="text-center" v-if="loading" id="loading-dataset">
@@ -64,51 +75,58 @@
                     :disabled="!newDatasetId"
                     class="btn btn-red"
                     v-translate="'import'"
-                    @click="importDataset"
+                    @click.prevent="confirmImport"
                 ></button>
                 <button
                     type="button"
                     class="btn btn-white"
                     v-translate="'cancel'"
-                    @click="closeModal"
+                    @click="toggleModal"
                 ></button>
             </template>
         </modal>
-        <reset-confirmation v-if="showConfirmation"
-                            :continue-editing="continueEditing"
-                            :cancel-editing="cancelEditing"
-                            :open="showConfirmation"></reset-confirmation>
+        <reset-confirmation
+            v-if="showConfirmation"
+            :continue-editing="continueEditing"
+            :cancel-editing="cancelEditing"
+            :open="showConfirmation"
+        ></reset-confirmation>
     </div>
 </template>
 <script lang="ts">
     import i18next from "i18next";
-    import {Language} from "../../store/translations/locales";
+    import { Language } from "../../store/translations/locales";
     import Vue from "vue";
     import TreeSelect from "@riophae/vue-treeselect";
-    import {datasetFromMetadata, mapActionByName, mapMutationByName, mapStateProp, mapGetterByName} from "../../utils";
-    import {RootState} from "../../root";
+    import {
+        datasetFromMetadata,
+        mapActionByName,
+        mapMutationByName,
+        mapStateProp,
+        mapGetterByName,
+    } from "../../utils";
+    import { RootState } from "../../root";
     import Modal from "../Modal.vue";
-    import {BaselineMutation} from "../../store/baseline/mutations";
+    import { BaselineMutation } from "../../store/baseline/mutations";
     import LoadingSpinner from "../LoadingSpinner.vue";
-    import {BaselineState} from "../../store/baseline/baseline";
+    import { BaselineState } from "../../store/baseline/baseline";
     import {
         ADRSchemas,
         Dataset,
         DatasetResource,
         DatasetResourceSet,
     } from "../../types";
-    import {InfoIcon} from "vue-feather-icons";
-    import {VTooltip} from "v-tooltip";
-    import {ADRState} from "../../store/adr/adr";
-    import {Error} from "../../generated";
+    import { InfoIcon } from "vue-feather-icons";
+    import { VTooltip } from "v-tooltip";
+    import { ADRState } from "../../store/adr/adr";
+    import { Error } from "../../generated";
     import ResetConfirmation from "../ResetConfirmation.vue";
 
     interface Methods {
         getDatasets: () => void;
         setDataset: (dataset: Dataset) => void;
         importDataset: () => void;
-        openModal: () => void;
-        closeModal: () => void;
+        toggleModal: () => void;
         importPJNZ: (url: string) => Promise<void>;
         importShape: (url: string) => Promise<void>;
         importPopulation: (url: string) => Promise<void>;
@@ -120,24 +138,25 @@
         markResourcesUpdated: () => void;
         startPolling: () => void;
         stopPolling: () => void;
+        confirmImport: () => void;
         continueEditing: () => void;
         cancelEditing: () => void;
     }
 
     interface Computed {
-        schemas: ADRSchemas
-        datasets: any[]
-        fetchingDatasets: boolean
-        adrError: Error | null,
-        datasetOptions: any[]
-        selectedDataset: Dataset | null
-        selectText: string,
-        outOfDateMessage: string,
-        outOfDateResources: { [k in keyof DatasetResourceSet]?: true }
-        hasShapeFile: boolean,
-        currentLanguage: Language,
-        select: string,
-        editsRequireConfirmation: boolean
+        schemas: ADRSchemas;
+        datasets: any[];
+        fetchingDatasets: boolean;
+        adrError: Error | null;
+        datasetOptions: any[];
+        selectedDataset: Dataset | null;
+        selectText: string;
+        outOfDateMessage: string;
+        outOfDateResources: { [k in keyof DatasetResourceSet]?: true };
+        hasShapeFile: boolean;
+        currentLanguage: Language;
+        select: string;
+        editsRequireConfirmation: boolean;
     }
 
     interface Data {
@@ -169,10 +188,19 @@
                 pollingId: null,
             };
         },
-        components: {Modal, TreeSelect, LoadingSpinner, InfoIcon, ResetConfirmation},
-        directives: {tooltip: VTooltip},
+        components: {
+            Modal,
+            TreeSelect,
+            LoadingSpinner,
+            InfoIcon,
+            ResetConfirmation,
+        },
+        directives: { tooltip: VTooltip },
         computed: {
-            editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
+            editsRequireConfirmation: mapGetterByName(
+                "stepper",
+                "editsRequireConfirmation"
+            ),
             hasShapeFile: mapStateProp<BaselineState, boolean>(
                 "baseline",
                 (state: BaselineState) => !!state.shape
@@ -202,17 +230,17 @@
                     id: d.id,
                     label: d.title,
                     customLabel: `${d.title}
-                        <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                            (${d.name})<br/>
-                            <span class="font-weight-bold">${d.organization.title}</span>
-                        </div>`,
+                            <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                                (${d.name})<br/>
+                                <span class="font-weight-bold">${d.organization.title}</span>
+                            </div>`,
                 }));
             },
             selectText() {
                 if (this.selectedDataset) {
-                    return i18next.t('editBtn', {lng: this.currentLanguage})
+                    return i18next.t("editBtn", { lng: this.currentLanguage });
                 } else {
-                    return i18next.t('selectADR', {lng: this.currentLanguage})
+                    return i18next.t("selectADR", { lng: this.currentLanguage });
                 }
             },
             outOfDateResources() {
@@ -220,34 +248,45 @@
                     return {};
                 }
                 const resources = this.selectedDataset.resources;
-                const outOfDateResources: { [k in keyof DatasetResourceSet]?: true } = {};
+                const outOfDateResources: {
+                    [k in keyof DatasetResourceSet]?: true;
+                } = {};
                 Object.keys(resources).map((k) => {
                     const key = k as keyof DatasetResourceSet;
                     if (resources[key] && resources[key]!.outOfDate) {
                         outOfDateResources[key] = true;
                     }
                 });
-                return outOfDateResources
+                return outOfDateResources;
             },
             outOfDateMessage() {
                 const updatedNames = Object.keys(this.outOfDateResources)
-                    .map(r => names[r as keyof DatasetResourceSet]).join(", ")
+                    .map((r) => names[r as keyof DatasetResourceSet])
+                    .join(", ");
                 if (Object.keys(this.outOfDateResources).length == 0) {
-                    return ""
+                    return "";
                 }
-                return `The following files have been updated in the ADR: ${updatedNames}. Use the refresh button to import the latest files.`
+                return `The following files have been updated in the ADR: ${updatedNames}. Use the refresh button to import the latest files.`;
             },
             select() {
-                return i18next.t('select', {lng: this.currentLanguage})
+                return i18next.t("select", { lng: this.currentLanguage });
             },
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language)
+            currentLanguage: mapStateProp<RootState, Language>(
+                null,
+                (state: RootState) => state.language
+            ),
         },
         methods: {
             getDatasets: mapActionByName("adr", "getDatasets"),
             setDataset: mapMutationByName("baseline", BaselineMutation.SetDataset),
-            refreshDatasetMetadata: mapActionByName("baseline", "refreshDatasetMetadata"),
-            markResourcesUpdated: mapMutationByName("baseline", BaselineMutation.MarkDatasetResourcesUpdated),
+            refreshDatasetMetadata: mapActionByName(
+                "baseline",
+                "refreshDatasetMetadata"
+            ),
+            markResourcesUpdated: mapMutationByName(
+                "baseline",
+                BaselineMutation.MarkDatasetResourcesUpdated
+            ),
             importPJNZ: mapActionByName("baseline", "importPJNZ"),
             importShape: mapActionByName("baseline", "importShape"),
             importPopulation: mapActionByName("baseline", "importPopulation"),
@@ -257,21 +296,34 @@
             async importDataset() {
                 if (this.newDatasetId) {
                     this.loading = true;
-                    const newDataset = datasetFromMetadata(this.newDatasetId, this.datasets, this.schemas);
+                    const newDataset = datasetFromMetadata(
+                        this.newDatasetId,
+                        this.datasets,
+                        this.schemas
+                    );
                     this.setDataset(newDataset);
 
-                    const {pjnz, pop, shape, survey, program, anc} = newDataset.resources
+                    const {
+                        pjnz,
+                        pop,
+                        shape,
+                        survey,
+                        program,
+                        anc,
+                    } = newDataset.resources;
 
                     await Promise.all([
                         pjnz && this.importPJNZ(pjnz.url),
                         pop && this.importPopulation(pop.url),
-                        shape && this.importShape(shape.url)]);
-
-                    (shape || this.hasShapeFile) && await Promise.all([
-                        survey && this.importSurvey(survey.url),
-                        program && this.importProgram(program.url),
-                        anc && this.importANC(anc.url)
+                        shape && this.importShape(shape.url),
                     ]);
+
+                    (shape || this.hasShapeFile) &&
+                        (await Promise.all([
+                            survey && this.importSurvey(survey.url),
+                            program && this.importProgram(program.url),
+                            anc && this.importANC(anc.url),
+                        ]));
 
                     this.loading = false;
                     this.open = false;
@@ -282,13 +334,24 @@
 
                 this.loading = true;
                 this.open = true;
-                const {pjnz, pop, shape, survey, program, anc} = this.selectedDataset!.resources;
+                const {
+                    pjnz,
+                    pop,
+                    shape,
+                    survey,
+                    program,
+                    anc,
+                } = this.selectedDataset!.resources;
                 await Promise.all([
-                    this.outOfDateResources["pjnz"] && pjnz && this.importPJNZ(pjnz.url),
-                    this.outOfDateResources["pop"] && pop && this.importPopulation(pop.url),
+                    this.outOfDateResources["pjnz"] &&
+                        pjnz &&
+                        this.importPJNZ(pjnz.url),
+                    this.outOfDateResources["pop"] &&
+                        pop &&
+                        this.importPopulation(pop.url),
                     this.outOfDateResources["shape"] &&
-                    shape &&
-                    this.importShape(shape.url),
+                        shape &&
+                        this.importShape(shape.url),
                 ]);
 
                 const baselineUpdated =
@@ -300,17 +363,17 @@
                 // regardless of whether they have changed, since updating the baseline files will
                 // have wiped these
                 (shape || this.hasShapeFile) &&
-                (await Promise.all([
-                    (baselineUpdated || this.outOfDateResources["survey"]) &&
-                    survey &&
-                    this.importSurvey(survey.url),
-                    (baselineUpdated || this.outOfDateResources["program"]) &&
-                    program &&
-                    this.importProgram(program.url),
-                    (baselineUpdated || this.outOfDateResources["anc"]) &&
-                    anc &&
-                    this.importANC(anc.url),
-                ]));
+                    (await Promise.all([
+                        (baselineUpdated || this.outOfDateResources["survey"]) &&
+                            survey &&
+                            this.importSurvey(survey.url),
+                        (baselineUpdated || this.outOfDateResources["program"]) &&
+                            program &&
+                            this.importProgram(program.url),
+                        (baselineUpdated || this.outOfDateResources["anc"]) &&
+                            anc &&
+                            this.importANC(anc.url),
+                    ]));
 
                 this.markResourcesUpdated();
                 this.loading = false;
@@ -318,31 +381,34 @@
 
                 this.startPolling();
             },
-            openModal(){
-                if (this.selectedDataset && this.editsRequireConfirmation){
+            toggleModal() {
+                this.open = !this.open;
+            },
+            confirmImport() {
+                if (this.newDatasetId && this.editsRequireConfirmation) {
                     this.showConfirmation = true;
                 } else {
-                    this.open = true;
+                    this.importDataset();
                 }
-            },
-            closeModal(){
-                this.open = false;
             },
             continueEditing() {
                 this.showConfirmation = false;
-                this.open = true;
+                this.importDataset();
             },
             cancelEditing() {
                 this.showConfirmation = false;
             },
             startPolling() {
-                this.pollingId = window.setInterval(this.refreshDatasetMetadata, 10000);
+                this.pollingId = window.setInterval(
+                    this.refreshDatasetMetadata,
+                    10000
+                );
             },
             stopPolling() {
                 if (this.pollingId) {
                     window.clearInterval(this.pollingId);
                 }
-            }
+            },
         },
         mounted() {
             this.refreshDatasetMetadata();
@@ -350,6 +416,6 @@
         },
         beforeDestroy() {
             this.stopPolling();
-        }
-    })
+        },
+    });
 </script>
