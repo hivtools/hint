@@ -98,8 +98,8 @@
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import BubblePlot from "../plots/bubble/BubblePlot.vue";
     import TableView from "../plots/table/Table.vue";
-    import {BarchartIndicator, Filter} from "@reside-ic/vue-charts/src/bar/types";
-    import {BarChartWithFilters, FilterConfig, FilterOption} from "@reside-ic/vue-charts";
+    import {BarchartIndicator, Filter, FilterConfig, FilterOption} from "@reside-ic/vue-charts/src/bar/types";
+    import {BarChartWithFilters} from "@reside-ic/vue-charts";
 
     import {mapGettersByNames, mapMutationByName, mapMutationsByNames, mapStateProp, mapStateProps,} from "../../utils";
     import {ModelRunState} from "../../store/modelRun/modelRun";
