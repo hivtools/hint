@@ -4,7 +4,7 @@
         <div id="headers" class="row font-weight-bold pt-2">
             <div class="col-md-1 header-cell"></div>
             <div class="col-md-3 header-cell" v-translate="'projectName'"></div>
-            <div class="col-md-1 header-cell">Versions</div>
+            <div class="col-md-1 header-cell" v-translate="'versions'"></div>
             <div class="col-md-2 header-cell" v-translate="'lastUpdated'"></div>
             <div class="col-md-1 header-cell" v-translate="'load'"></div>
             <div class="col-md-1 header-cell" v-translate="'renameProjectHistoryHeader'"></div>
@@ -377,9 +377,10 @@
             createProject: mapActionByName(namespace, "createProject"),
             getProjects: mapActionByName(namespace, "getProjects"),
             versionCountLabel(project: Project) {
+                const lng = this.currentLanguage;
                 return project.versions.length == 1
-                    ? "1 version"
-                    : `${project.versions.length} versions`;
+                    ? `1 ${i18next.t("versionCountLabelSingle", {lng})}`
+                    : `${project.versions.length} ${i18next.t("versionCountLabelPlural", {lng})}`;
             },
             versionLabel(version: Version) {
                 return versionLabel(version);

@@ -129,8 +129,8 @@ describe("adr integration", () => {
         expect(renders.findAll(ADRKey).length).toBe(1);
         const spans = (renders.find("#adr-capacity").findAll("span"))
 
-        expectTranslated(spans.at(0), "ADR access level:", "Niveau d'accès ADR:", store)
-        expectTranslated(spans.at(1), "Read & Write", "Lecture et écriture", store)
+        expectTranslated(spans.at(0), "ADR access level:", "Niveau d'accès ADR:", "Nível de acesso ADR:", store)
+        expectTranslated(spans.at(1), "Read & Write", "Lecture et écriture", "Leitura e Escrita", store)
         expect(mockTooltip.mock.calls[0][1].value).toBe("You have read and write permissions for this dataset and may push output files to ADR");
     });
 
@@ -146,8 +146,8 @@ describe("adr integration", () => {
         expect(renders.findAll(ADRKey).length).toBe(1);
         const spans = (renders.find("#adr-capacity").findAll("span"))
 
-        expectTranslated(spans.at(0), "ADR access level:", "Niveau d'accès ADR:", store)
-        expectTranslated(spans.at(1), "Read only", "Lecture seule", store)
+        expectTranslated(spans.at(0), "ADR access level:", "Niveau d'accès ADR:","Nível de acesso ADR:", store)
+        expectTranslated(spans.at(1), "Read only", "Lecture seule", "Apenas leitura", store)
         expect(mockTooltip.mock.calls[0][1].value).toBe("You do not currently have write permissions for this dataset and will be unable to upload files to ADR");
     });
 

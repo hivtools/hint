@@ -57,7 +57,8 @@ describe("Online support menu", () => {
             .toStrictEqual(["dropdown-menu", "show", "dropdown-menu-right"]);
 
         const link = wrapper.find(".dropdown").find("a");
-        expectTranslated(link, "Online support", "Support en ligne", store as any);
+        expectTranslated(link, "Online support", "Support en ligne",
+            "Apoio online", store as any);
     });
 
     it("renders FAQ menu-item text and link when language is English", () => {
@@ -71,7 +72,7 @@ describe("Online support menu", () => {
         const link = wrapper.findAll(".dropdown-item").at(0);
         expect(link.attributes("href")).toBe("https://mrc-ide.github.io/naomi-troubleshooting/index-en.html");
         expect(link.attributes("target")).toBe("_blank");
-        expectTranslated(link, "FAQ", "FAQ", store as any);
+        expectTranslated(link, "FAQ", "FAQ", "Perguntas Frequentes", store as any);
     });
 
     it("renders FAQ menu-item text and link when lang is French", () => {
@@ -86,7 +87,7 @@ describe("Online support menu", () => {
         const link = wrapper.findAll(".dropdown-item").at(0);
         expect(link.attributes("href")).toBe("https://mrc-ide.github.io/naomi-troubleshooting/index-fr.html");
         expect(link.attributes("target")).toBe("_blank");
-        expectTranslated(link, "FAQ", "FAQ", store as any);
+        expectTranslated(link, "FAQ", "FAQ", "Perguntas Frequentes", store as any);
     });
 
     it("renders Contact menu-item text and link when modelBugReport switch is true", () => {
@@ -106,7 +107,7 @@ describe("Online support menu", () => {
 
         expect(link.attributes("href")).toBe(expectedHref);
         expect(link.attributes("target")).toBe("_blank");
-        expectTranslated(link, "Contact", "Contact", store as any);
+        expectTranslated(link, "Contact", "Contact", "Contacto",  store as any);
 
     });
 
@@ -125,7 +126,7 @@ describe("Online support menu", () => {
 
         expect(link.attributes("href")).toBe(expectedHref);
         expect(link.attributes("target")).toBe("_blank");
-        expectTranslated(link, "Contact", "Contact", store as any);
+        expectTranslated(link, "Contact", "Contact", "Contacto", store as any);
     });
 
     it("renders accessibility menu-item text and link", () => {
@@ -138,6 +139,6 @@ describe("Online support menu", () => {
 
         const link = wrapper.find("router-link-stub");
         expect(link.attributes("to")).toBe("/accessibility");
-        expectTranslated(link, "Accessibility", "Accessibilité", store as any);
+        expectTranslated(link, "Accessibility", "Accessibilité", "Acessibilidade", store as any);
     });
 });

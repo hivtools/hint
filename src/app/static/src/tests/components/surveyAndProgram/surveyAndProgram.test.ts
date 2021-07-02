@@ -197,24 +197,25 @@ describe("Survey and programme component", () => {
 
     it("survey tab is enabled when survey data is present", () => {
         expectTabEnabled({survey: mockSurveyResponse(), selectedDataType: DataType.Survey},
-            "Household Survey", "Enquête de ménage", 0);
+            "Household Survey", "Enquête de ménage", "Inquérito aos agregados familiares", 0);
     });
 
     it("programme (ART) tab is enabled when programme data is present", () => {
         expectTabEnabled({program: mockProgramResponse(), selectedDataType: DataType.Survey},
-            "ART", "ART", 1);
+            "ART", "ART", "TARV", 1);
     });
 
     it("ANC tab is enabled when ANC data is present", () => {
         expectTabEnabled({anc: mockAncResponse(), selectedDataType: DataType.Survey},
-            "ANC Testing", "Test de clinique prénatale", 2);
+            "ANC Testing", "Test de clinique prénatale", "Teste da CPN", 2);
     });
 
-    function expectTabEnabled(state: Partial<SurveyAndProgramState>, englishName: string, frenchName: string, index: number) {
+    function expectTabEnabled(state: Partial<SurveyAndProgramState>, englishName: string, frenchName: string,
+                              portugueseName: string, index: number) {
         const store = createStore(state);
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         expect(wrapper.findAll(".nav-link").at(index).classes()).not.toContain("disabled");
-        expectTranslated(wrapper.findAll(".nav-link").at(index), englishName, frenchName, store);
+        expectTranslated(wrapper.findAll(".nav-link").at(index), englishName, frenchName, portugueseName, store);
         expect(wrapper.findAll(".nav-link.disabled").length).toBe(2);
     }
 

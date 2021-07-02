@@ -54,13 +54,14 @@ describe("Projects component", () => {
         expect(wrapper.find("#projects-content").exists()).toBe(true);
 
         expectTranslated(wrapper.find("#projects-header"), "Create a new project",
-            "Créer un nouveau projet", store);
+            "Créer un nouveau projet", "Criar um novo projeto", store);
         expectTranslated(wrapper.find("p"), "Your work is organised into projects. Each project contains its own data and settings.",
-            "Votre travail est organisé en projets. Chaque projet contient ses propres données et paramètres.", store);
+            "Votre travail est organisé en projets. Chaque projet contient ses propres données et paramètres.",
+            "O seu trabalho está organizado em projetos. Cada projeto contém os seus próprios dados e definições.", store);
         expectTranslated(wrapper.find("input"), "Project name",
-            "Nom du projet", store, "placeholder");
+            "Nom du projet", "Nome do projeto", store, "placeholder");
         expectTranslated(wrapper.find("button"), "Create project",
-            "Créer un projet", store);
+            "Créer un projet", "Criar projeto", store);
         expect(wrapper.find("button").attributes("disabled")).toBe("disabled");
         expect(wrapper.find(ErrorAlert).exists()).toBe(false);
     });
@@ -70,10 +71,12 @@ describe("Projects component", () => {
         const store = wrapper.vm.$store;
 
         expectTranslated(wrapper.find("p"), "Your work is organised into projects. Each project contains its own data and settings.",
-            "Votre travail est organisé en projets. Chaque projet contient ses propres données et paramètres.", store);
+            "Votre travail est organisé en projets. Chaque projet contient ses propres données et paramètres.",
+            "O seu trabalho está organizado em projetos. Cada projeto contém os seus próprios dados e definições.", store);
         expectTranslated(wrapper.find("#projects-header"),
             "Create a new project or return to current project (existingProject)",
-            "Créer un nouveau projet ou retour au projet actuel (existingProject)", store);
+            "Créer un nouveau projet ou retour au projet actuel (existingProject)",
+            "Criar um novo projeto ou regressar ao projeto atual (existingProject)", store);
         expect(wrapper.find("#projects-header a").exists()).toBe(true);
     });
 
