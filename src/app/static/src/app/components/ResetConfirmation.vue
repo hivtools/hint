@@ -6,7 +6,7 @@
 
             <p v-translate="'discardWarning'"></p>
             <ul>
-                <li v-for="step in changesToRelevantSteps" :key="step.number">
+            <li v-for="step in changesToRelevantSteps" :key="step.number">
                     <span v-translate="'step'"></span> {{ step.number }}: <span v-translate="step.textKey"></span>
                 </li>
             </ul>

@@ -294,40 +294,38 @@
             importProgram: mapActionByName("surveyAndProgram", "importProgram"),
             importANC: mapActionByName("surveyAndProgram", "importANC"),
             async importDataset() {
-                if (this.newDatasetId) {
-                    this.loading = true;
-                    const newDataset = datasetFromMetadata(
-                        this.newDatasetId,
-                        this.datasets,
-                        this.schemas
-                    );
-                    this.setDataset(newDataset);
+                this.loading = true;
+                const newDataset = datasetFromMetadata(
+                    this.newDatasetId as string,
+                    this.datasets,
+                    this.schemas
+                );
+                this.setDataset(newDataset);
 
-                    const {
-                        pjnz,
-                        pop,
-                        shape,
-                        survey,
-                        program,
-                        anc,
-                    } = newDataset.resources;
+                const {
+                    pjnz,
+                    pop,
+                    shape,
+                    survey,
+                    program,
+                    anc,
+                } = newDataset.resources;
 
-                    await Promise.all([
-                        pjnz && this.importPJNZ(pjnz.url),
-                        pop && this.importPopulation(pop.url),
-                        shape && this.importShape(shape.url),
-                    ]);
+                await Promise.all([
+                    pjnz && this.importPJNZ(pjnz.url),
+                    pop && this.importPopulation(pop.url),
+                    shape && this.importShape(shape.url),
+                ]);
 
-                    (shape || this.hasShapeFile) &&
-                        (await Promise.all([
-                            survey && this.importSurvey(survey.url),
-                            program && this.importProgram(program.url),
-                            anc && this.importANC(anc.url),
-                        ]));
+                (shape || this.hasShapeFile) &&
+                    (await Promise.all([
+                        survey && this.importSurvey(survey.url),
+                        program && this.importProgram(program.url),
+                        anc && this.importANC(anc.url),
+                    ]));
 
-                    this.loading = false;
-                    this.open = false;
-                }
+                this.loading = false;
+                this.open = false;
             },
             async refresh() {
                 this.stopPolling();
@@ -385,7 +383,7 @@
                 this.open = !this.open;
             },
             confirmImport() {
-                if (this.newDatasetId && this.editsRequireConfirmation) {
+                if (this.editsRequireConfirmation) {
                     this.showConfirmation = true;
                 } else {
                     this.importDataset();
@@ -397,6 +395,7 @@
             },
             cancelEditing() {
                 this.showConfirmation = false;
+                this.open = false;
             },
             startPolling() {
                 this.pollingId = window.setInterval(

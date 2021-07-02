@@ -616,7 +616,7 @@ describe("select dataset", () => {
         await cancelBtn.trigger("click");
         expect(rendered.find(ResetConfirmation).exists()).toBe(false);
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(true);
+        expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
     it("imports baseline files if they exist", async () => {
