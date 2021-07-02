@@ -133,6 +133,7 @@ export const mutations: MutationTree<RootState> = {
             colourScales: colourScales
         });
         Object.assign(state.adrUpload, initialADRUploadState());
+        Object.assign(state.downloadResults, initialDownloadResultsState());
     },
 
     ...languageMutations

@@ -1,52 +1,114 @@
 import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
-import {DownloadResultsState} from "./downloadResults";
+import {DownloadResultsState, getDownloadType} from "./downloadResults";
 import {api} from "../../apiService";
 import {DownloadResultsMutation} from "./mutations";
 import {ModelStatusResponse} from "../../generated";
 
 export interface DownloadResultsActions {
-    download: (store : ActionContext<DownloadResultsState, RootState>, type: String) => void
-    poll: (store: ActionContext<DownloadResultsState, RootState>) => void
+    downloadSummary: (store : ActionContext<DownloadResultsState, RootState>) => void
+    downloadSpectrum: (store : ActionContext<DownloadResultsState, RootState>) => void
+    downloadCoarseOutput: (store : ActionContext<DownloadResultsState, RootState>) => void
+    poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: string) => void
 }
 
 export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResultsActions = {
 
-    async download(context, type) {
+    async downloadCoarseOutput(context) {
+        const {dispatch, state, rootState} = context
+        const calibrateId = rootState.modelCalibrate.calibrateId
+
+        const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
+            .withSuccess(DownloadResultsMutation.CoarseOutputDownloadStarted)
+            .withError(DownloadResultsMutation.CoarseOutputError)
+            .get(`download/submit/coarse-output/${calibrateId}`)
+
+        if (response) {
+            await dispatch("poll", getDownloadType.coarse)
+        }
+    },
+
+    async downloadSummary(context) {
         const {dispatch, rootState} = context
         const calibrateId = rootState.modelCalibrate.calibrateId
 
         const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
-            .withSuccess(DownloadResultsMutation.DownloadStarted)
-            .withError(DownloadResultsMutation.DownloadError)
-            .get(`download/submit/${type}/${calibrateId}`)
+            .withSuccess(DownloadResultsMutation.SummaryDownloadStarted)
+            .withError(DownloadResultsMutation.SummaryError)
+            .get(`download/submit/summary/${calibrateId}`)
 
         if (response) {
-            await dispatch("poll")
+            await dispatch("poll", getDownloadType.summary)
         }
     },
 
-    async poll(context) {
+    async downloadSpectrum(context) {
+        const {dispatch, rootState} = context
+        const calibrateId = rootState.modelCalibrate.calibrateId
+
+        const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
+            .withSuccess(DownloadResultsMutation.SpectrumDownloadStarted)
+            .withError(DownloadResultsMutation.SpectrumError)
+            .get(`download/submit/spectrum/${calibrateId}`)
+
+        if (response) {
+            await dispatch("poll", getDownloadType.spectrum)
+        }
+    },
+
+    async poll(context, downloadType) {
         const {commit} = context;
         const id = setInterval(() => {
-            getDownloadStatus(context);
+            downloadType === getDownloadType.spectrum ? getSpectrumDownloadStatus(context)
+                : downloadType === getDownloadType.coarse ? getCoarseOutputDownloadStatus(context)
+                : getSummaryDownloadStatus(context)
         }, 2000);
 
-        commit({type: "PollingStatusStarted", payload: id});
+        commit({type: "PollingStatusStarted", payload: {pollId: id, downloadType: downloadType}});
     },
 };
 
-export const getDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
+export const getSummaryDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
     const {commit, state} = context;
-    const downloadId = state.downloadId;
+    const downloadId = state.summary.downloadId;
     return api<DownloadResultsMutation, DownloadResultsMutation>(context)
-        .withSuccess(DownloadResultsMutation.DownloadStatusUpdated)
-        .withError(DownloadResultsMutation.DownloadError)
+        .withSuccess(DownloadResultsMutation.SummaryDownloadStatusUpdated)
+        .withError(DownloadResultsMutation.SummaryError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
         .then(() => {
-            if (state.status && state.status.done) {
-                window.location.href = `/download/result/${state.downloadId}`
-                commit({type: DownloadResultsMutation.DownloadComplete, payload: true})
+            if (state.summary.status && state.summary.status.done) {
+                window.location.href = `/download/result/${downloadId}`
+                commit({type: DownloadResultsMutation.SummaryDownloadComplete, payload: true})
+            }
+        });
+};
+
+export const getSpectrumDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
+    const {commit, state} = context;
+    const downloadId = state.spectrum.downloadId;
+    return api<DownloadResultsMutation, DownloadResultsMutation>(context)
+        .withSuccess(DownloadResultsMutation.SpectrumDownloadStatusUpdated)
+        .withError(DownloadResultsMutation.SpectrumError)
+        .get<ModelStatusResponse>(`download/status/${downloadId}`)
+        .then(() => {
+            if (state.spectrum.status && state.spectrum.status.done) {
+                window.location.href = `/download/result/${downloadId}`
+                commit({type: DownloadResultsMutation.SpectrumDownloadComplete, payload: true})
+            }
+        });
+};
+
+export const getCoarseOutputDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
+    const {commit, state} = context;
+    const downloadId = state.coarseOutput.downloadId;
+    return api<DownloadResultsMutation, DownloadResultsMutation>(context)
+        .withSuccess(DownloadResultsMutation.CoarseOutputDownloadStatusUpdated)
+        .withError(DownloadResultsMutation.CoarseOutputError)
+        .get<ModelStatusResponse>(`download/status/${downloadId}`)
+        .then(() => {
+            if (state.coarseOutput.status && state.coarseOutput.status.done) {
+                window.location.href = `/download/result/${downloadId}`
+                commit({type: DownloadResultsMutation.CoarseOutputDownloadComplete, payload: true})
             }
         });
 };

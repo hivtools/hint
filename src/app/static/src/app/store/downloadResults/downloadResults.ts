@@ -1,40 +1,42 @@
-import {ReadyState, RootState} from "../../root";
-import {DownloadStatusResponse, Error} from "../../generated";
+import {RootState} from "../../root";
+import {DownloadStatusResponse} from "../../generated";
 import {Module} from "vuex";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
-import {localStorageManager} from "../../localStorageManager";
+import {DownloadResultsDependency} from "../../types";
 
+export interface DownloadResultsState {
+    spectrum: DownloadResultsDependency
+    coarseOutput: DownloadResultsDependency
+    summary: DownloadResultsDependency
+}
 
-export interface DownloadResultsState extends ReadyState {
-    downloadId: string
-    downloading: boolean
-    statusPollId: number
-    status: DownloadStatusResponse
-    complete: boolean
-    error: Error | null
+const mockInitialDownloadResults = {
+    downloadId: "",
+    downloading: false,
+    statusPollId: -1,
+    status: {} as DownloadStatusResponse,
+    complete: false,
+    error: null
+}
+
+export const getDownloadType = {
+    "spectrum": "Spectrum",
+    "coarse": "CoarseOutput",
+    "summary": "Summary"
 }
 
 export const initialDownloadResultsState = (): DownloadResultsState => {
     return {
-        downloading: false,
-        statusPollId: -1,
-        complete: false,
-        error: null,
-        ready: false,
-        status: {} as DownloadStatusResponse,
-        downloadId: ""
-
+        spectrum: mockInitialDownloadResults,
+        coarseOutput: mockInitialDownloadResults,
+        summary: mockInitialDownloadResults
     }
 }
 
-const namespaced = true;
-
-const existingState = localStorageManager.getState();
-
-export const downloadResults : Module<DownloadResultsState, RootState> = {
-    namespaced,
-    state: {...initialDownloadResultsState(), ...existingState && existingState.downloadResults, ready: false},
+export const downloadResults: Module<DownloadResultsState, RootState> = {
+    namespaced: true,
+    state: {...initialDownloadResultsState()},
     mutations,
     actions
 }

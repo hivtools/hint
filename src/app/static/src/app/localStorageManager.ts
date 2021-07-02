@@ -21,8 +21,7 @@ export const serialiseState = (rootState: RootState): Partial<RootState> => {
         plottingSelections: rootState.plottingSelections,
         surveyAndProgram: {selectedDataType: rootState.surveyAndProgram.selectedDataType} as any,
         projects: rootState.projects,
-        hintrVersion: rootState.hintrVersion,
-        downloadResults: rootState.downloadResults
+        hintrVersion: rootState.hintrVersion
     };
 };
 
