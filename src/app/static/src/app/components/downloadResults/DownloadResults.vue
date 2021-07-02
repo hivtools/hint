@@ -3,20 +3,21 @@
         <div class="row">
             <div class="col-sm">
                 <h4 v-translate="'exportOutputs'"></h4>
-                <a class="btn btn-red btn-lg my-3" :href=spectrumUrl>
+                <span class="btn btn-red btn-lg my-3"
+                @click="handleDownload('spectrum')">
                     <span v-translate="'export'"></span>
                     <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                </a>
+                </span>
                 <h4 class="mt-4" v-translate="'downloadCoarseOutput'"></h4>
-                <a class="btn btn-red btn-lg my-3" :href=coarseOutputUrl>
+                <span class="btn btn-red btn-lg my-3" @click="handleDownload('coarse-output')">
                     <span v-translate="'download'"></span>
                     <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                </a>
+                </span>
                 <h4 class="mt-4" v-translate="'downloadSummaryReport'"></h4>
-                <a class="btn btn-red btn-lg my-3" :href=summaryReportUrl>
+                <span class="btn btn-red btn-lg my-3" @click="handleDownload('summary')">
                     <span v-translate="'download'"></span>
                     <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                </a>
+                </span>
             </div>
             <div id="upload" v-if="hasUploadPermission" class="col-sm">
                 <h4 v-translate="'uploadFileToAdr'"></h4>
@@ -63,9 +64,12 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import i18next from "i18next";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
+    import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
+    import {router} from "../../router";
 
     interface Computed {
-        modelCalibrateId: string,
+        downloadId: string,
+        downloading: boolean,
         spectrumUrl: string,
         coarseOutputUrl: string,
         summaryReportUrl: string,
@@ -88,6 +92,8 @@
         handleUploadModal: () => void
         getUserCanUpload: () => void
         getUploadFiles: () => void
+        download: (downloadType: string) => void
+        handleDownload: (downloadType: string) => void
     }
 
     interface Data {
@@ -102,8 +108,9 @@
             }
         },
         computed: {
-            ...mapStateProps<ModelCalibrateState, keyof Computed>("modelCalibrate", {
-                modelCalibrateId: state => state.calibrateId
+            ...mapStateProps<DownloadResultsState, keyof Computed>("downloadResults", {
+                downloadId: state => state.downloadId,
+                downloading: state => state.downloading
             }),
             ...mapStateProps<ADRUploadState, keyof Computed>("adrUpload", {
                 currentFileUploading: state => state.currentFileUploading,
@@ -127,21 +134,30 @@
                 (state: RootState) => state.language
             ),
             spectrumUrl: function () {
-                return `/download/spectrum/${this.modelCalibrateId}`
+                return ""
+                //return `/download/spectrum/${this.modelCalibrateId}`
             },
             coarseOutputUrl: function () {
-                return `/download/coarse-output/${this.modelCalibrateId}`
+                return ""
+                //return `/download/coarse-output/${this.modelCalibrateId}`
             },
             summaryReportUrl: function () {
-                return `/download/summary/${this.modelCalibrateId}`
+                return ""
+               // return `/download/summary/${this.modelCalibrateId}`
             }
         },
         methods: {
             handleUploadModal() {
                 this.uploadModalOpen = true
             },
+            handleDownload(downloadType) {
+                if (!this.downloading) {
+                    this.download(downloadType)
+                }
+            },
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
-            getUploadFiles: mapActionByName("adrUpload", "getUploadFiles")
+            getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
+            download: mapActionByName("downloadResults", "download")
         },
         mounted() {
             this.getUserCanUpload();
