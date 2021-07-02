@@ -296,7 +296,7 @@
             async importDataset() {
                 this.loading = true;
                 const newDataset = datasetFromMetadata(
-                    this.newDatasetId as string,
+                    this.newDatasetId!,
                     this.datasets,
                     this.schemas
                 );
