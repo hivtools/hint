@@ -31,14 +31,17 @@
                 </div>
                 <div class="col-md-3 project-cell name-cell">
                     <a href="#"
-                    @click="loadVersion($event, p.id, p.versions[0].id)">
+                       @click="loadVersion($event, p.id, p.versions[0].id)">
                         {{ p.name }}
                     </a>
-                    <button href="#" class=" btn btn-sm btn-red-icons pl-2" v-tooltip ="getTranslatedValue('editNote')"
-                       @click.prevent="handleEditVersionNote(p.id, p.versions[0].id, p.versions[0].versionNumber)">
+                    <span class="float-right">
+                    <button href="#" class=" btn btn-sm btn-red-icons"
+                            v-tooltip="getTranslatedValue('editProjectNote')"
+                            @click.prevent="handleEditProjectNote(p.id)">
                         <file-text-icon size="20"></file-text-icon>
                     </button>
-                    <small v-if="p.sharedBy" class="text-muted d-flex" >{{getTranslatedValue("sharedBy")}}: {{p.sharedBy}}</small>
+                    </span>
+                    <small v-if="p.sharedBy" class="text-muted d-flex">{{ getTranslatedValue("sharedBy") }}: {{ p.sharedBy }}</small>
                 </div>
                 <div class="col-md-1 project-cell version-count-cell">
                     <small class="text-muted">{{ versionCountLabel(p) }}</small>
@@ -90,10 +93,13 @@
                      class="row font-italic bg-light py-2">
                     <div class="col-md-1 version-cell"></div>
                     <div class="col-md-3 version-cell edit-cell">
-                        <button href="#" class="btn btn-sm btn-red-icons" v-tooltip ="getTranslatedValue('editNote')"
-                                @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
+                        <span class="float-right">
+                            <button href="#" class="btn btn-sm btn-red-icons"
+                                    v-tooltip="getTranslatedValue('editVersionNote')"
+                                    @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
                             <file-text-icon size="20"></file-text-icon>
-                        </button>
+                            </button>
+                        </span>
                     </div>
                     <div class="col-md-1 version-cell version-label-cell">
                         {{ versionLabel(v) }}
@@ -202,11 +208,22 @@
             </template>
         </modal>
 
-        <modal :open="versionNoteToEdit">
-            <h4 v-html="editVersionNoteHeader" id="editVersionNoteHeader"></h4>
-            <div class="pb-3" v-html="editVersionNoteSubHeader" id="editVersionNoteSubHeader"></div>
-            <textarea id="edit-version-note-id" class="form-control" placeholder="Notes"
-                      v-model="editedVersionNote"></textarea>
+        <modal :open="versionNoteToEdit || projectNoteToEdit">
+            <div v-if="versionNoteToEdit">
+                <h4 v-html="editVersionNoteHeader" id="editVersionNoteHeader"></h4>
+                <div class="pb-3"
+                     v-html="editVersionNoteSubHeader"
+                     id="editVersionNoteSubHeader"></div>
+            </div>
+            <div v-if="projectNoteToEdit">
+                <h4 v-translate="'editProjectNoteHeader'" id="editProjectNoteHeader"></h4>
+                <div class="pb-3"
+                     v-html="editProjectNoteSubHeader"
+                     id="editProjectNoteSubHeader"></div>
+            </div>
+
+            <textarea id="edit-version-note-id" class="form-control"
+                      v-model="editedNote"></textarea>
             <template v-slot:footer>
                 <button type="button"
                         class="btn btn-red"
@@ -236,7 +253,7 @@
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
     import {VTooltip} from 'v-tooltip';
-    import {projects, ProjectsState} from "../../store/projects/projects";
+    import {projects} from "../../store/projects/projects";
 
     const namespace = "projects";
 
@@ -250,9 +267,11 @@
         selectedVersionNumber: string;
         versionNote: string;
         versionNoteToEdit: VersionIds | null;
-        editedVersionNote: string;
+        editedNote: string;
         displayProjectName: string;
         renameProjectNote: string;
+        projectNoteToEdit: number | null;
+        editedProjectNote: string;
     }
 
     interface Computed {
@@ -260,14 +279,16 @@
         disableRename: boolean;
         currentLanguage: Language;
         promoteVersionHeader: string;
-        editVersionNoteHeader: string,
-        editVersionNoteSubHeader: string
+        editVersionNoteHeader: string;
+        editVersionNoteSubHeader: string;
+        editProjectNoteSubHeader: string;
     }
 
     interface Methods {
         format: (date: string) => void;
         loadVersion: (event: Event, projectId: number, versionId: string) => void;
         handleEditVersionNote: (projectId: number, versionId: string, versionNumber: number) => void;
+        handleEditProjectNote: (projectId: number) => void;
         loadAction: (version: VersionIds) => void;
         versionCountLabel: (project: Project) => string;
         deleteProject: (event: Event, projectId: number) => void;
@@ -296,6 +317,7 @@
         confirmNoteEditing: () => void;
         getTranslatedValue: (key: string) => string;
         updateVersionNoteAction: (versionPayload: versionPayload) => void
+        updateProjectNoteAction: (payload: projectPayload) => void
     }
 
     export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
@@ -307,12 +329,14 @@
                 newProjectName: "",
                 selectedVersionNumber: "",
                 projectToRename: null,
-                renamedProjectName: '',
                 versionNoteToEdit: null,
-                editedVersionNote: "",
+                editedNote: "",
                 versionNote: "",
                 displayProjectName: "",
-                renameProjectNote: ""
+                renameProjectNote: "",
+                renamedProjectName: "",
+                editedProjectNote: "",
+                projectNoteToEdit: null
             };
         },
         computed: {
@@ -334,8 +358,15 @@
                     lng: this.currentLanguage,
                 });
             },
-            editVersionNoteSubHeader: function (){
+
+            editVersionNoteSubHeader: function () {
                 return i18next.t("editVersionNoteSubHeader", {
+                    projectName: this.displayProjectName,
+                    lng: this.currentLanguage,
+                });
+            },
+            editProjectNoteSubHeader: function () {
+                return i18next.t("editProjectNoteSubHeader", {
                     projectName: this.displayProjectName,
                     lng: this.currentLanguage,
                 });
@@ -354,15 +385,20 @@
                 this.loadAction({projectId, versionId});
             },
             handleEditVersionNote(projectId: number, versionId: string, versionNumber: number) {
-                this.projects.filter(project => {
-                    if (project.id === projectId) {
-                        this.displayProjectName = project.name
-                        this.editedVersionNote = project.versions
-                            .find(version => version.versionNumber === versionNumber)!.note || ""
-                    }
-                })
-                this.versionNoteToEdit = {projectId, versionId}
+                const project = this.projects.find(project => project.id === projectId)!
+                this.displayProjectName = project.name;
+                this.editedNote = project.versions
+                    .find(version => version.versionNumber === versionNumber)!.note || "";
+
+                this.versionNoteToEdit = {projectId, versionId};
                 this.selectedVersionNumber = `v${versionNumber}`;
+            },
+            handleEditProjectNote(projectId: number) {
+                const project = this.projects.find(project => project.id === projectId)!;
+                this.displayProjectName = project.name;
+                this.editedNote = project.note || "";
+
+                this.projectNoteToEdit = projectId;
             },
             renameProject(event: Event, projectId: number) {
                 event.preventDefault();
@@ -391,18 +427,33 @@
                 }
             },
             cancelNoteEditing() {
-                this.versionNoteToEdit = null;
-                this.editedVersionNote = "";
+                if (this.versionNoteToEdit) {
+                    this.versionNoteToEdit = null;
+                    this.editedNote = "";
+
+                } else if (this.projectNoteToEdit) {
+                    this.projectNoteToEdit = null
+                    this.editedNote = "";
+                }
             },
-            async confirmNoteEditing() {
+            confirmNoteEditing() {
                 if (this.versionNoteToEdit) {
                     const versionPayload: versionPayload = {
                         version: this.versionNoteToEdit!,
-                        note: this.editedVersionNote
+                        note: this.editedNote
                     };
                     this.updateVersionNoteAction(versionPayload);
                     this.versionNoteToEdit = null;
-                    this.editedVersionNote = "";
+                    this.editedNote = "";
+
+                } else if (this.projectNoteToEdit) {
+                    const payload: projectPayload = {
+                        projectId: this.projectNoteToEdit!,
+                        note: this.editedNote
+                    };
+                    this.updateProjectNoteAction(payload);
+                    this.projectNoteToEdit = null;
+                    this.editedNote = "";
                 }
             },
             deleteProject(event: Event, projectId: number) {
@@ -459,6 +510,7 @@
                 }
             },
             updateVersionNoteAction: mapActionByName<projectPayload>(namespace, "updateVersionNote"),
+            updateProjectNoteAction: mapActionByName<projectPayload>(namespace, "updateProjectNote"),
             renameProjectAction: mapActionByName<projectPayload>(
                 namespace,
                 "renameProject"

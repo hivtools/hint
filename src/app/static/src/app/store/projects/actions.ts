@@ -17,7 +17,7 @@ export interface versionPayload {
 
 export interface projectPayload {
     projectId: number,
-    name: string,
+    name?: string,
     note?: string
 }
 
@@ -35,6 +35,7 @@ export interface ProjectsActions {
     cloneProject: (store: ActionContext<ProjectsState, RootState>, payload: CloneProjectPayload) => void
     renameProject: (store: ActionContext<ProjectsState, RootState>, projectPayload: projectPayload) => void
     updateVersionNote: (store: ActionContext<ProjectsState, RootState>, versionPayload: versionPayload) => void
+    updateProjectNote: (store: ActionContext<ProjectsState, RootState>, payload: projectPayload) => void
 }
 
 export interface CloneProjectPayload {
@@ -87,9 +88,13 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .postAndReturn<string>("/project/", qs.stringify({name}));
     },
 
-    async getProjects(context) {
+    async getProjects(context, isLoading = true) {
         const {commit} = context;
-        commit({type: ProjectsMutations.SetLoading, payload: true});
+
+        if (isLoading) {
+            commit({type: ProjectsMutations.SetLoading, payload: true});
+        }
+
         await api<ProjectsMutations, ProjectsMutations>(context)
             .withSuccess(ProjectsMutations.SetPreviousProjects)
             .withError(ProjectsMutations.ProjectError)
@@ -121,7 +126,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     },
     
     async updateVersionNote(context, versionPayload: versionPayload) {
-        const {state, dispatch} = context
+        const {dispatch} = context
         const {projectId, versionId} = versionPayload.version
         const note = versionPayload.note
 
@@ -130,10 +135,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`/project/${projectId}/version/${versionId}/note`, qs.stringify({note}))
             .then(() => {
-                if (state.currentProject && state.currentProject.id === projectId) {
-                    dispatch("getCurrentProject")
-                }
-                dispatch("getProjects");
+                dispatch("getProjects", false);
             });
     },
 
@@ -147,6 +149,19 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .withSuccess(ProjectsMutations.VersionCreated)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`project/${projectId}/version/?parent=${versionId}&note=${note}`)
+    },
+
+    async updateProjectNote(context, payload) {
+        const {dispatch} = context
+        const projectId = payload.projectId
+        const note = payload.note
+        await api<ProjectsMutations, ErrorsMutation>(context)
+            .ignoreSuccess()
+            .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
+            .postAndReturn(`project/${projectId}/note`, qs.stringify({note}))
+            .then(() => {
+                dispatch("getProjects", false);
+            });
     },
 
     async loadVersion(context, version) {
@@ -239,4 +254,3 @@ async function immediateUploadVersionState(context: ActionContext<ProjectsState,
             .postAndReturn(`/project/${projectId}/version/${versionId}/state/`, serialiseState(rootState));
     }
 }
-

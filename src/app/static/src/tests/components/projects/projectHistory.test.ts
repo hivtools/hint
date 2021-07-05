@@ -28,6 +28,7 @@ describe("Project history component", () => {
     const mockPromoteVersion = jest.fn();
     const mockRenameProject = jest.fn();
     const mockUpdateVersion = jest.fn();
+    const mockUpdateProjectNote = jest.fn();
 
     function createStore(projects: Project[] = testProjects) {
         const store = new Vuex.Store({
@@ -42,7 +43,8 @@ describe("Project history component", () => {
                         loadVersion: mockLoad,
                         promoteVersion: mockPromoteVersion,
                         renameProject: mockRenameProject,
-                        updateVersionNote: mockUpdateVersion
+                        updateVersionNote: mockUpdateVersion,
+                        updateProjectNote: mockUpdateProjectNote
                     }
                 }
             }
@@ -83,11 +85,12 @@ describe("Project history component", () => {
         shallowMount(ProjectHistory, {store,
              directives: {"tooltip": mockTooltip} });
 
-        expect(mockTooltip.mock.calls[0][1].value).toBe("Add or edit version notes");
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Add or edit project notes");
         expect(mockTooltip.mock.calls[1][1].value).toBe("Load");
         expect(mockTooltip.mock.calls[2][1].value).toBe("Rename project");
         expect(mockTooltip.mock.calls[3][1].value).toBe("Delete");
         expect(mockTooltip.mock.calls[4][1].value).toBe("Copy last updated to a new project");
+        expect(mockTooltip.mock.calls[5][1].value).toBe("Add or edit version notes");
         expect(mockTooltip.mock.calls[8][1].value).toBe("Copy to a new project");
     });
 
@@ -98,11 +101,12 @@ describe("Project history component", () => {
         shallowMount(ProjectHistory, {store,
         directives: {"tooltip": mockTooltip} });
 
-        expect(mockTooltip.mock.calls[0][1].value).toBe("Ajouter ou modifier des notes de version");
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Ajouter ou modifier des notes de projet");
         expect(mockTooltip.mock.calls[1][1].value).toBe("Charger");
         expect(mockTooltip.mock.calls[2][1].value).toBe("Renommer le projet");
         expect(mockTooltip.mock.calls[3][1].value).toBe("Supprimer");
         expect(mockTooltip.mock.calls[4][1].value).toBe("Copier la dernière mise à jour dans un nouveau projet");
+        expect(mockTooltip.mock.calls[5][1].value).toBe("Ajouter ou modifier des notes de version");
         expect(mockTooltip.mock.calls[8][1].value).toBe("Copier dans un nouveau projet");
     });
 
@@ -486,15 +490,19 @@ describe("Project history component", () => {
         await Vue.nextTick();
 
         const modal = wrapper.findAll(".modal").at(3);
+        expect(modal.element.style.getPropertyValue("display")).toBe("block")
         const textarea = modal.find("textarea");
         textarea.setValue("new notes");
 
         const noteText = textarea.element as HTMLTextAreaElement
         expect(noteText.value).toBe("new notes")
+        expect(wrapper.vm.$data.editedNote).toBe("new notes")
 
         const okBtn = modal.find(".modal-footer").findAll("button").at(0);
         await okBtn.trigger("click");
 
+        expect(modal.element.style.getPropertyValue("display")).toBe("none")
+        expect(mockUpdateProjectNote.mock.calls.length).toBe(0);
         expect(mockUpdateVersion.mock.calls.length).toBe(1);
         expect(mockUpdateVersion.mock.calls[0][1]).toStrictEqual(
             {
@@ -503,6 +511,34 @@ describe("Project history component", () => {
                     "projectId": 1,
                     "versionId": "s11"
                 }
+            });
+    });
+
+    it("invokes projectNote action when ok button is triggered", async () => {
+        const wrapper = getWrapper(testProjects);
+        const copyLink = wrapper.find("#p-1").find(".project-cell.name-cell").find("button");
+        copyLink.trigger("click");
+        await Vue.nextTick();
+
+        const modal = wrapper.findAll(".modal").at(3);
+        expect(modal.element.style.getPropertyValue("display")).toBe("block")
+        const textarea = modal.find("textarea");
+        textarea.setValue("new notes");
+
+        const noteText = textarea.element as HTMLTextAreaElement
+        expect(noteText.value).toBe("new notes")
+        expect(wrapper.vm.$data.editedNote).toBe("new notes")
+
+        const okBtn = modal.find(".modal-footer").findAll("button").at(0);
+        await okBtn.trigger("click");
+
+        expect(modal.element.style.getPropertyValue("display")).toBe("none")
+        expect(mockUpdateVersion.mock.calls.length).toBe(0);
+        expect(mockUpdateProjectNote.mock.calls.length).toBe(1);
+        expect(mockUpdateProjectNote.mock.calls[0][1]).toStrictEqual(
+            {
+                "note": "new notes",
+                "projectId": 1
             });
     });
 
@@ -515,6 +551,34 @@ describe("Project history component", () => {
         const modal = wrapper.findAll(".modal").at(3);
         const noteText = modal.find("textarea").element as HTMLTextAreaElement
         expect(noteText.value).toBe("version notes")
+    });
+
+    it("can render pre-populate projectNote correctly when add/edit icon is triggered", async () => {
+        const wrapper = getWrapper(testProjects);
+        const copyLink = wrapper.find("#p-1").find(".project-cell.name-cell").find("button");
+        copyLink.trigger("click");
+        await Vue.nextTick();
+
+        const modal = wrapper.findAll(".modal").at(3);
+        const noteText = modal.find("textarea").element as HTMLTextAreaElement
+        expect(noteText.value).toBe("project notes")
+    });
+
+    it("cancels projectNote modal when cancel button is triggered", async () => {
+        const wrapper = getWrapper(testProjects);
+        const copyLink = wrapper.find("#p-1").find(".project-cell.name-cell").find("button");
+        copyLink.trigger("click");
+        await Vue.nextTick();
+        const modal = wrapper.findAll(".modal").at(3);
+        expect(modal.element.style.getPropertyValue("display")).toBe("block")
+        expect(wrapper.vm.$data.projectNoteToEdit).toBe( 1)
+
+        const cancelBtn = modal.find(".modal-footer").findAll("button").at(1);
+        await cancelBtn.trigger("click");
+
+        expect(wrapper.vm.$data.projectNoteToEdit).toBe(null)
+        expect(modal.element.style.getPropertyValue("display")).toBe("none")
+        expect(mockUpdateVersion.mock.calls.length).toBe(0);
     });
 
     it("cancels versionNote modal when cancel button is triggered", async () => {
@@ -534,7 +598,7 @@ describe("Project history component", () => {
         expect(mockUpdateVersion.mock.calls.length).toBe(0);
     });
 
-    it("can render translated versionNote headers and button texts", async () => {
+    it("can render translated versionNote headers and button text", async () => {
         const wrapper = getWrapper(testProjects);
         const store = wrapper.vm.$store
         const copyLink = wrapper.find("#v-s11").find(".version-cell.edit-cell").find("button");
@@ -555,6 +619,28 @@ describe("Project history component", () => {
         expectTranslated(buttons.at(1), "Cancel", "Annuler", store)
     });
 
+    it("can render translated projectNote headers and button text", async () => {
+        const wrapper = getWrapper(testProjects);
+        const store = wrapper.vm.$store
+        const copyLink = wrapper.find("#p-1").find(".project-cell.name-cell").find("button");
+        copyLink.trigger("click");
+        await Vue.nextTick();
+
+        const modal = wrapper.findAll(".modal").at(3);
+
+        const editProjectNoteSubHeader = modal.find("#editProjectNoteSubHeader")
+        expectTranslated(editProjectNoteSubHeader, "Add or edit project notes for proj1",
+            "Ajouter ou modifier des notes de projet pour proj1", store)
+
+        const editProjectNoteHeader = modal.find("#editProjectNoteHeader")
+        expectTranslated(editProjectNoteHeader, "Project notes",
+            "Notes de projet", store)
+
+        const buttons = modal.find(".modal-footer").findAll("button");
+        expectTranslated(buttons.at(0), "OK", "OK", store)
+        expectTranslated(buttons.at(1), "Cancel", "Annuler", store)
+    });
+
     it("cannot invoke promoteVersion action when input value is empty", async () => {
         const wrapper = getWrapper(testProjects);
         const copyLink = wrapper.find("#v-s11").find(".version-cell.copy-cell").find("button");
@@ -567,10 +653,34 @@ describe("Project history component", () => {
         input.setValue("");
         expect(copyBtn.attributes("disabled")).toBe("disabled");
         copyBtn.trigger("click");
-
         await Vue.nextTick();
 
         expect(mockPromoteVersion.mock.calls.length).toBe(0);
+    });
+
+    it("does not use carriage return to invoke promoteVersion action when input is empty", async () => {
+        const wrapper = getWrapper(testProjects);
+        const vm = wrapper.vm as any
+        const copyLink = wrapper.find("#v-s11").find(".version-cell.copy-cell").find("button");
+        copyLink.trigger("click");
+        await Vue.nextTick();
+
+        const modal = wrapper.findAll(".modal").at(1);
+        const input = modal.find("input");
+        const renameBtn = modal.find(".modal-footer").findAll("button").at(0);
+        await input.setValue("");
+
+        expect(renameBtn.attributes("disabled")).toBe("disabled");
+        await input.trigger("keyup.enter")
+
+        /**
+         *  modal remains open after trigger, promoteVersionAction is not invoked and
+         *  versionToPromote is not set to null
+         */
+        expect(modal.element.style.getPropertyValue("display")).toBe("block")
+        expect(mockPromoteVersion.mock.calls.length).toBe(0);
+        expect(vm.versionToPromote).toEqual({"projectId": 1, "versionId": "s11"});
+        expect(vm.newProjectName).toBe("");
     });
 
     it("invokes renameProject action when confirm rename", async () => {

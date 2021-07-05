@@ -1,10 +1,23 @@
-# hint 1.41.0
+
+# hint 1.44.0
 
 * Modify Rename dialog modal and add notes text area
 
-# hint 1.40.0
+# hint 1.43.0
 
 * Add note icon(s) and dialogs to project history for project/version
+
+# hint 1.42.0
+
+* Make login email case insensitive again
+
+# hint 1.41.0
+
+* Add bar chart to model calibrate page
+
+# hint 1.40.0
+
+* Create an endpoint for model calibrate bar chart
 
 # hint 1.39.0
 

@@ -278,6 +278,7 @@ class VersionRepositoryTests
         assertThat(newVersion.note).isEqualTo(null)
     }
 
+
     @Test
     fun `copy version throws error if version does not exist`() {
         val uid = setupUser()

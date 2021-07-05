@@ -18,7 +18,6 @@ interface ProjectRepository
     fun getProjectFromVersionId(versionId: String, userId: String): Project
     fun renameProject(projectId: Int, userId: String, newName: String, note: String? = null)
     fun updateProjectNote(projectId: Int, userId: String, note: String)
-    
 }
 
 @Component

@@ -7,6 +7,7 @@ import {getters} from "./getters";
 import {Dict} from "../../types";
 
 export interface PlottingSelectionsState {
+    calibratePlot: BarchartSelections,
     barchart: BarchartSelections,
     bubble: BubblePlotSelections,
     sapChoropleth: ChoroplethSelections,
@@ -21,6 +22,13 @@ export interface BarchartSelections {
     disaggregateById: string,
     selectedFilterOptions: Dict<FilterOption[]>
 
+}
+
+export interface UnadjustedBarchartSelections {
+    indicator_id: string,
+    x_axis_id: string,
+    disaggregate_by_id: string,
+    selected_filter_options: Dict<FilterOption[]>
 }
 
 export interface BubblePlotSelections {
@@ -56,6 +64,15 @@ export interface ScaleSettings {
     customMin: number,
     customMax: number
 }
+
+export const initialCalibratePlotSelections = (): BarchartSelections => {
+    return {
+        indicatorId: "",
+        xAxisId: "",
+        disaggregateById: "",
+        selectedFilterOptions: {}
+    }
+};
 
 export const initialBarchartSelections = (): BarchartSelections => {
     return {
@@ -110,6 +127,7 @@ export const initialBubbleSizeScalesState = (): BubbleSizeScalesState => {
 
 export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
     return {
+        calibratePlot: initialCalibratePlotSelections(),
         barchart: initialBarchartSelections(),
         bubble: initialBubblePlotSelections(),
         sapChoropleth: initialChorplethSelections(),
