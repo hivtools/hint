@@ -9,6 +9,8 @@ import {
     mockDataset,
     mockDatasetResource,
     mockError,
+    mockErrorsState,
+    mockProjectsState,
     mockRootState,
     mockShapeResponse
 } from "../../mocks";
@@ -25,6 +27,9 @@ import {expectTranslated} from "../../testHelpers";
 import {ADRState} from "../../../app/store/adr/adr";
 import {DomUtil} from "leaflet";
 import get = DomUtil.get;
+import {getters as rootGetters} from "../../../app/store/root/getters";
+import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
+import {actions as projectsActions} from "../../../app/store/projects/actions"
 
 describe("select dataset", () => {
 
@@ -167,9 +172,17 @@ describe("select dataset", () => {
         importANC: jest.fn()
     }
 
-    const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}) => {
+    const mockGetters = {
+        editsRequireConfirmation: () => false,
+        changesToRelevantSteps: () => [{number: 4, textKey: "fitModel"}]
+    };
+
+    let currentVersion = {id: "version-id", created: "", updated: "", versionNumber: 1}
+
+    const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}, requireConfirmation: boolean = false) => {
         const store = new Vuex.Store({
             state: mockRootState(),
+            getters: rootGetters,
             modules: {
                 adr: {
                     namespaced: true,
@@ -190,6 +203,19 @@ describe("select dataset", () => {
                         [BaselineMutation.SetDataset]: setDatasetMock,
                         [BaselineMutation.MarkDatasetResourcesUpdated]: markResourcesUpdatedMock
                     }
+                },
+                stepper: {
+                    namespaced: true,
+                    getters: {...mockGetters, editsRequireConfirmation: () => requireConfirmation}
+                },
+                errors: {
+                    namespaced: true,
+                    state: mockErrorsState(),
+                },
+                projects: {
+                    namespaced: true,
+                    state: mockProjectsState({currentProject: {id: 1, name: "v1", versions: []}, currentVersion}),
+                    actions: projectsActions
                 },
                 surveyAndProgram: {
                     namespaced: true,
@@ -461,19 +487,19 @@ describe("select dataset", () => {
                 id: "id1",
                 label: "Some data",
                 customLabel: `Some data
-                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                        (some-data)<br/>
-                        <span class="font-weight-bold">org</span>
-                    </div>`
+                        <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                            (some-data)<br/>
+                            <span class="font-weight-bold">org</span>
+                        </div>`
             },
             {
                 id: "id2",
                 label: "Some data 2",
                 customLabel: `Some data 2
-                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                        (some-data)<br/>
-                        <span class="font-weight-bold">org</span>
-                    </div>`
+                        <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                            (some-data)<br/>
+                            <span class="font-weight-bold">org</span>
+                        </div>`
             }
         ]
 
@@ -533,6 +559,62 @@ describe("select dataset", () => {
         await Vue.nextTick();
         await Vue.nextTick();
 
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+    
+    it("renders reset confirmation dialog when importing a new dataset and then saves new version and imports if click save", async () => {
+        let store = getStore({
+            selectedDataset: fakeDataset
+        },
+            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}, true
+        )
+        const rendered = mount(SelectDataset, {
+            store, stubs: ["tree-select"]
+        });
+        const editBtn = rendered.find("button")
+        await editBtn.trigger("click");
+        expect(rendered.find(Modal).props("open")).toBe(true);
+        rendered.setData({newDatasetId: "id2"});
+        const importBtn = rendered.find(Modal).find("button")
+        await importBtn.trigger("click");
+        expect(rendered.find(ResetConfirmation).props("open")).toBe(true);
+        const saveBtn = rendered.find(ResetConfirmation).find("button");
+        expectTranslated(saveBtn, "Save version and keep editing",
+            "Sauvegarder la version et continuer à modifier", store);
+        await saveBtn.trigger("click");
+        store.state.projects.currentVersion = {id: "id1"} as any;
+        expect(rendered.find(ResetConfirmation).exists()).toBe(false);
+        expect(rendered.find("#loading-dataset").find(LoadingSpinner).exists()).toBe(true);
+        await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+
+    it("renders reset confirmation dialog when changing selected dataset and closes if click cancel", async () => {
+        let store = getStore({
+            selectedDataset: fakeDataset
+        },
+            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}, true
+        )
+        const rendered = mount(SelectDataset, {
+            store, stubs: ["tree-select"]
+        });
+        const editBtn = rendered.find("button")
+        await editBtn.trigger("click");
+        expect(rendered.find(Modal).props("open")).toBe(true);
+        rendered.setData({newDatasetId: "id2"});
+        const importBtn = rendered.find(Modal).find("button")
+        await importBtn.trigger("click");
+        expect(rendered.find(ResetConfirmation).props("open")).toBe(true);
+        const cancelBtn = rendered.find(ResetConfirmation).findAll("button").at(1);
+        expectTranslated(cancelBtn, "Cancel editing",
+            "Annuler l'édition", store);
+        await cancelBtn.trigger("click");
+        expect(rendered.find(ResetConfirmation).exists()).toBe(false);
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
