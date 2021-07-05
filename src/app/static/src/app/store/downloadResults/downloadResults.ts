@@ -20,10 +20,10 @@ const mockInitialDownloadResults = {
     error: null
 }
 
-export const getDownloadType = {
-    "spectrum": "Spectrum",
-    "coarse": "CoarseOutput",
-    "summary": "Summary"
+export enum DOWNLOAD_TYPE {
+    SPECTRUM = "Spectrum",
+    COARSE = "CoarseOutput",
+    SUMMARY = "Summary"
 }
 
 export const initialDownloadResultsState = (): DownloadResultsState => {

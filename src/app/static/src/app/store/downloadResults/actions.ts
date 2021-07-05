@@ -1,6 +1,6 @@
 import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
-import {DownloadResultsState, getDownloadType} from "./downloadResults";
+import {DownloadResultsState, DOWNLOAD_TYPE} from "./downloadResults";
 import {api} from "../../apiService";
 import {DownloadResultsMutation} from "./mutations";
 import {ModelStatusResponse} from "../../generated";
@@ -24,7 +24,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             .get(`download/submit/coarse-output/${calibrateId}`)
 
         if (response) {
-            await dispatch("poll", getDownloadType.coarse)
+            await dispatch("poll", DOWNLOAD_TYPE.COARSE)
         }
     },
 
@@ -38,7 +38,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             .get(`download/submit/summary/${calibrateId}`)
 
         if (response) {
-            await dispatch("poll", getDownloadType.summary)
+            await dispatch("poll", DOWNLOAD_TYPE.SUMMARY)
         }
     },
 
@@ -52,15 +52,15 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             .get(`download/submit/spectrum/${calibrateId}`)
 
         if (response) {
-            await dispatch("poll", getDownloadType.spectrum)
+            await dispatch("poll", DOWNLOAD_TYPE.SPECTRUM)
         }
     },
 
     async poll(context, downloadType) {
         const {commit} = context;
         const id = setInterval(() => {
-            downloadType === getDownloadType.spectrum ? getSpectrumDownloadStatus(context)
-                : downloadType === getDownloadType.coarse ? getCoarseOutputDownloadStatus(context)
+            downloadType === DOWNLOAD_TYPE.SPECTRUM ? getSpectrumDownloadStatus(context)
+                : downloadType === DOWNLOAD_TYPE.COARSE ? getCoarseOutputDownloadStatus(context)
                 : getSummaryDownloadStatus(context)
         }, 2000);
 

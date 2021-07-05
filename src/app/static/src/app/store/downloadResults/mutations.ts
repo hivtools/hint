@@ -1,5 +1,5 @@
 import {MutationTree} from "vuex";
-import {DownloadResultsState, getDownloadType} from "./downloadResults";
+import {DownloadResultsState, DOWNLOAD_TYPE} from "./downloadResults";
 import {PayloadWithType, PoolingStarted} from "../../types";
 import {DownloadStatusResponse, DownloadSubmitResponse, Error} from "../../generated";
 
@@ -21,15 +21,18 @@ export enum DownloadResultsMutation {
 
 export const mutations: MutationTree<DownloadResultsState> = {
     [DownloadResultsMutation.SummaryDownloadStarted](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
-        state.summary = downloadStarted(action)
+        const downloadId = action.payload.id
+        state.summary = {...state.summary, downloadId, downloading: true, complete: false, error: null}
     },
 
     [DownloadResultsMutation.SpectrumDownloadStarted](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
-        state.spectrum = downloadStarted(action)
+        const downloadId = action.payload.id
+        state.spectrum = {...state.spectrum, downloadId, downloading: true, complete: false, error: null}
     },
 
     [DownloadResultsMutation.CoarseOutputDownloadStarted](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
-        state.coarseOutput = downloadStarted(action)
+        const downloadId = action.payload.id
+        state.coarseOutput = {...state.coarseOutput, downloadId, downloading: true, complete: false, error: null}
     },
 
     [DownloadResultsMutation.CoarseOutputError](state: DownloadResultsState, action: PayloadWithType<Error>) {
@@ -83,22 +86,6 @@ export const mutations: MutationTree<DownloadResultsState> = {
         state.spectrum.error = null;
     },
 
-    [DownloadResultsMutation.PollingStatusStarted](state: DownloadResultsState, action: PayloadWithType<PoolingStarted>) {
-        switch (action.payload.downloadType) {
-            case getDownloadType.spectrum: {
-                state.spectrum.statusPollId = action.payload.pollId
-                break;
-            }
-            case getDownloadType.coarse: {
-                state.coarseOutput.statusPollId = action.payload.pollId
-                break;
-            }
-            case getDownloadType.summary: {
-                state.summary.statusPollId = action.payload.pollId
-                break
-            }
-        }
-    },
     [DownloadResultsMutation.CoarseOutputDownloadComplete](state: DownloadResultsState, action: PayloadWithType<boolean>) {
         state.coarseOutput.complete = action.payload;
         state.coarseOutput.downloading = false;
@@ -112,19 +99,24 @@ export const mutations: MutationTree<DownloadResultsState> = {
     [DownloadResultsMutation.SpectrumDownloadComplete](state: DownloadResultsState, action: PayloadWithType<boolean>) {
         state.spectrum.complete = action.payload;
         state.spectrum.downloading = false;
-    }
+    },
+    [DownloadResultsMutation.PollingStatusStarted](state: DownloadResultsState, action: PayloadWithType<PoolingStarted>) {
+        switch (action.payload.downloadType) {
+            case DOWNLOAD_TYPE.SPECTRUM: {
+                state.spectrum.statusPollId = action.payload.pollId
+                break;
+            }
+            case DOWNLOAD_TYPE.COARSE: {
+                state.coarseOutput.statusPollId = action.payload.pollId
+                break;
+            }
+            case DOWNLOAD_TYPE.SUMMARY: {
+                state.summary.statusPollId = action.payload.pollId
+                break
+            }
+        }
+    },
 };
-
-const downloadStarted = (action: PayloadWithType<DownloadSubmitResponse>) => {
-    return {
-        downloadId: action.payload.id,
-        downloading: true,
-        statusPollId: -1,
-        status: {} as DownloadStatusResponse,
-        complete: false,
-        error: null
-    }
-}
 
 const stopPollingSpectrum = (state: DownloadResultsState) => {
     clearInterval(state.spectrum.statusPollId);
