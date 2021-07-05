@@ -168,3 +168,8 @@ export interface PoolingStarted {
     pollId: number,
     downloadType: string
 }
+export interface SelectedADRUploadFiles {
+    summary: any,
+    spectrum: any,
+    coarseOutput?: any
+}
