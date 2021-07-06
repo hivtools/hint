@@ -215,8 +215,8 @@ class ADRController(private val encryption: Encryption,
         // 1. Download relevant artefact from hintr
         val artefact: ResponseEntity<StreamingResponseBody> = when (resourceType)
         {
-            appProperties.adrOutputZipSchema -> getDownloadResult(downloadId)
-            appProperties.adrOutputSummarySchema -> getDownloadResult(downloadId)
+            appProperties.adrOutputZipSchema -> apiClient.downloadOutputResult(downloadId)
+            appProperties.adrOutputSummarySchema -> apiClient.downloadOutputResult(downloadId)
             else -> throw IllegalArgumentException("$resourceType is not an output resource type")
         }
 
@@ -239,11 +239,6 @@ class ADRController(private val encryption: Encryption,
             // 4. Checksum file and upload with metadata to ADR
             postFileToADR(file, datasetId, resourceType, resourceName, resourceId, description, tmpDir)
         }
-    }
-
-    private fun getDownloadResult(responseId: String): ResponseEntity<StreamingResponseBody>
-    {
-        return apiClient.downloadOutputResult(responseId)
     }
 
     private fun pushInputFileToADR(datasetId: String,

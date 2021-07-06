@@ -128,6 +128,7 @@
             confirmUpload() {
                 this.uploadFilesToAdr.forEach(value => this.uploadFilesPayload.push(this.uploadFiles[value]))
                 const readyForUpload = this.prepareFilesForUpload()
+
                 if (readyForUpload) {
                     this.sendUploadFilesToADR()
                 }
@@ -135,6 +136,7 @@
             sendUploadFilesToADR() {
                 this.uploadFilesToADRAction(this.uploadFilesPayload);
                 this.uploadFilesPayload = []
+
                 this.$emit("close")
             },
             prepareFilesForUpload() {
@@ -157,6 +159,7 @@
             },
             downloadIsReady() {
                 const {summary, spectrum} = this.findSelectedUploadFiles()
+
                 if (summary && spectrum) {
                     return !!this.summary.complete && !!this.spectrum.complete
                 } else {
