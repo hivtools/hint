@@ -651,19 +651,20 @@ describe("Projects actions", () => {
             currentVersion: mockProject.versions[0]
         });
 
-        const stateUrl = "/project/1/rename";
-        mockAxios.onPost(stateUrl, "name=renamedProject")
+        const stateUrl = "/project/1/rename?name=renamedProject&note=test%20notes";
+        mockAxios.onPost(stateUrl)
             .reply(200, mockSuccess("OK"));
 
         const projectPayload = {
             projectId: 1,
-            name: "renamedProject"
+            name: "renamedProject",
+            note: "test notes"
         }
         actions.renameProject({commit, state, rootState, dispatch} as any, projectPayload);
 
         setTimeout(() => {
             const posted = mockAxios.history.post[0].data;
-            expect(posted).toEqual("name=renamedProject");
+            expect(posted).toEqual("name=renamedProject&note=test%20notes");
             expect(dispatch.mock.calls[0][0]).toBe("getCurrentProject");
             expect(dispatch.mock.calls[1][0]).toBe("getProjects");
             expect(dispatch.mock.calls.length).toBe(2);
