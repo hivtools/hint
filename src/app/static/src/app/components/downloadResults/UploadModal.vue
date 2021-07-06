@@ -31,6 +31,9 @@
                     </div>
                 </div>
             </div>
+            <div class="pt-3">
+                <download-progress id="upload-progress" :is-upload="true" :downloading="downloadingFiles"/>
+            </div>
             <template v-slot:footer>
                 <button
                     type="button"
@@ -72,8 +75,8 @@
         setDefaultCheckedItems: () => void
         downloadSpectrum: (isAdrUpload: boolean) => void
         downloadSummary: (isAdrUpload: boolean) => void
-        prepareFilesForUpload: (uploadFilesPayload: UploadFile[]) => boolean
-        findSelectedUploadFiles: (uploadFilesPayload: UploadFile[]) => SelectedADRUploadFiles
+        prepareFilesForUpload: () => boolean
+        findSelectedUploadFiles: () => SelectedADRUploadFiles
         downloadIsReady: () => boolean
         getSummaryDownload: () => void
         getSpectrumDownload: () => void
@@ -87,7 +90,8 @@
         spectrum: Partial<DownloadResultsDependency>,
         summary: Partial<DownloadResultsDependency>,
         outputSummary: string,
-        outputSpectrum: string
+        outputSpectrum: string,
+        downloadingFiles: boolean
     }
 
     interface Data {
@@ -123,7 +127,7 @@
             ),
             confirmUpload() {
                 this.uploadFilesToAdr.forEach(value => this.uploadFilesPayload.push(this.uploadFiles[value]))
-                const readyForUpload = this.prepareFilesForUpload(this.uploadFilesPayload)
+                const readyForUpload = this.prepareFilesForUpload()
                 if (readyForUpload) {
                     this.sendUploadFilesToADR()
                 }
@@ -133,7 +137,8 @@
                 this.$emit("close")
             },
             prepareFilesForUpload() {
-                const {summary, spectrum} = this.findSelectedUploadFiles(this.uploadFilesPayload)
+                const {summary, spectrum} = this.findSelectedUploadFiles()
+
                 if (summary) {
                     this.getSummaryDownload()
                 }
@@ -150,7 +155,7 @@
                 return {summary, spectrum}
             },
             downloadIsReady() {
-                const {summary, spectrum} = this.findSelectedUploadFiles(this.uploadFilesPayload)
+                const {summary, spectrum} = this.findSelectedUploadFiles()
                 if (summary && spectrum) {
                     return !!this.summary.complete && !!this.spectrum.complete
                 } else {
@@ -218,6 +223,9 @@
                 } else {
                     return [];
                 }
+            },
+            downloadingFiles() {
+                return !!this.spectrum.downloading || !!this.summary.downloading
             }
         },
         components: {
@@ -229,12 +237,12 @@
                 this.setDefaultCheckedItems()
             },
             summary() {
-                if(this.downloadIsReady()) {
+                if (this.downloadIsReady()) {
                     this.sendUploadFilesToADR()
                 }
             },
             spectrum() {
-                if(this.downloadIsReady()) {
+                if (this.downloadIsReady()) {
                     this.sendUploadFilesToADR()
                 }
             }

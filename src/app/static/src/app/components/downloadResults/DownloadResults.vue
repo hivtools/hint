@@ -4,11 +4,11 @@
             <div class="col-sm">
                 <div id="spectrum-download">
                 <h4 v-translate="'exportOutputs'"></h4>
-                <span class="btn btn-red btn-lg my-3"
+                <button class="btn btn-red btn-lg my-3"
                       @click="downloadSpectrum">
                     <span v-translate="'export'"></span>
                     <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                </span>
+                </button>
                     <download-progress id="spectrum-progress"
                                        :complete="spectrum.complete"
                                        :downloading="spectrum.downloading">
@@ -17,10 +17,10 @@
                 </div>
                 <div id="coarse-output-download">
                 <h4 class="mt-4" v-translate="'downloadCoarseOutput'"></h4>
-                <span class="btn btn-red btn-lg my-3" @click="downloadCoarseOutput">
+                <button class="btn btn-red btn-lg my-3" @click="downloadCoarseOutput">
                     <span v-translate="'download'"></span>
                     <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                </span>
+                </button>
                     <download-progress id="coarse-output-progress"
                                        :complete="coarseOutput.complete"
                                        :downloading="coarseOutput.downloading">
@@ -29,10 +29,10 @@
                 </div>
                 <div id="summary-download">
                 <h4 class="mt-4" v-translate="'downloadSummaryReport'"></h4>
-                <span class="btn btn-red btn-lg my-3" @click="downloadSummary">
+                <button class="btn btn-red btn-lg my-3" @click="downloadSummary">
                     <span v-translate="'download'"></span>
                     <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                </span>
+                </button>
                     <download-progress id="summary-progress"
                                        :complete="summary.complete"
                                        :downloading="summary.downloading">

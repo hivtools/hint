@@ -200,7 +200,7 @@ class ADRController(private val encryption: Encryption,
 
     private fun pushOutputFileToADR(datasetId: String,
                                    resourceType: String,
-                                   modelCalibrateId: String,
+                                   downloadId: String,
                                    resourceFileName: String,
                                    resourceId: String?,
                                    resourceName: String,
@@ -215,8 +215,8 @@ class ADRController(private val encryption: Encryption,
         // 1. Download relevant artefact from hintr
         val artefact: ResponseEntity<StreamingResponseBody> = when (resourceType)
         {
-            appProperties.adrOutputZipSchema -> getDownloadOutput("spectrum", modelCalibrateId)
-            appProperties.adrOutputSummarySchema -> getDownloadOutput("summary", modelCalibrateId)
+            appProperties.adrOutputZipSchema -> getDownloadResult(downloadId)
+            appProperties.adrOutputSummarySchema -> getDownloadResult(downloadId)
             else -> throw IllegalArgumentException("$resourceType is not an output resource type")
         }
 
@@ -241,11 +241,8 @@ class ADRController(private val encryption: Encryption,
         }
     }
 
-    private fun getDownloadOutput(type: String, modelCalibrateId: String): ResponseEntity<StreamingResponseBody>
+    private fun getDownloadResult(responseId: String): ResponseEntity<StreamingResponseBody>
     {
-        val response = apiClient.downloadOutput(type, modelCalibrateId)
-        val bodyJSON = ObjectMapper().readTree(response.body)
-        val responseId = bodyJSON["data"]["id"].asText()
         return apiClient.downloadOutputResult(responseId)
     }
 
