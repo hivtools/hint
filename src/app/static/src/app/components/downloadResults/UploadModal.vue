@@ -134,6 +134,7 @@
             },
             sendUploadFilesToADR() {
                 this.uploadFilesToADRAction(this.uploadFilesPayload);
+                this.uploadFilesPayload = []
                 this.$emit("close")
             },
             prepareFilesForUpload() {
