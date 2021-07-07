@@ -643,7 +643,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("renameProject changes a project's name", async (done) => {
+    it("renameProject changes a project's name", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = mockProjectsState({
@@ -651,7 +651,7 @@ describe("Projects actions", () => {
             currentVersion: mockProject.versions[0]
         });
 
-        const stateUrl = "/project/1/rename?name=renamedProject&note=test%20notes";
+        const stateUrl = "/project/1/rename";
         mockAxios.onPost(stateUrl)
             .reply(200, mockSuccess("OK"));
 
@@ -660,16 +660,14 @@ describe("Projects actions", () => {
             name: "renamedProject",
             note: "test notes"
         }
-        actions.renameProject({commit, state, rootState, dispatch} as any, projectPayload);
+        await actions.renameProject({commit, state, rootState, dispatch} as any, projectPayload);
 
-        setTimeout(() => {
-            const posted = mockAxios.history.post[0].data;
-            expect(posted).toEqual("name=renamedProject&note=test%20notes");
-            expect(dispatch.mock.calls[0][0]).toBe("getCurrentProject");
-            expect(dispatch.mock.calls[1][0]).toBe("getProjects");
-            expect(dispatch.mock.calls.length).toBe(2);
-            done();
-        });
+        const posted = mockAxios.history.post[0].data;
+        expect(posted).toEqual("name=renamedProject&note=test%20notes");
+        expect(commit.mock.calls.length).toBe(0);
+        expect(dispatch.mock.calls[0][0]).toBe("getCurrentProject");
+        expect(dispatch.mock.calls[1][0]).toBe("getProjects");
+        expect(dispatch.mock.calls.length).toBe(2);
     });
 
     it("renameProject does not dispatch getCurrentProject if currentProject is not being renamed", async (done) => {
