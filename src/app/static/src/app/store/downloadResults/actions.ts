@@ -1,4 +1,4 @@
-import {ActionContext, ActionTree} from "vuex";
+import {ActionContext, ActionTree, Dispatch} from "vuex";
 import {RootState} from "../../root";
 import {DownloadResultsState, DOWNLOAD_TYPE} from "./downloadResults";
 import {api} from "../../apiService";
@@ -9,14 +9,20 @@ export interface DownloadResultsActions {
     downloadSummary: (store : ActionContext<DownloadResultsState, RootState>, isAdrUpload: boolean) => void
     downloadSpectrum: (store : ActionContext<DownloadResultsState, RootState>, isAdrUpload: boolean) => void
     downloadCoarseOutput: (store : ActionContext<DownloadResultsState, RootState>, isAdrUpload: boolean) => void
-    poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: {type: string, adr: {upload: boolean}}) => void
+    poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: string) => void
+}
+
+const getAdrUploadMeta = (dispatch: Dispatch, downloadId: string) => {
+    dispatch("metadata/getAdrUploadMetadata", downloadId, {root: true})
 }
 
 export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResultsActions = {
 
     async downloadCoarseOutput(context, isAdrUpload) {
-        const {dispatch, rootState} = context
+        const {commit, dispatch, rootState} = context
         const calibrateId = rootState.modelCalibrate.calibrateId
+
+        commit({type: DownloadResultsMutation.IsADRUpload, payload: isAdrUpload})
 
         const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
             .withSuccess(DownloadResultsMutation.CoarseOutputDownloadStarted)
@@ -24,13 +30,15 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             .get(`download/submit/coarse-output/${calibrateId}`)
 
         if (response) {
-            await dispatch("poll", {type: DOWNLOAD_TYPE.COARSE, adr: {upload: isAdrUpload}})
+            await dispatch("poll", DOWNLOAD_TYPE.COARSE)
         }
     },
 
     async downloadSummary(context, isAdrUpload) {
-        const {dispatch, rootState} = context
+        const {commit, dispatch, rootState} = context
         const calibrateId = rootState.modelCalibrate.calibrateId
+
+        commit({type: DownloadResultsMutation.IsADRUpload, payload: isAdrUpload})
 
         const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
             .withSuccess(DownloadResultsMutation.SummaryDownloadStarted)
@@ -38,13 +46,15 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             .get(`download/submit/summary/${calibrateId}`)
 
         if (response) {
-            await dispatch("poll", {type: DOWNLOAD_TYPE.SUMMARY, adr: {upload: isAdrUpload}})
+            await dispatch("poll", DOWNLOAD_TYPE.SUMMARY)
         }
     },
 
     async downloadSpectrum(context, isAdrUpload) {
-        const {dispatch, rootState} = context
+        const {commit, dispatch, rootState} = context
         const calibrateId = rootState.modelCalibrate.calibrateId
+
+        commit({type: DownloadResultsMutation.IsADRUpload, payload: isAdrUpload})
 
         const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
             .withSuccess(DownloadResultsMutation.SpectrumDownloadStarted)
@@ -52,36 +62,37 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             .get(`download/submit/spectrum/${calibrateId}`)
 
         if (response) {
-            await dispatch("poll", {type: DOWNLOAD_TYPE.SPECTRUM, adr: {upload: isAdrUpload}})
+            await dispatch("poll", DOWNLOAD_TYPE.SPECTRUM)
         }
     },
 
-    async poll(context, download) {
+    async poll(context, downloadType) {
         const {commit} = context;
         const id = setInterval(() => {
-            download.type === DOWNLOAD_TYPE.SPECTRUM ? getSpectrumDownloadStatus(context, download.adr)
-                : download.type === DOWNLOAD_TYPE.COARSE ? getCoarseOutputDownloadStatus(context, download.adr)
-                : getSummaryDownloadStatus(context, download.adr)
+            downloadType === DOWNLOAD_TYPE.SPECTRUM ? getSpectrumDownloadStatus(context)
+                : downloadType === DOWNLOAD_TYPE.COARSE ? getCoarseOutputDownloadStatus(context)
+                : getSummaryDownloadStatus(context)
         }, 2000);
 
-        commit({type: "PollingStatusStarted", payload: {pollId: id, downloadType: download.type}});
+        commit({type: "PollingStatusStarted", payload: {pollId: id, downloadType: downloadType}});
     },
 };
 
-export const getSummaryDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>, adr: {upload: boolean}) {
+export const getSummaryDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
     const {commit, state, dispatch} = context;
     const downloadId = state.summary.downloadId;
+    console.log(downloadId)
     return api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.SummaryDownloadStatusUpdated)
         .withError(DownloadResultsMutation.SummaryError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
         .then(() => {
             if (state.summary.status && state.summary.status.done) {
-                if (adr.upload) {
-                    dispatch("metadata/getAdrUploadMetadata", downloadId, {root: true})
+                if (state.isAdrUpload) {
+                    getAdrUploadMeta(dispatch, downloadId)
                 } else {
                     window.location.href = `/download/result/${downloadId}`
-                    dispatch("metadata/getAdrUploadMetadata", downloadId, {root: true})
+                    getAdrUploadMeta(dispatch, downloadId)
                 }
 
                 commit({type: DownloadResultsMutation.SummaryDownloadComplete, payload: true})
@@ -89,7 +100,7 @@ export const getSummaryDownloadStatus = async function (context: ActionContext<D
         });
 };
 
-export const getSpectrumDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>, adr: {upload: boolean}) {
+export const getSpectrumDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
     const {commit, state, dispatch} = context;
     const downloadId = state.spectrum.downloadId;
     return api<DownloadResultsMutation, DownloadResultsMutation>(context)
@@ -98,11 +109,11 @@ export const getSpectrumDownloadStatus = async function (context: ActionContext<
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
         .then(() => {
             if (state.spectrum.status && state.spectrum.status.done) {
-                if (adr.upload) {
-                    dispatch("metadata/getAdrUploadMetadata", downloadId, {root: true})
+                if (state.isAdrUpload) {
+                    getAdrUploadMeta(dispatch, downloadId)
                 } else {
                     window.location.href = `/download/result/${downloadId}`
-                    dispatch("metadata/getAdrUploadMetadata", downloadId, {root: true})
+                    getAdrUploadMeta(dispatch, downloadId)
                 }
 
                 commit({type: DownloadResultsMutation.SpectrumDownloadComplete, payload: true})
@@ -110,7 +121,7 @@ export const getSpectrumDownloadStatus = async function (context: ActionContext<
         });
 };
 
-export const getCoarseOutputDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>, adr: {upload: boolean}) {
+export const getCoarseOutputDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
     const {commit, state, dispatch} = context;
     const downloadId = state.coarseOutput.downloadId;
     return api<DownloadResultsMutation, DownloadResultsMutation>(context)
@@ -119,11 +130,11 @@ export const getCoarseOutputDownloadStatus = async function (context: ActionCont
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
         .then(() => {
             if (state.coarseOutput.status && state.coarseOutput.status.done) {
-                if (adr.upload) {
-                    dispatch("metadata/getAdrUploadMetadata", downloadId, {root: true})
+                if (state.isAdrUpload) {
+                    getAdrUploadMeta(dispatch, downloadId)
                 } else {
                     window.location.href = `/download/result/${downloadId}`
-                    dispatch("metadata/getAdrUploadMetadata", downloadId, {root: true})
+                    getAdrUploadMeta(dispatch, downloadId)
                 }
 
                 commit({type: DownloadResultsMutation.CoarseOutputDownloadComplete, payload: true})

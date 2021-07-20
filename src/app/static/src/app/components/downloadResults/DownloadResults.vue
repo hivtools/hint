@@ -9,10 +9,12 @@
                     <span v-translate="'export'"></span>
                     <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
                 </button>
-                    <download-progress id="spectrum-progress"
-                                       :complete="spectrum.complete"
-                                       :downloading="spectrum.downloading">
-                    </download-progress>
+                    <div v-if="showDownloadProgress">
+                        <download-progress id="spectrum-progress"
+                                           :complete="spectrum.complete"
+                                           :downloading="spectrum.downloading">
+                        </download-progress>
+                    </div>
                     <error-alert id="spectrum-error" v-if="spectrum.error" :error="spectrum.error"></error-alert>
                 </div>
                 <div id="coarse-output-download">
@@ -21,10 +23,12 @@
                     <span v-translate="'download'"></span>
                     <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
                 </button>
-                    <download-progress id="coarse-output-progress"
-                                       :complete="coarseOutput.complete"
-                                       :downloading="coarseOutput.downloading">
-                    </download-progress>
+                    <div v-if="showDownloadProgress">
+                        <download-progress id="coarse-output-progress"
+                                           :complete="coarseOutput.complete"
+                                           :downloading="coarseOutput.downloading">
+                        </download-progress>
+                    </div>
                     <error-alert id="coarse-output-error" v-if="coarseOutput.error" :error="coarseOutput.error"></error-alert>
                 </div>
                 <div id="summary-download">
@@ -33,10 +37,12 @@
                     <span v-translate="'download'"></span>
                     <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
                 </button>
+                    <div v-if="showDownloadProgress">
                     <download-progress id="summary-progress"
                                        :complete="summary.complete"
                                        :downloading="summary.downloading">
                     </download-progress>
+                    </div>
                     <error-alert id="summary-error" v-if="summary.error" :error="summary.error"></error-alert>
                 </div>
             </div>
@@ -100,7 +106,8 @@
         downloadingSpectrum: boolean,
         spectrum: Partial<DownloadResultsDependency>,
         coarseOutput: Partial<DownloadResultsDependency>,
-        summary: Partial<DownloadResultsDependency>
+        summary: Partial<DownloadResultsDependency>,
+        showDownloadProgress: boolean
     }
 
     interface UploadError {
@@ -147,7 +154,8 @@
                     downloading: state.coarseOutput.downloading,
                     complete: state.coarseOutput.complete,
                     error: state.coarseOutput.error
-                })
+                }),
+                showDownloadProgress: state => !state.isAdrUpload
             }),
             ...mapStateProps<ADRUploadState, keyof Computed>("adrUpload", {
                 currentFileUploading: state => state.currentFileUploading,

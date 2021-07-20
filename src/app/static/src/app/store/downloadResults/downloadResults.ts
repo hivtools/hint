@@ -9,6 +9,7 @@ export interface DownloadResultsState {
     spectrum: DownloadResultsDependency
     coarseOutput: DownloadResultsDependency
     summary: DownloadResultsDependency
+    isAdrUpload: boolean
 }
 
 const mockInitialDownloadResults = {
@@ -30,7 +31,8 @@ export const initialDownloadResultsState = (): DownloadResultsState => {
     return {
         spectrum: mockInitialDownloadResults,
         coarseOutput: mockInitialDownloadResults,
-        summary: mockInitialDownloadResults
+        summary: mockInitialDownloadResults,
+        isAdrUpload: false
     }
 }
 

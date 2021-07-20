@@ -92,6 +92,7 @@
         outputSummary: string,
         outputSpectrum: string,
         downloadingFiles: boolean
+        isAdrUpload: boolean
     }
 
     interface Data {
@@ -126,58 +127,58 @@
                 "uploadFilesToADR"
             ),
             confirmUpload() {
-                this.uploadFilesToAdr.forEach(value => this.uploadFilesPayload.push(this.uploadFiles[value]))
-                const readyForUpload = this.prepareFilesForUpload()
+                this.uploadFilesToAdr.forEach(value => this.uploadFilesPayload.push(this.uploadFiles[value]));
+                const readyForUpload = this.prepareFilesForUpload();
 
                 if (readyForUpload) {
-                    this.sendUploadFilesToADR()
+                    this.sendUploadFilesToADR();
                 }
             },
             sendUploadFilesToADR() {
                 this.uploadFilesToADRAction(this.uploadFilesPayload);
-                this.uploadFilesPayload = []
+                this.uploadFilesPayload = [];
 
-                this.$emit("close")
+                this.$emit("close");
             },
             prepareFilesForUpload() {
-                const {summary, spectrum} = this.findSelectedUploadFiles()
+                const {summary, spectrum} = this.findSelectedUploadFiles();
 
                 if (summary) {
-                    this.getSummaryDownload()
+                    this.getSummaryDownload();
                 }
                 if (spectrum) {
-                    this.getSpectrumDownload()
+                    this.getSpectrumDownload();
                 }
 
-                return this.downloadIsReady()
+                return this.downloadIsReady();
             },
             findSelectedUploadFiles() {
-                const summary = this.uploadFilesPayload.find(upload => upload.resourceType === this.outputSummary)
-                const spectrum = this.uploadFilesPayload.find(upload => upload.resourceType === this.outputSpectrum)
+                const summary = this.uploadFilesPayload.find(upload => upload.resourceType === this.outputSummary);
+                const spectrum = this.uploadFilesPayload.find(upload => upload.resourceType === this.outputSpectrum);
 
                 return {summary, spectrum}
             },
             downloadIsReady() {
-                const {summary, spectrum} = this.findSelectedUploadFiles()
+                const {summary, spectrum} = this.findSelectedUploadFiles();
 
                 if (summary && spectrum) {
-                    return !!this.summary.complete && !!this.spectrum.complete
+                    return !!this.summary.complete && !!this.spectrum.complete;
                 } else {
                     if (summary && !spectrum) {
-                        return !!this.summary.complete
+                        return !!this.summary.complete;
                     } else {
-                        return !!this.spectrum.complete
+                        return !!this.spectrum.complete;
                     }
                 }
             },
             getSummaryDownload() {
                 if (!this.summary.downloading && !this.summary.complete) {
-                    this.downloadSummary(true)
+                    this.downloadSummary(true);
                 }
             },
             getSpectrumDownload() {
                 if (!this.spectrum.downloading && !this.spectrum.complete) {
-                    this.downloadSpectrum(true)
+                    this.downloadSpectrum(true);
                 }
             },
             handleCancel() {
@@ -202,7 +203,8 @@
                 summary: state => ({
                     downloading: state.summary.downloading,
                     complete: state.summary.complete,
-                })
+                }),
+                isAdrUpload: state => state.isAdrUpload
             }),
             ...mapStateProps<ADRState, keyof Computed>("adr", {
                 outputSpectrum: state => state.schemas?.outputZip,
@@ -229,7 +231,7 @@
                 }
             },
             downloadingFiles() {
-                return !!this.spectrum.downloading || !!this.summary.downloading
+                return !!this.spectrum.downloading || !!this.summary.downloading;
             }
         },
         components: {
@@ -238,16 +240,16 @@
         },
         watch: {
             uploadFiles() {
-                this.setDefaultCheckedItems()
+                this.setDefaultCheckedItems();
             },
             summary() {
-                if (this.downloadIsReady()) {
-                    this.sendUploadFilesToADR()
+                if (this.isAdrUpload && this.downloadIsReady()) {
+                    this.sendUploadFilesToADR();
                 }
             },
             spectrum() {
-                if (this.downloadIsReady()) {
-                    this.sendUploadFilesToADR()
+                if (this.isAdrUpload && this.downloadIsReady()) {
+                    this.sendUploadFilesToADR();
                 }
             }
         }

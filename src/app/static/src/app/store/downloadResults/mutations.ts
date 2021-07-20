@@ -16,7 +16,8 @@ export enum DownloadResultsMutation {
     CoarseOutputError = "CoarseOutputError",
     CoarseOutputDownloadComplete = "CoarseOutputDownloadComplete",
     SummaryDownloadComplete = "SummaryDownloadComplete",
-    SpectrumDownloadComplete = "SpectrumDownloadComplete"
+    SpectrumDownloadComplete = "SpectrumDownloadComplete",
+    IsADRUpload = "IsADRUpload"
 }
 
 export const mutations: MutationTree<DownloadResultsState> = {
@@ -116,6 +117,10 @@ export const mutations: MutationTree<DownloadResultsState> = {
             }
         }
     },
+
+    [DownloadResultsMutation.IsADRUpload](state: DownloadResultsState, action: PayloadWithType<boolean>) {
+        state.isAdrUpload = action.payload;
+    }
 };
 
 const stopPollingSpectrum = (state: DownloadResultsState) => {
