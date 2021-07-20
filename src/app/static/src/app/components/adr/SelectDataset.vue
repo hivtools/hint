@@ -49,6 +49,7 @@
                     >
                     </label>
                 </tree-select>
+                <select-release></select-release>
                 <div
                     :class="fetchingDatasets ? 'visible' : 'invisible'"
                     style="margin-top: 15px"
@@ -121,6 +122,7 @@
     import { ADRState } from "../../store/adr/adr";
     import { Error } from "../../generated";
     import ResetConfirmation from "../ResetConfirmation.vue";
+    import SelectRelease from "./SelectRelease.vue";
 
     interface Methods {
         getDatasets: () => void;
@@ -194,6 +196,7 @@
             LoadingSpinner,
             InfoIcon,
             ResetConfirmation,
+            SelectRelease
         },
         directives: { tooltip: VTooltip },
         computed: {

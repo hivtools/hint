@@ -54,6 +54,16 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             });
     },
 
+    async getReleases(context) {
+        await api<ADRMutation, ADRMutation>(context)
+            .withError(ADRMutation.SetADRError)
+            .withSuccess(ADRMutation.SetReleases)
+            .get("/adr/releases/")
+            .then(() => {
+                context.commit({type: ADRMutation.SetFetchingReleases, payload: false});
+            });
+    },
+
     async getSchemas(context) {
         await api<ADRMutation, ADRMutation>(context)
             .ignoreErrors()
