@@ -112,6 +112,13 @@ class ADRController(private val encryption: Encryption,
         return adr.get("package_show?id=${id}")
     }
 
+    @GetMapping("/releases")
+    fun getReleases(): ResponseEntity<String>
+    {
+        val adr = adrClientBuilder.build()
+        return adr.get("/api/3/action/dataset_version_list?dataset_id=version-test")
+    }
+
     @GetMapping("/schemas")
     fun getFileTypeMappings(): ResponseEntity<String>
     {
