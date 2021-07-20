@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="pt-3">
-                <download-progress id="upload-progress" :is-upload="true" :downloading="downloadingFiles"/>
+                <download-progress id="upload-download-progress" :is-upload="true" :downloading="downloadingFiles"/>
             </div>
             <template v-slot:footer>
                 <button
@@ -142,7 +142,7 @@
             },
             prepareFilesForUpload() {
                 const {summary, spectrum} = this.findSelectedUploadFiles();
-
+                console.log("does not get to summary", summary)
                 if (summary) {
                     this.getSummaryDownload();
                 }

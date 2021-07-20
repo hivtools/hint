@@ -39,6 +39,7 @@ export const initialDownloadResultsState = (): DownloadResultsState => {
 export const downloadResults: Module<DownloadResultsState, RootState> = {
     namespaced: true,
     state: {...initialDownloadResultsState()},
-    mutations,
-    actions
+    actions,
+    mutations
+
 }

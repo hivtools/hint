@@ -3,12 +3,12 @@
         <div class="row">
             <div class="col-sm">
                 <div id="spectrum-download">
-                <h4 v-translate="'exportOutputs'"></h4>
-                <button class="btn btn-red btn-lg my-3"
-                      @click="downloadSpectrum">
-                    <span v-translate="'export'"></span>
-                    <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                </button>
+                    <h4 v-translate="'exportOutputs'"></h4>
+                    <button class="btn btn-red btn-lg my-3"
+                            @click="downloadSpectrum">
+                        <span v-translate="'export'"></span>
+                        <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
+                    </button>
                     <div v-if="showDownloadProgress">
                         <download-progress id="spectrum-progress"
                                            :complete="spectrum.complete"
@@ -18,40 +18,42 @@
                     <error-alert id="spectrum-error" v-if="spectrum.error" :error="spectrum.error"></error-alert>
                 </div>
                 <div id="coarse-output-download">
-                <h4 class="mt-4" v-translate="'downloadCoarseOutput'"></h4>
-                <button class="btn btn-red btn-lg my-3" @click="downloadCoarseOutput">
-                    <span v-translate="'download'"></span>
-                    <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                </button>
+                    <h4 class="mt-4" v-translate="'downloadCoarseOutput'"></h4>
+                    <button class="btn btn-red btn-lg my-3"
+                            @click="downloadCoarseOutput">
+                        <span v-translate="'download'"></span>
+                        <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
+                    </button>
                     <div v-if="showDownloadProgress">
                         <download-progress id="coarse-output-progress"
                                            :complete="coarseOutput.complete"
                                            :downloading="coarseOutput.downloading">
                         </download-progress>
                     </div>
-                    <error-alert id="coarse-output-error" v-if="coarseOutput.error" :error="coarseOutput.error"></error-alert>
+                    <error-alert id="coarse-output-error" v-if="coarseOutput.error"
+                                 :error="coarseOutput.error"></error-alert>
                 </div>
                 <div id="summary-download">
-                <h4 class="mt-4" v-translate="'downloadSummaryReport'"></h4>
-                <button class="btn btn-red btn-lg my-3" @click="downloadSummary">
-                    <span v-translate="'download'"></span>
-                    <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                </button>
+                    <h4 class="mt-4" v-translate="'downloadSummaryReport'"></h4>
+                    <button class="btn btn-red btn-lg my-3"
+                            @click="downloadSummary">
+                        <span v-translate="'download'"></span>
+                        <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
+                    </button>
                     <div v-if="showDownloadProgress">
-                    <download-progress id="summary-progress"
-                                       :complete="summary.complete"
-                                       :downloading="summary.downloading">
-                    </download-progress>
+                        <download-progress id="summary-progress"
+                                           :complete="summary.complete"
+                                           :downloading="summary.downloading">
+                        </download-progress>
                     </div>
                     <error-alert id="summary-error" v-if="summary.error" :error="summary.error"></error-alert>
                 </div>
             </div>
             <div id="upload" v-if="hasUploadPermission" class="col-sm">
                 <h4 v-translate="'uploadFileToAdr'"></h4>
-                <button @click.prevent="handleUploadModal" 
-                        class="btn btn-lg my-3" 
+                <button @click.prevent="handleUploadModal"
+                        class="btn btn-lg my-3"
                         :class="uploading ? 'btn-secondary' : 'btn-red'"
-                        href="#" 
                         :disabled="uploading">
                     <span v-translate="'upload'"></span>
                     <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>

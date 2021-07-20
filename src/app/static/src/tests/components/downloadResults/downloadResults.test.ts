@@ -1,17 +1,30 @@
 import {createLocalVue, shallowMount, mount} from '@vue/test-utils';
 import Vuex from 'vuex';
-import {mockADRState, mockADRUploadState, mockModelCalibrateState} from "../../mocks";
+import {mockADRState, mockADRUploadState, mockDownloadResultsState, mockModelCalibrateState} from "../../mocks";
 import DownloadResults from "../../../app/components/downloadResults/DownloadResults.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
 import {expectTranslated} from "../../testHelpers";
 import UploadModal from "../../../app/components/downloadResults/UploadModal.vue";
+import {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";
+import DownloadProgress from "../../../app/components/downloadResults/DownloadProgress.vue";
 
 const localVue = createLocalVue();
 
 describe("Download Results component", () => {
 
-    const createStore = (hasUploadPermission= true, getUserCanUpload = jest.fn(), uploading = false, uploadComplete = false, uploadError: any = null) => {
+    const mockSpectrumDownloadAction = jest.fn();
+    const mockSummaryDownloadAction = jest.fn();
+    const mockCoarseOutputDownloadAction = jest.fn();
+
+    const downloadResults = {
+        summary: {downloading: true, complete: false, error: null} as any,
+        spectrum: {downloading: true, complete: false, error: null} as any,
+        coarseOutput: {downloading: true, complete: false, error: null} as any
+    }
+
+
+    const createStore = (hasUploadPermission= true, getUserCanUpload = jest.fn(), uploading = false, uploadComplete = false, uploadError: any = null, downloadResults? : Partial<DownloadResultsState>) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -38,6 +51,15 @@ describe("Download Results component", () => {
                     actions: {
                         getUploadFiles: jest.fn()
                     }
+                },
+                downloadResults: {
+                    namespaced: true,
+                    state: mockDownloadResultsState(downloadResults),
+                    actions: {
+                        downloadSpectrum: mockSpectrumDownloadAction,
+                        downloadSummary: mockSummaryDownloadAction,
+                        downloadCoarseOutput: mockCoarseOutputDownloadAction
+                    }
                 }
             }
         });
@@ -59,18 +81,12 @@ describe("Download Results component", () => {
         expectTranslated(headers.at(3), "Upload to ADR",
             "Télécharger vers ADR", store);
 
-        const links = wrapper.findAll("a");
-        expect(links.length).toBe(3);
-        expectTranslated(links.at(0), "Export", "Exporter", store);
-        expect(links.at(0).attributes().href).toEqual("/download/spectrum/testId");
-        expectTranslated(links.at(1), "Download", "Télécharger", store);
-        expect(links.at(1).attributes().href).toEqual("/download/coarse-output/testId");
-        expectTranslated(links.at(2), "Download", "Télécharger", store);
-
         const buttons = wrapper.findAll("button");
-        expect(buttons.length).toBe(1);
-        expect(buttons.at(0).attributes().href).toEqual("#")
-        expectTranslated(buttons.at(0), "Upload", "Télécharger", store);
+        expect(buttons.length).toBe(4);
+        expectTranslated(buttons.at(0), "Export", "Exporter", store);
+        expectTranslated(buttons.at(1), "Download", "Télécharger", store);
+        expectTranslated(buttons.at(2), "Download", "Télécharger", store);
+        expectTranslated(buttons.at(3), "Upload", "Télécharger", store);
     });
 
     it(`renders, opens and closes dialog as expected`, async() => {
@@ -132,7 +148,7 @@ describe("Download Results component", () => {
         expectTranslated(statusMessage.find("span"), "Uploading 1 of 2 (this may take a while)",
             "Téléchargement de 1 sur 2 (cela peut prendre un certain temps)", store);
 
-        const uploadButton = wrapper.find("button");
+        const uploadButton = wrapper.find("#upload").find("button");
         expect(uploadButton.attributes("disabled")).toBe("disabled")
     });
 
@@ -159,5 +175,41 @@ describe("Download Results component", () => {
 
         const uploadButton = wrapper.find("button");
         expect(uploadButton.attributes("disabled")).toBeUndefined();
+    });
+
+    it("can invoke spectrum download action", async() => {
+        const store = createStore();
+        const wrapper = shallowMount(DownloadResults, {store});
+
+        const button = wrapper.find("#spectrum-download").find("button")
+
+        await button.trigger("click")
+        expect(mockSpectrumDownloadAction.mock.calls.length).toBe(1)
+        expect(mockSpectrumDownloadAction.mock.calls[0][1]).toBeUndefined()
+
+        expect(mockSummaryDownloadAction.mock.calls.length).toBe(0)
+        expect(mockCoarseOutputDownloadAction.mock.calls.length).toBe(0)
+    });
+
+    it("can invoke summary download action", async() => {
+        const store = createStore();
+        const wrapper = shallowMount(DownloadResults, {store});
+
+        const button = wrapper.find("#summary-download").find("button")
+
+        await button.trigger("click")
+        expect(mockSummaryDownloadAction.mock.calls.length).toBe(1)
+        expect(mockSummaryDownloadAction.mock.calls[0][1]).toBeUndefined()
+    });
+
+    it("can invoke coarseOutput download action", async() => {
+        const store = createStore();
+        const wrapper = shallowMount(DownloadResults, {store});
+
+        const button = wrapper.find("#coarse-output-download").find("button")
+
+        await button.trigger("click")
+        expect(mockCoarseOutputDownloadAction.mock.calls.length).toBe(1)
+        expect(mockCoarseOutputDownloadAction.mock.calls[0][1]).toBeUndefined()
     });
 });

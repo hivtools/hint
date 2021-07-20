@@ -2,11 +2,19 @@ import {mount, shallowMount} from "@vue/test-utils";
 import UploadModal from "../../../app/components/downloadResults/UploadModal.vue";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
-import {mockADRUploadState, mockBaselineState, mockDatasetResource} from "../../mocks";
+import {
+    mockADRState,
+    mockADRUploadState,
+    mockBaselineState,
+    mockDatasetResource,
+    mockDownloadResultsState
+} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
 import Vue from 'vue';
-import { Dict } from "../../../app/types";
+import {Dict} from "../../../app/types";
+import DownloadProgress from "../../../app/components/downloadResults/DownloadProgress.vue"
+import {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";
 
 describe(`uploadModal `, () => {
 
@@ -15,7 +23,7 @@ describe(`uploadModal `, () => {
             {
                 index: 1,
                 displayName: "uploadFileOutputZip",
-                resourceType: "inputs-unaids-naomi-output-zip",
+                resourceType: "outputZip",
                 resourceFilename: "naomi-model-outputs-project1.zip",
                 resourceId: null,
                 resourceUrl: null,
@@ -26,7 +34,7 @@ describe(`uploadModal `, () => {
             {
                 index: 2,
                 displayName: "uploadFileOutputSummary",
-                resourceType: "string",
+                resourceType: "outputSummary",
                 resourceFilename: "string",
                 resourceId: "value",
                 resourceUrl: null,
@@ -60,7 +68,11 @@ describe(`uploadModal `, () => {
     const mockOrganization = {
         id: "123abc"
     }
-    const createStore = (data: Dict<any> = fakeMetadata) => {
+
+    const mockSpectrumDownload = jest.fn();
+    const mockSummaryDownload = jest.fn();
+
+    const createStore = (data: Dict<any> = fakeMetadata, downloadResults? : Partial<DownloadResultsState>) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -86,6 +98,23 @@ describe(`uploadModal `, () => {
                     },
                     mutations: {
                         ADRUploadStarted: jest.fn()
+                    }
+                },
+                adr: {
+                    namespaced: true,
+                    state: mockADRState({
+                        schemas: {
+                            outputSummary: "outputSummary",
+                            outputZip: "outputZip"
+                        } as any
+                    })
+                },
+                downloadResults: {
+                    namespaced: true,
+                    state: mockDownloadResultsState(downloadResults),
+                    actions: {
+                        downloadSpectrum: mockSpectrumDownload,
+                        downloadSummary: mockSummaryDownload
                     }
                 }
             }
@@ -206,7 +235,11 @@ describe(`uploadModal `, () => {
     })
 
     it(`ok button is enabled when inputs are set and triggers close modal`, async () => {
-        const wrapper = mount(UploadModal, {store: createStore()})
+        const downloadResults = {
+            summary: {complete: true} as any,
+            spectrum: {complete: true} as any
+        }
+        const wrapper = mount(UploadModal, {store: createStore(fakeMetadata, downloadResults)})
 
         await wrapper.setProps({open: true})
 
@@ -222,6 +255,56 @@ describe(`uploadModal `, () => {
         expect(okBtn.text()).toBe("OK")
         await okBtn.trigger("click")
         expect(wrapper.emitted("close").length).toBe(1)
+    });
+
+    it(`ok button is enabled when inputs are set and does not triggers close modal when downloading files`, async () => {
+        const downloadResults = {
+            summary: {downloading: true} as any,
+            spectrum: {downloading: true} as any
+        }
+        const wrapper = mount(UploadModal, {store: createStore(fakeMetadata, downloadResults)})
+
+        await wrapper.setProps({open: true})
+
+        const okBtn = wrapper.find("button");
+        expect(okBtn.attributes("disabled")).toBe("disabled");
+
+        const inputs = wrapper.findAll("input.form-check-input")
+        expect(inputs.length).toBe(2)
+        inputs.at(0).setChecked(true)
+        inputs.at(1).setChecked(true)
+
+        expect(okBtn.attributes("disabled")).toBeUndefined();
+        expect(okBtn.text()).toBe("OK")
+        await okBtn.trigger("click")
+
+        expect(wrapper.find(DownloadProgress).text()).toBe("Preparing file(s) for upload...")
+        expect(wrapper.emitted("close")).toBeUndefined()
+    });
+
+    it("can invoke summary and spectrum download action", async () => {
+        const store = createStore();
+        const wrapper = mount(UploadModal, {store})
+
+        await wrapper.setProps({open: true})
+
+        const okBtn = wrapper.find("button");
+        expect(okBtn.attributes("disabled")).toBe("disabled");
+
+        const inputs = wrapper.findAll("input.form-check-input")
+        expect(inputs.length).toBe(2)
+        inputs.at(0).setChecked(true)
+        inputs.at(1).setChecked(true)
+
+        expect(okBtn.attributes("disabled")).toBeUndefined();
+        expect(okBtn.text()).toBe("OK")
+        await okBtn.trigger("click")
+
+        expect(mockSummaryDownload.mock.calls.length).toBe(1)
+        expect(mockSummaryDownload.mock.calls[0][1]).toBe(true)
+
+        expect(mockSpectrumDownload.mock.calls.length).toBe(1)
+        expect(mockSpectrumDownload.mock.calls[0][1]).toBe(true)
     });
 
     it("does not render file section header when no input files", () => {
