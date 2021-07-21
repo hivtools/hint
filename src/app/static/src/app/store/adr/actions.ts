@@ -97,7 +97,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async getAndSetDatasets(context, selectedDatasetId) {
-        const {state, commit, dispatch} = context;
+        const {state, commit} = context;
         let datasets = state.datasets;
         if (!datasets.length) {
             await api(context)
@@ -105,7 +105,6 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                 .ignoreSuccess()
                 .get(`/adr/datasets/${selectedDatasetId}`)
                 .then((response) => {
-                    // dispatch("getReleases", selectedDatasetId);
                     if (response) {
                         datasets = [response.data];
                     }
