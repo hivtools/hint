@@ -26,7 +26,7 @@ export const mutations: MutationTree<MetadataState> = {
     },
 
     [MetadataMutations.AdrUploadMetadataFetched](state: MetadataState, action: PayloadWithType<AdrMetadataResponse>) {
-        state.adrUploadMetadata = action.payload;
+        state.adrUploadMetadata?.push(action.payload)
         state.adrUploadMetadataError = null;
     }
 };

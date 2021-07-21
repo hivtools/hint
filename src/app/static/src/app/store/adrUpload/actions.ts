@@ -105,17 +105,19 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
             if (resourceType === rootState.adr.schemas?.outputSummary) {
                 downloadId = rootState.downloadResults.summary.downloadId
 
-                requestParams["description"] = uploadMetadata?.type === "summary"
-                    ? uploadMetadata.description!
-                    : "Naomi summary report uploaded from Naomi web app"
+                uploadMetadata?.find(meta => meta.type === "summary")
+
+                requestParams["description"] =
+                    uploadMetadata?.find(meta => meta.type === "summary")!.description
+                    || "Naomi summary report uploaded from Naomi web app"
             }
 
             if (resourceType === rootState.adr.schemas?.outputZip) {
                 downloadId = rootState.downloadResults.spectrum.downloadId
 
-                requestParams["description"] = uploadMetadata?.type === "spectrum"
-                    ? uploadMetadata.description!
-                    : "Naomi output uploaded from Naomi web app"
+                requestParams["description"] =
+                    uploadMetadata?.find(meta => meta.type === "spectrum")!.description
+                    || "Naomi output uploaded from Naomi web app"
             }
 
             let apiRequest = api<ADRUploadMutation, ADRUploadMutation>(context)
