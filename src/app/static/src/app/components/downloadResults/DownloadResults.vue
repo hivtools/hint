@@ -145,16 +145,19 @@
                 spectrum: state => ({
                     downloading: state.spectrum.downloading,
                     complete: state.spectrum.complete,
+                    downloadId: state.spectrum.downloadId,
                     error: state.spectrum.error
                 }),
                 summary: state => ({
                     downloading: state.summary.downloading,
                     complete: state.summary.complete,
+                    downloadId: state.summary.downloadId,
                     error: state.summary.error
                 }),
                 coarseOutput: state => ({
                     downloading: state.coarseOutput.downloading,
                     complete: state.coarseOutput.complete,
+                    downloadId: state.coarseOutput.downloadId,
                     error: state.coarseOutput.error
                 }),
                 showDownloadProgress: state => !state.isAdrUpload
@@ -218,6 +221,32 @@
             ErrorAlert,
             UploadModal,
             DownloadProgress
+        },
+        watch: {
+            summary: {
+                handler() {
+                    if (this.summary.complete) {
+                        window.location.href = `/download/result/${this.summary.downloadId}`
+                    }
+                },
+                deep: true
+            },
+            spectrum: {
+                handler() {
+                    if (this.spectrum.complete) {
+                        window.location.href = `/download/result/${this.spectrum.downloadId}`
+                    }
+                },
+                deep: true
+            },
+            coarseOutput: {
+                handler() {
+                    if (this.coarseOutput.complete) {
+                        window.location.href = `/download/result/${this.coarseOutput.downloadId}`
+                    }
+                },
+                deep: true
+            }
         }
     });
 </script>

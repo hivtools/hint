@@ -73,8 +73,8 @@
         handleCancel: () => void
         lastModified: (date: string) => string | null
         setDefaultCheckedItems: () => void
-        downloadSpectrum: (isAdrUpload: boolean) => void
-        downloadSummary: (isAdrUpload: boolean) => void
+        downloadSpectrum: () => void
+        downloadSummary: () => void
         prepareFilesForUpload: () => boolean
         findSelectedUploadFiles: () => SelectedADRUploadFiles
         downloadIsReady: () => boolean
@@ -92,7 +92,6 @@
         outputSummary: string,
         outputSpectrum: string,
         downloadingFiles: boolean
-        isAdrUpload: boolean
     }
 
     interface Data {
@@ -203,8 +202,7 @@
                 summary: state => ({
                     downloading: state.summary.downloading,
                     complete: state.summary.complete,
-                }),
-                isAdrUpload: state => state.isAdrUpload
+                })
             }),
             ...mapStateProps<ADRState, keyof Computed>("adr", {
                 outputSpectrum: state => state.schemas?.outputZip,
@@ -243,12 +241,12 @@
                 this.setDefaultCheckedItems();
             },
             summary() {
-                if (this.isAdrUpload && this.downloadIsReady()) {
+                if (this.downloadIsReady()) {
                     this.sendUploadFilesToADR();
                 }
             },
             spectrum() {
-                if (this.isAdrUpload && this.downloadIsReady()) {
+                if (this.downloadIsReady()) {
                     this.sendUploadFilesToADR();
                 }
             }
