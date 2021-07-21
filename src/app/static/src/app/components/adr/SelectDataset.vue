@@ -49,7 +49,7 @@
                     >
                     </label>
                 </tree-select>
-                <select-release></select-release>
+                <select-release :selected-dataset="newDatasetId"></select-release>
                 <div
                     :class="fetchingDatasets ? 'visible' : 'invisible'"
                     style="margin-top: 15px"

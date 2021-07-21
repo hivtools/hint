@@ -54,12 +54,13 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             });
     },
 
-    async getReleases(context) {
+    async getReleases(context, selectedDatasetId) {
         await api<ADRMutation, ADRMutation>(context)
             .withError(ADRMutation.SetADRError)
             .withSuccess(ADRMutation.SetReleases)
-            .get("/adr/releases/")
+            .get(`/adr/datasets/${selectedDatasetId}/releases/`)
             .then(() => {
+                console.log("releases was fired", selectedDatasetId)
                 context.commit({type: ADRMutation.SetFetchingReleases, payload: false});
             });
     },
@@ -96,7 +97,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async getAndSetDatasets(context, selectedDatasetId) {
-        const {state, commit} = context;
+        const {state, commit, dispatch} = context;
         let datasets = state.datasets;
         if (!datasets.length) {
             await api(context)
@@ -104,6 +105,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                 .ignoreSuccess()
                 .get(`/adr/datasets/${selectedDatasetId}`)
                 .then((response) => {
+                    // dispatch("getReleases", selectedDatasetId);
                     if (response) {
                         datasets = [response.data];
                     }
