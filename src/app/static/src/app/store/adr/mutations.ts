@@ -42,10 +42,6 @@ export const mutations: MutationTree<ADRState> = {
         state.fetchingDatasets = action.payload;
     },
 
-    [ADRMutation.SetFetchingReleases](state: ADRState, action: PayloadWithType<boolean>) {
-        state.fetchingReleases = action.payload;
-    },
-
     [ADRMutation.SetSchemas](state: ADRState, action: PayloadWithType<ADRSchemas>) {
         state.schemas = action.payload;
     },

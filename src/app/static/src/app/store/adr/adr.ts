@@ -9,7 +9,6 @@ export interface ADRState {
     datasets: any[],
     releases: any[],
     fetchingDatasets: boolean,
-    fetchingReleases: boolean,
     key: string | null,
     keyError: Error | null,
     adrError: Error | null,
@@ -26,7 +25,6 @@ export const initialADRState = (): ADRState => {
         adrError: null,
         schemas: null,
         fetchingDatasets: false,
-        fetchingReleases: false,
         userCanUpload: false
     }
 };

@@ -59,10 +59,6 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .withError(ADRMutation.SetADRError)
             .withSuccess(ADRMutation.SetReleases)
             .get(`/adr/datasets/${selectedDatasetId}/releases/`)
-            .then(() => {
-                console.log("releases was fired", selectedDatasetId)
-                context.commit({type: ADRMutation.SetFetchingReleases, payload: false});
-            });
     },
 
     async getSchemas(context) {
