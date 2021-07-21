@@ -76,6 +76,7 @@ export const mutations: MutationTree<DownloadResultsState> = {
             stopPollingSummary(state)
         }
         state.summary.status = action.payload;
+        console.log(state.summary.status)
         state.summary.error = null;
     },
 

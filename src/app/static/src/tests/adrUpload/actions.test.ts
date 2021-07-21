@@ -1,9 +1,9 @@
 import {
     mockADRState, mockADRUploadState,
     mockAxios,
-    mockBaselineState, mockCalibrateResultResponse, mockDownloadResultsState,
+    mockBaselineState, mockDownloadResultsState,
     mockError,
-    mockFailure, mockMetadataState, mockModelCalibrateState, mockModelRunState,
+    mockFailure, mockMetadataState,
     mockProjectsState,
     mockRootState,
     mockSuccess, mockSurveyAndProgramState
@@ -15,9 +15,6 @@ import {switches} from "../../app/featureSwitches";
 import Vuex from "vuex";
 import {RootState} from "../../app/root";
 import {mutations as baselineMutations} from "../../app/store/baseline/mutations";
-import {mutations as downloadResultsMutation} from "../../app/store/downloadResults/mutations";
-import {mutations as metadataMutations} from "../../app/store/metadata/mutations";
-import {mutations as adrMutation} from "../../app/store/adr/mutations";
 
 describe("ADR upload actions", () => {
     const state = mockADRUploadState();

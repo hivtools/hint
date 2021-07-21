@@ -81,7 +81,6 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 export const getSummaryDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
     const {commit, state, dispatch} = context;
     const downloadId = state.summary.downloadId;
-    console.log(downloadId)
     return api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.SummaryDownloadStatusUpdated)
         .withError(DownloadResultsMutation.SummaryError)

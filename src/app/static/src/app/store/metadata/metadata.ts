@@ -15,7 +15,7 @@ import {DataType} from "../surveyAndProgram/surveyAndProgram";
 export interface MetadataState {
     plottingMetadataError: Error | null
     plottingMetadata: PlottingMetadataResponse | null
-    adrUploadMetadata: AdrMetadataResponse[] | null
+    adrUploadMetadata: AdrMetadataResponse[]
     adrUploadMetadataError: Error | null
 }
 
@@ -24,7 +24,7 @@ export const initialMetadataState = (): MetadataState => {
         plottingMetadataError: null,
         plottingMetadata: null,
         adrUploadMetadataError: null,
-        adrUploadMetadata: null
+        adrUploadMetadata: [] as AdrMetadataResponse[]
     }
 };
 
