@@ -172,12 +172,12 @@
             },
             getSummaryDownload() {
                 if (!this.summary.downloading && !this.summary.complete) {
-                    this.downloadSummary(true);
+                    this.downloadSummary();
                 }
             },
             getSpectrumDownload() {
                 if (!this.spectrum.downloading && !this.spectrum.complete) {
-                    this.downloadSpectrum(true);
+                    this.downloadSpectrum();
                 }
             },
             handleCancel() {
@@ -240,15 +240,21 @@
             uploadFiles() {
                 this.setDefaultCheckedItems();
             },
-            summary() {
-                if (this.downloadIsReady()) {
-                    this.sendUploadFilesToADR();
-                }
+            summary: {
+                handler() {
+                    if (this.downloadIsReady()) {
+                        this.sendUploadFilesToADR();
+                    }
+                },
+                deep: true
             },
-            spectrum() {
-                if (this.downloadIsReady()) {
-                    this.sendUploadFilesToADR();
-                }
+            spectrum: {
+                handler() {
+                    if (this.downloadIsReady()) {
+                        this.sendUploadFilesToADR();
+                    }
+                },
+                deep: true
             }
         }
     });

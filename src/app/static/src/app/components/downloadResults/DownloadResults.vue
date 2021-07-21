@@ -9,7 +9,7 @@
                         <span v-translate="'export'"></span>
                         <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
                     </button>
-                    <div v-if="showDownloadProgress">
+                    <div v-if="!uploadModalOpen">
                         <download-progress id="spectrum-progress"
                                            :complete="spectrum.complete"
                                            :downloading="spectrum.downloading">
@@ -24,7 +24,7 @@
                         <span v-translate="'download'"></span>
                         <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
                     </button>
-                    <div v-if="showDownloadProgress">
+                    <div v-if="!uploadModalOpen">
                         <download-progress id="coarse-output-progress"
                                            :complete="coarseOutput.complete"
                                            :downloading="coarseOutput.downloading">
@@ -40,7 +40,7 @@
                         <span v-translate="'download'"></span>
                         <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
                     </button>
-                    <div v-if="showDownloadProgress">
+                    <div v-if="!uploadModalOpen">
                         <download-progress id="summary-progress"
                                            :complete="summary.complete"
                                            :downloading="summary.downloading">
@@ -109,7 +109,6 @@
         spectrum: Partial<DownloadResultsDependency>,
         coarseOutput: Partial<DownloadResultsDependency>,
         summary: Partial<DownloadResultsDependency>,
-        showDownloadProgress: boolean
     }
 
     interface UploadError {
@@ -159,8 +158,7 @@
                     complete: state.coarseOutput.complete,
                     downloadId: state.coarseOutput.downloadId,
                     error: state.coarseOutput.error
-                }),
-                showDownloadProgress: state => !state.isAdrUpload
+                })
             }),
             ...mapStateProps<ADRUploadState, keyof Computed>("adrUpload", {
                 currentFileUploading: state => state.currentFileUploading,
@@ -225,7 +223,7 @@
         watch: {
             summary: {
                 handler() {
-                    if (this.summary.complete) {
+                    if (!this.uploadModalOpen && this.summary.complete) {
                         window.location.href = `/download/result/${this.summary.downloadId}`
                     }
                 },
@@ -233,7 +231,7 @@
             },
             spectrum: {
                 handler() {
-                    if (this.spectrum.complete) {
+                    if (!this.uploadModalOpen && this.spectrum.complete) {
                         window.location.href = `/download/result/${this.spectrum.downloadId}`
                     }
                 },
@@ -241,7 +239,7 @@
             },
             coarseOutput: {
                 handler() {
-                    if (this.coarseOutput.complete) {
+                    if (!this.uploadModalOpen && this.coarseOutput.complete) {
                         window.location.href = `/download/result/${this.coarseOutput.downloadId}`
                     }
                 },

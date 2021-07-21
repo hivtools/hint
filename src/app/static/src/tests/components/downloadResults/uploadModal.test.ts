@@ -301,10 +301,7 @@ describe(`uploadModal `, () => {
         await okBtn.trigger("click")
 
         expect(mockSummaryDownload.mock.calls.length).toBe(1)
-        expect(mockSummaryDownload.mock.calls[0][1]).toBe(true)
-
         expect(mockSpectrumDownload.mock.calls.length).toBe(1)
-        expect(mockSpectrumDownload.mock.calls[0][1]).toBe(true)
     });
 
     it("does not render file section header when no input files", () => {
