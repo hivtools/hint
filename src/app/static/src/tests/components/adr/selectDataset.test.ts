@@ -2,6 +2,7 @@ import Vuex, {ActionTree} from "vuex";
 import Vue from "vue";
 import {mount, shallowMount} from "@vue/test-utils";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
+import SelectRelease from "../../../app/components/adr/SelectRelease.vue";
 import Modal from "../../../app/components/Modal.vue";
 import TreeSelect from '@riophae/vue-treeselect'
 import {
@@ -561,6 +562,22 @@ describe("select dataset", () => {
 
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+
+    it("renders select releases", async () => {
+        let store = getStore({},
+            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
+        )
+        const rendered = mount(SelectDataset, {
+            store, stubs: ["tree-select"]
+        });
+        rendered.find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        rendered.setData({newDatasetId: "id2"});
+        const selectRelease = rendered.find(SelectRelease)
+        expect(selectRelease.props("selectedDataset")).toBe("id2");
     });
     
     it("renders reset confirmation dialog when importing a new dataset and then saves new version and imports if click save", async () => {
