@@ -11,12 +11,8 @@
         },
         watch: {
             selectedDataset(id) {
-                console.log("watch method fired", id)
                 this.getReleases(id);
             },
-        },
-        mounted() {
-            console.log("select releases mounted", this.selectedDataset);
-        },
+        }
     });
 </script>

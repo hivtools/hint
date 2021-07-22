@@ -25,16 +25,15 @@ export const mutations: MutationTree<ADRState> = {
     },
 
     [ADRMutation.SetADRError](state: ADRState, action: PayloadWithType<Error | null>) {
-        console.log("releases error", state, action)
         state.adrError = action.payload;
     },
 
     [ADRMutation.SetDatasets](state: ADRState, action: PayloadWithType<any[]>) {
+        console.log("releases success", action.payload)
         state.datasets = action.payload;
     },
 
     [ADRMutation.SetReleases](state: ADRState, action: PayloadWithType<any[]>) {
-        console.log("releases success", action.payload)
         state.releases = action.payload;
     },
 
