@@ -13,7 +13,7 @@ export interface ADRActions {
     saveKey: (store: ActionContext<ADRState, RootState>, key: string) => void;
     deleteKey: (store: ActionContext<ADRState, RootState>) => void;
     getDatasets: (store: ActionContext<ADRState, RootState>) => void;
-    getReleases: (store: ActionContext<ADRState, RootState>, id: String) => void;
+    getReleases: (store: ActionContext<ADRState, RootState>, id: string) => void;
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
     getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
     getAndSetDatasets: (store: ActionContext<ADRState, RootState>, selectedDatasetId: string) => void;
