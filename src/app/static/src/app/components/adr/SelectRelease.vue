@@ -1,4 +1,6 @@
-<template></template>
+<template>
+    <div id="selectRelease"></div>
+</template>
 <script lang="ts">
     import Vue from "vue";
     import { mapActionByName } from "../../utils";

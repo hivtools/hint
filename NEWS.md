@@ -1,3 +1,7 @@
+# hint 1.44.0
+
+* Import releases from ADR: fetch and display release data from ADR
+
 # hint 1.43.1
 
 * Bug fix: Importing from adr after fitting model should prompt new version behaviour
