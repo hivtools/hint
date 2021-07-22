@@ -63,9 +63,21 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
     async poll(context, downloadType) {
         const {commit} = context;
         const id = setInterval(() => {
-            downloadType === DOWNLOAD_TYPE.SPECTRUM ? getSpectrumDownloadStatus(context)
+
+            if(downloadType === DOWNLOAD_TYPE.SPECTRUM) {
+                getSpectrumDownloadStatus(context)
+            }
+            else if(downloadType === DOWNLOAD_TYPE.COARSE) {
+                getCoarseOutputDownloadStatus(context)
+            }
+            else if (downloadType === DOWNLOAD_TYPE.SUMMARY) {
+                getSummaryDownloadStatus(context)
+            }
+            /*downloadType === DOWNLOAD_TYPE.SPECTRUM ? getSpectrumDownloadStatus(context)
                 : downloadType === DOWNLOAD_TYPE.COARSE ? getCoarseOutputDownloadStatus(context)
                 : getSummaryDownloadStatus(context)
+
+             */
         }, 2000);
 
         commit({type: "PollingStatusStarted", payload: {pollId: id, downloadType: downloadType}});

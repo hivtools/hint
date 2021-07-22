@@ -1,14 +1,8 @@
 import {actions} from "../../app/store/downloadResults/actions";
 import {rootState} from "./integrationTest";
-import {isDynamicFormMeta} from "@reside-ic/vue-dynamic-form";
-import {mockDownloadResultsState, mockModelCalibrateState, mockRootState} from "../mocks";
-//import {mockDownloadResultsTestData} from "../downloadResults/actions.test";
 import {
-    DOWNLOAD_TYPE,
-    initialDownloadResultsState,
-    mockInitialDownloadResults
+    DOWNLOAD_TYPE
 } from "../../app/store/downloadResults/downloadResults";
-import {Language} from "../../app/store/translations/locales";
 
 describe(`download results actions integration`, () => {
 
@@ -30,14 +24,29 @@ describe(`download results actions integration`, () => {
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
     })
 
-    it(`can poll summary download for status update`, async () => {
+    it(`can poll summary download for status update`, async (done) => {
         const commit = jest.fn();
-        await actions.poll({commit, rootState} as any, DOWNLOAD_TYPE.SUMMARY);
+        const dispatch = jest.fn();
+        const root = {
+            ...rootState,
+            modelCalibrate: {calibrateId: "calibrate123"}
+        };
 
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
-        expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.SUMMARY);
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
+        const state = {summary: {downloadId: 123}}
+
+        await actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.SUMMARY);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(2);
+            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
+            expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.SUMMARY);
+            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
+
+            expect(commit.mock.calls[1][0]["type"]).toBe("SummaryDownloadStatusUpdated");
+            expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
+            done()
+
+        }, 2100)
     })
 
     it(`can send spectrum download request`, async () => {
@@ -55,14 +64,29 @@ describe(`download results actions integration`, () => {
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
     })
 
-    it(`can poll spectrum download for status update`, async () => {
+    it(`can poll spectrum download for status update`, async (done) => {
         const commit = jest.fn();
-        await actions.poll({commit, rootState} as any, DOWNLOAD_TYPE.SPECTRUM);
+        const dispatch = jest.fn();
+        const root = {
+            ...rootState,
+            modelCalibrate: {calibrateId: "calibrate123"}
+        };
 
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
-        expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.SPECTRUM);
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
+        const state = {spectrum: {downloadId: 123}}
+
+        await actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.SPECTRUM);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(2);
+            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
+            expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.SPECTRUM);
+            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
+
+            expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumDownloadStatusUpdated");
+            expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
+            done()
+
+        }, 2100)
     })
 
     it(`can send coarseOutput download request`, async () => {
@@ -80,14 +104,28 @@ describe(`download results actions integration`, () => {
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
     })
 
-    it(`can poll coarseOutput download for status update`, async () => {
+    it(`can poll coarseOutput download for status update`, async (done) => {
         const commit = jest.fn();
-        await actions.poll({commit, rootState} as any, DOWNLOAD_TYPE.COARSE);
+        const dispatch = jest.fn();
+        const root = {
+            ...rootState,
+            modelCalibrate: {calibrateId: "calibrate123"}
+        };
 
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
-        expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.COARSE);
-        expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
+        const state = {coarseOutput: {downloadId: 123}}
+
+        await actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COARSE);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(2);
+            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
+            expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.COARSE);
+            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
+
+            expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputDownloadStatusUpdated");
+            expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
+            done()
+
+        }, 2100)
     })
-
 })
