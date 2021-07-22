@@ -11,7 +11,7 @@ export interface DownloadResultsState {
     summary: DownloadResultsDependency
 }
 
-const mockInitialDownloadResults = {
+export const mockInitialDownloadResults = {
     downloadId: "",
     downloading: false,
     statusPollId: -1,
