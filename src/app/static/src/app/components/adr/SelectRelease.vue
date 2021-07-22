@@ -12,8 +12,10 @@
         },
         watch: {
             selectedDataset(id) {
-                this.getReleases(id);
+                if (id) {
+                    this.getReleases(id);
+                }
             },
-        }
+        },
     });
 </script>

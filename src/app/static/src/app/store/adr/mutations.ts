@@ -32,7 +32,6 @@ export const mutations: MutationTree<ADRState> = {
     },
 
     [ADRMutation.SetReleases](state: ADRState, action: PayloadWithType<any[]>) {
-        console.log("releases success", action.payload)
         state.releases = action.payload;
     },
 

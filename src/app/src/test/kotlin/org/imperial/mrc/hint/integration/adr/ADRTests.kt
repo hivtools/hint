@@ -69,6 +69,32 @@ class ADRTests : SecureIntegrationTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `can get ADR releases`(isAuthorized: IsAuthorized)
+    {
+        testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
+        val datasets = testRestTemplate.getForEntity<String>("/adr/datasets")
+
+        assertSecureWithSuccess(isAuthorized, datasets, null)
+
+        val id = if (isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = ObjectMapper().readTree(datasets.body!!)["data"]
+            data.first()["id"].textValue()
+        }
+        else "fake-id"
+
+        val result = testRestTemplate.getForEntity<String>("/adr/datasets/$id/releases")
+        assertSecureWithSuccess(isAuthorized, result, null)
+
+        if (isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = ObjectMapper().readTree(result.body!!)["data"]
+            assertThat(data["id"].textValue()).isEqualTo(id)
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can get orgs with permission`(isAuthorized: IsAuthorized)
     {
         testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())

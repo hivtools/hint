@@ -74,6 +74,15 @@ describe("ADR dataset-related actions", () => {
         expect(commit.mock.calls[4][0]).toBe(BaselineMutation.UpdateDatasetResources);
     });
 
+    it("can get releases", async () => {
+        const commit = jest.fn();
+
+        await adrActions.getDatasets({commit, rootState} as any);
+        const datasetId = commit.mock.calls[2][0]["payload"][0].id;
+        await adrActions.getReleases({commit, rootState} as any, datasetId);
+        expect(commit.mock.calls[3][0]).toStrictEqual({type: ADRMutation.SetReleases, payload: []});
+    });
+
     it("can get userCanUpload when selected dataset organisation is set", async () => {
         const commit = jest.fn();
 

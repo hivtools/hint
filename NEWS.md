@@ -1,6 +1,6 @@
 # hint 1.44.0
 
-* Import releases from ADR: fetch and display release data from ADR
+* Import releases from ADR: sets up releases endpoint from ADR
 
 # hint 1.43.1
 
