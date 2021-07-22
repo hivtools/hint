@@ -10,7 +10,6 @@ export enum ADRMutation {
     SetDatasets = "SetDatasets",
     SetReleases = "SetReleases",
     SetFetchingDatasets = "SetFetchingDatasets",
-    SetFetchingReleases = "SetFetchingReleases",
     SetSchemas = "SetSchemas",
     SetUserCanUpload = "SetUserCanUpload"
 }

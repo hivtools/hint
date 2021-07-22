@@ -2,7 +2,6 @@
 <script lang="ts">
     import Vue from "vue";
     import { mapActionByName } from "../../utils";
-    import SelectDatasetVue from "./SelectDataset.vue";
 
     export default Vue.extend({
         props: ["selectedDataset"],
