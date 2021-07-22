@@ -28,11 +28,11 @@ export const mutations: MutationTree<ADRState> = {
     },
 
     [ADRMutation.SetDatasets](state: ADRState, action: PayloadWithType<any[]>) {
-        console.log("releases success", action.payload)
         state.datasets = action.payload;
     },
 
     [ADRMutation.SetReleases](state: ADRState, action: PayloadWithType<any[]>) {
+        console.log("releases success", action.payload)
         state.releases = action.payload;
     },
 
