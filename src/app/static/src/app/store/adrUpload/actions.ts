@@ -6,7 +6,6 @@ import {ADRUploadState} from "./adrUpload";
 import {ADRUploadMutation} from "./mutations";
 import {constructUploadFile, constructUploadFileWithResourceName} from "../../utils";
 import {Dict, UploadFile} from "../../types";
-import {ADRMutation} from "../adr/mutations";
 import {switches} from "../../featureSwitches";
 import {ValidateInputResponse} from "../../generated";
 
@@ -126,7 +125,6 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                 break
             }
         }
-        await dispatch("adr/getAndSetDatasets", selectedDatasetId, {root: true});
         await dispatch("getUploadFiles");
     }
 };
