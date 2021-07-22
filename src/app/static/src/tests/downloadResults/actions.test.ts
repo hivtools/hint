@@ -6,7 +6,6 @@ import {
 } from "../mocks";
 import {actions} from "../../app/store/downloadResults/actions";
 import {DOWNLOAD_TYPE} from "../../app/store/downloadResults/downloadResults";
-import {DownloadResultsDependency} from "../../app/types";
 
 
 export const RunningStatusResponse = {

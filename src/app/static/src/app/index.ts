@@ -27,7 +27,7 @@ export const app = new Vue({
         Errors
     },
     computed: mapState<RootState>({
-        language: state => state.language
+        language: (state: RootState) => state.language
     }),
     methods: {
         ...mapActions({loadBaseline: 'baseline/getBaselineData'}),

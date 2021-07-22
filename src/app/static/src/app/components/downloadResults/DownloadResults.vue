@@ -126,6 +126,7 @@
         getSummaryDownload: () => void
         getSpectrumDownload: () => void
         getCoarseOutputDownload: () => void
+        downloadUrl: (downloadId: string) => string
     }
 
     interface Data {
@@ -183,6 +184,9 @@
             )
         },
         methods: {
+            downloadUrl(downloadId) {
+                return `/download/result/${downloadId}`
+            },
             handleUploadModal() {
                 this.uploadModalOpen = true
             },
@@ -222,25 +226,25 @@
         },
         watch: {
             summary: {
-                handler() {
-                    if (!this.uploadModalOpen && this.summary.complete) {
-                        window.location.href = `/download/result/${this.summary.downloadId}`
+                handler(summary) {
+                    if (!this.uploadModalOpen && summary.complete) {
+                        window.location.assign(this.downloadUrl(summary.downloadId!))
                     }
                 },
                 deep: true
             },
             spectrum: {
-                handler() {
-                    if (!this.uploadModalOpen && this.spectrum.complete) {
-                        window.location.href = `/download/result/${this.spectrum.downloadId}`
+                handler(spectrum) {
+                    if (!this.uploadModalOpen && spectrum.complete) {
+                        window.location.assign(this.downloadUrl(spectrum.downloadId!))
                     }
                 },
                 deep: true
             },
             coarseOutput: {
-                handler() {
-                    if (!this.uploadModalOpen && this.coarseOutput.complete) {
-                        window.location.href = `/download/result/${this.coarseOutput.downloadId}`
+                handler(coarseOutput) {
+                    if (!this.uploadModalOpen && coarseOutput.complete) {
+                        window.location.assign(this.downloadUrl(coarseOutput.downloadId!))
                     }
                 },
                 deep: true

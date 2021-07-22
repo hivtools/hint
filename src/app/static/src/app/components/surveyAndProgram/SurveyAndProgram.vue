@@ -86,12 +86,13 @@
     import Filters from "../plots/Filters.vue";
     import {Filter, LevelLabel, PartialFileUploadProps} from "../../types";
     import {RootState} from "../../root";
-    import {DataType} from "../../store/surveyAndProgram/surveyAndProgram";
+    import {DataType, SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
     import {Feature} from "geojson";
     import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
     import {mapGettersByNames} from "../../utils";
-    import {ChoroplethSelections} from "../../store/plottingSelections/plottingSelections";
+    import {ChoroplethSelections, PlottingSelectionsState} from "../../store/plottingSelections/plottingSelections";
     import ManageFile from "../files/ManageFile.vue";
+    import {BaselineState} from "../../store/baseline/baseline";
 
     const namespace = 'surveyAndProgram';
 
@@ -124,13 +125,13 @@
         },
         computed: {
             ...mapState<RootState>({
-                selectedDataType: ({surveyAndProgram}) => {
+                selectedDataType: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => {
                     return surveyAndProgram.selectedDataType;
                 },
-                showChoropleth: ({surveyAndProgram, baseline}) => {
+                showChoropleth: ({surveyAndProgram, baseline}: {surveyAndProgram: SurveyAndProgramState, baseline: BaselineState}) => {
                     return surveyAndProgram.selectedDataType != null;
                 },
-                anc: ({surveyAndProgram}) => ({
+                anc: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     valid: !!surveyAndProgram.anc,
                     fromADR: !!surveyAndProgram.anc?.fromADR,
                     error: surveyAndProgram.ancError,
@@ -140,7 +141,7 @@
                         "active": surveyAndProgram.selectedDataType == DataType.ANC
                     }
                 } as PartialFileUploadProps),
-                programme: ({surveyAndProgram}) => ({
+                programme: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     valid: surveyAndProgram.program != null,
                     fromADR: !!surveyAndProgram.program?.fromADR,
                     error: surveyAndProgram.programError,
@@ -150,7 +151,7 @@
                         "active": surveyAndProgram.selectedDataType == DataType.Program
                     }
                 } as PartialFileUploadProps),
-                survey: ({surveyAndProgram}) => ({
+                survey: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     valid: surveyAndProgram.survey != null,
                     fromADR: !!surveyAndProgram.survey?.fromADR,
                     error: surveyAndProgram.surveyError,
@@ -160,9 +161,9 @@
                         "active": surveyAndProgram.selectedDataType == DataType.Survey
                     }
                 } as PartialFileUploadProps),
-                features: ({baseline}) => baseline.shape ? baseline.shape.data.features : [] as Feature[],
-                featureLevels: ({baseline}) => baseline.shape ? baseline.shape.filters.level_labels : [],
-                plottingSelections: ({plottingSelections}) => plottingSelections.sapChoropleth
+                features: ({baseline} : {baseline: BaselineState}) => baseline.shape ? baseline.shape.data.features : [] as Feature[],
+                featureLevels: ({baseline} : {baseline: BaselineState}) => baseline.shape ? baseline.shape.filters.level_labels : [],
+                plottingSelections: ({plottingSelections}: {plottingSelections: PlottingSelectionsState}) => plottingSelections.sapChoropleth
             }),
             ...mapGettersByNames(namespace, ["data", "filters", "countryAreaFilterOption"]),
             ...mapGetters("metadata", ["sapIndicatorsMetadata"]),

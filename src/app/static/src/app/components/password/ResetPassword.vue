@@ -49,9 +49,9 @@
             };
         },
         computed: mapState<PasswordState>({
-            error: state => state.resetPasswordError,
-            hasError: state => !!state.resetPasswordError,
-            passwordWasReset: state => state.passwordWasReset
+            error: (state: PasswordState) => state.resetPasswordError,
+            hasError: (state: PasswordState) => !!state.resetPasswordError,
+            passwordWasReset: (state: PasswordState) => state.passwordWasReset
         }),
         components: {
             ErrorAlert,

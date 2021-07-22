@@ -2,6 +2,10 @@
 
 * Use async endpoints for Just-In-time generation of download files from HINT frontend
 
+# hint 1.43.1
+
+* Bug fix: Importing from adr after fitting model should prompt new version behaviour
+
 # hint 1.43.0
 
 * Add note icon(s) and dialogs to project history for project/version

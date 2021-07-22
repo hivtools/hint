@@ -28,12 +28,11 @@
     import { Language, Translations } from "../../store/translations/locales";
     import {
         BarchartIndicator,
-        Filter
+        Filter,
+        FilterConfig
     } from "@reside-ic/vue-charts/src/bar/types";
     import {
-        BarChartWithFilters,
-        FilterConfig,
-        FilterOption,
+        BarChartWithFilters
     } from "@reside-ic/vue-charts";
     import {
         mapGettersByNames,
