@@ -193,7 +193,8 @@ describe("select dataset", () => {
                         ...adrProps
                     },
                     actions: {
-                        getDatasets: getDatasetsMock
+                        getDatasets: getDatasetsMock,
+                        getReleases: jest.fn()
                     }
                 },
                 baseline: {
