@@ -34,7 +34,9 @@
             <h4 v-if="!loading" v-translate="'browseADR'"></h4>
             <p v-if="loading" v-translate="'importingFiles'"></p>
             <div v-if="!loading">
+                <label for="datasetSelector" class="font-weight-bold">Datasets</label>
                 <tree-select
+                    id="datasetSelector"
                     :multiple="false"
                     :searchable="true"
                     :options="datasetOptions"
