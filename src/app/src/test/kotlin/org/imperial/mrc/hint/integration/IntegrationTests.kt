@@ -54,7 +54,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         val versionJson = parser.readTree(optionsResponseEntity.body!!)["version"]
         val version = parser.treeToValue<Map<String, String>>(versionJson)
 
-        val modelRunOptions = ModelOptions(getMockModelOptions(), version)
+        val modelRunOptions = ModelOptions(emptyMap(), version)
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val jsonString = ObjectMapper().writeValueAsString(modelRunOptions)
@@ -64,7 +64,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
     protected fun getValidationOptions(): HttpEntity<String>
     {
         uploadMinimalFiles()
-        val modelRunOptions = ModelOptions(getMockModelOptions(), emptyMap())
+        val modelRunOptions = ModelOptions(getMockOptions(), emptyMap())
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
@@ -299,7 +299,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         return ObjectMapper().readTree(entity.body)["data"]
     }
 
-    fun getMockModelOptions(): Map<String, Any>
+    fun getMockOptions(): Map<String, Any>
     {
         return mapOf(
                 "spectrum_plhiv_calibration_level" to "national",
