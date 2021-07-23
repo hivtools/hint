@@ -278,6 +278,8 @@ describe(`uploadModal `, () => {
         expect(okBtn.text()).toBe("OK")
         await okBtn.trigger("click")
 
+        expect(wrapper.find(DownloadProgress).props())
+            .toEqual({"complete": false, "downloading": true, "isUpload": true})
         expect(wrapper.find(DownloadProgress).text()).toBe("Preparing file(s) for upload...")
         expect(wrapper.emitted("close")).toBeUndefined()
     });
