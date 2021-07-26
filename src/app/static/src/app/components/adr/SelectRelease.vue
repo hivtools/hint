@@ -122,7 +122,7 @@
             ),
         },
         methods: {
-            getReleases: mapActionByName("adr", "getReleases"),
+            getReleases: mapActionByName(namespace, "getReleases"),
             translate(text) {
                 return i18next.t(text, { lng: this.currentLanguage });
             },
