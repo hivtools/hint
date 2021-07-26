@@ -53,4 +53,21 @@ describe("Metadata mutations", () => {
         );
         expect(testState.adrUploadMetadataError).toBe(null);
     });
+
+    it("update spectrum metadata on AdrUploadMetadataFetched", () => {
+        const adrMetadataResponse = {type: "spectrum", description: "new zip"}
+
+        const testState = mockMetadataState({
+            adrUploadMetadataError: mockError("previous error"),
+            adrUploadMetadata: [{type: "spectrum", description: "zip"}]
+        });
+        mutations.AdrUploadMetadataFetched(testState, {
+            payload: adrMetadataResponse
+        });
+
+        expect(testState.adrUploadMetadata).toStrictEqual(
+            [{type: "spectrum", description: "new zip"}]
+        );
+        expect(testState.adrUploadMetadataError).toBe(null);
+    });
 });

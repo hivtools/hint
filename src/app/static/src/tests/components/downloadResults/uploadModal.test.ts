@@ -69,10 +69,17 @@ describe(`uploadModal `, () => {
         id: "123abc"
     }
 
+    const mockDownloadResults = {
+        summary: {complete: false, downloading: false } as any,
+        spectrum: {complete: false, downloading: false} as any,
+        coarseOutput: {} as any
+    }
+
     const mockSpectrumDownload = jest.fn();
     const mockSummaryDownload = jest.fn();
+    const mockUploadFilesToADR = jest.fn();
 
-    const createStore = (data: Dict<any> = fakeMetadata, downloadResults? : Partial<DownloadResultsState>) => {
+    const createStore = (data: Dict<any> = fakeMetadata, downloadResults : Partial<DownloadResultsState> = mockDownloadResults) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -94,7 +101,7 @@ describe(`uploadModal `, () => {
                     namespaced: true,
                     state: mockADRUploadState({uploadFiles: data}),
                     actions: {
-                        uploadFilesToADR: jest.fn()
+                        uploadFilesToADR: mockUploadFilesToADR
                     },
                     mutations: {
                         ADRUploadStarted: jest.fn()
@@ -234,6 +241,20 @@ describe(`uploadModal `, () => {
         expect(mockUploadFiles).toHaveBeenCalledTimes(1)
     })
 
+    it(`can send upload files to ADR when download status is complete`, async () => {
+        const downloadResults = {
+            summary: {complete: true, downloading: false} as any,
+            spectrum: {complete: true, downloading: false} as any,
+            coarseOutput: {} as any
+        }
+        const store = createStore()
+        shallowMount(UploadModal, {store})
+
+        store.state.downloadResults = downloadResults
+
+        expect(mockUploadFilesToADR.mock.calls.length).toBe(2)
+    });
+
     it(`ok button is enabled when inputs are set and triggers close modal`, async () => {
         const downloadResults = {
             summary: {complete: true} as any,
@@ -262,7 +283,8 @@ describe(`uploadModal `, () => {
             summary: {downloading: true} as any,
             spectrum: {downloading: true} as any
         }
-        const wrapper = mount(UploadModal, {store: createStore(fakeMetadata, downloadResults)})
+        const store = createStore(fakeMetadata, downloadResults)
+        const wrapper = mount(UploadModal, {store})
 
         await wrapper.setProps({open: true})
 
@@ -280,7 +302,8 @@ describe(`uploadModal `, () => {
 
         expect(wrapper.find(DownloadProgress).props())
             .toEqual({"complete": false, "downloading": true, "isUpload": true})
-        expect(wrapper.find(DownloadProgress).text()).toBe("Preparing file(s) for upload...")
+        expectTranslated(wrapper.find(DownloadProgress), "Preparing file(s) for upload...",
+            "Préparer le(s) fichier(s) pour le téléchargement...", store)
         expect(wrapper.emitted("close")).toBeUndefined()
     });
 
@@ -304,6 +327,48 @@ describe(`uploadModal `, () => {
 
         expect(mockSummaryDownload.mock.calls.length).toBe(1)
         expect(mockSpectrumDownload.mock.calls.length).toBe(1)
+    });
+
+    it("can invoke spectrum download action", async () => {
+        const store = createStore();
+        const wrapper = mount(UploadModal, {store})
+
+        await wrapper.setProps({open: true})
+
+        const okBtn = wrapper.find("button");
+        expect(okBtn.attributes("disabled")).toBe("disabled");
+
+        const inputs = wrapper.findAll("input.form-check-input")
+        expect(inputs.length).toBe(2)
+        inputs.at(0).setChecked(true)
+
+        expect(okBtn.attributes("disabled")).toBeUndefined();
+        expect(okBtn.text()).toBe("OK")
+        await okBtn.trigger("click")
+
+        expect(mockSummaryDownload.mock.calls.length).toBe(1)
+        expect(mockSpectrumDownload.mock.calls.length).toBe(2)
+    });
+
+    it("can invoke summary download action", async () => {
+        const store = createStore();
+        const wrapper = mount(UploadModal, {store})
+
+        await wrapper.setProps({open: true})
+
+        const okBtn = wrapper.find("button");
+        expect(okBtn.attributes("disabled")).toBe("disabled");
+
+        const inputs = wrapper.findAll("input.form-check-input")
+        expect(inputs.length).toBe(2)
+        inputs.at(1).setChecked(true)
+
+        expect(okBtn.attributes("disabled")).toBeUndefined();
+        expect(okBtn.text()).toBe("OK")
+        await okBtn.trigger("click")
+
+        expect(mockSummaryDownload.mock.calls.length).toBe(2)
+        expect(mockSpectrumDownload.mock.calls.length).toBe(2)
     });
 
     it("does not render file section header when no input files", () => {

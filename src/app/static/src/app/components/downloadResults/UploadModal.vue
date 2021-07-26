@@ -141,7 +141,6 @@
             },
             prepareFilesForUpload() {
                 const {summary, spectrum} = this.findSelectedUploadFiles();
-                console.log("does not get to summary", summary)
                 if (summary) {
                     this.getSummaryDownload();
                 }
@@ -236,27 +235,21 @@
             Modal,
             DownloadProgress
         },
-        watch: {
-            uploadFiles() {
-                this.setDefaultCheckedItems();
-            },
-            summary: {
-                handler() {
-                    if (this.downloadIsReady()) {
-                        this.sendUploadFilesToADR();
-                    }
-                },
-                deep: true
-            },
-            spectrum: {
-                handler() {
-                    if (this.downloadIsReady()) {
-                        this.sendUploadFilesToADR();
-                    }
-                },
-                deep: true
-            }
+      watch: {
+        uploadFiles() {
+          this.setDefaultCheckedItems();
+        },
+        summary() {
+          if (this.downloadIsReady()) {
+            this.sendUploadFilesToADR();
+          }
+        },
+        spectrum() {
+          if (this.downloadIsReady()) {
+            this.sendUploadFilesToADR();
+          }
         }
+      }
     });
 </script>
 

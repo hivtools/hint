@@ -22,7 +22,7 @@ describe(`download results mutations`, () => {
     });
 
     it("sets summary download error on SummaryError", () => {
-        const state = mockDownloadResultsState();
+        const state = mockDownloadResultsState({summary: {statusPollId: 123}} as any);
         mutations[DownloadResultsMutation.SummaryError](state, {payload: error});
         expect(state.summary.downloading).toBe(false);
         expect(state.summary.statusPollId).toBe(-1);
@@ -69,7 +69,7 @@ describe(`download results mutations`, () => {
     });
 
     it("sets spectrum download error on SpectrumError", () => {
-        const state = mockDownloadResultsState();
+        const state = mockDownloadResultsState({spectrum: {statusPollId: 123}} as any);
         mutations[DownloadResultsMutation.SpectrumError](state, {payload: error});
         expect(state.spectrum.downloading).toBe(false);
         expect(state.spectrum.statusPollId).toBe(-1);
@@ -116,7 +116,7 @@ describe(`download results mutations`, () => {
     });
 
     it("sets coarseOutput download error on CoarseOutputError", () => {
-        const state = mockDownloadResultsState();
+        const state = mockDownloadResultsState({coarseOutput: {statusPollId: 123}} as any);
         mutations[DownloadResultsMutation.CoarseOutputError](state, {payload: error});
         expect(state.coarseOutput.downloading).toBe(false);
         expect(state.coarseOutput.statusPollId).toBe(-1);
