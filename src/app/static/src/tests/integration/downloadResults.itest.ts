@@ -46,7 +46,7 @@ describe(`download results actions integration`, () => {
             expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
             done()
 
-        }, 4100)
+        }, 3100)
     })
 
     it(`can send spectrum download request`, async () => {
