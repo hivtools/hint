@@ -1,23 +1,41 @@
 <template>
     <div id="selectRelease" v-if="releases.length">
-        <input type="radio" id="useData" value="useData" v-model="choiceADR" />
-        <label for="useData">Use latest data</label
-        ><span class="icon-small" v-tooltip="translate('datasetTooltip')">
-            <help-circle-icon></help-circle-icon>
-        </span>
-        <br />
-        <input
-            type="radio"
-            id="useRelease"
-            value="useRelease"
-            v-model="choiceADR"
-        />
-        <label for="useRelease">Select a release</label
-        ><span class="icon-small" v-tooltip="translate('releaseTooltip')">
-            <help-circle-icon></help-circle-icon>
-        </span>
-        <br />
-        <label for="releaseSelector" class="font-weight-bold">Releases</label>
+        <div class="pt-1">
+            <input
+                type="radio"
+                id="useData"
+                value="useData"
+                v-model="choiceADR"
+            />
+            <label for="useData" v-translate="'useData'" class="pr-1"></label
+            ><span class="icon-small" v-tooltip="translate('datasetTooltip')">
+                <help-circle-icon></help-circle-icon>
+            </span>
+            <br />
+        </div>
+        <div>
+            <input
+                type="radio"
+                id="useRelease"
+                value="useRelease"
+                v-model="choiceADR"
+            />
+            <label
+                for="useRelease"
+                v-translate="'useRelease'"
+                class="pr-1"
+            ></label
+            ><span class="icon-small" v-tooltip="translate('releaseTooltip')">
+                <help-circle-icon></help-circle-icon>
+            </span>
+            <br />
+        </div>
+
+        <label
+            for="releaseSelector"
+            class="font-weight-bold"
+            v-translate="'releases'"
+        ></label>
         <tree-select
             v-if="selectedDataset"
             id="releaseSelector"
@@ -90,9 +108,9 @@
                     id: d.id,
                     label: d.name,
                     customLabel: `${d.name}
-                                                            <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                                                                ${d.notes}<br/>
-                                                            </div>`,
+                                                                <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                                                                    ${d.notes}<br/>
+                                                                </div>`,
                 }));
             },
             useRelease() {
