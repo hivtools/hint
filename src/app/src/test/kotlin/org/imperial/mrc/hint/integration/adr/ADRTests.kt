@@ -4,10 +4,8 @@ import com.github.kittinunf.fuel.httpPost
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
-import org.imperial.mrc.hint.clients.FuelClient
 import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.integration.SecureIntegrationTests
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
@@ -194,9 +192,11 @@ class ADRTests : SecureIntegrationTests()
     {
         if (isAuthorized == IsAuthorized.TRUE) {
             val modelCalibrationId = waitForModelRunResult()
+            val calibrateId = waitForCalibrationResult(modelCalibrationId)
+            val downloadId = waitForSubmitDownloadOutput(calibrateId, "summary")
             testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
 
-            val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrOutputSummarySchema}/$modelCalibrationId?resourceFileName=output.html&resourceName=TestZip&description=test"
+            val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrOutputSummarySchema}/$downloadId?resourceFileName=output.html&resourceName=TestZip&description=test"
             val createResult = testRestTemplate.postForEntity<String>(url)
             assertSuccess(createResult)
             val resourceId = ObjectMapper().readTree(createResult.body!!)["data"]["id"].textValue()

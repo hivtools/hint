@@ -33,7 +33,7 @@ class MetadataTests : SecureIntegrationTests()
     {
         val modelId = waitForModelRunResult()
         val calibrateId = waitForCalibrationResult(modelId)
-        val responseId =  waitForDownloadOutputResult(calibrateId, "spectrum")
+        val responseId =  waitForSubmitDownloadOutput(calibrateId, "spectrum")
 
         val responseEntity = testRestTemplate.getForEntity<String>("/meta/adr/$responseId")
         assertSuccess(responseEntity, "AdrMetadataResponse")
