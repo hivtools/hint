@@ -170,11 +170,11 @@ class ADRController(private val encryption: Encryption,
         return saveAndValidate(url, FileType.ANC)
     }
 
-    @PostMapping("/datasets/{id}/resource/{resourceType}/{modelCalibrateId}")
+    @PostMapping("/datasets/{id}/resource/{resourceType}/{downloadId}")
     @Suppress("ReturnCount", "LongParameterList", "UnsafeCallOnNullableType")
     fun pushFileToADR(@PathVariable id: String,
                       @PathVariable resourceType: String,
-                      @PathVariable modelCalibrateId: String,
+                      @PathVariable downloadId: String,
                       @RequestParam resourceFileName: String,
                       @RequestParam resourceId: String?,
                       @RequestParam resourceName: String,
@@ -184,7 +184,7 @@ class ADRController(private val encryption: Encryption,
         {
             appProperties.adrOutputSummarySchema,
             appProperties.adrOutputZipSchema ->
-                pushOutputFileToADR(id, resourceType, modelCalibrateId, resourceFileName, resourceId, resourceName,
+                pushOutputFileToADR(id, resourceType, downloadId, resourceFileName, resourceId, resourceName,
                         description)
             appProperties.adrPJNZSchema,
             appProperties.adrShapeSchema,
@@ -211,7 +211,6 @@ class ADRController(private val encryption: Encryption,
             return ErrorDetail(HttpStatus.BAD_REQUEST, "description must be provided for output resourceType")
                     .toResponseEntity()
         }
-
         // 1. Download relevant artefact from hintr
         val artefact: ResponseEntity<StreamingResponseBody> = when (resourceType)
         {

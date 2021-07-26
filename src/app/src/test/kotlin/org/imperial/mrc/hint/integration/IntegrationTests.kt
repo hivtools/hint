@@ -54,7 +54,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         val versionJson = parser.readTree(optionsResponseEntity.body!!)["version"]
         val version = parser.treeToValue<Map<String, String>>(versionJson)
 
-        val modelRunOptions = ModelOptions(emptyMap(), version)
+        val modelRunOptions = ModelOptions(getMockOptions(), version)
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val jsonString = ObjectMapper().writeValueAsString(modelRunOptions)
@@ -105,7 +105,8 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         return id
     }
 
-    protected fun waitForCalibrationResult(modelId: String): String {
+    protected fun waitForCalibrationResult(modelId: String): String
+    {
         val entity = getModelRunEntity()
         val responseEntity = testRestTemplate.postForEntity<String>("/model/calibrate/submit/$modelId", entity)
         val id = ObjectMapper().readValue<JsonNode>(responseEntity.body!!)["data"]["id"].textValue()
@@ -302,14 +303,19 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
     fun getMockOptions(): Map<String, Any>
     {
         return mapOf(
-                "spectrum_plhiv_calibration_level" to "national",
-                "spectrum_plhiv_calibration_strat" to "sex_age_group",
-                "spectrum_artnum_calibration_level" to "national",
+                "spectrum_plhiv_calibration_level" to "none",
+                "spectrum_plhiv_calibration_strat" to "sex_age_coarse",
+                "spectrum_artnum_calibration_level" to "none",
                 "spectrum_artnum_calibration_strat" to "sex_age_coarse",
-                "spectrum_infections_calibration_level" to "national",
+                "spectrum_infections_calibration_level" to "none",
                 "spectrum_infections_calibration_strat" to "sex_age_coarse",
-                "spectrum_aware_calibration_level" to "national",
+                "spectrum_aware_calibration_level" to "none",
                 "spectrum_aware_calibration_strat" to "sex_age_coarse",
+                "anc_art_coverage_year1" to 2016,
+                "anc_art_coverage_year2" to 2018,
+                "artattend_log_gamma_offset" to -4,
+                "artattend" to false,
+                "output_aware_plhiv" to "true",
                 "calibrate_method" to "logistic")
     }
 }
