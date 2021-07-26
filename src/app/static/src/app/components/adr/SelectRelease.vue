@@ -79,19 +79,26 @@
 
     interface Computed {
         releases: any[];
+        newDatasetVersionId: string | null;
         releaseOptions: any[];
         useRelease: boolean;
         currentLanguage: Language;
     }
 
+    interface Props {
+        selectedDataset: string | null;
+    }
+
     const namespace = "adr";
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default Vue.extend<Data, Methods, Computed, Props>({
         components: {
             TreeSelect,
             HelpCircleIcon,
         },
-        props: ["selectedDataset"],
+        props: {
+            selectedDataset: String,
+        },
         data() {
             return {
                 newReleaseId: null,
@@ -103,14 +110,21 @@
                 namespace,
                 (state: ADRState) => state.releases
             ),
+            newDatasetVersionId() {
+                if (this.choiceADR === "useData") {
+                    return this.selectedDataset;
+                } else {
+                    return this.newReleaseId;
+                }
+            },
             releaseOptions() {
                 return this.releases.map((d) => ({
                     id: d.id,
                     label: d.name,
                     customLabel: `${d.name}
-                                                                <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                                                                    ${d.notes}<br/>
-                                                                </div>`,
+                                                                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                                                                        ${d.notes}<br/>
+                                                                    </div>`,
                 }));
             },
             useRelease() {
@@ -129,7 +143,19 @@
         },
         watch: {
             selectedDataset(id) {
-                this.getReleases(id);
+                this.choiceADR = "useData";
+                if (id) {
+                    this.getReleases(id);
+                }
+            },
+            newDatasetVersionId() {
+                // console.log(newer, old)
+                this.$emit("selected-dataset-version", this.newDatasetVersionId);
+            },
+            choiceADR(choice) {
+                if (choice === "useData") {
+                    this.newReleaseId = null;
+                }
             },
         },
         directives: {

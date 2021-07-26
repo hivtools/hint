@@ -51,7 +51,7 @@
                     >
                     </label>
                 </tree-select>
-                <select-release :selected-dataset="newDatasetId"></select-release>
+                <select-release :selected-dataset="newDatasetId" @selected-dataset-version="updateDatasetVersion"></select-release>
                 <div
                     :class="fetchingDatasets ? 'visible' : 'invisible'"
                     style="margin-top: 15px"
@@ -75,7 +75,7 @@
             <template v-slot:footer v-if="!loading">
                 <button
                     type="button"
-                    :disabled="!newDatasetId"
+                    :disabled="!newDatasetVersionId"
                     class="btn btn-red"
                     v-translate="'import'"
                     @click.prevent="confirmImport"
@@ -145,6 +145,7 @@
         confirmImport: () => void;
         continueEditing: () => void;
         cancelEditing: () => void;
+        updateDatasetVersion: (id: string) => void;
     }
 
     interface Computed {
@@ -169,6 +170,7 @@
         loading: boolean;
         newDatasetId: string | null;
         pollingId: number | null;
+        newDatasetVersionId: string | null;
     }
 
     const names: { [k in keyof DatasetResourceSet]: string } = {
@@ -190,6 +192,7 @@
                 loading: false,
                 newDatasetId: null,
                 pollingId: null,
+                newDatasetVersionId: null
             };
         },
         components: {
@@ -413,6 +416,10 @@
                     window.clearInterval(this.pollingId);
                 }
             },
+        updateDatasetVersion(id){
+            this.newDatasetVersionId = id;
+            console.log("new id", this.newDatasetVersionId)
+        }
         },
         mounted() {
             this.refreshDatasetMetadata();
@@ -420,6 +427,6 @@
         },
         beforeDestroy() {
             this.stopPolling();
-        },
+        }
     });
 </script>
