@@ -1,5 +1,5 @@
 <template>
-    <div id="selectRelease" v-if="releases.length">
+    <div id="selectRelease" v-if="newDatasetId && releases.length">
         <div class="pt-1">
             <input
                 type="radio"
@@ -37,7 +37,6 @@
             v-translate="'releases'"
         ></label>
         <tree-select
-            v-if="newDatasetId"
             id="releaseSelector"
             :multiple="false"
             :searchable="true"
@@ -58,7 +57,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import { mapActionByName, mapStateProp } from "../../utils";
+    import { mapActionByName, mapStateProp, mapMutationByName } from "../../utils";
     import TreeSelect from "@riophae/vue-treeselect";
     import { ADRState } from "../../store/adr/adr";
     import { HelpCircleIcon } from "vue-feather-icons";
@@ -66,6 +65,7 @@
     import i18next from "i18next";
     import { Language } from "../../store/translations/locales";
     import { RootState } from "../../root";
+    import {ADRMutation} from "../../store/adr/mutations";
 
     interface Data {
         newReleaseId: string | null;
@@ -74,6 +74,7 @@
 
     interface Methods {
         getReleases: (id: string) => void;
+        clearReleases: () => void;
         translate(text: string): string;
     }
 
@@ -121,10 +122,10 @@
                 return this.releases.map((d) => ({
                     id: d.id,
                     label: d.name,
-                    customLabel: `${d.name}
-                                                                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                                                                        ${d.notes}<br/>
-                                                                    </div>`,
+                customLabel: `${d.name}
+                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                        ${d.notes}<br/>
+                    </div>`,
                 }));
             },
             useRelease() {
@@ -140,10 +141,12 @@
             translate(text) {
                 return i18next.t(text, { lng: this.currentLanguage });
             },
+            clearReleases: mapMutationByName(namespace, ADRMutation.ClearReleases)
         },
         watch: {
             newDatasetId(id) {
                 this.choiceADR = "useData";
+                this.clearReleases()
                 if (id) {
                     this.getReleases(id);
                 }
