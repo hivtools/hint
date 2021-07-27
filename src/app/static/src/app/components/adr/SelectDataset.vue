@@ -51,7 +51,7 @@
                     >
                     </label>
                 </tree-select>
-                <select-release :selected-dataset="newDatasetId" @selected-dataset-version="updateDatasetVersion"></select-release>
+                <select-release :new-dataset-id="newDatasetId" @selected-dataset-version="updateDatasetVersion"></select-release>
                 <div
                     :class="fetchingDatasets ? 'visible' : 'invisible'"
                     style="margin-top: 15px"
@@ -75,7 +75,7 @@
             <template v-slot:footer v-if="!loading">
                 <button
                     type="button"
-                    :disabled="!newDatasetVersionId"
+                    :disabled="!enableImport"
                     class="btn btn-red"
                     v-translate="'import'"
                     @click.prevent="confirmImport"
@@ -145,7 +145,7 @@
         confirmImport: () => void;
         continueEditing: () => void;
         cancelEditing: () => void;
-        updateDatasetVersion: (id: string) => void;
+        updateDatasetVersion: (id: string, enableImport: boolean) => void;
     }
 
     interface Computed {
@@ -171,6 +171,7 @@
         newDatasetId: string | null;
         pollingId: number | null;
         newDatasetVersionId: string | null;
+        enableImport: boolean;
     }
 
     const names: { [k in keyof DatasetResourceSet]: string } = {
@@ -192,7 +193,8 @@
                 loading: false,
                 newDatasetId: null,
                 pollingId: null,
-                newDatasetVersionId: null
+                newDatasetVersionId: null,
+                enableImport: false
             };
         },
         components: {
@@ -416,9 +418,10 @@
                     window.clearInterval(this.pollingId);
                 }
             },
-        updateDatasetVersion(id){
-            this.newDatasetVersionId = id;
-            console.log("new id", this.newDatasetVersionId)
+        updateDatasetVersion(releaseId, enableImport){
+            this.newDatasetVersionId = releaseId;
+            this.enableImport = enableImport;
+            console.log("new id", this.newDatasetVersionId, this.enableImport)
         }
         },
         mounted() {

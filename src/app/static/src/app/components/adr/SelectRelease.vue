@@ -37,7 +37,7 @@
             v-translate="'releases'"
         ></label>
         <tree-select
-            v-if="selectedDataset"
+            v-if="newDatasetId"
             id="releaseSelector"
             :multiple="false"
             :searchable="true"
@@ -79,14 +79,14 @@
 
     interface Computed {
         releases: any[];
-        newDatasetVersionId: string | null;
+        selectedDatasetOrRelease: string | null;
         releaseOptions: any[];
         useRelease: boolean;
         currentLanguage: Language;
     }
 
     interface Props {
-        selectedDataset: string | null;
+        newDatasetId: string | null;
     }
 
     const namespace = "adr";
@@ -97,7 +97,7 @@
             HelpCircleIcon,
         },
         props: {
-            selectedDataset: String,
+            newDatasetId: String,
         },
         data() {
             return {
@@ -110,9 +110,9 @@
                 namespace,
                 (state: ADRState) => state.releases
             ),
-            newDatasetVersionId() {
+            selectedDatasetOrRelease() {
                 if (this.choiceADR === "useData") {
-                    return this.selectedDataset;
+                    return this.newDatasetId;
                 } else {
                     return this.newReleaseId;
                 }
@@ -142,20 +142,20 @@
             },
         },
         watch: {
-            selectedDataset(id) {
+            newDatasetId(id) {
                 this.choiceADR = "useData";
                 if (id) {
                     this.getReleases(id);
                 }
             },
-            newDatasetVersionId() {
-                // console.log(newer, old)
-                this.$emit("selected-dataset-version", this.newDatasetVersionId);
-            },
             choiceADR(choice) {
                 if (choice === "useData") {
                     this.newReleaseId = null;
                 }
+            },
+            selectedDatasetOrRelease() {
+                // console.log(newer, old)
+                this.$emit("selected-dataset-version", this.newReleaseId, !!this.selectedDatasetOrRelease);
             },
         },
         directives: {
