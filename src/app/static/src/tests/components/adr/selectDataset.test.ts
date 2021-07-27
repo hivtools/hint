@@ -547,6 +547,7 @@ describe("select dataset", () => {
         expect(rendered.find(Modal).findAll("button").length).toBe(2);
         expect(rendered.findAll("p").length).toBe(0);
         expectTranslated(rendered.find("h4"), "Browse ADR", "Parcourir ADR", store);
+        expectTranslated(rendered.find("div > label"), "Datasets", "Ensembles de données", store);
 
         rendered.setData({newDatasetId: "id2"});
         rendered.find(Modal).find("button").trigger("click");
