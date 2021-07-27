@@ -1,6 +1,10 @@
-# hint 1.44.0
+# hint 1.45.0
 
 * Use async endpoints for Just-In-time generation of download files from HINT frontend
+
+# hint 1.44.0
+
+* Modify Rename dialog modal and add notes text area
 
 # hint 1.43.1
 
