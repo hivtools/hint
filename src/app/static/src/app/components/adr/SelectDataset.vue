@@ -75,6 +75,7 @@
             </div>
             <template v-slot:footer v-if="!loading">
                 <button
+                    id="importBtn"
                     type="button"
                     :disabled="!enableImport"
                     class="btn btn-red"
@@ -422,7 +423,7 @@
         updateDatasetVersion(releaseId, enableImport){
             this.newDatasetVersionId = releaseId;
             this.enableImport = enableImport;
-            console.log("new id", this.newDatasetVersionId, this.enableImport)
+            // console.log("new id", this.newDatasetVersionId, this.enableImport)
         }
         },
         mounted() {

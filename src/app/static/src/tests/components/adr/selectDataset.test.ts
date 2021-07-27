@@ -572,7 +572,7 @@ describe("select dataset", () => {
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
-    it("renders select releases", async () => {
+    it("renders select release", async () => {
         let store = getStore({},
             {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
         )
@@ -581,11 +581,28 @@ describe("select dataset", () => {
         });
         await rendered.find("button").trigger("click");
 
-        // await Vue.nextTick();
-
         rendered.setData({newDatasetId: "id2"});
         const selectRelease = rendered.find(SelectRelease)
         expect(selectRelease.props("newDatasetId")).toBe("id2");
+    });
+
+    it("select release emits selected dataset version and enables import button", async () => {
+        let store = getStore({},
+            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
+        )
+        const rendered = mount(SelectDataset, {
+            store, stubs: ["tree-select"]
+        });
+        await rendered.find("button").trigger("click");
+
+        rendered.setData({newDatasetId: "id2", enableImport: false});
+        const selectRelease = rendered.find(SelectRelease)
+        const importBtn = rendered.find("#importBtn")
+        expect(importBtn.attributes("disabled")).toBe("disabled");
+        await selectRelease.vm.$emit("selected-dataset-version", "releaseId", true);
+        expect(importBtn.attributes("disabled")).toBeUndefined();
+        expect(rendered.vm.$data.newDatasetVersionId).toBe("releaseId")
+
     });
     
     it("renders reset confirmation dialog when importing a new dataset and then saves new version and imports if click save", async () => {
