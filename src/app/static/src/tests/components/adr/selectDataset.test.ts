@@ -18,6 +18,7 @@ import {
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {BaselineMutation} from "../../../app/store/baseline/mutations";
+import {ADRMutation} from "../../../app/store/adr/mutations";
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {ADRSchemas} from "../../../app/types";
@@ -159,6 +160,7 @@ describe("select dataset", () => {
     const setDatasetMock = jest.fn();
     const markResourcesUpdatedMock = jest.fn();
     const getDatasetsMock = jest.fn();
+    const getReleasesMock = jest.fn();
 
     const baselineActions: Partial<BaselineActions> & ActionTree<any, any> = {
         importShape: jest.fn(),
@@ -190,11 +192,16 @@ describe("select dataset", () => {
                     state: {
                         schemas: schemas,
                         datasets: fakeRawDatasets,
+                        releases: [],
                         ...adrProps
                     },
                     actions: {
                         getDatasets: getDatasetsMock,
-                        getReleases: jest.fn()
+                        getReleases: getReleasesMock
+                    },
+                    mutations: {
+                        [ADRMutation.ClearReleases]: jest.fn(),
+                        [ADRMutation.SetReleases]: jest.fn()
                     }
                 },
                 baseline: {
@@ -451,14 +458,14 @@ describe("select dataset", () => {
             selectedDataset: fakeDataset
         })
         const rendered = shallowMount(SelectDataset, {store});
-        expectTranslated(rendered.find(".font-weight-bold"), "Selected dataset:", "Ensemble de données sélectionné :", store);
+        expectTranslated(rendered.find("#selectedDatasetSpan"), "Selected dataset:", "Ensemble de données sélectionné :", store);
         expect(rendered.find("a").text()).toBe("Some data");
         expect(rendered.find("a").attributes("href")).toBe("www.adr.com/naomi-data/some-data");
     });
 
     it("does not render selected dataset if it doesn't exist", () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});
-        expect(rendered.findAll(".font-weight-bold").length).toBe(0);
+        expect(rendered.findAll("#selectedDatasetSpan").length).toBe(0);
         expect(rendered.findAll("a").length).toBe(0);
     });
 
@@ -572,13 +579,13 @@ describe("select dataset", () => {
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]
         });
-        rendered.find("button").trigger("click");
+        await rendered.find("button").trigger("click");
 
-        await Vue.nextTick();
+        // await Vue.nextTick();
 
         rendered.setData({newDatasetId: "id2"});
         const selectRelease = rendered.find(SelectRelease)
-        expect(selectRelease.props("selectedDataset")).toBe("id2");
+        expect(selectRelease.props("newDatasetId")).toBe("id2");
     });
     
     it("renders reset confirmation dialog when importing a new dataset and then saves new version and imports if click save", async () => {

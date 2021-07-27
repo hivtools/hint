@@ -4,6 +4,7 @@
             <span
                 class="font-weight-bold"
                 v-translate="'selectedDataset'"
+                id="selectedDatasetSpan"
             ></span>
             <a :href="selectedDataset.url" target="_blank">
                 {{ selectedDataset.title }}
