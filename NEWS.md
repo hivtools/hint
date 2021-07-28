@@ -1,6 +1,10 @@
+# hint 1.45.0
+
+* Import releases from ADR: fetch and display release data from ADR
+
 # hint 1.44.0
 
-* Import releases from ADR: sets up releases endpoint from ADR
+* Modify Rename dialog modal and add notes text area
 
 # hint 1.43.1
 
