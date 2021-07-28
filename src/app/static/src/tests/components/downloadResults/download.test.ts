@@ -1,4 +1,4 @@
-import {mount, shallowMount} from "@vue/test-utils";
+import {shallowMount} from "@vue/test-utils";
 import Download from "../../../app/components/downloadResults/Download.vue"
 
 describe(`download`, () => {
@@ -42,9 +42,21 @@ describe(`download`, () => {
 
     it(`can emit download`, async () => {
         const wrapper = getWrapper()
+        const downloadSummary = {
+            downloading: false,
+            complete: false,
+            downloadId: null,
+            error: null
+        }
         const button = wrapper.find("button")
+        expect(button.classes()).toEqual( ["btn", "btn-lg", "my-3", "btn-secondary"])
+        expect(button.attributes("disabled")).toEqual( "disabled")
 
-        await button.trigger("click")
+        await wrapper.setProps({file: downloadSummary})
+        expect(button.classes()).toEqual( ["btn", "btn-lg", "my-3", "btn-red"])
+        expect(button.attributes("disabled")).toBeUndefined()
+
+        button.trigger("click")
         expect(wrapper.emitted().click.length).toBe(1)
     })
 })
