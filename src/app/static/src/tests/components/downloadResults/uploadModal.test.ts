@@ -7,7 +7,7 @@ import {
     mockADRUploadState,
     mockBaselineState,
     mockDatasetResource,
-    mockDownloadResultsState
+    mockDownloadResultsState, mockMetadataState
 } from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
@@ -78,6 +78,7 @@ describe(`uploadModal `, () => {
     const mockSpectrumDownload = jest.fn();
     const mockSummaryDownload = jest.fn();
     const mockUploadFilesToADR = jest.fn();
+    const mockUploadMetadataAction = jest.fn();
 
     const createStore = (data: Dict<any> = fakeMetadata, downloadResults : Partial<DownloadResultsState> = mockDownloadResults) => {
         const store = new Vuex.Store({
@@ -122,6 +123,13 @@ describe(`uploadModal `, () => {
                     actions: {
                         downloadSpectrum: mockSpectrumDownload,
                         downloadSummary: mockSummaryDownload
+                    }
+                },
+                metadata: {
+                    namespaced: true,
+                    state: mockMetadataState(),
+                    actions: {
+                        getAdrUploadMetadata: mockUploadMetadataAction
                     }
                 }
             }
@@ -248,10 +256,15 @@ describe(`uploadModal `, () => {
             coarseOutput: {} as any
         }
         const store = createStore()
-        shallowMount(UploadModal, {store})
+        const wrapper = mount(UploadModal, {store})
+
+        await wrapper.setProps({open: true})
+        const modal = wrapper.find(".modal");
+        expect(modal.classes()).toContain("show");
 
         store.state.downloadResults = downloadResults
 
+        expect(mockUploadMetadataAction.mock.calls.length).toBe(2)
         expect(mockUploadFilesToADR.mock.calls.length).toBe(2)
     });
 
@@ -301,7 +314,7 @@ describe(`uploadModal `, () => {
         await okBtn.trigger("click")
 
         expect(wrapper.find(DownloadProgress).props())
-            .toEqual({"complete": false, "downloading": true, "isUpload": true})
+            .toEqual({"downloading": true, "translateKey": "downloadProgressForADR"})
         expectTranslated(wrapper.find(DownloadProgress), "Preparing file(s) for upload...",
             "Préparer le(s) fichier(s) pour le téléchargement...", store)
         expect(wrapper.emitted("close")).toBeUndefined()

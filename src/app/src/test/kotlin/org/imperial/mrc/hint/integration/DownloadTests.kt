@@ -18,7 +18,7 @@ class DownloadTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `can download coarse output data`()
+    fun `can submit coarse output download`()
     {
         val id = waitForModelRunResult()
         val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/coarse-output/$id")
@@ -37,7 +37,7 @@ class DownloadTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `can download summary data`()
+    fun `can submit summary download`()
     {
         val id = waitForModelRunResult()
         val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/summary/$id")
@@ -56,7 +56,7 @@ class DownloadTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `can download spectrum data`()
+    fun `can submit spectrum download`()
     {
         val id = waitForModelRunResult()
         val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/spectrum/$id")
@@ -75,7 +75,7 @@ class DownloadTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `can download output status`()
+    fun `can get download status`()
     {
         val responseId = downloadOutputResponseId()
         val responseEntity = testRestTemplate.getForEntity<String>("/download/status/$responseId")

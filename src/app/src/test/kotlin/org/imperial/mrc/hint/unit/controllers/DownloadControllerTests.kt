@@ -12,11 +12,11 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 class DownloadControllerTests
 {
     @Test
-    fun `get download spectrum data`()
+    fun `submit spectrum download`()
     {
         val mockResponse = mock<ResponseEntity<String>>()
         val mockAPIClient = mock<HintrAPIClient> {
-            on { downloadOutput("spectrum", "id1") } doReturn mockResponse
+            on { downloadOutputSubmit("spectrum", "id1") } doReturn mockResponse
         }
 
         val sut = DownloadController(mockAPIClient)
@@ -25,11 +25,11 @@ class DownloadControllerTests
     }
 
     @Test
-    fun `get download summary data`()
+    fun `submit summary download`()
     {
         val mockResponse = mock<ResponseEntity<String>>()
         val mockAPIClient = mock<HintrAPIClient> {
-            on { downloadOutput("summary", "id1") } doReturn mockResponse
+            on { downloadOutputSubmit("summary", "id1") } doReturn mockResponse
         }
 
         val sut = DownloadController(mockAPIClient)
@@ -38,11 +38,11 @@ class DownloadControllerTests
     }
 
     @Test
-    fun `get download coarse-output data`()
+    fun `submit coarse-output download`()
     {
         val mockResponse = mock<ResponseEntity<String>>()
         val mockAPIClient = mock<HintrAPIClient> {
-            on { downloadOutput("coarse-output", "id1") } doReturn mockResponse
+            on { downloadOutputSubmit("coarse-output", "id1") } doReturn mockResponse
         }
 
         val sut = DownloadController(mockAPIClient)
@@ -51,7 +51,7 @@ class DownloadControllerTests
     }
 
     @Test
-    fun `can get download submit status data`()
+    fun `can get download status`()
     {
         val mockResponse = mock<ResponseEntity<String>>()
         val mockAPIClient = mock<HintrAPIClient> {
@@ -64,7 +64,7 @@ class DownloadControllerTests
     }
 
     @Test
-    fun `can get download submit result data`()
+    fun `can get download result`()
     {
         val mockResponse = mock<ResponseEntity<StreamingResponseBody>>()
         val mockApiClient = mock<HintrAPIClient>

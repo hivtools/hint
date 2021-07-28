@@ -164,7 +164,7 @@ export interface DownloadResultsDependency {
     error: Error | null
 }
 
-export interface PoolingStarted {
+export interface PollingStarted {
     pollId: number,
     downloadType: string
 }

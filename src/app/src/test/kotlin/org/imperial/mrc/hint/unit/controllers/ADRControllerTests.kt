@@ -342,7 +342,7 @@ class ADRControllerTests : HintrControllerTests()
         val id = mapOf("id" to "downloadId")
         val data = mapOf("data" to id)
         val mockAPIClient: HintrAPIClient = mock {
-            on { downloadOutput("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
+            on { downloadOutputSubmit("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
             on { downloadOutputResult("downloadId") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
         }
         val mockClient: ADRClient = mock {
@@ -371,7 +371,7 @@ class ADRControllerTests : HintrControllerTests()
         val id = mapOf("id" to "downloadId")
         val data = mapOf("data" to id)
         val mockAPIClient: HintrAPIClient = mock {
-            on { downloadOutput("summary","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
+            on { downloadOutputSubmit("summary","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
             on { downloadOutputResult("downloadId") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
         }
         val mockClient: ADRClient = mock {
@@ -527,7 +527,7 @@ class ADRControllerTests : HintrControllerTests()
         val hash = mapOf("hash" to "D41D8CD98F00B204E9800998ECF8427EXXXXX", "id" to "downloadId")
         val data = mapOf("data" to hash)
         val mockAPIClient: HintrAPIClient = mock {
-            on { downloadOutput("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
+            on { downloadOutputSubmit("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
             on { downloadOutputResult("downloadId") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
         }
         val mockClient: ADRClient = mock {
@@ -557,7 +557,7 @@ class ADRControllerTests : HintrControllerTests()
         val id = mapOf("id" to "downloadId")
         val data = mapOf("data" to id)
         val mockAPIClient: HintrAPIClient = mock {
-            on { downloadOutput("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
+            on { downloadOutputSubmit("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
             on { downloadOutputResult("downloadId") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
         }
         val mockClient: ADRClient = mock {
@@ -582,7 +582,7 @@ class ADRControllerTests : HintrControllerTests()
         val hash = mapOf("hash" to "D41D8CD98F00B204E9800998ECF8427E", "id" to "modelResponseId")
         val data = mapOf("data" to hash)
         val mockAPIClient: HintrAPIClient = mock {
-            on { downloadOutput("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
+            on { downloadOutputSubmit("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
             on { downloadOutputResult("downloadId") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
         }
         val mockClient: ADRClient = mock {
@@ -609,7 +609,7 @@ class ADRControllerTests : HintrControllerTests()
         val id = mapOf("id" to "modelResponseId")
         val data = mapOf("data" to id)
         val mockAPIClient: HintrAPIClient = mock {
-            on { downloadOutput("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
+            on { downloadOutputSubmit("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
             on { downloadOutputResult("modelResponseId") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
         }
         val sut = ADRController(mock(), mock(), mock(), objectMapper, mockProperties, mock(), mockAPIClient, mock(), mock())
@@ -624,7 +624,7 @@ class ADRControllerTests : HintrControllerTests()
         val id = mapOf("id" to "downloadId")
         val data = mapOf("data" to id)
         val mockAPIClient: HintrAPIClient = mock {
-            on { downloadOutput("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
+            on { downloadOutputSubmit("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
             on { downloadOutputResult("downloadId") } doReturn ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(StreamingResponseBody { it.write("Internal Server Error".toByteArray()) })
             on { downloadOutputResult("downloadId") } doReturn ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(StreamingResponseBody { it.write("Internal Server Error".toByteArray()) })
         }
@@ -641,7 +641,7 @@ class ADRControllerTests : HintrControllerTests()
         val hash = mapOf("hash" to "", "id" to "downloadId")
         val data = mapOf("data" to hash)
         val mockAPIClient: HintrAPIClient = mock {
-            on { downloadOutput("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
+            on { downloadOutputSubmit("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
             on { downloadOutputResult("downloadId") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
         }
         val mockClient: ADRClient = mock {
@@ -664,7 +664,7 @@ class ADRControllerTests : HintrControllerTests()
         val id = mapOf("id" to "downloadId")
         val data = mapOf("data" to id)
         val mockAPIClient: HintrAPIClient = mock {
-            on { downloadOutput("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
+            on { downloadOutputSubmit("spectrum","model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
             on { downloadOutputResult("downloadId") } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(null)
         }
         val sut = ADRController(mock(), mock(), mock(), objectMapper, mockProperties, mock(), mockAPIClient, mock(), mock())

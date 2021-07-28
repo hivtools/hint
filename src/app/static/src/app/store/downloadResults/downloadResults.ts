@@ -11,7 +11,7 @@ export interface DownloadResultsState {
     summary: DownloadResultsDependency
 }
 
-export const mockInitialDownloadResults = {
+export const initialDownloadResults = {
     downloadId: "",
     downloading: false,
     statusPollId: -1,
@@ -28,9 +28,9 @@ export enum DOWNLOAD_TYPE {
 
 export const initialDownloadResultsState = (): DownloadResultsState => {
     return {
-        spectrum: mockInitialDownloadResults,
-        coarseOutput: mockInitialDownloadResults,
-        summary: mockInitialDownloadResults
+        spectrum: initialDownloadResults,
+        coarseOutput: initialDownloadResults,
+        summary: initialDownloadResults
     }
 }
 

@@ -98,9 +98,9 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("can get summary results, commits and dispatch upload metadata", async (done) => {
+    it("can get summary results and commits", async (done) => {
         const commit = jest.fn();
-        const dispatch = jest.fn();
+        const dispatch = jest.fn()
         const partialDownloadResultsState = {downloadId: "1", status: CompleteStatusResponse};
 
         const root = mockRootState({
@@ -131,11 +131,7 @@ describe(`download Results actions`, () => {
 
             expect(commit.mock.calls[2][0]["type"]).toBe("SummaryDownloadComplete")
             expect(commit.mock.calls[2][0]["payload"]).toEqual(true)
-
-            expect(dispatch.mock.calls.length).toBe(1)
-            expect(dispatch.mock.calls[0]).toEqual(["metadata/getAdrUploadMetadata", "1", {"root": true}])
             done()
-
         }, 3100)
     });
 
@@ -200,7 +196,6 @@ describe(`download Results actions`, () => {
             expect(commit.mock.calls[2][0]["type"]).toBe("SummaryDownloadComplete")
             expect(commit.mock.calls[2][0]["payload"]).toEqual(true)
             done()
-
         }, 2100)
     });
 
@@ -271,7 +266,6 @@ describe(`download Results actions`, () => {
 
     it("can get spectrum results, commits and dispatch upload metadata", async (done) => {
         const commit = jest.fn();
-        const dispatch = jest.fn();
         const partialDownloadResultsState = {downloadId: "1", status: CompleteStatusResponse};
 
         const root = mockRootState({
@@ -289,7 +283,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`/meta/adr/1`)
             .reply(200, mockSuccess({type: "spectrum", description: "spectrum"}))
 
-        await actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.SPECTRUM);
+        await actions.poll({commit, state, rootState: root} as any, DOWNLOAD_TYPE.SPECTRUM);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(3);
@@ -302,11 +296,7 @@ describe(`download Results actions`, () => {
 
             expect(commit.mock.calls[2][0]["type"]).toBe("SpectrumDownloadComplete")
             expect(commit.mock.calls[2][0]["payload"]).toEqual(true)
-
-            expect(dispatch.mock.calls.length).toBe(1)
-            expect(dispatch.mock.calls[0]).toEqual(["metadata/getAdrUploadMetadata", "1", {"root": true}])
             done()
-
         }, 3100)
     });
 
@@ -406,7 +396,6 @@ describe(`download Results actions`, () => {
 
     it("can invoke coarse output poll action, gets pollId, commits PollingStatusStarted", async (done) => {
         const commit = jest.fn();
-        const dispatch = jest.fn();
         const downloadId = {downloadId: "1"};
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
@@ -423,7 +412,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(RunningStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.COARSE);
+        await actions.poll({commit, state, rootState: root} as any, DOWNLOAD_TYPE.COARSE);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2);
@@ -439,7 +428,6 @@ describe(`download Results actions`, () => {
 
     it("can get coarse output results,commits and dispatch upload metadata", async (done) => {
         const commit = jest.fn();
-        const dispatch = jest.fn();
         const downloadStateMetadata = {downloadId: "1", status: CompleteStatusResponse};
         const root = mockRootState({
             modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
@@ -456,7 +444,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`/meta/adr/1`)
             .reply(200, mockSuccess({type: "coarse_output", description: "coarseOutput"}))
 
-        await actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.COARSE);
+        await actions.poll({commit, state, rootState: root} as any, DOWNLOAD_TYPE.COARSE);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(3);
@@ -469,10 +457,6 @@ describe(`download Results actions`, () => {
 
             expect(commit.mock.calls[2][0]["type"]).toBe("CoarseOutputDownloadComplete")
             expect(commit.mock.calls[2][0]["payload"]).toEqual(true)
-
-            expect(dispatch.mock.calls.length).toBe(1)
-            expect(dispatch.mock.calls[0]).toEqual(["metadata/getAdrUploadMetadata", "1", {"root": true}])
-
             done()
         }, 3100)
     });

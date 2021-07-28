@@ -3,7 +3,7 @@ import Vuex, {Store} from 'vuex';
 import {
     mockADRState,
     mockADRUploadState,
-    mockDownloadResultsState, mockError,
+    mockDownloadResultsState, mockError, mockMetadataState,
     mockModelCalibrateState
 } from "../../mocks";
 import DownloadResults from "../../../app/components/downloadResults/DownloadResults.vue";
@@ -15,6 +15,7 @@ import {DownloadResultsState} from "../../../app/store/downloadResults/downloadR
 import DownloadProgress from "../../../app/components/downloadResults/DownloadProgress.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import Tick from "../../../app/components/Tick.vue";
+import Download from "../../../app/components/downloadResults/Download.vue";
 
 const localVue = createLocalVue();
 
@@ -23,6 +24,7 @@ describe("Download Results component", () => {
     const mockSpectrumDownloadAction = jest.fn();
     const mockSummaryDownloadAction = jest.fn();
     const mockCoarseOutputDownloadAction = jest.fn();
+    const mockUploadMetadataAction = jest.fn();
 
     const mockDownloading = {
         downloading: true,
@@ -67,6 +69,13 @@ describe("Download Results component", () => {
                         downloadSummary: mockSummaryDownloadAction,
                         downloadCoarseOutput: mockCoarseOutputDownloadAction
                     }
+                },
+                metadata: {
+                    namespaced: true,
+                    state: mockMetadataState(),
+                    actions: {
+                        getAdrUploadMetadata: mockUploadMetadataAction
+                    }
                 }
             }
         });
@@ -76,7 +85,7 @@ describe("Download Results component", () => {
 
     it("renders as expected", () => {
         const store = createStore();
-        const wrapper = shallowMount(DownloadResults, {store, localVue});
+        const wrapper = mount(DownloadResults, {store, localVue, stubs: ["upload-modal"]});
 
         const headers = wrapper.findAll("h4");
         expectTranslated(headers.at(0), "Export model outputs for Spectrum",
@@ -132,7 +141,7 @@ describe("Download Results component", () => {
 
     it("does not display upload button when a user does not have permission", async () => {
         const store = createStore(false);
-        const wrapper = shallowMount(DownloadResults, {store});
+        const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
         const headers = wrapper.findAll("h4");
         expect(headers.length).toBe(3)
     });
@@ -223,7 +232,10 @@ describe("Download Results component", () => {
 
     it("can invoke spectrum download action", async () => {
         const store = createStore();
-        const wrapper = shallowMount(DownloadResults, {store});
+        const wrapper = mount(DownloadResults, {
+            store,
+            stubs: ["upload-modal"]
+        });
 
         const button = wrapper.find("#spectrum-download").find("button")
 
@@ -250,17 +262,16 @@ describe("Download Results component", () => {
             null,
             {spectrum: testError} as any);
 
-        const wrapper = shallowMount(DownloadResults, {store});
+        const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
 
         const button = wrapper.find("#spectrum-download").find("button")
 
         button.trigger("click")
 
-        expect(wrapper.find("error-alert-stub").props())
-            .toEqual({"error": {"detail": "TEST FAILED", "error": "OTHER_ERROR"}})
+        expect(wrapper.find("#error").text()).toBe( "TEST FAILED")
     });
 
-    it("can render complete text and tick when spectrum download action is complete", () => {
+    it("can fetch upload metadata when spectrum download action is complete", () => {
         const testComplete = {
             downloading: false,
             complete: true,
@@ -281,10 +292,8 @@ describe("Download Results component", () => {
             stubs: ["upload-modal"]
         });
 
-        const complete = wrapper.find("#spectrum-download").find(DownloadProgress).find("#download-complete-text")
-        expectTranslated(complete, "Download complete", "Téléchargement complet", store)
+        expect(mockUploadMetadataAction.mock.calls[0][1]).toBe("123")
         expect(wrapper.find(DownloadProgress).find(LoadingSpinner).exists()).toBe(false)
-        expect(wrapper.find(Tick).exists()).toBe(true)
     });
 
     it("does not call summary action when download is already in progress and can add props data to download progress", () => {
@@ -301,7 +310,7 @@ describe("Download Results component", () => {
 
     it("can invoke summary download action", async () => {
         const store = createStore();
-        const wrapper = shallowMount(DownloadResults, {store});
+        const wrapper = mount(DownloadResults, {store, stubs:["upload-modal"]});
 
         const button = wrapper.find("#summary-download").find("button")
 
@@ -350,17 +359,16 @@ describe("Download Results component", () => {
             null,
             {summary: testError} as any);
 
-        const wrapper = shallowMount(DownloadResults, {store});
+        const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
 
         const button = wrapper.find("#summary-download").find("button")
 
         button.trigger("click")
 
-        expect(wrapper.find("error-alert-stub").props())
-            .toEqual({"error": {"detail": "TEST FAILED", "error": "OTHER_ERROR"}})
+        expect(wrapper.find("#error").text()).toBe( "TEST FAILED")
     });
 
-    it("can render complete text and tick when summary download action is complete", () => {
+    it("can fetch upload metadata when summary download action is complete", () => {
         const testComplete = {
             downloading: false,
             complete: true,
@@ -381,10 +389,8 @@ describe("Download Results component", () => {
             stubs: ["upload-modal"]
         });
 
-        const complete = wrapper.find("#summary-download").find(DownloadProgress).find("#download-complete-text")
-        expectTranslated(complete, "Download complete", "Téléchargement complet", store)
+        expect(mockUploadMetadataAction.mock.calls[0][1]).toBe("123")
         expect(wrapper.find(DownloadProgress).find(LoadingSpinner).exists()).toBe(false)
-        expect(wrapper.find(Tick).exists()).toBe(true)
     });
 
     it("can download coarseOutput file when download is complete", () => {
@@ -426,7 +432,10 @@ describe("Download Results component", () => {
 
     it("can invoke coarseOutput download action", async () => {
         const store = createStore();
-        const wrapper = shallowMount(DownloadResults, {store});
+        const wrapper = mount(DownloadResults, {
+            store,
+            stubs: ["upload-modal"]
+        });
 
         const button = wrapper.find("#coarse-output-download").find("button")
 
@@ -450,42 +459,13 @@ describe("Download Results component", () => {
             null,
             {coarseOutput: testError} as any);
 
-        const wrapper = shallowMount(DownloadResults, {store});
-
+        const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
         const button = wrapper.find("#coarse-output-download").find("button")
 
         button.trigger("click")
-
-        expect(wrapper.find("error-alert-stub").props())
-            .toEqual({"error": {"detail": "TEST FAILED", "error": "OTHER_ERROR"}})
+        expect(wrapper.find("#error").text()).toBe("TEST FAILED")
     });
 
-    it("can render complete text and tick when coarseOutput download action is complete", () => {
-        const testComplete = {
-            downloading: false,
-            complete: true,
-            error: null,
-            downloadId: "123"
-        }
-        const store = createStore(
-            false,
-            jest.fn(),
-            false,
-            false,
-            null,
-            {coarseOutput: testComplete} as any);
-
-        const wrapper = mount(DownloadResults, {
-            store,
-            localVue,
-            stubs: ["upload-modal"]
-        });
-
-        const complete = wrapper.find("#coarse-output-download").find(DownloadProgress).find("#download-complete-text")
-        expectTranslated(complete, "Download complete", "Téléchargement complet", store)
-        expect(wrapper.find(DownloadProgress).find(LoadingSpinner).exists()).toBe(false)
-        expect(wrapper.find(Tick).exists()).toBe(true)
-    });
 });
 
 const doesNotCallAction = (store: Store<any>, mockAction = jest.fn(), id: string) => {
@@ -505,17 +485,17 @@ const doesNotCallAction = (store: Store<any>, mockAction = jest.fn(), id: string
     button.trigger("click")
 
     expect(mockAction.mock.calls.length).toBe(0)
-    expect(download.find(DownloadProgress).exists()).toBe(true)
+    expect(download.find(Download).exists()).toBe(true)
     expect(download.find(DownloadProgress).props())
-        .toEqual({complete: false, downloading: true, isUpload: false})
+        .toEqual({translateKey: "downloading", downloading: true})
 
     const downloading = download.find(DownloadProgress).find("#downloading")
+    expect(downloading.find(LoadingSpinner).exists()).toBe(true)
     expectTranslated(downloading, "Downloading...", "Téléchargement...", store)
-    expect(download.find(DownloadProgress).find(LoadingSpinner).exists()).toBe(true)
 }
 
 const downloadFile = (store: Store<any>, downloadResultsData: {}) => {
-    shallowMount(DownloadResults, {store});
+    mount(DownloadResults, {store, stubs: ["upload-modal"]});
 
     const realLocation = window.location
     delete window.location;

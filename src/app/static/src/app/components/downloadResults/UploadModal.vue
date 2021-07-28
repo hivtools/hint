@@ -32,7 +32,9 @@
                 </div>
             </div>
             <div class="pt-3">
-                <download-progress id="upload-download-progress" :is-upload="true" :downloading="downloadingFiles"/>
+                <download-progress id="upload-download-progress"
+                                   :translate-key="'downloadProgressForADR'"
+                                   :downloading="downloadingFiles"/>
             </div>
             <template v-slot:footer>
                 <button
@@ -81,6 +83,7 @@
         getSummaryDownload: () => void
         getSpectrumDownload: () => void
         sendUploadFilesToADR: () => void
+        getUploadMetadata: (id: string) => void
     }
 
     interface Computed {
@@ -190,17 +193,20 @@
                     .filter(key => this.uploadFiles.hasOwnProperty(key))
             },
             downloadSpectrum: mapActionByName("downloadResults", "downloadSpectrum"),
-            downloadSummary: mapActionByName("downloadResults", "downloadSummary")
+            downloadSummary: mapActionByName("downloadResults", "downloadSummary"),
+            getUploadMetadata: mapActionByName("metadata", "getAdrUploadMetadata")
         },
         computed: {
             ...mapStateProps<DownloadResultsState, keyof Computed>("downloadResults", {
                 spectrum: state => ({
                     downloading: state.spectrum.downloading,
                     complete: state.spectrum.complete,
+                    downloadId: state.spectrum.downloadId
                 }),
                 summary: state => ({
                     downloading: state.summary.downloading,
                     complete: state.summary.complete,
+                    downloadId: state.spectrum.downloadId
                 })
             }),
             ...mapStateProps<ADRState, keyof Computed>("adr", {
@@ -239,15 +245,23 @@
         uploadFiles() {
           this.setDefaultCheckedItems();
         },
-        summary() {
-          if (this.downloadIsReady()) {
-            this.sendUploadFilesToADR();
-          }
+        summary: {
+          handler(summary) {
+            if (this.open && this.downloadIsReady()) {
+              this.getUploadMetadata(summary.downloadId)
+              this.sendUploadFilesToADR();
+            }
+          },
+          deep: true
         },
-        spectrum() {
-          if (this.downloadIsReady()) {
-            this.sendUploadFilesToADR();
-          }
+        spectrum: {
+          handler(spectrum) {
+            if (this.open && this.downloadIsReady()) {
+              this.getUploadMetadata(spectrum.downloadId)
+              this.sendUploadFilesToADR();
+            }
+          },
+          deep: true
         }
       }
     });

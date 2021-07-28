@@ -3,50 +3,22 @@
         <div class="row">
             <div class="col-sm">
                 <div id="spectrum-download">
-                    <h4 v-translate="'exportOutputs'"></h4>
-                    <button class="btn btn-red btn-lg my-3"
-                            @click="downloadSpectrum">
-                        <span v-translate="'export'"></span>
-                        <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                    </button>
-                    <div v-if="!uploadModalOpen">
-                        <download-progress id="spectrum-progress"
-                                           :complete="spectrum.complete"
-                                           :downloading="spectrum.downloading">
-                        </download-progress>
-                    </div>
-                    <error-alert id="spectrum-error" v-if="spectrum.error" :error="spectrum.error"></error-alert>
+                  <download :translate-key="translation.spectrum"
+                            @click="downloadSpectrum"
+                            :modal-open="uploadModalOpen"
+                            :file="spectrum"/>
                 </div>
                 <div id="coarse-output-download">
-                    <h4 class="mt-4" v-translate="'downloadCoarseOutput'"></h4>
-                    <button class="btn btn-red btn-lg my-3"
-                            @click="downloadCoarseOutput">
-                        <span v-translate="'download'"></span>
-                        <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                    </button>
-                    <div v-if="!uploadModalOpen">
-                        <download-progress id="coarse-output-progress"
-                                           :complete="coarseOutput.complete"
-                                           :downloading="coarseOutput.downloading">
-                        </download-progress>
-                    </div>
-                    <error-alert id="coarse-output-error" v-if="coarseOutput.error"
-                                 :error="coarseOutput.error"></error-alert>
+                  <download :translate-key="translation.coarse"
+                            @click="downloadCoarseOutput"
+                            :modal-open="uploadModalOpen"
+                            :file="coarseOutput"/>
                 </div>
                 <div id="summary-download">
-                    <h4 class="mt-4" v-translate="'downloadSummaryReport'"></h4>
-                    <button class="btn btn-red btn-lg my-3"
-                            @click="downloadSummary">
-                        <span v-translate="'download'"></span>
-                        <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                    </button>
-                    <div v-if="!uploadModalOpen">
-                        <download-progress id="summary-progress"
-                                           :complete="summary.complete"
-                                           :downloading="summary.downloading">
-                        </download-progress>
-                    </div>
-                    <error-alert id="summary-error" v-if="summary.error" :error="summary.error"></error-alert>
+                  <download :translate-key="translation.summary"
+                            @click="downloadSummary"
+                            :modal-open="uploadModalOpen"
+                            :file="summary"/>
                 </div>
             </div>
             <div id="upload" v-if="hasUploadPermission" class="col-sm">
@@ -82,7 +54,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
-    import {DownloadIcon, UploadIcon} from "vue-feather-icons";
+    import {UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
     import LoadingSpinner from "../LoadingSpinner.vue";
@@ -94,7 +66,7 @@
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
     import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
     import {DownloadResultsDependency} from "../../types";
-    import DownloadProgress from "./DownloadProgress.vue";
+    import Download from "./Download.vue";
 
     interface Computed {
         uploadingStatus: string,
@@ -109,6 +81,7 @@
         spectrum: Partial<DownloadResultsDependency>,
         coarseOutput: Partial<DownloadResultsDependency>,
         summary: Partial<DownloadResultsDependency>,
+        translation: Record<string, any>
     }
 
     interface UploadError {
@@ -126,6 +99,7 @@
         getSummaryDownload: () => void
         getSpectrumDownload: () => void
         getCoarseOutputDownload: () => void
+        getUploadMetadata: (id: string) => void
         downloadUrl: (downloadId: string) => string
     }
 
@@ -181,54 +155,62 @@
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
-            )
+            ),
+          translation() {
+            return {
+              spectrum: {header: 'exportOutputs', button: 'export'},
+              coarse: {header: 'downloadCoarseOutput', button: 'download'},
+              summary: {header: 'downloadSummaryReport', button: 'download'}
+            }
+          }
         },
         methods: {
             downloadUrl(downloadId) {
-                return `/download/result/${downloadId}`
+                return `/download/result/${downloadId}`;
             },
             handleUploadModal() {
-                this.uploadModalOpen = true
+                this.uploadModalOpen = true;
             },
             downloadSpectrum() {
                 if (!this.spectrum.downloading) {
-                    this.getSpectrumDownload()
+                    this.getSpectrumDownload();
                 }
             },
             downloadSummary() {
                 if (!this.summary.downloading) {
-                    this.getSummaryDownload()
+                    this.getSummaryDownload();
                 }
             },
             downloadCoarseOutput() {
                 if (!this.coarseOutput.downloading) {
-                    this.getCoarseOutputDownload()
+                    this.getCoarseOutputDownload();
                 }
             },
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
             getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
             getSpectrumDownload: mapActionByName("downloadResults", "downloadSpectrum"),
             getSummaryDownload: mapActionByName("downloadResults", "downloadSummary"),
-            getCoarseOutputDownload: mapActionByName("downloadResults", "downloadCoarseOutput")
+            getCoarseOutputDownload: mapActionByName("downloadResults", "downloadCoarseOutput"),
+            getUploadMetadata: mapActionByName("metadata", "getAdrUploadMetadata")
         },
         mounted() {
             this.getUserCanUpload();
             this.getUploadFiles()
         },
         components: {
-            DownloadIcon,
             UploadIcon,
             LoadingSpinner,
             Tick,
             ErrorAlert,
             UploadModal,
-            DownloadProgress
+            Download
         },
         watch: {
             summary: {
                 handler(summary) {
                     if (!this.uploadModalOpen && summary.complete) {
-                        window.location.assign(this.downloadUrl(summary.downloadId!))
+                        window.location.assign(this.downloadUrl(summary.downloadId));
+                        this.getUploadMetadata(summary.downloadId);
                     }
                 },
                 deep: true
@@ -236,7 +218,8 @@
             spectrum: {
                 handler(spectrum) {
                     if (!this.uploadModalOpen && spectrum.complete) {
-                        window.location.assign(this.downloadUrl(spectrum.downloadId!))
+                        window.location.assign(this.downloadUrl(spectrum.downloadId));
+                        this.getUploadMetadata(spectrum.downloadId);
                     }
                 },
                 deep: true
@@ -244,7 +227,8 @@
             coarseOutput: {
                 handler(coarseOutput) {
                     if (!this.uploadModalOpen && coarseOutput.complete) {
-                        window.location.assign(this.downloadUrl(coarseOutput.downloadId!))
+                        window.location.assign(this.downloadUrl(coarseOutput.downloadId));
+                        this.getUploadMetadata(coarseOutput.downloadId);
                     }
                 },
                 deep: true

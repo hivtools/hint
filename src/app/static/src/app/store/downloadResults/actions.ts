@@ -1,4 +1,4 @@
-import {ActionContext, ActionTree, Dispatch} from "vuex";
+import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
 import {DownloadResultsState, DOWNLOAD_TYPE} from "./downloadResults";
 import {api} from "../../apiService";
@@ -10,10 +10,6 @@ export interface DownloadResultsActions {
     downloadSpectrum: (store : ActionContext<DownloadResultsState, RootState>) => void
     downloadCoarseOutput: (store : ActionContext<DownloadResultsState, RootState>) => void
     poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: string) => void
-}
-
-const getAdrUploadMeta = (dispatch: Dispatch, downloadId: string) => {
-    dispatch("metadata/getAdrUploadMetadata", downloadId, {root: true})
 }
 
 export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResultsActions = {
@@ -73,11 +69,6 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             else if (downloadType === DOWNLOAD_TYPE.SUMMARY) {
                 getSummaryDownloadStatus(context)
             }
-            /*downloadType === DOWNLOAD_TYPE.SPECTRUM ? getSpectrumDownloadStatus(context)
-                : downloadType === DOWNLOAD_TYPE.COARSE ? getCoarseOutputDownloadStatus(context)
-                : getSummaryDownloadStatus(context)
-
-             */
         }, 2000);
 
         commit({type: "PollingStatusStarted", payload: {pollId: id, downloadType: downloadType}});
@@ -85,7 +76,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 };
 
 export const getSummaryDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
-    const {commit, state, dispatch} = context;
+    const {commit, state} = context;
     const downloadId = state.summary.downloadId;
     return api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.SummaryDownloadStatusUpdated)
@@ -93,14 +84,13 @@ export const getSummaryDownloadStatus = async function (context: ActionContext<D
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
         .then(() => {
             if (state.summary.status && state.summary.status.done) {
-                getAdrUploadMeta(dispatch, downloadId)
                 commit({type: DownloadResultsMutation.SummaryDownloadComplete, payload: true})
             }
         });
 };
 
 export const getSpectrumDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
-    const {commit, state, dispatch} = context;
+    const {commit, state} = context;
     const downloadId = state.spectrum.downloadId;
     return api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.SpectrumDownloadStatusUpdated)
@@ -108,14 +98,13 @@ export const getSpectrumDownloadStatus = async function (context: ActionContext<
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
         .then(() => {
             if (state.spectrum.status && state.spectrum.status.done) {
-                getAdrUploadMeta(dispatch, downloadId)
                 commit({type: DownloadResultsMutation.SpectrumDownloadComplete, payload: true})
             }
         });
 };
 
 export const getCoarseOutputDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
-    const {commit, state, dispatch} = context;
+    const {commit, state} = context;
     const downloadId = state.coarseOutput.downloadId;
     return api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.CoarseOutputDownloadStatusUpdated)
@@ -123,7 +112,6 @@ export const getCoarseOutputDownloadStatus = async function (context: ActionCont
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
         .then(() => {
             if (state.coarseOutput.status && state.coarseOutput.status.done) {
-                getAdrUploadMeta(dispatch, downloadId)
                 commit({type: DownloadResultsMutation.CoarseOutputDownloadComplete, payload: true})
             }
         });
