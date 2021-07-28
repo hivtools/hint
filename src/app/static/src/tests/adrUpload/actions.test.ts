@@ -140,6 +140,19 @@ describe("ADR upload actions", () => {
         });
     });
 
+    it("getUploadFiles takes release into account", async () => {
+        const commit = jest.fn();
+
+        const root = mockRootState({
+            baseline: mockBaselineState({selectedDataset: {id: "test-dataset", release: "2.0"} as any}),
+            projects: mockProjectsState({currentProject: {name: "project1"} as any})
+        });
+
+        await actions.getUploadFiles({commit, rootState: root} as any);
+
+        expect(mockAxios.history["get"][0]["url"]).toBe("/adr/datasets/test-dataset?release=2.0");
+    });
+
     const testGetUploadFilesInputs = async (enableFeatureSwitch: boolean) => {
         switches.adrPushInputs = enableFeatureSwitch ? "true" : null;
 
