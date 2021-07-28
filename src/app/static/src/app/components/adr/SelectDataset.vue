@@ -423,7 +423,6 @@
         updateDatasetVersion(releaseId, enableImport){
             this.newDatasetVersionId = releaseId;
             this.enableImport = enableImport;
-            // console.log("new id", this.newDatasetVersionId, this.enableImport)
         }
         },
         mounted() {
@@ -432,6 +431,6 @@
         },
         beforeDestroy() {
             this.stopPolling();
-        }
+        },
     });
 </script>

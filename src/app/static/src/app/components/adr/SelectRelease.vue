@@ -7,8 +7,8 @@
                 value="useData"
                 v-model="choiceADR"
             />
-            <label for="useData" v-translate="'useData'" class="pr-1"></label
-            ><span class="icon-small" v-tooltip="translate('datasetTooltip')">
+            <label for="useData" v-translate="'useData'" class="pr-1"></label>
+            <span class="icon-small" v-tooltip="translate('datasetTooltip')">
                 <help-circle-icon></help-circle-icon>
             </span>
             <br />
@@ -24,8 +24,8 @@
                 for="useRelease"
                 v-translate="'useRelease'"
                 class="pr-1"
-            ></label
-            ><span class="icon-small" v-tooltip="translate('releaseTooltip')">
+            ></label>
+            <span class="icon-small" v-tooltip="translate('releaseTooltip')">
                 <help-circle-icon></help-circle-icon>
             </span>
             <br />
@@ -157,7 +157,6 @@
                 }
             },
             selectedDatasetOrRelease() {
-                // console.log(newer, old)
                 this.$emit("selected-dataset-version", this.newReleaseId, !!this.selectedDatasetOrRelease);
             },
         },

@@ -2,16 +2,8 @@ import {shallowMount} from "@vue/test-utils";
 import SelectRelease from "../../../app/components/adr/SelectRelease.vue";
 import Vuex from "vuex";
 import {ADRMutation} from "../../../app/store/adr/mutations";
-import registerTranslations from "../../../app/store/translations/registerTranslations";import {
-    mockBaselineState,
-    mockDataset,
-    mockDatasetResource,
-    mockError,
-    mockErrorsState,
-    mockProjectsState,
-    mockRootState,
-    mockShapeResponse
-} from "../../mocks";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {mockRootState} from "../../mocks";
 import {expectTranslated} from "../../testHelpers";
 import TreeSelect from '@riophae/vue-treeselect';
 import {Language} from "../../../app/store/translations/locales";
@@ -35,10 +27,7 @@ describe("select release", () => {
                 adr: {
                     namespaced: true,
                     state: {
-                        // schemas: schemas,
-                        // datasets: fakeRawDatasets,
-                        releases,
-                        // ...adrProps
+                        releases
                     },
                     actions: {
                         getDatasets: jest.fn(),
@@ -58,7 +47,6 @@ describe("select release", () => {
     afterEach(() => {
         jest.resetAllMocks();
     });
-    // const getWrapper() = shallowMount(SelectRelease, {store: getStore()})
 
     it("renders select release", () => {
         let store = getStore()
