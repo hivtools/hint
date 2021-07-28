@@ -17,19 +17,19 @@
     }
 
     export default Vue.extend<unknown, unknown, unknown, Props>({
-      name: "DownloadProgress",
-      components: {
-        LoadingSpinner
-      },
-      props: {
-        downloading: {
-          required: true,
-          type: Boolean
+        name: "DownloadProgress",
+        components: {
+            LoadingSpinner
         },
-        translateKey: {
-          required: true,
-          type: String
+        props: {
+            downloading: {
+              required: true,
+              type: Boolean
+          },
+            translateKey: {
+              required: true,
+              type: String
+            }
         }
-      }
     })
 </script>

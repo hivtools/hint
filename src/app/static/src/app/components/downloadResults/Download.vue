@@ -24,45 +24,45 @@
     import {DownloadResultsDependency} from "../../types";
 
     interface downloadTranslate {
-      header: string,
-      button: string
+        header: string,
+        button: string
     }
 
     interface Props {
-      file: DownloadResultsDependency,
-      translateKey: downloadTranslate,
-      modalOpen: boolean
+        file: DownloadResultsDependency,
+        translateKey: downloadTranslate,
+        modalOpen: boolean
     }
 
     interface Methods {
-      download: () => void
+        download: () => void
     }
 
     export default Vue.extend<unknown, Methods, unknown, Props>({
-      name: "Download",
-      components: {
-        DownloadIcon,
-        ErrorAlert,
-        DownloadProgress
-      },
-      props: {
-        file: {
-          required: true,
-          type: Object
+        name: "Download",
+        components: {
+          DownloadIcon,
+          ErrorAlert,
+          DownloadProgress
         },
-        translateKey: {
-          required: true,
-          type: Object
-        },
-        modalOpen: {
-          required: true,
-          type: Boolean
-        }
+        props: {
+          file: {
+            required: true,
+            type: Object
+         },
+          translateKey: {
+            required: true,
+            type: Object
+          },
+          modalOpen: {
+            required: true,
+            type: Boolean
+          }
       },
-      methods: {
-        download() {
-          this.$emit("click")
+        methods: {
+          download() {
+            this.$emit("click")
+         }
         }
-      }
     })
 </script>
