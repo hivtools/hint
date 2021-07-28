@@ -25,6 +25,8 @@ describe("select release", () => {
             notes: "releaseNotes"
         }
     ]
+    const getReleasesMock = jest.fn();
+    const clearReleasesMock = jest.fn();
     
     const getStore = (releases = releasesArray) => {
         const store = new Vuex.Store({
@@ -40,10 +42,10 @@ describe("select release", () => {
                     },
                     actions: {
                         getDatasets: jest.fn(),
-                        getReleases: jest.fn()
+                        getReleases: getReleasesMock
                     },
                     mutations: {
-                        [ADRMutation.ClearReleases]: jest.fn(),
+                        [ADRMutation.ClearReleases]: clearReleasesMock,
                         [ADRMutation.SetReleases]: jest.fn()
                     }
                 },
@@ -62,6 +64,7 @@ describe("select release", () => {
         let store = getStore()
         const rendered = shallowMount(SelectRelease, {store});
         rendered.setProps({newDatasetId: "datasetId"})
+        expect(getReleasesMock.mock.calls.length).toBe(1);
         expect(rendered.find("#selectRelease").exists()).toBe(true);
         expect(rendered.findAll("input").length).toBe(2);
         const labels = rendered.findAll("label")
@@ -99,6 +102,14 @@ describe("select release", () => {
         expect(rendered.find("#selectRelease").exists()).toBe(false);
     });
 
+    it("does not get releases if dataset id is cleared", () => {
+        const rendered = shallowMount(SelectRelease, {store: getStore()});
+        rendered.setProps({newDatasetId: "datasetId"})
+        expect(getReleasesMock.mock.calls.length).toBe(1);
+        rendered.setProps({newDatasetId: null})
+        expect(getReleasesMock.mock.calls.length).toBe(1);
+    });
+
     it("can render tooltips in English", () => {
         const mockTooltip = jest.fn();
         const store = getStore()
@@ -122,5 +133,46 @@ describe("select release", () => {
 
         expect(mockTooltip.mock.calls[0][1].value).toBe("Chargez les dernières données, qu'elles soient incluses dans une version (une version étiquetée) ou non");
         expect(mockTooltip.mock.calls[1][1].value).toBe("Charger des données à partir d'une version étiquetée particulière, qui peuvent ne pas être les dernières données");
+    });
+
+    it("radial toggles whether release tree select is disabled", async (done) => {
+        let store = getStore()
+        const rendered = shallowMount(SelectRelease, {store});
+        rendered.setProps({newDatasetId: "datasetId"})
+        const select = rendered.find(TreeSelect);
+        expect(select.attributes("disabled")).toBe("true");
+        const selectRelease = rendered.findAll("input").at(1)
+        await selectRelease.trigger("click")
+        expect(select.attributes("disabled")).toBeUndefined();
+        done()
+    });
+
+    it("selecting a release emits release id and enables import", async (done) => {
+        let store = getStore()
+        const rendered = shallowMount(SelectRelease, {store});
+        rendered.setProps({newDatasetId: "datasetId"})
+        const selectRelease = rendered.findAll("input").at(1)
+        await selectRelease.trigger("click")
+        rendered.setData({newReleaseId: "releaseId"})
+        expect(rendered.emitted("selected-dataset-version")).toStrictEqual([[null, true], [null, false], ["releaseId", true]])
+        done()
+    });
+
+    it("changing newDatasetId clears releases and resets radial and newReleaseId", async () => {
+        let store = getStore()
+        const rendered = shallowMount(SelectRelease, {store});
+        rendered.setProps({newDatasetId: "datasetId"})
+        const selectRelease = rendered.findAll("input").at(1);
+        await selectRelease.trigger("click")
+        rendered.setData({newReleaseId: "releaseId"})
+        expect(rendered.vm.$data.newReleaseId).toBe("releaseId");
+        expect(rendered.vm.$data.choiceADR).toBe("useRelease");
+
+        rendered.setProps({newDatasetId: "datasetId2"})
+        expect(clearReleasesMock.mock.calls.length).toBe(2);
+        const select = rendered.find(TreeSelect);
+        expect(select.attributes("disabled")).toBe("true");
+        expect(rendered.vm.$data.newReleaseId).toBe(null);
+        expect(rendered.vm.$data.choiceADR).toBe("useData");
     });
 });
