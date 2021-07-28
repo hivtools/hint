@@ -1,6 +1,10 @@
-# hint 1.43.2
+# hint 1.44.1
 
 * Import releases from ADR: fetch data from correct ADR release
+
+# hint 1.44.0
+
+* Modify Rename dialog modal and add notes text area
 
 # hint 1.43.1
 
