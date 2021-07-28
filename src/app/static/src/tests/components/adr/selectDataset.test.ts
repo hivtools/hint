@@ -528,7 +528,7 @@ describe("select dataset", () => {
         const rendered = mount(SelectDataset, {
             store,
             data: () => ({
-                newDatasetVersionId: "1.0"
+                newDatasetReleaseId: "1.0"
             }),
             stubs: ["tree-select"]
         });

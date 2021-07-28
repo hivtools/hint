@@ -163,7 +163,7 @@
         showConfirmation: boolean;
         loading: boolean;
         newDatasetId: string | null;
-        newDatasetVersionId?: string;
+        newDatasetReleaseId?: string;
         pollingId: number | null;
     }
 
@@ -295,7 +295,7 @@
             importANC: mapActionByName("surveyAndProgram", "importANC"),
             async importDataset() {
                 this.loading = true;
-                await this.getDataset({id: this.newDatasetId!, release: this.newDatasetVersionId});
+                await this.getDataset({id: this.newDatasetId!, release: this.newDatasetReleaseId});
 
                 const {
                     pjnz,
