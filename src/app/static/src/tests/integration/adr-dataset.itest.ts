@@ -120,7 +120,6 @@ describe("ADR dataset-related actions", () => {
         expect(dataset).not.toBeNull()
 
         // 3. update dataset's organisation
-        commit.mockClear();
         const root = {
             ...rootState,
             baseline: {
@@ -129,13 +128,20 @@ describe("ADR dataset-related actions", () => {
                 }
             }
         };
-        const adr = {schemas, datasets: []}; //do not include datasets in adr state, the action will fetch them
-        await adrActions.getAndSetDatasets({commit, rootState, state: adr} as any, dataset.id)
 
         // 4. check can upload
         commit.mockClear();
-        const dispatch = jest.fn();
-        await adrActions.getUserCanUpload({commit, rootState: root, state: adr, dispatch} as any);
+        const dispatch = jest.fn().mockImplementation((type, payload) => {
+            if (type === "getDataset") {
+                root.baseline.selectedDataset = {
+                    id: payload.id,
+                    organization: {
+                        id: dataset.organization.id
+                    }
+                } as any
+            }
+        });
+        await adrActions.getUserCanUpload({commit, rootState: root, state: {schemas}, dispatch} as any);
         expect(commit.mock.calls[0][0].type).toBe(ADRMutation.SetUserCanUpload);
         expect(commit.mock.calls[0][0].payload).toBe(true);
     });
@@ -236,7 +242,7 @@ describe("ADR dataset-related actions", () => {
                 }
             }
         };
-        
+
         const uploadFilesPayload = [
             {
                 resourceType: "type1",
@@ -254,9 +260,8 @@ describe("ADR dataset-related actions", () => {
         expect(commit.mock.calls[1][0]["payload"]).toBe(1);
         expect(commit.mock.calls[2][0]["type"]).toBe("SetADRUploadError");
         expect(commit.mock.calls[2][0]["payload"]["error"]).toBe("OTHER_ERROR");
-        expect(dispatch.mock.calls.length).toBe(2);
-        expect(dispatch.mock.calls[0][0]).toBe("adr/getAndSetDatasets");
-        expect(dispatch.mock.calls[1][0]).toBe("getUploadFiles");
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("getUploadFiles");
     }, 7000);
 
 });

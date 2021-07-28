@@ -93,11 +93,15 @@ export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
     async refreshDatasetMetadata(context) {
         const {commit, state, rootState} = context
         if (state.selectedDataset) {
+            let url = `/adr/datasets/${state.selectedDataset.id}`;
+            if (state.selectedDataset.release) {
+                url += '?' + new URLSearchParams({release: state.selectedDataset.release});
+            }
             const schemas = rootState.adr.schemas!
             await api(context)
                 .ignoreErrors()
                 .ignoreSuccess()
-                .get(`/adr/datasets/${state.selectedDataset.id}`)
+                .get(url)
                 .then((response) => {
                     if (response) {
                         const metadata = response.data;
