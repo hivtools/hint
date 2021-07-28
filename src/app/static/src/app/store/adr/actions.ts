@@ -69,7 +69,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .withError(ADRMutation.SetADRError)
             .ignoreSuccess()
             .get(url)
-            .then(async (response) => {
+            .then(response => {
                 if (response) {
                     const dataset = datasetFromMetadata(response.data, state.schemas!, release);
                     commit(`baseline/${BaselineMutation.SetDataset}`, dataset, {root: true});
