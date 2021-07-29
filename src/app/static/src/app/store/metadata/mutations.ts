@@ -1,7 +1,7 @@
 import {Mutation, MutationTree} from 'vuex';
 import {MetadataState} from "./metadata";
 import {PlottingMetadataResponse, Error} from "../../generated";
-import {PayloadWithType} from "../../types";
+import {GenericChartMetadataResponse, PayloadWithType} from "../../types";
 
 type MetadataMutation = Mutation<MetadataState>
 

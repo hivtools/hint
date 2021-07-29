@@ -3,7 +3,7 @@ import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {MetadataState} from "./metadata";
 
-export type MetadataActionTypes = "PlottingMetadataFetched"
+export type MetadataActionTypes = "PlottingMetadataFetched" | "GenericChartMetadataFetched"
 export type MetadataErrorActionTypes = "PlottingMetadataError"
 
 export interface MetadataActions {

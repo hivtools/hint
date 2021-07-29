@@ -155,3 +155,42 @@ export interface UploadFile {
     resourceUrl: string | null,
     lastModified: string | null
 }
+
+export interface DatasetConfig {
+    id: string,
+    type: "standard" | "custom",
+    label: string,
+    module?: string,
+    prop?: string,
+    filters?: Filter[]
+}
+
+export interface DataSourceConfig {
+    id: string,
+    type: "fixed" | "editable",
+    label: string,
+    datasetId: string
+    showFilters: true
+    showIndicators: true
+}
+
+export interface GenericChartMetadata {
+    datasets: DatasetConfig[],
+    dataSelectors: {
+        dataSources: DataSourceConfig[]
+    },
+    subplots?: {
+        columns: number,
+        distinctColumn: string,
+        heightPerRow: number
+    },
+    chartConfig: {
+        id: string,
+        label: string,
+        config: string
+    }[]
+}
+
+export interface GenericChartMetadataResponse {
+    [key: string]: string | GenericChartMetadata;
+}

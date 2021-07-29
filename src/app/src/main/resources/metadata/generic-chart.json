@@ -54,11 +54,15 @@
         }
       ]
     },
+    "subplots": {
+      "columns": 5,
+      "distinctColumn": "area_name",
+      "heightPerRow": 100
+    },
     "chartConfig": [
       {
         "id": "scatter",
-        "label": "Scatter",
-        "config": "<INPUT_TIME_SERIES_CONFIG_JSONATA>"
+        "label": "Scatter"
       }
     ]
   }
