@@ -1,0 +1,75 @@
+(
+$areaNames := $distinct(data.area_name);
+{
+    "data":$map($areaNames, function($v, $i) {(
+        $areaData := data[area_name=$v];
+        [
+            {
+                "name": $v,
+                "showlegend": false,
+                "x": $areaData.time_period,
+                "y": $areaData.value,
+                "xaxis": 'x' & ($i+1),
+                "yaxis": 'y' & ($i+1),
+                "type": "scatter",
+                "line": {
+                    "color": "rgb(51, 51, 51)"
+                }
+            },
+            {
+                "showlegend": false,
+                "x": data[area_name=$v].time_period,
+                "y": $map(data[area_name=$v].value, function($thv, $thi) {
+                       (($thi > 0) and $thv > (1.25 * ($areaData.value)[$thi-1]))
+                       or
+                       (($thi < $count($areaData.value)-1) and ($areaData.value)[$thi+1] > (1.25 * $thv))
+                       or
+                       (($thi > 0) and $thv < (0.75 * ($areaData.value)[$thi-1]))
+                       or
+                       (($thi < $count($areaData.value)-1) and ($areaData.value)[$thi+1] < (0.75 * $thv))
+                       ? $thv : null
+                 }),
+                "xaxis": 'x' & ($i+1),
+                "yaxis": 'y' & ($i+1),
+                "type": "scatter",
+                "line": {
+                    "color": "rgb(255, 51, 51)"
+                },
+                "hoverinfo": "none"
+            }
+        ]
+    )}).*,
+    "config": {"responsive": true},
+    "layout": $merge([
+        {
+            "grid": {"columns": subplots.columns, "rows": subplots.rows, "pattern": 'independent'},
+            "annotations": $map($areaNames, function($v, $i) {
+                {
+                    "text": $v & " (" & (data[area_name=$v].area_id)[0] & ")",
+                    "textfont": {},
+                    "showarrow": false,
+                    "x": 0.5,
+                    "xanchor": "middle",
+                    "xref": "x" & ($i+1) & " domain",
+                    "y": 1,
+                    "yanchor": "middle",
+                    "yref": "y" & ($i+1) & " domain"
+                }
+            })
+        },
+        [1..$count($areaNames)]{
+            "yaxis"&$: {
+                "rangemode": "tozero",
+                "zeroline": false,
+                "tickfont": {
+                    "color": "grey"
+                }
+            },
+            "xaxis"&$: {
+                "tickfont": {
+                    "color": "grey"
+                }
+            }
+        }
+    ])
+})
