@@ -49,13 +49,7 @@ describe(`download`, () => {
             error: null
         }
         const button = wrapper.find("button")
-        expect(button.classes()).toEqual( ["btn", "btn-lg", "my-3", "btn-secondary"])
-        expect(button.attributes("disabled")).toEqual( "disabled")
-
         await wrapper.setProps({file: downloadSummary})
-        expect(button.classes()).toEqual( ["btn", "btn-lg", "my-3", "btn-red"])
-        expect(button.attributes("disabled")).toBeUndefined()
-
         button.trigger("click")
         expect(wrapper.emitted().click.length).toBe(1)
     })

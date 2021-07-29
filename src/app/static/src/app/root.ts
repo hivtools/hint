@@ -38,6 +38,7 @@ import {
     DownloadResultsState,
     initialDownloadResultsState
 } from "./store/downloadResults/downloadResults";
+import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibrate/mutations";
 
 export interface TranslatableState {
     language: Language
@@ -110,6 +111,11 @@ const resetState = (store: Store<RootState>): void => {
 
             if (type[0] == "modelRun" && ModelRunUpdates.includes(type[1] as ModelRunMutation)) {
                 store.commit(RootMutation.ResetOutputs);
+            }
+
+            console.log(type[1] + type[0])
+            if (type[0] == "modelCalibrate" && ModelCalibrateUpdates.includes(type[1] as ModelCalibrateMutation)) {
+                store.commit(RootMutation.ResetDownload);
             }
         }
     })

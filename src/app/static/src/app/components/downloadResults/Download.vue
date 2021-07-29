@@ -1,10 +1,7 @@
 <template>
   <div id="download">
     <h4 v-translate="translateKey.header"></h4>
-    <button class="btn btn-lg my-3"
-            :disabled="file.downloading"
-            :class="file.downloading ? 'btn-secondary' : 'btn-red'"
-            @click="download">
+    <button class="btn btn-red btn-lg my-3" @click="download">
       <span v-translate="translateKey.button"></span>
       <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
     </button>

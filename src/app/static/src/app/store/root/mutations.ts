@@ -22,7 +22,8 @@ export enum RootMutation {
     ResetSelectedDataType = "ResetSelectedDataType",
     ResetOptions = "ResetOptions",
     ResetOutputs = "ResetOutputs",
-    SetProject = "SetProject"
+    SetProject = "SetProject",
+    ResetDownload = "ResetDownload"
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -117,6 +118,10 @@ export const mutations: MutationTree<RootState> = {
 
     [RootMutation.ResetOptions](state: RootState) {
         Object.assign(state.modelOptions, initialModelOptionsState());
+    },
+
+    [RootMutation.ResetDownload](state: RootState) {
+        Object.assign(state.downloadResults, initialDownloadResultsState());
     },
 
     [RootMutation.ResetOutputs](state: RootState) {
