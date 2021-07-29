@@ -421,7 +421,6 @@
             },
             updateDatasetRelease(releaseId){
                 this.newDatasetReleaseId = releaseId;
-                console.log("release update", this.newDatasetReleaseId)
             },
             updateValid(valid){
                 this.valid = valid;
