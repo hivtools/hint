@@ -246,6 +246,32 @@ class ADRControllerTests : HintrControllerTests()
     }
 
     @Test
+    fun `gets dataset by id and version`()
+    {
+        val expectedUrl = "package_show?id=1234&release=1.0"
+        val mockClient = mock<ADRClient> {
+            on { get(expectedUrl) } doReturn ResponseEntity
+                    .ok()
+                    .body("whatever")
+        }
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mockBuilder,
+                objectMapper,
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
+        val result = sut.getDataset("1234", "1.0")
+        assertThat(result.body!!).isEqualTo("whatever")
+    }
+
+    @Test
     fun `returns map of names to adr file schemas`()
     {
         val sut = ADRController(

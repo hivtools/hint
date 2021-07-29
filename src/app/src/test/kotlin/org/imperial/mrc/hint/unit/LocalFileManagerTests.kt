@@ -108,6 +108,20 @@ class LocalFileManagerTests
     }
 
     @Test
+    fun `saves file from ADR if URL has query string`()
+    {
+        val mockClient = mock<ADRClient> {
+            on { getInputStream(any()) } doReturn BufferedInputStream("test content".byteInputStream())
+        }
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+        val sut = LocalFileManager(mock(), mock(), mock(), mockBuilder)
+        val file = sut.saveFile("some-url/name.csv?version=1.0", FileType.Survey)
+        assertThat(file.filename).isEqualTo("name.csv")
+    }
+
+    @Test
     fun `does not save file from ADR if file matches an existing hash and returns details`()
     {
 

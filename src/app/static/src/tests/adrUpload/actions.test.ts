@@ -140,6 +140,19 @@ describe("ADR upload actions", () => {
         });
     });
 
+    it("getUploadFiles takes release into account", async () => {
+        const commit = jest.fn();
+
+        const root = mockRootState({
+            baseline: mockBaselineState({selectedDataset: {id: "test-dataset", release: "2.0"} as any}),
+            projects: mockProjectsState({currentProject: {name: "project1"} as any})
+        });
+
+        await actions.getUploadFiles({commit, rootState: root} as any);
+
+        expect(mockAxios.history["get"][0]["url"]).toBe("/adr/datasets/test-dataset?release=2.0");
+    });
+
     const testGetUploadFilesInputs = async (enableFeatureSwitch: boolean) => {
         switches.adrPushInputs = enableFeatureSwitch ? "true" : null;
 
@@ -518,11 +531,8 @@ describe("ADR upload actions", () => {
         expect(commit.mock.calls[2][0]["payload"]).toBe(2);
         expect(commit.mock.calls[3][0]["type"]).toBe("ADRUploadCompleted");
         expect(commit.mock.calls[3][0]["payload"]).toEqual(success);
-        expect(dispatch.mock.calls.length).toBe(2);
-        expect(dispatch.mock.calls[0][0]).toBe("adr/getAndSetDatasets");
-        expect(dispatch.mock.calls[0][1]).toBe("datasetId");
-        expect(dispatch.mock.calls[0][2]).toEqual({root: true});
-        expect(dispatch.mock.calls[1][0]).toBe("getUploadFiles");
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("getUploadFiles");
         expect(mockAxios.history.post.length).toBe(2);
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=zip");
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/2");
@@ -597,9 +607,8 @@ describe("ADR upload actions", () => {
         expect(commit.mock.calls[1][0]["payload"]).toBe(1);
         expect(commit.mock.calls[2][0]["type"]).toBe("SetADRUploadError");
         expect(commit.mock.calls[2][0]["payload"]).toEqual({"detail": "failed", "error": "OTHER_ERROR"});
-        expect(dispatch.mock.calls.length).toBe(2);
-        expect(dispatch.mock.calls[0][0]).toBe("adr/getAndSetDatasets");
-        expect(dispatch.mock.calls[1][0]).toBe("getUploadFiles");
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("getUploadFiles");
         expect(mockAxios.history.post.length).toBe(1);
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=summary");
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-report/1");
@@ -676,7 +685,6 @@ describe("ADR upload actions", () => {
         mockAxios.onGet(`adr/datasets/datasetId`)
             .reply(200, mockSuccess({id: "datasetId", resources: [], organization: {id: null}, title: "datasetTitle"}));
 
-        const getAndSetDatasets = jest.fn();
         const getUploadFiles = jest.fn();
 
         const store = new Vuex.Store<RootState>({
@@ -712,9 +720,6 @@ describe("ADR upload actions", () => {
                 },
                 adr: {
                     namespaced: true,
-                    actions: {
-                        getAndSetDatasets
-                    },
                     state: mockADRState({
                         datasets: [],
                         schemas: {
@@ -741,8 +746,6 @@ describe("ADR upload actions", () => {
         await store.dispatch("adrUpload/uploadFilesToADR", uploadFilesPayload);
 
         expect(store.state.adrUpload.uploadComplete).toBe(true);
-        expect(getAndSetDatasets.mock.calls.length).toBe(1);
-        expect(getAndSetDatasets.mock.calls[0][1]).toBe("datasetId");
         expect(getUploadFiles.mock.calls.length).toBe(1);
     });
 });

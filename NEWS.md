@@ -2,6 +2,10 @@
 
 * Use async endpoints for Just-In-time generation of download files from HINT frontend
 
+# hint 1.44.1
+
+* Import releases from ADR: fetch data from correct ADR release
+
 # hint 1.44.0
 
 * Modify Rename dialog modal and add notes text area

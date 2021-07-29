@@ -200,17 +200,13 @@ describe("ADR actions", () => {
         expect(commit.mock.calls[0][0].payload).toStrictEqual(mockError("test-error"));
     });
 
-    it("getUserCanUpload dispatches getAndSetDatasets to set organisation if necessary", async () => {
+    it("getUserCanUpload dispatches getDataset to set organisation if necessary", async () => {
         const root = mockRootState({
-            baseline: mockBaselineState({selectedDataset: {id: "test-dataset"}} as any)
+            baseline: mockBaselineState({selectedDataset: {id: "test-dataset", release: "2.0"}} as any)
         });
         const organization = {id: "test-org"};
-        const adr = mockADRState({
-            datasets: [{id: "test-dataset", resources: [], organization}],
-            schemas: {baseUrl: "http://test"} as any
-        });
         const dispatch = jest.fn().mockImplementation((mutation, payload) => {
-            if (mutation === "getAndSetDatasets") {
+            if (mutation === "getDataset" && payload.id === "test-dataset" && payload.release === "2.0") {
                 root.baseline.selectedDataset!.organization = organization;
             }
         });
@@ -219,48 +215,47 @@ describe("ADR actions", () => {
         mockAxios.onGet(`adr/orgs?permission=update_dataset`)
             .reply(200, mockSuccess([{id: "test-org"}]));
 
-        await actions.getUserCanUpload({commit, state: adr, rootState: root, dispatch} as any);
+        await actions.getUserCanUpload({commit, state, rootState: root, dispatch} as any);
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SetUserCanUpload", payload: true});
     });
 
-    it("getAndSetDatasets sets dataset", async () => {
-        const adr = mockADRState({
-            datasets: [{id: "test-dataset", resources: [], organization: {id: "test-org"}}],
-            schemas: {baseUrl: "http://test"} as any
-        });
+    it("fetches dataset without release", async () => {
+        const state = mockADRState({schemas: {baseUrl: "adr.com"} as any});
+        mockAxios.onGet(`/adr/datasets/abc123`)
+            .reply(200, mockSuccess({
+                id: "abc123",
+                resources: [],
+                organization: {}
+            }));
+
         const commit = jest.fn();
 
-        await actions.getAndSetDatasets({commit, state: adr} as any, adr.datasets[0].id);
+        await actions.getDataset({commit, state, rootState} as any, {id: "abc123"});
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]).toBe("baseline/SetDataset");
-        expect(commit.mock.calls[0][1].id).toBe("test-dataset");
-        expect(commit.mock.calls[0][1].organization).toStrictEqual({id: "test-org"});
-        expect(commit.mock.calls[0][2]).toStrictEqual({root: true});
+        expect(commit.mock.calls[0][1].id).toBe("abc123");
     });
 
-    it("getAndSetDatasets gets dataset metadata if necessary to set dataset", async () => {
-        const rootState = mockRootState()
-        const adr = mockADRState({
-            // datasets: [{id: "test-dataset", resources: [], organization: {id: "test-org"}}],
-            schemas: {baseUrl: "http://test"} as any
-        });
+    it("fetches dataset with release", async () => {
+        const state = mockADRState({schemas: {baseUrl: "adr.com"} as any});
+        mockAxios.onGet(`/adr/datasets/abc123?release=V+1.0`)
+            .reply(200, mockSuccess({
+                id: "abc123",
+                resources: [],
+                organization: {}
+            }));
+
         const commit = jest.fn();
 
-        const datasetResponse = {id: "test-dataset", resources: [], organization: {id: "test-org"}}
-        mockAxios.onGet(`adr/datasets/test-dataset`)
-            .reply(200, mockSuccess(datasetResponse));
-
-        await actions.getAndSetDatasets({commit, state: adr, rootState} as any, datasetResponse.id);
+        await actions.getDataset({commit, state, rootState} as any, {id: "abc123", release: "V 1.0"});
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]).toBe("baseline/SetDataset");
-        expect(commit.mock.calls[0][1].id).toBe("test-dataset");
-        expect(commit.mock.calls[0][1].organization).toStrictEqual({id: "test-org"});
-        expect(commit.mock.calls[0][2]).toStrictEqual({root: true});
-        expect(mockAxios.history.get.length).toBe(1);
+        expect(commit.mock.calls[0][1].id).toBe("abc123");
+        expect(commit.mock.calls[0][1].release).toBe("V 1.0");
     });
 
 });

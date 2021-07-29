@@ -122,6 +122,7 @@ export interface DatasetResourceSet {
 
 export interface Dataset {
     id: string
+    release?: string
     title: string
     url: string,
     resources: DatasetResourceSet
