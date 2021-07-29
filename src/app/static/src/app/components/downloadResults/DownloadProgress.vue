@@ -1,10 +1,12 @@
 <template>
-    <div>
-    <span v-if="downloading" id="downloading" class="d-flex mt-2">
+  <div>
+    <div v-if="downloading" id="downloading" class="d-flex align-items-end">
         <loading-spinner size="xs"></loading-spinner>
+      <div class="d-flex align-items-center height-40 ml-2'">
         <span v-translate="translateKey"></span>
-    </span>
+      </div>
     </div>
+  </div>
 </template>
 
 <script lang="ts">

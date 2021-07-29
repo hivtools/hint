@@ -53,7 +53,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+    import {mapActionByName, mapMutationByName, mapStateProp, mapStateProps} from "../../utils";
     import {UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
@@ -64,9 +64,10 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import i18next from "i18next";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
-    import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
+    import {DOWNLOAD_TYPE, DownloadResultsState} from "../../store/downloadResults/downloadResults";
     import {DownloadResultsDependency} from "../../types";
     import Download from "./Download.vue";
+    import {DownloadResultsMutation} from "../../store/downloadResults/mutations";
 
     interface Computed {
         uploadingStatus: string,
@@ -101,6 +102,7 @@
         getCoarseOutputDownload: () => void
         getUploadMetadata: (id: string) => void
         downloadUrl: (downloadId: string) => string
+        stopPolling: (pollingId: number) => void
     }
 
     interface Data {
@@ -120,18 +122,21 @@
                     downloading: state.spectrum.downloading,
                     complete: state.spectrum.complete,
                     downloadId: state.spectrum.downloadId,
+                    statusPollId: state.spectrum.statusPollId,
                     error: state.spectrum.error
                 }),
                 summary: state => ({
                     downloading: state.summary.downloading,
                     complete: state.summary.complete,
                     downloadId: state.summary.downloadId,
+                    statusPollId: state.summary.statusPollId,
                     error: state.summary.error
                 }),
                 coarseOutput: state => ({
                     downloading: state.coarseOutput.downloading,
                     complete: state.coarseOutput.complete,
                     downloadId: state.coarseOutput.downloadId,
+                    statusPollId: state.coarseOutput.statusPollId,
                     error: state.coarseOutput.error
                 })
             }),
@@ -186,12 +191,15 @@
                     this.getCoarseOutputDownload();
                 }
             },
+            stopPolling(id) {
+              clearInterval(id)
+            },
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
             getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
             getSpectrumDownload: mapActionByName("downloadResults", "downloadSpectrum"),
             getSummaryDownload: mapActionByName("downloadResults", "downloadSummary"),
             getCoarseOutputDownload: mapActionByName("downloadResults", "downloadCoarseOutput"),
-            getUploadMetadata: mapActionByName("metadata", "getAdrUploadMetadata")
+            getUploadMetadata: mapActionByName("metadata", "getAdrUploadMetadata"),
         },
         mounted() {
             this.getUserCanUpload();
@@ -208,27 +216,48 @@
         watch: {
             summary: {
                 handler(summary) {
-                    if (!this.uploadModalOpen && summary.complete) {
+                    if(!this.uploadModalOpen) {
+
+                      if (summary.complete) {
                         window.location.assign(this.downloadUrl(summary.downloadId));
                         this.getUploadMetadata(summary.downloadId);
+                        this.stopPolling(summary.statusPollId)
+                      }
+                      if (summary.error && summary.statusPollId > -1) {
+                        this.stopPolling(summary.statusPollId);
+                      }
                     }
                 },
                 deep: true
             },
             spectrum: {
                 handler(spectrum) {
-                    if (!this.uploadModalOpen && spectrum.complete) {
+                  if(!this.uploadModalOpen) {
+
+                    if (spectrum.complete) {
                         window.location.assign(this.downloadUrl(spectrum.downloadId));
                         this.getUploadMetadata(spectrum.downloadId);
+                        this.stopPolling(spectrum.statusPollId);
                     }
+                    if (spectrum.error && spectrum.statusPollId > -1) {
+                      this.stopPolling(spectrum.statusPollId);
+                    }
+                  }
                 },
                 deep: true
             },
             coarseOutput: {
                 handler(coarseOutput) {
-                    if (!this.uploadModalOpen && coarseOutput.complete) {
+                    if(!this.uploadModalOpen) {
+
+                      if (coarseOutput.complete) {
                         window.location.assign(this.downloadUrl(coarseOutput.downloadId));
                         this.getUploadMetadata(coarseOutput.downloadId);
+                        this.stopPolling(coarseOutput.statusPollId);
+                      }
+                      if (coarseOutput.error && coarseOutput.statusPollId > -1) {
+                        this.stopPolling(coarseOutput.statusPollId);
+                      }
                     }
                 },
                 deep: true

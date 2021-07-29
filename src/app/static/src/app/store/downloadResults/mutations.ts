@@ -16,7 +16,8 @@ export enum DownloadResultsMutation {
     SummaryDownloadStatusUpdated = "SummaryDownloadStatusUpdated",
     SummaryDownloadComplete = "SummaryDownloadComplete",
     SummaryError = "SummaryError",
-    PollingStatusStarted = "PollingStatusStarted"
+    PollingStatusStarted = "PollingStatusStarted",
+    StopPolling = "StopPolling"
 }
 
 export const mutations: MutationTree<DownloadResultsState> = {
@@ -28,7 +29,8 @@ export const mutations: MutationTree<DownloadResultsState> = {
 
     [DownloadResultsMutation.SpectrumDownloadStatusUpdated](state: DownloadResultsState, action: PayloadWithType<DownloadStatusResponse>) {
         if (action.payload.done) {
-            stopPollingSpectrum(state)
+            state.spectrum.complete = true;
+            state.spectrum.downloading = false;
         }
         state.spectrum.status = action.payload;
         state.spectrum.error = null;
@@ -42,10 +44,6 @@ export const mutations: MutationTree<DownloadResultsState> = {
     [DownloadResultsMutation.SpectrumError](state: DownloadResultsState, action: PayloadWithType<Error>) {
         state.spectrum.error = action.payload
         state.spectrum.downloading = false
-
-        if (state.spectrum.statusPollId > -1) {
-            stopPollingSpectrum(state);
-        }
     },
 
     [DownloadResultsMutation.CoarseOutputDownloadStarted](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
@@ -55,7 +53,8 @@ export const mutations: MutationTree<DownloadResultsState> = {
 
     [DownloadResultsMutation.CoarseOutputDownloadStatusUpdated](state: DownloadResultsState, action: PayloadWithType<DownloadStatusResponse>) {
         if (action.payload.done) {
-            stopPollingCoarse(state)
+            state.coarseOutput.complete = true;
+            state.coarseOutput.downloading = false;
         }
         state.coarseOutput.status = action.payload;
         state.coarseOutput.error = null;
@@ -69,10 +68,6 @@ export const mutations: MutationTree<DownloadResultsState> = {
     [DownloadResultsMutation.CoarseOutputError](state: DownloadResultsState, action: PayloadWithType<Error>) {
         state.coarseOutput.error = action.payload
         state.coarseOutput.downloading = false
-
-        if (state.coarseOutput.statusPollId > -1) {
-            stopPollingCoarse(state);
-        }
     },
 
     [DownloadResultsMutation.SummaryDownloadStarted](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
@@ -82,7 +77,8 @@ export const mutations: MutationTree<DownloadResultsState> = {
 
     [DownloadResultsMutation.SummaryDownloadStatusUpdated](state: DownloadResultsState, action: PayloadWithType<DownloadStatusResponse>) {
         if (action.payload.done) {
-            stopPollingSummary(state)
+            state.summary.complete = true;
+            state.summary.downloading = false;
         }
         state.summary.status = action.payload;
         state.summary.error = null;
@@ -96,10 +92,6 @@ export const mutations: MutationTree<DownloadResultsState> = {
     [DownloadResultsMutation.SummaryError](state: DownloadResultsState, action: PayloadWithType<Error>) {
         state.summary.error = action.payload
         state.summary.downloading = false
-
-        if (state.summary.statusPollId > -1) {
-            stopPollingSummary(state);
-        }
     },
 
     [DownloadResultsMutation.PollingStatusStarted](state: DownloadResultsState, action: PayloadWithType<PollingStarted>) {
@@ -118,19 +110,4 @@ export const mutations: MutationTree<DownloadResultsState> = {
             }
         }
     }
-};
-
-const stopPollingSpectrum = (state: DownloadResultsState) => {
-    clearInterval(state.spectrum.statusPollId);
-    state.spectrum.statusPollId = -1;
-};
-
-const stopPollingCoarse = (state: DownloadResultsState) => {
-    clearInterval(state.coarseOutput.statusPollId);
-    state.coarseOutput.statusPollId = -1;
-};
-
-const stopPollingSummary = (state: DownloadResultsState) => {
-    clearInterval(state.summary.statusPollId);
-    state.summary.statusPollId = -1;
 };

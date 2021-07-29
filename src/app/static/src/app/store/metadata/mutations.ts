@@ -26,14 +26,12 @@ export const mutations: MutationTree<MetadataState> = {
     },
 
     [MetadataMutations.AdrUploadMetadataFetched](state: MetadataState, action: PayloadWithType<AdrMetadataResponse>) {
-        state.adrUploadMetadata
-            .find(adrMeta => {
-                if (adrMeta.type === action.payload.type) {
-                    adrMeta.description = action.payload.description
-                } else {
-                    state.adrUploadMetadata.push({type: action.payload.type, description: action.payload.description})
-                }
-            })
+        const adrMeta = state.adrUploadMetadata.find(adrMeta => adrMeta.type === action.payload.type);
+        if (adrMeta) {
+            adrMeta.description = action.payload.description;
+        } else {
+            state.adrUploadMetadata.push({type: action.payload.type, description: action.payload.description});
+        }
 
         state.adrUploadMetadataError = null;
     }

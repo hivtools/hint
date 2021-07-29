@@ -76,43 +76,28 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 };
 
 export const getSummaryDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
-    const {commit, state} = context;
+    const {state} = context;
     const downloadId = state.summary.downloadId;
     return api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.SummaryDownloadStatusUpdated)
         .withError(DownloadResultsMutation.SummaryError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
-        .then(() => {
-            if (state.summary.status && state.summary.status.done) {
-                commit({type: DownloadResultsMutation.SummaryDownloadComplete, payload: true})
-            }
-        });
 };
 
 export const getSpectrumDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
-    const {commit, state} = context;
+    const {state} = context;
     const downloadId = state.spectrum.downloadId;
     return api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.SpectrumDownloadStatusUpdated)
         .withError(DownloadResultsMutation.SpectrumError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
-        .then(() => {
-            if (state.spectrum.status && state.spectrum.status.done) {
-                commit({type: DownloadResultsMutation.SpectrumDownloadComplete, payload: true})
-            }
-        });
 };
 
 export const getCoarseOutputDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
-    const {commit, state} = context;
+    const {state} = context;
     const downloadId = state.coarseOutput.downloadId;
     return api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.CoarseOutputDownloadStatusUpdated)
         .withError(DownloadResultsMutation.CoarseOutputError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
-        .then(() => {
-            if (state.coarseOutput.status && state.coarseOutput.status.done) {
-                commit({type: DownloadResultsMutation.CoarseOutputDownloadComplete, payload: true})
-            }
-        });
 };
