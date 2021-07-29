@@ -113,7 +113,6 @@ const resetState = (store: Store<RootState>): void => {
                 store.commit(RootMutation.ResetOutputs);
             }
 
-            console.log(type[1] + type[0])
             if (type[0] == "modelCalibrate" && ModelCalibrateUpdates.includes(type[1] as ModelCalibrateMutation)) {
                 store.commit(RootMutation.ResetDownload);
             }
