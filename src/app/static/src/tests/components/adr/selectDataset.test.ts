@@ -587,10 +587,10 @@ describe("select dataset", () => {
 
         rendered.setData({newDatasetId: "id2"});
         const selectRelease = rendered.find(SelectRelease)
-        expect(selectRelease.props("newDatasetId")).toBe("id2");
+        expect(selectRelease.props("datasetId")).toBe("id2");
     });
 
-    it("select release emits selected dataset version and enables import button", async () => {
+    it("select release emits valid and enables import button", async () => {
         let store = getStore({},
             {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
         )
@@ -599,14 +599,27 @@ describe("select dataset", () => {
         });
         await rendered.find("button").trigger("click");
 
-        rendered.setData({newDatasetId: "id2", enableImport: false});
+        rendered.setData({newDatasetId: "id2", valid: false});
         const selectRelease = rendered.find(SelectRelease)
         const importBtn = rendered.find("#importBtn")
         expect(importBtn.attributes("disabled")).toBe("disabled");
-        await selectRelease.vm.$emit("selected-dataset-version", "releaseId", true);
+        await selectRelease.vm.$emit("valid", true);
         expect(importBtn.attributes("disabled")).toBeUndefined();
-        expect(rendered.vm.$data.newDatasetVersionId).toBe("releaseId")
+    });
 
+    it("select release emits selected dataset release and updates release id", async () => {
+        let store = getStore({},
+            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
+        )
+        const rendered = mount(SelectDataset, {
+            store, stubs: ["tree-select"]
+        });
+        await rendered.find("button").trigger("click");
+
+        rendered.setData({newDatasetId: "id2"});
+        const selectRelease = rendered.find(SelectRelease)
+        await selectRelease.vm.$emit("selected-dataset-release", "releaseId");
+        expect(rendered.vm.$data.newDatasetReleaseId).toBe("releaseId")
     });
     
     it("renders reset confirmation dialog when importing a new dataset and then saves new version and imports if click save", async () => {

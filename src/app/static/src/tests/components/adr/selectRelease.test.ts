@@ -51,7 +51,7 @@ describe("select release", () => {
     it("renders select release", () => {
         let store = getStore()
         const rendered = shallowMount(SelectRelease, {store});
-        rendered.setProps({newDatasetId: "datasetId"})
+        rendered.setProps({datasetId: "datasetId"})
         expect(getReleasesMock.mock.calls.length).toBe(1);
         expect(rendered.find("#selectRelease").exists()).toBe(true);
         expect(rendered.findAll("input").length).toBe(2);
@@ -81,7 +81,7 @@ describe("select release", () => {
 
     it("does not render select release if there are no releases", () => {
         const rendered = shallowMount(SelectRelease, {store: getStore([])});
-        rendered.setProps({newDatasetId: "datasetId"})
+        rendered.setProps({datasetId: "datasetId"})
         expect(rendered.find("#selectRelease").exists()).toBe(false);
     });
 
@@ -92,9 +92,9 @@ describe("select release", () => {
 
     it("does not get releases if dataset id is cleared", () => {
         const rendered = shallowMount(SelectRelease, {store: getStore()});
-        rendered.setProps({newDatasetId: "datasetId"})
+        rendered.setProps({datasetId: "datasetId"})
         expect(getReleasesMock.mock.calls.length).toBe(1);
-        rendered.setProps({newDatasetId: null})
+        rendered.setProps({datasetId: null})
         expect(getReleasesMock.mock.calls.length).toBe(1);
     });
 
@@ -104,7 +104,7 @@ describe("select release", () => {
         
         const rendered = shallowMount(SelectRelease, {store,
              directives: {"tooltip": mockTooltip} });
-        rendered.setProps({newDatasetId: "datasetId"})
+        rendered.setProps({datasetId: "datasetId"})
 
         expect(mockTooltip.mock.calls[0][1].value).toBe("Load the latest data, whether it is included in a release (a labelled version) or not");
         expect(mockTooltip.mock.calls[1][1].value).toBe("Load data from a particular labelled version, which may not be the latest data");
@@ -117,7 +117,7 @@ describe("select release", () => {
         
         const rendered = shallowMount(SelectRelease, {store,
              directives: {"tooltip": mockTooltip} });
-        rendered.setProps({newDatasetId: "datasetId"})
+        rendered.setProps({datasetId: "datasetId"})
 
         expect(mockTooltip.mock.calls[0][1].value).toBe("Chargez les dernières données, qu'elles soient incluses dans une version (une version étiquetée) ou non");
         expect(mockTooltip.mock.calls[1][1].value).toBe("Charger des données à partir d'une version étiquetée particulière, qui peuvent ne pas être les dernières données");
@@ -126,7 +126,7 @@ describe("select release", () => {
     it("radial toggles whether release tree select is disabled", async (done) => {
         let store = getStore()
         const rendered = shallowMount(SelectRelease, {store});
-        rendered.setProps({newDatasetId: "datasetId"})
+        rendered.setProps({datasetId: "datasetId"})
         const select = rendered.find(TreeSelect);
         expect(select.attributes("disabled")).toBe("true");
         const selectRelease = rendered.findAll("input").at(1)
@@ -135,32 +135,44 @@ describe("select release", () => {
         done()
     });
 
-    it("selecting a release emits release id and enables import", async (done) => {
+    it("selecting a release emits release id", async (done) => {
         let store = getStore()
         const rendered = shallowMount(SelectRelease, {store});
-        rendered.setProps({newDatasetId: "datasetId"})
+        rendered.setProps({datasetId: "datasetId"})
         const selectRelease = rendered.findAll("input").at(1)
         await selectRelease.trigger("click")
-        rendered.setData({newReleaseId: "releaseId"})
-        expect(rendered.emitted("selected-dataset-version")).toStrictEqual([[null, true], [null, false], ["releaseId", true]])
+        rendered.setData({releaseId: "releaseId"})
+        expect(rendered.emitted("selected-dataset-release")).toStrictEqual([["releaseId"]])
         done()
     });
 
-    it("changing newDatasetId clears releases and resets radial and newReleaseId", async () => {
+    it("selecting a release emits true valid", async (done) => {
         let store = getStore()
         const rendered = shallowMount(SelectRelease, {store});
-        rendered.setProps({newDatasetId: "datasetId"})
+        rendered.setProps({datasetId: "datasetId"})
+        const selectRelease = rendered.findAll("input").at(1)
+        await selectRelease.trigger("click")
+        expect(rendered.emitted("valid")).toStrictEqual([[false]])
+        rendered.setData({releaseId: "releaseId"})
+        expect(rendered.emitted("valid")).toStrictEqual([[false], [true]])
+        done()
+    });
+
+    it("changing datasetId clears releases and resets radial and releaseId", async () => {
+        let store = getStore()
+        const rendered = shallowMount(SelectRelease, {store});
+        rendered.setProps({datasetId: "datasetId"})
         const selectRelease = rendered.findAll("input").at(1);
         await selectRelease.trigger("click")
-        rendered.setData({newReleaseId: "releaseId"})
-        expect(rendered.vm.$data.newReleaseId).toBe("releaseId");
+        rendered.setData({releaseId: "releaseId"})
+        expect(rendered.vm.$data.releaseId).toBe("releaseId");
         expect(rendered.vm.$data.choiceADR).toBe("useRelease");
 
-        rendered.setProps({newDatasetId: "datasetId2"})
+        rendered.setProps({datasetId: "datasetId2"})
         expect(clearReleasesMock.mock.calls.length).toBe(2);
         const select = rendered.find(TreeSelect);
         expect(select.attributes("disabled")).toBe("true");
-        expect(rendered.vm.$data.newReleaseId).toBe(null);
-        expect(rendered.vm.$data.choiceADR).toBe("useData");
+        expect(rendered.vm.$data.releaseId).toBe(undefined);
+        expect(rendered.vm.$data.choiceADR).toBe("useLatest");
     });
 });

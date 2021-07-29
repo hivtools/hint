@@ -80,7 +80,7 @@ describe("ADR dataset-related actions", () => {
         await adrActions.getDatasets({commit, rootState} as any);
         const datasetId = commit.mock.calls[2][0]["payload"][0].id;
         await adrActions.getReleases({commit, rootState} as any, datasetId);
-        expect(commit.mock.calls[commit.mock.calls.length - 1][0]).toStrictEqual({type: ADRMutation.SetReleases, payload: []});
+        expect(commit.mock.calls[3][0]).toStrictEqual({type: ADRMutation.SetReleases, payload: []});
     });
 
     it("can get userCanUpload when selected dataset organisation is set", async () => {

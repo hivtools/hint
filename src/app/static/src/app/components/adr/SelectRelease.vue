@@ -1,13 +1,13 @@
 <template>
-    <div id="selectRelease" v-if="newDatasetId && releases.length">
-        <div class="pt-1">
+    <div id="selectRelease" v-if="datasetId && releases.length">
+        <div class="pt-2">
             <input
                 type="radio"
-                id="useData"
-                value="useData"
+                id="useLatest"
+                value="useLatest"
                 v-model="choiceADR"
             />
-            <label for="useData" v-translate="'useData'" class="pr-1"></label>
+            <label for="useLatest" v-translate="'useLatest'" class="pr-1"></label>
             <span class="icon-small" v-tooltip="translate('datasetTooltip')">
                 <help-circle-icon></help-circle-icon>
             </span>
@@ -43,7 +43,7 @@
             :options="releaseOptions"
             :placeholder="translate('select')"
             :disabled="!useRelease"
-            v-model="newReleaseId"
+            v-model="releaseId"
         >
             <label
                 slot="option-label"
@@ -66,10 +66,11 @@
     import { Language } from "../../store/translations/locales";
     import { RootState } from "../../root";
     import {ADRMutation} from "../../store/adr/mutations";
+    import { Release } from "../../types";
 
     interface Data {
-        newReleaseId: string | null;
-        choiceADR: "useData" | "useRelease";
+        releaseId: string | undefined;
+        choiceADR: "useLatest" | "useRelease";
     }
 
     interface Methods {
@@ -79,15 +80,15 @@
     }
 
     interface Computed {
-        releases: any[];
-        selectedDatasetOrRelease: string | null;
+        releases: Release[];
+        valid: boolean;
         releaseOptions: any[];
         useRelease: boolean;
         currentLanguage: Language;
     }
 
     interface Props {
-        newDatasetId: string | null;
+        datasetId: string | null;
     }
 
     const namespace = "adr";
@@ -98,12 +99,12 @@
             HelpCircleIcon,
         },
         props: {
-            newDatasetId: String,
+            datasetId: String,
         },
         data() {
             return {
-                newReleaseId: null,
-                choiceADR: "useData",
+                releaseId: undefined,
+                choiceADR: "useLatest",
             };
         },
         computed: {
@@ -111,12 +112,8 @@
                 namespace,
                 (state: ADRState) => state.releases
             ),
-            selectedDatasetOrRelease() {
-                if (this.choiceADR === "useData") {
-                    return this.newDatasetId;
-                } else {
-                    return this.newReleaseId;
-                }
+            valid() {
+                return (this.choiceADR === "useLatest") || !!this.releaseId;
             },
             releaseOptions() {
                 return this.releases.map((d) => ({
@@ -144,20 +141,23 @@
             clearReleases: mapMutationByName(namespace, ADRMutation.ClearReleases)
         },
         watch: {
-            newDatasetId(id) {
-                this.choiceADR = "useData";
+            datasetId(id) {
+                this.choiceADR = "useLatest";
                 this.clearReleases()
                 if (id) {
                     this.getReleases(id);
                 }
             },
             choiceADR(choice) {
-                if (choice === "useData") {
-                    this.newReleaseId = null;
+                if (choice === "useLatest") {
+                    this.releaseId = undefined;
                 }
             },
-            selectedDatasetOrRelease() {
-                this.$emit("selected-dataset-version", this.newReleaseId, !!this.selectedDatasetOrRelease);
+            releaseId() {
+                this.$emit("selected-dataset-release", this.releaseId);
+            },
+            valid() {
+                this.$emit("valid", this.valid);
             },
         },
         directives: {

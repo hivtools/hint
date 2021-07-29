@@ -52,7 +52,7 @@
                     >
                     </label>
                 </tree-select>
-                <select-release :new-dataset-id="newDatasetId" @selected-dataset-version="updateDatasetVersion"></select-release>
+                <select-release :dataset-id="newDatasetId" @selected-dataset-release="updateDatasetRelease" @valid="updateValid"></select-release>
                 <div
                     :class="fetchingDatasets ? 'visible' : 'invisible'"
                     style="margin-top: 15px"
@@ -77,7 +77,7 @@
                 <button
                     id="importBtn"
                     type="button"
-                    :disabled="!enableImport"
+                    :disabled="disableImport"
                     class="btn btn-red"
                     v-translate="'import'"
                     @click.prevent="confirmImport"
@@ -146,7 +146,8 @@
         confirmImport: () => void;
         continueEditing: () => void;
         cancelEditing: () => void;
-        updateDatasetVersion: (id: string, enableImport: boolean) => void;
+        updateDatasetRelease: (id: string) => void;
+        updateValid: (valid: boolean) => void;
     }
 
     interface Computed {
@@ -163,6 +164,7 @@
         currentLanguage: Language;
         select: string;
         editsRequireConfirmation: boolean;
+        disableImport: boolean;
     }
 
     interface Data {
@@ -170,10 +172,9 @@
         showConfirmation: boolean;
         loading: boolean;
         newDatasetId: string | null;
-        newDatasetReleaseId?: string;
+        newDatasetReleaseId: string | undefined;
         pollingId: number | null;
-        newDatasetVersionId: string | null;
-        enableImport: boolean;
+        valid: boolean;
     }
 
     const names: { [k in keyof DatasetResourceSet]: string } = {
@@ -195,8 +196,8 @@
                 loading: false,
                 newDatasetId: null,
                 pollingId: null,
-                newDatasetVersionId: null,
-                enableImport: false
+                valid: true,
+                newDatasetReleaseId: undefined
             };
         },
         components: {
@@ -287,6 +288,9 @@
                 null,
                 (state: RootState) => state.language
             ),
+            disableImport(){
+                return !this.newDatasetId || !this.valid
+            }
         },
         methods: {
             getDatasets: mapActionByName("adr", "getDatasets"),
@@ -415,10 +419,13 @@
                     window.clearInterval(this.pollingId);
                 }
             },
-        updateDatasetVersion(releaseId, enableImport){
-            this.newDatasetVersionId = releaseId;
-            this.enableImport = enableImport;
-        }
+            updateDatasetRelease(releaseId){
+                this.newDatasetReleaseId = releaseId;
+                console.log("release update", this.newDatasetReleaseId)
+            },
+            updateValid(valid){
+                this.valid = valid;
+            }
         },
         mounted() {
             this.refreshDatasetMetadata();

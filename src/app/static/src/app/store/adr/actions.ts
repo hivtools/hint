@@ -66,7 +66,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .withSuccess(ADRMutation.SetReleases)
             .get(`/adr/datasets/${selectedDatasetId}/releases/`)
     },
-    
+
     async getDataset(context, {id, release}) {
         const {state, commit} = context;
         let url = `/adr/datasets/${id}`
