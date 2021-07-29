@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.util.LinkedMultiValueMap
+import java.time.Instant
 
 // These test integration between HINT and the ADR
 // so are prone to flakiness when the ADR dev server goes down
@@ -246,11 +247,36 @@ class ADRTests : SecureIntegrationTests()
         }
     }
 
-    private fun getPostEntityWithKey(): HttpEntity<LinkedMultiValueMap<String, String>>
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can create an ADR release`(isAuthorized: IsAuthorized)
+    {
+        testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
+
+        val dataset = "burundi-inputs-unaids-estimates-2021"
+
+        createTestADRResource(ConfiguredAppProperties().adrOutputSummarySchema, dataset)
+
+        val releaseName = Instant.now().toString()
+
+        val result = testRestTemplate.postForEntity<String>(
+                "/adr/datasets/$dataset/releases",
+                getPostEntityWithKey(mapOf("name" to listOf(releaseName)))
+        )
+
+        if (isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = ObjectMapper().readTree(result.body!!)["data"]
+            assertThat(data["name"].textValue()).isEqualTo(releaseName)
+        }
+    }
+
+    private fun getPostEntityWithKey(values: Map<String, List<String>> = emptyMap()): HttpEntity<LinkedMultiValueMap<String, String>>
     {
         val map = LinkedMultiValueMap<String, String>()
         // this key is for a test user who has access to 1 fake dataset
         map.add("key", ADR_KEY)
+        map.addAll(LinkedMultiValueMap(values))
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         return HttpEntity(map, headers)
@@ -289,14 +315,14 @@ class ADRTests : SecureIntegrationTests()
         }
     }
 
-    private fun createTestADRResource(resourceType: String): String
+    private fun createTestADRResource(resourceType: String, dataset: String = "hint_test"): String
     {
         val response = "${ConfiguredAppProperties().adrUrl}api/3/action/resource_create".httpPost()
                 .timeout(60000)
                 .timeoutRead(60000)
                 .header("Content-Type" to "application/json")
                 .header("Authorization" to ADR_KEY)
-                .body("""{"package_id": "hint_test", "resource_type": "$resourceType"}""")
+                .body("""{"package_id": "$dataset", "resource_type": "$resourceType"}""")
                 .response()
                 .second
 

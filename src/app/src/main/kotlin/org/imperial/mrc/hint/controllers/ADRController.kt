@@ -174,6 +174,13 @@ class ADRController(private val encryption: Encryption,
         return saveAndValidate(url, FileType.ANC)
     }
 
+    @PostMapping("/datasets/{id}/releases")
+    fun createRelease(@PathVariable id: String, @RequestParam name: String): ResponseEntity<String>
+    {
+        val adr = adrClientBuilder.build()
+        return adr.post("dataset_version_create", listOf("dataset_id" to id, "name" to name));
+    }
+
     @PostMapping("/datasets/{id}/resource/{resourceType}/{modelCalibrateId}")
     @Suppress("ReturnCount", "LongParameterList", "UnsafeCallOnNullableType")
     fun pushFileToADR(@PathVariable id: String,

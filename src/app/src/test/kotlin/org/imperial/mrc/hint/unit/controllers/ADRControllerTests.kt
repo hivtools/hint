@@ -705,6 +705,32 @@ class ADRControllerTests : HintrControllerTests()
         assertThat(result.body!!).isEqualTo("whatever")
     }
 
+    @Test
+    fun `creates a release`()
+    {
+        val expectedUrl = "dataset_version_create"
+        val mockClient = mock<ADRClient> {
+            on { post(expectedUrl, listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity
+                    .ok()
+                    .body("whatever")
+        }
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mockBuilder,
+                objectMapper,
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
+        val result = sut.createRelease("dataset-1", "release-1")
+        assertThat(result.body!!).isEqualTo("whatever")
+    }
+
     private fun makeFakeSuccessResponse(): ResponseEntity<String>
     {
         val resultWithResources = mapOf("resources" to listOf(1, 2))
