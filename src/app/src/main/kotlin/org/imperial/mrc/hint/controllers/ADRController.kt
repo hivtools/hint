@@ -106,10 +106,14 @@ class ADRController(private val encryption: Encryption,
     }
 
     @GetMapping("/datasets/{id}")
-    fun getDataset(@PathVariable id: String): ResponseEntity<String>
+    fun getDataset(@PathVariable id: String, @RequestParam release: String? = null): ResponseEntity<String>
     {
         val adr = adrClientBuilder.build()
-        return adr.get("package_show?id=${id}")
+        var url = "package_show?id=${id}"
+        if (release != null) {
+            url = "$url&release=${release}"
+        }
+        return adr.get(url)
     }
 
     @GetMapping("/datasets/{id}/releases")

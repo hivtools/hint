@@ -14,9 +14,14 @@ export interface ADRActions {
     deleteKey: (store: ActionContext<ADRState, RootState>) => void;
     getDatasets: (store: ActionContext<ADRState, RootState>) => void;
     getReleases: (store: ActionContext<ADRState, RootState>, id: string) => void;
+    getDataset: (store: ActionContext<ADRState, RootState>, payload: GetDatasetPayload) => void;
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
     getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
-    getAndSetDatasets: (store: ActionContext<ADRState, RootState>, selectedDatasetId: string) => void;
+}
+
+export interface GetDatasetPayload {
+    id: string
+    release?: string
 }
 
 export const actions: ActionTree<ADRState, RootState> & ADRActions = {
@@ -61,6 +66,24 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .withSuccess(ADRMutation.SetReleases)
             .get(`/adr/datasets/${selectedDatasetId}/releases/`)
     },
+    
+    async getDataset(context, {id, release}) {
+        const {state, commit} = context;
+        let url = `/adr/datasets/${id}`
+        if (release) {
+            url += '?' + new URLSearchParams({release});
+        }
+        await api<BaselineMutation, ADRMutation>(context)
+            .withError(ADRMutation.SetADRError)
+            .ignoreSuccess()
+            .get(url)
+            .then(response => {
+                if (response) {
+                    const dataset = datasetFromMetadata(response.data, state.schemas!, release);
+                    commit(`baseline/${BaselineMutation.SetDataset}`, dataset, {root: true});
+                }
+            });
+    },
 
     async getSchemas(context) {
         await api<ADRMutation, ADRMutation>(context)
@@ -75,7 +98,7 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
 
         if (selectedDataset) {
             if (!selectedDataset.organization) {
-                await dispatch("getAndSetDatasets", selectedDataset.id);
+                await dispatch("getDataset", {id: selectedDataset.id, release: selectedDataset.release});
             }
             const selectedDatasetOrgId = rootState.baseline.selectedDataset!.organization.id
 
@@ -91,23 +114,5 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
                     }
                 })
         }
-    },
-
-    async getAndSetDatasets(context, selectedDatasetId) {
-        const {state, commit} = context;
-        let datasets = state.datasets;
-        if (!datasets.length) {
-            await api(context)
-                .ignoreErrors()
-                .ignoreSuccess()
-                .get(`/adr/datasets/${selectedDatasetId}`)
-                .then((response) => {
-                    if (response) {
-                        datasets = [response.data];
-                    }
-                });
-        }
-        const regenDataset = datasetFromMetadata(selectedDatasetId, datasets, state.schemas!);
-        commit(`baseline/${BaselineMutation.SetDataset}`, regenDataset, {root: true});
     }
 };

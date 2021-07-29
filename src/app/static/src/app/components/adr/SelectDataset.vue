@@ -104,7 +104,6 @@
     import Vue from "vue";
     import TreeSelect from "@riophae/vue-treeselect";
     import {
-        datasetFromMetadata,
         mapActionByName,
         mapMutationByName,
         mapStateProp,
@@ -118,7 +117,6 @@
     import {
         ADRSchemas,
         Dataset,
-        DatasetResource,
         DatasetResourceSet,
     } from "../../types";
     import { InfoIcon } from "vue-feather-icons";
@@ -127,10 +125,11 @@
     import { Error } from "../../generated";
     import ResetConfirmation from "../ResetConfirmation.vue";
     import SelectRelease from "./SelectRelease.vue";
+    import { GetDatasetPayload } from "../../store/adr/actions";
 
     interface Methods {
         getDatasets: () => void;
-        setDataset: (dataset: Dataset) => void;
+        getDataset: (payload: GetDatasetPayload) => void;
         importDataset: () => void;
         toggleModal: () => void;
         importPJNZ: (url: string) => Promise<void>;
@@ -171,6 +170,7 @@
         showConfirmation: boolean;
         loading: boolean;
         newDatasetId: string | null;
+        newDatasetReleaseId?: string;
         pollingId: number | null;
         newDatasetVersionId: string | null;
         enableImport: boolean;
@@ -290,7 +290,7 @@
         },
         methods: {
             getDatasets: mapActionByName("adr", "getDatasets"),
-            setDataset: mapMutationByName("baseline", BaselineMutation.SetDataset),
+            getDataset: mapActionByName("adr", "getDataset"),
             refreshDatasetMetadata: mapActionByName(
                 "baseline",
                 "refreshDatasetMetadata"
@@ -307,12 +307,7 @@
             importANC: mapActionByName("surveyAndProgram", "importANC"),
             async importDataset() {
                 this.loading = true;
-                const newDataset = datasetFromMetadata(
-                    this.newDatasetId!,
-                    this.datasets,
-                    this.schemas
-                );
-                this.setDataset(newDataset);
+                await this.getDataset({id: this.newDatasetId!, release: this.newDatasetReleaseId});
 
                 const {
                     pjnz,
@@ -321,7 +316,7 @@
                     survey,
                     program,
                     anc,
-                } = newDataset.resources;
+                } = this.selectedDataset!.resources;
 
                 await Promise.all([
                     pjnz && this.importPJNZ(pjnz.url),
