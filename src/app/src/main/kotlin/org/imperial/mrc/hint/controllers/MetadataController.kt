@@ -52,7 +52,7 @@ class MetadataController(val apiClient: HintrAPIClient,
     }
 
     private fun readFromResource(path: String): String {
-        val url: URL? = classLoader.getResource(path)
-        return url?.readText() ?: throw FileNotFoundException("Resource file '$path' not found")
+        val url = classLoader.getResource(path)
+        return url.readText()
     }
 }
