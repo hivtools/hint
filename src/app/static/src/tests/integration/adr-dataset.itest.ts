@@ -81,7 +81,7 @@ describe("ADR dataset-related actions", () => {
         }
 
         await adrActions.getDatasets({commit, rootState} as any);
-        const datasetId = commit.mock.calls[2][0]["payload"].find(dataset => dataset.name.includes("Antarctica")).id;
+        const datasetId = commit.mock.calls[2][0]["payload"].find(dataset => dataset.title.includes("Antarctica")).id;
         await adrActions.getReleases({commit, rootState} as any, datasetId);
         expect(commit.mock.calls[4][0]).toStrictEqual({type: ADRMutation.SetReleases, payload: [antarcticaRelease]});
     });
