@@ -61,8 +61,8 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async getReleases(context, selectedDatasetId) {
-        await api<ADRMutation, ADRMutation>(context)
-            .withError(ADRMutation.SetADRError)
+        await api<ADRMutation, BaselineMutation>(context)
+            .withError(BaselineMutation.BaselineError)
             .withSuccess(ADRMutation.SetReleases)
             .get(`/adr/datasets/${selectedDatasetId}/releases/`)
     },

@@ -142,7 +142,7 @@ describe("select release", () => {
         const selectRelease = rendered.findAll("input").at(1)
         await selectRelease.trigger("click")
         rendered.setData({releaseId: "releaseId"})
-        expect(rendered.emitted("selected-dataset-release")).toStrictEqual([["releaseId"]])
+        expect(rendered.emitted("selected-dataset-release")).toStrictEqual([[undefined], ["releaseId"]])
         done()
     });
 
@@ -152,9 +152,9 @@ describe("select release", () => {
         rendered.setProps({datasetId: "datasetId"})
         const selectRelease = rendered.findAll("input").at(1)
         await selectRelease.trigger("click")
-        expect(rendered.emitted("valid")).toStrictEqual([[false]])
+        expect(rendered.emitted("valid")).toStrictEqual([[true], [false]])
         rendered.setData({releaseId: "releaseId"})
-        expect(rendered.emitted("valid")).toStrictEqual([[false], [true]])
+        expect(rendered.emitted("valid")).toStrictEqual([[true], [false], [true]])
         done()
     });
 

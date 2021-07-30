@@ -160,6 +160,10 @@
                 this.$emit("valid", this.valid);
             },
         },
+        mounted(){
+            this.$emit("selected-dataset-release", this.releaseId);
+            this.$emit("valid", this.valid);
+        },
         directives: {
             tooltip: VTooltip,
         },
