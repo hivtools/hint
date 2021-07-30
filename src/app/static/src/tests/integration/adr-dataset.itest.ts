@@ -87,6 +87,16 @@ describe("ADR dataset-related actions", () => {
                 "package_id": "56d260a7-8fa2-491f-827c-6991caf99ed4",
                 "resource_id": "None",
             },
+            {
+                "activity_id": "a862058a-1621-455d-8c4b-ea6ec29d8389",
+                "created": "2021-07-02 08:17:25.050937",
+                "creator_user_id": "c9fc88f0-7ba8-4752-bf88-c49506611dd2",
+                "id": "13f59ec4-4936-487d-b514-3d29b0b2a725",
+                "name": "1.0",
+                "notes": "Example first release",
+                "package_id": "56d260a7-8fa2-491f-827c-6991caf99ed4",
+                "resource_id": "None",
+             },
         ]
 
         await adrActions.getDatasets({commit, rootState} as any);
