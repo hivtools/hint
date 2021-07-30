@@ -85,6 +85,18 @@ class MetadataControllerTests
 
     }
 
+    @Test
+    fun `get generic chart metadata throws error if file not found`()
+    {
+        val mockClassLoader = mock<ClassLoader>() {
+            on { getResource("metadata/generic-chart.json") } doReturn URL("file:/nonexistent.json")
+        }
+
+        val sut = MetadataController(mock(), mockClassLoader)
+        assertThatThrownBy{ sut.genericChart() }
+                .isInstanceOf(FileNotFoundException::class.java)
+    }
+
     private fun createTestResource(path: String, contents: String): URL {
         val dir = File(path.replaceAfterLast("/", ""))
         dir.mkdirs()
