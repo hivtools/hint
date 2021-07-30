@@ -7,7 +7,7 @@ import {actions as adrUploadActions} from "../../app/store/adrUpload/actions";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {getFormData} from "./helpers";
 import {ADRMutation} from "../../app/store/adr/mutations";
-import {UploadFile} from "../../app/types";
+import {UploadFile, Dataset} from "../../app/types";
 
 // this suite tests all endpoints that talk to the ADR
 // we put them in a suite of their own so that we can run
@@ -81,7 +81,7 @@ describe("ADR dataset-related actions", () => {
         }
 
         await adrActions.getDatasets({commit, rootState} as any);
-        const datasetId = commit.mock.calls[2][0]["payload"].find(dataset => dataset.title.includes("Antarctica")).id;
+        const datasetId = commit.mock.calls[2][0]["payload"].find((dataset: Dataset) => dataset.title.includes("Antarctica")).id;
         await adrActions.getReleases({commit, rootState} as any, datasetId);
         expect(commit.mock.calls[4][0]).toStrictEqual({type: ADRMutation.SetReleases, payload: [antarcticaRelease]});
     });
