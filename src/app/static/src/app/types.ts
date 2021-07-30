@@ -192,5 +192,5 @@ export interface GenericChartMetadata {
 }
 
 export interface GenericChartMetadataResponse {
-    [key: string]: string | GenericChartMetadata;
+    [key: string]: GenericChartMetadata;
 }

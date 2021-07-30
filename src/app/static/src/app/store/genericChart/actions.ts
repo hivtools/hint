@@ -6,7 +6,7 @@ import {GenericChartState} from "./genericChart";
 export type GenericChartMutation = "GenericChartMetadataFetched"
 
 export interface MetadataActions {
-    getGenericChartMetadata: (store: ActionContext<GenericChartState, RootState>, country: string) => void
+    getGenericChartMetadata: (store: ActionContext<GenericChartState, RootState>) => void
 }
 
 export const actions: ActionTree<GenericChartState, RootState> & MetadataActions = {
