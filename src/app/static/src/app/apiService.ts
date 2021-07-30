@@ -115,7 +115,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     }
 
     private _handleError = (e: AxiosError) => {
-        // console.log(e.response && e.response.data || e);
+        console.log(e.response && e.response.data || e);
         if (this._ignoreErrors) {
             return
         }
