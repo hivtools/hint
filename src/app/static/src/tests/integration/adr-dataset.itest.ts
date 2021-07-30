@@ -76,14 +76,44 @@ describe("ADR dataset-related actions", () => {
 
     it("can get releases", async () => {
         const commit = jest.fn();
-        const antarcticaRelease = {
-            name: "1.0"
-        }
+        const antarcticaReleases = [
+             {
+             "activity_id": "d73e4b30-1e42-4cfd-8e45-0b949d12159b",
+             "created": "2021-06-30 12:48:01.434139",
+             "creator_user_id": "4b68c273-c53e-41fe-9ef7-f8ce194e1b68",
+             "id": "3b217841-b6df-4bba-a174-f32c5dc60c7f",
+             "name": "v3.0",
+             "notes": "Refined ANC data so it's final",
+             "package_id": "6a96a99a-6294-4d1b-a547-625e9df9cd06",
+             "resource_id": "None",
+           },
+            {
+             "activity_id": "d50e238e-5ddd-4c02-b80c-fbd8623e5566",
+             "created": "2021-06-30 10:18:04.396084",
+             "creator_user_id": "4b68c273-c53e-41fe-9ef7-f8ce194e1b68",
+             "id": "1299f66c-3c19-45ac-a664-3170e55dcaef",
+             "name": "v2.0",
+             "notes": "Updated ANC data with most recent values",
+             "package_id": "6a96a99a-6294-4d1b-a547-625e9df9cd06",
+             "resource_id": "None",
+           },
+            {
+             "activity_id": "46ec543f-f072-4459-a4ee-fb3bb07a2459",
+             "created": "2021-06-30 10:17:00.167434",
+             "creator_user_id": "4b68c273-c53e-41fe-9ef7-f8ce194e1b68",
+             "id": "6b9bfe32-caf7-41d6-9e80-6dd7bd50f02e",
+             "name": "v1.0",
+             "notes": "Initial release",
+             "package_id": "6a96a99a-6294-4d1b-a547-625e9df9cd06",
+             "resource_id": "None",
+            },
+          ]
 
         await adrActions.getDatasets({commit, rootState} as any);
         const datasetId = commit.mock.calls[2][0]["payload"].find((dataset: Dataset) => dataset.title.includes("Antarctica")).id;
         await adrActions.getReleases({commit, rootState} as any, datasetId);
-        expect(commit.mock.calls[4][0]).toStrictEqual({type: ADRMutation.SetReleases, payload: [antarcticaRelease]});
+        // The payload on this commit is likely to change depending on the current state of releases
+        expect(commit.mock.calls[4][0]).toStrictEqual({type: ADRMutation.SetReleases, payload: antarcticaReleases});
     });
 
     it("can get userCanUpload when selected dataset organisation is set", async () => {
