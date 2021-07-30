@@ -34,6 +34,16 @@
                                  name="anc">
                     </manage-file>
                 </form>
+                <div v-if="showChoropleth" class="form-group">
+                    <label class="font-weight-bold" id="data-source-header" v-translate="'dataSource'"></label>
+                    <treeselect
+                            :multiple="false"
+                            :clearable="false"
+                            :options="dataSourceOptions"
+                            :value="selectedDataType"
+                            @select="selectDataSource">
+                    </treeselect>
+                </div>
                 <filters v-if="showChoropleth"
                          :filters="filters"
                          :selectedFilterOptions="plottingSelections.selectedFilterOptions"
@@ -42,14 +52,14 @@
             <div v-if="showChoropleth" class="col-md-9">
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link" :class="survey.tabClass" v-on:click="selectTab(2)"
+                        <a class="nav-link" :class="survey.tabClass" v-on:click="selectDataType(2)"
                            v-translate="'survey'"></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectTab(1)" v-translate="'ART'">ART</a>
+                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectDataType(1)" v-translate="'ART'">ART</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" :class="anc.tabClass" v-on:click="selectTab(0)" v-translate="'ANC'">ANC</a>
+                        <a class="nav-link" :class="anc.tabClass" v-on:click="selectDataType(0)" v-translate="'ANC'">ANC</a>
                     </li>
                 </ul>
                 <choropleth :chartdata="data"
@@ -80,24 +90,35 @@
 
 <script lang="ts">
     import Vue from "vue";
+    import Treeselect from '@riophae/vue-treeselect';
+    import i18next from "i18next";
     import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import TableView from "../plots/table/Table.vue";
     import Filters from "../plots/Filters.vue";
-    import {Filter, LevelLabel, PartialFileUploadProps} from "../../types";
+    import {Filter, LevelLabel, PartialFileUploadProps, PayloadWithType} from "../../types";
     import {RootState} from "../../root";
     import {DataType, SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
     import {Feature} from "geojson";
     import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
-    import {mapGettersByNames} from "../../utils";
-    import {ChoroplethSelections, PlottingSelectionsState} from "../../store/plottingSelections/plottingSelections";
+    import {mapActionByName, mapGettersByNames, mapStateProp} from "../../utils";
+    import {
+        ChoroplethSelections,
+        PlottingSelectionsState,
+        ScaleSelections
+    } from "../../store/plottingSelections/plottingSelections";
     import ManageFile from "../files/ManageFile.vue";
     import {BaselineState} from "../../store/baseline/baseline";
+    import {Language} from "../../store/translations/locales";
 
     const namespace = 'surveyAndProgram';
 
     interface Data {
         areaFilterId: string
+    }
+
+    interface SAPFileUploadProps extends PartialFileUploadProps {
+        available: boolean
     }
 
     interface Computed {
@@ -107,16 +128,24 @@
         data: any,
         sapIndicatorsMetadata: ChoroplethIndicatorMetadata[],
         showChoropleth: boolean,
-        anc: PartialFileUploadProps,
-        programme: PartialFileUploadProps,
-        survey: PartialFileUploadProps,
+        anc: SAPFileUploadProps,
+        programme: SAPFileUploadProps,
+        survey: SAPFileUploadProps,
         features: Feature[],
         featureLevels: LevelLabel[],
         plottingSelections: ChoroplethSelections,
-        filterTableIndicators: ChoroplethIndicatorMetadata[]
+        selectedDataSource: string,
+        filterTableIndicators: ChoroplethIndicatorMetadata[],
+        currentLanguage: Language,
+        dataSourceOptions: FilterOption[]
     }
 
-    export default Vue.extend<Data, unknown, Computed, unknown>({
+    interface Methods {
+        selectDataType: (payload: DataType) => void,
+        selectDataSource: (option: FilterOption) => void
+    }
+
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         name: "SurveyAndProgram",
         data: () => {
             return {
@@ -139,7 +168,8 @@
                     tabClass: {
                         "disabled": !!surveyAndProgram.ancError || !surveyAndProgram.anc,
                         "active": surveyAndProgram.selectedDataType == DataType.ANC
-                    }
+                    },
+                    available: !surveyAndProgram.ancError && surveyAndProgram.anc
                 } as PartialFileUploadProps),
                 programme: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     valid: surveyAndProgram.program != null,
@@ -149,7 +179,8 @@
                     tabClass: {
                         "disabled": !!surveyAndProgram.programError || !surveyAndProgram.program,
                         "active": surveyAndProgram.selectedDataType == DataType.Program
-                    }
+                    },
+                    available: !surveyAndProgram.programError && surveyAndProgram.program
                 } as PartialFileUploadProps),
                 survey: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     valid: surveyAndProgram.survey != null,
@@ -159,7 +190,8 @@
                     tabClass: {
                         "disabled": !!surveyAndProgram.surveyError || !surveyAndProgram.survey,
                         "active": surveyAndProgram.selectedDataType == DataType.Survey
-                    }
+                    },
+                    available: !surveyAndProgram.surveyError && surveyAndProgram.survey
                 } as PartialFileUploadProps),
                 features: ({baseline} : {baseline: BaselineState}) => baseline.shape ? baseline.shape.data.features : [] as Feature[],
                 featureLevels: ({baseline} : {baseline: BaselineState}) => baseline.shape ? baseline.shape.filters.level_labels : [],
@@ -168,8 +200,26 @@
             ...mapGettersByNames(namespace, ["data", "filters", "countryAreaFilterOption"]),
             ...mapGetters("metadata", ["sapIndicatorsMetadata"]),
             ...mapGetters("plottingSelections", ["selectedSAPColourScales"]),
+            currentLanguage: mapStateProp<RootState, Language>(
+                null,
+                (state: RootState) => state.language
+            ),
             filterTableIndicators() {
                 return this.sapIndicatorsMetadata.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.plottingSelections.indicatorId)
+            },
+            dataSourceOptions() {
+                const options = [];
+                const lang = {lng: this.currentLanguage};
+                if (this.survey.available) {
+                    options.push({id: "2", label: i18next.t("survey", lang)});
+                }
+                if (this.programme.available) {
+                    options.push({id: "1", label: i18next.t("ART", lang)});
+                }
+                if (this.anc.available) {
+                    options.push({id: "0", label: i18next.t("ANC", lang)});
+                }
+                return options;
             }
         },
         methods: {
@@ -177,7 +227,6 @@
                 uploadSurvey: 'surveyAndProgram/uploadSurvey',
                 uploadProgram: 'surveyAndProgram/uploadProgram',
                 uploadANC: 'surveyAndProgram/uploadANC',
-                selectTab: 'surveyAndProgram/selectDataType',
                 deleteSurvey: 'surveyAndProgram/deleteSurvey',
                 deleteProgram: 'surveyAndProgram/deleteProgram',
                 deleteANC: 'surveyAndProgram/deleteANC',
@@ -186,12 +235,17 @@
                 updateChoroplethSelections: "plottingSelections/updateSAPChoroplethSelections",
                 updateSAPColourScales: "plottingSelections/updateSAPColourScales",
             }),
+            selectDataType: mapActionByName(namespace, "selectDataType"),
+            selectDataSource: function(option: FilterOption) {
+                this.selectDataType(parseInt(option.id))
+            }
         },
         components: {
             Choropleth,
             Filters,
             TableView,
-            ManageFile
+            ManageFile,
+            Treeselect
         }
     })
 </script>
