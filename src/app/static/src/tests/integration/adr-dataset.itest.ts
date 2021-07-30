@@ -76,34 +76,17 @@ describe("ADR dataset-related actions", () => {
 
     it("can get releases", async () => {
         const commit = jest.fn();
-        const antarcticaReleases = [
-            {
-                "activity_id": "76147b3e-c5c9-42c9-9379-1301e92e98a2",
-                "created": "2021-07-30 13:06:20.100768",
-                "creator_user_id": "d55719bf-16a5-4b5f-9dba-3c10c6dd9520",
-                "id": "7211ff8c-8a00-49b0-aa63-a8d9966efd86",
-                "name": "1.2",
-                "notes": null,
-                "package_id": "56d260a7-8fa2-491f-827c-6991caf99ed4",
-                "resource_id": "None",
-            },
-            {
-                "activity_id": "a862058a-1621-455d-8c4b-ea6ec29d8389",
-                "created": "2021-07-02 08:17:25.050937",
-                "creator_user_id": "c9fc88f0-7ba8-4752-bf88-c49506611dd2",
-                "id": "13f59ec4-4936-487d-b514-3d29b0b2a725",
-                "name": "1.0",
-                "notes": "Example first release",
-                "package_id": "56d260a7-8fa2-491f-827c-6991caf99ed4",
-                "resource_id": "None",
-             },
-        ]
 
         await adrActions.getDatasets({commit, rootState} as any);
         const datasetId = commit.mock.calls[2][0]["payload"].find((dataset: Dataset) => dataset.title.includes("Antarctica")).id;
+
+        jest.resetAllMocks();
+        
         await adrActions.getReleases({commit, rootState} as any, datasetId);
-        // The payload on this commit is likely to change depending on the current state of releases
-        expect(commit.mock.calls[4][0]).toStrictEqual({type: ADRMutation.SetReleases, payload: antarcticaReleases});
+        expect(commit.mock.calls[0][0].type).toBe(ADRMutation.SetReleases)
+        expect(commit.mock.calls[0][0].payload.length).toBeGreaterThan(0);
+        expect(commit.mock.calls[0][0].payload[0].name).toBeTruthy();
+        expect(commit.mock.calls[0][0].payload[0].id).toBeTruthy();
     });
 
     it("can get userCanUpload when selected dataset organisation is set", async () => {

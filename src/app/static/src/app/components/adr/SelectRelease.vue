@@ -121,7 +121,7 @@
                     label: d.name,
                 customLabel: `${d.name}
                     <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                        ${d.notes}<br/>
+                        ${d.notes ? d.notes + "<br/>" : ""}
                     </div>`,
                 }));
             },

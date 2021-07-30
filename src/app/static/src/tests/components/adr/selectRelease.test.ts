@@ -15,6 +15,11 @@ describe("select release", () => {
             id: "releaseId",
             name: "releaseName",
             notes: "releaseNotes"
+        },
+        {
+            id: "releaseId2",
+            name: "releaseName2",
+            notes: null
         }
     ]
     const getReleasesMock = jest.fn();
@@ -72,6 +77,14 @@ describe("select release", () => {
                 customLabel: `releaseName
                 <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
                     releaseNotes<br/>
+                </div>`
+            },
+            {
+                id: "releaseId2",
+                label: "releaseName2",
+                customLabel: `releaseName2
+                <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                    
                 </div>`
             }
         ]
