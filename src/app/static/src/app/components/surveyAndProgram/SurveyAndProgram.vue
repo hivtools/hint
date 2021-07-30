@@ -1,6 +1,13 @@
 <template>
     <div>
         <div class="row">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" v-translate="'map'"></a>
+                </li>
+            </ul>
+        </div>
+        <div class="row">
             <div :class="showChoropleth ? 'col-md-3' : 'col-sm-6 col-md-8'" class="upload-section">
                 <form>
                     <manage-file label="survey"
@@ -50,18 +57,6 @@
                          @update="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"></filters>
             </div>
             <div v-if="showChoropleth" class="col-md-9">
-                <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                        <a class="nav-link" :class="survey.tabClass" v-on:click="selectDataType(2)"
-                           v-translate="'survey'"></a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" :class="programme.tabClass" v-on:click="selectDataType(1)" v-translate="'ART'">ART</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" :class="anc.tabClass" v-on:click="selectDataType(0)" v-translate="'ANC'">ANC</a>
-                    </li>
-                </ul>
                 <choropleth :chartdata="data"
                             :filters="filters"
                             :features="features"
@@ -165,10 +160,6 @@
                     fromADR: !!surveyAndProgram.anc?.fromADR,
                     error: surveyAndProgram.ancError,
                     existingFileName: (surveyAndProgram.anc && surveyAndProgram.anc.filename)|| surveyAndProgram.ancErroredFile,
-                    tabClass: {
-                        "disabled": !!surveyAndProgram.ancError || !surveyAndProgram.anc,
-                        "active": surveyAndProgram.selectedDataType == DataType.ANC
-                    },
                     available: !surveyAndProgram.ancError && surveyAndProgram.anc
                 } as PartialFileUploadProps),
                 programme: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
@@ -176,10 +167,6 @@
                     fromADR: !!surveyAndProgram.program?.fromADR,
                     error: surveyAndProgram.programError,
                     existingFileName: (surveyAndProgram.program && surveyAndProgram.program.filename) || surveyAndProgram.programErroredFile,
-                    tabClass: {
-                        "disabled": !!surveyAndProgram.programError || !surveyAndProgram.program,
-                        "active": surveyAndProgram.selectedDataType == DataType.Program
-                    },
                     available: !surveyAndProgram.programError && surveyAndProgram.program
                 } as PartialFileUploadProps),
                 survey: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
@@ -187,10 +174,6 @@
                     fromADR: !!surveyAndProgram.survey?.fromADR,
                     error: surveyAndProgram.surveyError,
                     existingFileName: (surveyAndProgram.survey && surveyAndProgram.survey.filename) || surveyAndProgram.surveyErroredFile,
-                    tabClass: {
-                        "disabled": !!surveyAndProgram.surveyError || !surveyAndProgram.survey,
-                        "active": surveyAndProgram.selectedDataType == DataType.Survey
-                    },
                     available: !surveyAndProgram.surveyError && surveyAndProgram.survey
                 } as PartialFileUploadProps),
                 features: ({baseline} : {baseline: BaselineState}) => baseline.shape ? baseline.shape.data.features : [] as Feature[],
