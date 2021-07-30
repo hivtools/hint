@@ -536,9 +536,6 @@ describe("select dataset", () => {
         let store = getStore({selectedDataset: fakeDataset2});
         const rendered = mount(SelectDataset, {
             store,
-            data: () => ({
-                newDatasetReleaseId: "1.0"
-            }),
             stubs: ["tree-select"]
         });
 
@@ -553,6 +550,8 @@ describe("select dataset", () => {
 
         // select dataset from dropdown and click button to import
         rendered.setData({newDatasetId: "id2"});
+        const selectRelease = rendered.find(SelectRelease)
+        await selectRelease.vm.$emit("selected-dataset-release", "1.0");
         rendered.find(Modal).find("button").trigger("click");
 
         await Vue.nextTick();
