@@ -21,6 +21,7 @@ import {mutations as selectionsMutations} from "../../../app/store/plottingSelec
 import {ScaleSelections, ScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
 import {Language} from "../../../app/store/translations/locales";
+import {expectTranslated} from "../../testHelpers";
 
 const localVue = createLocalVue();
 
@@ -193,6 +194,13 @@ describe("Survey and programme component", () => {
         const store = createStore({selectedDataType: null});
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         expect(wrapper.find("#data-source").exists()).toBe(false);
+    });
+
+    it("renders data source header as expected", () => {
+        const store = createStore();
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const header = wrapper.find("#data-source h4");
+        expectTranslated(header, "Data source", "Source de données", store);
     });
 
     it("survey in included in data sources when survey data is present", () => {

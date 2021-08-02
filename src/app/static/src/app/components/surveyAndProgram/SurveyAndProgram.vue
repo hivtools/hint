@@ -42,7 +42,7 @@
                     </manage-file>
                 </form>
                 <div v-if="showChoropleth" id="data-source" class="form-group">
-                    <label class="font-weight-bold" id="data-source-header" v-translate="'dataSource'"></label>
+                    <h4 id="data-source-header" v-translate="'dataSource'"></h4>
                     <treeselect
                             :multiple="false"
                             :clearable="false"
