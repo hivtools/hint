@@ -2,8 +2,7 @@ import {ActionContext, ActionTree} from 'vuex';
 import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {GenericChartState} from "./genericChart";
-
-export type GenericChartMutation = "GenericChartMetadataFetched"
+import {GenericChartMutation} from "./mutations";
 
 export interface MetadataActions {
     getGenericChartMetadata: (store: ActionContext<GenericChartState, RootState>) => void
@@ -11,8 +10,8 @@ export interface MetadataActions {
 
 export const actions: ActionTree<GenericChartState, RootState> & MetadataActions = {
     async getGenericChartMetadata(context) {
-        await api<GenericChartMutation, GenericChartMutation>(context)
-            .withSuccess("GenericChartMetadataFetched")
+        await api<GenericChartMutation, "">(context)
+            .withSuccess(GenericChartMutation.GenericChartMetadataFetched)
             .ignoreErrors()
             .get(`/meta/generic-chart`);
     }

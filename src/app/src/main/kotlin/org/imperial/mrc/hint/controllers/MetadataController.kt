@@ -8,12 +8,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.io.FileNotFoundException
-import java.net.URL
-import javax.xml.ws.Response
 
 @RestController
 @RequestMapping("/meta")
@@ -48,10 +44,11 @@ class MetadataController(val apiClient: HintrAPIClient,
         val chartConfigNode = metadata["input-time-series"]["chartConfig"][0]
         (chartConfigNode as ObjectNode).set("config", TextNode(timeSeriesConfigText))
 
-        return  SuccessResponse(metadata).asResponseEntity()
+        return SuccessResponse(metadata).asResponseEntity()
     }
 
-    private fun readFromResource(path: String): String {
+    private fun readFromResource(path: String): String
+    {
         val url = classLoader.getResource(path)
         return url.readText()
     }

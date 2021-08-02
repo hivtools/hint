@@ -9,6 +9,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.controllers.MetadataController
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,6 +20,17 @@ import java.net.URL
 
 class MetadataControllerTests
 {
+    private val tmpDir = "tmp"
+
+    @BeforeEach
+    fun makeTmpDir() {
+        File(tmpDir).mkdir()
+    }
+
+    @AfterEach
+    fun cleanup() {
+        File(tmpDir).deleteRecursively()
+    }
 
     @Test
     fun `gets plotting metadata`()
@@ -51,38 +64,27 @@ class MetadataControllerTests
     @Test
     fun `gets generic chart metadata`()
     {
-        val tmpDir = "tmp"
+        val mockClassLoader = mock<ClassLoader>() {
+            on { getResource("metadata/generic-chart.json") } doReturn createTestResource(
+                    "${tmpDir}/metadata/metadata/generic-chart.json",
+                    """{
+                        "input-time-series": {
+                            "chartConfig": [
+                                {"id": "scatter"}
+                            ]
+                        }
+                    }""")
+            on { getResource("metadata/input-time-series-config-jsonata.txt") } doReturn createTestResource(
+                "${tmpDir}/metadata/input-time-series-config-jsonata.txt", "TEST_JSONATA")
+            }
 
-        try
-        {
-            File(tmpDir).mkdir()
-            val mockClassLoader = mock<ClassLoader>() {
-                on { getResource("metadata/generic-chart.json") } doReturn createTestResource(
-                        "${tmpDir}/metadata/metadata/generic-chart.json",
-                        """{
-                            "input-time-series": {
-                                "chartConfig": [
-                                    {"id": "scatter"}
-                                ]
-                            }
-                        }""")
-                on { getResource("metadata/input-time-series-config-jsonata.txt") } doReturn createTestResource(
-                    "${tmpDir}/metadata/input-time-series-config-jsonata.txt", "TEST_JSONATA")
-                }
-
-            val sut = MetadataController(mock(), mockClassLoader)
-            val result = sut.genericChart()
-            assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
-            val resultJson = ObjectMapper().readValue<ObjectNode>(result.body!!)
-            val chartConfig = resultJson["data"]["input-time-series"]["chartConfig"][0]
-            assertThat(chartConfig["id"].asText()).isEqualTo("scatter")
-            assertThat(chartConfig["config"].asText()).isEqualTo("TEST_JSONATA")
-        }
-        finally
-        {
-            File(tmpDir).deleteRecursively()
-        }
-
+        val sut = MetadataController(mock(), mockClassLoader)
+        val result = sut.genericChart()
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        val resultJson = ObjectMapper().readValue<ObjectNode>(result.body!!)
+        val chartConfig = resultJson["data"]["input-time-series"]["chartConfig"][0]
+        assertThat(chartConfig["id"].asText()).isEqualTo("scatter")
+        assertThat(chartConfig["config"].asText()).isEqualTo("TEST_JSONATA")
     }
 
     @Test
@@ -95,6 +97,22 @@ class MetadataControllerTests
         val sut = MetadataController(mock(), mockClassLoader)
         assertThatThrownBy{ sut.genericChart() }
                 .isInstanceOf(FileNotFoundException::class.java)
+    }
+
+    @Test
+    fun `get generic chart metadata fails if loaded metadata is not an object node`()
+    {
+        val mockClassLoader = mock<ClassLoader>() {
+            on { getResource("metadata/generic-chart.json") } doReturn createTestResource(
+                    "${tmpDir}/metadata/metadata/generic-chart.json",
+                    """["This should fail"]""")
+            on { getResource("metadata/input-time-series-config-jsonata.txt") } doReturn createTestResource(
+                    "${tmpDir}/metadata/input-time-series-config-jsonata.txt", "TEST_JSONATA")
+        }
+
+        val sut = MetadataController(mock(), mockClassLoader)
+        assertThatThrownBy{ sut.genericChart() }
+                .isInstanceOf(NullPointerException::class.java)
     }
 
     private fun createTestResource(path: String, contents: String): URL {
