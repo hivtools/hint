@@ -1,3 +1,7 @@
+# hint 1.46.0
+
+* Combine input data tabs
+
 # hint 1.45.0
 
 * Import releases from ADR: fetch and display release data from ADR
