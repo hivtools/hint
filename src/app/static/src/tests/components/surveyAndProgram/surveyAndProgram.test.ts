@@ -19,8 +19,8 @@ import {mutations} from "../../../app/store/surveyAndProgram/mutations";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {mutations as selectionsMutations} from "../../../app/store/plottingSelections/mutations";
 import {ScaleSelections, ScaleType} from "../../../app/store/plottingSelections/plottingSelections";
-import {expectTranslated} from "../../testHelpers";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
+import {Language} from "../../../app/store/translations/locales";
 
 const localVue = createLocalVue();
 
@@ -189,32 +189,38 @@ describe("Survey and programme component", () => {
         expect((wrapper.vm as any).plottingSelections).toStrictEqual({selectedFilterOptions: "NEW TEST SELECTIONS"});
     });
 
-    it("data source is not rendered if no data is present", () => {
-        const wrapper = shallowMount(SurveyAndProgram, {store: createStore(), localVue});
+    it("data source is not rendered if no selected data type", () => {
+        const store = createStore({selectedDataType: null});
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         expect(wrapper.find("#data-source").exists()).toBe(false);
     });
 
     it("survey in included in data sources when survey data is present", () => {
         expectDataSource({survey: mockSurveyResponse(), selectedDataType: DataType.Survey},
-            "Household Survey", "Enquête de ménage", "0");
+            "Household Survey", "Enquête de ménage", "2");
     });
 
     it("programme (ART) tab is enabled when programme data is present", () => {
-        expectDataSource({program: mockProgramResponse(), selectedDataType: DataType.Survey},
+        expectDataSource({program: mockProgramResponse(), selectedDataType: DataType.Program},
             "ART", "ART", "1");
     });
 
     it("ANC tab is enabled when ANC data is present", () => {
-        expectDataSource({anc: mockAncResponse(), selectedDataType: DataType.Survey},
-            "ANC Testing", "Test de clinique prénatale", "2");
+        expectDataSource({anc: mockAncResponse(), selectedDataType: DataType.ANC},
+            "ANC Testing", "Test de clinique prénatale", "0");
     });
 
     function expectDataSource(state: Partial<SurveyAndProgramState>, englishName: string, frenchName: string, id: string) {
         const store = createStore(state);
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
-        const options = wrapper.find("#data-source treeselect-stub").props("options");
-        expect(options).toStrictEqual([{id, label: englishName}]); //TODO: check translations
+        let options = wrapper.find("#data-source treeselect-stub").props("options");
+        expect(options).toStrictEqual([{id, label: englishName}]);
+
+        store.state.language = Language.fr;
+        registerTranslations(store);
+        options = wrapper.find("#data-source treeselect-stub").props("options");
+        expect(options).toStrictEqual([{id, label:frenchName}]);
     }
 
     it("can change tabs", () => {
@@ -227,19 +233,19 @@ describe("Survey and programme component", () => {
             });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
-        const dataSourceSelect = wrapper.find(".data-source treeselect-stub");
+        const dataSourceSelect = wrapper.find("#data-source treeselect-stub");
         expect(dataSourceSelect.attributes("value")).toBe("1");
         expect(dataSourceSelect.props("options").length).toBe(3);
 
-        dataSourceSelect.vm.$emit("select", "0");
+        dataSourceSelect.vm.$emit("select", {id: "0", label: "ANC"});
         expect(dataSourceSelect.attributes("value")).toBe("0");
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.ANC);
 
-        dataSourceSelect.vm.$emit("select", "2");
+        dataSourceSelect.vm.$emit("select", {id: "2", label: "Household Survey"});
         expect(dataSourceSelect.attributes("value")).toBe("2");
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.Survey);
 
-        dataSourceSelect.vm.$emit("select", "1");
+        dataSourceSelect.vm.$emit("select", {id: "1", label: "ART"});
         expect(dataSourceSelect.attributes("value")).toBe("1");
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.Program);
 
