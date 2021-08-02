@@ -129,6 +129,12 @@ export interface Dataset {
     organization: Organization
 }
 
+export interface Release {
+    id: string
+    name: string
+    notes: string
+}
+
 export interface Organization {
     id: string
 }

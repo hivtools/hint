@@ -13,6 +13,7 @@ export interface ADRActions {
     saveKey: (store: ActionContext<ADRState, RootState>, key: string) => void;
     deleteKey: (store: ActionContext<ADRState, RootState>) => void;
     getDatasets: (store: ActionContext<ADRState, RootState>) => void;
+    getReleases: (store: ActionContext<ADRState, RootState>, id: string) => void;
     getDataset: (store: ActionContext<ADRState, RootState>, payload: GetDatasetPayload) => void;
     getSchemas: (store: ActionContext<ADRState, RootState>) => void;
     getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
@@ -57,6 +58,13 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .then(() => {
                 context.commit({type: ADRMutation.SetFetchingDatasets, payload: false});
             });
+    },
+
+    async getReleases(context, selectedDatasetId) {
+        await api<ADRMutation, BaselineMutation>(context)
+            .withError(BaselineMutation.BaselineError)
+            .withSuccess(ADRMutation.SetReleases)
+            .get(`/adr/datasets/${selectedDatasetId}/releases/`)
     },
 
     async getDataset(context, {id, release}) {

@@ -1,3 +1,7 @@
+# hint 1.45.0
+
+* Import releases from ADR: fetch and display release data from ADR
+
 # hint 1.44.1
 
 * Import releases from ADR: fetch data from correct ADR release

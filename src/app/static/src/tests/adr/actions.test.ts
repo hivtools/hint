@@ -1,6 +1,7 @@
 import {mockADRState, mockAxios, mockBaselineState, mockError, mockFailure, mockRootState, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/adr/actions";
 import {ADRMutation} from "../../app/store/adr/mutations";
+import {BaselineMutation} from "../../app/store/baseline/mutations";
 
 describe("ADR actions", () => {
     const state = mockADRState();
@@ -126,6 +127,38 @@ describe("ADR actions", () => {
             .toStrictEqual({
                 type: ADRMutation.SetFetchingDatasets,
                 payload: false
+            });
+    });
+
+    it("fetches releases", async () => {
+        mockAxios.onGet(`/adr/datasets/123/releases/`)
+            .reply(200, mockSuccess([1]));
+
+        const commit = jest.fn();
+
+        await actions.getReleases({commit, state, rootState} as any, "123");
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0])
+            .toStrictEqual({
+                type: ADRMutation.SetReleases,
+                payload: [1]
+            });
+    });
+
+    it("releases failure sets error response", async () => {
+        mockAxios.onGet(`/adr/datasets/123/releases/`)
+            .reply(500, mockFailure("error"));
+
+        const commit = jest.fn();
+
+        await actions.getReleases({commit, state, rootState} as any, "123");
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0])
+            .toStrictEqual({
+                type: BaselineMutation.BaselineError,
+                payload: mockError("error")
             });
     });
 

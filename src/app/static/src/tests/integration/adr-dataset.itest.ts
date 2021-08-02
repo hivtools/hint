@@ -7,7 +7,7 @@ import {actions as adrUploadActions} from "../../app/store/adrUpload/actions";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {getFormData} from "./helpers";
 import {ADRMutation} from "../../app/store/adr/mutations";
-import {UploadFile} from "../../app/types";
+import {UploadFile, Dataset} from "../../app/types";
 
 // this suite tests all endpoints that talk to the ADR
 // we put them in a suite of their own so that we can run
@@ -72,6 +72,21 @@ describe("ADR dataset-related actions", () => {
 
         await baselineActions.refreshDatasetMetadata({commit, state, dispatch, rootState: rootStateWithSchemas} as any);
         expect(commit.mock.calls[4][0]).toBe(BaselineMutation.UpdateDatasetResources);
+    });
+
+    it("can get releases", async () => {
+        const commit = jest.fn();
+
+        await adrActions.getDatasets({commit, rootState} as any);
+        const datasetId = commit.mock.calls[2][0]["payload"].find((dataset: Dataset) => dataset.title.includes("Antarctica")).id;
+
+        jest.resetAllMocks();
+        
+        await adrActions.getReleases({commit, rootState} as any, datasetId);
+        expect(commit.mock.calls[0][0].type).toBe(ADRMutation.SetReleases)
+        expect(commit.mock.calls[0][0].payload.length).toBeGreaterThan(0);
+        expect(commit.mock.calls[0][0].payload[0].name).toBeTruthy();
+        expect(commit.mock.calls[0][0].payload[0].id).toBeTruthy();
     });
 
     it("can get userCanUpload when selected dataset organisation is set", async () => {
