@@ -41,7 +41,7 @@
                                  name="anc">
                     </manage-file>
                 </form>
-                <div v-if="showChoropleth" class="form-group">
+                <div v-if="showChoropleth" id="data-source" class="form-group">
                     <label class="font-weight-bold" id="data-source-header" v-translate="'dataSource'"></label>
                     <treeselect
                             :multiple="false"
