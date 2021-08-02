@@ -16,7 +16,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.util.LinkedMultiValueMap
-import java.time.Instant
 
 // These test integration between HINT and the ADR
 // so are prone to flakiness when the ADR dev server goes down
@@ -253,14 +252,10 @@ class ADRTests : SecureIntegrationTests()
     {
         testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
 
-        val dataset = "burundi-inputs-unaids-estimates-2021"
-
-        createTestADRResource(ConfiguredAppProperties().adrOutputSummarySchema, dataset)
-
-        val releaseName = Instant.now().toString()
+        val releaseName = "1.0"
 
         val result = testRestTemplate.postForEntity<String>(
-                "/adr/datasets/$dataset/releases",
+                "/adr/datasets/hint_test/releases",
                 getPostEntityWithKey(mapOf("name" to listOf(releaseName)))
         )
 
@@ -268,6 +263,10 @@ class ADRTests : SecureIntegrationTests()
         {
             val data = ObjectMapper().readTree(result.body!!)["data"]
             assertThat(data["name"].textValue()).isEqualTo(releaseName)
+
+            "${ConfiguredAppProperties().adrUrl}api/3/action/version_delete".httpPost(listOf("version_id" to data["id"].textValue()))
+                    .header("Authorization" to ADR_KEY)
+                    .response()
         }
     }
 
@@ -315,14 +314,14 @@ class ADRTests : SecureIntegrationTests()
         }
     }
 
-    private fun createTestADRResource(resourceType: String, dataset: String = "hint_test"): String
+    private fun createTestADRResource(resourceType: String): String
     {
         val response = "${ConfiguredAppProperties().adrUrl}api/3/action/resource_create".httpPost()
                 .timeout(60000)
                 .timeoutRead(60000)
                 .header("Content-Type" to "application/json")
                 .header("Authorization" to ADR_KEY)
-                .body("""{"package_id": "$dataset", "resource_type": "$resourceType"}""")
+                .body("""{"package_id": "hint_test", "resource_type": "$resourceType"}""")
                 .response()
                 .second
 
