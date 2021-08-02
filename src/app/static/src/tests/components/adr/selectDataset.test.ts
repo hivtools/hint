@@ -2,6 +2,7 @@ import Vuex, {ActionTree} from "vuex";
 import Vue from "vue";
 import {mount, shallowMount} from "@vue/test-utils";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
+import SelectRelease from "../../../app/components/adr/SelectRelease.vue";
 import Modal from "../../../app/components/Modal.vue";
 import TreeSelect from '@riophae/vue-treeselect'
 import {
@@ -17,6 +18,7 @@ import {
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {BaselineMutation} from "../../../app/store/baseline/mutations";
+import {ADRMutation} from "../../../app/store/adr/mutations";
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {ADRSchemas} from "../../../app/types";
@@ -156,6 +158,7 @@ describe("select dataset", () => {
     const setDatasetMock = jest.fn();
     const markResourcesUpdatedMock = jest.fn();
     const getDatasetsMock = jest.fn();
+    const getReleasesMock = jest.fn();
     const getDatasetMock = jest.fn();
 
     const baselineActions: Partial<BaselineActions> & ActionTree<any, any> = {
@@ -188,11 +191,17 @@ describe("select dataset", () => {
                     state: {
                         schemas: schemas,
                         datasets: fakeRawDatasets,
+                        releases: [],
                         ...adrProps
                     },
                     actions: {
                         getDatasets: getDatasetsMock,
+                        getReleases: getReleasesMock,
                         getDataset: getDatasetMock
+                    },
+                    mutations: {
+                        [ADRMutation.ClearReleases]: jest.fn(),
+                        [ADRMutation.SetReleases]: jest.fn()
                     }
                 },
                 baseline: {
@@ -449,14 +458,14 @@ describe("select dataset", () => {
             selectedDataset: fakeDataset
         })
         const rendered = shallowMount(SelectDataset, {store});
-        expectTranslated(rendered.find(".font-weight-bold"), "Selected dataset:", "Ensemble de données sélectionné :", store);
+        expectTranslated(rendered.find("#selectedDatasetSpan"), "Selected dataset:", "Ensemble de données sélectionné :", store);
         expect(rendered.find("a").text()).toBe("Some data");
         expect(rendered.find("a").attributes("href")).toBe("www.adr.com/naomi-data/some-data");
     });
 
     it("does not render selected dataset if it doesn't exist", () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});
-        expect(rendered.findAll(".font-weight-bold").length).toBe(0);
+        expect(rendered.findAll("#selectedDatasetSpan").length).toBe(0);
         expect(rendered.findAll("a").length).toBe(0);
     });
 
@@ -527,9 +536,6 @@ describe("select dataset", () => {
         let store = getStore({selectedDataset: fakeDataset2});
         const rendered = mount(SelectDataset, {
             store,
-            data: () => ({
-                newDatasetReleaseId: "1.0"
-            }),
             stubs: ["tree-select"]
         });
 
@@ -540,9 +546,12 @@ describe("select dataset", () => {
         expect(rendered.find(Modal).findAll("button").length).toBe(2);
         expect(rendered.findAll("p").length).toBe(0);
         expectTranslated(rendered.find("h4"), "Browse ADR", "Parcourir ADR", store);
+        expectTranslated(rendered.find("div > label"), "Datasets", "Ensembles de données", store);
 
         // select dataset from dropdown and click button to import
         rendered.setData({newDatasetId: "id2"});
+        const selectRelease = rendered.find(SelectRelease)
+        await selectRelease.vm.$emit("selected-dataset-release", "1.0");
         rendered.find(Modal).find("button").trigger("click");
 
         await Vue.nextTick();
@@ -566,6 +575,52 @@ describe("select dataset", () => {
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
+    it("renders select release", async () => {
+        let store = getStore({},
+            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
+        )
+        const rendered = mount(SelectDataset, {
+            store, stubs: ["tree-select"]
+        });
+        await rendered.find("button").trigger("click");
+
+        rendered.setData({newDatasetId: "id2"});
+        const selectRelease = rendered.find(SelectRelease)
+        expect(selectRelease.props("datasetId")).toBe("id2");
+    });
+
+    it("select release emits valid and enables import button", async () => {
+        let store = getStore({},
+            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
+        )
+        const rendered = mount(SelectDataset, {
+            store, stubs: ["tree-select"]
+        });
+        await rendered.find("button").trigger("click");
+
+        rendered.setData({newDatasetId: "id2", valid: false});
+        const selectRelease = rendered.find(SelectRelease)
+        const importBtn = rendered.find("#importBtn")
+        expect(importBtn.attributes("disabled")).toBe("disabled");
+        await selectRelease.vm.$emit("valid", true);
+        expect(importBtn.attributes("disabled")).toBeUndefined();
+    });
+
+    it("select release emits selected dataset release and updates release id", async () => {
+        let store = getStore({},
+            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
+        )
+        const rendered = mount(SelectDataset, {
+            store, stubs: ["tree-select"]
+        });
+        await rendered.find("button").trigger("click");
+
+        rendered.setData({newDatasetId: "id2"});
+        const selectRelease = rendered.find(SelectRelease)
+        await selectRelease.vm.$emit("selected-dataset-release", "releaseId");
+        expect(rendered.vm.$data.newDatasetReleaseId).toBe("releaseId")
+    });
+    
     it("renders reset confirmation dialog when importing a new dataset and then saves new version and imports if click save", async () => {
         let store = getStore({selectedDataset: fakeDataset2}, {}, true);
         const rendered = mount(SelectDataset, {
