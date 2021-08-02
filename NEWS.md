@@ -1,3 +1,7 @@
+# hint 1.45.0
+
+* Combine input data tabs
+
 # hint 1.44.1
 
 * Import releases from ADR: fetch data from correct ADR release
