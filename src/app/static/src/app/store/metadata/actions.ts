@@ -6,7 +6,7 @@ import {MetadataMutations} from "./mutations";
 
 export interface MetadataActions {
     getPlottingMetadata: (store: ActionContext<MetadataState, RootState>, country: string) => void
-    getAdrUploadMetadata: (store: ActionContext<MetadataState, RootState>, downloadId: string) => void
+    getAdrUploadMetadata: (store: ActionContext<MetadataState, RootState>, downloadId: string) => Promise<void>
 }
 
 export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {

@@ -68,6 +68,7 @@
     import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
     import {adr, ADRState} from "../../store/adr/adr";
     import DownloadProgress from "./DownloadProgress.vue";
+    import {rootState} from "../../../tests/integration/integrationTest";
 
     interface Methods {
         uploadFilesToADRAction: (uploadFilesPayload: UploadFile[]) => void;
@@ -83,7 +84,7 @@
         getSummaryDownload: () => void
         getSpectrumDownload: () => void
         sendUploadFilesToADR: () => void
-        getUploadMetadata: (id: string) => void
+        getUploadMetadata: (id: string) => Promise<void>
         handleDownloadResult: (downloadResults: DownloadResultsDependency) => void
     }
 
@@ -195,8 +196,8 @@
             },
             async handleDownloadResult(downloadResults) {
               if (this.open && this.downloadIsReady()) {
-                await this.getUploadMetadata(downloadResults.downloadId)
-                this.sendUploadFilesToADR();
+                  await this.getUploadMetadata(downloadResults.downloadId)
+                  this.sendUploadFilesToADR();
               }
             },
             downloadSpectrum: mapActionByName("downloadResults", "downloadSpectrum"),

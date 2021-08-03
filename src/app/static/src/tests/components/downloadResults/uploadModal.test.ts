@@ -265,6 +265,8 @@ describe(`uploadModal `, () => {
         store.state.downloadResults = downloadResults
 
         expect(mockUploadMetadataAction.mock.calls.length).toBe(2)
+
+        await Vue.nextTick()
         expect(mockUploadFilesToADR.mock.calls.length).toBe(2)
     });
 
