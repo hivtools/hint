@@ -6,15 +6,12 @@ import {DownloadStatusResponse, DownloadSubmitResponse, Error} from "../../gener
 export enum DownloadResultsMutation {
     SpectrumDownloadStarted = "SpectrumDownloadStarted",
     SpectrumDownloadStatusUpdated = "SpectrumDownloadStatusUpdated",
-    SpectrumDownloadComplete = "SpectrumDownloadComplete",
     SpectrumError = "SpectrumError",
     CoarseOutputDownloadStarted = "CoarseOutputDownloadStarted",
     CoarseOutputDownloadStatusUpdated = "CoarseOutputDownloadStatusUpdated",
     CoarseOutputError = "CoarseOutputError",
-    CoarseOutputDownloadComplete = "CoarseOutputDownloadComplete",
     SummaryDownloadStarted = "SummaryDownloadStarted",
     SummaryDownloadStatusUpdated = "SummaryDownloadStatusUpdated",
-    SummaryDownloadComplete = "SummaryDownloadComplete",
     SummaryError = "SummaryError",
     PollingStatusStarted = "PollingStatusStarted",
     StopPolling = "StopPolling"
@@ -32,13 +29,7 @@ export const mutations: MutationTree<DownloadResultsState> = {
             state.spectrum.complete = true;
             state.spectrum.downloading = false;
         }
-        state.spectrum.status = action.payload;
         state.spectrum.error = null;
-    },
-
-    [DownloadResultsMutation.SpectrumDownloadComplete](state: DownloadResultsState, action: PayloadWithType<boolean>) {
-        state.spectrum.complete = action.payload;
-        state.spectrum.downloading = false;
     },
 
     [DownloadResultsMutation.SpectrumError](state: DownloadResultsState, action: PayloadWithType<Error>) {
@@ -56,13 +47,7 @@ export const mutations: MutationTree<DownloadResultsState> = {
             state.coarseOutput.complete = true;
             state.coarseOutput.downloading = false;
         }
-        state.coarseOutput.status = action.payload;
         state.coarseOutput.error = null;
-    },
-
-    [DownloadResultsMutation.CoarseOutputDownloadComplete](state: DownloadResultsState, action: PayloadWithType<boolean>) {
-        state.coarseOutput.complete = action.payload;
-        state.coarseOutput.downloading = false;
     },
 
     [DownloadResultsMutation.CoarseOutputError](state: DownloadResultsState, action: PayloadWithType<Error>) {
@@ -80,13 +65,7 @@ export const mutations: MutationTree<DownloadResultsState> = {
             state.summary.complete = true;
             state.summary.downloading = false;
         }
-        state.summary.status = action.payload;
         state.summary.error = null;
-    },
-
-    [DownloadResultsMutation.SummaryDownloadComplete](state: DownloadResultsState, action: PayloadWithType<boolean>) {
-        state.summary.complete = action.payload;
-        state.summary.downloading = false;
     },
 
     [DownloadResultsMutation.SummaryError](state: DownloadResultsState, action: PayloadWithType<Error>) {

@@ -121,18 +121,15 @@ describe(`download Results actions`, () => {
         await actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.SUMMARY);
 
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(3);
+            expect(commit.mock.calls.length).toBe(2);
             expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
             expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
             expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SUMMARY)
 
             expect(commit.mock.calls[1][0]["type"]).toBe("SummaryDownloadStatusUpdated")
             expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
-
-            expect(commit.mock.calls[2][0]["type"]).toBe("SummaryDownloadComplete")
-            expect(commit.mock.calls[2][0]["payload"]).toEqual(true)
             done()
-        }, 3100)
+        }, 2100)
     });
 
     it("does not send download summary request when unsuccessful", async () => {
@@ -182,7 +179,7 @@ describe(`download Results actions`, () => {
         await actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.SUMMARY);
 
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(3)
+            expect(commit.mock.calls.length).toBe(2)
 
             expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
             expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
@@ -192,9 +189,6 @@ describe(`download Results actions`, () => {
                 type: "SummaryError",
                 payload: mockError("TEST FAILED")
             });
-
-            expect(commit.mock.calls[2][0]["type"]).toBe("SummaryDownloadComplete")
-            expect(commit.mock.calls[2][0]["payload"]).toEqual(true)
             done()
         }, 2100)
     });
@@ -286,18 +280,15 @@ describe(`download Results actions`, () => {
         await actions.poll({commit, state, rootState: root} as any, DOWNLOAD_TYPE.SPECTRUM);
 
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(3);
+            expect(commit.mock.calls.length).toBe(2);
             expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
             expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
             expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SPECTRUM)
 
             expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumDownloadStatusUpdated")
             expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
-
-            expect(commit.mock.calls[2][0]["type"]).toBe("SpectrumDownloadComplete")
-            expect(commit.mock.calls[2][0]["payload"]).toEqual(true)
             done()
-        }, 3100)
+        }, 2100)
     });
 
     it("does not send download spectrum request when unsuccessful", async () => {
@@ -347,7 +338,7 @@ describe(`download Results actions`, () => {
         await actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.SPECTRUM);
 
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(3)
+            expect(commit.mock.calls.length).toBe(2)
 
             expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
             expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
@@ -358,8 +349,6 @@ describe(`download Results actions`, () => {
                 payload: mockError("TEST FAILED")
             });
 
-            expect(commit.mock.calls[2][0]["type"]).toBe("SpectrumDownloadComplete")
-            expect(commit.mock.calls[2][0]["payload"]).toEqual(true)
             done()
 
         }, 2100)
@@ -447,7 +436,7 @@ describe(`download Results actions`, () => {
         await actions.poll({commit, state, rootState: root} as any, DOWNLOAD_TYPE.COARSE);
 
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(3);
+            expect(commit.mock.calls.length).toBe(2);
             expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
             expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
             expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COARSE)
@@ -455,10 +444,8 @@ describe(`download Results actions`, () => {
             expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputDownloadStatusUpdated")
             expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
 
-            expect(commit.mock.calls[2][0]["type"]).toBe("CoarseOutputDownloadComplete")
-            expect(commit.mock.calls[2][0]["payload"]).toEqual(true)
             done()
-        }, 3100)
+        }, 2100)
     });
 
     it("does not send download coarse output request when unsuccessful", async () => {
@@ -506,7 +493,7 @@ describe(`download Results actions`, () => {
         await actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.COARSE);
 
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(3)
+            expect(commit.mock.calls.length).toBe(2)
 
             expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
             expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
@@ -516,9 +503,6 @@ describe(`download Results actions`, () => {
                 type: "CoarseOutputError",
                 payload: mockError("TEST FAILED")
             });
-
-            expect(commit.mock.calls[2][0]["type"]).toBe("CoarseOutputDownloadComplete")
-            expect(commit.mock.calls[2][0]["payload"]).toEqual(true)
 
             done()
         }, 2100)
