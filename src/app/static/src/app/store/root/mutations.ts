@@ -38,6 +38,7 @@ export const mutations: MutationTree<RootState> = {
             hintrVersion: state.hintrVersion,
             language: state.language,
             adr: state.adr,
+            genericChart: state.genericChart,
             adrUpload: initialADRUploadState(),
             baseline: maxValidStep < 1 ? initialBaselineState() : state.baseline,
             metadata: maxValidStep < 1 ? initialMetadataState() : state.metadata,
@@ -73,6 +74,7 @@ export const mutations: MutationTree<RootState> = {
             language: state.language,
             hintrVersion: state.hintrVersion,
             adr: state.adr,
+            genericChart: state.genericChart,
             projects: {
                 ...initialProjectsState(),
                 currentProject: action.payload,

@@ -43,6 +43,7 @@ import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrV
 import {ADRState, initialADRState} from "../app/store/adr/adr";
 import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrUpload";
 import {DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
+import {GenericChartState, initialGenericChartState} from "../app/store/genericChart/genericChart";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -169,6 +170,13 @@ export const mockColourScales = (props?: Partial<ColourScalesState>) => {
 export const mockProjectsState = (props?: Partial<ProjectsState>) => {
     return {
         ...initialProjectsState(),
+        ...props
+    }
+};
+
+export const mockGenericChartState =  (props?: Partial<GenericChartState>): GenericChartState => {
+    return {
+        ...initialGenericChartState(),
         ...props
     }
 };

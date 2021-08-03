@@ -4,6 +4,7 @@
             <span
                 class="font-weight-bold"
                 v-translate="'selectedDataset'"
+                id="selectedDatasetSpan"
             ></span>
             <a :href="selectedDataset.url" target="_blank">
                 {{ selectedDataset.title }}
@@ -34,7 +35,9 @@
             <h4 v-if="!loading" v-translate="'browseADR'"></h4>
             <p v-if="loading" v-translate="'importingFiles'"></p>
             <div v-if="!loading">
+                <label for="datasetSelector" class="font-weight-bold" v-translate="'datasets'"></label>
                 <tree-select
+                    id="datasetSelector"
                     :multiple="false"
                     :searchable="true"
                     :options="datasetOptions"
@@ -49,6 +52,7 @@
                     >
                     </label>
                 </tree-select>
+                <select-release :dataset-id="newDatasetId" @selected-dataset-release="updateDatasetRelease" @valid="updateValid"></select-release>
                 <div
                     :class="fetchingDatasets ? 'visible' : 'invisible'"
                     style="margin-top: 15px"
@@ -71,8 +75,9 @@
             </div>
             <template v-slot:footer v-if="!loading">
                 <button
+                    id="importBtn"
                     type="button"
-                    :disabled="!newDatasetId"
+                    :disabled="disableImport"
                     class="btn btn-red"
                     v-translate="'import'"
                     @click.prevent="confirmImport"
@@ -119,6 +124,7 @@
     import { ADRState } from "../../store/adr/adr";
     import { Error } from "../../generated";
     import ResetConfirmation from "../ResetConfirmation.vue";
+    import SelectRelease from "./SelectRelease.vue";
     import { GetDatasetPayload } from "../../store/adr/actions";
 
     interface Methods {
@@ -140,6 +146,8 @@
         confirmImport: () => void;
         continueEditing: () => void;
         cancelEditing: () => void;
+        updateDatasetRelease: (id: string) => void;
+        updateValid: (valid: boolean) => void;
     }
 
     interface Computed {
@@ -156,6 +164,7 @@
         currentLanguage: Language;
         select: string;
         editsRequireConfirmation: boolean;
+        disableImport: boolean;
     }
 
     interface Data {
@@ -163,8 +172,9 @@
         showConfirmation: boolean;
         loading: boolean;
         newDatasetId: string | null;
-        newDatasetReleaseId?: string;
+        newDatasetReleaseId: string | undefined;
         pollingId: number | null;
+        valid: boolean;
     }
 
     const names: { [k in keyof DatasetResourceSet]: string } = {
@@ -186,6 +196,8 @@
                 loading: false,
                 newDatasetId: null,
                 pollingId: null,
+                valid: true,
+                newDatasetReleaseId: undefined
             };
         },
         components: {
@@ -194,6 +206,7 @@
             LoadingSpinner,
             InfoIcon,
             ResetConfirmation,
+            SelectRelease
         },
         directives: { tooltip: VTooltip },
         computed: {
@@ -275,6 +288,9 @@
                 null,
                 (state: RootState) => state.language
             ),
+            disableImport(){
+                return !this.newDatasetId || !this.valid
+            }
         },
         methods: {
             getDatasets: mapActionByName("adr", "getDatasets"),
@@ -403,6 +419,12 @@
                     window.clearInterval(this.pollingId);
                 }
             },
+            updateDatasetRelease(releaseId){
+                this.newDatasetReleaseId = releaseId;
+            },
+            updateValid(valid){
+                this.valid = valid;
+            }
         },
         mounted() {
             this.refreshDatasetMetadata();

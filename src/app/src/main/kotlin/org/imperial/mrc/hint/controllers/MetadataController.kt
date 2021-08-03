@@ -1,13 +1,20 @@
 package org.imperial.mrc.hint.controllers
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.node.ObjectNode
+import com.fasterxml.jackson.databind.node.TextNode
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.imperial.mrc.hint.clients.HintrAPIClient
+import org.imperial.mrc.hint.models.SuccessResponse
+import org.imperial.mrc.hint.models.asResponseEntity
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import javax.xml.ws.Response
 
 @RestController
 @RequestMapping("/meta")
-class MetadataController(val apiClient: HintrAPIClient)
+class MetadataController(val apiClient: HintrAPIClient,
+                         private val classLoader: ClassLoader = MetadataController::class.java.classLoader)
 {
     @GetMapping("/plotting/{iso3}")
     @ResponseBody
@@ -28,5 +35,28 @@ class MetadataController(val apiClient: HintrAPIClient)
     fun uploadMetadata(@PathVariable("id") id: String): ResponseEntity<String>
     {
         return apiClient.getUploadMetadata(id)
+    }
+
+    @GetMapping("/generic-chart")
+    @ResponseBody
+    fun genericChart(): ResponseEntity<String>
+    {
+        // Reading config from local resources is temporary, and will be replaced by fetch from hintr in
+        // https://mrc-ide.myjetbrains.com/youtrack/issue/mrc-2536
+        val objectMapper = ObjectMapper()
+        val metadataText = readFromResource("metadata/generic-chart.json")
+        val timeSeriesConfigText = readFromResource("metadata/input-time-series-config-jsonata.txt")
+
+        val metadata = objectMapper.readValue<JsonNode>(metadataText)
+        val chartConfigNode = metadata["input-time-series"]["chartConfig"][0]
+        (chartConfigNode as ObjectNode).set("config", TextNode(timeSeriesConfigText))
+
+        return SuccessResponse(metadata).asResponseEntity()
+    }
+
+    private fun readFromResource(path: String): String
+    {
+        val url = classLoader.getResource(path)
+        return url.readText()
     }
 }

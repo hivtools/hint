@@ -1,6 +1,14 @@
-# hint 1.45.0
+# hint 1.47.0
 
 * Use async endpoints for Just-In-time generation of download files from HINT frontend
+
+# hint 1.46.0
+
+* Combine input data tabs
+
+# hint 1.45.0
+
+* Import releases from ADR: fetch and display release data from ADR
 
 # hint 1.44.1
 

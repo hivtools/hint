@@ -8,6 +8,8 @@ export enum ADRMutation {
     SetKeyError = "KeyError",
     SetADRError = "ADRError",
     SetDatasets = "SetDatasets",
+    SetReleases = "SetReleases",
+    ClearReleases = "ClearReleases",
     SetFetchingDatasets = "SetFetchingDatasets",
     SetSchemas = "SetSchemas",
     SetUserCanUpload = "SetUserCanUpload"
@@ -28,6 +30,14 @@ export const mutations: MutationTree<ADRState> = {
 
     [ADRMutation.SetDatasets](state: ADRState, action: PayloadWithType<any[]>) {
         state.datasets = action.payload;
+    },
+
+    [ADRMutation.SetReleases](state: ADRState, action: PayloadWithType<any[]>) {
+        state.releases = action.payload;
+    },
+
+    [ADRMutation.ClearReleases](state: ADRState) {
+        state.releases = [];
     },
 
     [ADRMutation.SetFetchingDatasets](state: ADRState, action: PayloadWithType<boolean>) {
