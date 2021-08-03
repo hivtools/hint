@@ -269,11 +269,36 @@ class ADRTests : SecureIntegrationTests()
         }
     }
 
-    private fun getPostEntityWithKey(): HttpEntity<LinkedMultiValueMap<String, String>>
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can create an ADR release`(isAuthorized: IsAuthorized)
+    {
+        testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
+
+        val releaseName = "1.0"
+
+        val result = testRestTemplate.postForEntity<String>(
+                "/adr/datasets/hint_test/releases",
+                getPostEntityWithKey(mapOf("name" to listOf(releaseName)))
+        )
+
+        if (isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = ObjectMapper().readTree(result.body!!)["data"]
+            assertThat(data["name"].textValue()).isEqualTo(releaseName)
+
+            "${ConfiguredAppProperties().adrUrl}api/3/action/version_delete".httpPost(listOf("version_id" to data["id"].textValue()))
+                    .header("Authorization" to ADR_KEY)
+                    .response()
+        }
+    }
+
+    private fun getPostEntityWithKey(values: Map<String, List<String>> = emptyMap()): HttpEntity<LinkedMultiValueMap<String, String>>
     {
         val map = LinkedMultiValueMap<String, String>()
         // this key is for a test user who has access to 1 fake dataset
         map.add("key", ADR_KEY)
+        map.addAll(LinkedMultiValueMap(values))
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         return HttpEntity(map, headers)

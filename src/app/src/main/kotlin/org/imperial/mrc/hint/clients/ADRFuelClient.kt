@@ -32,6 +32,7 @@ interface ADRClient
 {
     fun getInputStream(url: String): BufferedInputStream
     fun get(url: String): ResponseEntity<String>
+    fun post(url: String, params: List<Pair<String, String>>): ResponseEntity<String>
     fun postFile(url: String, parameters: List<Pair<String, Any?>>, file: Pair<String, File>): ResponseEntity<String>
 }
 
