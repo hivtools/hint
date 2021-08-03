@@ -84,6 +84,7 @@
         getSpectrumDownload: () => void
         sendUploadFilesToADR: () => void
         getUploadMetadata: (id: string) => void
+        handleDownloadResult: (downloadResults: DownloadResultsDependency) => void
     }
 
     interface Computed {
@@ -192,6 +193,12 @@
                 this.uploadFilesToAdr = outputFileTypes
                     .filter(key => this.uploadFiles.hasOwnProperty(key))
             },
+            async handleDownloadResult(downloadResults) {
+              if (this.open && this.downloadIsReady()) {
+                await this.getUploadMetadata(downloadResults.downloadId)
+                this.sendUploadFilesToADR();
+              }
+            },
             downloadSpectrum: mapActionByName("downloadResults", "downloadSpectrum"),
             downloadSummary: mapActionByName("downloadResults", "downloadSummary"),
             getUploadMetadata: mapActionByName("metadata", "getAdrUploadMetadata")
@@ -247,19 +254,13 @@
         },
         summary: {
           handler(summary) {
-            if (this.open && this.downloadIsReady()) {
-              this.getUploadMetadata(summary.downloadId)
-              this.sendUploadFilesToADR();
-            }
+            this.handleDownloadResult(summary)
           },
           deep: true
         },
         spectrum: {
           handler(spectrum) {
-            if (this.open && this.downloadIsReady()) {
-              this.getUploadMetadata(spectrum.downloadId)
-              this.sendUploadFilesToADR();
-            }
+            this.handleDownloadResult(spectrum)
           },
           deep: true
         }

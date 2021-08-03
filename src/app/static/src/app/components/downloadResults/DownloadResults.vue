@@ -103,6 +103,7 @@
         getUploadMetadata: (id: string) => void
         downloadUrl: (downloadId: string) => string
         stopPolling: (pollingId: number) => void
+        handleDownloadResult: (downloadResults: DownloadResultsDependency) => void
     }
 
     interface Data {
@@ -194,6 +195,18 @@
             stopPolling(id) {
               clearInterval(id)
             },
+            handleDownloadResult(downloadResults) {
+              if(!this.uploadModalOpen) {
+                if (downloadResults.complete) {
+                  window.location.assign(this.downloadUrl(downloadResults.downloadId));
+                  this.getUploadMetadata(downloadResults.downloadId);
+                  this.stopPolling(downloadResults.statusPollId)
+                }
+                if (downloadResults.error && downloadResults.statusPollId > -1) {
+                  this.stopPolling(downloadResults.statusPollId);
+                }
+              }
+            },
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
             getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
             getSpectrumDownload: mapActionByName("downloadResults", "downloadSpectrum"),
@@ -216,49 +229,19 @@
         watch: {
             summary: {
                 handler(summary) {
-                    if(!this.uploadModalOpen) {
-
-                      if (summary.complete) {
-                        window.location.assign(this.downloadUrl(summary.downloadId));
-                        this.getUploadMetadata(summary.downloadId);
-                        this.stopPolling(summary.statusPollId)
-                      }
-                      if (summary.error && summary.statusPollId > -1) {
-                        this.stopPolling(summary.statusPollId);
-                      }
-                    }
+                  this.handleDownloadResult(summary)
                 },
                 deep: true
             },
             spectrum: {
                 handler(spectrum) {
-                  if(!this.uploadModalOpen) {
-
-                    if (spectrum.complete) {
-                        window.location.assign(this.downloadUrl(spectrum.downloadId));
-                        this.getUploadMetadata(spectrum.downloadId);
-                        this.stopPolling(spectrum.statusPollId);
-                    }
-                    if (spectrum.error && spectrum.statusPollId > -1) {
-                      this.stopPolling(spectrum.statusPollId);
-                    }
-                  }
+                  this.handleDownloadResult(spectrum)
                 },
                 deep: true
             },
             coarseOutput: {
                 handler(coarseOutput) {
-                    if(!this.uploadModalOpen) {
-
-                      if (coarseOutput.complete) {
-                        window.location.assign(this.downloadUrl(coarseOutput.downloadId));
-                        this.getUploadMetadata(coarseOutput.downloadId);
-                        this.stopPolling(coarseOutput.statusPollId);
-                      }
-                      if (coarseOutput.error && coarseOutput.statusPollId > -1) {
-                        this.stopPolling(coarseOutput.statusPollId);
-                      }
-                    }
+                  this.handleDownloadResult(coarseOutput)
                 },
                 deep: true
             }
