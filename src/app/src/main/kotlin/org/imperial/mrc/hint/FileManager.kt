@@ -57,7 +57,7 @@ class LocalFileManager(
 
     override fun saveFile(url: String, type: FileType): VersionFileWithPath
     {
-        val originalFilename = url.split("/").last()
+        val originalFilename = url.split("/").last().split("?").first()
         val adr = adrClientBuilder.build()
         return saveFile(adr.getInputStream(url), originalFilename, type, true)
     }

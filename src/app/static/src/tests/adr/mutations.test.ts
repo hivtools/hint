@@ -41,6 +41,18 @@ describe("ADR mutations", () => {
         expect(state.fetchingDatasets).toBe(true);
     });
 
+    it("can set releases", () => {
+        const state = mockADRState();
+        mutations[ADRMutation.SetReleases](state, {payload: [1, 2, 3]});
+        expect(state.releases).toEqual([1, 2, 3]);
+    });
+
+    it("can clear releases", () => {
+        const state = mockADRState({releases: [1, 2, 3]});
+        mutations[ADRMutation.ClearReleases](state);
+        expect(state.releases).toEqual([]);
+    });
+
     it("can set schemas", () => {
         const state = mockADRState();
         mutations[ADRMutation.SetSchemas](state, {payload: {baseUrl: "adr.com"}});

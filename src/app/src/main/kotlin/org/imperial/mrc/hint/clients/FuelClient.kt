@@ -30,6 +30,16 @@ abstract class FuelClient(protected val baseUrl: String)
                 .asResponseEntity()
     }
 
+    fun post(url: String, params: List<Pair<String, String>>): ResponseEntity<String>
+    {
+        return "$baseUrl/$url".httpPost(params)
+                .addTimeouts()
+                .header(standardHeaders())
+                .response()
+                .second
+                .asResponseEntity()
+    }
+
     protected fun postJson(url: String, json: String): ResponseEntity<String>
     {
         return "$baseUrl/$url".httpPost()

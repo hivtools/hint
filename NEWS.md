@@ -1,6 +1,27 @@
-# hint 1.44.0
+
+# hint 1.47.0
 
 * Move all file upload controls to Step 1 
+
+# hint 1.46.0
+
+* Combine input data tabs
+
+# hint 1.45.0
+
+* Import releases from ADR: fetch and display release data from ADR
+
+# hint 1.44.1
+
+* Import releases from ADR: fetch data from correct ADR release
+
+# hint 1.44.0
+
+* Modify Rename dialog modal and add notes text area
+
+# hint 1.43.1
+
+* Bug fix: Importing from adr after fitting model should prompt new version behaviour
 
 # hint 1.43.0
 

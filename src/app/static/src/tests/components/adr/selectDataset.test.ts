@@ -2,6 +2,7 @@ import Vuex, {ActionTree} from "vuex";
 import Vue from "vue";
 import {mount, shallowMount} from "@vue/test-utils";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
+import SelectRelease from "../../../app/components/adr/SelectRelease.vue";
 import Modal from "../../../app/components/Modal.vue";
 import TreeSelect from '@riophae/vue-treeselect'
 import {
@@ -9,22 +10,26 @@ import {
     mockDataset,
     mockDatasetResource,
     mockError,
+    mockErrorsState,
+    mockProjectsState,
     mockRootState,
     mockShapeResponse
 } from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {BaselineMutation} from "../../../app/store/baseline/mutations";
+import {ADRMutation} from "../../../app/store/adr/mutations";
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {ADRSchemas} from "../../../app/types";
 import {InfoIcon} from "vue-feather-icons";
-import Mock = jest.Mock;
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
 import {ADRState} from "../../../app/store/adr/adr";
-import {DomUtil} from "leaflet";
-import get = DomUtil.get;
+import {getters as rootGetters} from "../../../app/store/root/getters";
+import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
+import {actions as projectsActions} from "../../../app/store/projects/actions"
+import Mock = jest.Mock;
 
 describe("select dataset", () => {
 
@@ -153,6 +158,8 @@ describe("select dataset", () => {
     const setDatasetMock = jest.fn();
     const markResourcesUpdatedMock = jest.fn();
     const getDatasetsMock = jest.fn();
+    const getReleasesMock = jest.fn();
+    const getDatasetMock = jest.fn();
 
     const baselineActions: Partial<BaselineActions> & ActionTree<any, any> = {
         importShape: jest.fn(),
@@ -167,19 +174,34 @@ describe("select dataset", () => {
         importANC: jest.fn()
     }
 
-    const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}) => {
+    const mockGetters = {
+        editsRequireConfirmation: () => false,
+        changesToRelevantSteps: () => [{number: 4, textKey: "fitModel"}]
+    };
+
+    let currentVersion = {id: "version-id", created: "", updated: "", versionNumber: 1}
+
+    const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}, requireConfirmation: boolean = false) => {
         const store = new Vuex.Store({
             state: mockRootState(),
+            getters: rootGetters,
             modules: {
                 adr: {
                     namespaced: true,
                     state: {
                         schemas: schemas,
                         datasets: fakeRawDatasets,
+                        releases: [],
                         ...adrProps
                     },
                     actions: {
-                        getDatasets: getDatasetsMock
+                        getDatasets: getDatasetsMock,
+                        getReleases: getReleasesMock,
+                        getDataset: getDatasetMock
+                    },
+                    mutations: {
+                        [ADRMutation.ClearReleases]: jest.fn(),
+                        [ADRMutation.SetReleases]: jest.fn()
                     }
                 },
                 baseline: {
@@ -190,6 +212,19 @@ describe("select dataset", () => {
                         [BaselineMutation.SetDataset]: setDatasetMock,
                         [BaselineMutation.MarkDatasetResourcesUpdated]: markResourcesUpdatedMock
                     }
+                },
+                stepper: {
+                    namespaced: true,
+                    getters: {...mockGetters, editsRequireConfirmation: () => requireConfirmation}
+                },
+                errors: {
+                    namespaced: true,
+                    state: mockErrorsState(),
+                },
+                projects: {
+                    namespaced: true,
+                    state: mockProjectsState({currentProject: {id: 1, name: "v1", versions: []}, currentVersion}),
+                    actions: projectsActions
                 },
                 surveyAndProgram: {
                     namespaced: true,
@@ -423,14 +458,14 @@ describe("select dataset", () => {
             selectedDataset: fakeDataset
         })
         const rendered = shallowMount(SelectDataset, {store});
-        expectTranslated(rendered.find(".font-weight-bold"), "Selected dataset:", "Ensemble de données sélectionné :", store);
+        expectTranslated(rendered.find("#selectedDatasetSpan"), "Selected dataset:", "Ensemble de données sélectionné :", store);
         expect(rendered.find("a").text()).toBe("Some data");
         expect(rendered.find("a").attributes("href")).toBe("www.adr.com/naomi-data/some-data");
     });
 
     it("does not render selected dataset if it doesn't exist", () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});
-        expect(rendered.findAll(".font-weight-bold").length).toBe(0);
+        expect(rendered.findAll("#selectedDatasetSpan").length).toBe(0);
         expect(rendered.findAll("a").length).toBe(0);
     });
 
@@ -461,19 +496,19 @@ describe("select dataset", () => {
                 id: "id1",
                 label: "Some data",
                 customLabel: `Some data
-                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                        (some-data)<br/>
-                        <span class="font-weight-bold">org</span>
-                    </div>`
+                        <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                            (some-data)<br/>
+                            <span class="font-weight-bold">org</span>
+                        </div>`
             },
             {
                 id: "id2",
                 label: "Some data 2",
                 customLabel: `Some data 2
-                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                        (some-data)<br/>
-                        <span class="font-weight-bold">org</span>
-                    </div>`
+                        <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                            (some-data)<br/>
+                            <span class="font-weight-bold">org</span>
+                        </div>`
             }
         ]
 
@@ -498,38 +533,41 @@ describe("select dataset", () => {
     });
 
     it("sets current dataset", async () => {
-        let store = getStore({},
-            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
-        )
+        let store = getStore({selectedDataset: fakeDataset2});
         const rendered = mount(SelectDataset, {
-            store, stubs: ["tree-select"]
+            store,
+            stubs: ["tree-select"]
         });
-        rendered.find("button").trigger("click");
 
-        await Vue.nextTick();
+        // open modal
+        rendered.find("button").trigger("click");
 
         expect(rendered.findAll(TreeSelect).length).toBe(1);
         expect(rendered.find(Modal).findAll("button").length).toBe(2);
         expect(rendered.findAll("p").length).toBe(0);
         expectTranslated(rendered.find("h4"), "Browse ADR", "Parcourir ADR", store);
+        expectTranslated(rendered.find("div > label"), "Datasets", "Ensembles de données", store);
 
+        // select dataset from dropdown and click button to import
         rendered.setData({newDatasetId: "id2"});
+        const selectRelease = rendered.find(SelectRelease)
+        await selectRelease.vm.$emit("selected-dataset-release", "1.0");
         rendered.find(Modal).find("button").trigger("click");
 
         await Vue.nextTick();
-        expect(setDatasetMock.mock.calls[0][1]).toEqual(fakeDataset2);
-
-        // loading spinner should render and buttons hidden
-        const buttons = rendered.find(Modal).findAll("button");
-        expect(rendered.findAll(TreeSelect).length).toBe(0);
         expect(rendered.find("#loading-dataset").find(LoadingSpinner).exists()).toBe(true);
-        expect(buttons.length).toBe(0);
+        expect(rendered.findAll(TreeSelect).length).toBe(0);
+        expect(rendered.find(Modal).findAll("button").length).toBe(0);
+        expect(rendered.findAll("h4").length).toBe(0);
         expectTranslated(rendered.find("p"),
             "Importing files - this may take several minutes. Please do not close your browser.",
             "Importation de fichiers - cela peut prendre plusieurs minutes. Veuillez ne pas fermer votre navigateur.",
             store);
-        expect(rendered.findAll("h4").length).toBe(0);
 
+        expect(getDatasetMock.mock.calls[0][1].id).toBe("id2");
+        expect(getDatasetMock.mock.calls[0][1].release).toBe("1.0");
+
+        await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
 
@@ -537,10 +575,114 @@ describe("select dataset", () => {
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
-    it("imports baseline files if they exist", async () => {
-        const store = getStore({}, {
-            datasets: [{...fakeRawDatasets[0], resources: [pjnz, pop, shape]}]
+    it("renders select release", async () => {
+        let store = getStore({},
+            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
+        )
+        const rendered = mount(SelectDataset, {
+            store, stubs: ["tree-select"]
         });
+        await rendered.find("button").trigger("click");
+
+        rendered.setData({newDatasetId: "id2"});
+        const selectRelease = rendered.find(SelectRelease)
+        expect(selectRelease.props("datasetId")).toBe("id2");
+    });
+
+    it("select release emits valid and enables import button", async () => {
+        let store = getStore({},
+            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
+        )
+        const rendered = mount(SelectDataset, {
+            store, stubs: ["tree-select"]
+        });
+        await rendered.find("button").trigger("click");
+
+        rendered.setData({newDatasetId: "id2", valid: false});
+        const selectRelease = rendered.find(SelectRelease)
+        const importBtn = rendered.find("#importBtn")
+        expect(importBtn.attributes("disabled")).toBe("disabled");
+        await selectRelease.vm.$emit("valid", true);
+        expect(importBtn.attributes("disabled")).toBeUndefined();
+    });
+
+    it("select release emits selected dataset release and updates release id", async () => {
+        let store = getStore({},
+            {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
+        )
+        const rendered = mount(SelectDataset, {
+            store, stubs: ["tree-select"]
+        });
+        await rendered.find("button").trigger("click");
+
+        rendered.setData({newDatasetId: "id2"});
+        const selectRelease = rendered.find(SelectRelease)
+        await selectRelease.vm.$emit("selected-dataset-release", "releaseId");
+        expect(rendered.vm.$data.newDatasetReleaseId).toBe("releaseId")
+    });
+    
+    it("renders reset confirmation dialog when importing a new dataset and then saves new version and imports if click save", async () => {
+        let store = getStore({selectedDataset: fakeDataset2}, {}, true);
+        const rendered = mount(SelectDataset, {
+            store, stubs: ["tree-select"]
+        });
+        const editBtn = rendered.find("button")
+        editBtn.trigger("click");
+        expect(rendered.find(Modal).props("open")).toBe(true);
+        rendered.setData({newDatasetId: "id2"});
+        const importBtn = rendered.find(Modal).find("button")
+        importBtn.trigger("click");
+        expect(rendered.find(ResetConfirmation).props("open")).toBe(true);
+        const saveBtn = rendered.find(ResetConfirmation).find("button");
+        expectTranslated(saveBtn, "Save version and keep editing",
+            "Sauvegarder la version et continuer à modifier", store);
+        saveBtn.trigger("click");
+        store.state.projects.currentVersion = {id: "id1"} as any;
+        expect(rendered.find(ResetConfirmation).exists()).toBe(false);
+        expect(rendered.find("#loading-dataset").find(LoadingSpinner).exists()).toBe(true);
+        await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+
+    it("renders reset confirmation dialog when changing selected dataset and closes if click cancel", async () => {
+        let store = getStore({selectedDataset: fakeDataset}, {}, true);
+        const rendered = mount(SelectDataset, {
+            store, stubs: ["tree-select"]
+        });
+        const editBtn = rendered.find("button")
+        await editBtn.trigger("click");
+        expect(rendered.find(Modal).props("open")).toBe(true);
+        rendered.setData({newDatasetId: "id2"});
+        const importBtn = rendered.find(Modal).find("button")
+        await importBtn.trigger("click");
+        expect(rendered.find(ResetConfirmation).props("open")).toBe(true);
+        const cancelBtn = rendered.find(ResetConfirmation).findAll("button").at(1);
+        expectTranslated(cancelBtn, "Cancel editing",
+            "Annuler l'édition", store);
+        await cancelBtn.trigger("click");
+        expect(rendered.find(ResetConfirmation).exists()).toBe(false);
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+
+    it("imports baseline files if they exist", async () => {
+        const store = getStore(
+            {
+                selectedDataset: {
+                    ...fakeDataset,
+                    resources: {
+                        pjnz: mockDatasetResource(pjnz),
+                        pop: mockDatasetResource(pop),
+                        shape: mockDatasetResource(shape)
+                    } as any
+                }
+            }
+        );
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
@@ -568,9 +710,16 @@ describe("select dataset", () => {
     });
 
     it("does not import baseline file if it doesn't exist", async () => {
-        const store = getStore({}, {
-            datasets: [{...fakeRawDatasets[0], resources: [pjnz]}]
-        });
+        const store = getStore(
+            {
+                selectedDataset: {
+                    ...fakeDataset,
+                    resources: {
+                        pjnz: mockDatasetResource(pjnz)
+                    } as any
+                }
+            }
+        );
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
@@ -599,69 +748,90 @@ describe("select dataset", () => {
     });
 
     it("imports survey and program files if they exist and shape file exists", async () => {
-        const store = getStore({}, {
-            datasets: [{...fakeRawDatasets[0], resources: [shape, survey, program, anc]}]
-        });
+        const store = getStore(
+            {
+                selectedDataset: {
+                    ...fakeDataset,
+                    resources: {
+                        shape: mockDatasetResource(shape),
+                        survey: mockDatasetResource(survey),
+                        program: mockDatasetResource(program),
+                        anc: mockDatasetResource(anc)
+                    } as any
+                }
+            }
+        );
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
-
-        await Vue.nextTick();
 
         expect(rendered.findAll(TreeSelect).length).toBe(1);
         rendered.setData({newDatasetId: "id1"});
         rendered.find(Modal).find("button").trigger("click");
 
-        await Vue.nextTick();
-
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
 
+        await Vue.nextTick();
+        await Vue.nextTick();
         await Vue.nextTick();
 
         expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
         expect((surveyProgramActions.importProgram as Mock).mock.calls[0][1]).toBe("program.csv");
         expect((surveyProgramActions.importANC as Mock).mock.calls[0][1]).toBe("anc.csv");
 
-        await Vue.nextTick(); // once for baseline actions to return
-        await Vue.nextTick(); // once for survey actions to return
+        await Vue.nextTick();
 
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
     it("does not import survey and program file if it doesn't exist", async () => {
-        const store = getStore({}, {
-            datasets: [{...fakeRawDatasets[0], resources: [shape, survey]}]
-        });
+        const store = getStore(
+            {
+                selectedDataset: {
+                    ...fakeDataset,
+                    resources: {
+                        shape: mockDatasetResource(shape),
+                        survey: mockDatasetResource(survey)
+                    } as any
+                }
+            }
+        );
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
-
-        await Vue.nextTick();
 
         expect(rendered.findAll(TreeSelect).length).toBe(1);
         rendered.setData({newDatasetId: "id1"});
         rendered.find(Modal).find("button").trigger("click");
 
-        await Vue.nextTick();
-
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
 
+        await Vue.nextTick();
+        await Vue.nextTick();
         await Vue.nextTick();
 
         expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
         expect((surveyProgramActions.importProgram as Mock).mock.calls.length).toBe(0);
         expect((surveyProgramActions.importANC as Mock).mock.calls.length).toBe(0);
 
-        await Vue.nextTick(); // once for baseline actions to return
-        await Vue.nextTick(); // once for survey actions to return
+        await Vue.nextTick();
 
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
     it("does not import any survey and program files if shape file doesn't exist", async () => {
-        const store = getStore({}, {
-            datasets: [{...fakeRawDatasets[0], resources: [survey, program, anc]}]
-        });
+        const store = getStore(
+            {
+                selectedDataset: {
+                    ...fakeDataset,
+                    resources: {
+                        survey: mockDatasetResource(survey),
+                        program: mockDatasetResource(program),
+                        anc: mockDatasetResource(anc)
+                    } as any
+                }
+            }
+        );
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
@@ -690,16 +860,19 @@ describe("select dataset", () => {
     it("imports survey and program files if pre-existing shape file is present", async () => {
         const store = getStore(
             {
-                shape: mockShapeResponse()
-            },
-            {
-                datasets: [{...fakeRawDatasets[0], resources: [survey, program, anc]}]
-            });
-
+                selectedDataset: {
+                    ...fakeDataset,
+                    resources: {
+                        shape: mockDatasetResource(shape),
+                        survey: mockDatasetResource(survey),
+                        program: mockDatasetResource(program),
+                        anc: mockDatasetResource(anc)
+                    } as any
+                }
+            }
+        );
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
-
-        await Vue.nextTick();
 
         expect(rendered.findAll(TreeSelect).length).toBe(1);
         rendered.setData({newDatasetId: "id1"});
@@ -710,13 +883,13 @@ describe("select dataset", () => {
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
 
         await Vue.nextTick();
+        await Vue.nextTick();
 
         expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
         expect((surveyProgramActions.importProgram as Mock).mock.calls[0][1]).toBe("program.csv");
         expect((surveyProgramActions.importANC as Mock).mock.calls[0][1]).toBe("anc.csv");
 
-        await Vue.nextTick(); // once for baseline actions to return
-        await Vue.nextTick(); // once for survey actions to return
+        await Vue.nextTick();
 
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
@@ -734,7 +907,6 @@ describe("select dataset", () => {
         const store = getStore({}, {
             datasets: [{...fakeRawDatasets[0], resources: [shape, survey]}]
         });
-
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
         await Vue.nextTick();

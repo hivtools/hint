@@ -6,7 +6,7 @@ import {
     flattenToIdSet,
     formatDateTime,
     validateEmail,
-    versionLabel, rootOptionChildren, constructUploadFile, constructUploadFileWithResourceName
+    versionLabel, rootOptionChildren, constructUploadFile, constructUploadFileWithResourceName, getFilenameFromImportUrl
 } from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
 
@@ -275,5 +275,13 @@ describe("utils", () => {
         const datasetWithResources = {resources: []};
         const result = constructUploadFile(datasetWithResources, 0, "test-type", "test.txt", "displayTest");
         expect(result).toBeNull();
+    });
+
+    it("getFilenameFromImportUrl interprets URL without query string", () => {
+        expect(getFilenameFromImportUrl("http://a/b.csv")).toBe("b.csv");
+    });
+
+    it("getFilenameFromImportUrl interprets URL with query string", () => {
+        expect(getFilenameFromImportUrl("http://a/b.csv?c=d")).toBe("b.csv");
     });
 });

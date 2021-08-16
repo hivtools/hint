@@ -179,10 +179,10 @@ export const findResource = (datasetWithResources: any, resourceType: string, re
         outOfDate: false} : null
 };
 
-export const datasetFromMetadata = (id: string, datasets: any[], schemas: ADRSchemas) => {
-    const fullMetaData = datasets.find(d => d.id == id);
+export const datasetFromMetadata = (fullMetaData: any, schemas: ADRSchemas, release?: string) => {
     return fullMetaData && {
         id: fullMetaData.id,
+        release,
         title: fullMetaData.title,
         url: `${schemas.baseUrl}${fullMetaData.type}/${fullMetaData.name}`,
         resources: {
@@ -291,8 +291,7 @@ function updateGroup(oldGroup: DynamicControlGroup, newGroup: DynamicControlGrou
 }
 
 export function getFilenameFromImportUrl(url: string) {
-    const parts = url.split("/");
-    return parts[parts.length - 1];
+    return url.split("/").pop()!.split("?")[0];
 }
 
 export function getFilenameFromUploadFormData(formdata: FormData) {

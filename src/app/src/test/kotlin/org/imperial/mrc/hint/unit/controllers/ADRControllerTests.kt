@@ -15,16 +15,13 @@ import org.imperial.mrc.hint.controllers.HintrController
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.md5sum
-import org.imperial.mrc.hint.models.ErrorResponse
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentCaptor
 import org.pac4j.core.profile.CommonProfile
-import org.pac4j.sql.profile.DbProfile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
@@ -245,6 +242,57 @@ class ADRControllerTests : HintrControllerTests()
                 mockSession,
                 mock())
         val result = sut.getDataset("1234")
+        assertThat(result.body!!).isEqualTo("whatever")
+    }
+
+    @Test
+    fun `gets releases by id`()
+    {
+        val expectedUrl = "/dataset_version_list?dataset_id=1234"
+        val mockClient = mock<ADRClient> {
+            on { get(expectedUrl) } doReturn ResponseEntity
+                    .ok()
+                    .body("whatever")
+        }
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mockBuilder,
+                objectMapper,
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
+        val result = sut.getReleases("1234")
+        assertThat(result.body!!).isEqualTo("whatever")
+    }
+    
+    fun `gets dataset by id and version`()
+    {
+        val expectedUrl = "package_show?id=1234&release=1.0"
+        val mockClient = mock<ADRClient> {
+            on { get(expectedUrl) } doReturn ResponseEntity
+                    .ok()
+                    .body("whatever")
+        }
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mockBuilder,
+                objectMapper,
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
+        val result = sut.getDataset("1234", "1.0")
         assertThat(result.body!!).isEqualTo("whatever")
     }
 
@@ -679,6 +727,32 @@ class ADRControllerTests : HintrControllerTests()
                 mockSession,
                 mock())
         val result = sut.getOrgsWithPermission("test_perm")
+        assertThat(result.body!!).isEqualTo("whatever")
+    }
+
+    @Test
+    fun `creates a release`()
+    {
+        val expectedUrl = "dataset_version_create"
+        val mockClient = mock<ADRClient> {
+            on { post(expectedUrl, listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity
+                    .ok()
+                    .body("whatever")
+        }
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mockBuilder,
+                objectMapper,
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
+        val result = sut.createRelease("dataset-1", "release-1")
         assertThat(result.body!!).isEqualTo("whatever")
     }
 
