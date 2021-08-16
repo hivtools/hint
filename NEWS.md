@@ -1,3 +1,7 @@
+# hint 1.44.0
+
+* Move all file upload controls to Step 1 
+
 # hint 1.43.0
 
 * Add note icon(s) and dialogs to project history for project/version
