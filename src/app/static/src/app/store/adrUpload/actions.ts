@@ -4,7 +4,7 @@ import {api} from "../../apiService";
 import qs from "qs";
 import {ADRUploadState} from "./adrUpload";
 import {ADRUploadMutation} from "./mutations";
-import {constructUploadFile, constructUploadFileWithResourceName} from "../../utils";
+import {constructUploadFile, constructUploadFileWithResourceName, findResource} from "../../utils";
 import {Dict, UploadFile} from "../../types";
 import {switches} from "../../featureSwitches";
 import {ValidateInputResponse} from "../../generated";
@@ -35,56 +35,75 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                         const metadata = response.data;
                         const schemas = rootState.adr.schemas!;
 
-                        const uploadFiles: Dict<UploadFile> =  {
-                            outputZip: constructUploadFileWithResourceName(
-                                metadata,
-                                0,
-                                schemas.outputZip,
-                                `${project.name}_naomi_outputs.zip`,
-                                "uploadFileOutputZip",
-                                `${project.name} Naomi Outputs`),
-                            outputSummary: constructUploadFileWithResourceName(
-                                metadata,
-                                1,
-                                schemas.outputSummary,
-                                `${project.name}_naomi_summary.html`,
-                                "uploadFileOutputSummary",
-                                `${project.name} Naomi Summary`)
-                        };
+                        // const uploadFiles: Dict<UploadFile> =  {
+                        //     outputZip: constructUploadFileWithResourceName(
+                        //         metadata,
+                        //         0,
+                        //         schemas.outputZip,
+                        //         `${project.name}_naomi_outputs.zip`,
+                        //         "uploadFileOutputZip",
+                        //         `${project.name} Naomi Outputs`),
+                        //     outputSummary: constructUploadFileWithResourceName(
+                        //         metadata,
+                        //         1,
+                        //         schemas.outputSummary,
+                        //         `${project.name}_naomi_summary.html`,
+                        //         "uploadFileOutputSummary",
+                        //         `${project.name} Naomi Summary`)
+                        // };
+
+                        // if (switches.adrPushInputs) {
+                        //     const addLocalInputFileToUploads = (
+                        //         key: string,
+                        //         schema: string,
+                        //         response: ValidateInputResponse,
+                        //         displayName: string) => {
+                        //         if (!response.fromADR) {
+                        //             const uploadFile = constructUploadFile(
+                        //                 metadata,
+                        //                 Object.keys(uploadFiles).length,
+                        //                 schema,
+                        //                 response.filename,
+                        //                 displayName
+                        //             );
+                        //             if (uploadFile) {
+                        //                 uploadFiles[key] = uploadFile;
+                        //             }
+                        //         }
+                        //     };
+
+
+                        //     const baseline = rootState.baseline;
+                        //     addLocalInputFileToUploads("pjnz", schemas.pjnz, baseline.pjnz!, "PJNZ");
+                        //     addLocalInputFileToUploads("shape", schemas.shape, baseline.shape!, "shape");
+                        //     addLocalInputFileToUploads("population",  schemas.population, baseline.population!, "population");
+
+                        //     const sap = rootState.surveyAndProgram;
+                        //     addLocalInputFileToUploads("survey", schemas.survey, sap.survey!, "survey");
+                        //     addLocalInputFileToUploads("programme", schemas.programme, sap.program!, "ART");
+                        //     addLocalInputFileToUploads("anc", schemas.anc, sap.anc!, "ANC");
+                        // }
+
+                        // let uploadFiles =  {
+                        //     outputZip: findResource(metadata, schemas.outputZip),
+                        //     outputSummary: findResource(metadata, schemas.outputSummary)
+                        // }
+                        const outputZip = findResource(metadata, schemas.outputZip);
+                        const outputSummary = findResource(metadata, schemas.outputSummary);
 
                         if (switches.adrPushInputs) {
-                            const addLocalInputFileToUploads = (
-                                key: string,
-                                schema: string,
-                                response: ValidateInputResponse,
-                                displayName: string) => {
-                                if (!response.fromADR) {
-                                    const uploadFile = constructUploadFile(
-                                        metadata,
-                                        Object.keys(uploadFiles).length,
-                                        schema,
-                                        response.filename,
-                                        displayName
-                                    );
-                                    if (uploadFile) {
-                                        uploadFiles[key] = uploadFile;
-                                    }
-                                }
-                            };
-                            
-
-                            const baseline = rootState.baseline;
-                            addLocalInputFileToUploads("pjnz", schemas.pjnz, baseline.pjnz!, "PJNZ");
-                            addLocalInputFileToUploads("shape", schemas.shape, baseline.shape!, "shape");
-                            addLocalInputFileToUploads("population",  schemas.population, baseline.population!, "population");
-
-                            const sap = rootState.surveyAndProgram;
-                            addLocalInputFileToUploads("survey", schemas.survey, sap.survey!, "survey");
-                            addLocalInputFileToUploads("programme", schemas.programme, sap.program!, "ART");
-                            addLocalInputFileToUploads("anc", schemas.anc, sap.anc!, "ANC");
+                        const pjnz = findResource(metadata, schemas.pjnz);
+                        const pop = findResource(metadata, schemas.population);
+                        const shape = findResource(metadata, schemas.shape);
+                        const survey = findResource(metadata, schemas.survey);
+                        const program = findResource(metadata, schemas.programme);
+                        const anc = findResource(metadata, schemas.anc);
+                        // }
+                        // commit({type: ADRUploadMutation.SetUploadFiles, payload: uploadFiles});
+                        commit({type: ADRUploadMutation.SetUploadFiles, payload: {pjnz, pop, shape, survey, program, anc, outputZip, outputSummary}});
+                        } else {
+                            commit({type: ADRUploadMutation.SetUploadFiles, payload: {outputZip, outputSummary}});
                         }
-
-                        commit({type: ADRUploadMutation.SetUploadFiles, payload: uploadFiles});
                     }
                 });
         }
