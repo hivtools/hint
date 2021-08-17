@@ -64,7 +64,16 @@ class DownloadTests : SecureIntegrationTests()
         assertSuccess(responseEntity, "DownloadSubmitResponse")
     }
 
-
+    @Test
+    fun `can download spectrum output result`()
+    {
+        val modelId = waitForModelRunResult()
+        val calibrateId = waitForCalibrationResult(modelId)
+        val responseId = waitForSubmitDownloadOutput(calibrateId, "spectrum")
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/result/$responseId")
+        assertSuccess(responseEntity)
+        assertResponseHasExpectedDownloadHeaders(responseEntity)
+    }
 
     @Test
     fun `can get download status`()
