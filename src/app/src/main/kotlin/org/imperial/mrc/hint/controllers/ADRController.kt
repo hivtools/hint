@@ -312,11 +312,11 @@ class ADRController(private val encryption: Encryption,
         val adr = adrClientBuilder.build()
         return try
         {
-            when (resourceId)
-            {
-                null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to datasetId), filePart)
-                else ->
-                {
+            // when (resourceId)
+            // {
+            //     null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to datasetId), filePart)
+            //     else ->
+            //     {
                     if (uploadFileHasChanges(resourceId, fileHash))
                     {
                         adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
@@ -325,8 +325,8 @@ class ADRController(private val encryption: Encryption,
                     {
                         EmptySuccessResponse.asResponseEntity()
                     }
-                }
-            }
+            //     }
+            // }
         }
         catch (e: IOException)
         {
