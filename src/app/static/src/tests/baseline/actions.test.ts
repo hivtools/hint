@@ -491,6 +491,16 @@ describe("Baseline actions", () => {
         });
     });
 
+    it("refreshDatasetMetadata takes release into account", async () => {
+        const state = mockBaselineState({
+            selectedDataset: mockDataset({id: "1234", release: "2.0"})
+        });
+
+        await actions.refreshDatasetMetadata({rootState, state} as any);
+
+        expect(mockAxios.history["get"][0]["url"]).toBe("/adr/datasets/1234?release=2.0");
+    });
+
     it("refreshDatasetMetadata does nothing if no dataset", async () => {
         const commit = jest.fn();
         const state = mockBaselineState();

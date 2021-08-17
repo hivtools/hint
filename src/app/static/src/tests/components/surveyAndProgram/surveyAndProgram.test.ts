@@ -19,8 +19,9 @@ import {mutations} from "../../../app/store/surveyAndProgram/mutations";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {mutations as selectionsMutations} from "../../../app/store/plottingSelections/mutations";
 import {ScaleSelections, ScaleType} from "../../../app/store/plottingSelections/plottingSelections";
-import {expectTranslated} from "../../testHelpers";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
+import {Language} from "../../../app/store/translations/locales";
+import {expectTranslated} from "../../testHelpers";
 
 const localVue = createLocalVue();
 
@@ -189,10 +190,10 @@ describe("Survey and programme component", () => {
         expect((wrapper.vm as any).plottingSelections).toStrictEqual({selectedFilterOptions: "NEW TEST SELECTIONS"});
     });
 
-    it("tabs are disabled if no data is present", () => {
-        const wrapper = shallowMount(SurveyAndProgram, {store: createStore(), localVue});
-        expect(wrapper.findAll(".nav-item").length).toBe(3);
-        expect(wrapper.findAll(".nav-item .nav-link.disabled").length).toBe(3);
+    it("data source is not rendered if no selected data type", () => {
+        const store = createStore({selectedDataType: null});
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        expect(wrapper.find("#data-source").exists()).toBe(false);
     });
 
     it("survey tab is enabled when survey data is present", () => {
@@ -219,6 +220,41 @@ describe("Survey and programme component", () => {
         expect(wrapper.findAll(".nav-link.disabled").length).toBe(2);
     }
 
+    it("renders data source header as expected", () => {
+        const store = createStore();
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const header = wrapper.find("#data-source h4");
+        expectTranslated(header, "Data source", "Source de données", store);
+    });
+
+    it("survey in included in data sources when survey data is present", () => {
+        expectDataSource({survey: mockSurveyResponse(), selectedDataType: DataType.Survey},
+            "Household Survey", "Enquête de ménage", "2");
+    });
+
+    it("programme (ART) tab is enabled when programme data is present", () => {
+        expectDataSource({program: mockProgramResponse(), selectedDataType: DataType.Program},
+            "ART", "ART", "1");
+    });
+
+    it("ANC tab is enabled when ANC data is present", () => {
+        expectDataSource({anc: mockAncResponse(), selectedDataType: DataType.ANC},
+            "ANC Testing", "Test de clinique prénatale", "0");
+    });
+
+    function expectDataSource(state: Partial<SurveyAndProgramState>, englishName: string, frenchName: string, id: string) {
+        const store = createStore(state);
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+
+        let options = wrapper.find("#data-source treeselect-stub").props("options");
+        expect(options).toStrictEqual([{id, label: englishName}]);
+
+        store.state.language = Language.fr;
+        registerTranslations(store);
+        options = wrapper.find("#data-source treeselect-stub").props("options");
+        expect(options).toStrictEqual([{id, label:frenchName}]);
+    }
+
     it("can change tabs", () => {
         const store = createStore(
             {
@@ -228,19 +264,22 @@ describe("Survey and programme component", () => {
                 selectedDataType: DataType.Program
             });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect(wrapper.find(".nav-link.active").text()).toBe("ART");
 
-        wrapper.findAll(".nav-link").at(2).trigger("click");
-        Vue.nextTick();
-        expect(wrapper.find(".nav-link.active").text()).toBe("ANC Testing");
+        const dataSourceSelect = wrapper.find("#data-source treeselect-stub");
+        expect(dataSourceSelect.attributes("value")).toBe("1");
+        expect(dataSourceSelect.props("options").length).toBe(3);
 
-        wrapper.findAll(".nav-link").at(0).trigger("click");
-        Vue.nextTick();
-        expect(wrapper.find(".nav-link.active").text()).toBe("Household Survey");
+        dataSourceSelect.vm.$emit("select", {id: "0", label: "ANC"});
+        expect(dataSourceSelect.attributes("value")).toBe("0");
+        expect((wrapper.vm as any).selectedDataType).toBe(DataType.ANC);
 
-        wrapper.findAll(".nav-link").at(1).trigger("click");
-        Vue.nextTick();
-        expect(wrapper.find(".nav-link.active").text()).toBe("ART");
+        dataSourceSelect.vm.$emit("select", {id: "2", label: "Household Survey"});
+        expect(dataSourceSelect.attributes("value")).toBe("2");
+        expect((wrapper.vm as any).selectedDataType).toBe(DataType.Survey);
+
+        dataSourceSelect.vm.$emit("select", {id: "1", label: "ART"});
+        expect(dataSourceSelect.attributes("value")).toBe("1");
+        expect((wrapper.vm as any).selectedDataType).toBe(DataType.Program);
 
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
     });

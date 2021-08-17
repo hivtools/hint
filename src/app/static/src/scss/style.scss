@@ -146,3 +146,9 @@ a.down::after {
   max-height: 95vh;
   overflow: auto;
 }
+
+.icon-small svg {
+    height: 20px;
+    width: 20px;
+    vertical-align: sub;
+  }

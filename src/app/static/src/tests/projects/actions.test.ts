@@ -543,7 +543,107 @@ describe("Projects actions", () => {
         });
     });
 
-    it("renameProject changes a project's name", async (done) => {
+    it("updateVersionNote action adds/edits a project's note", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const testProjects = [{id: 1, name: "v1", versions: []}];
+        const state = mockProjectsState()
+
+        const stateUrl = "/project/1/version/version-id/note";
+        mockAxios.onPost(stateUrl, "note=edit%20version%20note")
+            .reply(200, mockSuccess(testProjects));
+
+        const versionPayload = {
+            version: {projectId: mockProject.id, versionId: mockProject.versions[0].id},
+            note: 'edit version note'
+        };
+
+        actions.updateVersionNote({commit, dispatch, state, rootState} as any, versionPayload);
+
+        setTimeout(() => {
+            const posted = mockAxios.history.post[0].data;
+            expect(posted).toEqual("note=edit%20version%20note");
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
+            expect(dispatch.mock.calls.length).toBe(1);
+            done();
+        });
+    });
+
+    it("can update project notes", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const testProjects = [{id: 1, name: "v1", versions: []}];
+        const state = mockProjectsState();
+
+        const stateUrl = "project/1/note";
+        mockAxios.onPost(stateUrl, "note=test%20project%20note")
+            .reply(200, mockSuccess(testProjects));
+
+        const projectPayload = {
+            projectId: mockProject.id,
+            note: "test project note"
+        }
+        actions.updateProjectNote({commit, dispatch, state, rootState} as any, projectPayload);
+        setTimeout(() => {
+            const posted = mockAxios.history.post[0].data;
+            expect(posted).toEqual("note=test%20project%20note");
+            expect(dispatch.mock.calls[0][0]).toBe("getProjects");
+            expect(dispatch.mock.calls.length).toBe(1);
+            done();
+        });
+    });
+
+    it("update project notes commits Project Error on failure", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = mockProjectsState({error: "TEST ERROR" as any});
+
+        const stateUrl = "project/1/note";
+        mockAxios.onPost(stateUrl, "note=test%20project%20note")
+            .reply(500, mockFailure("TestError"));
+
+        const projectPayload = {
+            projectId: 1,
+            note: "test project note"
+        }
+        actions.updateProjectNote({commit, dispatch, state, rootState} as any, projectPayload);
+        setTimeout(() => {
+            const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
+            expect(commit.mock.calls[0][0]).toStrictEqual({
+                type: `errors/${ErrorsMutation.ErrorAdded}`,
+                payload: expectedError
+            });
+            done();
+        });
+    });
+
+    it("update version notes commits Project Error on failure", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = mockProjectsState({error: "TEST ERROR" as any});
+
+        const stateUrl = "/project/1/version/version-id/note";
+        mockAxios.onPost(stateUrl, "note=test%20version%20note")
+            .reply(500, mockFailure("TestError"));
+
+        const versionPayload = {
+            version: {projectId: mockProject.id, versionId: mockProject.versions[0].id},
+            note: 'test version note'
+        };
+
+        actions.updateVersionNote({commit, dispatch, state, rootState} as any, versionPayload);
+
+        setTimeout(() => {
+            const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
+            expect(commit.mock.calls[0][0]).toStrictEqual({
+                type: `errors/${ErrorsMutation.ErrorAdded}`,
+                payload: expectedError
+            });
+            done();
+        });
+    });
+
+    it("renameProject changes a project's name", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = mockProjectsState({
@@ -552,23 +652,22 @@ describe("Projects actions", () => {
         });
 
         const stateUrl = "/project/1/rename";
-        mockAxios.onPost(stateUrl, "name=renamedProject")
+        mockAxios.onPost(stateUrl)
             .reply(200, mockSuccess("OK"));
 
         const projectPayload = {
             projectId: 1,
-            name: "renamedProject"
+            name: "renamedProject",
+            note: "test notes"
         }
-        actions.renameProject({commit, state, rootState, dispatch} as any, projectPayload);
+        await actions.renameProject({commit, state, rootState, dispatch} as any, projectPayload);
 
-        setTimeout(() => {
-            const posted = mockAxios.history.post[0].data;
-            expect(posted).toEqual("name=renamedProject");
-            expect(dispatch.mock.calls[0][0]).toBe("getCurrentProject");
-            expect(dispatch.mock.calls[1][0]).toBe("getProjects");
-            expect(dispatch.mock.calls.length).toBe(2);
-            done();
-        });
+        const posted = mockAxios.history.post[0].data;
+        expect(posted).toEqual("name=renamedProject&note=test%20notes");
+        expect(commit.mock.calls.length).toBe(0);
+        expect(dispatch.mock.calls[0][0]).toBe("getCurrentProject");
+        expect(dispatch.mock.calls[1][0]).toBe("getProjects");
+        expect(dispatch.mock.calls.length).toBe(2);
     });
 
     it("renameProject does not dispatch getCurrentProject if currentProject is not being renamed", async (done) => {

@@ -1,0 +1,69 @@
+{
+  "input-time-series": {
+    "datasets": [
+      {
+        "id": "art",
+        "type": "custom",
+        "label": "ART",
+        "url":  "/chart-data/input-time-series/programme",
+        "filters": [
+          {
+            "id": "plot_type",
+            "source": "data"
+          },
+          {
+            "id": "area_level",
+            "source": "data"
+          },
+          {
+            "id": "time_step",
+            "source": "data"
+          }
+        ]
+      },
+      {
+        "id": "anc",
+        "type": "custom",
+        "label": "ANC",
+        "url": "/chart-data/input-time-series/anc",
+        "filters": [
+          {
+            "id": "plot_type",
+            "source": "data"
+          },
+          {
+            "id": "area_level",
+            "source": "data"
+          },
+          {
+            "id": "age",
+            "source": "data"
+          }
+        ]
+      }
+    ],
+    "dataSelectors": {
+      "dataSources": [
+        {
+          "id": "data",
+          "type": "editable",
+          "label": "dataSource",
+          "datasetId": "art",
+          "showIndicators": false,
+          "showFilters": true
+        }
+      ]
+    },
+    "subplots": {
+      "columns": 5,
+      "distinctColumn": "area_name",
+      "heightPerRow": 100
+    },
+    "chartConfig": [
+      {
+        "id": "scatter",
+        "label": "Scatter"
+      }
+    ]
+  }
+}

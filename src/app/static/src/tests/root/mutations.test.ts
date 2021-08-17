@@ -17,7 +17,7 @@ import {
     mockRootState,
     mockStepperState,
     mockSurveyAndProgramState,
-    mockSurveyResponse, mockADRState
+    mockSurveyResponse, mockADRState, mockGenericChartState
 } from "../mocks";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {RootState} from "../../app/root";
@@ -45,6 +45,15 @@ describe("Root mutations", () => {
                 fetchingDatasets: true,
                 key: "TEST KEY"
             }),
+            genericChart: mockGenericChartState({
+                genericChartMetadata: {
+                    "input-time-series": {
+                        datasets: ["test datasets"],
+                        dataSelectors: {},
+                        chartConfig: ["test config"]
+                    }
+                }
+            } as any),
             baseline: mockBaselineState({country: "Test Country", ready: true}),
             metadata: mockMetadataState({plottingMetadataError: mockError("Test Metadata Error")}),
             surveyAndProgram: mockSurveyAndProgramState({surveyError: mockError("Test Survey Error"), ready: true}),
@@ -84,6 +93,17 @@ describe("Root mutations", () => {
             fetchingDatasets: true,
             key: "TEST KEY"
         }));
+
+        //genericChart State is always copied
+        expect(state.genericChart).toStrictEqual(mockGenericChartState({
+                genericChartMetadata: {
+                    "input-time-series": {
+                        datasets: ["test datasets"],
+                        dataSelectors: {},
+                        chartConfig: ["test config"]
+                    }
+                }
+            } as any));
 
         //we skip stepper state this needs to be tested separately, activeStep may have been modified
     };

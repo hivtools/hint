@@ -65,4 +65,22 @@ describe("model calibrate actions integration", () => {
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
         expect(commit.mock.calls[1][0]).toBe("Ready");
     });
+
+    it("can get calibrate plot", async () => {
+        const commit = jest.fn();
+        const state = {
+            calibrateId: "123",
+            status: {
+                done: true,
+                success: true
+            }
+        } as any;
+        await actions.getCalibratePlot({commit, state, rootState} as any);
+
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]).toBe("CalibrationPlotStarted");
+        expect(commit.mock.calls[1][0]).toBe("SetPlotData");
+        expect(commit.mock.calls[1][1]).toHaveProperty("data");
+        expect(commit.mock.calls[1][1]).toHaveProperty("plottingMetadata.barchart");
+    });
 });
