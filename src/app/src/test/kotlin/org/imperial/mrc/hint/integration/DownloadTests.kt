@@ -64,8 +64,8 @@ class DownloadTests : SecureIntegrationTests()
         assertSuccess(responseEntity, "DownloadSubmitResponse")
     }
 
-    @Test
     @Ignore
+    @Test
     fun `can download spectrum output result`()
     {
         val modelId = waitForModelRunResult()
