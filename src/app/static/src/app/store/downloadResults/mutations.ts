@@ -13,8 +13,7 @@ export enum DownloadResultsMutation {
     SummaryDownloadStarted = "SummaryDownloadStarted",
     SummaryDownloadStatusUpdated = "SummaryDownloadStatusUpdated",
     SummaryError = "SummaryError",
-    PollingStatusStarted = "PollingStatusStarted",
-    StopPolling = "StopPolling"
+    PollingStatusStarted = "PollingStatusStarted"
 }
 
 export const mutations: MutationTree<DownloadResultsState> = {

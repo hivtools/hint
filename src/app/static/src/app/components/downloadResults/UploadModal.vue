@@ -66,9 +66,8 @@
     import {formatDateTime, mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
     import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
-    import {adr, ADRState} from "../../store/adr/adr";
+    import {ADRState} from "../../store/adr/adr";
     import DownloadProgress from "./DownloadProgress.vue";
-    import {rootState} from "../../../tests/integration/integrationTest";
 
     interface Methods {
         uploadFilesToADRAction: (uploadFilesPayload: UploadFile[]) => void;
@@ -164,14 +163,15 @@
             downloadIsReady() {
                 const {summary, spectrum} = this.findSelectedUploadFiles();
 
+                /**
+                 * This logic checks and returns complete state (true/false)
+                 * for resources that are meant to be uploaded to ADR
+                 */
+
                 if (summary && spectrum) {
                     return !!this.summary.complete && !!this.spectrum.complete;
                 } else {
-                    if (summary && !spectrum) {
-                        return !!this.summary.complete;
-                    } else {
-                        return !!this.spectrum.complete;
-                    }
+                    return summary ? !!this.summary.complete : !!this.spectrum.complete;
                 }
             },
             getSummaryDownload() {

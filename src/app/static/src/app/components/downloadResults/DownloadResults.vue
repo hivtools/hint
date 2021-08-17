@@ -3,22 +3,22 @@
         <div class="row">
             <div class="col-sm">
                 <div id="spectrum-download">
-                  <download :translate-key="translation.spectrum"
-                            @click="downloadSpectrum"
-                            :modal-open="uploadModalOpen"
-                            :file="spectrum"/>
+                    <download :translate-key="translation.spectrum"
+                              @click="downloadSpectrum"
+                              :modal-open="uploadModalOpen"
+                              :file="spectrum"/>
                 </div>
                 <div id="coarse-output-download">
-                  <download :translate-key="translation.coarse"
-                            @click="downloadCoarseOutput"
-                            :modal-open="uploadModalOpen"
-                            :file="coarseOutput"/>
+                    <download :translate-key="translation.coarse"
+                              @click="downloadCoarseOutput"
+                              :modal-open="uploadModalOpen"
+                              :file="coarseOutput"/>
                 </div>
                 <div id="summary-download">
-                  <download :translate-key="translation.summary"
-                            @click="downloadSummary"
-                            :modal-open="uploadModalOpen"
-                            :file="summary"/>
+                    <download :translate-key="translation.summary"
+                              @click="downloadSummary"
+                              :modal-open="uploadModalOpen"
+                              :file="summary"/>
                 </div>
             </div>
             <div id="upload" v-if="hasUploadPermission" class="col-sm">
@@ -53,7 +53,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActionByName, mapMutationByName, mapStateProp, mapStateProps} from "../../utils";
+    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
@@ -64,10 +64,9 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import i18next from "i18next";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
-    import {DOWNLOAD_TYPE, DownloadResultsState} from "../../store/downloadResults/downloadResults";
+    import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
     import {DownloadResultsDependency} from "../../types";
     import Download from "./Download.vue";
-    import {DownloadResultsMutation} from "../../store/downloadResults/mutations";
 
     interface Computed {
         uploadingStatus: string,

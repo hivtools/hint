@@ -14,7 +14,6 @@ import UploadModal from "../../../app/components/downloadResults/UploadModal.vue
 import {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";
 import DownloadProgress from "../../../app/components/downloadResults/DownloadProgress.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
-import Tick from "../../../app/components/Tick.vue";
 import Download from "../../../app/components/downloadResults/Download.vue";
 
 const localVue = createLocalVue();
@@ -32,6 +31,10 @@ describe("Download Results component", () => {
         error: null,
         downloadId: null
     }
+
+    afterEach(() => {
+        jest.useRealTimers()
+    })
 
     const createStore = (hasUploadPermission = true, getUserCanUpload = jest.fn(), uploading = false, uploadComplete = false, uploadError: any = null, downloadResults?: Partial<DownloadResultsState>) => {
         const store = new Vuex.Store({
@@ -271,6 +274,56 @@ describe("Download Results component", () => {
         expect(wrapper.find("#error").text()).toBe( "TEST FAILED")
     });
 
+    it("can stop polling spectrum download when error response", () => {
+        const spectrumDownloadStatus = {
+            downloading: true,
+            complete: false,
+            error: null,
+            downloadId: 1,
+            statusPollId: 123
+        }
+
+        const spectrumTestError = {
+            summary: {
+                downloading: false,
+                complete: false,
+                error: null,
+                downloadId: null
+            },
+            coarseOutput: {
+                downloading: false,
+                complete: false,
+                error: null,
+                downloadId: null
+            },
+            spectrum: {
+                downloading: false,
+                complete: false,
+                error: mockError("TEST FAILED"),
+                downloadId: null,
+                statusPollId: 123
+            }
+        }
+
+        const store = createStore(
+            false,
+            jest.fn(),
+            false,
+            false,
+            null,
+            {spectrum: spectrumDownloadStatus} as any);
+
+        const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
+
+        jest.useFakeTimers()
+        const button = wrapper.find("#spectrum-download").find("button")
+        button.trigger("click")
+
+        wrapper.vm.$store.state.downloadResults = spectrumTestError
+        expect(clearInterval).toHaveBeenCalledTimes(1)
+        expect(wrapper.find("#error").text()).toBe("TEST FAILED")
+    });
+
     it("can fetch upload metadata when spectrum download action is complete", () => {
         const testComplete = {
             downloading: false,
@@ -393,6 +446,56 @@ describe("Download Results component", () => {
         expect(wrapper.find(DownloadProgress).find(LoadingSpinner).exists()).toBe(false)
     });
 
+    it("can stop polling summary download when error response", () => {
+        const summaryDownloadStatus = {
+            downloading: true,
+            complete: false,
+            error: null,
+            downloadId: 1,
+            statusPollId: 123
+        }
+
+        const summaryTestError = {
+            summary: {
+                downloading: false,
+                complete: false,
+                error: mockError("TEST FAILED"),
+                downloadId: null,
+                statusPollId: 123
+            },
+            coarseOutput: {
+                downloading: false,
+                complete: false,
+                error: null,
+                downloadId: null
+            },
+            spectrum: {
+                downloading: false,
+                complete: false,
+                error: null,
+                downloadId: null
+            }
+        }
+
+        const store = createStore(
+            false,
+            jest.fn(),
+            false,
+            false,
+            null,
+            {summary: summaryDownloadStatus} as any);
+
+        const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
+
+        jest.useFakeTimers()
+        const button = wrapper.find("#summary-download").find("button")
+        button.trigger("click")
+
+        wrapper.vm.$store.state.downloadResults = summaryTestError
+        expect(clearInterval).toHaveBeenCalledTimes(1)
+        expect(wrapper.find("#error").text()).toBe("TEST FAILED")
+    });
+
     it("can download coarseOutput file when download is complete", () => {
         const store = createStore();
         const downloadResults = {
@@ -466,6 +569,56 @@ describe("Download Results component", () => {
         expect(wrapper.find("#error").text()).toBe("TEST FAILED")
     });
 
+    it("can stop polling coarseOutput download when error response", () => {
+        const coarseDownloadStatus = {
+            downloading: true,
+            complete: false,
+            error: null,
+            downloadId: 1,
+            statusPollId: 123
+        }
+
+        const coarseTestError = {
+            summary: {
+                downloading: false,
+                complete: false,
+                error: null,
+                downloadId: null
+            },
+            coarseOutput: {
+                downloading: false,
+                complete: false,
+                error: mockError("TEST FAILED"),
+                downloadId: null,
+                statusPollId: 123
+            },
+            spectrum: {
+                downloading: false,
+                complete: false,
+                error: null,
+                downloadId: null
+            }
+        }
+
+        const store = createStore(
+            false,
+            jest.fn(),
+            false,
+            false,
+            null,
+            {coarseOutput: coarseDownloadStatus} as any);
+
+        const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
+
+        jest.useFakeTimers()
+        const button = wrapper.find("#coarse-output-download").find("button")
+        button.trigger("click")
+
+        wrapper.vm.$store.state.downloadResults = coarseTestError
+        expect(clearInterval).toHaveBeenCalledTimes(1)
+        expect(wrapper.find("#error").text()).toBe("TEST FAILED")
+    });
+
 });
 
 const doesNotCallAction = (store: Store<any>, mockAction = jest.fn(), id: string) => {
@@ -496,6 +649,7 @@ const doesNotCallAction = (store: Store<any>, mockAction = jest.fn(), id: string
 
 const downloadFile = (store: Store<any>, downloadResultsData: {}) => {
     mount(DownloadResults, {store, stubs: ["upload-modal"]});
+    jest.useFakeTimers()
 
     const realLocation = window.location
     delete window.location;
@@ -504,6 +658,7 @@ const downloadFile = (store: Store<any>, downloadResultsData: {}) => {
     expect(window.location.assign).not.toHaveBeenCalled()
     store.state.downloadResults = downloadResultsData
 
+    expect(clearInterval).toHaveBeenCalledTimes(1)
     expect(window.location.assign).toHaveBeenCalledTimes(1)
     expect(window.location.assign).toHaveBeenCalledWith("/download/result/123")
     window.location = realLocation
