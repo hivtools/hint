@@ -4,7 +4,7 @@ import {api} from "../../apiService";
 import qs from "qs";
 import {ADRUploadState} from "./adrUpload";
 import {ADRUploadMutation} from "./mutations";
-import {constructUploadFile, constructUploadFileWithResourceName, findResource} from "../../utils";
+import {constructUploadFile} from "../../utils";
 import {Dict, UploadFile} from "../../types";
 import {switches} from "../../featureSwitches";
 import {ValidateInputResponse} from "../../generated";
@@ -35,21 +35,19 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                         const metadata = response.data;
                         const schemas = rootState.adr.schemas!;
 
-                        const uploadFiles: Dict<UploadFile> =  {
-                            outputZip: constructUploadFileWithResourceName(
+                        const uploadFiles: Dict<UploadFile | null> =  {
+                            outputZip: constructUploadFile(
                                 metadata,
                                 0,
                                 schemas.outputZip,
-                                `${project.name}_naomi_outputs.zip`,
-                                "uploadFileOutputZip",
-                                `${project.name} Naomi Outputs`),
-                            outputSummary: constructUploadFileWithResourceName(
+                                `naomi_outputs.zip`,
+                                "uploadFileOutputZip"),
+                            outputSummary: constructUploadFile(
                                 metadata,
                                 1,
                                 schemas.outputSummary,
-                                `${project.name}_naomi_summary.html`,
-                                "uploadFileOutputSummary",
-                                `${project.name} Naomi Summary`)
+                                `naomi_summary.html`,
+                                "uploadFileOutputSummary")
                         };
 
                         if (switches.adrPushInputs) {

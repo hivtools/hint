@@ -6,7 +6,7 @@ import {
     flattenToIdSet,
     formatDateTime,
     validateEmail,
-    versionLabel, rootOptionChildren, constructUploadFile, constructUploadFileWithResourceName, getFilenameFromImportUrl
+    versionLabel, rootOptionChildren, constructUploadFile, getFilenameFromImportUrl
 } from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
 
@@ -179,62 +179,62 @@ describe("utils", () => {
         expect(versionLabel(version)).toBe("v9");
     });
 
-    it("can construct upload file where resource exists", () => {
-        const datasetWithResources = {
-            resources: [
-                {
-                    resource_type: "other-type",
-                    id: "456",
-                    last_modified: "2021-02-01",
-                    metadata_modified: "2021-01-28",
-                    url: "http://other",
-                    name: "Other Resource"
-                },
-                {
-                    resource_type: "test-type",
-                    id: "456",
-                    name: "A different resource",
-                    last_modified: "2021-03-01",
-                    metadata_modified: "2021-02-28",
-                    url: "http://test2"
-                },
-                {
-                    resource_type: "test-type",
-                    id: "123",
-                    name: "Test Resource",
-                    last_modified: "2021-03-01",
-                    metadata_modified: "2021-02-28",
-                    url: "http://test",
-                }
-            ]
-        };
-        const result = constructUploadFileWithResourceName(datasetWithResources, 0,"test-type", "test.txt", "displayTest", "Test Resource");
-        expect(result).toStrictEqual({
-            index: 0,
-            displayName: "displayTest",
-            resourceType: "test-type",
-            resourceFilename: "test.txt",
-            resourceId: "123",
-            lastModified: "2021-03-01",
-            resourceUrl: "http://test",
-            resourceName: "Test Resource"
-        });
-    });
+    // it("can construct upload file where resource exists", () => {
+    //     const datasetWithResources = {
+    //         resources: [
+    //             {
+    //                 resource_type: "other-type",
+    //                 id: "456",
+    //                 last_modified: "2021-02-01",
+    //                 metadata_modified: "2021-01-28",
+    //                 url: "http://other",
+    //                 name: "Other Resource"
+    //             },
+    //             {
+    //                 resource_type: "test-type",
+    //                 id: "456",
+    //                 name: "A different resource",
+    //                 last_modified: "2021-03-01",
+    //                 metadata_modified: "2021-02-28",
+    //                 url: "http://test2"
+    //             },
+    //             {
+    //                 resource_type: "test-type",
+    //                 id: "123",
+    //                 name: "Test Resource",
+    //                 last_modified: "2021-03-01",
+    //                 metadata_modified: "2021-02-28",
+    //                 url: "http://test",
+    //             }
+    //         ]
+    //     };
+    //     // const result = constructUploadFileWithResourceName(datasetWithResources, 0,"test-type", "test.txt", "displayTest", "Test Resource");
+    //     // expect(result).toStrictEqual({
+    //     //     index: 0,
+    //     //     displayName: "displayTest",
+    //     //     resourceType: "test-type",
+    //     //     resourceFilename: "test.txt",
+    //     //     resourceId: "123",
+    //     //     lastModified: "2021-03-01",
+    //     //     resourceUrl: "http://test",
+    //     //     resourceName: "Test Resource"
+    //     // });
+    // });
 
-    it("can construct upload file where resource does not exist", () => {
-        const datasetWithResources = {resources: []};
-        const result = constructUploadFileWithResourceName(datasetWithResources, 0, "test-type", "test.txt", "displayTest", "Test Resource");
-        expect(result).toStrictEqual({
-            index: 0,
-            displayName: "displayTest",
-            resourceType: "test-type",
-            resourceFilename: "test.txt",
-            resourceId: null,
-            lastModified: null,
-            resourceUrl: null,
-            resourceName: "Test Resource"
-        });
-    });
+    // it("can construct upload file where resource does not exist", () => {
+    //     const datasetWithResources = {resources: []};
+    //     const result = constructUploadFileWithResourceName(datasetWithResources, 0, "test-type", "test.txt", "displayTest", "Test Resource");
+    //     expect(result).toStrictEqual({
+    //         index: 0,
+    //         displayName: "displayTest",
+    //         resourceType: "test-type",
+    //         resourceFilename: "test.txt",
+    //         resourceId: null,
+    //         lastModified: null,
+    //         resourceUrl: null,
+    //         resourceName: "Test Resource"
+    //     });
+    // });
 
     it("can construct upload file without resource name when resource already exists", () => {
         //Name not provided, so will match on type only
