@@ -196,35 +196,11 @@ describe("Survey and programme component", () => {
         expect(wrapper.find("#data-source").exists()).toBe(false);
     });
 
-    it("survey tab is enabled when survey data is present", () => {
-        expectTabEnabled({survey: mockSurveyResponse(), selectedDataType: DataType.Survey},
-            "Household Survey", "Enquête de ménage", "Inquérito aos agregados familiares", 0);
-    });
-
-    it("programme (ART) tab is enabled when programme data is present", () => {
-        expectTabEnabled({program: mockProgramResponse(), selectedDataType: DataType.Survey},
-            "ART", "ART", "TARV", 1);
-    });
-
-    it("ANC tab is enabled when ANC data is present", () => {
-        expectTabEnabled({anc: mockAncResponse(), selectedDataType: DataType.Survey},
-            "ANC Testing", "Test de clinique prénatale", "Teste da CPN", 2);
-    });
-
-    function expectTabEnabled(state: Partial<SurveyAndProgramState>, englishName: string, frenchName: string,
-                              portugueseName: string, index: number) {
-        const store = createStore(state);
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect(wrapper.findAll(".nav-link").at(index).classes()).not.toContain("disabled");
-        expectTranslated(wrapper.findAll(".nav-link").at(index), englishName, frenchName, portugueseName, store);
-        expect(wrapper.findAll(".nav-link.disabled").length).toBe(2);
-    }
-
     it("renders data source header as expected", () => {
         const store = createStore();
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         const header = wrapper.find("#data-source h4");
-        expectTranslated(header, "Data source", "Source de données", store);
+        expectTranslated(header, "Data source", "Source de données", "Fonte de dados", store);
     });
 
     it("survey in included in data sources when survey data is present", () => {

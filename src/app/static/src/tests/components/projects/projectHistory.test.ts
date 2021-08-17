@@ -356,7 +356,8 @@ describe("Project history component", () => {
             "Por favor, introduza um novo nome para o projeto", store);
 
         expectTranslated(modal.find(".modal-body label"), "Notes: (your reason for renaming the project)",
-            "Remarques : (la raison pour laquelle vous avez renommé le projet)", store);
+            "Remarques : (la raison pour laquelle vous avez renommé le projet)",
+            "Notas: (seu motivo para renomear o projeto)", store);
 
         const input = modal.find("input")
         expectTranslated(input, "Project name", "Nom du projet", "Nome do projeto",
@@ -620,15 +621,16 @@ describe("Project history component", () => {
         const modal = wrapper.findAll(".modal").at(3);
         const editVersionNoteHeader = modal.find("#editVersionNoteHeader")
         expectTranslated(editVersionNoteHeader, "Project notes for version v1",
-            "Notes de projet pour la version v1", store)
+            "Notes de projet pour la version v1", "Notas do projeto para a versão v1", store)
 
         const editVersionNoteSubHeader = modal.find("#editVersionNoteSubHeader")
         expectTranslated(editVersionNoteSubHeader, "Add or edit version notes for proj1",
-            "Ajouter ou modifier des notes de version pour proj1", store)
+            "Ajouter ou modifier des notes de version pour proj1",
+            "Adicionar ou editar notas de versão para proj1", store)
 
         const buttons = modal.find(".modal-footer").findAll("button");
-        expectTranslated(buttons.at(0), "OK", "OK", store)
-        expectTranslated(buttons.at(1), "Cancel", "Annuler", store)
+        expectTranslated(buttons.at(0), "OK", "OK", "OK", store)
+        expectTranslated(buttons.at(1), "Cancel", "Annuler", "Cancelar", store)
     });
 
     it("can render translated projectNote headers and button text", async () => {
@@ -642,15 +644,16 @@ describe("Project history component", () => {
 
         const editProjectNoteSubHeader = modal.find("#editProjectNoteSubHeader")
         expectTranslated(editProjectNoteSubHeader, "Add or edit project notes for proj1",
-            "Ajouter ou modifier des notes de projet pour proj1", store)
+            "Ajouter ou modifier des notes de projet pour proj1",  "Adicionar ou editar notas de projeto para proj1",
+            store)
 
         const editProjectNoteHeader = modal.find("#editProjectNoteHeader")
         expectTranslated(editProjectNoteHeader, "Project notes",
-            "Notes de projet", store)
+            "Notes de projet", "Notas do projeto", store)
 
         const buttons = modal.find(".modal-footer").findAll("button");
-        expectTranslated(buttons.at(0), "OK", "OK", store)
-        expectTranslated(buttons.at(1), "Cancel", "Annuler", store)
+        expectTranslated(buttons.at(0), "OK", "OK", "OK", store)
+        expectTranslated(buttons.at(1), "Cancel", "Annuler", "Cancelar", store)
     });
 
     it("cannot invoke promoteVersion action when input value is empty", async () => {

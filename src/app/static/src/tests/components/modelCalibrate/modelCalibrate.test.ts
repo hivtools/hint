@@ -173,7 +173,7 @@ describe("Model calibrate component", () => {
         const wrapper = getWrapper(store);
         expect(wrapper.find("#genCalibResults").find(LoadingSpinner).exists()).toBe(true);
         expectTranslated(wrapper.find("#genCalibResults span"), "Generating calibration results",
-        "Générer des résultats d'étalonnage", store);
+        "Générer des résultats d'étalonnage", "Gerando resultados de calibração", store);
     });
 
     it("renders calibration plot", () => {
@@ -181,6 +181,6 @@ describe("Model calibrate component", () => {
         const wrapper = getWrapper(store);
         expect(wrapper.find(CalibrationResults).exists()).toBe(true);
         expectTranslated(wrapper.find("#reviewResults"), "(Review results below)",
-        "(Consultez les résultats ci-dessous)", store);
+        "(Consultez les résultats ci-dessous)", "(Analise os resultados abaixo)", store);
     });
 });

@@ -551,7 +551,8 @@ describe("select dataset", () => {
         expect(rendered.findAll("p").length).toBe(0);
 
         expectTranslated(rendered.find("h4"), "Browse ADR", "Parcourir ADR", "Procurar no ADR", store);
-        expectTranslated(rendered.find("div > label"), "Datasets", "Ensembles de données", store);
+        expectTranslated(rendered.find("div > label"), "Datasets", "Ensembles de données",
+            "Conjuntos de dados", store);
 
         // select dataset from dropdown and click button to import
         rendered.setData({newDatasetId: "id2"});
@@ -641,7 +642,8 @@ describe("select dataset", () => {
         expect(rendered.find(ResetConfirmation).props("open")).toBe(true);
         const saveBtn = rendered.find(ResetConfirmation).find("button");
         expectTranslated(saveBtn, "Save version and keep editing",
-            "Sauvegarder la version et continuer à modifier", store);
+            "Sauvegarder la version et continuer à modifier", "Guardar versão e continuar a editar",
+            store);
         saveBtn.trigger("click");
         store.state.projects.currentVersion = {id: "id1"} as any;
         expect(rendered.find(ResetConfirmation).exists()).toBe(false);
@@ -669,7 +671,7 @@ describe("select dataset", () => {
         expect(rendered.find(ResetConfirmation).props("open")).toBe(true);
         const cancelBtn = rendered.find(ResetConfirmation).findAll("button").at(1);
         expectTranslated(cancelBtn, "Cancel editing",
-            "Annuler l'édition", store);
+            "Annuler l'édition", "Cancelar edição", store);
         await cancelBtn.trigger("click");
         expect(rendered.find(ResetConfirmation).exists()).toBe(false);
         expect(rendered.find("#loading-dataset").exists()).toBe(false);

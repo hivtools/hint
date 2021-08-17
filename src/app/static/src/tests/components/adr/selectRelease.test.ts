@@ -62,9 +62,12 @@ describe("select release", () => {
         expect(rendered.findAll("input").length).toBe(2);
         const labels = rendered.findAll("label")
         expect(labels.length).toBe(3);
-        expectTranslated(labels.at(0), "Use latest data", "Utiliser les dernières données", store);
-        expectTranslated(labels.at(1), "Select a release", "Sélectionnez une version", store);
-        expectTranslated(labels.at(2), "Releases", "Versions", store);
+        expectTranslated(labels.at(0), "Use latest data", "Utiliser les dernières données",
+            "Use os dados mais recentes", store);
+        expectTranslated(labels.at(1), "Select a release", "Sélectionnez une version",
+            "Selecione um lançamento", store);
+        expectTranslated(labels.at(2), "Releases", "Versions",
+            "Lançamentos", store);
         expect(rendered.findAll("help-circle-icon-stub").length).toBe(2);
         const select = rendered.find(TreeSelect);
         expect(select.props("multiple")).toBe(false);
