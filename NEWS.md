@@ -1,6 +1,10 @@
-# hint 1.45.1
+# hint 1.46.1
 
 * Upload release to ADR: upload to core output resources
+
+# hint 1.46.0
+
+* Combine input data tabs
 
 # hint 1.45.0
 
