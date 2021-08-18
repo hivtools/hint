@@ -35,7 +35,7 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                         const metadata = response.data;
                         const schemas = rootState.adr.schemas!;
 
-                        const uploadFiles: Dict<UploadFile | null> =  {
+                        const uploadFiles: Dict<UploadFile> =  {
                             outputZip: constructUploadFileWithResourceName(
                                 metadata,
                                 0,
@@ -82,7 +82,7 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                             addLocalInputFileToUploads("programme", schemas.programme, sap.program!, "ART");
                             addLocalInputFileToUploads("anc", schemas.anc, sap.anc!, "ANC");
                         }
-                        console.log("uploadFiles", uploadFiles)
+                        
                         commit({type: ADRUploadMutation.SetUploadFiles, payload: uploadFiles});
                     }
                 });
