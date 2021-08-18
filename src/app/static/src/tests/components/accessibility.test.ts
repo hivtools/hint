@@ -29,44 +29,38 @@ describe(`accessibility`, () =>{
 
     it(`renders accessibility tags as expected`, () => {
         const rendered = getWrapper()
-        expect(rendered.find("#accessibility-content")
-            .find("h1").text()).toBe("Accessibility on Naomi")
+        const store = rendered.vm.$store;
+        const h1 = rendered.find("#accessibility-content")
+            .find("h1");
+
+        expectTranslated(h1, "Accessibility on Naomi", "Accessibilité sur Naomi",
+            "Acessibilidade do Naomi", store);
 
         const h2 = rendered.find("#accessibility-content").findAll("h2")
 
-        expect(h2.at(0).text()).toBe("How accessible the website is")
-        expect(h2.at(1).text()).toBe("What we do about known issues")
-        expect(h2.at(2).text()).toBe("Technical information about this website’s accessibility")
-        expect(h2.at(3).text()).toBe("Reporting accessibility issues")
-        expect(h2.at(4).text()).toBe("Enforcement procedure")
-        expect(h2.at(5).text()).toBe("How we test this website")
-        expect(h2.at(6).text()).toBe("Last updated")
+        expectTranslated(h2.at(0),"How accessible the website is", "Accessibilité du site Web",
+            "Acessibilidade do sítio web", store);
+        expectTranslated(h2.at(1), "What we do about known issues", "Traitement des problèmes connus",
+            "O que fazemos relativamente aos problemas conhecidos", store);
+        expectTranslated(h2.at(2), "Technical information about this website’s accessibility",
+            "Informations techniques sur l'accessibilité de ce site Web",
+            "Informações técnicas sobre a acessibilidade deste sítio web", store);
+        expectTranslated(h2.at(3), "Reporting accessibility issues", "Signalement des problèmes d’accessibilité",
+            "Comunicação de problemas de acessibilidade", store);
+        expectTranslated(h2.at(4), "Enforcement procedure", "Procédure d'exécution",
+            "Procedimento de aplicação", store);
+        expectTranslated(h2.at(5), "How we test this website", "Comment nous testons ce site Web",
+            "De que forma testamos este sítio web", store);
+        expectTranslated(h2.at(6), "Last updated", "Dernière mise à jour",
+            "Última atualização", store);
 
         const paragraphs = rendered.find("#accessibility-content").findAll("p")
         expect(paragraphs.length).toBe(12)
-        expect(paragraphs.at(11).text()).toBe("This statement was prepared on 24 February 2021." +
-            " It was last updated on 26 February 2021.")
-    })
-
-    it(`renders accessibility h1 and h2 tags as expected`, () => {
-        const rendered = getWrapper()
-        rendered.vm.$store.state.language = Language.fr
-
-        expect(rendered.find("#accessibility-content")
-            .find("h1").text()).toBe("Accessibilité sur Naomi")
-
-        const h2 = rendered.find("#accessibility-content").findAll("h2")
-        expect(h2.at(0).text()).toBe("Accessibilité du site Web")
-        expect(h2.at(1).text()).toBe("Traitement des problèmes connus")
-        expect(h2.at(2).text()).toBe("Informations techniques sur l'accessibilité de ce site Web")
-        expect(h2.at(3).text()).toBe("Signalement des problèmes d’accessibilité")
-        expect(h2.at(4).text()).toBe("Procédure d'exécution")
-        expect(h2.at(5).text()).toBe("Comment nous testons ce site Web")
-        expect(h2.at(6).text()).toBe("Dernière mise à jour")
-
-        const paragraph = rendered.find("#accessibility-content").findAll("p")
-        expect(paragraph.at(11).text()).toBe("Cette déclaration a été préparée " +
-            "le 24 février 2021. Elle a été mise à jour pour la dernière fois le 26 février 2021.")
+        expectTranslated(paragraphs.at(11),
+            "This statement was prepared on 24 February 2021. It was last updated on 26 February 2021.",
+            "Cette déclaration a été préparée le 24 février 2021. Elle a été mise à jour pour la dernière fois le 26 février 2021.",
+            "Esta comunicação foi elaborada em 24 de fevereiro de 2021. Foi atualizada pela última vez em 26 de fevereiro de 2021.",
+            store);
     })
 
     it(`renders accessibility purpose list tags as expected in French`, () => {
