@@ -187,7 +187,7 @@ class ADRController(private val encryption: Encryption,
                       @PathVariable resourceType: String,
                       @PathVariable modelCalibrateId: String,
                       @RequestParam resourceFileName: String,
-                      @RequestParam resourceId: String?,
+                      @RequestParam resourceId: String,
                       @RequestParam resourceName: String,
                       @RequestParam description: String?) : ResponseEntity<String>
     {
@@ -213,7 +213,7 @@ class ADRController(private val encryption: Encryption,
                                    resourceType: String,
                                    modelCalibrateId: String,
                                    resourceFileName: String,
-                                   resourceId: String?,
+                                   resourceId: String,
                                    resourceName: String,
                                    description: String?): ResponseEntity<String>
     {
@@ -295,7 +295,7 @@ class ADRController(private val encryption: Encryption,
                               datasetId: String,
                               resourceType: String,
                               resourceName: String,
-                              resourceId: String?,
+                              resourceId: String,
                               description: String?,
                               tmpDir: File): ResponseEntity<String>
     {
