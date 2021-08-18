@@ -21,7 +21,7 @@ import {emptyState} from "../../../app/root";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
-import {testUploadComponent} from "../surveyAndProgram/fileUploads";
+import {testUploadComponent} from "./fileUploads";
 
 const localVue = createLocalVue();
 
