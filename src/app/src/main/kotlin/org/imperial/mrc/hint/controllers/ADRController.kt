@@ -187,7 +187,7 @@ class ADRController(private val encryption: Encryption,
                       @PathVariable resourceType: String,
                       @PathVariable modelCalibrateId: String,
                       @RequestParam resourceFileName: String,
-                      @RequestParam resourceId: String,
+                      @RequestParam resourceId: String?,
                       @RequestParam resourceName: String,
                       @RequestParam description: String?) : ResponseEntity<String>
     {
@@ -213,7 +213,7 @@ class ADRController(private val encryption: Encryption,
                                    resourceType: String,
                                    modelCalibrateId: String,
                                    resourceFileName: String,
-                                   resourceId: String,
+                                   resourceId: String?,
                                    resourceName: String,
                                    description: String?): ResponseEntity<String>
     {
@@ -295,7 +295,7 @@ class ADRController(private val encryption: Encryption,
                               datasetId: String,
                               resourceType: String,
                               resourceName: String,
-                              resourceId: String,
+                              resourceId: String?,
                               description: String?,
                               tmpDir: File): ResponseEntity<String>
     {
@@ -312,11 +312,11 @@ class ADRController(private val encryption: Encryption,
         val adr = adrClientBuilder.build()
         return try
         {
-            // when (resourceId)
-            // {
-            //     null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to datasetId), filePart)
-            //     else ->
-            //     {
+            when (resourceId)
+            {
+                null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to datasetId), filePart)
+                else ->
+                {
                     if (uploadFileHasChanges(resourceId, fileHash))
                     {
                         adr.postFile("resource_patch", commonParameters + listOf("id" to resourceId), filePart)
@@ -325,8 +325,8 @@ class ADRController(private val encryption: Encryption,
                     {
                         EmptySuccessResponse.asResponseEntity()
                     }
-            //     }
-            // }
+                }
+            }
         }
         catch (e: IOException)
         {
