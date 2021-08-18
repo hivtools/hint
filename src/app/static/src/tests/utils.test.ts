@@ -200,7 +200,7 @@ describe("utils", () => {
                 }
             ]
         };
-        const result = constructUploadFileWithResourceName(datasetWithResources, 0,"test-type", "test.txt", "displayTest", "Test Resource");
+        const result = constructUploadFileWithResourceName(datasetWithResources, 0,"test-type", "test.txt", "displayTest", "Potential Name");
         expect(result).toStrictEqual({
             index: 0,
             displayName: "displayTest",
