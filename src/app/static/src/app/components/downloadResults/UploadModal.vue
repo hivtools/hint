@@ -144,6 +144,7 @@
         watch: {
             uploadFiles() {
                 this.setDefaultCheckedItems()
+                console.log("uploadFiles", this.uploadFiles)
             }
         }
     });
