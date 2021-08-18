@@ -55,7 +55,7 @@
     import Vue from "vue";
     import TreeSelect from '@riophae/vue-treeselect';
     import i18next from "i18next";
-    import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
+    import {mapGetters, mapMutations, mapState} from "vuex";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import TableView from "../plots/table/Table.vue";
     import Filters from "../plots/Filters.vue";
@@ -67,10 +67,8 @@
     import {mapActionByName, mapGettersByNames, mapStateProp} from "../../utils";
     import {
         ChoroplethSelections,
-        PlottingSelectionsState,
-        ScaleSelections
+        PlottingSelectionsState
     } from "../../store/plottingSelections/plottingSelections";
-    import ManageFile from "../files/ManageFile.vue";
     import {BaselineState} from "../../store/baseline/baseline";
     import {Language} from "../../store/translations/locales";
 
@@ -175,7 +173,6 @@
             Choropleth,
             Filters,
             TableView,
-            ManageFile,
             TreeSelect
         }
     })

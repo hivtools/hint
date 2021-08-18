@@ -80,7 +80,6 @@
 
     import Vue from "vue";
     import {mapActions, mapState} from "vuex";
-
     import {BaselineState} from "../../store/baseline/baseline";
     import {PartialFileUploadProps} from "../../types";
     import {MetadataState} from "../../store/metadata/metadata";
@@ -89,8 +88,6 @@
     import ManageFile from "../files/ManageFile.vue";
     import {RootState} from "../../root";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
-    import {Feature} from "geojson";
-    import {PlottingSelectionsState} from "../../store/plottingSelections/plottingSelections";
 
     const namespace = 'baseline';
 
