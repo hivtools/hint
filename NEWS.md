@@ -1,3 +1,7 @@
+# hint 1.45.1
+
+* Upload release to ADR: upload to core output resources
+
 # hint 1.45.0
 
 * Import releases from ADR: fetch and display release data from ADR
