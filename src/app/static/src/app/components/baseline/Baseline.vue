@@ -35,6 +35,36 @@
                                  accept="csv,.csv"
                                  name="population">
                     </manage-file>
+                    <manage-file label="survey"
+                                 :valid="survey.valid"
+                                 :fromADR="survey.fromADR"
+                                 :error="survey.error"
+                                 :upload="uploadSurvey"
+                                 :delete-file="deleteSurvey"
+                                 :existingFileName="survey.existingFileName"
+                                 accept="csv,.csv"
+                                 name="survey">
+                    </manage-file>
+                    <manage-file label="ART"
+                                 :valid="programme.valid"
+                                 :fromADR="programme.fromADR"
+                                 :error="programme.error"
+                                 :upload="uploadProgram"
+                                 :delete-file="deleteProgram"
+                                 :existingFileName="programme.existingFileName"
+                                 accept="csv,.csv"
+                                 name="program">
+                    </manage-file>
+                    <manage-file label="ANC"
+                                 :valid="anc.valid"
+                                 :fromADR="anc.fromADR"
+                                 :error="anc.error"
+                                 :upload="uploadANC"
+                                 :delete-file="deleteANC"
+                                 :existingFileName="anc.existingFileName"
+                                 accept="csv,.csv"
+                                 name="anc">
+                    </manage-file>
                 </form>
                 <div v-if="validating" id="baseline-validating">
                     <loading-spinner size="xs"></loading-spinner>
@@ -57,6 +87,10 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import ManageFile from "../files/ManageFile.vue";
+    import {RootState} from "../../root";
+    import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
+    import {Feature} from "geojson";
+    import {PlottingSelectionsState} from "../../store/plottingSelections/plottingSelections";
 
     const namespace = 'baseline';
 
@@ -89,6 +123,26 @@
             }),
             ...mapState<MetadataState>("metadata", {
                 plottingMetadataError: (state: MetadataState) => state.plottingMetadataError
+            }),
+            ...mapState<RootState>({
+                anc: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
+                    valid: !!surveyAndProgram.anc,
+                    fromADR: !!surveyAndProgram.anc?.fromADR,
+                    error: surveyAndProgram.ancError,
+                    existingFileName: (surveyAndProgram.anc && surveyAndProgram.anc.filename)|| surveyAndProgram.ancErroredFile
+                } as PartialFileUploadProps),
+                programme: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
+                    valid: surveyAndProgram.program != null,
+                    fromADR: !!surveyAndProgram.program?.fromADR,
+                    error: surveyAndProgram.programError,
+                    existingFileName: (surveyAndProgram.program && surveyAndProgram.program.filename) || surveyAndProgram.programErroredFile
+                } as PartialFileUploadProps),
+                survey: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
+                    valid: surveyAndProgram.survey != null,
+                    fromADR: !!surveyAndProgram.survey?.fromADR,
+                    error: surveyAndProgram.surveyError,
+                    existingFileName: (surveyAndProgram.survey && surveyAndProgram.survey.filename) || surveyAndProgram.surveyErroredFile
+                } as PartialFileUploadProps)
             })
         },
         methods: {
@@ -98,7 +152,13 @@
                 uploadPopulation: 'baseline/uploadPopulation',
                 deletePJNZ: 'baseline/deletePJNZ',
                 deleteShape: 'baseline/deleteShape',
-                deletePopulation: 'baseline/deletePopulation'
+                deletePopulation: 'baseline/deletePopulation',
+                uploadSurvey: 'surveyAndProgram/uploadSurvey',
+                uploadProgram: 'surveyAndProgram/uploadProgram',
+                uploadANC: 'surveyAndProgram/uploadANC',
+                deleteSurvey: 'surveyAndProgram/deleteSurvey',
+                deleteProgram: 'surveyAndProgram/deleteProgram',
+                deleteANC: 'surveyAndProgram/deleteANC'
             })
         },
         components: {
