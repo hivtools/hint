@@ -213,10 +213,10 @@ export const constructUploadFile = (datasetWithResources: any, index: number, re
 };
 
 export const constructUploadFileWithResourceName = (datasetWithResources: any, index: number, resourceType: string,
-                             resourceFilename: string, displayName: string, resourceName: string): UploadFile => {
-    const resource = findResource(datasetWithResources, resourceType, resourceName);
-    return getUploadFileFromResource(resource, resourceName, index, resourceType, resourceFilename, displayName);
-
+    resourceFilename: string, displayName: string, resourceName: string): UploadFile => {
+    const resource = findResource(datasetWithResources, resourceType);
+    const name = resource?.name || resourceName;
+    return getUploadFileFromResource(resource, name, index, resourceType, resourceFilename, displayName);
 };
 
 function getUploadFileFromResource(resource: DatasetResource | null, resourceName: string, index: number,
