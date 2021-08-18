@@ -96,8 +96,6 @@ const resetState = (store: Store<RootState>): void => {
             if (type[0] == "surveyAndProgram" && SurveyAndProgramUpdates.includes(type[1] as SurveyAndProgramMutation)) {
 
                 store.commit(RootMutation.ResetSelectedDataType);
-                store.commit(RootMutation.ResetOptions);
-                store.commit(RootMutation.ResetOutputs);
             }
 
             if (type[0] == "modelOptions" && ModelOptionsUpdates.includes(type[1] as ModelOptionsMutation)) {
