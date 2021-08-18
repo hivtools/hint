@@ -82,7 +82,7 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                             addLocalInputFileToUploads("programme", schemas.programme, sap.program!, "ART");
                             addLocalInputFileToUploads("anc", schemas.anc, sap.anc!, "ANC");
                         }
-                        
+
                         commit({type: ADRUploadMutation.SetUploadFiles, payload: uploadFiles});
                     }
                 });
