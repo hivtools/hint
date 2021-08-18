@@ -4,7 +4,7 @@ import {api} from "../../apiService";
 import qs from "qs";
 import {ADRUploadState} from "./adrUpload";
 import {ADRUploadMutation} from "./mutations";
-import {constructUploadFile} from "../../utils";
+import {constructUploadFile, constructUploadFileWithResourceName} from "../../utils";
 import {Dict, UploadFile} from "../../types";
 import {switches} from "../../featureSwitches";
 import {ValidateInputResponse} from "../../generated";
@@ -36,18 +36,20 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                         const schemas = rootState.adr.schemas!;
 
                         const uploadFiles: Dict<UploadFile | null> =  {
-                            outputZip: constructUploadFile(
+                            outputZip: constructUploadFileWithResourceName(
                                 metadata,
                                 0,
                                 schemas.outputZip,
                                 "naomi_outputs.zip",
-                                "uploadFileOutputZip"),
-                            outputSummary: constructUploadFile(
+                                "uploadFileOutputZip",
+                                "Naomi Output ZIP"),
+                            outputSummary: constructUploadFileWithResourceName(
                                 metadata,
                                 1,
                                 schemas.outputSummary,
                                 "naomi_summary.html",
-                                "uploadFileOutputSummary")
+                                "uploadFileOutputSummary",
+                                "Naomi Results and Summary Report")
                         };
 
                         if (switches.adrPushInputs) {
@@ -80,7 +82,7 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                             addLocalInputFileToUploads("programme", schemas.programme, sap.program!, "ART");
                             addLocalInputFileToUploads("anc", schemas.anc, sap.anc!, "ANC");
                         }
-
+                        console.log("uploadFiles", uploadFiles)
                         commit({type: ADRUploadMutation.SetUploadFiles, payload: uploadFiles});
                     }
                 });
