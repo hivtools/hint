@@ -123,13 +123,13 @@
                 },
                 anc: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     available: !surveyAndProgram.ancError && surveyAndProgram.anc
-                } as any),
+                }),
                 programme: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     available: !surveyAndProgram.programError && surveyAndProgram.program
-                } as any),
+                }),
                 survey: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     available: !surveyAndProgram.surveyError && surveyAndProgram.survey
-                } as any),
+                }),
                 features: ({baseline} : {baseline: BaselineState}) => baseline.shape ? baseline.shape.data.features : [] as Feature[],
                 featureLevels: ({baseline} : {baseline: BaselineState}) => baseline.shape ? baseline.shape.filters.level_labels : [],
                 plottingSelections: ({plottingSelections}: {plottingSelections: PlottingSelectionsState}) => plottingSelections.sapChoropleth
