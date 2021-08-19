@@ -307,6 +307,16 @@ describe("Stepper component", () => {
         expect([3, 4, 5].filter(i => steps.at(i).props().enabled).length).toBe(0);
     });
 
+    it("Review inputs step is not enabled when baseline step is not complete", () => {
+        const wrapper = createReadySut(completedBaselineState);
+        const steps = wrapper.findAll(Step);
+        expect(steps.at(0).props().enabled).toBe(true);
+        expect(steps.at(1).props().enabled).toBe(false);
+        expect(steps.at(0).props().complete).toBe(false);
+        expect(steps.at(2).props().enabled).toBe(false);
+        expect([3, 4, 5].filter(i => steps.at(i).props().enabled).length).toBe(0);
+    });
+
     it("Review inputs step is not enabled if metadata state is not complete", () => {
         const wrapper = createReadySut(completedBaselineState,
             completedSurveyAndProgramState,
