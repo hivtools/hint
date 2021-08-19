@@ -706,7 +706,7 @@ class ProjectTests : VersionFileTests()
         {
             val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
             val msg = errors[0]["detail"].asText()
-            assertThat(msg).isEqualTo("O projeto não existe.")
+            assertThat(msg).isEqualTo("A versão não existe.")
         }
     }
 
