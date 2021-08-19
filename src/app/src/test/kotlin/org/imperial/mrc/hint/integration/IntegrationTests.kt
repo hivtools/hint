@@ -100,9 +100,8 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         {
             Thread.sleep(500)
             val statusResponse = testRestTemplate.getForEntity<String>("/model/status/$id")
-        } while (statusResponse.body != null
-                && (statusResponse.body!!.contains("\"status\":\"RUNNING\"")
-                        || statusResponse.body!!.contains("\"status\":\"PENDING\"")))
+        } while (statusResponse.body!!.contains("\"status\":\"RUNNING\"")
+                || statusResponse.body!!.contains("\"status\":\"PENDING\""))
 
         return id
     }
@@ -117,9 +116,8 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         {
             Thread.sleep(500)
             val statusResponse = testRestTemplate.getForEntity<String>("/model/calibrate/status/$id")
-        } while (statusResponse.body != null
-                && (statusResponse.body!!.contains("\"status\":\"RUNNING\"")
-                        || statusResponse.body!!.contains("\"status\":\"PENDING\"")))
+        } while (statusResponse.body!!.contains("\"status\":\"RUNNING\"")
+                || statusResponse.body!!.contains("\"status\":\"PENDING\""))
 
         return id
     }
@@ -135,9 +133,8 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         {
             Thread.sleep(500)
             val statusResponse = testRestTemplate.getForEntity<String>("/download/status/$responseId")
-        } while (statusResponse.body != null
-                && (statusResponse.body!!.contains("\"status\":\"RUNNING\"")
-                        || statusResponse.body!!.contains("\"status\":\"PENDING\"")))
+        } while (statusResponse.body!!.contains("\"status\":\"RUNNING\"")
+                || statusResponse.body!!.contains("\"status\":\"PENDING\""))
 
         return responseId
     }
