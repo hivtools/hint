@@ -6,7 +6,37 @@
                 <div id="dataset-id" class="mt-4">
                     <span v-translate="'uploadFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
-                <div id="instructions" class="mt-3" v-translate="'uploadFileInstruction'"></div>
+                <!-- <div id="instructions" class="mt-3" v-translate="'uploadFileInstruction'"></div> -->
+                <div class="pt-2">
+                    <input
+                        type="radio"
+                        id="createRelease"
+                        value="createRelease"
+                        v-model="choiceUpload"
+                    />
+                    <label for="createRelease" v-translate="'createRelease'" class="pr-1"></label>
+                    <span class="icon-small" v-tooltip="translate('createReleaseTooltip')">
+                        <help-circle-icon></help-circle-icon>
+                    </span>
+                    <br />
+                </div>
+                <div>
+                    <input
+                        type="radio"
+                        id="uploadFiles"
+                        value="uploadFiles"
+                        v-model="choiceUpload"
+                    />
+                    <label
+                        for="uploadFiles"
+                        v-translate="'uploadFiles'"
+                        class="pr-1"
+                    ></label>
+                    <span class="icon-small" v-tooltip="translate('uploadFilesTooltip')">
+                        <help-circle-icon></help-circle-icon>
+                    </span>
+                    <br />
+                </div>
                 <div v-for="(uploadFileSection, sectionIndex) in uploadFileSections" :key="sectionIndex">
                     <h5 v-if="Object.keys(uploadFileSections[1]).length > 0"
                         v-translate="sectionIndex === 0 ? 'outputFiles' : 'inputFiles'"
@@ -55,6 +85,11 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {formatDateTime, mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
+    import { HelpCircleIcon } from "vue-feather-icons";
+    import { VTooltip } from "v-tooltip";
+    import i18next from "i18next";
+    import { Language } from "../../store/translations/locales";
+    import { RootState } from "../../root";
 
     interface Methods {
         uploadFilesToADRAction: (uploadFilesPayload: UploadFile[]) => void;
@@ -62,17 +97,20 @@
         handleCancel: () => void
         lastModified: (date: string) => string | null
         setDefaultCheckedItems: () => void
+        translate(text: string): string;
     }
 
     interface Computed {
         dataset: string
         uploadFiles: Dict<UploadFile>,
         uploadFileSections: Array<Dict<UploadFile>>
+        currentLanguage: Language;
     }
 
     interface Data {
         uploadFilesToAdr: string[]
         uploadDescToAdr: string
+        choiceUpload: "createRelease" | "uploadFiles"
     }
 
     interface Props {
@@ -91,7 +129,8 @@
         data(): Data {
             return {
                 uploadFilesToAdr: [],
-                uploadDescToAdr: ""
+                uploadDescToAdr: "",
+                choiceUpload: "createRelease"
             }
         },
         methods: {
@@ -111,6 +150,9 @@
             lastModified: function (date: string) {
                 return formatDateTime(date)
             },
+            translate(text) {
+                return i18next.t(text, { lng: this.currentLanguage });
+            },
             setDefaultCheckedItems: function () {
                 this.uploadFilesToAdr = outputFileTypes
                     .filter(key => this.uploadFiles.hasOwnProperty(key))
@@ -120,6 +162,10 @@
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
                 dataset: state => state.selectedDataset?.title
             }),
+            currentLanguage: mapStateProp<RootState, Language>(
+                null,
+                (state: RootState) => state.language
+            ),
             uploadFiles: mapStateProp<ADRUploadState, Dict<UploadFile>>("adrUpload",
                 (state) => state.uploadFiles!
             ),
@@ -139,14 +185,18 @@
             }
         },
         components: {
-            Modal
+            Modal,
+            HelpCircleIcon,
         },
         watch: {
             uploadFiles() {
                 this.setDefaultCheckedItems()
                 console.log("uploadFiles", this.uploadFiles)
             }
-        }
+        },
+        directives: {
+            tooltip: VTooltip,
+        },
     });
 </script>
 
