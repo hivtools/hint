@@ -1,4 +1,3 @@
-import {testUploadComponent} from "./fileUploads";
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -19,7 +18,6 @@ import {mutations} from "../../../app/store/surveyAndProgram/mutations";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {mutations as selectionsMutations} from "../../../app/store/plottingSelections/mutations";
 import {ScaleSelections, ScaleType} from "../../../app/store/plottingSelections/plottingSelections";
-import ManageFile from "../../../app/components/files/ManageFile.vue";
 import {Language} from "../../../app/store/translations/locales";
 import {expectTranslated} from "../../testHelpers";
 
@@ -34,10 +32,6 @@ describe("Survey and programme component", () => {
     afterAll(() => {
         Vue.config.silent = false;
     })
-
-    testUploadComponent("surveys", 0);
-    testUploadComponent("program", 1);
-    testUploadComponent("anc", 2);
 
     const createStore = (surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey}) => {
         const store = new Vuex.Store({
@@ -222,12 +216,12 @@ describe("Survey and programme component", () => {
         const store = createStore(state);
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
-        let options = wrapper.find("#data-source treeselect-stub").props("options");
+        let options = wrapper.find("#data-source tree-select-stub").props("options");
         expect(options).toStrictEqual([{id, label: englishName}]);
 
         store.state.language = Language.fr;
         registerTranslations(store);
-        options = wrapper.find("#data-source treeselect-stub").props("options");
+        options = wrapper.find("#data-source tree-select-stub").props("options");
         expect(options).toStrictEqual([{id, label:frenchName}]);
     }
 
@@ -241,7 +235,7 @@ describe("Survey and programme component", () => {
             });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
-        const dataSourceSelect = wrapper.find("#data-source treeselect-stub");
+        const dataSourceSelect = wrapper.find("#data-source tree-select-stub");
         expect(dataSourceSelect.attributes("value")).toBe("1");
         expect(dataSourceSelect.props("options").length).toBe(3);
 
@@ -315,99 +309,6 @@ describe("Survey and programme component", () => {
                 "id": "country",
             }
         );
-    });
-
-    it("passes survey response existing file name to manage file", () => {
-        const store = createStore({survey: {filename: "existing file"} as any});
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect(wrapper.findAll(ManageFile).at(0).props("existingFileName")).toBe("existing file");
-    });
-
-    it("passes survey errored file to manage file", () => {
-        const store = createStore({surveyErroredFile: "errored file"});
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect(wrapper.findAll(ManageFile).at(0).props("existingFileName")).toBe("errored file");
-    });
-
-    it("passes program response existing file name to manage file", () => {
-        const store = createStore({program: {filename: "existing file"} as any});
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect(wrapper.findAll(ManageFile).at(1).props("existingFileName")).toBe("existing file");
-    });
-
-    it("passes program errored file to manage file", () => {
-        const store = createStore({programErroredFile: "errored file"});
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect(wrapper.findAll(ManageFile).at(1).props("existingFileName")).toBe("errored file");
-    });
-
-    it("passes anc response existing file name to manage file", () => {
-        const store = createStore({anc: {filename: "existing file"} as any});
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect(wrapper.findAll(ManageFile).at(2).props("existingFileName")).toBe("existing file");
-    });
-
-    it("passes anc errored file to manage file", () => {
-        const store = createStore({ancErroredFile: "errored file"});
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect(wrapper.findAll(ManageFile).at(2).props("existingFileName")).toBe("errored file");
-    });
-
-    it("can return true when fromADR", async () => { 
-        const store = createStore({
-            survey: {
-                "fromADR": true,
-                "filters": {
-                    "year": "TEST YEAR FILTERS"
-                }
-            } as any,
-            anc: {
-                "fromADR": true,
-                "filters": {
-                    "year": "TEST YEAR FILTERS"
-                }
-            } as any,
-            program: {
-                "fromADR": true,
-                "filters": {
-                    "year": "TEST YEAR FILTERS"
-                }
-            } as any
-        });
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-
-        expect(wrapper.findAll("manage-file-stub").at(0).props().fromADR).toBe(true);
-        expect(wrapper.findAll("manage-file-stub").at(1).props().fromADR).toBe(true);
-        expect(wrapper.findAll("manage-file-stub").at(2).props().fromADR).toBe(true);
-    });
-
-    it("can return false when not fromADR", async () => { 
-        const store = createStore({
-            survey: {
-                "fromADR": "",
-                "filters": {
-                    "year": "TEST YEAR FILTERS"
-                }
-            } as any,
-            anc: {
-                "fromADR": "",
-                "filters": {
-                    "year": "TEST YEAR FILTERS"
-                }
-            } as any,
-            program: {
-                "fromADR": "",
-                "filters": {
-                    "year": "TEST YEAR FILTERS"
-                }
-            } as any
-        });
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-
-        expect(wrapper.findAll("manage-file-stub").at(0).props().fromADR).toBe(false);
-        expect(wrapper.findAll("manage-file-stub").at(1).props().fromADR).toBe(false);
-        expect(wrapper.findAll("manage-file-stub").at(2).props().fromADR).toBe(false);
-        
     });
 
 });
