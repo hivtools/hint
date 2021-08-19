@@ -125,7 +125,10 @@ describe("App", () => {
         store.commit(prefixNamespace("surveyAndProgram", SurveyAndProgramMutation.SurveyUpdated), {payload: null});
 
         expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetSelectedDataType);
-        expect(spy).toBeCalledTimes(2);
+        expect(spy.mock.calls[2][0]).toBe(RootMutation.ResetOptions);
+        expect(spy.mock.calls[3][0]).toBe(RootMutation.ResetOutputs);
+
+        expect(spy).toBeCalledTimes(4);
     });
 
     it("resets outputs if modelOptions update mutation is called and state is ready", () => {
