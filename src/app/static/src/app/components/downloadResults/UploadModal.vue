@@ -163,10 +163,6 @@
             },
             downloadIsReady() {
                 const {summary, spectrum} = this.findSelectedUploadFiles();
-                /**
-                 * This logic checks and returns complete status (true/false)
-                 * of each selected resource being prepared for Upload to ADR
-                 */
 
                 if (summary && spectrum) {
                     return !!this.summary.complete && !!this.spectrum.complete;
