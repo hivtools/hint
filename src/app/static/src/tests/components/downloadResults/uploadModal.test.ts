@@ -7,7 +7,7 @@ import {
     mockADRUploadState,
     mockBaselineState,
     mockDatasetResource,
-    mockDownloadResultsState, mockMetadataState
+    mockDownloadResultsState, mockError, mockMetadataState
 } from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
@@ -17,6 +17,11 @@ import DownloadProgress from "../../../app/components/downloadResults/DownloadPr
 import {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";
 
 describe(`uploadModal `, () => {
+
+    afterEach(() => {
+        jest.resetAllMocks()
+        jest.useRealTimers()
+    })
 
     const fakeMetadata = {
         outputZip:
@@ -73,6 +78,37 @@ describe(`uploadModal `, () => {
         summary: {complete: false, downloading: false } as any,
         spectrum: {complete: false, downloading: false} as any,
         coarseOutput: {} as any
+    }
+
+    const completeDownloadResults = {
+        summary: {
+            downloading: false,
+            complete: false,
+            error: null,
+            downloadId: null
+        },
+        spectrum: {
+            downloading: false,
+            complete: true,
+            error: null,
+            downloadId: null
+        }
+    }
+
+    const failedDownloadResults = {
+        summary: {
+            downloading: false,
+            complete: true,
+            error: null,
+            downloadId: null
+        },
+        spectrum: {
+            downloading: false,
+            complete: false,
+            error: mockError("TEST FAILED"),
+            downloadId: null,
+            statusPollId: 123
+        }
     }
 
     const mockSpectrumDownload = jest.fn();
@@ -325,7 +361,6 @@ describe(`uploadModal `, () => {
     it("can invoke summary and spectrum download action", async () => {
         const store = createStore();
         const wrapper = mount(UploadModal, {store})
-
         await wrapper.setProps({open: true})
 
         const okBtn = wrapper.find("button");
@@ -342,6 +377,32 @@ describe(`uploadModal `, () => {
 
         expect(mockSummaryDownload.mock.calls.length).toBe(1)
         expect(mockSpectrumDownload.mock.calls.length).toBe(1)
+    });
+
+    it("can clear timer when download action is complete", async () => {
+        const store = createStore();
+        const wrapper = mount(UploadModal, {store})
+        jest.useFakeTimers()
+
+        await wrapper.setProps({open: true})
+        wrapper.vm.$store.state.downloadResults = completeDownloadResults
+        await Vue.nextTick()
+
+        expect(clearInterval).toHaveBeenCalledTimes(2)
+        expect(wrapper.emitted().close.length).toBe(2)
+    });
+
+    it("can clear timer when any download action fails and does not send files to adr", async () => {
+        const store = createStore();
+        const wrapper = mount(UploadModal, {store})
+        jest.useFakeTimers()
+
+        await wrapper.setProps({open: true})
+        wrapper.vm.$store.state.downloadResults = failedDownloadResults
+        await Vue.nextTick()
+
+        expect(clearInterval).toHaveBeenCalledTimes(1)
+        expect(wrapper.emitted().close).toBeUndefined()
     });
 
     it("can invoke spectrum download action", async () => {
@@ -361,8 +422,8 @@ describe(`uploadModal `, () => {
         expect(okBtn.text()).toBe("OK")
         await okBtn.trigger("click")
 
-        expect(mockSummaryDownload.mock.calls.length).toBe(1)
-        expect(mockSpectrumDownload.mock.calls.length).toBe(2)
+        expect(mockSummaryDownload.mock.calls.length).toBe(0)
+        expect(mockSpectrumDownload.mock.calls.length).toBe(1)
     });
 
     it("can invoke summary download action", async () => {
@@ -382,8 +443,8 @@ describe(`uploadModal `, () => {
         expect(okBtn.text()).toBe("OK")
         await okBtn.trigger("click")
 
-        expect(mockSummaryDownload.mock.calls.length).toBe(2)
-        expect(mockSpectrumDownload.mock.calls.length).toBe(2)
+        expect(mockSummaryDownload.mock.calls.length).toBe(1)
+        expect(mockSpectrumDownload.mock.calls.length).toBe(0)
     });
 
     it("does not render file section header when no input files", () => {

@@ -84,7 +84,8 @@
         getSpectrumDownload: () => void
         sendUploadFilesToADR: () => void
         getUploadMetadata: (id: string) => Promise<void>
-        handleDownloadResult: (downloadResults: DownloadResultsDependency) => void
+        handleDownloadResult: (downloadResults: DownloadResultsDependency) => void,
+        stopPolling:(id: number) => void
     }
 
     interface Computed {
@@ -193,11 +194,21 @@
                 this.uploadFilesToAdr = outputFileTypes
                     .filter(key => this.uploadFiles.hasOwnProperty(key))
             },
+            stopPolling(id) {
+                clearInterval(id)
+            },
             async handleDownloadResult(downloadResults) {
-              if (this.open && this.downloadIsReady()) {
-                  await this.getUploadMetadata(downloadResults.downloadId)
-                  this.sendUploadFilesToADR();
-              }
+                if (this.open) {
+                    if (this.downloadIsReady()) {
+                        await this.getUploadMetadata(downloadResults.downloadId)
+                        this.stopPolling(downloadResults.statusPollId)
+                        this.sendUploadFilesToADR();
+                    }
+
+                    if (downloadResults.error && downloadResults.statusPollId > -1) {
+                        this.stopPolling(downloadResults.statusPollId)
+                    }
+                }
             },
             downloadSpectrum: mapActionByName("downloadResults", "downloadSpectrum"),
             downloadSummary: mapActionByName("downloadResults", "downloadSummary"),
@@ -208,12 +219,16 @@
                 spectrum: state => ({
                     downloading: state.spectrum.downloading,
                     complete: state.spectrum.complete,
-                    downloadId: state.spectrum.downloadId
+                    downloadId: state.spectrum.downloadId,
+                    statusPollId: state.spectrum.statusPollId,
+                    error: state.spectrum.error
                 }),
                 summary: state => ({
                     downloading: state.summary.downloading,
                     complete: state.summary.complete,
-                    downloadId: state.spectrum.downloadId
+                    downloadId: state.summary.downloadId,
+                    statusPollId: state.summary.statusPollId,
+                    error: state.summary.error
                 })
             }),
             ...mapStateProps<ADRState, keyof Computed>("adr", {
