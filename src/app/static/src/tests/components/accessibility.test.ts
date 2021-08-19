@@ -109,4 +109,27 @@ describe(`accessibility`, () =>{
         expect(li.at(4).text()).toBe("Some form elements may lack sufficient color contrasts")
         expect(li.at(5).text()).toBe("Some pages may not have the option to skip navigation and jump to the content")
     })
+
+    it(`renders accessibility purpose list tags as expected in Portuguese`, () => {
+        const rendered = getWrapper()
+        rendered.vm.$store.state.language = Language.pt;
+        const li = rendered.find("#accessibility-content").find("#purpose").findAll("ul li")
+        expect(li.length).toBe(3)
+        expect(li.at(0).text()).toBe("Reajustar o tamanho da sua janela e o conteúdo será reformatado em conformidade")
+        expect(li.at(1).text()).toBe("Ajustar o tamanho de letra sem que a página se torne menos funcional")
+        expect(li.at(2).text()).toBe("Ler texto facilmente devido ao contraste suficiente entre o primeiro plano e os elementos de fundo")
+    })
+
+    it(`renders accessibility example list tags as expected in Portuguese`, () => {
+        const rendered = getWrapper()
+        rendered.vm.$store.state.language = Language.pt;
+        const li = rendered.find("#accessibility-content").find("#example").findAll("ul li")
+        expect(li.length).toBe(6)
+        expect(li.at(0).text()).toBe("Poderá não ser possível navegar a totalidade do sítio web com o teclado")
+        expect(li.at(1).text()).toBe("Alguns quadros e tabelas poderão não ser corretamente interpretados pelos leitores de ecrã")
+        expect(li.at(2).text()).toBe("Alguns elementos de formulário poderão não ter designações descritivas ou etiquetas")
+        expect(li.at(3).text()).toBe("Algumas frases poderão não ter sido corretamente traduzidas")
+        expect(li.at(4).text()).toBe("Alguns elementos de formulário poderão não possuir o contraste de cor suficiente")
+        expect(li.at(5).text()).toBe("Algumas páginas poderão não ter a opção de ignorar um passo e saltar para outro conteúdo")
+    })
 })

@@ -175,6 +175,30 @@ describe("adr integration", () => {
         expect(mockTooltip.mock.calls[0][1].value).toBe("Vous ne disposez actuellement d’aucun droit d’écriture pour cet ensemble de données et vous ne pourrez pas télécharger de fichiers vers le ADR");
     });
 
+    it("renders Tooltip text for writers as expected in Portuguese", () => {
+        const store = createStore("123", null, {}, true, {selectedDataset: fakeDataset})
+        store.state.language = Language.pt
+        const mockTooltip = jest.fn()
+        shallowMount(ADRIntegration,
+            {
+                store,
+                directives: {"tooltip": mockTooltip}
+            })
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Tem permissões de leitura e escrita para este conjunto de dados e pode carregar ficheiros de saída para o ADR");
+    });
+
+    it("renders Tooltip text for readers as expected in Portuguese", () => {
+        const store = createStore("123", null, {}, false, {selectedDataset: fakeDataset})
+        store.state.language = Language.pt
+        const mockTooltip = jest.fn()
+        shallowMount(ADRIntegration,
+            {
+                store,
+                directives: {"tooltip": mockTooltip}
+            })
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Atualmente não tem permissões de escrita para este conjunto de dados e não poderá carregar ficheiros para o ADR");
+    });
+
     it("call getUserCanUpload action if key is provided", async() => {
         const store = createStore("123", null, {})
         shallowMount(ADRIntegration, {store});

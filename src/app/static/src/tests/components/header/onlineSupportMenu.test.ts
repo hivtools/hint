@@ -61,7 +61,20 @@ describe("Online support menu", () => {
             "Apoio online", store as any);
     });
 
-    it("renders FAQ menu-item text and link when language is English", () => {
+    it("renders FAQ menu-item text", () => {
+        const store = createStore();
+        const wrapper = shallowMount(OnlineSupportMenu, {
+            store,
+            localVue,
+            router
+        });
+
+        const link = wrapper.findAll(".dropdown-item").at(0);
+        expectTranslated(link, "FAQ", "FAQ", "Perguntas Frequentes", store as any);
+        expect(link.attributes("target")).toBe("_blank");
+    });
+
+    it("renders FAQ menu-item link href when language is English", () => {
         const store = createStore();
         const wrapper = shallowMount(OnlineSupportMenu, {
             store,
@@ -71,11 +84,9 @@ describe("Online support menu", () => {
 
         const link = wrapper.findAll(".dropdown-item").at(0);
         expect(link.attributes("href")).toBe("https://mrc-ide.github.io/naomi-troubleshooting/index-en.html");
-        expect(link.attributes("target")).toBe("_blank");
-        expectTranslated(link, "FAQ", "FAQ", "Perguntas Frequentes", store as any);
     });
 
-    it("renders FAQ menu-item text and link when lang is French", () => {
+    it("renders FAQ menu-item link href when lang is French", () => {
         const store = createStore();
         store.state.language = Language.fr;
         const wrapper = shallowMount(OnlineSupportMenu, {
@@ -86,8 +97,20 @@ describe("Online support menu", () => {
 
         const link = wrapper.findAll(".dropdown-item").at(0);
         expect(link.attributes("href")).toBe("https://mrc-ide.github.io/naomi-troubleshooting/index-fr.html");
-        expect(link.attributes("target")).toBe("_blank");
-        expectTranslated(link, "FAQ", "FAQ", "Perguntas Frequentes", store as any);
+    });
+
+    it("renders FAQ menu-item link href when language is Portuguese", () => {
+        const store = createStore();
+        store.state.language = Language.pt;
+        const wrapper = shallowMount(OnlineSupportMenu, {
+            store,
+            localVue,
+            router
+        });
+
+        const link = wrapper.findAll(".dropdown-item").at(0);
+        // This will eventually link to Portuguese language FAQ doc, but using English doc for now
+        expect(link.attributes("href")).toBe("https://mrc-ide.github.io/naomi-troubleshooting/index-en.html");
     });
 
     it("renders Contact menu-item text and link when modelBugReport switch is true", () => {

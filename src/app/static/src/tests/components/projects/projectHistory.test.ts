@@ -110,6 +110,22 @@ describe("Project history component", () => {
         expect(mockTooltip.mock.calls[8][1].value).toBe("Copier dans un nouveau projet");
     });
 
+    it("can render tooltips in Portuguese without an error", () => {
+        const mockTooltip = jest.fn();
+        const store = createStore(testProjects)
+        store.state.language = Language.pt;
+        shallowMount(ProjectHistory, {store,
+            directives: {"tooltip": mockTooltip} });
+
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Adicionar ou editar notas do projeto");
+        expect(mockTooltip.mock.calls[1][1].value).toBe("Carregar");
+        expect(mockTooltip.mock.calls[2][1].value).toBe("Mudar o nome do projeto");
+        expect(mockTooltip.mock.calls[3][1].value).toBe("Eliminar");
+        expect(mockTooltip.mock.calls[4][1].value).toBe("Copiar última atualização para um novo projeto");
+        expect(mockTooltip.mock.calls[5][1].value).toBe("Adicionar ou editar notas de versão");
+        expect(mockTooltip.mock.calls[8][1].value).toBe("Copiar para um novo projeto");
+    });
+
     const testRendersProject = (wrapper: Wrapper<any>, id: number, name: string, updatedIsoDate: string,
                                 versionsCount: number) => {
         const v = wrapper.find(`#p-${id}`).findAll(".project-cell");
