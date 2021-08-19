@@ -7,7 +7,7 @@
                     <span v-translate="'uploadFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
                 <!-- <div id="instructions" class="mt-3" v-translate="'uploadFileInstruction'"></div> -->
-                <div class="pt-2">
+                <div class="pt-3">
                     <input
                         type="radio"
                         id="createRelease"
@@ -37,7 +37,7 @@
                     </span>
                     <br />
                 </div>
-                <div v-for="(uploadFileSection, sectionIndex) in uploadFileSections" :key="sectionIndex">
+                <div v-for="(uploadFileSection, sectionIndex) in uploadFileSections" :key="sectionIndex" class="pl-4">
                     <h5 v-if="Object.keys(uploadFileSections[1]).length > 0"
                         v-translate="sectionIndex === 0 ? 'outputFiles' : 'inputFiles'"
                         class="mt-3"></h5>
@@ -45,6 +45,7 @@
                         <div class="mt-3 form-check">
                             <input class="form-check-input"
                                    type="checkbox"
+                                   :disabled="choiceUpload === 'createRelease'"
                                    :value="key"
                                    v-model="uploadFilesToAdr"
                                    :id="`id-${sectionIndex}-${index}`">
