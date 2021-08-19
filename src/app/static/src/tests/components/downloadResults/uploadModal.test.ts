@@ -98,7 +98,7 @@ describe(`uploadModal `, () => {
     const failedDownloadResults = {
         summary: {
             downloading: false,
-            complete: true,
+            complete: false,
             error: null,
             downloadId: null
         },
@@ -388,7 +388,7 @@ describe(`uploadModal `, () => {
         wrapper.vm.$store.state.downloadResults = completeDownloadResults
         await Vue.nextTick()
 
-        expect(clearInterval).toHaveBeenCalledTimes(2)
+        expect(clearInterval).toHaveBeenCalledTimes(1)
         expect(wrapper.emitted().close.length).toBe(2)
     });
 

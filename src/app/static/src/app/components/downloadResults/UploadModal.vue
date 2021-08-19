@@ -197,8 +197,11 @@
                 if (this.open) {
                     if (this.downloadIsReady()) {
                         await this.getUploadMetadata(downloadResults.downloadId)
-                        this.stopPolling(downloadResults.statusPollId)
                         this.sendUploadFilesToADR();
+                    }
+
+                    if(downloadResults.complete) {
+                        this.stopPolling(downloadResults.statusPollId)
                     }
 
                     if (downloadResults.error && downloadResults.statusPollId > -1) {
