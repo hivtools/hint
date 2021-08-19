@@ -303,7 +303,8 @@ describe("Stepper component", () => {
         expect(steps.at(0).props().enabled).toBe(true);
         expect(steps.at(1).props().enabled).toBe(true);
         expect(steps.at(0).props().complete).toBe(true);
-        expect([2, 3, 4, 5].filter(i => steps.at(i).props().enabled).length).toBe(1);
+        expect(steps.at(2).props().enabled).toBe(true);
+        expect([3, 4, 5].filter(i => steps.at(i).props().enabled).length).toBe(0);
     });
 
     it("Review inputs step is not enabled if metadata state is not complete", () => {
