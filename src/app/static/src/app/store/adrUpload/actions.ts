@@ -40,16 +40,16 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                                 metadata,
                                 0,
                                 schemas.outputZip,
-                                `${project.name}_naomi_outputs.zip`,
+                                "naomi_outputs.zip",
                                 "uploadFileOutputZip",
-                                `${project.name} Naomi Outputs`),
+                                "Naomi Output ZIP"),
                             outputSummary: constructUploadFileWithResourceName(
                                 metadata,
                                 1,
                                 schemas.outputSummary,
-                                `${project.name}_naomi_summary.html`,
+                                "naomi_summary.html",
                                 "uploadFileOutputSummary",
-                                `${project.name} Naomi Summary`)
+                                "Naomi Results and Summary Report")
                         };
 
                         if (switches.adrPushInputs) {

@@ -192,14 +192,6 @@ describe("utils", () => {
                 },
                 {
                     resource_type: "test-type",
-                    id: "456",
-                    name: "A different resource",
-                    last_modified: "2021-03-01",
-                    metadata_modified: "2021-02-28",
-                    url: "http://test2"
-                },
-                {
-                    resource_type: "test-type",
                     id: "123",
                     name: "Test Resource",
                     last_modified: "2021-03-01",
@@ -208,7 +200,7 @@ describe("utils", () => {
                 }
             ]
         };
-        const result = constructUploadFileWithResourceName(datasetWithResources, 0,"test-type", "test.txt", "displayTest", "Test Resource");
+        const result = constructUploadFileWithResourceName(datasetWithResources, 0,"test-type", "test.txt", "displayTest", "Potential Name");
         expect(result).toStrictEqual({
             index: 0,
             displayName: "displayTest",
