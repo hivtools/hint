@@ -84,17 +84,8 @@ describe("ADR upload actions", () => {
             resources: [
                 {
                     resource_type: "output-summary",
-                    id: "456",
-                    name: "project2 Naomi Summary",
-                    last_modified: "2021-03-01",
-                    metadata_modified: "2021-03-02",
-                    url: "http://test2",
-
-                },
-                {
-                    resource_type: "output-summary",
                     id: "123",
-                    name: "project1 Naomi Summary",
+                    name: "Naomi Results and Summary Report",
                     last_modified: "2021-03-01",
                     metadata_modified: "2021-03-02",
                     url: "http://test"
@@ -121,8 +112,8 @@ describe("ADR upload actions", () => {
                 index: 0,
                 displayName: "uploadFileOutputZip",
                 resourceType: "output-zip",
-                resourceFilename: "project1_naomi_outputs.zip",
-                resourceName: "project1 Naomi Outputs",
+                resourceFilename: "naomi_outputs.zip",
+                resourceName: "Naomi Output ZIP",
                 resourceId: null,
                 lastModified: null,
                 resourceUrl: null
@@ -131,8 +122,8 @@ describe("ADR upload actions", () => {
                 index: 1,
                 displayName: "uploadFileOutputSummary",
                 resourceType: "output-summary",
-                resourceFilename: "project1_naomi_summary.html",
-                resourceName: "project1 Naomi Summary",
+                resourceFilename: "naomi_summary.html",
+                resourceName: "Naomi Results and Summary Report",
                 resourceId: "123",
                 lastModified: "2021-03-02",
                 resourceUrl: "http://test"
@@ -165,7 +156,7 @@ describe("ADR upload actions", () => {
                     last_modified: "2021-03-01",
                     metadata_modified: "2021-03-02",
                     url: "http://test",
-                    name: "project1 Naomi Summary"
+                    name: "Naomi Results and Summary Report"
                 },
                 {
                     resource_type: "adr-shape",
@@ -224,8 +215,8 @@ describe("ADR upload actions", () => {
                 index: 0,
                 displayName: "uploadFileOutputZip",
                 resourceType: "output-zip",
-                resourceFilename: "project1_naomi_outputs.zip",
-                resourceName: "project1 Naomi Outputs",
+                resourceFilename: "naomi_outputs.zip",
+                resourceName: "Naomi Output ZIP",
                 resourceId: null,
                 lastModified: null,
                 resourceUrl: null
@@ -234,8 +225,8 @@ describe("ADR upload actions", () => {
                 index: 1,
                 displayName: "uploadFileOutputSummary",
                 resourceType: "output-summary",
-                resourceFilename: "project1_naomi_summary.html",
-                resourceName: "project1 Naomi Summary",
+                resourceFilename: "naomi_summary.html",
+                resourceName: "Naomi Results and Summary Report",
                 resourceId: "123",
                 lastModified: "2021-03-02",
                 resourceUrl: "http://test"
@@ -291,7 +282,7 @@ describe("ADR upload actions", () => {
                     last_modified: "2021-03-01",
                     metadata_modified: "2021-03-02",
                     url: "http://test",
-                    name: "project1 Naomi Summary"
+                    name: "Naomi Results and Summary Report"
                 },
                 {
                     resource_type: "adr-pjnz",
@@ -381,8 +372,8 @@ describe("ADR upload actions", () => {
                 index: 0,
                 displayName: "uploadFileOutputZip",
                 resourceType: "output-zip",
-                resourceFilename: "project1_naomi_outputs.zip",
-                resourceName: "project1 Naomi Outputs",
+                resourceFilename: "naomi_outputs.zip",
+                resourceName: "Naomi Output ZIP",
                 resourceId: null,
                 lastModified: null,
                 resourceUrl: null
@@ -391,8 +382,8 @@ describe("ADR upload actions", () => {
                 index: 1,
                 displayName: "uploadFileOutputSummary",
                 resourceType: "output-summary",
-                resourceFilename: "project1_naomi_summary.html",
-                resourceName: "project1 Naomi Summary",
+                resourceFilename: "naomi_summary.html",
+                resourceName: "Naomi Results and Summary Report",
                 resourceId: "123",
                 lastModified: "2021-03-02",
                 resourceUrl: "http://test"
