@@ -12,6 +12,7 @@ import {ValidateInputResponse} from "../../generated";
 export interface ADRUploadActions {
     getUploadFiles: (store: ActionContext<ADRUploadState, RootState>) => void;
     uploadFilesToADR: (store: ActionContext<ADRUploadState, RootState>, uploadFilesPayload: UploadFile[]) => void;
+    createRelease: (store: ActionContext<ADRUploadState, RootState>) => void;
 }
 
 export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions = {
@@ -130,5 +131,23 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
             }
         }
         await dispatch("getUploadFiles");
+    },
+
+    async createRelease(context) {
+        const {rootState, commit, dispatch} = context;
+        const uploadMetadata = rootState.modelRun.result?.uploadMetadata
+        const selectedDatasetId = rootState.baseline.selectedDataset!.id;
+        const project = rootState.projects.currentProject?.name;
+        const version = rootState.projects.currentVersion?.versionNumber;
+        const name = `Naomi: ${project} v${version}`
+        console.log("name", name)
+
+        await api(context)
+                .withError(ADRUploadMutation.SetADRUploadError)
+                .ignoreSuccess()
+                .postAndReturn(`/adr/datasets/${selectedDatasetId}/releases`, name)
+                .then((response) => {
+                    console.log("response", response)
+                });
     }
 };

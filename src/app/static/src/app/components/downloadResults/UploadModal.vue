@@ -66,7 +66,7 @@
                 <button
                     type="button"
                     class="btn btn-red"
-                    :disabled="uploadFilesToAdr.length < 1"
+                    :disabled="uploadDisabled"
                     @click.prevent="confirmUpload"
                     v-translate="'ok'"></button>
                 <button
@@ -94,6 +94,7 @@
 
     interface Methods {
         uploadFilesToADRAction: (uploadFilesPayload: UploadFile[]) => void;
+        createReleaseAction: () => void;
         confirmUpload: () => void;
         handleCancel: () => void
         lastModified: (date: string) => string | null
@@ -106,6 +107,7 @@
         uploadFiles: Dict<UploadFile>,
         uploadFileSections: Array<Dict<UploadFile>>
         currentLanguage: Language;
+        uploadDisabled: boolean;
     }
 
     interface Data {
@@ -139,10 +141,18 @@
                 "adrUpload",
                 "uploadFilesToADR"
             ),
+            createReleaseAction: mapActionByName(
+                "adrUpload",
+                "createRelease"
+            ),
             confirmUpload() {
-                const uploadFilesPayload: UploadFile[] = []
-                this.uploadFilesToAdr.forEach(value => uploadFilesPayload.push(this.uploadFiles[value]))
-                this.uploadFilesToADRAction(uploadFilesPayload);
+                if (this.choiceUpload === 'createRelease'){
+                    this.createReleaseAction()
+                } else {
+                    const uploadFilesPayload: UploadFile[] = []
+                    this.uploadFilesToAdr.forEach(value => uploadFilesPayload.push(this.uploadFiles[value]))
+                    this.uploadFilesToADRAction(uploadFilesPayload);
+                }
                 this.$emit("close")
             },
             handleCancel() {
@@ -182,6 +192,13 @@
                     }, [{} as any, {} as any]);
                 } else {
                     return [];
+                }
+            },
+            uploadDisabled(){
+                if (this.choiceUpload === 'uploadFiles' && this.uploadFilesToAdr.length < 1){
+                    return true
+                } else {
+                    return false
                 }
             }
         },
