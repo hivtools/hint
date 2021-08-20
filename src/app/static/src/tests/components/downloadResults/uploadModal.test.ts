@@ -18,10 +18,14 @@ import {DownloadResultsState} from "../../../app/store/downloadResults/downloadR
 
 describe(`uploadModal `, () => {
 
+    beforeEach(() => {
+        jest.useFakeTimers();
+    });
+
     afterEach(() => {
         jest.resetAllMocks()
         jest.useRealTimers()
-    })
+    });
 
     const fakeMetadata = {
         outputZip:
@@ -77,21 +81,6 @@ describe(`uploadModal `, () => {
     const mockDownloadResults = {
         summary: {complete: false, downloading: false } as any,
         spectrum: {complete: false, downloading: false} as any
-    } as any
-
-    const completeDownloadResults = {
-        summary: {
-            downloading: false,
-            complete: false,
-            error: null,
-            downloadId: 12
-        },
-        spectrum: {
-            downloading: false,
-            complete: true,
-            error: null,
-            downloadId: 123
-        }
     } as any
 
     const failedDownloadResults = {
@@ -298,6 +287,14 @@ describe(`uploadModal `, () => {
         const modal = wrapper.find(".modal");
         expect(modal.classes()).toContain("show");
 
+        //Refresh adrUpload upload files to trigger watch, which populates uploadFilesToADR
+        store.state.adrUpload.uploadFiles= {...fakeMetadata};
+
+        //Click ok to trigger population of uploadFilesPayload
+        const okBtn = modal.find("button.btn-red");
+        expect(okBtn.element)
+        await okBtn.trigger("click");
+
         store.state.downloadResults = downloadResults
         await Vue.nextTick()
         expect(mockUploadFilesToADR.mock.calls.length).toBe(2)
@@ -378,12 +375,23 @@ describe(`uploadModal `, () => {
     });
 
     it("can clear timer when download action is complete", async () => {
-        const store = createStore();
+        const store = createStore(fakeMetadata, {
+            summary: {complete: false, downloading: false } as any,
+            spectrum: {complete: false, downloading: false} as any
+        });
         const wrapper = mount(UploadModal, {store})
-        jest.useFakeTimers()
 
         await wrapper.setProps({open: true})
-        wrapper.vm.$store.state.downloadResults = completeDownloadResults
+
+        //Refresh adrUpload upload files to trigger watch, which populates uploadFilesToADR
+        store.state.adrUpload.uploadFiles= {outputZip: fakeMetadata.outputZip};
+
+        //Click ok to trigger population of uploadFilesPayload
+        const okBtn = wrapper.find(".modal button.btn-red");
+        expect(okBtn.element)
+        await okBtn.trigger("click");
+
+        wrapper.vm.$store.state.downloadResults.spectrum.complete = true;
         await Vue.nextTick()
 
         expect(clearInterval).toHaveBeenCalledTimes(1)
@@ -394,7 +402,6 @@ describe(`uploadModal `, () => {
     it("can clear timer when any download action fails and does not send files to adr", async () => {
         const store = createStore();
         const wrapper = mount(UploadModal, {store})
-        jest.useFakeTimers()
 
         await wrapper.setProps({open: true})
         wrapper.vm.$store.state.downloadResults = failedDownloadResults
