@@ -76,9 +76,8 @@ describe(`uploadModal `, () => {
 
     const mockDownloadResults = {
         summary: {complete: false, downloading: false } as any,
-        spectrum: {complete: false, downloading: false} as any,
-        coarseOutput: {} as any
-    }
+        spectrum: {complete: false, downloading: false} as any
+    } as any
 
     const completeDownloadResults = {
         summary: {
