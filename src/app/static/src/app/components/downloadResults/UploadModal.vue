@@ -164,11 +164,7 @@
             downloadIsReady() {
                 const {summary, spectrum} = this.findSelectedUploadFiles();
 
-                if (summary && spectrum) {
-                    return !!this.summary.complete && !!this.spectrum.complete;
-                } else {
-                    return summary ? !!this.summary.complete : !!this.spectrum.complete;
-                }
+                return (summary || spectrum) && (!summary || !!this.summary.complete) && (!spectrum || !!this.spectrum.complete);
             },
             getSummaryDownload() {
                 if (!this.summary.downloading && !this.summary.complete) {

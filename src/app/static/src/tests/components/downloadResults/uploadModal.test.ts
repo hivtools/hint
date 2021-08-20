@@ -85,13 +85,15 @@ describe(`uploadModal `, () => {
             downloading: false,
             complete: false,
             error: null,
-            downloadId: null
+            downloadId: 12,
+            statusPollId: 2
         },
         spectrum: {
             downloading: false,
             complete: true,
             error: null,
-            downloadId: null
+            downloadId: 123,
+            statusPollId: 1
         }
     }
 
@@ -100,7 +102,8 @@ describe(`uploadModal `, () => {
             downloading: false,
             complete: false,
             error: null,
-            downloadId: null
+            downloadId: 321,
+            statusPollId: 123
         },
         spectrum: {
             downloading: false,
@@ -387,7 +390,6 @@ describe(`uploadModal `, () => {
         await wrapper.setProps({open: true})
         wrapper.vm.$store.state.downloadResults = completeDownloadResults
         await Vue.nextTick()
-
         expect(clearInterval).toHaveBeenCalledTimes(1)
         expect(wrapper.emitted().close.length).toBe(2)
     });
