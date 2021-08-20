@@ -6,7 +6,7 @@
         </div>
         <dynamic-form v-if="!loading && !hasOptionsError"
                       v-model="modelOptions"
-                      submit-text="Validate"
+                      :submit-text="validateText"
                       @confirm="confirmEditing"
                       @submit="validate"
                       :required-text="requiredText"
@@ -63,6 +63,7 @@
         currentLanguage: Language
         selectText: string
         requiredText: string
+        validateText: string
     }
 
     interface Data {
@@ -95,6 +96,9 @@
             },
             requiredText() {
                 return i18next.t("required", {lng: this.currentLanguage})
+            },
+            validateText() {
+                return i18next.t("validate", {lng: this.currentLanguage})
             },
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
             modelOptions: {

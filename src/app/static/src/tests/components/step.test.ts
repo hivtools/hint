@@ -4,6 +4,7 @@ import Vue from 'vue';
 import Step from "../../app/components/Step.vue";
 import {emptyState} from "../../app/root";
 import registerTranslations from "../../app/store/translations/registerTranslations";
+import {expectTranslated} from "../testHelpers";
 
 const localVue = createLocalVue();
 
@@ -15,12 +16,14 @@ describe("Step component", () => {
     it("renders step", () => {
         const wrapper = shallowMount(Step, {
             localVue,
+            store,
             propsData: {
                 textKey: "uploadBaseline"
             }
         });
 
-        expect(wrapper.find("div").text()).toBe("Upload baseline data");
+        expectTranslated(wrapper.find("div"),"Upload baseline data", "Télécharger les données de base",
+            "Carregar dados de base", store);
     });
 
     it("renders enabled step", () => {
