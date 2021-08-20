@@ -85,17 +85,15 @@ describe(`uploadModal `, () => {
             downloading: false,
             complete: false,
             error: null,
-            downloadId: 12,
-            statusPollId: 2
+            downloadId: 12
         },
         spectrum: {
             downloading: false,
             complete: true,
             error: null,
-            downloadId: 123,
-            statusPollId: 1
+            downloadId: 123
         }
-    }
+    } as any
 
     const failedDownloadResults = {
         summary: {
@@ -302,11 +300,9 @@ describe(`uploadModal `, () => {
         expect(modal.classes()).toContain("show");
 
         store.state.downloadResults = downloadResults
-
-        expect(mockUploadMetadataAction.mock.calls.length).toBe(2)
-
         await Vue.nextTick()
         expect(mockUploadFilesToADR.mock.calls.length).toBe(2)
+        expect(mockUploadMetadataAction.mock.calls.length).toBe(2)
     });
 
     it(`ok button is enabled when inputs are set and triggers close modal`, async () => {
@@ -390,8 +386,10 @@ describe(`uploadModal `, () => {
         await wrapper.setProps({open: true})
         wrapper.vm.$store.state.downloadResults = completeDownloadResults
         await Vue.nextTick()
+
         expect(clearInterval).toHaveBeenCalledTimes(1)
-        expect(wrapper.emitted().close.length).toBe(2)
+        expect(mockUploadFilesToADR.mock.calls.length).toBe(1)
+        expect(wrapper.emitted().close.length).toBe(1)
     });
 
     it("can clear timer when any download action fails and does not send files to adr", async () => {

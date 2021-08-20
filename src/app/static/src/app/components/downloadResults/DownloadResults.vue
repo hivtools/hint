@@ -25,8 +25,8 @@
                 <h4 v-translate="'uploadFileToAdr'"></h4>
                 <button @click.prevent="handleUploadModal"
                         class="btn btn-lg my-3"
-                        :class="uploading ? 'btn-secondary' : 'btn-red'"
-                        :disabled="uploading">
+                        :class="uploading || isDownloading ? 'btn-secondary' : 'btn-red'"
+                        :disabled="uploading || isDownloading">
                     <span v-translate="'upload'"></span>
                     <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
                 </button>
@@ -81,7 +81,8 @@
         spectrum: Partial<DownloadResultsDependency>,
         coarseOutput: Partial<DownloadResultsDependency>,
         summary: Partial<DownloadResultsDependency>,
-        translation: Record<string, any>
+        translation: Record<string, any>,
+        isDownloading : boolean
     }
 
     interface UploadError {
@@ -161,13 +162,16 @@
                 null,
                 (state: RootState) => state.language
             ),
-          translation() {
-            return {
-              spectrum: {header: 'exportOutputs', button: 'export'},
-              coarse: {header: 'downloadCoarseOutput', button: 'download'},
-              summary: {header: 'downloadSummaryReport', button: 'download'}
+            translation() {
+                return {
+                    spectrum: {header: 'exportOutputs', button: 'export'},
+                    coarse: {header: 'downloadCoarseOutput', button: 'download'},
+                    summary: {header: 'downloadSummaryReport', button: 'download'}
+                }
+            },
+            isDownloading() {
+                return !!this.summary.downloading || !!this.spectrum.downloading || !!this.coarseOutput.downloading
             }
-          }
         },
         methods: {
             downloadUrl(downloadId) {

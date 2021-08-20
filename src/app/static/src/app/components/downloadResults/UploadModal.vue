@@ -163,7 +163,6 @@
             },
             downloadIsReady() {
                 const {summary, spectrum} = this.findSelectedUploadFiles();
-
                 return (summary || spectrum) && (!summary || !!this.summary.complete) && (!spectrum || !!this.spectrum.complete);
             },
             getSummaryDownload() {
