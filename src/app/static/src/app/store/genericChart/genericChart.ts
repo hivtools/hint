@@ -1,4 +1,4 @@
-import {GenericChartMetadataResponse} from "../../types";
+import {Dict, GenericChartMetadataResponse} from "../../types";
 import {Module} from "vuex";
 import {RootState} from "../../root";
 import {actions} from "./actions";
@@ -6,11 +6,13 @@ import {mutations} from "./mutations";
 
 export interface GenericChartState {
     genericChartMetadata: GenericChartMetadataResponse | null
+    datasets: Record<string, Dict<unknown>[]>
 }
 
 export const initialGenericChartState = (): GenericChartState => {
     return {
-        genericChartMetadata: null
+        genericChartMetadata: null,
+        datasets: {}
     }
 };
 

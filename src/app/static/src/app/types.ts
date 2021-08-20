@@ -164,11 +164,8 @@ export interface UploadFile {
 
 export interface DatasetConfig {
     id: string
-    type: "standard" | "custom"
     label: string
-    module?: string
-    prop?: string
-    filters?: Filter[]
+    url: string
 }
 
 export interface DataSourceConfig {
