@@ -306,7 +306,7 @@ describe("Download Results component", () => {
         }
 
         const store = createStore(
-            false,
+            true,
             jest.fn(),
             false,
             false,
@@ -318,6 +318,8 @@ describe("Download Results component", () => {
         jest.useFakeTimers()
         const button = wrapper.find("#spectrum-download").find("button")
         button.trigger("click")
+        const uploadButton = wrapper.find("#upload").find("button");
+        expect(uploadButton.attributes("disabled")).toBe("disabled");
 
         wrapper.vm.$store.state.downloadResults = spectrumTestError
         expect(clearInterval).toHaveBeenCalledTimes(1)
