@@ -139,13 +139,16 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
         const selectedDatasetId = rootState.baseline.selectedDataset!.id;
         const project = rootState.projects.currentProject?.name;
         const version = rootState.projects.currentVersion?.versionNumber;
-        const name = `Naomi: ${project} v${version}`
+        const name = {name: `Naomi: ${project} v${version}`}
         console.log("name", name)
+
+        // commit({type: ADRUploadMutation.ADRUploadStarted, payload: 1});
 
         await api(context)
                 .withError(ADRUploadMutation.SetADRUploadError)
+                // .withSuccess(ADRUploadMutation.ADRUploadCompleted)
                 .ignoreSuccess()
-                .postAndReturn(`/adr/datasets/${selectedDatasetId}/releases`, name)
+                .postAndReturn(`/adr/datasets/${selectedDatasetId}/releases`, qs.stringify(name))
                 .then((response) => {
                     console.log("response", response)
                 });
