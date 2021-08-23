@@ -134,33 +134,21 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
         await dispatch("getUploadFiles");
 
         const uploadComplete = rootState.adrUpload.uploadComplete;
-        console.log("uploadComplete", uploadComplete)
         if (createRelease && uploadComplete){
             dispatch("createRelease");
         }
     },
 
     async createRelease(context) {
-        const {rootState, commit, dispatch} = context;
-        const uploadMetadata = rootState.modelRun.result?.uploadMetadata
+        const {rootState} = context;
         const selectedDatasetId = rootState.baseline.selectedDataset!.id;
         const project = rootState.projects.currentProject?.name;
         const version = rootState.projects.currentVersion?.versionNumber;
         const name = {name: `Naomi: ${project} v${version}`}
-        console.log("name", name)
-
-        // commit({type: ADRUploadMutation.ADRUploadStarted, payload: 1});
 
         await api(context)
                 .withError(ADRUploadMutation.ReleaseNotCreated)
                 .withSuccess(ADRUploadMutation.ReleaseCreated)
-                // .ignoreSuccess()
-                .postAndReturn(`/adr/datasets/${selectedDatasetId}/releases`, qs.stringify(name))
-                .then((response) => {
-                    console.log("response", response)
-                    // if (response.status === "failure"){
-
-                    // }
-                });
+                .postAndReturn(`/adr/datasets/${selectedDatasetId}/releases`, qs.stringify(name));
     }
 };

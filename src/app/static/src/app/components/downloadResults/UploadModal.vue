@@ -6,7 +6,6 @@
                 <div id="dataset-id" class="mt-4">
                     <span v-translate="'uploadFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
-                <!-- <div id="instructions" class="mt-3" v-translate="'uploadFileInstruction'"></div> -->
                 <div class="pt-3">
                     <input
                         type="radio"
@@ -146,14 +145,9 @@
                 "createRelease"
             ),
             confirmUpload() {
-                //  else {
-                    const uploadFilesPayload: UploadFile[] = []
-                    this.uploadFilesToAdr.forEach(value => uploadFilesPayload.push(this.uploadFiles[value]))
-                    this.uploadFilesToADRAction({uploadFiles: uploadFilesPayload, createRelease: this.choiceUpload === 'createRelease'});
-                // }
-                // if (this.choiceUpload === 'createRelease'){
-                //     this.createReleaseAction()
-                // }
+                const uploadFiles: UploadFile[] = []
+                this.uploadFilesToAdr.forEach(value => uploadFiles.push(this.uploadFiles[value]))
+                this.uploadFilesToADRAction({uploadFiles, createRelease: this.choiceUpload === 'createRelease'});
                 this.$emit("close")
             },
             handleCancel() {
