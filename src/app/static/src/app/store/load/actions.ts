@@ -7,6 +7,7 @@ import {Dict, LocalSessionFile, VersionDetails} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
 import {currentHintVersion} from "../../hintVersion";
+import {initialStepperState} from "../stepper/stepper";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError"
 export type LoadErrorActionTypes = "LoadFailed"
@@ -70,6 +71,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
             await (dispatch("projects/createProject", projectName, {root: true}));
             savedState.projects.currentProject = rootState.projects.currentProject;
             savedState.projects.currentVersion = rootState.projects.currentVersion;
+            savedState.stepper.steps = initialStepperState().steps;
         }
 
         await getFilesAndLoad(context, files, savedState);

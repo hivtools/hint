@@ -104,7 +104,7 @@ describe("Load actions", () => {
             }
         };
         const rootGetters = {isGuest: false};
-        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {version: currentHintVersion, projects: {}}}));
+        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {version: currentHintVersion, projects: {}, stepper: {}}}));
 
         await actions.setFiles({commit, state, dispatch, rootState: testRootState, rootGetters} as any,
             {savedFileContents: fileContents, projectName: "new project"}
@@ -121,7 +121,43 @@ describe("Load actions", () => {
         expect(dispatch.mock.calls[1][0]).toEqual("updateStoreState");
         expect(dispatch.mock.calls[1][1]).toStrictEqual(
             {
-                version: currentHintVersion, projects: {currentProject: "TEST PROJECT", currentVersion: "TEST VERSION"}
+                version: currentHintVersion,
+                projects: {
+                    currentProject: "TEST PROJECT",
+                    currentVersion: "TEST VERSION"
+                },
+                stepper: {
+                    steps: [
+                        {
+                            number: 1,
+                            textKey: "uploadInputs"
+                        },
+                        {
+                            number: 2,
+                            textKey: "reviewInputs"
+                        },
+                        {
+                            number: 3,
+                            textKey: "modelOptions"
+                        },
+                        {
+                            number: 4,
+                            textKey: "fitModel"
+                        },
+                        {
+                            number: 5,
+                            textKey: "calibrateModel"
+                        },
+                        {
+                            number: 6,
+                            textKey: "reviewOutput"
+                        },
+                        {
+                            number: 7,
+                            textKey: "downloadResults"
+                        }
+                    ]
+                }
             });
     });
 
