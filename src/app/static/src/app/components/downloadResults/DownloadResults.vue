@@ -48,7 +48,7 @@
                     </div>
                     <div class="d-flex align-items-center height-40">
                         <tick color="#e31837" v-if="releaseCreated" width="20px"></tick>
-                        <svg class="tick" v-if="releaseNotCreated" width="20px">
+                        <svg class="tick" id="cross" v-if="releaseNotCreated" width="20px">
                             <path d="M 10,10 l 90,90 M 100,10 l -90,90" stroke="#e31837" stroke-width="15"
                                 fill="none"></path>
                         </svg>

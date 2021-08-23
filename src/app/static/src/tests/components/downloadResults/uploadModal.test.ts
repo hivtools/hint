@@ -120,17 +120,6 @@ describe(`uploadModal `, () => {
             "Base de données: test title", store)
     })
 
-    it(`renders instructions text as expected`, () => {
-        const wrapper = getWrapper()
-        const store = wrapper.vm.$store
-
-        const instructions = wrapper.find("#instructions")
-        expectTranslated(instructions,
-            "Please select the new or modified files which should be uploaded",
-            "Veuillez sélectionner les fichiers nouveaux ou modifiés qui doivent être téléchargés",
-            store)
-    })
-
     it(`renders Output files, inputs, overwritten text and labels as expected`, () => {
         const wrapper = getWrapper()
         const store = wrapper.vm.$store
@@ -172,6 +161,8 @@ describe(`uploadModal `, () => {
 
     it(`can check and get values from check boxes`, async () => {
         const wrapper = getWrapper()
+        const radialInput = wrapper.find("#uploadFiles")
+        await radialInput.trigger("click")
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
         inputs.at(0).setChecked(true)
@@ -205,10 +196,12 @@ describe(`uploadModal `, () => {
         expect(mockUploadFiles).toHaveBeenCalledTimes(1)
     })
 
-    it(`ok button is enabled when inputs are set and triggers close modal`, async () => {
+    it(`ok button is enabled when uploading specific files and inputs are set and triggers close modal`, async () => {
         const wrapper = mount(UploadModal, {store: createStore()})
 
         await wrapper.setProps({open: true})
+        const radialInput = wrapper.find("#uploadFiles")
+        await radialInput.trigger("click")
 
         const okBtn = wrapper.find("button");
         expect(okBtn.attributes("disabled")).toBe("disabled");

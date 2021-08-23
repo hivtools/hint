@@ -11,7 +11,7 @@ const localVue = createLocalVue();
 
 describe("Download Results component", () => {
 
-    const createStore = (hasUploadPermission= true, getUserCanUpload = jest.fn(), uploading = false, uploadComplete = false, uploadError: any = null) => {
+    const createStore = (hasUploadPermission= true, getUserCanUpload = jest.fn(), uploading = false, uploadComplete = false, uploadError: any = null, releaseCreated = false, releaseNotCreated = false) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -32,6 +32,8 @@ describe("Download Results component", () => {
                         uploading,
                         uploadComplete,
                         uploadError,
+                        releaseCreated,
+                        releaseNotCreated,
                         currentFileUploading: 1,
                         totalFilesUploading: 2
                     }),
@@ -136,14 +138,32 @@ describe("Download Results component", () => {
         expect(uploadButton.attributes("disabled")).toBe("disabled")
     });
 
-    it("renders upload complete status messages as expected", () => {
-        const store = createStore(true, jest.fn(), false, true);
+    it("renders upload complete and release created status messages as expected", () => {
+        const store = createStore(true, jest.fn(), false, true, null, true);
         const wrapper = shallowMount(DownloadResults, {store, localVue});
 
         const statusMessage = wrapper.find("#uploadComplete");
         expectTranslated(statusMessage.find("span"), "Upload complete",
             "Téléchargement complet", store);
         expect(statusMessage.find("tick-stub").exists()).toBe(true)
+
+        const statusMessage2 = wrapper.find("#releaseCreated");
+        expectTranslated(statusMessage2.find("span"), "Release created",
+            "Version créée", store);
+        expect(statusMessage2.find("tick-stub").exists()).toBe(true)
+
+        const uploadButton = wrapper.find("button");
+        expect(uploadButton.attributes("disabled")).toBeUndefined();
+    });
+
+    it("renders release not created status messages as expected", () => {
+        const store = createStore(true, jest.fn(), false, true, null, false, true);
+        const wrapper = shallowMount(DownloadResults, {store, localVue});
+
+        const statusMessage = wrapper.find("#releaseCreated");
+        expectTranslated(statusMessage.find("span"), "Could not create new release",
+            "Impossible de créer une nouvelle version", store);
+        expect(statusMessage.find("#cross").exists()).toBe(true)
 
         const uploadButton = wrapper.find("button");
         expect(uploadButton.attributes("disabled")).toBeUndefined();
