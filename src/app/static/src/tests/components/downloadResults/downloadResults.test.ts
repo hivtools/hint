@@ -92,20 +92,21 @@ describe("Download Results component", () => {
 
         const headers = wrapper.findAll("h4");
         expectTranslated(headers.at(0), "Export model outputs for Spectrum",
-            "Exporter des sorties de modèles pour Spectrum", store);
+            "Exporter des sorties de modèles pour Spectrum", "Exportação de saídas modelo para Spectrum", store);
         expectTranslated(headers.at(1), "Download coarse age group outputs",
-            "Télécharger les résultats grossiers du groupe d'âge", store);
+            "Télécharger les résultats grossiers du groupe d'âge",
+            "Descarregar resultados de grupos etários grosseiros", store);
         expectTranslated(headers.at(2), "Download summary report",
-            "Télécharger le rapport de synthèse", store);
+            "Télécharger le rapport de synthèse", "Descarregar relatório de síntese", store);
         expectTranslated(headers.at(3), "Upload to ADR",
-            "Télécharger vers ADR", store);
+            "Télécharger vers ADR", "Carregar para o ADR", store);
 
         const buttons = wrapper.findAll("button");
         expect(buttons.length).toBe(4);
-        expectTranslated(buttons.at(0), "Export", "Exporter", store);
-        expectTranslated(buttons.at(1), "Download", "Télécharger", store);
-        expectTranslated(buttons.at(2), "Download", "Télécharger", store);
-        expectTranslated(buttons.at(3), "Upload", "Télécharger", store);
+        expectTranslated(buttons.at(0), "Export", "Exporter", "Exportação", store);
+        expectTranslated(buttons.at(1), "Download", "Télécharger", "Descarregar", store);
+        expectTranslated(buttons.at(2), "Download", "Télécharger", "Descarregar", store);
+        expectTranslated(buttons.at(3), "Upload", "Télécharger", "Carregar", store);
     });
 
     it(`renders, opens and closes dialog as expected`, async () => {
@@ -165,7 +166,8 @@ describe("Download Results component", () => {
         const statusMessage = wrapper.find("#uploading");
         expect(statusMessage.find("loading-spinner-stub").exists()).toBe(true)
         expectTranslated(statusMessage.find("span"), "Uploading 1 of 2 (this may take a while)",
-            "Téléchargement de 1 sur 2 (cela peut prendre un certain temps)", store);
+            "Téléchargement de 1 sur 2 (cela peut prendre un certain temps)",
+            "A carregar 1 de 2 (este processo poderá demorar um pouco)", store);
 
         const uploadButton = wrapper.find("#upload").find("button");
         expect(uploadButton.attributes("disabled")).toBe("disabled")
@@ -177,7 +179,7 @@ describe("Download Results component", () => {
 
         const statusMessage = wrapper.find("#uploadComplete");
         expectTranslated(statusMessage.find("span"), "Upload complete",
-            "Téléchargement complet", store);
+            "Téléchargement complet", "Carregamento concluído", store);
         expect(statusMessage.find("tick-stub").exists()).toBe(true)
 
         const uploadButton = wrapper.find("button");
@@ -646,7 +648,10 @@ const doesNotCallAction = (store: Store<any>, mockAction = jest.fn(), id: string
 
     const downloading = download.find(DownloadProgress).find("#downloading")
     expect(downloading.find(LoadingSpinner).exists()).toBe(true)
-    expectTranslated(downloading, "Downloading...", "Téléchargement...", store)
+    expectTranslated(downloading,
+        "Downloading...",
+        "Téléchargement...",
+        "Descarregando...", store)
 }
 
 const downloadFile = (store: Store<any>, downloadResultsData: {}) => {

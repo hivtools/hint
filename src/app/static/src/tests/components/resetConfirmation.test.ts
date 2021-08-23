@@ -58,21 +58,25 @@ describe("Reset confirmation modal", () => {
         });
 
         expectTranslated(rendered.find("h4"), "Have you saved your work?",
-            "Avez-vous sauvegardé votre travail ?", store);
+            "Avez-vous sauvegardé votre travail ?", "Já guardou o seu trabalho?", store);
         expectTranslated(rendered.findAll("p").at(0),
             "Changing this will result in the following steps being discarded:",
-            "Si vous modifiez ce paramètre, les étapes suivantes seront abandonnées :", store);
+            "Si vous modifiez ce paramètre, les étapes suivantes seront abandonnées :",
+            "Ao alterar isto, as etapas seguintes serão descartadas:", store);
         expectTranslated(rendered.findAll("p").at(1),
             "You may want to save your work before continuing.",
-            "Vous devriez peut-être sauvegarder votre travail avant de poursuivre.", store);
+            "Vous devriez peut-être sauvegarder votre travail avant de poursuivre.",
+            "Poderá querer guardar o seu trabalho antes de continuar.", store);
 
         expectRenderedSteps(rendered);
 
         const buttons = rendered.findAll("button");
         expectTranslated(buttons.at(0), "Discard these steps and keep editing",
-            "Ignorer ces étapes et poursuivre la modification", store);
+            "Ignorer ces étapes et poursuivre la modification",
+            "Descartar estas etapas e continuar a editar", store);
         expectTranslated(buttons.at(1), "Cancel editing so I can save my work",
-            "Annuler l'édition pour que je puisse sauvegarder mon travail", store);
+            "Annuler l'édition pour que je puisse sauvegarder mon travail",
+            "Cancelar a edição para que eu possa guardar o meu trabalho", store);
 
         expect(rendered.find(LoadingSpinner).exists()).toBe(false);
     });
@@ -88,21 +92,23 @@ describe("Reset confirmation modal", () => {
         });
 
         expectTranslated(rendered.find("h4"), "Save version?",
-            "Sauvegarder la version?", store);
+            "Sauvegarder la version?", "Guardar versão?", store);
         expectTranslated(rendered.findAll("p").at(0),
             "Changing this will result in the following steps being discarded:",
-            "Si vous modifiez ce paramètre, les étapes suivantes seront abandonnées :", store);
+            "Si vous modifiez ce paramètre, les étapes suivantes seront abandonnées :",
+            "Ao alterar isto, as etapas seguintes serão descartadas:", store);
         expectTranslated(rendered.findAll("p").at(1),
             "These steps will automatically be saved in a version. You will be able to reload this version from the Projects page.",
             "Ces étapes seront automatiquement sauvegardées dans une version. Vous pourrez recharger cette version depuis la page Projets.",
+            "Estas etapas serão automaticamente guardadas numa versão. Poderá voltar a carregar esta versão a partir da página Projetos.",
             store);
 
         expectRenderedSteps(rendered);
 
         const buttons = rendered.findAll("button");
         expectTranslated(buttons.at(0), "Save version and keep editing",
-            "Sauvegarder la version et continuer à modifier", store);
-        expectTranslated(buttons.at(1), "Cancel editing", "Annuler l'édition", store);
+            "Sauvegarder la version et continuer à modifier", "Guardar versão e continuar a editar", store);
+        expectTranslated(buttons.at(1), "Cancel editing", "Annuler l'édition", "Cancelar edição", store);
 
         expect(rendered.find(LoadingSpinner).exists()).toBe(false);
     });
@@ -166,7 +172,8 @@ describe("Reset confirmation modal", () => {
         const store = rendered.vm.$store
         const noteLabel = rendered.find("#noteHeader label")
         expectTranslated(noteLabel, "Notes: (your reason for saving as a new version)",
-            "Remarques: (la raison pour laquelle vous enregistrez en tant que nouvelle version)", store)
+            "Notes : (votre motif pour sauvegarder en tant que nouvelle version)",
+            "Notas: (a sua razão para guardar como nova versão)", store)
     });
 
     it("can set and get note value", async () => {
@@ -329,11 +336,12 @@ describe("Reset confirmation modal", () => {
         const steps = rendered.findAll("li");
         expect(steps.length).toBe(3);
         expectTranslated(steps.at(0), "Step 2: Upload survey and programme data",
-            "Étape 2: Télécharger les données d'enquête et de programme", store);
+            "Étape 2: Télécharger les données d'enquête et de programme",
+            "Etapa 2: Carregar dados do inquérito e do programa", store);
         expectTranslated(steps.at(1), "Step 3: Model options",
-            "Étape 3: Options des modèles", store);
+            "Étape 3: Options des modèles", "Etapa 3: Opções de modelos", store);
         expectTranslated(steps.at(2), "Step 4: Fit model",
-            "Étape 4: Ajuster le modèle", store);
+            "Étape 4: Ajuster le modèle", "Etapa 4: Ajustar modelo", store);
     };
 
     const expectRenderedModelRunSteps = (rendered: Wrapper<any>) => {
@@ -341,7 +349,7 @@ describe("Reset confirmation modal", () => {
         const steps = rendered.findAll("li");
         expect(steps.length).toBe(1);
         expectTranslated(steps.at(0), "Step 4: Fit model",
-            "Étape 4: Ajuster le modèle", store);
+            "Étape 4: Ajuster le modèle", "Etapa 4: Ajustar modelo", store);
     };
 
 });
