@@ -195,7 +195,7 @@
                         this.sendUploadFilesToADR();
                     }
 
-                    if(downloadResults.complete) {
+                    if(downloadResults.complete && downloadResults.statusPollId > -1) {
                         this.stopPolling(downloadResults.statusPollId)
                     }
 
