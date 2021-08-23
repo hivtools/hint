@@ -88,7 +88,7 @@ describe(`uploadModal `, () => {
             downloading: false,
             complete: false,
             error: null,
-            downloadId: 321,
+            downloadId: null,
             statusPollId: 123
         },
         spectrum: {
