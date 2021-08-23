@@ -42,6 +42,18 @@
                         <tick color="#e31837" v-if="uploadComplete" width="20px"></tick>
                     </div>
                 </div>
+                <div id="releaseCreated" v-if="releaseCreated || releaseNotCreated" class="d-flex align-items-end">
+                    <div class="d-flex align-items-center height-40 mr-1">
+                        <span class="font-weight-bold" v-translate="releaseCreated ? 'releaseCreated' : 'releaseNotCreated'"></span>
+                    </div>
+                    <div class="d-flex align-items-center height-40">
+                        <tick color="#e31837" v-if="releaseCreated" width="20px"></tick>
+                        <svg class="tick" v-if="releaseNotCreated" width="20px">
+                            <path d="M 10,10 l 90,90 M 100,10 l -90,90" stroke="#e31837" stroke-width="15"
+                                fill="none"></path>
+                        </svg>
+                    </div>
+                </div>
                 <error-alert v-if="uploadError" :error="uploadError"></error-alert>
             </div>
         </div>
@@ -75,6 +87,8 @@
         totalFilesUploading: number | null,
         uploading: boolean,
         uploadComplete: boolean,
+        releaseCreated: boolean,
+        releaseNotCreated: boolean,
         uploadError: null | UploadError,
         hasUploadPermission: boolean
     }
@@ -110,6 +124,8 @@
                 totalFilesUploading: state => state.totalFilesUploading,
                 uploading: state => state.uploading,
                 uploadComplete: state => state.uploadComplete,
+                releaseCreated: state => state.releaseCreated,
+                releaseNotCreated: state => state.releaseNotCreated,
                 uploadError: state => state.uploadError
             }),
             hasUploadPermission: mapStateProp<ADRState, boolean>("adr",

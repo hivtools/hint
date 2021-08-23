@@ -8,6 +8,8 @@ export enum ADRUploadMutation {
     ADRUploadStarted = "ADRUploadStarted",
     ADRUploadProgress = "ADRUploadProgress",
     ADRUploadCompleted = "ADRUploadCompleted",
+    ReleaseCreated = "ReleaseCreated",
+    ReleaseNotCreated = "ReleaseNotCreated",
     SetADRUploadError = "SetADRUploadError",
 }
 
@@ -21,6 +23,8 @@ export const mutations: MutationTree<ADRUploadState> = {
         state.uploadComplete = false;
         state.uploadError = null;
         state.totalFilesUploading = action.payload;
+        state.releaseCreated = false;
+        state.releaseNotCreated = false;
     },
 
     [ADRUploadMutation.ADRUploadProgress](state: ADRUploadState, action: PayloadWithType<number>) {
@@ -32,6 +36,15 @@ export const mutations: MutationTree<ADRUploadState> = {
         state.uploadComplete = true;
         state.currentFileUploading = null;
         state.totalFilesUploading = null;
+    },
+
+    [ADRUploadMutation.ReleaseCreated](state: ADRUploadState) {
+        state.releaseCreated = true;
+    },
+
+    [ADRUploadMutation.ReleaseNotCreated](state: ADRUploadState, action: PayloadWithType<Error | null>) {
+        state.releaseNotCreated = true;
+        state.uploadError = action.payload;
     },
 
     [ADRUploadMutation.SetADRUploadError](state: ADRUploadState, action: PayloadWithType<Error | null>) {

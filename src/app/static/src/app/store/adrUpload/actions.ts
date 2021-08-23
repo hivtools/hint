@@ -132,7 +132,10 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
             }
         }
         await dispatch("getUploadFiles");
-        if (createRelease){
+
+        const uploadComplete = rootState.adrUpload.uploadComplete;
+        console.log("uploadComplete", uploadComplete)
+        if (createRelease && uploadComplete){
             dispatch("createRelease");
         }
     },
@@ -149,12 +152,15 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
         // commit({type: ADRUploadMutation.ADRUploadStarted, payload: 1});
 
         await api(context)
-                .withError(ADRUploadMutation.SetADRUploadError)
-                // .withSuccess(ADRUploadMutation.ADRUploadCompleted)
-                .ignoreSuccess()
+                .withError(ADRUploadMutation.ReleaseNotCreated)
+                .withSuccess(ADRUploadMutation.ReleaseCreated)
+                // .ignoreSuccess()
                 .postAndReturn(`/adr/datasets/${selectedDatasetId}/releases`, qs.stringify(name))
                 .then((response) => {
                     console.log("response", response)
+                    // if (response.status === "failure"){
+
+                    // }
                 });
     }
 };
