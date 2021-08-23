@@ -58,7 +58,8 @@ describe("load actions", () => {
             state: {
                 version: currentHintVersion,
                 projects: {},
-                baseline: "TEST BASELINE"
+                baseline: "TEST BASELINE",
+                stepper: {}
             }
         });
         const fakeFileContents = addCheckSum(fakeState);
@@ -102,6 +103,18 @@ describe("load actions", () => {
                     }
             });
         expect(mockSaveToLocalStorage.mock.calls[0][0].baseline).toBe("TEST BASELINE");
+        expect(mockSaveToLocalStorage.mock.calls[0][0].stepper.steps).toEqual(
+            [
+                {
+                    "number": 1,
+                    "textKey": "uploadInputs"
+                },
+                {
+                    "number": 2,
+                    "textKey": "reviewInputs"
+                }
+            ]
+        );
     });
 
 });

@@ -71,7 +71,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
             await (dispatch("projects/createProject", projectName, {root: true}));
             savedState.projects.currentProject = rootState.projects.currentProject;
             savedState.projects.currentVersion = rootState.projects.currentVersion;
-            savedState.stepper.steps = initialStepperState().steps;
+            savedState.stepper.steps = initialStepperState().steps.filter(step => step.number <= 2);
         }
 
         await getFilesAndLoad(context, files, savedState);

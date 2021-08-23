@@ -135,26 +135,6 @@ describe("Load actions", () => {
                         {
                             number: 2,
                             textKey: "reviewInputs"
-                        },
-                        {
-                            number: 3,
-                            textKey: "modelOptions"
-                        },
-                        {
-                            number: 4,
-                            textKey: "fitModel"
-                        },
-                        {
-                            number: 5,
-                            textKey: "calibrateModel"
-                        },
-                        {
-                            number: 6,
-                            textKey: "reviewOutput"
-                        },
-                        {
-                            number: 7,
-                            textKey: "downloadResults"
                         }
                     ]
                 }
