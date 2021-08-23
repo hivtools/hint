@@ -93,7 +93,7 @@
     import { RootState } from "../../root";
 
     interface Methods {
-        uploadFilesToADRAction: (uploadFilesPayload: UploadFile[]) => void;
+        uploadFilesToADRAction: (uploadFilesPayload: {uploadFiles: UploadFile[], createRelease: boolean}) => void;
         createReleaseAction: () => void;
         confirmUpload: () => void;
         handleCancel: () => void
@@ -146,13 +146,14 @@
                 "createRelease"
             ),
             confirmUpload() {
-                if (this.choiceUpload === 'createRelease'){
-                    this.createReleaseAction()
-                } else {
+                //  else {
                     const uploadFilesPayload: UploadFile[] = []
                     this.uploadFilesToAdr.forEach(value => uploadFilesPayload.push(this.uploadFiles[value]))
-                    this.uploadFilesToADRAction(uploadFilesPayload);
-                }
+                    this.uploadFilesToADRAction({uploadFiles: uploadFilesPayload, createRelease: this.choiceUpload === 'createRelease'});
+                // }
+                // if (this.choiceUpload === 'createRelease'){
+                //     this.createReleaseAction()
+                // }
                 this.$emit("close")
             },
             handleCancel() {
@@ -210,6 +211,11 @@
             uploadFiles() {
                 this.setDefaultCheckedItems()
                 console.log("uploadFiles", this.uploadFiles)
+            },
+            choiceUpload(){
+                if (this.choiceUpload === 'createRelease'){
+                    this.setDefaultCheckedItems()
+                }
             }
         },
         directives: {

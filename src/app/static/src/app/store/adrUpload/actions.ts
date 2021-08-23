@@ -11,7 +11,7 @@ import {ValidateInputResponse} from "../../generated";
 
 export interface ADRUploadActions {
     getUploadFiles: (store: ActionContext<ADRUploadState, RootState>) => void;
-    uploadFilesToADR: (store: ActionContext<ADRUploadState, RootState>, uploadFilesPayload: UploadFile[]) => void;
+    uploadFilesToADR: (store: ActionContext<ADRUploadState, RootState>, uploadFilesPayload: {uploadFiles: UploadFile[], createRelease: boolean}) => void;
     createRelease: (store: ActionContext<ADRUploadState, RootState>) => void;
 }
 
@@ -95,12 +95,13 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
         const uploadMetadata = rootState.modelRun.result?.uploadMetadata
         const selectedDatasetId = rootState.baseline.selectedDataset!.id;
         const modelCalibrateId = rootState.modelCalibrate.calibrateId;
+        const {uploadFiles, createRelease} = uploadFilesPayload
 
-        commit({type: ADRUploadMutation.ADRUploadStarted, payload: uploadFilesPayload.length});
+        commit({type: ADRUploadMutation.ADRUploadStarted, payload: uploadFiles.length});
 
-        for (let i = 0; i < uploadFilesPayload.length; i++) {
+        for (let i = 0; i < uploadFiles.length; i++) {
             commit({type: ADRUploadMutation.ADRUploadProgress, payload: i + 1});
-            const { resourceType, resourceFilename, resourceName, resourceId } = uploadFilesPayload[i];
+            const { resourceType, resourceFilename, resourceName, resourceId } = uploadFiles[i];
 
             const requestParams: Dict<string> = {resourceFileName: resourceFilename, resourceName};
             if (resourceId) {
@@ -119,7 +120,7 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
 
             let apiRequest = api<ADRUploadMutation, ADRUploadMutation>(context)
                 .withError(ADRUploadMutation.SetADRUploadError);
-            if (i === uploadFilesPayload.length - 1) {
+            if (i === uploadFiles.length - 1) {
                 apiRequest = apiRequest.withSuccess(ADRUploadMutation.ADRUploadCompleted);
             } else {
                 apiRequest = apiRequest.ignoreSuccess();
@@ -131,6 +132,9 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
             }
         }
         await dispatch("getUploadFiles");
+        if (createRelease){
+            dispatch("createRelease");
+        }
     },
 
     async createRelease(context) {
