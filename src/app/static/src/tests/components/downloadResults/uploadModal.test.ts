@@ -381,7 +381,7 @@ describe(`uploadModal `, () => {
     it("can clear timer when download action is complete", async () => {
         const store = createStore(fakeMetadata, {
             summary: {complete: false, downloading: false } as any,
-            spectrum: {complete: false, downloading: false} as any
+            spectrum: {complete: false, downloading: false } as any
         });
         const wrapper = mount(UploadModal, {store})
 

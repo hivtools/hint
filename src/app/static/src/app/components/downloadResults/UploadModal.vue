@@ -195,11 +195,11 @@
                         this.sendUploadFilesToADR();
                     }
 
-                    if(downloadResults.complete && downloadResults.statusPollId > -1) {
+                    if(downloadResults.complete) {
                         this.stopPolling(downloadResults.statusPollId)
                     }
 
-                    if (downloadResults.error && downloadResults.statusPollId > -1) {
+                    if (downloadResults.error) {
                         this.stopPolling(downloadResults.statusPollId)
                     }
                 }
