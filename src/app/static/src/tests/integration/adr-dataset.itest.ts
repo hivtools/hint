@@ -240,17 +240,20 @@ describe("ADR dataset-related actions", () => {
         const dispatch = jest.fn();
         const root = {
             ...rootState,
-            adr: {schemas, datasets: []},
+            adr: { schemas, datasets: [] },
+            modelCalibrate: {calibrateId: "calId"},
             baseline: {
                 selectedDataset: {
                     id: "datasetId",
                     organization: {id: "organisationId"}
                 }
             },
-            metadata: {
-                adrUploadMetadata: {
-                    outputSummary: {description: "summary"},
-                    outputZip: {description: "zip"}
+            modelRun: {
+                result: {
+                    uploadMetadata: {
+                        outputSummary: {description: "summary"},
+                        outputZip: {description: "zip"}
+                    }
                 }
             }
         };

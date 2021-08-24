@@ -54,7 +54,7 @@ class ModelRunTests : SecureIntegrationTests()
     @Test
     fun `can run model`()
     {
-        val entity = getModelRunEntity(getMockModelOptions())
+        val entity = getModelRunEntity()
         val responseEntity = testRestTemplate.postForEntity<String>("/model/run/", entity)
         assertSuccess(responseEntity, "ModelSubmitResponse")
     }
@@ -72,7 +72,7 @@ class ModelRunTests : SecureIntegrationTests()
     @Test
     fun `can submit calibrate`()
     {
-        val entity = getModelRunEntity(getMockCalibrateModelOptions())
+        val entity = getModelRunEntity()
         val responseEntity = testRestTemplate.postForEntity<String>("/model/calibrate/submit/1234", entity)
         assertError(responseEntity,
                 HttpStatus.BAD_REQUEST,
@@ -99,7 +99,7 @@ class ModelRunTests : SecureIntegrationTests()
     fun `can cancel run model`()
     {
 
-        val entity = getModelRunEntity(getMockModelOptions())
+        val entity = getModelRunEntity()
         val runResponseEntity = testRestTemplate.postForEntity<String>("/model/run/", entity)
         val bodyJSON = ObjectMapper().readTree(runResponseEntity.body)
         val modelRunId = bodyJSON["data"]["id"].asText()

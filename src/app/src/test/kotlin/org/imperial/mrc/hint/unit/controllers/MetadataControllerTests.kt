@@ -62,18 +62,6 @@ class MetadataControllerTests
     }
 
     @Test
-    fun `can get uploadToADR metadata`()
-    {
-        val mockResponse = mock<ResponseEntity<String>>()
-        val mockAPIClient = mock<HintrAPIClient> {
-            on { getUploadMetadata("id1") } doReturn mockResponse
-        }
-
-        val sut = MetadataController(mockAPIClient)
-        val result = sut.uploadMetadata("id1")
-        assertThat(result).isSameAs(mockResponse)
-    }
-
     fun `gets generic chart metadata`()
     {
         val mockClassLoader = mock<ClassLoader>() {

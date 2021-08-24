@@ -237,11 +237,9 @@ class ADRTests : SecureIntegrationTests()
     {
         if (isAuthorized == IsAuthorized.TRUE) {
             val modelCalibrationId = waitForModelRunResult()
-            val calibrateId = waitForCalibrationResult(modelCalibrationId)
-            val downloadId = waitForSubmitDownloadOutput(calibrateId, "summary")
             testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
 
-            val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrOutputSummarySchema}/$downloadId?resourceFileName=output.html&resourceName=TestZip&description=test"
+            val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrOutputSummarySchema}/$modelCalibrationId?resourceFileName=output.html&resourceName=TestZip&description=test"
             val createResult = testRestTemplate.postForEntity<String>(url)
             assertSuccess(createResult)
             val resourceId = ObjectMapper().readTree(createResult.body!!)["data"]["id"].textValue()

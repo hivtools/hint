@@ -17,9 +17,7 @@ import {
     mockRootState,
     mockStepperState,
     mockSurveyAndProgramState,
-    mockDownloadResultsState,
     mockSurveyResponse, mockADRState, mockGenericChartState
-
 } from "../mocks";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {RootState} from "../../app/root";
@@ -36,7 +34,6 @@ import {LanguageMutation} from "../../app/store/language/mutations";
 import {Language} from "../../app/store/translations/locales";
 import {router} from '../../app/router';
 import {initialModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
-import {initialDownloadResultsState} from "../../app/store/downloadResults/downloadResults";
 
 describe("Root mutations", () => {
 
@@ -67,12 +64,7 @@ describe("Root mutations", () => {
             plottingSelections: mockPlottingSelections({barchart: {indicatorId: "Test Indicator"} as BarchartSelections}),
             stepper: mockStepperState({activeStep: 7}),
             load: mockLoadState({loadError: mockError("Test Load Error")}),
-            errors: mockErrorsState({errors: [mockError("Test Error")]}),
-            downloadResults: mockDownloadResultsState({
-                summary: {downloading: false, complete: true} as any,
-                spectrum: {downloading: false, complete: true} as any,
-                coarseOutput: {downloading: false, complete: true} as any
-            })
+            errors: mockErrorsState({errors: [mockError("Test Error")]})
         });
     };
 
@@ -101,8 +93,6 @@ describe("Root mutations", () => {
             fetchingDatasets: true,
             key: "TEST KEY"
         }));
-
-        expect(state.downloadResults).toStrictEqual(initialDownloadResultsState()),
 
         //genericChart State is always copied
         expect(state.genericChart).toStrictEqual(mockGenericChartState({
@@ -294,15 +284,5 @@ describe("Root mutations", () => {
 
         expect(mockRouterPush.mock.calls.length).toBe(1);
         expect(mockRouterPush.mock.calls[0][0]).toBe("/");
-    });
-
-    it("can reset download state when model is re-calibrated", () => {
-        const state = populatedState();
-
-        mutations.ResetDownload(state);
-
-        expect(state.downloadResults.summary.complete).toBe(false)
-        expect(state.downloadResults.coarseOutput.complete).toBe(false)
-        expect(state.downloadResults.spectrum.complete).toBe(false)
     });
 });
