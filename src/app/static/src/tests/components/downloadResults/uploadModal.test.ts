@@ -7,6 +7,7 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {expectTranslated} from "../../testHelpers";
 import Vue from 'vue';
 import { Dict } from "../../../app/types";
+import {Language} from "../../../app/store/translations/locales";
 
 describe(`uploadModal `, () => {
 
@@ -94,10 +95,11 @@ describe(`uploadModal `, () => {
         return store;
     };
 
-    const getWrapper = () => {
+    const getWrapper = (directives = {}) => {
         return shallowMount(UploadModal,
             {
-                store: createStore()
+                store: createStore(),
+                directives
             })
     }
 
@@ -120,6 +122,35 @@ describe(`uploadModal `, () => {
             "Base de données: test title", store)
     })
 
+    it(`renders radial options as expected`, () => {
+        const wrapper = getWrapper()
+        const store = wrapper.vm.$store
+
+        expect(wrapper.find("#createRelease").exists()).toBe(true)
+        expect(wrapper.find("#uploadFiles").exists()).toBe(true)
+        const labels = wrapper.findAll('label')
+        expectTranslated(labels.at(0), "Create a new ADR release (upload all files)",
+            "Créer une nouvelle version ADR (télécharger tous les fichiers)", store)
+        expectTranslated(labels.at(1), "Upload specific files",
+            "Télécharger des fichiers spécifiques", store)
+        const circleIcons = wrapper.findAll('help-circle-icon-stub')
+        expect(circleIcons.length).toBe(2)
+    })
+
+    it("can render tooltips in English and French", () => {
+        const mockTooltip = jest.fn();
+        const wrapper = getWrapper({"tooltip": mockTooltip})
+
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Create a labelled version in the ADR dataset, to include all input and output files");
+        expect(mockTooltip.mock.calls[1][1].value).toBe("Upload new versions of selected files without creating a release");
+
+        const store = wrapper.vm.$store
+        store.state.language = Language.fr;
+
+        expect(mockTooltip.mock.calls[2][1].value).toBe("Créer une version étiquetée dans l'ensemble de données ADR, pour inclure tous les fichiers d'entrée et de sortie");
+        expect(mockTooltip.mock.calls[3][1].value).toBe("Télécharger de nouvelles versions des fichiers sélectionnés sans créer de version");
+    });
+
     it(`renders Output files, inputs, overwritten text and labels as expected`, () => {
         const wrapper = getWrapper()
         const store = wrapper.vm.$store
@@ -132,6 +163,7 @@ describe(`uploadModal `, () => {
 
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
+        expect(inputs.at(0).attributes("disabled")).toBe("disabled");
         expect(inputs.at(0).attributes("id")).toBe("id-0-0");
         expect(inputs.at(1).attributes("id")).toBe("id-0-1");
 
@@ -170,6 +202,26 @@ describe(`uploadModal `, () => {
 
         expect(wrapper.find("#dialog").exists()).toBe(true)
         expect(wrapper.vm.$data.uploadFilesToAdr).toMatchObject(["outputZip", "outputSummary"])
+    })
+
+    it(`checkboxes are reset to default when switching back to create release`, async () => {
+        const store = createStore({})
+        const wrapper = shallowMount(UploadModal, {store})
+        store.state.adrUpload.uploadFiles = fakeMetadata
+        await Vue.nextTick()
+        const radialInput = wrapper.find("#uploadFiles")
+        await radialInput.trigger("click")
+        const inputs = wrapper.findAll("input.form-check-input")
+        inputs.at(0).setChecked(false)
+        inputs.at(1).setChecked(false)
+        const input1 =  inputs.at(0).element as HTMLInputElement
+        expect(input1.checked).toBe(false)
+        const input2 =  inputs.at(1).element as HTMLInputElement
+        expect(input2.checked).toBe(false)
+        const radialInput2 = wrapper.find("#createRelease")
+        await radialInput2.trigger("click")
+        expect(input1.checked).toBe(true)
+        expect(input2.checked).toBe(true)
     })
 
     it(`can trigger close modal as expected`, async () => {

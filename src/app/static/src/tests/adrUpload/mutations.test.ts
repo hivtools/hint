@@ -40,6 +40,8 @@ describe("ADR mutations", () => {
         expect(state.uploading).toBe(true);
         expect(state.uploadComplete).toBe(false);
         expect(state.totalFilesUploading).toBe(2);
+        expect(state.releaseCreated).toBe(false);
+        expect(state.releaseNotCreated).toBe(false);
     });
 
     it("can set upload progress", () => {
@@ -55,5 +57,18 @@ describe("ADR mutations", () => {
         expect(state.uploadComplete).toBe(true);
         expect(state.currentFileUploading).toBe(null);
         expect(state.totalFilesUploading).toBe(null);
+    });
+
+    it("can set release created", () => {
+        const state = mockADRUploadState();
+        mutations[ADRUploadMutation.ReleaseCreated](state);
+        expect(state.releaseCreated).toBe(true);
+    });
+
+    it("can set release not created with error", () => {
+        const state = mockADRUploadState();
+        mutations[ADRUploadMutation.ReleaseNotCreated](state, {payload: mockError("error detail")});
+        expect(state.releaseNotCreated).toBe(true);
+        expect(state.uploadError!!.detail).toBe("error detail");
     });
 });

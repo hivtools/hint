@@ -482,7 +482,7 @@ describe("ADR upload actions", () => {
             } as any)
         });
 
-        const uploadFilesPayload = [
+        const uploadFilesPayload = {createRelease: false, uploadFiles: [
             {
                 resourceType: "inputs-unaids-naomi-output-zip",
                 resourceFilename: "file1",
@@ -492,7 +492,7 @@ describe("ADR upload actions", () => {
                 resourceType: "inputs-unaids-naomi-report",
                 resourceFilename: "file2"
             }
-        ] as UploadFile[]
+        ] as UploadFile[]}
 
         const success = {response: "success"}
 
@@ -521,6 +521,66 @@ describe("ADR upload actions", () => {
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId");
         expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&description=summary");
         expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId");
+    });
+
+    it("uploadFilesToADR dispatches createRelease on upload of final file if instructed to", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const root = mockRootState({
+            adr: mockADRState({
+                datasets: [],
+                schemas: {
+                    baseUrl: "http://test",
+                    outputZip: "inputs-unaids-naomi-output-zip",
+                    outputSummary: "inputs-unaids-naomi-report"
+                } as any
+            }),
+            modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
+            modelRun: mockModelRunState(
+                {
+                    result: mockCalibrateResultResponse({
+                        uploadMetadata: {
+                            outputSummary: {description: "summary"},
+                            outputZip: {description: "zip"}
+                        }
+                    })
+                }),
+            baseline: mockBaselineState({
+                selectedDataset: {
+                    id: "datasetId"
+                }
+            } as any),
+            adrUpload: mockADRUploadState({
+                uploadComplete: true
+            })
+        });
+
+        const uploadFilesPayload = {createRelease: true, uploadFiles: [
+            {
+                resourceType: "inputs-unaids-naomi-output-zip",
+                resourceFilename: "file1",
+                resourceId: "id1"
+            },
+            {
+                resourceType: "inputs-unaids-naomi-report",
+                resourceFilename: "file2"
+            }
+        ] as UploadFile[]}
+
+        const success = {response: "success"}
+
+        mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId`)
+            .reply(200, mockSuccess(null));
+        mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId`)
+            .reply(200, mockSuccess(success));
+        mockAxios.onGet(`adr/datasets/datasetId`)
+            .reply(200, mockSuccess(null));
+
+        await actions.uploadFilesToADR({commit, dispatch, rootState: root} as any, uploadFilesPayload);
+        expect(dispatch.mock.calls.length).toBe(2);
+        expect(dispatch.mock.calls[0][0]).toBe("getUploadFiles");
+        expect(dispatch.mock.calls[1][0]).toBe("createRelease");
+        
     });
 
     it("uploadFilesToADR sets upload failure and prevents subsequent uploads", async () => {
@@ -552,7 +612,7 @@ describe("ADR upload actions", () => {
             } as any)
         });
 
-        const uploadFilesPayload = [
+        const uploadFilesPayload = {createRelease: false, uploadFiles: [
             {
                 resourceType: "inputs-unaids-naomi-report",
                 resourceFilename: "file1",
@@ -563,7 +623,7 @@ describe("ADR upload actions", () => {
                 resourceFilename: "file2",
                 resourceId: "id2"
             }
-        ] as UploadFile[]
+        ] as UploadFile[]}
 
         const success2 = {response: "success2"}
 
@@ -609,7 +669,7 @@ describe("ADR upload actions", () => {
             } as any)
         });
 
-        const uploadFilesPayload = [
+        const uploadFilesPayload = {createRelease: false, uploadFiles: [
             {
                 resourceType: "inputs-unaids-naomi-output-zip",
                 resourceFilename: "file1",
@@ -619,7 +679,7 @@ describe("ADR upload actions", () => {
                 resourceType: "inputs-unaids-naomi-report",
                 resourceFilename: "file2"
             }
-        ] as UploadFile[]
+        ] as UploadFile[]}
 
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId`)
             .reply(200, mockSuccess("success"));
@@ -635,14 +695,14 @@ describe("ADR upload actions", () => {
     });
 
     it("uploadFilesToADR invokes actions to update datasets on upload success", async () => {
-        const uploadFilesPayload = [
+        const uploadFilesPayload = {createRelease: false, uploadFiles: [
             {
                 resourceType: "inputs-unaids-naomi-output-zip"
             },
             {
                 resourceType: "inputs-unaids-naomi-report"
             }
-        ] as UploadFile[]
+        ] as UploadFile[]}
 
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId`)
             .reply(200, mockSuccess(null));
@@ -696,5 +756,86 @@ describe("ADR upload actions", () => {
 
         expect(store.state.adrUpload.uploadComplete).toBe(true);
         expect(getUploadFiles.mock.calls.length).toBe(1);
+    });
+
+    it("createRelease posts release name to releases endpoint", async () => {
+        const commit = jest.fn();
+        const root = mockRootState({
+            adr: mockADRState({
+                datasets: [],
+                schemas: {
+                    baseUrl: "http://test"
+                } as any
+            }),
+            baseline: mockBaselineState({
+                selectedDataset: {
+                    id: "datasetId"
+                }
+            } as any),
+            projects: mockProjectsState({
+                currentProject: {
+                    name: "projectName",
+                    id: 1,
+                    versions: []
+                },
+                currentVersion: {
+                    versionNumber: 1,
+                    id: "1",
+                    created: "then",
+                    updated: "now"
+                }
+            })
+        });
+
+        mockAxios.onPost(`adr/datasets/datasetId/releases`)
+            .reply(200, mockSuccess(null));
+
+        await actions.createRelease({commit, rootState: root} as any);
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ReleaseCreated");
+        expect(commit.mock.calls[0][0]["payload"]).toBe(null);
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0]["data"]).toBe("name=Naomi%3A%20projectName%20v1");
+        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/releases")
+    });
+
+    it("createRelease commits release not created on failure", async () => {
+        const commit = jest.fn();
+        const root = mockRootState({
+            adr: mockADRState({
+                datasets: [],
+                schemas: {
+                    baseUrl: "http://test"
+                } as any
+            }),
+            baseline: mockBaselineState({
+                selectedDataset: {
+                    id: "datasetId"
+                }
+            } as any),
+            projects: mockProjectsState({
+                currentProject: {
+                    name: "projectName",
+                    id: 1,
+                    versions: []
+                },
+                currentVersion: {
+                    versionNumber: 1,
+                    id: "1",
+                    created: "then",
+                    updated: "now"
+                }
+            })
+        });
+
+        mockAxios.onPost(`adr/datasets/datasetId/releases`)
+            .reply(500, mockFailure("failed"));
+
+        await actions.createRelease({commit, rootState: root} as any);
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ReleaseNotCreated");
+        expect(commit.mock.calls[0][0]["payload"]).toStrictEqual({"detail": "failed", "error": "OTHER_ERROR"});
     });
 });
