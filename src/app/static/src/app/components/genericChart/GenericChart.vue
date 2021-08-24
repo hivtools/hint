@@ -1,14 +1,17 @@
 <template>
     <div class="row">
         <div class="col-3">
-            <div v-for="ds in chartConfigValues.dataSourceValues" :key="ds.config.id">
+            <div v-for="ds in chartConfigValues.dataSourceConfigValues" :key="ds.config.id">
                 <data-source v-if="ds.editable"
                              :config="ds.config"
                              :datasets="chartMetadata.datasets"
                              :value="ds.selections.datasetId"
-                             @update="updateDataSource(chartIndex, ds.dataSourceId, $event)" />
+                             @update="updateDataSource(ds.config.id, $event)">
                 </data-source>
             </div>
+        </div>
+        <div class="col-9">
+            {{ chartId }} coming soon
         </div>
     </div>
 </template>
@@ -52,7 +55,8 @@
 
     interface Methods {
         ensureDataset: (datasetId: string) => void,
-        getDataset: (payload: getDatasetPayload) => void
+        getDataset: (payload: getDatasetPayload) => void,
+        updateDataSource: (dataSourceId: string, datasetId: string) => void
     }
 
     const namespace = "genericChart";
@@ -101,10 +105,14 @@
             getDataset: mapActionByName(namespace, 'getDataset'),
             ensureDataset(datasetId: string) {
                 const dataset = this.chartMetadata.datasets.find(dataset => dataset.id === datasetId)!;
-                console.log("ensureing dataset with url "+ dataset.url)
                 if (datasetId && !this.datasets[datasetId]) {
                     this.getDataset({datasetId, url: dataset.url});
                 }
+            },
+            updateDataSource(dataSourceId: string, datasetId: string) {
+                console.log(`GC updating data source ${dataSourceId} with dataset ${datasetId}`)
+                this.dataSourceSelections[dataSourceId]!.datasetId = datasetId;
+                this.ensureDataset(datasetId);
             }
         },
         mounted() {

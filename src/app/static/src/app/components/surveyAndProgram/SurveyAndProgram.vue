@@ -89,7 +89,7 @@
                 </div>
             </div>
         </div>
-        <div v-if="selectedTab === 1" class="row">
+        <div v-if="selectedTab === 1">
             <generic-chart v-if="genericChartMetadata"
                            chart-id="input-time-series"
                            :metadata="genericChartMetadata"></generic-chart>

@@ -1,14 +1,14 @@
-template>
-<div>
-    <div class="form-group">
-        <label class="font-weight-bold" :for="`data-source-${config.id}`">{{config.label}}</label>
-        <select v-model="selected" :id="`data-source-${config.id}`" class="form-control">
-            <option v-for="ds in datasets" :value="ds.id">
-                {{ds.label}}
-            </option>
-        </select>
+<template>
+    <div>
+        <div class="form-group">
+            <label class="font-weight-bold" :for="`data-source-${config.id}`" v-translate="config.label"></label>
+            <select v-model="selected" :id="`data-source-${config.id}`" class="form-control">
+                <option v-for="ds in datasets" :key="ds.id" :value="ds.id">
+                    {{ds.label}}
+                </option>
+            </select>
+        </div>
     </div>
-</div>
 </template>
 
 <script lang="ts">
@@ -44,6 +44,7 @@ template>
                     return this.value;
                 },
                 set(newValue: string) {
+                    console.log("DS emitting update")
                     this.$emit('update', newValue)
                 }
             }
