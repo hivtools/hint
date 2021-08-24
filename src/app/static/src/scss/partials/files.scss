@@ -22,3 +22,9 @@
     width: 90px;
   }
 }
+
+.pt {
+  .custom-file-label:not(.uploading)::after {
+    content: "Navegar" !important;
+  }
+}

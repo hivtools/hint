@@ -73,9 +73,13 @@ describe("CalibrateResults component", () => {
         const wrapper = shallowMount(CalibrationResults, {localVue, store});
         await Vue.nextTick();
         const title = wrapper.find("h3");
-        expectTranslated(title, "Review calibration results", "Examiner les résultats de l'étalonnage", store);
+        expectTranslated(title, "Review calibration results", "Examiner les résultats de l'étalonnage",
+            "Revise os resultados da calibração", store);
         const text = wrapper.find("p");
-        expectTranslated(text, "Comparison of unadjusted estimates (uncalibrated) to model estimates calibrated to spectrum results as specified in calibration options above.", "Comparaison des estimations non ajustées (non calibrées) aux estimations du modèle calées sur les résultats du spectre comme spécifié dans les options de calage ci-dessus.", store);
+        expectTranslated(text, "Comparison of unadjusted estimates (uncalibrated) to model estimates calibrated to spectrum results as specified in calibration options above.",
+            "Comparaison des estimations non ajustées (non calibrées) aux estimations du modèle calées sur les résultats du spectre comme spécifié dans les options de calage ci-dessus.",
+            "Comparação de estimativas não ajustadas (não calibradas) com estimativas de modelo calibradas para resultados de espectro, conforme especificado nas opções de calibração acima.",
+            store);
     });
 
     it("renders barchart", async () => {

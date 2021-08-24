@@ -200,25 +200,26 @@ describe("Survey and programme component", () => {
         const store = createStore();
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         const header = wrapper.find("#data-source h4");
-        expectTranslated(header, "Data source", "Source de données", store);
+        expectTranslated(header, "Data source", "Source de données", "Fonte de dados", store);
     });
 
     it("survey in included in data sources when survey data is present", () => {
         expectDataSource({survey: mockSurveyResponse(), selectedDataType: DataType.Survey},
-            "Household Survey", "Enquête de ménage", "2");
+            "Household Survey", "Enquête de ménage", "Inquérito aos agregados familiares", "2");
     });
 
     it("programme (ART) tab is enabled when programme data is present", () => {
         expectDataSource({program: mockProgramResponse(), selectedDataType: DataType.Program},
-            "ART", "ART", "1");
+            "ART", "ART", "TARV", "1");
     });
 
     it("ANC tab is enabled when ANC data is present", () => {
         expectDataSource({anc: mockAncResponse(), selectedDataType: DataType.ANC},
-            "ANC Testing", "Test de clinique prénatale", "0");
+            "ANC Testing", "Test de clinique prénatale", "Teste da CPN", "0");
     });
 
-    function expectDataSource(state: Partial<SurveyAndProgramState>, englishName: string, frenchName: string, id: string) {
+    function expectDataSource(state: Partial<SurveyAndProgramState>, englishName: string, frenchName: string,
+                              portugueseName: string, id: string) {
         const store = createStore(state);
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
@@ -229,6 +230,11 @@ describe("Survey and programme component", () => {
         registerTranslations(store);
         options = wrapper.find("#data-source treeselect-stub").props("options");
         expect(options).toStrictEqual([{id, label:frenchName}]);
+
+        store.state.language = Language.pt;
+        registerTranslations(store);
+        options = wrapper.find("#data-source treeselect-stub").props("options");
+        expect(options).toStrictEqual([{id, label:portugueseName}]);
     }
 
     it("can change tabs", () => {

@@ -1,6 +1,10 @@
-# hint 1.46.1
+# hint 1.47.1
 
 * Upload release to ADR: upload to core output resources
+
+# hint 1.47.0
+
+* Add Portuguese translations
 
 # hint 1.46.0
 
@@ -193,7 +197,7 @@
 
 # hint 1.12.2
 
-* Fix casing in French translation of "Spectrum file" 
+* Fix casing in French translation of "Spectrum file"
 
 # hint 1.12.1
 
@@ -327,4 +331,4 @@
 
 # hint 0.0.0
 
-* Initial version of HINT for 2019 workshops. 
+* Initial version of HINT for 2019 workshops.

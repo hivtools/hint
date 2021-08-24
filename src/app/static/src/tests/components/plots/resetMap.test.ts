@@ -22,8 +22,10 @@ describe("ResetMap component", () => {
         const wrapper = getWrapper();
         expect(wrapper.findAll(LControl).length).toBe(1)
         const button = wrapper.find(LControl).find('div').find('a')
-        expectTranslated(button, 'Reset view', 'Réinitialiser la vue', store, "aria-label");
-        expectTranslated(button, 'Reset view', 'Réinitialiser la vue', store, "title");
+        expectTranslated(button, 'Reset view', 'Réinitialiser la vue',
+            "Repor vista", store, "aria-label");
+        expectTranslated(button, 'Reset view', 'Réinitialiser la vue',
+            "Repor vista", store, "title");
         
         button.trigger("click")
         expect(wrapper.emitted("reset-view")).toBeTruthy();
