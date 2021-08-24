@@ -28,9 +28,9 @@ export enum DOWNLOAD_TYPE {
 
 export const initialDownloadResultsState = (): DownloadResultsState => {
     return {
-        spectrum: initialDownloadResults,
-        coarseOutput: initialDownloadResults,
-        summary: initialDownloadResults
+        spectrum: JSON.parse(JSON.stringify(initialDownloadResults)),
+        coarseOutput: JSON.parse(JSON.stringify(initialDownloadResults)),
+        summary: JSON.parse(JSON.stringify(initialDownloadResults))
     }
 }
 

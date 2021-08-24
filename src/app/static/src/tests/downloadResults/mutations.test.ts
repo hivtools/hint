@@ -26,6 +26,8 @@ describe(`download results mutations`, () => {
         mutations[DownloadResultsMutation.SummaryError](state, {payload: error});
         expect(state.summary.downloading).toBe(false);
         expect(state.summary.error).toEqual(errorMsg);
+        expect(state.spectrum.error).toBe(null);
+        expect(state.coarseOutput.error).toBe(null);
     });
 
     it("sets poll started for summary download on PollingStatusStarted", () => {
@@ -57,6 +59,8 @@ describe(`download results mutations`, () => {
         mutations[DownloadResultsMutation.SpectrumError](state, {payload: error});
         expect(state.spectrum.downloading).toBe(false);
         expect(state.spectrum.error).toEqual(errorMsg);
+        expect(state.coarseOutput.error).toBe(null);
+        expect(state.summary.error).toBe(null);
     });
 
     it("sets poll started for spectrum download on PollingStatusStarted", () => {
@@ -88,6 +92,8 @@ describe(`download results mutations`, () => {
         mutations[DownloadResultsMutation.CoarseOutputError](state, {payload: error});
         expect(state.coarseOutput.downloading).toBe(false);
         expect(state.coarseOutput.error).toEqual(errorMsg);
+        expect(state.spectrum.error).toBe(null);
+        expect(state.summary.error).toBe(null);
     });
 
     it("sets poll started for coarseOutput download on PollingStatusStarted", () => {
