@@ -53,26 +53,27 @@ describe("Download Results component", () => {
 
         const headers = wrapper.findAll("h4");
         expectTranslated(headers.at(0), "Export model outputs for Spectrum",
-            "Exporter des sorties de modèles pour Spectrum", store);
+            "Exporter des sorties de modèles pour Spectrum", "Exportação de saídas modelo para Spectrum", store);
         expectTranslated(headers.at(1), "Download coarse age group outputs",
-            "Télécharger les résultats grossiers du groupe d'âge", store);
+            "Télécharger les résultats grossiers du groupe d'âge",
+            "Descarregar resultados de grupos etários grosseiros", store);
         expectTranslated(headers.at(2), "Download summary report",
-            "Télécharger le rapport de synthèse", store);
+            "Télécharger le rapport de synthèse", "Descarregar relatório de síntese", store);
         expectTranslated(headers.at(3), "Upload to ADR",
-            "Télécharger vers ADR", store);
+            "Télécharger vers ADR", "Carregar para o ADR", store);
 
         const links = wrapper.findAll("a");
         expect(links.length).toBe(3);
-        expectTranslated(links.at(0), "Export", "Exporter", store);
+        expectTranslated(links.at(0), "Export", "Exporter", "Exportação", store);
         expect(links.at(0).attributes().href).toEqual("/download/spectrum/testId");
-        expectTranslated(links.at(1), "Download", "Télécharger", store);
+        expectTranslated(links.at(1), "Download", "Télécharger", "Descarregar", store);
         expect(links.at(1).attributes().href).toEqual("/download/coarse-output/testId");
-        expectTranslated(links.at(2), "Download", "Télécharger", store);
+        expectTranslated(links.at(2), "Download", "Télécharger", "Descarregar", store);
 
         const buttons = wrapper.findAll("button");
         expect(buttons.length).toBe(1);
         expect(buttons.at(0).attributes().href).toEqual("#")
-        expectTranslated(buttons.at(0), "Upload", "Télécharger", store);
+        expectTranslated(buttons.at(0), "Upload", "Télécharger", "Carregar", store);
     });
 
     it(`renders, opens and closes dialog as expected`, async() => {
@@ -132,7 +133,8 @@ describe("Download Results component", () => {
         const statusMessage = wrapper.find("#uploading");
         expect(statusMessage.find("loading-spinner-stub").exists()).toBe(true)
         expectTranslated(statusMessage.find("span"), "Uploading 1 of 2 (this may take a while)",
-            "Téléchargement de 1 sur 2 (cela peut prendre un certain temps)", store);
+            "Téléchargement de 1 sur 2 (cela peut prendre un certain temps)",
+            "A carregar 1 de 2 (este processo poderá demorar um pouco)", store);
 
         const uploadButton = wrapper.find("button");
         expect(uploadButton.attributes("disabled")).toBe("disabled")
@@ -144,12 +146,12 @@ describe("Download Results component", () => {
 
         const statusMessage = wrapper.find("#uploadComplete");
         expectTranslated(statusMessage.find("span"), "Upload complete",
-            "Téléchargement complet", store);
+            "Téléchargement complet", "Carregamento concluído", store);
         expect(statusMessage.find("tick-stub").exists()).toBe(true)
 
         const statusMessage2 = wrapper.find("#releaseCreated");
         expectTranslated(statusMessage2.find("span"), "Release created",
-            "Version créée", store);
+            "Version créée", "Lançamento criado", store);
         expect(statusMessage2.find("tick-stub").exists()).toBe(true)
 
         const uploadButton = wrapper.find("button");
@@ -162,7 +164,7 @@ describe("Download Results component", () => {
 
         const statusMessage = wrapper.find("#releaseCreated");
         expectTranslated(statusMessage.find("span"), "Could not create new release",
-            "Impossible de créer une nouvelle version", store);
+            "Impossible de créer une nouvelle version", "Não foi possível criar um novo lançamento", store);
         expect(statusMessage.find("#cross").exists()).toBe(true)
 
         const uploadButton = wrapper.find("button");

@@ -110,7 +110,7 @@ describe(`uploadModal `, () => {
         const dialog = wrapper.find("#dialog")
         expect(dialog.exists()).toBe(true)
         const text = dialog.find("h4")
-        expectTranslated(text, "Upload to ADR", "Télécharger vers ADR", store)
+        expectTranslated(text, "Upload to ADR", "Télécharger vers ADR", "Carregar para o ADR", store)
     })
 
     it(`renders dataset name as expected`, () => {
@@ -119,7 +119,7 @@ describe(`uploadModal `, () => {
 
         const dataset = wrapper.find("#dialog").find("#dataset-id")
         expectTranslated(dataset, "Dataset: test title",
-            "Base de données: test title", store)
+            "Base de données: test title", "Conjunto de dados: test title", store)
     })
 
     it(`renders radial options as expected`, () => {
@@ -130,14 +130,14 @@ describe(`uploadModal `, () => {
         expect(wrapper.find("#uploadFiles").exists()).toBe(true)
         const labels = wrapper.findAll('label')
         expectTranslated(labels.at(0), "Create a new ADR release (upload all files)",
-            "Créer une nouvelle version ADR (télécharger tous les fichiers)", store)
+            "Créer une nouvelle version ADR (télécharger tous les fichiers)", "Crie uma nova versão ADR (carregue todos os arquivos)", store)
         expectTranslated(labels.at(1), "Upload specific files",
-            "Télécharger des fichiers spécifiques", store)
+            "Télécharger des fichiers spécifiques", "Faça upload de arquivos específicos", store)
         const circleIcons = wrapper.findAll('help-circle-icon-stub')
         expect(circleIcons.length).toBe(2)
     })
 
-    it("can render tooltips in English and French", () => {
+    it("can render tooltips in English, French, and Portuguese", () => {
         const mockTooltip = jest.fn();
         const wrapper = getWrapper({"tooltip": mockTooltip})
 
@@ -146,9 +146,12 @@ describe(`uploadModal `, () => {
 
         const store = wrapper.vm.$store
         store.state.language = Language.fr;
-
         expect(mockTooltip.mock.calls[2][1].value).toBe("Créer une version étiquetée dans l'ensemble de données ADR, pour inclure tous les fichiers d'entrée et de sortie");
         expect(mockTooltip.mock.calls[3][1].value).toBe("Télécharger de nouvelles versions des fichiers sélectionnés sans créer de version");
+
+        store.state.language = Language.pt;
+        expect(mockTooltip.mock.calls[4][1].value).toBe("Crie uma versão rotulada no conjunto de dados ADR, para incluir todos os arquivos de entrada e saída");
+        expect(mockTooltip.mock.calls[5][1].value).toBe("Faça upload de novas versões dos arquivos selecionados sem criar uma versão");
     });
 
     it(`renders Output files, inputs, overwritten text and labels as expected`, () => {
@@ -159,7 +162,8 @@ describe(`uploadModal `, () => {
         expect(overwriteText.length).toBe(1)
         expectTranslated(overwriteText.at(0), "This file already exists on ADR " +
             "and will be overwritten. File was updated 25/01/2021 06:34:12",
-            "Ce fichier existe déjà sur ADR et sera écrasé. Le fichier a été mis à jour 25/01/2021 06:34:12", store)
+            "Ce fichier existe déjà sur ADR et sera écrasé. Le fichier a été mis à jour 25/01/2021 06:34:12",
+            "Este ficheiro já existe no ADR e será substituído. O ficheiro foi atualizado 25/01/2021 06:34:12", store);
 
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
@@ -172,8 +176,8 @@ describe(`uploadModal `, () => {
         expect(label.at(0).attributes("for")).toBe("id-0-0");
         expect(label.at(1).attributes("for")).toBe("id-0-1");
 
-        expectTranslated(label.at(0), "Model outputs", "Résultats du modèle", store)
-        expectTranslated(label.at(1), "Summary report", "Rapport sommaire", store)
+        expectTranslated(label.at(0), "Model outputs", "Résultats du modèle", "Saídas modelo", store)
+        expectTranslated(label.at(1), "Summary report", "Rapport sommaire", "Relatório de síntese", store)
     })
 
     it(`checkboxes are set by default`, async () => {
@@ -279,8 +283,8 @@ describe(`uploadModal `, () => {
         const wrapper = mount(UploadModal, {store});
         const headers = wrapper.findAll("h5");
         expect(headers.length).toBe(2);
-        expectTranslated(headers.at(0), "Output Files", "Fichiers de sortie", store);
-        expectTranslated(headers.at(1), "Input Files", "Fichiers d'entrée", store);
+        expectTranslated(headers.at(0), "Output Files", "Fichiers de sortie", "Ficheiros de saída", store);
+        expectTranslated(headers.at(1), "Input Files", "Fichiers d'entrée", "Ficheiros de entrada", store);
     });
 
     it("renders input controls as expected when there are input files", () => {

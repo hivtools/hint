@@ -78,7 +78,7 @@ describe("Project history component", () => {
         expect(wrapper.find("refresh-cw-icon").exists).toBeTruthy();
         expect(wrapper.find("edit-icon").exists).toBeTruthy();
     });
-    
+
     it("can render tooltips without an error", () => {
         const mockTooltip = jest.fn();
         const store = createStore(testProjects)
@@ -110,6 +110,22 @@ describe("Project history component", () => {
         expect(mockTooltip.mock.calls[8][1].value).toBe("Copier dans un nouveau projet");
     });
 
+    it("can render tooltips in Portuguese without an error", () => {
+        const mockTooltip = jest.fn();
+        const store = createStore(testProjects)
+        store.state.language = Language.pt;
+        shallowMount(ProjectHistory, {store,
+            directives: {"tooltip": mockTooltip} });
+
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Adicionar ou editar notas do projeto");
+        expect(mockTooltip.mock.calls[1][1].value).toBe("Carregar");
+        expect(mockTooltip.mock.calls[2][1].value).toBe("Mudar o nome do projeto");
+        expect(mockTooltip.mock.calls[3][1].value).toBe("Eliminar");
+        expect(mockTooltip.mock.calls[4][1].value).toBe("Copiar última atualização para um novo projeto");
+        expect(mockTooltip.mock.calls[5][1].value).toBe("Adicionar ou editar notas de versão");
+        expect(mockTooltip.mock.calls[8][1].value).toBe("Copiar para um novo projeto");
+    });
+
     const testRendersProject = (wrapper: Wrapper<any>, id: number, name: string, updatedIsoDate: string,
                                 versionsCount: number) => {
         const v = wrapper.find(`#p-${id}`).findAll(".project-cell");
@@ -121,7 +137,11 @@ describe("Project history component", () => {
         expect(svg.at(1).classes()).toContain("when-open");
         expect(svg.at(1).classes()).toContain("feather-chevron-down");
         expect(v.at(1).find("a").text()).toContain(name);
-        expect(v.at(2).text()).toBe(versionsCount === 1 ? "1 version" : `${versionsCount} versions`);
+
+        const versionCountLabel = versionsCount === 1 ? "1 version" : `${versionsCount} versions`;
+        const ptVersionCountLabel = versionsCount === 1 ? "1 versão" : `${versionsCount} versões`;
+        expectTranslated(v.at(2), versionCountLabel, versionCountLabel, ptVersionCountLabel, wrapper.vm.$store);
+
         expect(v.at(3).text()).toBe(formatDateTime(updatedIsoDate));
         expect(v.at(4).classes()).toContain("load-cell");
         expect(v.at(5).classes()).toContain("rename-cell");
@@ -159,15 +179,15 @@ describe("Project history component", () => {
         const headers = wrapper.find("#headers").findAll(".header-cell");
         expect(headers.length).toBe(9);
         expect(headers.at(0).text()).toBe("");
-        expectTranslated(headers.at(1), "Project name", "Nom du projet", store);
-        expectTranslated(headers.at(2), "Versions", "Versions", store);
-        expectTranslated(headers.at(3), "Last updated", "Dernière mise à jour", store);
-        expectTranslated(headers.at(4), "Load", "Charger", store);
-        expectTranslated(headers.at(5), "Rename", "Renommer le projet", store);
-        expectTranslated(headers.at(6), "Delete", "Supprimer", store);
-        expectTranslated(headers.at(7), "Copy to", "Copier", store);
-        expectTranslated(headers.at(8), "Share", "Partager", store);
-        
+        expectTranslated(headers.at(1), "Project name", "Nom du projet", "Nome do projeto", store);
+        expectTranslated(headers.at(2), "Versions", "Versions","Versões", store);
+        expectTranslated(headers.at(3), "Last updated", "Dernière mise à jour", "Última atualização", store);
+        expectTranslated(headers.at(4), "Load", "Charger", "Carregar", store);
+        expectTranslated(headers.at(5), "Rename", "Renommer le projet", "Mudar o nome", store);
+        expectTranslated(headers.at(6), "Delete", "Supprimer", "Eliminar", store);
+        expectTranslated(headers.at(7), "Copy to", "Copier", "Copiar para", store);
+        expectTranslated(headers.at(8), "Share", "Partager", "Partilhar", store);
+
         testRendersProject(wrapper, 1, "proj1",  isoDates[1], 2);
         const proj1Versions = wrapper.find("#versions-1");
         const proj1VersionRows = proj1Versions.findAll(".row");
@@ -182,7 +202,7 @@ describe("Project history component", () => {
         testRendersVersion(proj2VersionRows.at(0), "s21", isoDates[3], 1, store);
 
         const modal = wrapper.find(".modal");
-        expect(modal.classes).not.toContain("show");         
+        expect(modal.classes).not.toContain("show");
     });
 
     it("can expand project row", async (done) => {
@@ -232,10 +252,10 @@ describe("Project history component", () => {
 
         const modal = wrapper.find(".modal");
         expect(modal.classes()).toContain("show");
-        expectTranslated(modal.find(".modal-body"), "Delete project?", "Supprimer ce projet?", store);
+        expectTranslated(modal.find(".modal-body"), "Delete project?", "Supprimer ce projet?", "Eliminar projeto?", store);
         const buttons = modal.find(".modal-footer").findAll("button");
-        expectTranslated(buttons.at(0), "OK", "OK", store);
-        expectTranslated(buttons.at(1), "Cancel", "Annuler", store);
+        expectTranslated(buttons.at(0), "OK", "OK", "OK", store);
+        expectTranslated(buttons.at(1), "Cancel", "Annuler", "Cancelar", store);
     });
 
     it("shows modal when click delete version link", async () => {
@@ -247,10 +267,11 @@ describe("Project history component", () => {
 
         const modal = wrapper.find(".modal");
         expect(modal.classes()).toContain("show");
-        expectTranslated(modal.find(".modal-body"), "Delete version?", "Supprimer cette version?", store);
+        expectTranslated(modal.find(".modal-body"), "Delete version?",
+            "Supprimer cette version?", "Eliminar versão?", store);
         const buttons = modal.find(".modal-footer").findAll("button");
-        expectTranslated(buttons.at(0), "OK", "OK", store);
-        expectTranslated(buttons.at(1), "Cancel", "Annuler", store);
+        expectTranslated(buttons.at(0), "OK", "OK","OK", store);
+        expectTranslated(buttons.at(1), "Cancel", "Annuler", "Cancelar", store);
     });
 
     it("invokes deleteProject action when confirm delete", async () => {
@@ -294,7 +315,7 @@ describe("Project history component", () => {
         expect(mockDeleteVersion.mock.calls.length).toBe(0);
         const modal = wrapper.find(".modal");
         expect(modal.classes).not.toContain("show");
-    }); 
+    });
 
     const testLoadVersionLink = async function (elementId: string, projectId: number, versionId: string) {
         const wrapper = getWrapper(testProjects);
@@ -347,16 +368,20 @@ describe("Project history component", () => {
         const modal = wrapper.findAll(".modal").at(2);
         expect(modal.classes()).toContain("show");
         expectTranslated(modal.find(".modal-body h4"), "Please enter a new name for the project",
-            "Veuillez entrer un nouveau nom pour le projet", store);
+            "Veuillez entrer un nouveau nom pour le projet",
+            "Por favor, introduza um novo nome para o projeto", store);
 
         expectTranslated(modal.find(".modal-body label"), "Notes: (your reason for renaming the project)",
-            "Remarques : (la raison pour laquelle vous avez renommé le projet)", store);
+            "Remarques : (la raison pour laquelle vous avez renommé le projet)",
+            "Notas: (seu motivo para renomear o projeto)", store);
 
         const input = modal.find("input")
-        expectTranslated(input, "Project name", "Nom du projet", store, "placeholder");
+        expectTranslated(input, "Project name", "Nom du projet", "Nome do projeto",
+            store, "placeholder");
         const buttons = modal.find(".modal-footer").findAll("button");
-        expectTranslated(buttons.at(0), "Rename project", "Renommer le projet", store);
-        expectTranslated(buttons.at(1), "Cancel", "Annuler", store);
+        expectTranslated(buttons.at(0), "Rename project", "Renommer le projet",
+            "Mudar o nome do projeto", store);
+        expectTranslated(buttons.at(1), "Cancel", "Annuler", "Cancelar", store);
 
         const cancelButton = buttons.at(1);
         cancelButton.trigger("click");
@@ -370,7 +395,7 @@ describe("Project history component", () => {
         const mockEvent = { preventDefault: mockPreventDefault }
         wrapper.setData({ projectToRename: null })
         const vm = wrapper.vm as any
-        
+
         vm.renameProject(mockEvent, 123);
         expect(vm.projectToRename).toBe(123);
         expect(mockPreventDefault.mock.calls.length).toStrictEqual(1);
@@ -389,15 +414,17 @@ describe("Project history component", () => {
         const modal = wrapper.findAll(".modal").at(1);
         expect(modal.classes()).toContain("show");
         expectTranslated(modal.find(".modal-body h4"), "Copying version v1 to a new project",
-            "Copie de la version v1 dans un nouveau projet", store);
+            "Copie de la version v1 dans un nouveau projet",
+            "A copiar versão v1 para um novo projeto", store);
         expectTranslated(modal.find(".modal-body h5"), "Please enter a name for the new project",
-            "Veuillez entrer un nom pour le nouveau projet", store);
+            "Veuillez entrer un nom pour le nouveau projet",
+            "Por favor, introduza um nome para o novo projecto", store);
 
         const input = modal.find("input")
-        expectTranslated(input, "Project name", "Nom du projet", store, "placeholder");
+        expectTranslated(input, "Project name", "Nom du projet","Nome do projeto", store, "placeholder");
         const buttons = modal.find(".modal-footer").findAll("button");
-        expectTranslated(buttons.at(0), "Create project", "Créer un projet", store);
-        expectTranslated(buttons.at(1), "Cancel", "Annuler", store);
+        expectTranslated(buttons.at(0), "Create project", "Créer un projet", "Criar projeto", store);
+        expectTranslated(buttons.at(1), "Cancel", "Annuler", "Cancelar", store);
 
         const cancelButton = buttons.at(1);
         cancelButton.trigger("click");
@@ -416,14 +443,16 @@ describe("Project history component", () => {
         const modal = wrapper.findAll(".modal").at(1);
         expect(modal.classes()).toContain("show");
         expectTranslated(modal.find(".modal-body h4"), "Copying version v1 to a new project",
-            "Copie de la version v1 dans un nouveau projet", store);
+            "Copie de la version v1 dans un nouveau projet",
+            "A copiar versão v1 para um novo projeto", store);
         expectTranslated(modal.find(".modal-body h5"), "Please enter a name for the new project",
-            "Veuillez entrer un nom pour le nouveau projet", store);
+            "Veuillez entrer un nom pour le nouveau projet",
+            "Por favor, introduza um nome para o novo projecto", store);
         const input = modal.find("input");
-        expectTranslated(input, "Project name", "Nom du projet", store, "placeholder");
+        expectTranslated(input, "Project name", "Nom du projet", "Nome do projeto", store, "placeholder");
         const buttons = modal.find(".modal-footer").findAll("button");
-        expectTranslated(buttons.at(0), "Create project", "Créer un projet", store);
-        expectTranslated(buttons.at(1), "Cancel", "Annuler", store);
+        expectTranslated(buttons.at(0), "Create project", "Créer un projet", "Criar projeto", store);
+        expectTranslated(buttons.at(1), "Cancel", "Annuler", "Cancelar", store);
 
         const cancelButton = buttons.at(1);
         cancelButton.trigger("click");
@@ -608,15 +637,16 @@ describe("Project history component", () => {
         const modal = wrapper.findAll(".modal").at(3);
         const editVersionNoteHeader = modal.find("#editVersionNoteHeader")
         expectTranslated(editVersionNoteHeader, "Project notes for version v1",
-            "Notes de projet pour la version v1", store)
+            "Notes de projet pour la version v1", "Notas do projeto para a versão v1", store)
 
         const editVersionNoteSubHeader = modal.find("#editVersionNoteSubHeader")
         expectTranslated(editVersionNoteSubHeader, "Add or edit version notes for proj1",
-            "Ajouter ou modifier des notes de version pour proj1", store)
+            "Ajouter ou modifier des notes de version pour proj1",
+            "Adicionar ou editar notas de versão para proj1", store)
 
         const buttons = modal.find(".modal-footer").findAll("button");
-        expectTranslated(buttons.at(0), "OK", "OK", store)
-        expectTranslated(buttons.at(1), "Cancel", "Annuler", store)
+        expectTranslated(buttons.at(0), "OK", "OK", "OK", store)
+        expectTranslated(buttons.at(1), "Cancel", "Annuler", "Cancelar", store)
     });
 
     it("can render translated projectNote headers and button text", async () => {
@@ -630,15 +660,16 @@ describe("Project history component", () => {
 
         const editProjectNoteSubHeader = modal.find("#editProjectNoteSubHeader")
         expectTranslated(editProjectNoteSubHeader, "Add or edit project notes for proj1",
-            "Ajouter ou modifier des notes de projet pour proj1", store)
+            "Ajouter ou modifier des notes de projet pour proj1",  "Adicionar ou editar notas de projeto para proj1",
+            store)
 
         const editProjectNoteHeader = modal.find("#editProjectNoteHeader")
         expectTranslated(editProjectNoteHeader, "Project notes",
-            "Notes de projet", store)
+            "Notes de projet", "Notas do projeto", store)
 
         const buttons = modal.find(".modal-footer").findAll("button");
-        expectTranslated(buttons.at(0), "OK", "OK", store)
-        expectTranslated(buttons.at(1), "Cancel", "Annuler", store)
+        expectTranslated(buttons.at(0), "OK", "OK", "OK", store)
+        expectTranslated(buttons.at(1), "Cancel", "Annuler", "Cancelar", store)
     });
 
     it("cannot invoke promoteVersion action when input value is empty", async () => {
@@ -828,7 +859,7 @@ describe("Project history component", () => {
         const modal = wrapper.findAll(".modal").at(1);
         const textarea = modal.find("#promoteNote label");
         expectTranslated(textarea, "Notes: (your reason for copying project)",
-            "Remarques : (la raison de la copie du projet)" , store)
+            "Notes : (votre motif pour copier le projet)" , "Notas: (a sua razão para copiar o projeto)", store)
     });
 
 });
