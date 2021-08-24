@@ -53,7 +53,10 @@ describe("Load actions", () => {
         const dispatch = jest.fn();
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
 
-        await actions.loadFromVersion({commit, dispatch, state, rootState} as any, {files: "files", state: "{}"});
+        await actions.loadFromVersion({commit, dispatch, state, rootState} as any, {
+            files: "files",
+            state: JSON.stringify({stepper: {}})
+        });
         setTimeout(() => {
             expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
             expect(commit.mock.calls[1][0]).toStrictEqual({type: "UpdatingState", payload: {}});
@@ -62,7 +65,40 @@ describe("Load actions", () => {
             expect(mockAxios.history.post[0].data).toBe("files");
 
             expect(dispatch.mock.calls[0][0]).toBe("updateStoreState");
-            expect(dispatch.mock.calls[0][1]).toStrictEqual({});
+            expect(dispatch.mock.calls[0][1]).toStrictEqual({
+                stepper: {
+                    steps: [
+                        {
+                            "number": 1,
+                            "textKey": "uploadInputs"
+                        },
+                        {
+                            "number": 2,
+                            "textKey": "reviewInputs"
+                        },
+                        {
+                            "number": 3,
+                            "textKey": "modelOptions"
+                        },
+                        {
+                            "number": 4,
+                            "textKey": "fitModel"
+                        },
+                        {
+                            "number": 5,
+                            "textKey": "calibrateModel"
+                        },
+                        {
+                            "number": 6,
+                            "textKey": "reviewOutput"
+                        },
+                        {
+                            "number": 7,
+                            "textKey": "downloadResults"
+                        }
+                    ]
+                }
+            });
             done();
         });
     });
@@ -76,7 +112,7 @@ describe("Load actions", () => {
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
         const dispatch = jest.fn();
         const rootGetters = {isGuest: true};
-        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": currentHintVersion}}));
+        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": currentHintVersion, stepper: {}}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
             {savedFileContents: fileContents, projectName: null}
         );
@@ -86,7 +122,41 @@ describe("Load actions", () => {
 
         //should also hand on to updateState action
         expect(dispatch.mock.calls[0][0]).toEqual("updateStoreState");
-        expect(dispatch.mock.calls[0][1]).toStrictEqual({"version": currentHintVersion});
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({
+            stepper: {
+                steps: [
+                    {
+                        "number": 1,
+                        "textKey": "uploadInputs"
+                    },
+                    {
+                        "number": 2,
+                        "textKey": "reviewInputs"
+                    },
+                    {
+                        "number": 3,
+                        "textKey": "modelOptions"
+                    },
+                    {
+                        "number": 4,
+                        "textKey": "fitModel"
+                    },
+                    {
+                        "number": 5,
+                        "textKey": "calibrateModel"
+                    },
+                    {
+                        "number": 6,
+                        "textKey": "reviewOutput"
+                    },
+                    {
+                        "number": 7,
+                        "textKey": "downloadResults"
+                    }
+                ]
+            },
+            "version": currentHintVersion
+        });
     });
 
     it("if not guest, creates project and updates saved State before setting files", async () => {
@@ -104,7 +174,10 @@ describe("Load actions", () => {
             }
         };
         const rootGetters = {isGuest: false};
-        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {version: currentHintVersion, projects: {}, stepper: {}}}));
+        const fileContents = addCheckSum(JSON.stringify({
+            files: "TEST FILES",
+            state: {version: currentHintVersion, projects: {}, stepper: {}}
+        }));
 
         await actions.setFiles({commit, state, dispatch, rootState: testRootState, rootGetters} as any,
             {savedFileContents: fileContents, projectName: "new project"}
@@ -129,12 +202,32 @@ describe("Load actions", () => {
                 stepper: {
                     steps: [
                         {
-                            number: 1,
-                            textKey: "uploadInputs"
+                            "number": 1,
+                            "textKey": "uploadInputs"
                         },
                         {
-                            number: 2,
-                            textKey: "reviewInputs"
+                            "number": 2,
+                            "textKey": "reviewInputs"
+                        },
+                        {
+                            "number": 3,
+                            "textKey": "modelOptions"
+                        },
+                        {
+                            "number": 4,
+                            "textKey": "fitModel"
+                        },
+                        {
+                            "number": 5,
+                            "textKey": "calibrateModel"
+                        },
+                        {
+                            "number": 6,
+                            "textKey": "reviewOutput"
+                        },
+                        {
+                            "number": 7,
+                            "textKey": "downloadResults"
                         }
                     ]
                 }
@@ -173,7 +266,7 @@ describe("Load actions", () => {
         const state = mockLoadState({loadingState: LoadingState.LoadFailed});
         const dispatch = jest.fn();
         const rootGetters = {isGuest: true};
-        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {version: currentHintVersion}}));
+        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {version: currentHintVersion, stepper: {}}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
             {savedFileContents: fileContents, projectName: null}
         );
@@ -236,7 +329,7 @@ describe("Load actions", () => {
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
         const dispatch = jest.fn();
         const rootGetters = {isGuest: true};
-        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": "1.1.0"}}));
+        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": "1.1.0", stepper: {}}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
             {savedFileContents: fileContents, projectName: null}
         );
@@ -244,7 +337,41 @@ describe("Load actions", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
         expect(commit.mock.calls[1][0]).toStrictEqual({type: "UpdatingState", payload: {}});
         expect(dispatch.mock.calls[0][0]).toEqual("updateStoreState");
-        expect(dispatch.mock.calls[0][1]).toStrictEqual({"version": "1.1.0"});
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({
+            stepper: {
+                steps: [
+                    {
+                        "number": 1,
+                        "textKey": "uploadInputs"
+                    },
+                    {
+                        "number": 2,
+                        "textKey": "reviewInputs"
+                    },
+                    {
+                        "number": 3,
+                        "textKey": "modelOptions"
+                    },
+                    {
+                        "number": 4,
+                        "textKey": "fitModel"
+                    },
+                    {
+                        "number": 5,
+                        "textKey": "calibrateModel"
+                    },
+                    {
+                        "number": 6,
+                        "textKey": "reviewOutput"
+                    },
+                    {
+                        "number": 7,
+                        "textKey": "downloadResults"
+                    }
+                ]
+            },
+            "version": "1.1.0"
+        });
     });
 
 
