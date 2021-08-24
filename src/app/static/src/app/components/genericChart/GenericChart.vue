@@ -2,7 +2,12 @@
     <div class="row">
         <div class="col-3">
             <div v-for="ds in chartConfigValues.dataSourceValues" :key="ds.config.id">
-                {{ds.selectedDatasetId}}
+                <data-source v-if="ds.editable"
+                             :config="ds.config"
+                             :datasets="chartMetadata.datasets"
+                             :value="ds.selections.datasetId"
+                             @update="updateDataSource(chartIndex, ds.dataSourceId, $event)" />//TODO: Handle this, update selection, ensure dataset
+                ></data-source>
             </div>
         </div>
     </div>
@@ -11,19 +16,27 @@
 <script lang="ts">
     import Vue from "vue";
     import {DataSourceConfig, Dict, GenericChartMetadata, GenericChartMetadataResponse} from "../../types";
-    import {api} from "../../apiService";
+    import DataSource from "./dataSelectors/DataSource.vue";
     import {mapActionByName, mapStateProp} from "../../utils";
     import {GenericChartState} from "../../store/genericChart/genericChart";
     import {getDatasetPayload} from "../../store/genericChart/actions";
 
     interface DataSourceConfigValues {
-        selectedDatasetId: string,
+        selections: DataSourceSelections,
         editable: boolean,
         config: DataSourceConfig
     }
 
     interface ChartConfigValues {
         dataSourceConfigValues: DataSourceConfigValues[]
+    }
+
+    interface DataSourceSelections {
+        datasetId: string
+    }
+
+    interface Data {
+        dataSourceSelections:  Record<string, DataSourceSelections>
     }
 
     interface Props {
@@ -38,17 +51,31 @@
     }
 
     interface Methods {
-        ensureDataset: (datasetId: string, url: string) => void,
+        ensureDataset: (datasetId: string) => void,
         getDataset: (payload: getDatasetPayload) => void
     }
 
     const namespace = "genericChart";
 
-    export default Vue.extend<unknown, Methods, Computed, Props>({
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: "GenericChart",
         props: {
             metadata: Object,
             chartId: String
+        },
+        components: {
+            DataSource
+        },
+        data() {
+            const dataSourceSelections = this.chartMetadata.dataSelectors.dataSources
+                .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => ({
+                    ...running,
+                    [dataSource.id]: {dataSetId: dataSource.datasetId}
+                }), {});
+
+            return {
+                dataSourceSelections
+            }
         },
         computed: {
             datasets:  mapStateProp<GenericChartState, Record<string, Dict<unknown>[]>>(namespace,
@@ -59,7 +86,7 @@
             chartConfigValues() {
                 const dataSourceConfigValues = this.chartMetadata.dataSelectors.dataSources.map((dataSourceConfig) => {
                     return {
-                        selectedDatasetId: dataSourceConfig.datasetId,
+                        selections: this.dataSourceSelections[dataSourceConfig.id],
                         editable: dataSourceConfig.type === "editable",
                         config: dataSourceConfig
                     }
@@ -71,16 +98,16 @@
         },
         methods: {
             getDataset: mapActionByName(namespace, 'getDataset'),
-            ensureDataset(datasetId: string, url: string) {
+            ensureDataset(datasetId: string) {
+                const dataset = this.chartMetadata.datasets.find(dataset => dataset.id === datasetId)!;
                 if (datasetId && !this.datasets[datasetId]) {
-                    this.getDataset({datasetId, url});
+                    this.getDataset({datasetId, url: dataset.url});
                 }
             }
         },
         mounted() {
             this.chartConfigValues.dataSourceConfigValues.forEach((dataSourceValues) => {
-                //TODO: find dataset config and get url from that
-                this.ensureDataset(dataSourceValues.selectedDatasetId, dataSourceValues.config.url);
+                this.ensureDataset(dataSourceValues.selectedDatasetId);
             });
         }
     });
