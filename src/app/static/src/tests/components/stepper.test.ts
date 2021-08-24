@@ -212,13 +212,13 @@ describe("Stepper component", () => {
         const steps = wrapper.findAll(Step);
 
         expect(wrapper.findAll(Step).length).toBe(7);
-        expect(steps.at(0).props().textKey).toBe("uploadInputs");
+        expect(steps.at(0).props().textKey).toBe("uploadBaseline");
         expect(steps.at(0).props().active).toBe(true);
         expect(steps.at(0).props().number).toBe(1);
         expect(steps.at(0).props().complete).toBe(false);
         expect(steps.at(0).props().enabled).toBe(true);
 
-        expect(steps.at(1).props().textKey).toBe("reviewInputs");
+        expect(steps.at(1).props().textKey).toBe("uploadSurvey");
         expect(steps.at(1).props().active).toBe(false);
         expect(steps.at(1).props().number).toBe(2);
         expect(steps.at(1).props().complete).toBe(false);

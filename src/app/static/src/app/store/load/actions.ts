@@ -7,7 +7,6 @@ import {Dict, LocalSessionFile, VersionDetails} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
 import {currentHintVersion} from "../../hintVersion";
-import {initialStepperState} from "../stepper/stepper";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError"
 export type LoadErrorActionTypes = "LoadFailed"
@@ -101,7 +100,6 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 };
 
 async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, files: any, savedState: any) {
-    savedState.stepper.steps = initialStepperState().steps;
     const {dispatch, state} = context;
     await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("UpdatingState")
