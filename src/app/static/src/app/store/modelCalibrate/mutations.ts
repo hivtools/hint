@@ -9,7 +9,6 @@ import {
     Error,
     VersionInfo
 } from "../../generated";
-import {ModelRunMutation} from "../modelRun/mutations";
 
 export enum ModelCalibrateMutation {
     FetchingModelCalibrateOptions = "FetchingModelCalibrateOptions",
@@ -26,11 +25,6 @@ export enum ModelCalibrateMutation {
     CalibrationPlotStarted = "CalibrationPlotStarted",
     SetPlotData = "SetPlotData"
 }
-
-export const ModelCalibrateUpdates = [
-    ModelCalibrateMutation.Calibrated
-];
-
 
 export const mutations: MutationTree<ModelCalibrateState> = {
     [ModelCalibrateMutation.Ready](state: ModelCalibrateState) {

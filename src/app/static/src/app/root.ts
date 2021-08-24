@@ -33,13 +33,6 @@ import {currentHintVersion} from "./hintVersion";
 import {ModelRunMutation, ModelRunUpdates} from "./store/modelRun/mutations";
 import {adr, ADRState, initialADRState} from "./store/adr/adr";
 import {adrUpload, ADRUploadState, initialADRUploadState} from "./store/adrUpload/adrUpload";
-
-import {
-    downloadResults,
-    DownloadResultsState,
-    initialDownloadResultsState
-} from "./store/downloadResults/downloadResults";
-import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibrate/mutations";
 import {GenericChartState, initialGenericChartState, genericChart} from "./store/genericChart/genericChart";
 
 export interface TranslatableState {
@@ -64,8 +57,7 @@ export interface RootState extends TranslatableState {
     load: LoadState,
     errors: ErrorsState,
     projects: ProjectsState
-    currentUser: string,
-    downloadResults: DownloadResultsState
+    currentUser: string
 }
 
 export interface ReadyState {
@@ -115,10 +107,6 @@ const resetState = (store: Store<RootState>): void => {
             if (type[0] == "modelRun" && ModelRunUpdates.includes(type[1] as ModelRunMutation)) {
                 store.commit(RootMutation.ResetOutputs);
             }
-
-            if (type[0] == "modelCalibrate" && ModelCalibrateUpdates.includes(type[1] as ModelCalibrateMutation)) {
-                store.commit(RootMutation.ResetDownload);
-            }
         }
     })
 };
@@ -145,8 +133,7 @@ export const emptyState = (): RootState => {
         plottingSelections: initialPlottingSelectionsState(),
         errors: initialErrorsState(),
         projects: initialProjectsState(),
-        currentUser: currentUser,
-        downloadResults: initialDownloadResultsState()
+        currentUser: currentUser
     }
 };
 
@@ -168,8 +155,7 @@ export const storeOptions: StoreOptions<RootState> = {
         load,
         errors,
         projects,
-        hintrVersion,
-        downloadResults
+        hintrVersion
     },
     actions: actions,
     mutations: mutations,

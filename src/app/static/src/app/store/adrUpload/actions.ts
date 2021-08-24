@@ -91,10 +91,9 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
 
     async uploadFilesToADR(context, uploadFilesPayload) {
         const {rootState, commit, dispatch} = context;
+        const uploadMetadata = rootState.modelRun.result?.uploadMetadata
         const selectedDatasetId = rootState.baseline.selectedDataset!.id;
-        let downloadId;
-
-        const uploadMetadata = rootState.metadata.adrUploadMetadata
+        const modelCalibrateId = rootState.modelCalibrate.calibrateId;
 
         commit({type: ADRUploadMutation.ADRUploadStarted, payload: uploadFilesPayload.length});
 
@@ -107,19 +106,14 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                 requestParams["resourceId"] = resourceId
             }
             if (resourceType === rootState.adr.schemas?.outputSummary) {
-                downloadId = rootState.downloadResults.summary.downloadId
-
-                requestParams["description"] =
-                    uploadMetadata?.find(meta => meta.type === "summary")?.description
-                    || "Naomi summary report uploaded from Naomi web app"
+                requestParams["description"] = uploadMetadata
+                    ? uploadMetadata.outputSummary.description
+                    : "Naomi summary report uploaded from Naomi web app"
             }
-
             if (resourceType === rootState.adr.schemas?.outputZip) {
-                downloadId = rootState.downloadResults.spectrum.downloadId
-
-                requestParams["description"] =
-                    uploadMetadata?.find(meta => meta.type === "spectrum")?.description
-                    || "Naomi output uploaded from Naomi web app"
+                requestParams["description"] = uploadMetadata
+                    ? uploadMetadata.outputZip.description
+                    : "Naomi output uploaded from Naomi web app"
             }
 
             let apiRequest = api<ADRUploadMutation, ADRUploadMutation>(context)
@@ -129,7 +123,7 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
             } else {
                 apiRequest = apiRequest.ignoreSuccess();
             }
-            const response = await apiRequest.postAndReturn(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${downloadId}`,
+            const response = await apiRequest.postAndReturn(`/adr/datasets/${selectedDatasetId}/resource/${resourceType}/${modelCalibrateId}`,
                 qs.stringify(requestParams))
             if (!response) {
                 break

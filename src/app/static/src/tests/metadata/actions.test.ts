@@ -4,7 +4,6 @@ import {
     mockSuccess
 } from "../mocks";
 import {actions} from "../../app/store/metadata/actions";
-import {MetadataMutations} from "../../app/store/metadata/mutations";
 
 const rootState = mockRootState();
 describe("Metadata actions", () => {
@@ -37,32 +36,6 @@ describe("Metadata actions", () => {
     it("commits error after unsuccessful (404) fetch", async () => {
         await testPlottingMetadataError(404);
     });
-
-    it("commits ADR metadata after successful fetch", async () => {
-
-        const adrMetadataResponse = {type: "summary", description: "summary"}
-
-        mockAxios.onGet(`/meta/adr/1`)
-            .reply(200, mockSuccess(adrMetadataResponse));
-
-        const commit = jest.fn();
-        await actions.getAdrUploadMetadata({commit, rootState} as any, "1");
-
-        expect(commit.mock.calls[0][0]).toStrictEqual({type: "AdrUploadMetadataFetched", payload: adrMetadataResponse});
-    });
-
-    it("commits ADR metadata error after failure to fetch", async () => {
-        mockAxios.onGet(`/meta/adr/1`)
-            .reply(500, mockFailure("ADR Metadata Failed"));
-
-        const commit = jest.fn();
-        await actions.getAdrUploadMetadata({commit, rootState} as any, "1");
-
-        expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "AdrUploadMetadataError",
-            payload: mockError("ADR Metadata Failed")
-        });
-    })
 
     async function testPlottingMetadataError(statusCode: number) {
         mockAxios.onGet(`/meta/plotting/Malawi`)

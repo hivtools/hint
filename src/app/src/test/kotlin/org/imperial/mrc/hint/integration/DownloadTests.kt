@@ -1,7 +1,5 @@
 package org.imperial.mrc.hint.integration
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import jdk.nashorn.internal.ir.annotations.Ignore
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -19,68 +17,32 @@ class DownloadTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `can submit coarse output download`()
+    fun `can download Spectrum results`()
     {
         val id = waitForModelRunResult()
-        val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/coarse-output/$id")
-        assertSuccess(responseEntity, "DownloadSubmitResponse")
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/spectrum/$id")
+        assertSuccess(responseEntity)
+        assertResponseHasExpectedDownloadHeaders(responseEntity)
+
     }
 
     @Test
-    fun `can download coarse output result`()
+    fun `can download summary data`()
     {
-        val modelId = waitForModelRunResult()
-        val calibrateId = waitForCalibrationResult(modelId)
-        val responseId = waitForSubmitDownloadOutput(calibrateId, "coarse-output")
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/result/$responseId")
+        val id = waitForModelRunResult()
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/summary/$id")
         assertSuccess(responseEntity)
         assertResponseHasExpectedDownloadHeaders(responseEntity)
     }
 
     @Test
-    fun `can submit summary download`()
+    fun `can download coarse output results`()
     {
         val id = waitForModelRunResult()
-        val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/summary/$id")
-        assertSuccess(responseEntity, "DownloadSubmitResponse")
-    }
-
-    @Test
-    fun `can download summary output result`()
-    {
-        val modelId = waitForModelRunResult()
-        val calibrateId = waitForCalibrationResult(modelId)
-        val responseId = waitForSubmitDownloadOutput(calibrateId, "summary")
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/result/$responseId")
+        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/coarse-output/$id")
         assertSuccess(responseEntity)
         assertResponseHasExpectedDownloadHeaders(responseEntity)
-    }
 
-    @Test
-    fun `can submit spectrum download`()
-    {
-        val id = waitForModelRunResult()
-        val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/spectrum/$id")
-        assertSuccess(responseEntity, "DownloadSubmitResponse")
-    }
-
-    @Test
-    fun `can download spectrum output result`()
-    {
-        val modelId = waitForModelRunResult()
-        val calibrateId = waitForCalibrationResult(modelId)
-        val responseId = waitForSubmitDownloadOutput(calibrateId, "spectrum")
-        val responseEntity = testRestTemplate.getForEntity<ByteArray>("/download/result/$responseId")
-        assertSuccess(responseEntity)
-        assertResponseHasExpectedDownloadHeaders(responseEntity)
-    }
-
-    @Test
-    fun `can get download status`()
-    {
-        val responseId = downloadOutputResponseId()
-        val responseEntity = testRestTemplate.getForEntity<String>("/download/status/$responseId")
-        assertSuccess(responseEntity, "DownloadStatusResponse")
     }
 
     fun assertResponseHasExpectedDownloadHeaders(response: ResponseEntity<ByteArray>)
@@ -93,14 +55,5 @@ class DownloadTests : SecureIntegrationTests()
         val bodyLength = response.body?.count()
         assertThat(contentLength).isEqualTo(bodyLength)
         assertThat(headers["Connection"]?.first()).isNotEqualTo("keep-alive")
-    }
-
-    fun downloadOutputResponseId(): String
-    {
-        val calibrateId = waitForModelRunResult()
-        val response = testRestTemplate.getForEntity<String>("/download/submit/spectrum/$calibrateId")
-
-        val bodyJSON = ObjectMapper().readTree(response.body)
-        return bodyJSON["data"]["id"].asText()
     }
 }

@@ -32,16 +32,6 @@ class MetadataTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `can get uploadToADR metadata`()
-    {
-        val modelId = waitForModelRunResult()
-        val calibrateId = waitForCalibrationResult(modelId)
-        val responseId = waitForSubmitDownloadOutput(calibrateId, "spectrum")
-
-        val responseEntity = testRestTemplate.getForEntity<String>("/meta/adr/$responseId")
-        assertSuccess(responseEntity, "AdrMetadataResponse")
-    }
-    @Test
     fun `can get generic chart metadata`()
     {
         val responseEntity = testRestTemplate.getForEntity<String>("/meta/generic-chart/")
