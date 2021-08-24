@@ -13,7 +13,7 @@ import {
     mockShapeResponse, mockStepperState,
     mockSurveyAndProgramState,
     mockValidateBaselineResponse,
-    mockProjectsState, mockModelCalibrateState, mockADRState
+    mockProjectsState, mockModelCalibrateState, mockADRState, mockSurveyResponse
 
 } from "../mocks";
 import {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
@@ -164,6 +164,12 @@ describe("Stepper component", () => {
         validatedConsistent: true
     };
 
+    const completedSurveyAndProgramState = {
+        survey: mockSurveyResponse(),
+        programError: null,
+        ancError: null
+    }
+
     afterEach(() => {
         localStorage.clear();
     });
@@ -264,12 +270,22 @@ describe("Stepper component", () => {
     });
 
     it("step connector is enabled if next step is", () => {
-        const wrapper = createReadySut({},
-            {survey: true, program: true, shape: true} as any);
+        const wrapper = createReadySut(completedBaselineState,
+            completedSurveyAndProgramState,
+            {plottingMetadata: "TEST DATA" as any});
         const connectors = wrapper.findAll(".step-connector");
 
         expect(connectors.at(0).classes()).toContain("enabled");
-        expect(connectors.filter(c => c.classes().indexOf("enabled") > -1).length).toBe(1);
+        expect(connectors.filter(c => c.classes().indexOf("enabled") > -1).length).toBe(2);
+    });
+
+    it("step connector is not enabled for review inputs step if survey is not valid", () => {
+        const wrapper = createReadySut(completedBaselineState,
+            {survey: false, program: true, shape: true} as any);
+        const connectors = wrapper.findAll(".step-connector");
+
+        expect(connectors.at(0).classes()).not.toContain("enabled");
+        expect(connectors.filter(c => c.classes().indexOf("enabled") > -1).length).toBe(0);
     });
 
     it("all steps except baseline are disabled initially", () => {
@@ -279,20 +295,31 @@ describe("Stepper component", () => {
         expect([1, 2, 3, 4, 5].filter(i => steps.at(i).props().enabled).length).toBe(0);
     });
 
-    it("upload surveys step is enabled when baseline step is complete", () => {
+    it("Review inputs step is enabled when baseline step is complete", () => {
         const wrapper = createReadySut(completedBaselineState,
-            {},
+            completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any});
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().enabled).toBe(true);
         expect(steps.at(1).props().enabled).toBe(true);
         expect(steps.at(0).props().complete).toBe(true);
-        expect([2, 3, 4, 5].filter(i => steps.at(i).props().enabled).length).toBe(0);
+        expect(steps.at(2).props().enabled).toBe(true);
+        expect([3, 4, 5].filter(i => steps.at(i).props().enabled).length).toBe(0);
     });
 
-    it("upload surveys step is not enabled if metadata state is not complete", () => {
+    it("Review inputs step is not enabled when baseline step is not complete", () => {
+        const wrapper = createReadySut(completedBaselineState);
+        const steps = wrapper.findAll(Step);
+        expect(steps.at(0).props().enabled).toBe(true);
+        expect(steps.at(1).props().enabled).toBe(false);
+        expect(steps.at(0).props().complete).toBe(false);
+        expect(steps.at(2).props().enabled).toBe(false);
+        expect([3, 4, 5].filter(i => steps.at(i).props().enabled).length).toBe(0);
+    });
+
+    it("Review inputs step is not enabled if metadata state is not complete", () => {
         const wrapper = createReadySut(completedBaselineState,
-            {},
+            completedSurveyAndProgramState,
             {plottingMetadata: null});
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().enabled).toBe(true);
@@ -303,7 +330,7 @@ describe("Stepper component", () => {
 
     it("updates active step when jump event is emitted", () => {
         const wrapper = createReadySut(completedBaselineState,
-            {},
+            completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any});
         const steps = wrapper.findAll(Step);
         steps.at(1).vm.$emit("jump", 2);
@@ -324,7 +351,7 @@ describe("Stepper component", () => {
 
     it("can continue when the active step is complete", () => {
         const wrapper = createReadySut(completedBaselineState,
-            {},
+            completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).not.toContain("disabled");
@@ -369,7 +396,7 @@ describe("Stepper component", () => {
             ready: true
         };
         const wrapper = createReadySut(baselineState,
-            {},
+            completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any});
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes()).toContain("disabled");
@@ -406,7 +433,7 @@ describe("Stepper component", () => {
 
         const wrapper = createSut(
             completedBaselineState,
-            {},
+            completedSurveyAndProgramState,
             {
                 plottingMetadata: "TEST DATA" as any
             },
@@ -423,7 +450,7 @@ describe("Stepper component", () => {
     it("steps only shown as enabled once state becomes ready, and not loading", async () => {
 
         const wrapper = createSut(completedBaselineState,
-            {},
+            completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
         let steps = wrapper.findAll(Step);
