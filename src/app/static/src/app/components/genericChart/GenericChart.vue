@@ -6,8 +6,8 @@
                              :config="ds.config"
                              :datasets="chartMetadata.datasets"
                              :value="ds.selections.datasetId"
-                             @update="updateDataSource(chartIndex, ds.dataSourceId, $event)" />//TODO: Handle this, update selection, ensure dataset
-                ></data-source>
+                             @update="updateDataSource(chartIndex, ds.dataSourceId, $event)" />
+                </data-source>
             </div>
         </div>
     </div>
@@ -66,11 +66,12 @@
         components: {
             DataSource
         },
-        data() {
-            const dataSourceSelections = this.chartMetadata.dataSelectors.dataSources
+        data: function() {
+            const chart = this.metadata[this.chartId];
+            const dataSourceSelections = chart.dataSelectors.dataSources
                 .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => ({
                     ...running,
-                    [dataSource.id]: {dataSetId: dataSource.datasetId}
+                    [dataSource.id]: {datasetId: dataSource.datasetId}
                 }), {});
 
             return {
@@ -100,6 +101,7 @@
             getDataset: mapActionByName(namespace, 'getDataset'),
             ensureDataset(datasetId: string) {
                 const dataset = this.chartMetadata.datasets.find(dataset => dataset.id === datasetId)!;
+                console.log("ensureing dataset with url "+ dataset.url)
                 if (datasetId && !this.datasets[datasetId]) {
                     this.getDataset({datasetId, url: dataset.url});
                 }
@@ -107,7 +109,7 @@
         },
         mounted() {
             this.chartConfigValues.dataSourceConfigValues.forEach((dataSourceValues) => {
-                this.ensureDataset(dataSourceValues.selectedDatasetId);
+                this.ensureDataset(dataSourceValues.selections.datasetId);
             });
         }
     });
