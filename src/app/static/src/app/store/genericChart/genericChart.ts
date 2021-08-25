@@ -7,12 +7,14 @@ import {mutations} from "./mutations";
 export interface GenericChartState {
     genericChartMetadata: GenericChartMetadataResponse | null
     datasets: Record<string, Dict<unknown>[]>
+    genericChartError: Error | null
 }
 
 export const initialGenericChartState = (): GenericChartState => {
     return {
         genericChartMetadata: null,
-        datasets: {}
+        datasets: {},
+        genericChartError: null
     }
 };
 

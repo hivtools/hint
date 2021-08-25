@@ -171,7 +171,7 @@ export interface DatasetConfig {
 export interface DataSourceConfig {
     id: string
     type: "fixed" | "editable"
-    label: string
+    label?: string
     datasetId: string
     showFilters: true
     showIndicators: true

@@ -3,9 +3,7 @@
         <div class="form-group">
             <label class="font-weight-bold" :for="`data-source-${config.id}`" v-translate="config.label"></label>
             <select v-model="selected" :id="`data-source-${config.id}`" class="form-control">
-                <option v-for="ds in datasets" :key="ds.id" :value="ds.id">
-                    {{ds.label}}
-                </option>
+                <option v-for="ds in datasets" :key="ds.id" :value="ds.id" v-translate="ds.label"></option>
             </select>
         </div>
     </div>

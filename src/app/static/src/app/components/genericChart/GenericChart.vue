@@ -12,6 +12,7 @@
         </div>
         <div class="col-9">
             {{ chartId }} coming soon
+            <error-alert v-if="error" :error="error"></error-alert>
         </div>
     </div>
 </template>
@@ -20,6 +21,7 @@
     import Vue from "vue";
     import {DataSourceConfig, Dict, GenericChartMetadata, GenericChartMetadataResponse} from "../../types";
     import DataSource from "./dataSelectors/DataSource.vue";
+    import ErrorAlert from "../ErrorAlert.vue";
     import {mapActionByName, mapStateProp} from "../../utils";
     import {GenericChartState} from "../../store/genericChart/genericChart";
     import {getDatasetPayload} from "../../store/genericChart/actions";
@@ -48,9 +50,10 @@
     }
 
     interface Computed {
+        datasets: Record<string, Dict<unknown>[]>
+        error: Error | null
         chartMetadata: GenericChartMetadata
         chartConfigValues: ChartConfigValues
-        datasets: Record<string, Dict<unknown>[]>
     }
 
     interface Methods {
@@ -68,7 +71,8 @@
             chartId: String
         },
         components: {
-            DataSource
+            DataSource,
+            ErrorAlert
         },
         data: function() {
             const chart = this.metadata[this.chartId];
@@ -85,6 +89,8 @@
         computed: {
             datasets:  mapStateProp<GenericChartState, Record<string, Dict<unknown>[]>>(namespace,
                 (state: GenericChartState) => state.datasets),
+            error: mapStateProp<GenericChartState, Error | null>(namespace,
+                (state: GenericChartState) => state.genericChartError),
             chartMetadata() {
                 return this.metadata[this.chartId]!;
             },
@@ -104,8 +110,8 @@
         methods: {
             getDataset: mapActionByName(namespace, 'getDataset'),
             ensureDataset(datasetId: string) {
-                const dataset = this.chartMetadata.datasets.find(dataset => dataset.id === datasetId)!;
                 if (datasetId && !this.datasets[datasetId]) {
+                    const dataset = this.chartMetadata.datasets.find(dataset => dataset.id === datasetId)!;
                     this.getDataset({datasetId, url: dataset.url});
                 }
             },

@@ -23,9 +23,11 @@ export const actions: ActionTree<GenericChartState, RootState> & MetadataActions
     },
     async getDataset(context, payload) {
         const {commit} = context;
-        await api<GenericChartMutation, "">(context)
+        commit({type: GenericChartMutation.SetError, payload: null});
+        await api<GenericChartMutation, GenericChartMutation>(context)
             .ignoreSuccess()
-            .ignoreErrors()
+            .withError(GenericChartMutation.SetError)
+            .freezeResponse()
             .get(payload.url)
             .then((response) => {
                 if (response) {
@@ -37,10 +39,6 @@ export const actions: ActionTree<GenericChartState, RootState> & MetadataActions
                         }
                     });
                 }
-            })
-            .catch((e) => {
-                // TODO: !! Commit error to state
-                console.log("Fetch dataset failed: " + JSON.stringify(e))
             });
     }
 };

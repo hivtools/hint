@@ -3,7 +3,6 @@
     "datasets": [
       {
         "id": "art",
-        "type": "custom",
         "label": "ART",
         "url":  "/chart-data/input-time-series/programme",
         "filters": [
@@ -23,7 +22,6 @@
       },
       {
         "id": "anc",
-        "type": "custom",
         "label": "ANC",
         "url": "/chart-data/input-time-series/anc",
         "filters": [
