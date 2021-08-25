@@ -53,37 +53,33 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                                 "Naomi Results and Summary Report")
                         };
 
-                        if (switches.adrPushInputs) {
-                            const addLocalInputFileToUploads = (
-                                key: string,
-                                schema: string,
-                                response: ValidateInputResponse,
-                                displayName: string) => {
-                                if (!response.fromADR) {
-                                    const uploadFile = constructUploadFile(
-                                        metadata,
-                                        Object.keys(uploadFiles).length,
-                                        schema,
-                                        response.filename,
-                                        displayName
-                                    );
-                                    if (uploadFile) {
-                                        uploadFiles[key] = uploadFile;
-                                    }
-                                }
-                            };
+                        const addLocalInputFileToUploads = (
+                            key: string,
+                            schema: string,
+                            response: ValidateInputResponse,
+                            displayName: string) => {
+                            const uploadFile = constructUploadFile(
+                                metadata,
+                                Object.keys(uploadFiles).length,
+                                schema,
+                                response.filename,
+                                displayName
+                            );
+                            if (uploadFile) {
+                                uploadFiles[key] = uploadFile;
+                            }
+                        };
 
-                            const baseline = rootState.baseline;
-                            addLocalInputFileToUploads("pjnz", schemas.pjnz, baseline.pjnz!, "PJNZ");
-                            addLocalInputFileToUploads("shape", schemas.shape, baseline.shape!, "shape");
-                            addLocalInputFileToUploads("population",  schemas.population, baseline.population!, "population");
+                        const baseline = rootState.baseline;
+                        addLocalInputFileToUploads("pjnz", schemas.pjnz, baseline.pjnz!, "PJNZ");
+                        addLocalInputFileToUploads("shape", schemas.shape, baseline.shape!, "shape");
+                        addLocalInputFileToUploads("population",  schemas.population, baseline.population!, "population");
 
-                            const sap = rootState.surveyAndProgram;
-                            addLocalInputFileToUploads("survey", schemas.survey, sap.survey!, "survey");
-                            addLocalInputFileToUploads("programme", schemas.programme, sap.program!, "ART");
-                            addLocalInputFileToUploads("anc", schemas.anc, sap.anc!, "ANC");
-                        }
-
+                        const sap = rootState.surveyAndProgram;
+                        addLocalInputFileToUploads("survey", schemas.survey, sap.survey!, "survey");
+                        addLocalInputFileToUploads("programme", schemas.programme, sap.program!, "ART");
+                        addLocalInputFileToUploads("anc", schemas.anc, sap.anc!, "ANC");
+                        
                         commit({type: ADRUploadMutation.SetUploadFiles, payload: uploadFiles});
                     }
                 });

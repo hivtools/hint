@@ -120,6 +120,7 @@
     }
 
     const outputFileTypes = ["outputZip", "outputSummary"];
+    const inputFileTypes = ["anc", "programme", "pjnz", "population", "shape", "survey"];
 
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "UploadModal",
@@ -160,7 +161,7 @@
                 return i18next.t(text, { lng: this.currentLanguage });
             },
             setDefaultCheckedItems: function () {
-                this.uploadFilesToAdr = outputFileTypes
+                this.uploadFilesToAdr = [...outputFileTypes, ...inputFileTypes]
                     .filter(key => this.uploadFiles.hasOwnProperty(key))
             }
         },
