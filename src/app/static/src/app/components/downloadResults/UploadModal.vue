@@ -113,6 +113,9 @@
         open: boolean
     }
 
+// Version names must be unique per dataset
+// Version already exists for this activity
+
     const outputFileTypes = ["outputZip", "outputSummary"];
     const inputFileTypes = ["anc", "programme", "pjnz", "population", "shape", "survey"];
 

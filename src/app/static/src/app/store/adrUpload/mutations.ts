@@ -44,7 +44,16 @@ export const mutations: MutationTree<ADRUploadState> = {
 
     [ADRUploadMutation.ReleaseFailed](state: ADRUploadState, action: PayloadWithType<Error | null>) {
         state.releaseFailed = true;
-        state.uploadError = action.payload;
+        let alteredPayload = action.payload
+        switch(action.payload?.detail) {
+            case "Version already exists for this activity":
+                alteredPayload!.detail = "A release already exists on ADR for the latest files"
+              break;
+            case "Version names must be unique per dataset":
+                alteredPayload!.detail = "Release names must be unique per dataset and a release with the same name already exists on ADR. Try renaming the project to generate a new release name."
+              break;
+        }
+        state.uploadError = alteredPayload;
     },
 
     [ADRUploadMutation.SetADRUploadError](state: ADRUploadState, action: PayloadWithType<Error | null>) {
