@@ -42,13 +42,13 @@
                         <tick color="#e31837" v-if="uploadComplete" width="20px"></tick>
                     </div>
                 </div>
-                <div id="releaseCreated" v-if="releaseCreated || releaseNotCreated" class="d-flex align-items-end">
+                <div id="releaseCreated" v-if="releaseCreated || releaseFailed" class="d-flex align-items-end">
                     <div class="d-flex align-items-center height-40 mr-1">
-                        <span class="font-weight-bold" v-translate="releaseCreated ? 'releaseCreated' : 'releaseNotCreated'"></span>
+                        <span class="font-weight-bold" v-translate="releaseCreated ? 'releaseCreated' : 'releaseFailed'"></span>
                     </div>
                     <div class="d-flex align-items-center height-40">
                         <tick color="#e31837" v-if="releaseCreated" width="20px"></tick>
-                        <svg class="tick" id="cross" v-if="releaseNotCreated" width="20px">
+                        <svg class="tick" id="cross" v-if="releaseFailed" width="20px">
                             <path d="M 10,10 l 90,90 M 100,10 l -90,90" stroke="#e31837" stroke-width="15"
                                 fill="none"></path>
                         </svg>
@@ -88,7 +88,7 @@
         uploading: boolean,
         uploadComplete: boolean,
         releaseCreated: boolean,
-        releaseNotCreated: boolean,
+        releaseFailed: boolean,
         uploadError: null | UploadError,
         hasUploadPermission: boolean
     }
@@ -125,7 +125,7 @@
                 uploading: state => state.uploading,
                 uploadComplete: state => state.uploadComplete,
                 releaseCreated: state => state.releaseCreated,
-                releaseNotCreated: state => state.releaseNotCreated,
+                releaseFailed: state => state.releaseFailed,
                 uploadError: state => state.uploadError
             }),
             hasUploadPermission: mapStateProp<ADRState, boolean>("adr",

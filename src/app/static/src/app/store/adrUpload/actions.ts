@@ -147,7 +147,7 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
         const name = {name: `Naomi: ${project} v${version}`}
 
         await api(context)
-                .withError(ADRUploadMutation.ReleaseNotCreated)
+                .withError(ADRUploadMutation.ReleaseFailed)
                 .withSuccess(ADRUploadMutation.ReleaseCreated)
                 .postAndReturn(`/adr/datasets/${selectedDatasetId}/releases`, qs.stringify(name));
     }

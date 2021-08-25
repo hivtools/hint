@@ -835,7 +835,7 @@ describe("ADR upload actions", () => {
         await actions.createRelease({commit, rootState: root} as any);
 
         expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ReleaseNotCreated");
+        expect(commit.mock.calls[0][0]["type"]).toBe("ReleaseFailed");
         expect(commit.mock.calls[0][0]["payload"]).toStrictEqual({"detail": "failed", "error": "OTHER_ERROR"});
     });
 });

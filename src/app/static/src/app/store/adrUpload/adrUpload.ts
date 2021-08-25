@@ -12,7 +12,7 @@ export interface ADRUploadState {
     uploading: boolean,
     uploadComplete: boolean,
     releaseCreated: boolean,
-    releaseNotCreated: boolean,
+    releaseFailed: boolean,
     uploadFiles: Dict<UploadFile> | null
 }
 
@@ -23,7 +23,7 @@ export const initialADRUploadState = (): ADRUploadState => ({
     uploading: false,
     uploadComplete: false,
     releaseCreated: false,
-    releaseNotCreated: false,
+    releaseFailed: false,
     uploadFiles: null
 });
 

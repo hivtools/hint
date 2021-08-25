@@ -11,7 +11,7 @@ const localVue = createLocalVue();
 
 describe("Download Results component", () => {
 
-    const createStore = (hasUploadPermission= true, getUserCanUpload = jest.fn(), uploading = false, uploadComplete = false, uploadError: any = null, releaseCreated = false, releaseNotCreated = false) => {
+    const createStore = (hasUploadPermission= true, getUserCanUpload = jest.fn(), uploading = false, uploadComplete = false, uploadError: any = null, releaseCreated = false, releaseFailed = false) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -33,7 +33,7 @@ describe("Download Results component", () => {
                         uploadComplete,
                         uploadError,
                         releaseCreated,
-                        releaseNotCreated,
+                        releaseFailed,
                         currentFileUploading: 1,
                         totalFilesUploading: 2
                     }),
