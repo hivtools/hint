@@ -93,6 +93,7 @@
     interface Data {
         uploadModalOpen: boolean
     }
+    // test
 
     export default Vue.extend<Data, Methods, Computed>({
         name: "downloadResults",
