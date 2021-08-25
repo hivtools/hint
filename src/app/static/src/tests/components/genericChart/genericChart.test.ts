@@ -1,6 +1,5 @@
 import Vuex from 'vuex';
 import {emptyState} from "../../../app/root";
-import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {shallowMount} from "@vue/test-utils";
 import GenericChart from "../../../app/components/genericChart/GenericChart.vue";
 import DataSource from "../../../app/components/genericChart/dataSelectors/DataSource.vue";
@@ -40,7 +39,6 @@ describe("GenericChart component", () => {
                 }
             }
         });
-        registerTranslations(store);
         const propsData = {
             metadata,
             chartId: "test-chart"
