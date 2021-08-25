@@ -52,11 +52,6 @@
                             <label class="form-check-label"
                                    :for="`id-${sectionIndex}-${index}`"
                                    v-translate="uploadFile.displayName"></label>
-                            <small v-if="uploadFile.resourceId" class="text-danger row">
-                            <span class="col-auto">
-                            <span v-translate="'uploadFileOverwrite'"></span>{{ lastModified(uploadFile.lastModified) }}
-                            </span>
-                            </small>
                         </div>
                     </div>
                 </div>
@@ -83,7 +78,7 @@
     import Modal from "../Modal.vue";
     import {Dict, UploadFile} from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {formatDateTime, mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
     import { HelpCircleIcon } from "vue-feather-icons";
     import { VTooltip } from "v-tooltip";
@@ -96,7 +91,6 @@
         createReleaseAction: () => void;
         confirmUpload: () => void;
         handleCancel: () => void
-        lastModified: (date: string) => string | null
         setDefaultCheckedItems: () => void
         translate(text: string): string;
     }
@@ -153,9 +147,6 @@
             },
             handleCancel() {
                 this.$emit("close")
-            },
-            lastModified: function (date: string) {
-                return formatDateTime(date)
             },
             translate(text) {
                 return i18next.t(text, { lng: this.currentLanguage });
