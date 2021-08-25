@@ -110,7 +110,6 @@
                 }
             },
             updateDataSource(dataSourceId: string, datasetId: string) {
-                console.log(`GC updating data source ${dataSourceId} with dataset ${datasetId}`)
                 this.dataSourceSelections[dataSourceId]!.datasetId = datasetId;
                 this.ensureDataset(datasetId);
             }

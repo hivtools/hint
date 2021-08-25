@@ -44,7 +44,6 @@
                     return this.value;
                 },
                 set(newValue: string) {
-                    console.log("DS emitting update")
                     this.$emit('update', newValue)
                 }
             }
