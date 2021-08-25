@@ -1,3 +1,7 @@
+# hint 1.48.0
+
+* Use async endpoints for Just-In-time generation of download files from HINT frontend
+
 # hint 1.47.0
 
 * Add Portuguese translations
