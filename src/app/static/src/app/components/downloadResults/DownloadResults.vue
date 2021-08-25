@@ -48,10 +48,7 @@
                     </div>
                     <div class="d-flex align-items-center height-40">
                         <tick color="#e31837" v-if="releaseCreated" width="20px"></tick>
-                        <svg class="tick" id="cross" v-if="releaseFailed" width="20px">
-                            <path d="M 10,10 l 90,90 M 100,10 l -90,90" stroke="#e31837" stroke-width="15"
-                                fill="none"></path>
-                        </svg>
+                        <cross color="#e31837" v-if="releaseFailed" width="20px"></cross>
                     </div>
                 </div>
                 <error-alert v-if="uploadError" :error="uploadError"></error-alert>
@@ -70,6 +67,7 @@
     import {ADRState} from "../../store/adr/adr";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
+    import Cross from "../Cross.vue";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import ErrorAlert from "../ErrorAlert.vue";
@@ -168,6 +166,7 @@
             UploadIcon,
             LoadingSpinner,
             Tick,
+            Cross,
             ErrorAlert,
             UploadModal
         }

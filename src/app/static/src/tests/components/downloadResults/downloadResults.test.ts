@@ -165,7 +165,7 @@ describe("Download Results component", () => {
         const statusMessage = wrapper.find("#releaseCreated");
         expectTranslated(statusMessage.find("span"), "Could not create new release",
             "Impossible de créer une nouvelle version", "Não foi possível criar um novo lançamento", store);
-        expect(statusMessage.find("#cross").exists()).toBe(true)
+        expect(statusMessage.find("cross-stub").exists()).toBe(true)
 
         const uploadButton = wrapper.find("button");
         expect(uploadButton.attributes("disabled")).toBeUndefined();
