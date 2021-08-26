@@ -33,7 +33,7 @@ describe(`uploadModal `, () => {
                 resourceUrl: null,
                 lastModified: "2021-01-25T06:34:12.375649",
                 resourceName: "Naomi Output Zip"
-            }
+            },
     }
 
     const metadataWithInput = {
@@ -43,7 +43,7 @@ describe(`uploadModal `, () => {
             displayName: "population",
             resourceType: "inputs-unaids-population",
             resourceFilename: "naomi-model-outputs-population.zip",
-            resourceId: 123,
+            resourceId: "123",
             resourceUrl: null,
             lastModified: "2021-06-01",
             resourceName: "TestPopulation"
@@ -154,16 +154,9 @@ describe(`uploadModal `, () => {
         expect(mockTooltip.mock.calls[5][1].value).toBe("Faça upload de novas versões dos arquivos selecionados sem criar uma versão");
     });
 
-    it(`renders Output files, inputs, overwritten text and labels as expected`, () => {
+    it(`renders Output files, inputs, and labels as expected`, () => {
         const wrapper = getWrapper()
         const store = wrapper.vm.$store
-
-        const overwriteText = wrapper.findAll("small")
-        expect(overwriteText.length).toBe(1)
-        expectTranslated(overwriteText.at(0), "This file already exists on ADR " +
-            "and will be overwritten. File was updated 25/01/2021 06:34:12",
-            "Ce fichier existe déjà sur ADR et sera écrasé. Le fichier a été mis à jour 25/01/2021 06:34:12",
-            "Este ficheiro já existe no ADR e será substituído. O ficheiro foi atualizado 25/01/2021 06:34:12", store);
 
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
@@ -183,16 +176,19 @@ describe(`uploadModal `, () => {
     it(`checkboxes are set by default`, async () => {
         const store = createStore({})
         const wrapper = shallowMount(UploadModal, {store})
-        store.state.adrUpload.uploadFiles = fakeMetadata
+        store.state.adrUpload.uploadFiles = metadataWithInput
         await Vue.nextTick()
         const inputs = wrapper.findAll("input.form-check-input")
-        expect(inputs.length).toBe(2)
+        expect(inputs.length).toBe(3)
 
         const input1 =  inputs.at(0).element as HTMLInputElement
         expect(input1.checked).toBe(true)
 
         const input2 =  inputs.at(1).element as HTMLInputElement
         expect(input2.checked).toBe(true)
+
+        const input3 =  inputs.at(2).element as HTMLInputElement
+        expect(input3.checked).toBe(true)
     })
 
     it(`can check and get values from check boxes`, async () => {
@@ -211,21 +207,25 @@ describe(`uploadModal `, () => {
     it(`checkboxes are reset to default when switching back to create release`, async () => {
         const store = createStore({})
         const wrapper = shallowMount(UploadModal, {store})
-        store.state.adrUpload.uploadFiles = fakeMetadata
+        store.state.adrUpload.uploadFiles = metadataWithInput
         await Vue.nextTick()
         const radialInput = wrapper.find("#uploadFiles")
         await radialInput.trigger("click")
         const inputs = wrapper.findAll("input.form-check-input")
         inputs.at(0).setChecked(false)
         inputs.at(1).setChecked(false)
+        inputs.at(2).setChecked(false)
         const input1 =  inputs.at(0).element as HTMLInputElement
         expect(input1.checked).toBe(false)
         const input2 =  inputs.at(1).element as HTMLInputElement
         expect(input2.checked).toBe(false)
+        const input3 =  inputs.at(2).element as HTMLInputElement
+        expect(input3.checked).toBe(false)
         const radialInput2 = wrapper.find("#createRelease")
         await radialInput2.trigger("click")
         expect(input1.checked).toBe(true)
         expect(input2.checked).toBe(true)
+        expect(input3.checked).toBe(true)
     })
 
     it(`can trigger close modal as expected`, async () => {

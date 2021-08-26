@@ -11,7 +11,6 @@ import {
 import {actions} from "../../app/store/adrUpload/actions";
 import {mutations} from "../../app/store/adrUpload/mutations";
 import {UploadFile} from "../../app/types";
-import {switches} from "../../app/featureSwitches";
 import Vuex from "vuex";
 import {RootState} from "../../app/root";
 import {mutations as baselineMutations} from "../../app/store/baseline/mutations";
@@ -25,10 +24,8 @@ describe("ADR upload actions", () => {
         mockAxios.reset();
     });
 
-    const oldADRPushInputsValue = switches.adrPushInputs;
     afterEach(() => {
         (console.log as jest.Mock).mockClear();
-        switches.adrPushInputs = oldADRPushInputsValue;
     });
 
     it("getUploadFiles does nothing if no selected dataset", async () => {
@@ -78,59 +75,6 @@ describe("ADR upload actions", () => {
         expect(commit.mock.calls[1][0].payload).toStrictEqual(mockError("test error"));
     });
 
-    it("getUploadFiles gets dataset details and constructs upload files", async () => {
-        const commit = jest.fn();
-        const datasetWithResources = {
-            resources: [
-                {
-                    resource_type: "output-summary",
-                    id: "123",
-                    name: "Naomi Results and Summary Report",
-                    last_modified: "2021-03-01",
-                    metadata_modified: "2021-03-02",
-                    url: "http://test"
-                }
-            ]
-        };
-        mockAxios.onGet(`/adr/datasets/test-dataset`)
-            .reply(200, mockSuccess(datasetWithResources));
-
-        const root = mockRootState({
-            adr: mockADRState({schemas: {outputZip: "output-zip", outputSummary: "output-summary"} as any}),
-            baseline: mockBaselineState({selectedDataset: {id: "test-dataset"} as any}),
-            projects: mockProjectsState({currentProject: {name: "project1"} as any})
-        });
-
-        await actions.getUploadFiles({commit, state, rootState: root} as any);
-
-        expect(commit.mock.calls[0][0].type).toBe("SetADRUploadError");
-        expect(commit.mock.calls[0][0].payload).toBeNull();
-
-        expect(commit.mock.calls[1][0].type).toBe("SetUploadFiles");
-        expect(commit.mock.calls[1][0].payload).toStrictEqual({
-            outputZip: {
-                index: 0,
-                displayName: "uploadFileOutputZip",
-                resourceType: "output-zip",
-                resourceFilename: "naomi_outputs.zip",
-                resourceName: "Naomi Output ZIP",
-                resourceId: null,
-                lastModified: null,
-                resourceUrl: null
-            },
-            outputSummary: {
-                index: 1,
-                displayName: "uploadFileOutputSummary",
-                resourceType: "output-summary",
-                resourceFilename: "naomi_summary.html",
-                resourceName: "Naomi Results and Summary Report",
-                resourceId: "123",
-                lastModified: "2021-03-02",
-                resourceUrl: "http://test"
-            }
-        });
-    });
-
     it("getUploadFiles takes release into account", async () => {
         const commit = jest.fn();
 
@@ -144,9 +88,7 @@ describe("ADR upload actions", () => {
         expect(mockAxios.history["get"][0]["url"]).toBe("/adr/datasets/test-dataset?release=2.0");
     });
 
-    const testGetUploadFilesInputs = async (enableFeatureSwitch: boolean) => {
-        switches.adrPushInputs = enableFeatureSwitch ? "true" : null;
-
+    const testGetUploadFilesInputs = async () => {
         const commit = jest.fn();
         const datasetWithResources = {
             resources: [
@@ -230,48 +172,37 @@ describe("ADR upload actions", () => {
                 resourceId: "123",
                 lastModified: "2021-03-02",
                 resourceUrl: "http://test"
+            },
+            shape: {
+                index: 2,
+                displayName: "shape",
+                resourceType: "adr-shape",
+                resourceFilename: "test-shape.geojson",
+                resourceName: "Naomi Input Shape file",
+                resourceId: "456",
+                lastModified: "2021-04-02",
+                resourceUrl: "http://adr/test-shape"
+            },
+            programme: {
+                index: 3,
+                displayName: "ART",
+                resourceType: "adr-art",
+                resourceFilename: "test-program.csv",
+                resourceName: "Naomi Input ART file",
+                resourceId: "789",
+                lastModified: "2021-04-04",
+                resourceUrl: "http://adr/test-art"
             }
         };
-
-        if (enableFeatureSwitch) {
-            expectedUploadFiles = {
-                ...expectedUploadFiles,
-                shape: {
-                    index: 2,
-                    displayName: "shape",
-                    resourceType: "adr-shape",
-                    resourceFilename: "test-shape.geojson",
-                    resourceName: "Naomi Input Shape file",
-                    resourceId: "456",
-                    lastModified: "2021-04-02",
-                    resourceUrl: "http://adr/test-shape"
-                },
-                programme: {
-                    index: 3,
-                    displayName: "ART",
-                    resourceType: "adr-art",
-                    resourceFilename: "test-program.csv",
-                    resourceName: "Naomi Input ART file",
-                    resourceId: "789",
-                    lastModified: "2021-04-04",
-                    resourceUrl: "http://adr/test-art"
-                }
-            };
-        }
 
         expect(commit.mock.calls[1][0].payload).toStrictEqual(expectedUploadFiles);
     };
 
-    it("getUploadFiles includes non-ADR input files when adrPushInputs feature switch is on", async () => {
-        await testGetUploadFilesInputs(true);
+    it("getUploadFiles includes non-ADR input files", async () => {
+        await testGetUploadFilesInputs();
     });
 
-    it("getUploadFiles does not include non-ADR input files when adrPushInputs feature switch is off", async () => {
-        await testGetUploadFilesInputs(false);
-    });
-
-    it("getUploadFiles can include full set of non_ADR input files when adrPushInputs feature switch is on", async () => {
-        switches.adrPushInputs =  "true";
+    it("getUploadFiles can include full set of non_ADR input files", async () => {
 
         const commit = jest.fn();
         const datasetWithResources = {

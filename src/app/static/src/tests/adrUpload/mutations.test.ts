@@ -59,16 +59,24 @@ describe("ADR mutations", () => {
         expect(state.totalFilesUploading).toBe(null);
     });
 
+    it("can clear status", () => {
+        const state = mockADRUploadState();
+        mutations[ADRUploadMutation.ClearStatus](state);
+        expect(state.uploadComplete).toBe(false);
+        expect(state.releaseCreated).toBe(false);
+        expect(state.releaseFailed).toBe(false);
+    });
+
     it("can set release created", () => {
         const state = mockADRUploadState();
         mutations[ADRUploadMutation.ReleaseCreated](state);
         expect(state.releaseCreated).toBe(true);
     });
 
-    it("can set release not created with error", () => {
+    it("can set release failed with error", () => {
         const state = mockADRUploadState();
-        mutations[ADRUploadMutation.ReleaseFailed](state, {payload: mockError("error detail")});
+        mutations[ADRUploadMutation.ReleaseFailed](state, {payload: mockError("Version already exists for this activity")});
         expect(state.releaseFailed).toBe(true);
-        expect(state.uploadError!!.detail).toBe("error detail");
+        expect(state.uploadError!!.detail).toBe("A release already exists on ADR for the latest files");
     });
 });
