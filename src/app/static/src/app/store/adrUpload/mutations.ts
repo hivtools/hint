@@ -9,6 +9,7 @@ export enum ADRUploadMutation {
     ADRUploadProgress = "ADRUploadProgress",
     ADRUploadCompleted = "ADRUploadCompleted",
     ReleaseCreated = "ReleaseCreated",
+    ClearStatus = "ClearStatus",
     ReleaseFailed = "ReleaseFailed",
     SetADRUploadError = "SetADRUploadError",
 }
@@ -40,6 +41,12 @@ export const mutations: MutationTree<ADRUploadState> = {
 
     [ADRUploadMutation.ReleaseCreated](state: ADRUploadState) {
         state.releaseCreated = true;
+    },
+
+    [ADRUploadMutation.ClearStatus](state: ADRUploadState) {
+        state.releaseCreated = false;
+        state.releaseFailed = false;
+        state.uploadComplete = false;
     },
 
     [ADRUploadMutation.ReleaseFailed](state: ADRUploadState, action: PayloadWithType<Error | null>) {

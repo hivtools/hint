@@ -60,7 +60,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+    import {mapActionByName, mapStateProp, mapStateProps, mapMutationByName} from "../../utils";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
@@ -100,6 +100,7 @@
         handleUploadModal: () => void
         getUserCanUpload: () => void
         getUploadFiles: () => void
+        clearStatus: () => void;
     }
 
     interface Data {
@@ -154,12 +155,16 @@
             handleUploadModal() {
                 this.uploadModalOpen = true
             },
+            clearStatus: mapMutationByName("adrUpload", "ClearStatus"),
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
             getUploadFiles: mapActionByName("adrUpload", "getUploadFiles")
         },
         mounted() {
             this.getUserCanUpload();
             this.getUploadFiles()
+        },
+        destroyed(){
+            this.clearStatus();
         },
         components: {
             DownloadIcon,
