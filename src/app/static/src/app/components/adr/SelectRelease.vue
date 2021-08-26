@@ -81,6 +81,7 @@
 
     interface Computed {
         releases: Release[];
+        releaseName: string | null;
         valid: boolean;
         releaseOptions: any[];
         useRelease: boolean;
@@ -125,6 +126,14 @@
                     </div>`,
                 }));
             },
+            releaseName(){
+                // console.log('everything', this.releaseId, this.releases.length, this.releases.find( release => release.id === this.releaseId))
+                if (this.releaseId && this.releases.length){
+                    return this.releases.find( release => release.id === this.releaseId).name
+                } else {
+                    return null
+                }
+            },
             useRelease() {
                 return this.choiceADR === "useRelease";
             },
@@ -163,6 +172,7 @@
         mounted(){
             this.$emit("selected-dataset-release", this.releaseId);
             this.$emit("valid", this.valid);
+            console.log('everything', this.releaseId, this.releases.length, this.releases.find( release => release.id === this.releaseId))
         },
         directives: {
             tooltip: VTooltip,

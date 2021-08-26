@@ -6,7 +6,10 @@
                 v-translate="'selectedDataset'"
                 id="selectedDatasetSpan"
             ></span>
-            <a :href="selectedDataset.url" target="_blank">
+            <a v-if="releaseName" :href="selectedDataset.url" target="_blank">
+                {{ selectedDataset.title }} — {{ releaseName }}
+            </a>
+            <a v-else :href="selectedDataset.url" target="_blank">
                 {{ selectedDataset.title }}
             </a>
             <span class="color-red">
@@ -117,6 +120,7 @@
     import {
         Dataset,
         DatasetResourceSet,
+        // Release
     } from "../../types";
     import { InfoIcon } from "vue-feather-icons";
     import { VTooltip } from "v-tooltip";
@@ -151,6 +155,8 @@
 
     interface Computed {
         datasets: any[];
+        // releases: Release[];
+        // releaseName: string | null;
         fetchingDatasets: boolean;
         adrError: Error | null;
         datasetOptions: any[];
@@ -208,6 +214,10 @@
         },
         directives: { tooltip: VTooltip },
         computed: {
+            // releases: mapStateProp<ADRState, any[]>(
+            //     namespace,
+            //     (state: ADRState) => state.releases
+            // ),
             editsRequireConfirmation: mapGetterByName(
                 "stepper",
                 "editsRequireConfirmation"
@@ -232,6 +242,14 @@
                 namespace,
                 (state: ADRState) => state.adrError
             ),
+            // releaseName(){
+            //     console.log('everything', this.selectedDataset, this.selectedDataset.release, this.releases.length)
+            //     if (this.selectedDataset && this.selectedDataset.release && this.releases.length){
+            //         return this.releases.find( release => release?.id === this.selectedDataset.release).name
+            //     } else {
+            //         return null
+            //     }
+            // },
             datasetOptions() {
                 return this.datasets.map((d) => ({
                     id: d.id,
