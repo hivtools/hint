@@ -45,6 +45,8 @@ console.error = jest.fn();
 import {app} from "../../app"
 import {RootMutation} from "../../app/store/root/mutations";
 import {ModelRunMutation} from "../../app/store/modelRun/mutations";
+import ModelCalibrate from "../../app/components/modelCalibrate/ModelCalibrate.vue";
+import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 
 describe("App", () => {
 
@@ -146,6 +148,15 @@ describe("App", () => {
         store.commit(prefixNamespace("modelOptions", ModelOptionsMutation.UnValidate));
 
         expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetOutputs);
+        expect(spy).toBeCalledTimes(2);
+    });
+
+    it("resets download if calibrate option is unvalidated", () => {
+        const store = getStore(true);
+        const spy = jest.spyOn(store, "commit");
+        store.commit(prefixNamespace("modelCalibrate", ModelCalibrateMutation.Calibrated));
+
+        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetDownload);
         expect(spy).toBeCalledTimes(2);
     });
 
