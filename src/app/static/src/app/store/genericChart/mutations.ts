@@ -1,6 +1,6 @@
 import {MutationTree} from 'vuex';
 import {GenericChartState} from "./genericChart";
-import {Dict, GenericChartMetadataResponse, PayloadWithType} from "../../types";
+import {Dict, GenericChartDataset, GenericChartMetadataResponse, PayloadWithType} from "../../types";
 
 export enum GenericChartMutation {
     GenericChartMetadataFetched = "GenericChartMetadataFetched",
@@ -10,7 +10,7 @@ export enum GenericChartMutation {
 
 export interface SetDatasetPayload {
     datasetId: string,
-    dataset: Dict<unknown>[]
+    dataset: GenericChartDataset
 }
 
 export const mutations: MutationTree<GenericChartState> = {

@@ -1,6 +1,6 @@
 import {actions} from "../../app/store/genericChart/actions";
 import {login, rootState} from "./integrationTest";
-import {Dict, GenericChartMetadataResponse} from "../../app/types";
+import {Dict, GenericChartDataset, GenericChartMetadataResponse} from "../../app/types";
 import {GenericChartMutation} from "../../app/store/genericChart/mutations";
 import {getFormData} from "./helpers";
 import {actions as baselineActions} from "../../app/store/baseline/actions";
@@ -37,7 +37,7 @@ describe("genericChart actions", () => {
         const payload = {datasetId: "ART", url: "/chart-data/input-time-series/programme"};
         await actions.getDataset({commit, rootState} as any, payload);
         expect(commit.mock.calls[1][0]["type"]).toBe(GenericChartMutation.SetDataset);
-        const response = commit.mock.calls[1][0]["payload"]["dataset"] as any;
+        const response = commit.mock.calls[1][0]["payload"]["dataset"] as GenericChartDataset;
         expect(response.data.length).toBeGreaterThan(0);
         expect(response.data[0].area_id).toContain("MWI");
         expect(response.data[0].value).not.toBeUndefined();

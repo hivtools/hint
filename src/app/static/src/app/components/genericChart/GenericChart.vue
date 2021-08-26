@@ -19,7 +19,13 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {DataSourceConfig, Dict, GenericChartMetadata, GenericChartMetadataResponse} from "../../types";
+    import {
+        DataSourceConfig,
+        Dict,
+        GenericChartDataset,
+        GenericChartMetadata,
+        GenericChartMetadataResponse
+    } from "../../types";
     import DataSource from "./dataSelectors/DataSource.vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import {mapActionByName, mapStateProp} from "../../utils";
@@ -50,7 +56,7 @@
     }
 
     interface Computed {
-        datasets: Record<string, Dict<unknown>[]>
+        datasets: Record<string, GenericChartDataset>
         error: Error | null
         chartMetadata: GenericChartMetadata
         chartConfigValues: ChartConfigValues
@@ -87,7 +93,7 @@
             }
         },
         computed: {
-            datasets:  mapStateProp<GenericChartState, Record<string, Dict<unknown>[]>>(namespace,
+            datasets:  mapStateProp<GenericChartState, Record<string, GenericChartDataset>>(namespace,
                 (state: GenericChartState) => state.datasets),
             error: mapStateProp<GenericChartState, Error | null>(namespace,
                 (state: GenericChartState) => state.genericChartError),
