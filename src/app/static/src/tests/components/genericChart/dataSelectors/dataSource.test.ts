@@ -22,7 +22,8 @@ describe("DataSource component", () => {
 
     it("renders as expected", () => {
         const wrapper = getWrapper();
-        expectTranslated(wrapper.find("label"), "Data source", "Source de données", wrapper.vm.$store);
+        expectTranslated(wrapper.find("label"), "Data source", "Source de données",
+            "Fonte de dados", wrapper.vm.$store);
         expect(wrapper.find("label").attributes("for")).toBe("data-source-test-datasource");
 
         expect(wrapper.find("select").attributes("id")).toBe("data-source-test-datasource");
@@ -31,10 +32,11 @@ describe("DataSource component", () => {
         const options = wrapper.find("select").findAll("option");
         expect(options.length).toBe(2);
         expect(options.at(0).attributes("value")).toBe("dataset1");
-        expectTranslated(options.at(0), "ANC Testing", "Test de clinique prénatale", wrapper.vm.$store);
+        expectTranslated(options.at(0), "ANC Testing", "Test de clinique prénatale",
+            "Teste da CPN", wrapper.vm.$store);
 
         expect(options.at(1).attributes("value")).toBe("dataset2");
-        expectTranslated(options.at(1), "ART", "ART", wrapper.vm.$store);
+        expectTranslated(options.at(1), "ART", "ART", "TARV", wrapper.vm.$store);
     });
 
     it("emits update when value changes", async () => {

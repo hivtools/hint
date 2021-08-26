@@ -89,8 +89,8 @@ describe("GenericChart component", () => {
         const mockGetDataset = jest.fn();
         const state = {
             datasets: {
-                dataset1: [{value: "test"}],
-                dataset3: [{value: "test"}]
+                dataset1: {data: [{value: "test"}], metadata: null},
+                dataset3: {data: [{value: "test"}], metadata: null}
             }
         };
         getWrapper(mockGetDataset, state);
@@ -102,7 +102,7 @@ describe("GenericChart component", () => {
         const mockGetDataset = jest.fn();
         const state = {
             datasets: {
-                dataset2: [{value: "test"}]
+                dataset2: {data: [{value: "test"}], metadata: null}
             }
         };
         const wrapper = getWrapper(mockGetDataset, state);

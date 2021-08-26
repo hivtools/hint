@@ -56,7 +56,7 @@ describe("Survey and programme component", () => {
                 },
                 genericChart: {
                     namespaced: true,
-                    state: mockGenericChartState()
+                    state: mockGenericChartState(genericChartState)
                 },
                 baseline: {
                     namespaced: true,
@@ -105,7 +105,7 @@ describe("Survey and programme component", () => {
     it("renders tabs", () => {
         const store = createStore();
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        const tabItems = wrapper.findAll("li.tab-item a");
+        const tabItems = wrapper.findAll("li.nav-item a");
         expect(tabItems.length).toBe(2);
         expect(tabItems.at(0).classes()).toContain("active");
         expectTranslated(tabItems.at(0), "Map", "Carte", "Mapa", store);
@@ -178,8 +178,8 @@ describe("Survey and programme component", () => {
         const store = createStore({}, {
             genericChartMetadata
         });
-        const data = {
-            selectedTab: 1
+        const data = () => {
+            return {selectedTab: 1};
         };
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue, data});
         const tabItems = wrapper.findAll("li.nav-item a");
@@ -195,8 +195,8 @@ describe("Survey and programme component", () => {
 
     it("does not render generic chart component if generic chart metadata does not exist", () => {
         const store = createStore();
-        const data = {
-            selectedTab: 1
+        const data = ()  => {
+            return {selectedTab: 1}
         };
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue, data});
         expect(wrapper.find(GenericChart).exists()).toBe(false);
@@ -205,21 +205,22 @@ describe("Survey and programme component", () => {
 
     it("clicking tab item changes tab", async () => {
         const genericChartMetadata = {value: "TEST"} as any;
-        const store = createStore({}, {
-            genericChartMetadata
-        });
+        const store = createStore(
+            {selectedDataType: DataType.Survey},
+            {genericChartMetadata}
+        );
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
         const tabItems = wrapper.findAll("li.nav-item a");
         await tabItems.at(1).trigger("click");
-        expect(tabItems.at(0).classes).not.toContain("active");
-        expect(tabItems.at(1).classes).toContain("active");
+        expect(tabItems.at(0).classes()).not.toContain("active");
+        expect(tabItems.at(1).classes()).toContain("active");
         expect(wrapper.find(Choropleth).exists()).toBe(false);
         expect(wrapper.find(GenericChart).exists()).toBe(true);
 
         await tabItems.at(0).trigger("click");
-        expect(tabItems.at(0).classes).toContain("active");
-        expect(tabItems.at(1).classes).not.toContain("active");
+        expect(tabItems.at(0).classes()).toContain("active");
+        expect(tabItems.at(1).classes()).not.toContain("active");
         expect(wrapper.find(Choropleth).exists()).toBe(true);
         expect(wrapper.find(GenericChart).exists()).toBe(false);
     });
