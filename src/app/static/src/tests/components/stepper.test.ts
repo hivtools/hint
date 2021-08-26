@@ -174,7 +174,7 @@ describe("Stepper component", () => {
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(".content").length).toBe(0);
         expectTranslated(wrapper.find("#loading-message"), "Loading your data",
-            "Chargement de vos données", store);
+            "Chargement de vos données", "A carregar os seus dados", store);
     });
 
     it("renders loading spinner while ready but loadingFromFile", () => {
@@ -191,7 +191,7 @@ describe("Stepper component", () => {
         expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAll(".content").length).toBe(0);
         expectTranslated(wrapper.find("#loading-message"), "Loading your data",
-            "Chargement de vos données", store);
+            "Chargement de vos données","A carregar os seus dados", store);
     });
 
     it("does not render loading spinner once states are ready", () => {

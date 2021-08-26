@@ -6,6 +6,7 @@ import MapAdjustScale from "../../../app/components/plots/MapAdjustScale.vue";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {expectTranslated} from "../../testHelpers";
 
 const store = new Vuex.Store({
     state: emptyState()
@@ -293,21 +294,24 @@ describe("Map legend component", () => {
                 },
                 colourRange,
                 colourScale
-            }
+            },
+            store
         });
 
         const adjust = wrapper.find(MapAdjustScale);
 
         const showAdjust = wrapper.find(".adjust-scale a");
-        expect(showAdjust.find("span").text()).toBe("Adjust scale");
+        expectTranslated(showAdjust.find("span"), "Adjust scale", "Ajuster l'échelle",
+            "Ajustar a escala", store);
 
         showAdjust.trigger("click");
         expect(adjust.props().show).toBe(true);
-        expect(showAdjust.find("span").text()).toBe("Done");
+        expectTranslated(showAdjust.find("span"), "Done", "Terminé","Concluído", store);
 
         showAdjust.trigger("click");
         expect(adjust.props().show).toBe(false);
-        expect(showAdjust.find("span").text()).toBe("Adjust scale");
+        expectTranslated(showAdjust.find("span"), "Adjust scale", "Ajuster l'échelle",
+            "Ajustar a escala", store);
     });
 
     it("emits update event when scale changes", () => {

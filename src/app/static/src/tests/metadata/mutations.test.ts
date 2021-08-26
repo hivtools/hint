@@ -26,4 +26,48 @@ describe("Metadata mutations", () => {
         });
         expect(testState.plottingMetadataError).toBe(error);
     });
+
+    it("sets error on AdrUploadMetadataError", () => {
+        const testState = mockMetadataState();
+        const error = mockError("Test Error");
+        mutations.AdrUploadMetadataError(testState, {
+            payload: error
+        });
+        expect(testState.adrUploadMetadataError).toBe(error);
+    });
+
+    it("sets metadata on AdrUploadMetadataFetched", () => {
+        const adrMetadataResponse = {type: "summary", description: "summary"}
+
+        const testState = mockMetadataState({
+            adrUploadMetadataError: mockError("previous error"),
+            adrUploadMetadata: [{type: "spectrum", description: "zip"}]
+        });
+        mutations.AdrUploadMetadataFetched(testState, {
+            payload: adrMetadataResponse
+        });
+
+        expect(testState.adrUploadMetadata).toStrictEqual(
+            [{type: "spectrum", description: "zip"},
+                {type: "summary", description: "summary"}]
+        );
+        expect(testState.adrUploadMetadataError).toBe(null);
+    });
+
+    it("update spectrum metadata on AdrUploadMetadataFetched", () => {
+        const adrMetadataResponse = {type: "spectrum", description: "new zip"}
+
+        const testState = mockMetadataState({
+            adrUploadMetadataError: mockError("previous error"),
+            adrUploadMetadata: [{type: "spectrum", description: "zip"}]
+        });
+        mutations.AdrUploadMetadataFetched(testState, {
+            payload: adrMetadataResponse
+        });
+
+        expect(testState.adrUploadMetadata).toStrictEqual(
+            [{type: "spectrum", description: "new zip"}]
+        );
+        expect(testState.adrUploadMetadataError).toBe(null);
+    });
 });

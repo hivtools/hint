@@ -62,9 +62,12 @@ describe("select release", () => {
         expect(rendered.findAll("input").length).toBe(2);
         const labels = rendered.findAll("label")
         expect(labels.length).toBe(3);
-        expectTranslated(labels.at(0), "Use latest data", "Utiliser les dernières données", store);
-        expectTranslated(labels.at(1), "Select a release", "Sélectionnez une version", store);
-        expectTranslated(labels.at(2), "Releases", "Versions", store);
+        expectTranslated(labels.at(0), "Use latest data", "Utiliser les dernières données",
+            "Use os dados mais recentes", store);
+        expectTranslated(labels.at(1), "Select a release", "Sélectionnez une version",
+            "Selecione um lançamento", store);
+        expectTranslated(labels.at(2), "Releases", "Versions",
+            "Lançamentos", store);
         expect(rendered.findAll("help-circle-icon-stub").length).toBe(2);
         const select = rendered.find(TreeSelect);
         expect(select.props("multiple")).toBe(false);
@@ -134,6 +137,19 @@ describe("select release", () => {
 
         expect(mockTooltip.mock.calls[0][1].value).toBe("Chargez les dernières données, qu'elles soient incluses dans une version (une version étiquetée) ou non");
         expect(mockTooltip.mock.calls[1][1].value).toBe("Charger des données à partir d'une version étiquetée particulière, qui peuvent ne pas être les dernières données");
+    });
+
+    it("can render tooltips in Portuguese", () => {
+        const mockTooltip = jest.fn();
+        const store = getStore()
+        store.state.language = Language.pt;
+
+        const rendered = shallowMount(SelectRelease, {store,
+            directives: {"tooltip": mockTooltip} });
+        rendered.setProps({datasetId: "datasetId"})
+
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Carregue os dados mais recentes, estejam incluídos em uma versão (uma versão rotulada) ou não");
+        expect(mockTooltip.mock.calls[1][1].value).toBe("Carregar dados de uma determinada versão rotulada, que podem não ser os dados mais recentes");
     });
 
     it("radial toggles whether release tree select is disabled", async (done) => {

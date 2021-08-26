@@ -28,11 +28,12 @@ describe("Language menu", () => {
         expect(wrapper.find(DropDown).props("text")).toBe("EN");
     });
 
-    it("changes language", (done) => {
+    it("changes language to French", (done) => {
         const store = createStore();
         const wrapper = mount(LanguageMenu, {
             store
         });
+
         wrapper.findAll(".dropdown-item").at(1).trigger("mousedown");
 
         setTimeout(() => {
@@ -42,5 +43,18 @@ describe("Language menu", () => {
         })
     });
 
+    it("changes language to Portuguese", (done) => {
+        const store = createStore();
+        const wrapper = mount(LanguageMenu, {
+            store
+        });
 
+        wrapper.findAll(".dropdown-item").at(2).trigger("mousedown");
+
+        setTimeout(() => {
+            expect(store.state.language).toBe(Language.pt);
+            expect(wrapper.find(DropDown).props("text")).toBe("PT");
+            done();
+        })
+    });
 });
