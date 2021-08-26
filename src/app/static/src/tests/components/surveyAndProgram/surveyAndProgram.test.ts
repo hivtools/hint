@@ -108,9 +108,9 @@ describe("Survey and programme component", () => {
         const tabItems = wrapper.findAll("li.tab-item a");
         expect(tabItems.length).toBe(2);
         expect(tabItems.at(0).classes()).toContain("active");
-        expectTranslated(tabItems.at(0), "Map", "Carte", store);
+        expectTranslated(tabItems.at(0), "Map", "Carte", "Mapa", store);
         expect(tabItems.at(1).classes()).not.toContain("active");
-        expectTranslated(tabItems.at(1), "Time series", "Séries chronologiques", store);
+        expectTranslated(tabItems.at(1), "Time series", "Séries chronologiques", "Séries temporais", store);
     });
 
     it("renders choropleth controls if there is a selected data type and selectedTab is 0", () => {

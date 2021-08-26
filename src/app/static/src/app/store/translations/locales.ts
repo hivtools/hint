@@ -1026,6 +1026,7 @@ const pt: Partial<Translations> = {
     step: "Etapa",
     support: "Apoio online",
     survey: "Inquérito aos agregados familiares",
+    timeSeries: "Séries temporais",
     troubleshooting: "Resolução de problemas",
     tryAgain: "Tente novamente",
     typeSearch: "Escreva para pesquisar",
