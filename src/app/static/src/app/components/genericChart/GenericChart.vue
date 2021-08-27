@@ -21,7 +21,6 @@
     import Vue from "vue";
     import {
         DataSourceConfig,
-        Dict,
         GenericChartDataset,
         GenericChartMetadata,
         GenericChartMetadataResponse

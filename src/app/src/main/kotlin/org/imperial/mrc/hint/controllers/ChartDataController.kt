@@ -25,6 +25,6 @@ class ChartDataController(val fileManager: FileManager, val apiClient: HintrAPIC
         }
 
         val files = fileManager.getFiles(FileType.Shape, inputFileType)
-        return apiClient.getInputTimeSeriesChartData(type, files)
+        return apiClient.getInputTimeSeriesChartData(inputFileType.toString().toLowerCase(), files)
     }
 }

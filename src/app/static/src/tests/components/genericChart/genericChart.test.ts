@@ -20,7 +20,7 @@ describe("GenericChart component", () => {
                 dataSources: [
                     {id: "visible1", type: "editable", label: "First", datasetId: "dataset1"},
                     {id: "visible2", type: "editable", label: "Second", datasetId: "dataset2"},
-                    {id: "hidden", type: "readonly", datasetId: "dataset3"}
+                    {id: "hidden", type: "fixed", datasetId: "dataset3"}
                 ]
             }
         }
