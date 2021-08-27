@@ -56,6 +56,11 @@
                     </div>
                 </div>
             </div>
+            <div class="pt-3">
+                <download-progress id="upload-download-progress"
+                                   :translate-key="'downloadProgressForADR'"
+                                   :downloading="downloadingFiles"/>
+            </div>
             <template v-slot:footer>
                 <button
                     type="button"
@@ -76,7 +81,12 @@
 <script lang="ts">
     import Vue from "vue";
     import Modal from "../Modal.vue";
-    import {Dict, UploadFile} from "../../types";
+    import {
+        Dict,
+        DownloadResultsDependency,
+        SelectedADRUploadFiles,
+        UploadFile
+    } from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
     import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
@@ -85,6 +95,9 @@
     import i18next from "i18next";
     import { Language } from "../../store/translations/locales";
     import { RootState } from "../../root";
+    import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
+    import {ADRState} from "../../store/adr/adr";
+    import DownloadProgress from "./DownloadProgress.vue";
 
     interface Methods {
         uploadFilesToADRAction: (uploadFilesPayload: {uploadFiles: UploadFile[], createRelease: boolean}) => void;
@@ -93,6 +106,17 @@
         handleCancel: () => void
         setDefaultCheckedItems: () => void
         translate(text: string): string;
+        downloadSpectrum: () => void
+        downloadSummary: () => void
+        prepareFilesForUpload: () => boolean
+        findSelectedUploadFiles: () => SelectedADRUploadFiles
+        downloadIsReady: () => boolean
+        getSummaryDownload: () => void
+        getSpectrumDownload: () => void
+        sendUploadFilesToADR: () => void
+        getUploadMetadata: (id: string) => Promise<void>
+        handleDownloadResult: (downloadResults: DownloadResultsDependency) => void,
+        stopPolling:(id: number) => void
     }
 
     interface Computed {
@@ -101,12 +125,18 @@
         uploadFileSections: Array<Dict<UploadFile>>
         currentLanguage: Language;
         uploadDisabled: boolean;
+        spectrum: Partial<DownloadResultsDependency>,
+        summary: Partial<DownloadResultsDependency>,
+        outputSummary: string,
+        outputSpectrum: string,
+        downloadingFiles: boolean
     }
 
     interface Data {
         uploadFilesToAdr: string[]
         uploadDescToAdr: string
         choiceUpload: "createRelease" | "uploadFiles"
+        uploadFilesPayload: UploadFile[]
     }
 
     interface Props {
@@ -127,7 +157,8 @@
             return {
                 uploadFilesToAdr: [],
                 uploadDescToAdr: "",
-                choiceUpload: "createRelease"
+                choiceUpload: "createRelease",
+                uploadFilesPayload: []
             }
         },
         methods: {
@@ -140,10 +171,49 @@
                 "createRelease"
             ),
             confirmUpload() {
-                const uploadFiles: UploadFile[] = []
-                this.uploadFilesToAdr.forEach(value => uploadFiles.push(this.uploadFiles[value]))
-                this.uploadFilesToADRAction({uploadFiles, createRelease: this.choiceUpload === 'createRelease'});
-                this.$emit("close")
+                this.uploadFilesToAdr.forEach(value => this.uploadFilesPayload.push(this.uploadFiles[value]));
+                const readyForUpload = this.prepareFilesForUpload();
+
+                if (readyForUpload) {
+                    this.sendUploadFilesToADR();
+                }
+            },
+            sendUploadFilesToADR() {
+                this.uploadFilesToADRAction({uploadFiles: this.uploadFilesPayload, createRelease: this.choiceUpload === 'createRelease'});
+                this.uploadFilesPayload = [];
+
+                this.$emit("close");
+            },
+            prepareFilesForUpload() {
+                const {summary, spectrum} = this.findSelectedUploadFiles();
+                if (summary) {
+                    this.getSummaryDownload();
+                }
+                if (spectrum) {
+                    this.getSpectrumDownload();
+                }
+
+                return this.downloadIsReady();
+            },
+            findSelectedUploadFiles() {
+                const summary = this.uploadFilesPayload.find(upload => upload.resourceType === this.outputSummary);
+                const spectrum = this.uploadFilesPayload.find(upload => upload.resourceType === this.outputSpectrum);
+
+                return {summary, spectrum}
+            },
+            downloadIsReady() {
+                const {summary, spectrum} = this.findSelectedUploadFiles();
+                return (summary || spectrum) && (!summary || !!this.summary.complete) && (!spectrum || !!this.spectrum.complete);
+            },
+            getSummaryDownload() {
+                if (!this.summary.downloading && !this.summary.complete) {
+                    this.downloadSummary();
+                }
+            },
+            getSpectrumDownload() {
+                if (!this.spectrum.downloading && !this.spectrum.complete) {
+                    this.downloadSpectrum();
+                }
             },
             handleCancel() {
                 this.$emit("close")
@@ -154,9 +224,51 @@
             setDefaultCheckedItems: function () {
                 this.uploadFilesToAdr = [...outputFileTypes, ...inputFileTypes]
                     .filter(key => this.uploadFiles.hasOwnProperty(key))
-            }
+            },
+            stopPolling(id) {
+                clearInterval(id)
+            },
+            async handleDownloadResult(downloadResults) {
+                if (this.open) {
+                    if (this.downloadIsReady()) {
+                        await this.getUploadMetadata(downloadResults.downloadId)
+                        this.sendUploadFilesToADR();
+                    }
+
+                    if(downloadResults.complete) {
+                        this.stopPolling(downloadResults.statusPollId)
+                    }
+
+                    if (downloadResults.error) {
+                        this.stopPolling(downloadResults.statusPollId)
+                    }
+                }
+            },
+            downloadSpectrum: mapActionByName("downloadResults", "downloadSpectrum"),
+            downloadSummary: mapActionByName("downloadResults", "downloadSummary"),
+            getUploadMetadata: mapActionByName("metadata", "getAdrUploadMetadata")
         },
         computed: {
+            ...mapStateProps<DownloadResultsState, keyof Computed>("downloadResults", {
+                spectrum: state => ({
+                    downloading: state.spectrum.downloading,
+                    complete: state.spectrum.complete,
+                    downloadId: state.spectrum.downloadId,
+                    statusPollId: state.spectrum.statusPollId,
+                    error: state.spectrum.error
+                }),
+                summary: state => ({
+                    downloading: state.summary.downloading,
+                    complete: state.summary.complete,
+                    downloadId: state.summary.downloadId,
+                    statusPollId: state.summary.statusPollId,
+                    error: state.summary.error
+                })
+            }),
+            ...mapStateProps<ADRState, keyof Computed>("adr", {
+                outputSpectrum: state => state.schemas?.outputZip,
+                outputSummary: state => state.schemas?.outputSummary
+            }),
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
                 dataset: state => state.selectedDataset?.title
             }),
@@ -187,11 +299,15 @@
                 } else {
                     return false
                 }
+            },
+            downloadingFiles() {
+                return !!this.spectrum.downloading || !!this.summary.downloading;
             }
         },
         components: {
             Modal,
             HelpCircleIcon,
+            DownloadProgress
         },
         watch: {
             uploadFiles() {
@@ -201,6 +317,18 @@
                 if (this.choiceUpload === 'createRelease'){
                     this.setDefaultCheckedItems()
                 }
+            },
+            summary: {
+                handler(summary) {
+                    this.handleDownloadResult(summary)
+                },
+                deep: true
+            },
+            spectrum: {
+                handler(spectrum) {
+                    this.handleDownloadResult(spectrum)
+                },
+                deep: true
             }
         },
         directives: {

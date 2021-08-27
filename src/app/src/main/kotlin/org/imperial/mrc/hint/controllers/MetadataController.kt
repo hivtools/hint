@@ -30,6 +30,13 @@ class MetadataController(val apiClient: HintrAPIClient,
         return apiClient.getVersion()
     }
 
+    @GetMapping("/adr/{id}")
+    @ResponseBody
+    fun uploadMetadata(@PathVariable("id") id: String): ResponseEntity<String>
+    {
+        return apiClient.getUploadMetadata(id)
+    }
+
     @GetMapping("/generic-chart")
     @ResponseBody
     fun genericChart(): ResponseEntity<String>
