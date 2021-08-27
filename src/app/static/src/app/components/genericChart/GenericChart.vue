@@ -40,14 +40,17 @@
     import {FilterOption} from "../../generated";
 
     interface DataSourceConfigValues {
-        selections: DataSourceSelections,
-        editable: boolean,
+        selections: DataSourceSelections
+        editable: boolean
         config: DataSourceConfig
         filters: DisplayFilter[] | null
     }
 
     interface ChartConfigValues {
         dataSourceConfigValues: DataSourceConfigValues[]
+        layoutData: Dict<unknown>
+        scrollHeight: string
+        chartConfig: string
     }
 
     interface DataSourceSelections {
@@ -126,23 +129,49 @@
                         filters: this.datasets[selections.datasetId]?.metadata.filters
                     }
                 });
+
+                //Sort out layout issues around subplots - provide additional metadata to jsonata (rows and columns)
+                //and define scroll height
+                const layoutData = {} as Dict<unknown>;
+                let scrollHeight = "100%";
+                const subplots = this.chartMetadata.subplots;
+                if (subplots && this.chartData) {
+                    const distinctAreas = new Set(this.chartData["data"].map((row: any) => row[subplots.distinctColumn]));
+                    const numberOfPlots = [...distinctAreas].length;
+                    const rows = Math.ceil(numberOfPlots / subplots.columns);
+                    layoutData.subplots = {
+                        ...subplots,
+                        rows
+                    };
+                    scrollHeight = `${subplots.heightPerRow * rows}px`;
+                }
+
+                // The metadata supports multiple chart types per chart e.g Scatter and Bar, but for now we only need to
+                // support one chart type, so here we select the first config in the array
+                const chartConfig = this.chartMetadata.chartConfig[0].config;
+
                 return {
-                    dataSourceConfigValues
+                    dataSourceConfigValues,
+                    layoutData,
+                    scrollHeight,
+                    chartConfig
                 };
             },
             chartData() {
                 const result = {} as Dict<unknown[]>;
 
-                for (const dataSource of this.chartConfigValues.dataSourceConfigValues) {
-                    const dataSourceId = dataSource.config.id;
-                    const unfilteredData = this.datasets[dataSource.selections.datasetId]?.data;
+                for (const dataSource of this.chartMetadata.dataSelectors.dataSources) {
+                    const dataSourceId = dataSource.id;
+                    const dataSourceSelections = this.dataSourceSelections[dataSourceId]
+                    const datasetId = dataSourceSelections.datasetId;
+                    const unfilteredData = this.datasets[datasetId]?.data;
 
                     if (!unfilteredData) {
                         return null; //Do not attempt to initialise if we are missing any datasets
                     }
 
-                    const filters = dataSource.filters || [];
-                    const selectedFilterOptions = dataSource.selections.selectedFilterOptions;
+                    const filters = this.datasets[dataSourceSelections.datasetId]?.metadata.filters || [];
+                    const selectedFilterOptions = dataSourceSelections.selectedFilterOptions;
                     const includeRow = (row: any, idx: number) => {
                         let filterOutRow = false;
                         for (const filter of filters) {
