@@ -8,7 +8,7 @@
                              :value="ds.selections.datasetId"
                              @update="updateDataSource(ds.config.id, $event)">
                 </data-source>
-                <filters v-if="ds.config.showFilters"
+                <filters v-if="ds.config.showFilters && ds.filters"
                             :filters="ds.filters"
                             :selected-filter-options="ds.selections.selectedFilterOptions"
                             @update="updateSelectedFilterOptions(ds.config.id, $event)">
@@ -16,7 +16,7 @@
             </div>
         </div>
         <div class="col-9">
-            {{JSON.stringify(datasets)}}
+            {{JSON.stringify(chartData)}}
             <error-alert v-if="error" :error="error"></error-alert>
         </div>
     </div>
@@ -43,7 +43,7 @@
         selections: DataSourceSelections,
         editable: boolean,
         config: DataSourceConfig
-        filters: DisplayFilter[]
+        filters: DisplayFilter[] | null
     }
 
     interface ChartConfigValues {
@@ -56,7 +56,7 @@
     }
 
     interface Data {
-        dataSourceSelections:  Record<string, DataSourceSelections>
+        dataSourceSelections:  Dict<DataSourceSelections>
     }
 
     interface Props {
@@ -69,6 +69,7 @@
         error: Error | null
         chartMetadata: GenericChartMetadata
         chartConfigValues: ChartConfigValues
+        chartData: Dict<unknown[]> | null
     }
 
     interface Methods {
@@ -118,8 +119,6 @@
             chartConfigValues() {
                 const dataSourceConfigValues = this.chartMetadata.dataSelectors.dataSources.map((dataSourceConfig) => {
                     const selections = this.dataSourceSelections[dataSourceConfig.id];
-                    console.log("selections dataset id: " + selections.datasetId)
-                    console.log("metadata:" + this.datasets[selections.datasetId]?.metadata)
                     return {
                         selections,
                         editable: dataSourceConfig.type === "editable",
@@ -130,6 +129,35 @@
                 return {
                     dataSourceConfigValues
                 };
+            },
+            chartData() {
+                const result = {} as Dict<unknown[]>;
+
+                for (const dataSource of this.chartConfigValues.dataSourceConfigValues) {
+                    const dataSourceId = dataSource.config.id;
+                    const unfilteredData = this.datasets[dataSource.selections.datasetId]?.data;
+
+                    if (!unfilteredData) {
+                        return null; //Do not attempt to initialise if we are missing any datasets
+                    }
+
+                    const filters = dataSource.filters || [];
+                    const selectedFilterOptions = dataSource.selections.selectedFilterOptions;
+                    const includeRow = (row: any, idx: number) => {
+                        let filterOutRow = false;
+                        for (const filter of filters) {
+                            const filterValues = selectedFilterOptions[filter.id]?.map(n => n.id);
+                            if (filterValues?.indexOf(row[filter.column_id].toString()) < 0) {
+                                filterOutRow = true;
+                                break;
+                            }
+                        }
+
+                        return !filterOutRow;
+                    };
+                    result[dataSourceId] = unfilteredData.filter((row: any, idx: number) => includeRow(row, idx));
+                }
+                return result;
             }
         },
         methods: {
@@ -147,7 +175,9 @@
             },
             setDataSourceDefaultFilterSelections(dataSourceId: string, datasetId: string) {
                 const selectedFilterOptions = this.datasets[datasetId].metadata.defaults.selected_filter_options;
-                this.updateSelectedFilterOptions(dataSourceId, {...selectedFilterOptions});
+                if (selectedFilterOptions) {
+                    this.updateSelectedFilterOptions(dataSourceId, {...selectedFilterOptions});
+                }
             },
             updateSelectedFilterOptions(dataSourceId: string, options: Dict<FilterOption[]>) {
                 this.dataSourceSelections[dataSourceId].selectedFilterOptions = options;
