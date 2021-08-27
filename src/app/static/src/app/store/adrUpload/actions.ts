@@ -89,7 +89,6 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
     async uploadFilesToADR(context, uploadFilesPayload) {
         const {rootState, commit, dispatch} = context;
         const selectedDatasetId = rootState.baseline.selectedDataset!.id;
-        const modelCalibrateId = rootState.modelCalibrate.calibrateId;
         const {uploadFiles, createRelease} = uploadFilesPayload
         let downloadId;
 
