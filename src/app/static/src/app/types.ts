@@ -219,5 +219,10 @@ export interface GenericChartMetadataResponse {
 
 export interface GenericChartDataset {
     data: Dict<unknown>[],
-    metadata: unknown
+    metadata: {
+        filters: DisplayFilter[],
+        defaults: {
+            selected_filter_options: Dict<FilterOption[]>
+        }
+    }
 }

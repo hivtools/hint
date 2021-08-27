@@ -8,10 +8,15 @@
                              :value="ds.selections.datasetId"
                              @update="updateDataSource(ds.config.id, $event)">
                 </data-source>
+                <filters v-if="ds.config.showFilters"
+                            :filters="ds.filters"
+                            :selected-filter-options="ds.selections.selectedFilterOptions"
+                            @update="updateSelectedFilterOptions(ds.config.id, $event)">
+                </filters>
             </div>
         </div>
         <div class="col-9">
-            {{ chartId }} coming soon
+            {{JSON.stringify(datasets)}}
             <error-alert v-if="error" :error="error"></error-alert>
         </div>
     </div>
@@ -21,21 +26,24 @@
     import Vue from "vue";
     import {
         DataSourceConfig,
-        Dict,
+        Dict, DisplayFilter,
         GenericChartDataset,
         GenericChartMetadata,
         GenericChartMetadataResponse
     } from "../../types";
     import DataSource from "./dataSelectors/DataSource.vue";
+    import Filters from "../plots/Filters.vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import {mapActionByName, mapStateProp} from "../../utils";
     import {GenericChartState} from "../../store/genericChart/genericChart";
     import {getDatasetPayload} from "../../store/genericChart/actions";
+    import {FilterOption} from "../../generated";
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections,
         editable: boolean,
         config: DataSourceConfig
+        filters: DisplayFilter[]
     }
 
     interface ChartConfigValues {
@@ -43,7 +51,8 @@
     }
 
     interface DataSourceSelections {
-        datasetId: string
+        datasetId: string,
+        selectedFilterOptions: Dict<FilterOption[]>
     }
 
     interface Data {
@@ -65,7 +74,9 @@
     interface Methods {
         ensureDataset: (datasetId: string) => void,
         getDataset: (payload: getDatasetPayload) => void,
-        updateDataSource: (dataSourceId: string, datasetId: string) => void
+        setDataSourceDefaultFilterSelections: (dataSourceId: string, datasetId: string) => void,
+        updateDataSource: (dataSourceId: string, datasetId: string) => void,
+        updateSelectedFilterOptions: (dataSourceId: string, options: Dict<FilterOption[]>) => void
     }
 
     const namespace = "genericChart";
@@ -78,6 +89,7 @@
         },
         components: {
             DataSource,
+            Filters,
             ErrorAlert
         },
         data: function() {
@@ -85,7 +97,10 @@
             const dataSourceSelections = chart.dataSelectors.dataSources
                 .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => ({
                     ...running,
-                    [dataSource.id]: {datasetId: dataSource.datasetId}
+                    [dataSource.id]: {
+                        datasetId: dataSource.datasetId,
+                        selectedFilterOptions: {}
+                    }
                 }), {});
 
             return {
@@ -102,10 +117,14 @@
             },
             chartConfigValues() {
                 const dataSourceConfigValues = this.chartMetadata.dataSelectors.dataSources.map((dataSourceConfig) => {
+                    const selections = this.dataSourceSelections[dataSourceConfig.id];
+                    console.log("selections dataset id: " + selections.datasetId)
+                    console.log("metadata:" + this.datasets[selections.datasetId]?.metadata)
                     return {
-                        selections: this.dataSourceSelections[dataSourceConfig.id],
+                        selections,
                         editable: dataSourceConfig.type === "editable",
-                        config: dataSourceConfig
+                        config: dataSourceConfig,
+                        filters: this.datasets[selections.datasetId]?.metadata.filters
                     }
                 });
                 return {
@@ -115,21 +134,30 @@
         },
         methods: {
             getDataset: mapActionByName(namespace, 'getDataset'),
-            ensureDataset(datasetId: string) {
+            async ensureDataset(datasetId: string) {
                 if (datasetId && !this.datasets[datasetId]) {
-                    const dataset = this.chartMetadata.datasets.find(dataset => dataset.id === datasetId)!;
-                    this.getDataset({datasetId, url: dataset.url});
+                    const datasetConfig = this.chartMetadata.datasets.find(dataset => dataset.id === datasetId)!;
+                    await this.getDataset({datasetId, url: datasetConfig.url});
                 }
             },
-            updateDataSource(dataSourceId: string, datasetId: string) {
+            async updateDataSource(dataSourceId: string, datasetId: string) {
                 this.dataSourceSelections[dataSourceId]!.datasetId = datasetId;
-                this.ensureDataset(datasetId);
+                await this.ensureDataset(datasetId);
+                this.setDataSourceDefaultFilterSelections(dataSourceId, datasetId);
+            },
+            setDataSourceDefaultFilterSelections(dataSourceId: string, datasetId: string) {
+                const selectedFilterOptions = this.datasets[datasetId].metadata.defaults.selected_filter_options;
+                this.updateSelectedFilterOptions(dataSourceId, {...selectedFilterOptions});
+            },
+            updateSelectedFilterOptions(dataSourceId: string, options: Dict<FilterOption[]>) {
+                this.dataSourceSelections[dataSourceId].selectedFilterOptions = options;
             }
         },
-        mounted() {
-            this.chartConfigValues.dataSourceConfigValues.forEach((dataSourceValues) => {
-                this.ensureDataset(dataSourceValues.selections.datasetId);
-            });
+        async mounted() {
+            for (const dataSourceValues of this.chartConfigValues.dataSourceConfigValues) {
+                await this.ensureDataset(dataSourceValues.selections.datasetId);
+                this.setDataSourceDefaultFilterSelections(dataSourceValues.config.id, dataSourceValues.selections.datasetId);
+            }
         }
     });
 </script>

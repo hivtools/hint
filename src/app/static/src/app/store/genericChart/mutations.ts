@@ -18,7 +18,8 @@ export const mutations: MutationTree<GenericChartState> = {
         state.genericChartMetadata = action.payload;
     },
     [GenericChartMutation.SetDataset](state: GenericChartState, action: PayloadWithType<SetDatasetPayload>) {
-        state.datasets[action.payload.datasetId] = action.payload.dataset;
+        const newDatasets = {...state.datasets, [action.payload.datasetId]: action.payload.dataset}
+        state.datasets = newDatasets;
     },
     [GenericChartMutation.SetError](state: GenericChartState, action: PayloadWithType<Error | null>) {
         state.genericChartError = action.payload;
