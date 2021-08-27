@@ -51,7 +51,7 @@ export const mutations: MutationTree<ADRUploadState> = {
 
     [ADRUploadMutation.ReleaseFailed](state: ADRUploadState, action: PayloadWithType<Error | null>) {
         state.releaseFailed = true;
-        let alteredPayload = action.payload
+        const alteredPayload = action.payload
         switch(action.payload?.detail) {
             case "Version already exists for this activity":
                 alteredPayload!.detail = "A release already exists on ADR for the latest files"
