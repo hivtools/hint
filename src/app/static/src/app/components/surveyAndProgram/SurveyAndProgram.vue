@@ -3,11 +3,20 @@
         <div class="row">
             <ul class="nav nav-tabs col-12 mb-3">
                 <li class="nav-item">
-                    <a class="nav-link active" v-translate="'map'"></a>
+                    <a class="nav-link"
+                       :class="{'active': selectedTab === 0}"
+                       v-translate="'map'"
+                       v-on:click="selectTab(0)"></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       :class="{'active': selectedTab === 1}"
+                       v-translate="'timeSeries'"
+                       v-on:click="selectTab(1)"></a>
                 </li>
             </ul>
         </div>
-        <div class="row">
+        <div v-if="selectedTab === 0" class="row">
             <div :class="showChoropleth ? 'col-md-3' : 'col-sm-6 col-md-8'" class="upload-section">
                 <form>
                     <manage-file label="survey"
@@ -80,6 +89,11 @@
                 </div>
             </div>
         </div>
+        <div v-if="selectedTab === 1">
+            <generic-chart v-if="genericChartMetadata"
+                           chart-id="input-time-series"
+                           :metadata="genericChartMetadata"></generic-chart>
+        </div>
     </div>
 </template>
 
@@ -91,7 +105,13 @@
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import TableView from "../plots/table/Table.vue";
     import Filters from "../plots/Filters.vue";
-    import {Filter, LevelLabel, PartialFileUploadProps, PayloadWithType} from "../../types";
+    import {
+        Filter,
+        GenericChartMetadataResponse,
+        LevelLabel,
+        PartialFileUploadProps,
+        PayloadWithType
+    } from "../../types";
     import {RootState} from "../../root";
     import {DataType, SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
     import {Feature} from "geojson";
@@ -105,11 +125,19 @@
     import ManageFile from "../files/ManageFile.vue";
     import {BaselineState} from "../../store/baseline/baseline";
     import {Language} from "../../store/translations/locales";
+    import GenericChart from "../genericChart/GenericChart.vue";
+    import {GenericChartState} from "../../store/genericChart/genericChart";
 
     const namespace = 'surveyAndProgram';
 
+    enum Tab {
+        Map = 0,
+        TimeSeries = 1
+    }
+
     interface Data {
         areaFilterId: string
+        selectedTab: Tab
     }
 
     interface SAPFileUploadProps extends PartialFileUploadProps {
@@ -132,19 +160,22 @@
         selectedDataSource: string,
         filterTableIndicators: ChoroplethIndicatorMetadata[],
         currentLanguage: Language,
-        dataSourceOptions: FilterOption[]
+        dataSourceOptions: FilterOption[],
+        genericChartMetadata: GenericChartMetadataResponse | null
     }
 
     interface Methods {
         selectDataType: (payload: DataType) => void,
-        selectDataSource: (option: FilterOption) => void
+        selectDataSource: (option: FilterOption) => void,
+        selectTab: (tab: Tab) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
         name: "SurveyAndProgram",
         data: () => {
             return {
-                areaFilterId: "area"
+                areaFilterId: "area",
+                selectedTab: Tab.Map
             };
         },
         computed: {
@@ -178,7 +209,8 @@
                 } as PartialFileUploadProps),
                 features: ({baseline} : {baseline: BaselineState}) => baseline.shape ? baseline.shape.data.features : [] as Feature[],
                 featureLevels: ({baseline} : {baseline: BaselineState}) => baseline.shape ? baseline.shape.filters.level_labels : [],
-                plottingSelections: ({plottingSelections}: {plottingSelections: PlottingSelectionsState}) => plottingSelections.sapChoropleth
+                plottingSelections: ({plottingSelections}: {plottingSelections: PlottingSelectionsState}) => plottingSelections.sapChoropleth,
+                genericChartMetadata:({genericChart}: {genericChart: GenericChartState}) => genericChart.genericChartMetadata
             }),
             ...mapGettersByNames(namespace, ["data", "filters", "countryAreaFilterOption"]),
             ...mapGetters("metadata", ["sapIndicatorsMetadata"]),
@@ -221,6 +253,9 @@
             selectDataType: mapActionByName(namespace, "selectDataType"),
             selectDataSource: function(option: FilterOption) {
                 this.selectDataType(parseInt(option.id))
+            },
+            selectTab: function(tab: Tab) {
+                this.selectedTab = tab
             }
         },
         components: {
@@ -228,7 +263,8 @@
             Filters,
             TableView,
             ManageFile,
-            Treeselect
+            Treeselect,
+            GenericChart
         }
     })
 </script>

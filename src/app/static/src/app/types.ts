@@ -183,17 +183,14 @@ export interface SelectedADRUploadFiles {
 
 export interface DatasetConfig {
     id: string
-    type: "standard" | "custom"
     label: string
-    module?: string
-    prop?: string
-    filters?: Filter[]
+    url: string
 }
 
 export interface DataSourceConfig {
     id: string
     type: "fixed" | "editable"
-    label: string
+    label?: string
     datasetId: string
     showFilters: true
     showIndicators: true
@@ -218,4 +215,9 @@ export interface GenericChartMetadata {
 
 export interface GenericChartMetadataResponse {
     [key: string]: GenericChartMetadata;
+}
+
+export interface GenericChartDataset {
+    data: Dict<unknown>[],
+    metadata: unknown
 }
