@@ -8,7 +8,7 @@
                              :value="ds.selections.datasetId"
                              @update="updateDataSource(ds.config.id, $event)">
                 </data-source>
-                <filters v-if="ds.config.showFilters && ds.filters"
+                <filters v-if="ds.config.showFilters && ds.filters && ds.selections.selectedFilterOptions"
                             :filters="ds.filters"
                             :selected-filter-options="ds.selections.selectedFilterOptions"
                             @update="updateSelectedFilterOptions(ds.config.id, $event)">
@@ -16,7 +16,13 @@
             </div>
         </div>
         <div class="col-9">
-            {{JSON.stringify(chartData)}}
+            <div v-if="chartData" class="chart-container" :style="{height: chartHeight}">
+                <plotly class="chart"
+                       :chart-metadata="chartConfigValues.chartConfig"
+                       :chart-data="chartData"
+                       :layout-data="chartConfigValues.layoutData"
+                       :style="{height: chartConfigValues.scrollHeight}"></plotly>
+            </div>
             <error-alert v-if="error" :error="error"></error-alert>
         </div>
     </div>
@@ -38,6 +44,7 @@
     import {GenericChartState} from "../../store/genericChart/genericChart";
     import {getDatasetPayload} from "../../store/genericChart/actions";
     import {FilterOption} from "../../generated";
+    import Plotly from "./Plotly.vue";
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections
@@ -55,7 +62,7 @@
 
     interface DataSourceSelections {
         datasetId: string,
-        selectedFilterOptions: Dict<FilterOption[]>
+        selectedFilterOptions: Dict<FilterOption[]> | null
     }
 
     interface Data {
@@ -65,6 +72,7 @@
     interface Props {
         metadata: GenericChartMetadataResponse
         chartId: string
+        chartHeight: string
     }
 
     interface Computed {
@@ -89,11 +97,13 @@
         name: "GenericChart",
         props: {
             metadata: Object,
-            chartId: String
+            chartId: String,
+            chartHeight: String
         },
         components: {
             DataSource,
             Filters,
+            Plotly,
             ErrorAlert
         },
         data: function() {
@@ -103,7 +113,7 @@
                     ...running,
                     [dataSource.id]: {
                         datasetId: dataSource.datasetId,
-                        selectedFilterOptions: {}
+                        selectedFilterOptions: null
                     }
                 }), {});
 
@@ -130,7 +140,7 @@
                     }
                 });
 
-                //Sort out layout issues around subplots - provide additional metadata to jsonata (rows and columns)
+                //Provide additional metadata to jsonata relating to subplots (rows and columns)
                 //and define scroll height
                 const layoutData = {} as Dict<unknown>;
                 let scrollHeight = "100%";
@@ -166,18 +176,21 @@
                     const datasetId = dataSourceSelections.datasetId;
                     const unfilteredData = this.datasets[datasetId]?.data;
 
-                    if (!unfilteredData) {
-                        return null; //Do not attempt to initialise if we are missing any datasets
-                    }
-
                     const filters = this.datasets[dataSourceSelections.datasetId]?.metadata.filters || [];
                     const selectedFilterOptions = dataSourceSelections.selectedFilterOptions;
+
+                    if (!unfilteredData || !selectedFilterOptions) {
+                        return null; //Do not attempt to initialise if we are missing any datasets, or selections not initialised
+                    }
+
+                    let filteredout = 0; //TODO: remove this!
                     const includeRow = (row: any, idx: number) => {
                         let filterOutRow = false;
                         for (const filter of filters) {
                             const filterValues = selectedFilterOptions[filter.id]?.map(n => n.id);
                             if (filterValues?.indexOf(row[filter.column_id].toString()) < 0) {
                                 filterOutRow = true;
+                                filteredout++;
                                 break;
                             }
                         }

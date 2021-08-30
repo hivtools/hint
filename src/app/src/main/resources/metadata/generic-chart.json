@@ -53,7 +53,7 @@
       ]
     },
     "subplots": {
-      "columns": 5,
+      "columns": 3,
       "distinctColumn": "area_name",
       "heightPerRow": 100
     },
