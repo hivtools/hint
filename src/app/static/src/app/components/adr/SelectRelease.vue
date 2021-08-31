@@ -66,7 +66,8 @@
     import { Language } from "../../store/translations/locales";
     import { RootState } from "../../root";
     import {ADRMutation} from "../../store/adr/mutations";
-    import { Release } from "../../types";
+    import { Release, Dataset } from "../../types";
+    import { BaselineState } from "../../store/baseline/baseline";
 
     interface Data {
         releaseId: string | undefined;
@@ -81,6 +82,7 @@
 
     interface Computed {
         releases: Release[];
+        initialRelease: string | undefined;
         // releaseName: string | null;
         valid: boolean;
         releaseOptions: any[];
@@ -112,6 +114,10 @@
             releases: mapStateProp<ADRState, any[]>(
                 namespace,
                 (state: ADRState) => state.releases
+            ),
+            initialRelease: mapStateProp<BaselineState, string | undefined>(
+                "baseline",
+                (state: BaselineState) => state.selectedDataset?.release
             ),
             valid() {
                 return (this.choiceADR === "useLatest") || !!this.releaseId;
@@ -172,7 +178,11 @@
         mounted(){
             this.$emit("selected-dataset-release", this.releaseId);
             this.$emit("valid", this.valid);
-            // console.log('everything', this.releaseId, this.releases.length, this.releases.find( release => release.id === this.releaseId))
+            if (this.initialRelease){
+                this.choiceADR = "useRelease"
+                this.releaseId = this.initialRelease;
+            }
+            console.log('releaseId', this.releaseId)
         },
         directives: {
             tooltip: VTooltip,

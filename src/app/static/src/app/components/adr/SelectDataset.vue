@@ -6,7 +6,8 @@
                 v-translate="'selectedDataset'"
                 id="selectedDatasetSpan"
             ></span>
-            <a v-if="releaseName" :href="selectedDataset.url" target="_blank">
+            <!-- <a v-if="releaseName" :href="selectedDataset.url.replace('inputs-unaids-estimates', 'dataset') + '?activity_id=' + selectedDataset.release" target="_blank"> -->
+            <a v-if="releaseName" :href="selectedDataset.url + '/releases?__no_cache__=True'" target="_blank">
                 {{ selectedDataset.title }} — {{ releaseName }}
             </a>
             <a v-else :href="selectedDataset.url" target="_blank">
@@ -451,6 +452,10 @@
             this.startPolling();
             if (this.selectedDataset?.id){
                 this.getReleases(this.selectedDataset.id);
+                this.newDatasetId = this.selectedDataset.title;
+                // if (this.selectedDataset.release){
+
+                // }
             }
                 // console.log('everything', this.selectedDataset, this.selectedDataset.release, this.releases)
         },
