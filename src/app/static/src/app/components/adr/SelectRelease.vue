@@ -178,7 +178,7 @@
         mounted(){
             this.$emit("selected-dataset-release", this.releaseId);
             this.$emit("valid", this.valid);
-            if (this.initialRelease){
+            if (this.initialRelease && this.releases.length){
                 this.choiceADR = "useRelease"
                 this.releaseId = this.initialRelease;
             }

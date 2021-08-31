@@ -452,10 +452,11 @@
             this.startPolling();
             if (this.selectedDataset?.id){
                 this.getReleases(this.selectedDataset.id);
-                this.newDatasetId = this.selectedDataset.title;
-                // if (this.selectedDataset.release){
-
-                // }
+                if (this.datasets.length){
+                    // this.newDatasetId = this.selectedDataset.title;
+                    const selectedDatasetId = this.selectedDataset.id
+                    this.newDatasetId = this.datasets.find( dataset => dataset.id === selectedDatasetId).title
+                }
             }
                 // console.log('everything', this.selectedDataset, this.selectedDataset.release, this.releases)
         },
