@@ -643,6 +643,14 @@ describe("Download Results component", () => {
         expect(wrapper.find("#error").text()).toBe("TEST FAILED")
     });
 
+    it("destroys as expected", () => {
+        const store = createStore();
+        const spy = jest.fn()
+        const rendered = shallowMount(DownloadResults, {store, methods: { clearStatus: spy }});
+        rendered.destroy();
+        expect(spy).toHaveBeenCalledTimes(1)
+    });
+
 });
 
 const doesNotCallAction = (store: Store<any>, mockAction = jest.fn(), id: string) => {

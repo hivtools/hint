@@ -78,5 +78,13 @@ describe("ADR mutations", () => {
         mutations[ADRUploadMutation.ReleaseFailed](state, {payload: mockError("Version already exists for this activity")});
         expect(state.releaseFailed).toBe(true);
         expect(state.uploadError!!.detail).toBe("A release already exists on ADR for the latest files");
+
+        mutations[ADRUploadMutation.ReleaseFailed](state, {payload: mockError("Version names must be unique per dataset")});
+        expect(state.releaseFailed).toBe(true);
+        expect(state.uploadError!!.detail).toBe("Release names must be unique per dataset and a release with the same name already exists on ADR. Try renaming the project to generate a new release name.");
+
+        mutations[ADRUploadMutation.ReleaseFailed](state, {payload: mockError("other error")});
+        expect(state.releaseFailed).toBe(true);
+        expect(state.uploadError!!.detail).toBe("other error");
     });
 });
