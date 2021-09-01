@@ -153,7 +153,9 @@
                         ...subplots,
                         rows
                     };
-                    scrollHeight = `${subplots.heightPerRow * rows}px`;
+                    //Height per row plus enough to accommodate margins
+                    scrollHeight = `${(subplots.heightPerRow * rows) + 100}px`;
+                    //scrollHeight = `${subplots.heightPerRow * rows}px`;
                 }
 
                 // The metadata supports multiple chart types per chart e.g Scatter and Bar, but for now we only need to
@@ -183,14 +185,12 @@
                         return null; //Do not attempt to initialise if we are missing any datasets, or selections not initialised
                     }
 
-                    let filteredout = 0; //TODO: remove this!
                     const includeRow = (row: any, idx: number) => {
                         let filterOutRow = false;
                         for (const filter of filters) {
                             const filterValues = selectedFilterOptions[filter.id]?.map(n => n.id);
                             if (filterValues?.indexOf(row[filter.column_id].toString()) < 0) {
                                 filterOutRow = true;
-                                filteredout++;
                                 break;
                             }
                         }
