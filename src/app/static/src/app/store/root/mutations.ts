@@ -39,14 +39,14 @@ export const mutations: MutationTree<RootState> = {
             hintrVersion: state.hintrVersion,
             language: state.language,
             adr: state.adr,
-            genericChart: {
-                ...initialGenericChartState(),
-                genericChartMetadata: state.genericChart.genericChartMetadata
-            },
             adrUpload: initialADRUploadState(),
             baseline: maxValidStep < 1 ? initialBaselineState() : state.baseline,
             metadata: maxValidStep < 1 ? initialMetadataState() : state.metadata,
             surveyAndProgram: maxValidStep < 2 ? initialSurveyAndProgramState() : state.surveyAndProgram,
+            genericChart: maxValidStep < 2 ? {
+                ...initialGenericChartState(),
+                genericChartMetadata: state.genericChart.genericChartMetadata
+            } : state.genericChart,
             modelOptions: maxValidStep < 3 ? initialModelOptionsState() : state.modelOptions,
             modelRun: maxValidStep < 4 ? initialModelRunState() : state.modelRun,
             modelCalibrate: initialModelCalibrateState(),
