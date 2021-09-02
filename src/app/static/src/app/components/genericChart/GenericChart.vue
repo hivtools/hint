@@ -1,29 +1,38 @@
 <template>
-    <div class="row">
-        <div class="col-3">
-            <div v-for="ds in chartConfigValues.dataSourceConfigValues" :key="ds.config.id">
-                <data-source v-if="ds.editable"
-                             :config="ds.config"
-                             :datasets="chartMetadata.datasets"
-                             :value="ds.selections.datasetId"
-                             @update="updateDataSource(ds.config.id, $event)">
-                </data-source>
-                <filters v-if="ds.config.showFilters && ds.filters && ds.selections.selectedFilterOptions"
-                            :filters="ds.filters"
-                            :selected-filter-options="ds.selections.selectedFilterOptions"
-                            @update="updateSelectedFilterOptions(ds.config.id, $event)">
-                </filters>
+    <div>
+        <div class="row" v-if="chartData">
+            <div class="col-3">
+                <div v-for="ds in chartConfigValues.dataSourceConfigValues" :key="ds.config.id">
+                    <data-source v-if="ds.editable"
+                                 :config="ds.config"
+                                 :datasets="chartMetadata.datasets"
+                                 :value="ds.selections.datasetId"
+                                 @update="updateDataSource(ds.config.id, $event)">
+                    </data-source>
+                    <filters v-if="ds.config.showFilters && ds.filters && ds.selections.selectedFilterOptions"
+                                :filters="ds.filters"
+                                :selected-filter-options="ds.selections.selectedFilterOptions"
+                                @update="updateSelectedFilterOptions(ds.config.id, $event)">
+                    </filters>
+                </div>
             </div>
+            <div class="col-9">
+                <div class="chart-container" :style="{height: chartHeight}">
+                    <plotly class="chart"
+                           :chart-metadata="chartConfigValues.chartConfig"
+                           :chart-data="chartData"
+                           :layout-data="chartConfigValues.layoutData"
+                           :style="{height: chartConfigValues.scrollHeight}"></plotly>
+                </div>
+                <error-alert v-if="error" :error="error"></error-alert>
+            </div>
+
         </div>
-        <div class="col-9">
-            <div v-if="chartData" class="chart-container" :style="{height: chartHeight}">
-                <plotly class="chart"
-                       :chart-metadata="chartConfigValues.chartConfig"
-                       :chart-data="chartData"
-                       :layout-data="chartConfigValues.layoutData"
-                       :style="{height: chartConfigValues.scrollHeight}"></plotly>
+        <div class="row" v-if="!chartData">
+            <div class="text-center col-12">
+                <loading-spinner size="lg"></loading-spinner>
+                <h2 id="loading-message" v-translate="'loadingData'"></h2>
             </div>
-            <error-alert v-if="error" :error="error"></error-alert>
         </div>
     </div>
 </template>
@@ -40,6 +49,7 @@
     import DataSource from "./dataSelectors/DataSource.vue";
     import Filters from "../plots/Filters.vue";
     import ErrorAlert from "../ErrorAlert.vue";
+    import LoadingSpinner from "../LoadingSpinner.vue";
     import {mapActionByName, mapStateProp} from "../../utils";
     import {GenericChartState} from "../../store/genericChart/genericChart";
     import {getDatasetPayload} from "../../store/genericChart/actions";
@@ -104,7 +114,8 @@
             DataSource,
             Filters,
             Plotly,
-            ErrorAlert
+            ErrorAlert,
+            LoadingSpinner
         },
         data: function() {
             const chart = this.metadata[this.chartId];

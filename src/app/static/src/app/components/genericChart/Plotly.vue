@@ -52,8 +52,6 @@
         methods: {
             drawChart() {
                 const el = this.$refs.chart;
-                console.log("DATA: " + JSON.stringify(this.data.data))
-                console.log("LAYOUT:" + JSON.stringify(this.data.layout))
                 Plotly.newPlot(el as HTMLElement, this.data.data as any, this.data.layout, this.data.config as any);
             }
         },
