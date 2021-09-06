@@ -43,13 +43,13 @@ describe("Forgot password component", () => {
         const wrapper = createSut(store);
 
         expectTranslatedWithStoreType<PasswordState>(wrapper.find("h3"), "Forgotten your password?",
-            "Vous avez oublié votre mot de passe ?", store);
+            "Vous avez oublié votre mot de passe ?", "Esqueceu-se da sua palavra-passe?", store);
         expect((wrapper.find("input[type='email']").element as HTMLInputElement).value).toEqual("");
         expectTranslatedWithStoreType<PasswordState>(wrapper.find("input[type='email']"), "Email address",
-            "Adresse e-mail", store, "placeholder");
+            "Adresse e-mail", "Endereço de e-mail", store, "placeholder");
         expectTranslatedWithStoreType<PasswordState>(wrapper.find("input[type='submit']"),
             "Request password reset email", "Demande de réinitialisation du mot de passe par e-mail",
-            store, "value");
+            "Solicitar e-mail de reposição de palavra-passe", store, "value");
         expect(wrapper.findAll("error-alert-stub").length).toEqual(0);
         expect(wrapper.findAll(".alert-success").length).toEqual(0);
     });
@@ -64,11 +64,11 @@ describe("Forgot password component", () => {
         const wrapper = createSut(store);
 
         expectTranslatedWithStoreType<PasswordState>(wrapper.find("h3"), "Forgotten your password?",
-            "Vous avez oublié votre mot de passe ?", store);
+            "Vous avez oublié votre mot de passe ?", "Esqueceu-se da sua palavra-passe?", store);
         expect((wrapper.find("input[type='email']").element as HTMLInputElement).value).toEqual("");
         expectTranslatedWithStoreType<PasswordState>(wrapper.find("input[type='submit']"),
             "Request password reset email", "Demande de réinitialisation du mot de passe par e-mail",
-            store, "value");
+            "Solicitar e-mail de reposição de palavra-passe", store, "value");
         expect(wrapper.findAll("error-alert-stub").length).toEqual(1);
         expect(wrapper.find(ErrorAlert).props().error).toBe(error);
         expect(wrapper.findAll(".alert-success").length).toEqual(0);
@@ -83,16 +83,17 @@ describe("Forgot password component", () => {
         const wrapper = createSut(store);
 
         expectTranslatedWithStoreType<PasswordState>(wrapper.find("h3"), "Forgotten your password?",
-            "Vous avez oublié votre mot de passe ?", store);
+            "Vous avez oublié votre mot de passe ?", "Esqueceu-se da sua palavra-passe?", store);
         expect((wrapper.find("input[type='email']").element as HTMLInputElement).value).toEqual("");
         expectTranslatedWithStoreType<PasswordState>(wrapper.find("input[type='submit']"),
             "Request password reset email", "Demande de réinitialisation du mot de passe par e-mail",
-            store, "value");
+            "Solicitar e-mail de reposição de palavra-passe", store, "value");
         expect(wrapper.findAll("error-alert-stub").length).toEqual(0);
         expect(wrapper.findAll(".alert-success").length).toEqual(1);
         expectTranslatedWithStoreType<PasswordState>(wrapper.find(".alert-success"),
             "Thank you. If we have an account registered for this email address, you will receive a password reset link.",
             "Merci. Si un compte est enregistré pour cette adresse e-mail, vous recevrez un lien de réinitialisation du mot de passe.",
+            "Obrigado. Se tivermos uma conta registada para este endereço de e-mail, receberá uma ligação de reposição de palavra-passe.",
             store);
     });
 

@@ -16,13 +16,16 @@ describe("Step component", () => {
     it("renders step", () => {
         const wrapper = shallowMount(Step, {
             localVue,
+            store,
             propsData: {
                 textKey: "uploadInputs"
             }
         });
 
-        expectTranslated(wrapper.find("div"), "Upload inputs",
-            "Télécharger les entrées", store);
+        expectTranslated(wrapper.find("div"),
+            "Upload inputs",
+            "Télécharger les entrées",
+            "Carregar entradas", store);
     });
 
     it("renders enabled step", () => {

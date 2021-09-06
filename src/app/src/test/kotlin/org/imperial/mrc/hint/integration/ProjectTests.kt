@@ -268,6 +268,20 @@ class ProjectTests : VersionFileTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `can return expected Portuguese error when copy nonexistent version`(isAuthorized: IsAuthorized)
+    {
+        val result = getNewVersionResult(1, "nonExistent", "pt")
+        assertSecureWithHttpStatus(isAuthorized,result,null,HttpStatus.BAD_REQUEST)
+        if(isAuthorized == IsAuthorized.TRUE)
+        {
+            val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
+            val msg = errors[0]["detail"].asText()
+            assertThat(msg).isEqualTo("A versão não existe.")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can update version state`(isAuthorized: IsAuthorized)
     {
         val createResult = createProject()
@@ -318,6 +332,21 @@ class ProjectTests : VersionFileTests()
             val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
             val msg = errors[0]["detail"].asText()
             assertThat(msg).isEqualTo("La version n'existe pas.")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can return expected Portuguese error when update nonexistent version state`(isAuthorized: IsAuthorized)
+    {
+        val result = getUpdateVersionStateResult(1, "nonExistent", "testState",
+                "pt")
+        assertSecureWithHttpStatus(isAuthorized,result,null,HttpStatus.BAD_REQUEST)
+        if (isAuthorized == IsAuthorized.TRUE)
+        {
+            val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
+            val msg = errors[0]["detail"].asText()
+            assertThat(msg).isEqualTo("A versão não existe.")
         }
     }
 
@@ -427,6 +456,23 @@ class ProjectTests : VersionFileTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `can return expected Portuguese error when get nonexistent version details`(isAuthorized: IsAuthorized)
+    {
+        val headers = getStandardHeaders("pt")
+        val httpEntity = HttpEntity<String>(headers)
+
+        val result = testRestTemplate.exchange<String>("/project/99/version/noversion", HttpMethod.GET, httpEntity)
+        assertSecureWithHttpStatus(isAuthorized, result, null,HttpStatus.BAD_REQUEST)
+        if(isAuthorized == IsAuthorized.TRUE)
+        {
+            val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
+            val msg = errors[0]["detail"].asText()
+            assertThat(msg).isEqualTo("A versão não existe.")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `can delete project`(isAuthorized: IsAuthorized)
     {
         val createResult = createProject()
@@ -517,6 +563,24 @@ class ProjectTests : VersionFileTests()
             val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
             val msg = errors[0]["detail"].asText()
             assertThat(msg).isEqualTo("Le projet n'existe pas.")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can return expected Portuguese error when delete nonexistent project`(isAuthorized: IsAuthorized)
+    {
+        val headers = getStandardHeaders("pt")
+        val httpEntity = HttpEntity<String>(headers)
+
+        val result = testRestTemplate.exchange<String>("/project/99", HttpMethod.DELETE, httpEntity)
+        assertSecureWithHttpStatus(isAuthorized,result,null, HttpStatus.BAD_REQUEST)
+
+        if(isAuthorized == IsAuthorized.TRUE)
+        {
+            val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
+            val msg = errors[0]["detail"].asText()
+            assertThat(msg).isEqualTo("O projeto não existe.")
         }
     }
 
@@ -626,6 +690,23 @@ class ProjectTests : VersionFileTests()
             val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
             val msg = errors[0]["detail"].asText()
             assertThat(msg).isEqualTo("La version n'existe pas.")
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can return expected Portuguese error when delete nonexistent version`(isAuthorized: IsAuthorized)
+    {
+        val headers = getStandardHeaders("pt")
+        val httpEntity = HttpEntity<String>(headers)
+
+        val result = testRestTemplate.exchange<String>("/project/99/version/nonexistent", HttpMethod.DELETE, httpEntity)
+        assertSecureWithHttpStatus(isAuthorized,result,null, HttpStatus.BAD_REQUEST)
+        if(isAuthorized == IsAuthorized.TRUE)
+        {
+            val errors = ObjectMapper().readTree(result.body)["errors"] as ArrayNode
+            val msg = errors[0]["detail"].asText()
+            assertThat(msg).isEqualTo("A versão não existe.")
         }
     }
 
