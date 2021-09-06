@@ -192,8 +192,8 @@ export interface DataSourceConfig {
     type: "fixed" | "editable"
     label?: string
     datasetId: string
-    showFilters: true
-    showIndicators: true
+    showFilters: boolean
+    showIndicators: boolean
 }
 
 export interface GenericChartMetadata {

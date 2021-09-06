@@ -24,15 +24,16 @@
                            :layout-data="chartConfigValues.layoutData"
                            :style="{height: chartConfigValues.scrollHeight}"></plotly>
                 </div>
-                <error-alert v-if="error" :error="error"></error-alert>
             </div>
-
         </div>
         <div class="row" v-if="!chartData">
             <div class="text-center col-12">
                 <loading-spinner size="lg"></loading-spinner>
                 <h2 id="loading-message" v-translate="'loadingData'"></h2>
             </div>
+        </div>
+        <div v-if="error" class="row">
+            <error-alert :error="error"></error-alert>
         </div>
     </div>
 </template>
@@ -141,7 +142,6 @@
                 return this.metadata[this.chartId]!;
             },
             chartConfigValues() {
-                console.log("STARTING CALC CHARTCONFIGVALUES")
                 const dataSourceConfigValues = this.chartMetadata.dataSelectors.dataSources.map((dataSourceConfig) => {
                     const selections = this.dataSourceSelections[dataSourceConfig.id];
                     return {
@@ -169,12 +169,9 @@
                     scrollHeight = `${(subplots.heightPerRow * rows) + 100}px`;
                 }
 
-                console.log("GETTING CHART CONFIG")
                 // The metadata supports multiple chart types per chart e.g Scatter and Bar, but for now we only need to
                 // support one chart type, so here we select the first config in the array
                 const chartConfig = this.chartMetadata.chartConfig[0].config;
-
-                console.log("FINISHED CALC CHARTCONFIGVALUES")
 
                 return {
                     dataSourceConfigValues,
@@ -196,9 +193,6 @@
                     const selectedFilterOptions = dataSourceSelections.selectedFilterOptions;
 
                     if (!unfilteredData || !selectedFilterOptions) {
-                        console.log(`returning null chart data`)
-                        console.log("unfilteredData: " + JSON.stringify(unfilteredData))
-                        console.log("selectedFilterOptions:" +  JSON.stringify(selectedFilterOptions))
                         return null; //Do not attempt to initialise if we are missing any datasets, or selections not initialised
                     }
 
@@ -216,7 +210,6 @@
                     };
                     result[dataSourceId] = unfilteredData.filter((row: any, idx: number) => includeRow(row, idx));
                 }
-                console.log("generated chart data: " + JSON.stringify(result))
                 return result;
             }
         },
