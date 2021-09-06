@@ -216,7 +216,6 @@ describe("Survey and programme component", () => {
                               portugueseName: string, id: string) {
         const store = createStore(state);
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-
         let options = wrapper.find("#data-source tree-select-stub").props("options");
         expect(options).toStrictEqual([{id, label: englishName}]);
 
