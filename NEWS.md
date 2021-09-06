@@ -1,6 +1,10 @@
-# hint 1.48.0
+# hint 1.49.0
 
 * Move all file upload controls to Step 1 
+
+# hint 1.48.0
+
+* Use async endpoints for Just-In-time generation of download files from HINT frontend
 
 # hint 1.47.0
 
