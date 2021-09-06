@@ -226,7 +226,7 @@ describe("Survey and programme component", () => {
 
         store.state.language = Language.pt;
         registerTranslations(store);
-        options = wrapper.find("#data-source treeselect-stub").props("options");
+        options = wrapper.find("#data-source tree-select-stub").props("options");
         expect(options).toStrictEqual([{id, label:portugueseName}]);
     }
 
