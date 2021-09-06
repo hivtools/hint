@@ -2,29 +2,31 @@
     <div class="container">
         <div class="row">
             <div class="col-sm">
-                <h4 v-translate="'exportOutputs'"></h4>
-                <a class="btn btn-red btn-lg my-3" :href=spectrumUrl>
-                    <span v-translate="'export'"></span>
-                    <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                </a>
-                <h4 class="mt-4" v-translate="'downloadCoarseOutput'"></h4>
-                <a class="btn btn-red btn-lg my-3" :href=coarseOutputUrl>
-                    <span v-translate="'download'"></span>
-                    <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                </a>
-                <h4 class="mt-4" v-translate="'downloadSummaryReport'"></h4>
-                <a class="btn btn-red btn-lg my-3" :href=summaryReportUrl>
-                    <span v-translate="'download'"></span>
-                    <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-                </a>
+                <div id="spectrum-download">
+                    <download :translate-key="translation.spectrum"
+                              @click="downloadSpectrum"
+                              :modal-open="uploadModalOpen"
+                              :file="spectrum"/>
+                </div>
+                <div id="coarse-output-download">
+                    <download :translate-key="translation.coarse"
+                              @click="downloadCoarseOutput"
+                              :modal-open="uploadModalOpen"
+                              :file="coarseOutput"/>
+                </div>
+                <div id="summary-download">
+                    <download :translate-key="translation.summary"
+                              @click="downloadSummary"
+                              :modal-open="uploadModalOpen"
+                              :file="summary"/>
+                </div>
             </div>
             <div id="upload" v-if="hasUploadPermission" class="col-sm">
                 <h4 v-translate="'uploadFileToAdr'"></h4>
-                <button @click.prevent="handleUploadModal" 
-                        class="btn btn-lg my-3" 
-                        :class="uploading ? 'btn-secondary' : 'btn-red'"
-                        href="#" 
-                        :disabled="uploading">
+                <button @click.prevent="handleUploadModal"
+                        class="btn btn-lg my-3"
+                        :class="uploading || isDownloading ? 'btn-secondary' : 'btn-red'"
+                        :disabled="uploading || isDownloading">
                     <span v-translate="'upload'"></span>
                     <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
                 </button>
@@ -52,8 +54,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
-    import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
-    import {DownloadIcon, UploadIcon} from "vue-feather-icons";
+    import {UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
     import LoadingSpinner from "../LoadingSpinner.vue";
@@ -63,12 +64,11 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import i18next from "i18next";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
+    import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
+    import {DownloadResultsDependency} from "../../types";
+    import Download from "./Download.vue";
 
     interface Computed {
-        modelCalibrateId: string,
-        spectrumUrl: string,
-        coarseOutputUrl: string,
-        summaryReportUrl: string,
         uploadingStatus: string,
         currentLanguage: Language,
         currentFileUploading: number | null,
@@ -76,7 +76,13 @@
         uploading: boolean,
         uploadComplete: boolean,
         uploadError: null | UploadError,
-        hasUploadPermission: boolean
+        hasUploadPermission: boolean,
+        downloadingSpectrum: boolean,
+        spectrum: Partial<DownloadResultsDependency>,
+        coarseOutput: Partial<DownloadResultsDependency>,
+        summary: Partial<DownloadResultsDependency>,
+        translation: Record<string, any>,
+        isDownloading : boolean
     }
 
     interface UploadError {
@@ -88,6 +94,16 @@
         handleUploadModal: () => void
         getUserCanUpload: () => void
         getUploadFiles: () => void
+        downloadCoarseOutput: () => void
+        downloadSpectrum: () => void
+        downloadSummary: () => void
+        getSummaryDownload: () => void
+        getSpectrumDownload: () => void
+        getCoarseOutputDownload: () => void
+        getUploadMetadata: (id: string) => void
+        downloadUrl: (downloadId: string) => string
+        stopPolling: (pollingId: number) => void
+        handleDownloadResult: (downloadResults: DownloadResultsDependency) => void
     }
 
     interface Data {
@@ -102,8 +118,28 @@
             }
         },
         computed: {
-            ...mapStateProps<ModelCalibrateState, keyof Computed>("modelCalibrate", {
-                modelCalibrateId: state => state.calibrateId
+            ...mapStateProps<DownloadResultsState, keyof Computed>("downloadResults", {
+                spectrum: state => ({
+                    downloading: state.spectrum.downloading,
+                    complete: state.spectrum.complete,
+                    downloadId: state.spectrum.downloadId,
+                    statusPollId: state.spectrum.statusPollId,
+                    error: state.spectrum.error
+                }),
+                summary: state => ({
+                    downloading: state.summary.downloading,
+                    complete: state.summary.complete,
+                    downloadId: state.summary.downloadId,
+                    statusPollId: state.summary.statusPollId,
+                    error: state.summary.error
+                }),
+                coarseOutput: state => ({
+                    downloading: state.coarseOutput.downloading,
+                    complete: state.coarseOutput.complete,
+                    downloadId: state.coarseOutput.downloadId,
+                    statusPollId: state.coarseOutput.statusPollId,
+                    error: state.coarseOutput.error
+                })
             }),
             ...mapStateProps<ADRUploadState, keyof Computed>("adrUpload", {
                 currentFileUploading: state => state.currentFileUploading,
@@ -126,35 +162,92 @@
                 null,
                 (state: RootState) => state.language
             ),
-            spectrumUrl: function () {
-                return `/download/spectrum/${this.modelCalibrateId}`
+            translation() {
+                return {
+                    spectrum: {header: 'exportOutputs', button: 'export'},
+                    coarse: {header: 'downloadCoarseOutput', button: 'download'},
+                    summary: {header: 'downloadSummaryReport', button: 'download'}
+                }
             },
-            coarseOutputUrl: function () {
-                return `/download/coarse-output/${this.modelCalibrateId}`
-            },
-            summaryReportUrl: function () {
-                return `/download/summary/${this.modelCalibrateId}`
+            isDownloading() {
+                return !!this.summary.downloading || !!this.spectrum.downloading || !!this.coarseOutput.downloading
             }
         },
         methods: {
+            downloadUrl(downloadId) {
+                return `/download/result/${downloadId}`;
+            },
             handleUploadModal() {
-                this.uploadModalOpen = true
+                this.uploadModalOpen = true;
+            },
+            downloadSpectrum() {
+                if (!this.spectrum.downloading) {
+                    this.getSpectrumDownload();
+                }
+            },
+            downloadSummary() {
+                if (!this.summary.downloading) {
+                    this.getSummaryDownload();
+                }
+            },
+            downloadCoarseOutput() {
+                if (!this.coarseOutput.downloading) {
+                    this.getCoarseOutputDownload();
+                }
+            },
+            stopPolling(id) {
+              clearInterval(id)
+            },
+            handleDownloadResult(downloadResults) {
+              if(!this.uploadModalOpen) {
+                if (downloadResults.complete) {
+                  window.location.assign(this.downloadUrl(downloadResults.downloadId));
+                  this.getUploadMetadata(downloadResults.downloadId);
+                  this.stopPolling(downloadResults.statusPollId)
+                }
+                if (downloadResults.error) {
+                  this.stopPolling(downloadResults.statusPollId);
+                }
+              }
             },
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
-            getUploadFiles: mapActionByName("adrUpload", "getUploadFiles")
+            getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
+            getSpectrumDownload: mapActionByName("downloadResults", "downloadSpectrum"),
+            getSummaryDownload: mapActionByName("downloadResults", "downloadSummary"),
+            getCoarseOutputDownload: mapActionByName("downloadResults", "downloadCoarseOutput"),
+            getUploadMetadata: mapActionByName("metadata", "getAdrUploadMetadata"),
         },
         mounted() {
             this.getUserCanUpload();
             this.getUploadFiles()
         },
         components: {
-            DownloadIcon,
             UploadIcon,
             LoadingSpinner,
             Tick,
             ErrorAlert,
-            UploadModal
+            UploadModal,
+            Download
+        },
+        watch: {
+            summary: {
+                handler(summary) {
+                  this.handleDownloadResult(summary)
+                },
+                deep: true
+            },
+            spectrum: {
+                handler(spectrum) {
+                  this.handleDownloadResult(spectrum)
+                },
+                deep: true
+            },
+            coarseOutput: {
+                handler(coarseOutput) {
+                  this.handleDownloadResult(coarseOutput)
+                },
+                deep: true
+            }
         }
     });
 </script>
-

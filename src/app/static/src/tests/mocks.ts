@@ -42,6 +42,7 @@ import {initialModelCalibrateState, ModelCalibrateState} from "../app/store/mode
 import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrVersion/hintrVersion";
 import {ADRState, initialADRState} from "../app/store/adr/adr";
 import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrUpload";
+import {DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
 import {GenericChartState, initialGenericChartState} from "../app/store/genericChart/genericChart";
 
 export const mockAxios = new MockAdapter(axios);
@@ -63,6 +64,13 @@ export const mockADRState =  (props?: Partial<ADRState>): ADRState => {
 export const mockADRUploadState =  (props?: Partial<ADRUploadState>): ADRUploadState => {
     return {
         ...initialADRUploadState(),
+        ...props
+    }
+};
+
+export const mockDownloadResultsState =  (props?: Partial<DownloadResultsState>): DownloadResultsState => {
+    return {
+        ...initialDownloadResultsState(),
         ...props
     }
 };
