@@ -47,14 +47,14 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         }
     }
 
-    protected fun getModelRunEntity(): HttpEntity<String>
+    protected fun getModelRunEntity(modelEntity: Map<String, Any>): HttpEntity<String>
     {
         uploadMinimalFiles()
         val optionsResponseEntity = testRestTemplate.getForEntity<String>("/model/options/")
         val versionJson = parser.readTree(optionsResponseEntity.body!!)["version"]
         val version = parser.treeToValue<Map<String, String>>(versionJson)
 
-        val modelRunOptions = ModelOptions(emptyMap(), version)
+        val modelRunOptions = ModelOptions(modelEntity, version)
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val jsonString = ObjectMapper().writeValueAsString(modelRunOptions)
@@ -64,7 +64,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
     protected fun getValidationOptions(): HttpEntity<String>
     {
         uploadMinimalFiles()
-        val modelRunOptions = ModelOptions(getMockOptions(), emptyMap())
+        val modelRunOptions = ModelOptions(getMockModelOptions(), emptyMap())
 
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
@@ -92,7 +92,7 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
 
     protected fun waitForModelRunResult(): String
     {
-        val entity = getModelRunEntity()
+        val entity = getModelRunEntity(getMockModelOptions())
         val runResult = testRestTemplate.postForEntity<String>("/model/run/", entity)
         val id = ObjectMapper().readValue<JsonNode>(runResult.body!!)["data"]["id"].textValue()
 
@@ -100,9 +100,43 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         {
             Thread.sleep(500)
             val statusResponse = testRestTemplate.getForEntity<String>("/model/status/$id")
-        } while (statusResponse.body != null && statusResponse.body!!.contains("\"status\":\"RUNNING\""))
+        } while (statusResponse.body!!.contains("\"status\":\"RUNNING\"")
+                || statusResponse.body!!.contains("\"status\":\"PENDING\""))
 
         return id
+    }
+
+    protected fun waitForCalibrationResult(modelId: String): String
+    {
+        val entity = getModelRunEntity(getMockCalibrateModelOptions())
+        val responseEntity = testRestTemplate.postForEntity<String>("/model/calibrate/submit/$modelId", entity)
+        val id = ObjectMapper().readValue<JsonNode>(responseEntity.body!!)["data"]["id"].textValue()
+
+        do
+        {
+            Thread.sleep(500)
+            val statusResponse = testRestTemplate.getForEntity<String>("/model/calibrate/status/$id")
+        } while (statusResponse.body!!.contains("\"status\":\"RUNNING\"")
+                || statusResponse.body!!.contains("\"status\":\"PENDING\""))
+
+        return id
+    }
+
+    protected fun waitForSubmitDownloadOutput(calibrateId: String, type: String): String
+    {
+        val response = testRestTemplate.getForEntity<String>("/download/submit/$type/$calibrateId")
+        assertSuccess(response, "DownloadSubmitResponse")
+        val bodyJSON = ObjectMapper().readTree(response.body)
+        val responseId = bodyJSON["data"]["id"].asText()
+
+        do
+        {
+            Thread.sleep(500)
+            val statusResponse = testRestTemplate.getForEntity<String>("/download/status/$responseId")
+        } while (statusResponse.body!!.contains("\"status\":\"RUNNING\"")
+                || statusResponse.body!!.contains("\"status\":\"PENDING\""))
+
+        return responseId
     }
 
     fun assertSecureWithHttpStatus(isAuthorized: IsAuthorized,
@@ -269,7 +303,21 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         return ObjectMapper().readTree(entity.body)["data"]
     }
 
-    fun getMockOptions(): Map<String, Any>
+    fun getMockCalibrateModelOptions(): Map<String, Any>
+    {
+        return mapOf(
+                "spectrum_plhiv_calibration_level" to "national",
+                "spectrum_plhiv_calibration_strat" to "sex_age_coarse",
+                "spectrum_artnum_calibration_level" to "national",
+                "spectrum_artnum_calibration_strat" to "sex_age_coarse",
+                "spectrum_infections_calibration_level" to "national",
+                "spectrum_infections_calibration_strat" to "sex_age_coarse",
+                "spectrum_aware_calibration_level" to "none",
+                "spectrum_aware_calibration_strat" to "sex_age_coarse",
+                "calibrate_method" to "logistic")
+    }
+
+    fun getMockModelOptions(): Map<String, Any>
     {
         return mapOf("anc_art_coverage_year1" to "2018",
                 "anc_prevalence_year1" to "2018",
@@ -290,15 +338,6 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
                 "no_of_samples" to 1000,
                 "permissive" to "false",
                 "rng_seed" to 28,
-                "spectrum_artnum_calibration_level" to "national",
-                "spectrum_artnum_calibration_strat" to "sex_age_coarse",
-                "spectrum_infections_calibration_level" to "national",
-                "spectrum_infections_calibration_strat" to "sex_age_coarse",
-                "spectrum_plhiv_calibration_level" to "national",
-                "spectrum_plhiv_calibration_strat" to "sex_age_coarse",
-                "spectrum_population_calibration" to "national",
-                "spectrum_aware_calibration_level" to "none",
-                "spectrum_aware_calibration_strat" to "age_coarse",
                 "survey_art_coverage" to { "MWI2016PHIA" },
                 "survey_prevalence" to { "MWI2016PHIA" },
                 "survey_recently_infected" to { "MWI2016PHIA" },
