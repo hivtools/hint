@@ -63,7 +63,7 @@ describe("Model calibrate component", () => {
         const wrapper = getWrapper(store);
         expect(wrapper.find(LoadingSpinner).exists()).toBe(true);
         expectTranslated(wrapper.find("#loading-message"), "Loading options",
-            "Chargement de vos options.", store);
+            "Chargement de vos options.", "Opções de carregamento", store);
         expect(wrapper.find(DynamicForm).exists()).toBe(false);
         expect(wrapper.find("#calibration-complete").exists()).toBe(false);
         expect(wrapper.find(ErrorAlert).exists()).toBe(false);
@@ -91,7 +91,7 @@ describe("Model calibrate component", () => {
         expect(form.find("h3").text()).toBe("Test Section");
         expect(form.find(".text-muted").text()).toBe("Just a test section");
         expect((form.find("input").element as HTMLInputElement).value).toBe("5");
-        expectTranslated(wrapper.find("button"), "Calibrate", "Calibrer", store);
+        expectTranslated(wrapper.find("button"), "Calibrate", "Calibrer", "Calibrar", store);
         expect(wrapper.find("button").classes()).toContain("btn-submit");
         expect(wrapper.find("button").classes()).not.toContain("btn-secondary");
         expect((wrapper.find("button").element as HTMLButtonElement).disabled).toBe(false);
@@ -115,7 +115,7 @@ describe("Model calibrate component", () => {
         const wrapper = getWrapper(store);
         expect(wrapper.find("#calibration-complete").find(Tick).exists()).toBe(true);
         expectTranslated(wrapper.find("#calibration-complete h4"), "Calibration complete",
-            "Calibrage du modèle terminé", store);
+            "Calibrage du modèle terminé", "Calibração concluída", store);
     });
 
     it("renders error", () => {
@@ -130,7 +130,7 @@ describe("Model calibrate component", () => {
         const wrapper = getWrapper(store);
         expect(wrapper.find("#calibrating").find(LoadingSpinner).exists()).toBe(true);
         expectTranslated(wrapper.find("#calibrating"), "Calibrating...",
-            "Calibrage en cours...", store);
+            "Calibrage en cours...", "Calibrar...", store);
         expect((wrapper.find("button").element as HTMLButtonElement).disabled).toBe(true);
         expect(wrapper.find("button").classes()).toContain("btn-secondary");
         expect(wrapper.find("button").classes()).not.toContain("btn-submit");
@@ -173,7 +173,7 @@ describe("Model calibrate component", () => {
         const wrapper = getWrapper(store);
         expect(wrapper.find("#genCalibResults").find(LoadingSpinner).exists()).toBe(true);
         expectTranslated(wrapper.find("#genCalibResults span"), "Generating calibration results",
-        "Générer des résultats d'étalonnage", store);
+        "Générer des résultats d'étalonnage", "Gerando resultados de calibração", store);
     });
 
     it("renders calibration plot", () => {
@@ -181,6 +181,6 @@ describe("Model calibrate component", () => {
         const wrapper = getWrapper(store);
         expect(wrapper.find(CalibrationResults).exists()).toBe(true);
         expectTranslated(wrapper.find("#reviewResults"), "(Review results below)",
-        "(Consultez les résultats ci-dessous)", store);
+        "(Consultez les résultats ci-dessous)", "(Analise os resultados abaixo)", store);
     });
 });

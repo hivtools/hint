@@ -106,10 +106,21 @@ class ADRController(private val encryption: Encryption,
     }
 
     @GetMapping("/datasets/{id}")
-    fun getDataset(@PathVariable id: String): ResponseEntity<String>
+    fun getDataset(@PathVariable id: String, @RequestParam release: String? = null): ResponseEntity<String>
     {
         val adr = adrClientBuilder.build()
-        return adr.get("package_show?id=${id}")
+        var url = "package_show?id=${id}"
+        if (release != null) {
+            url = "$url&release=${release}"
+        }
+        return adr.get(url)
+    }
+
+    @GetMapping("/datasets/{id}/releases")
+    fun getReleases(@PathVariable id: String): ResponseEntity<String>
+    {
+        val adr = adrClientBuilder.build()
+        return adr.get("/dataset_version_list?dataset_id=${id}")
     }
 
     @GetMapping("/schemas")
@@ -168,6 +179,13 @@ class ADRController(private val encryption: Encryption,
     fun importANC(@RequestParam url: String): ResponseEntity<String>
     {
         return saveAndValidate(url, FileType.ANC)
+    }
+
+    @PostMapping("/datasets/{id}/releases")
+    fun createRelease(@PathVariable id: String, @RequestParam name: String): ResponseEntity<String>
+    {
+        val adr = adrClientBuilder.build()
+        return adr.post("dataset_version_create", listOf("dataset_id" to id, "name" to name));
     }
 
     @PostMapping("/datasets/{id}/resource/{resourceType}/{modelCalibrateId}")

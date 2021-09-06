@@ -7,6 +7,7 @@ import {mutations} from "./mutations";
 
 export interface ADRState {
     datasets: any[],
+    releases: any[],
     fetchingDatasets: boolean,
     key: string | null,
     keyError: Error | null,
@@ -18,6 +19,7 @@ export interface ADRState {
 export const initialADRState = (): ADRState => {
     return {
         datasets: [],
+        releases: [],
         key: null,
         keyError: null,
         adrError: null,

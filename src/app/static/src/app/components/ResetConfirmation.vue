@@ -42,7 +42,6 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapGetters} from 'vuex';
     import Modal from "./Modal.vue";
     import {mapActionByName, mapGetterByName, mapStateProp} from "../utils";
     import {StepDescription} from "../store/stepper/stepper";
@@ -51,16 +50,17 @@
     import {ErrorsState} from "../store/errors/errors";
 
     interface Computed {
-        changesToRelevantSteps: StepDescription[],
-        currentVersionId: string | null,
-        errorsCount: number,
+        changesToRelevantSteps: StepDescription[]
+        currentVersionId: string | null
+        errorsCount: number
         currentVersionNote: string
+        isGuest: boolean
     }
 
     interface Props {
         open: boolean
-        continueEditing: boolean
-        cancelEditing: boolean
+        continueEditing: () => void
+        cancelEditing: () => void
     }
 
     interface Data {
@@ -68,8 +68,17 @@
         versionNote: string
     }
 
-    export default Vue.extend<Data, unknown, Computed, any>({
-        props: ["open", "continueEditing", "cancelEditing"],
+    interface Methods {
+        handleConfirm: () => void
+        newVersion: (note: string) => void
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
+        props: {
+            open: Boolean,
+            continueEditing: Function,
+            cancelEditing: Function
+        },
         data: function () {
             return {
                 waitingForVersion: false,
@@ -84,7 +93,7 @@
             currentVersionNote: mapStateProp<ProjectsState, string>("projects", state => {
                 return state.currentVersion?.note || "";
             }),
-            ...mapGetters(["isGuest"]),
+            isGuest: mapGetterByName(null, "isGuest"),
             errorsCount: mapStateProp<ErrorsState, number>("errors", state => {
                 return state.errors ? state.errors.length : 0;
             })

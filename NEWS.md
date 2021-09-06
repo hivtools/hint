@@ -1,6 +1,34 @@
-# hint 1.43.0
+# hint 1.48.0
 
 * User can create a new project when enter key event is pressed
+
+# hint 1.47.0
+
+* Add Portuguese translations
+
+# hint 1.46.0
+
+* Combine input data tabs
+
+# hint 1.45.0
+
+* Import releases from ADR: fetch and display release data from ADR
+
+# hint 1.44.1
+
+* Import releases from ADR: fetch data from correct ADR release
+
+# hint 1.44.0
+
+* Modify Rename dialog modal and add notes text area
+
+# hint 1.43.1
+
+* Bug fix: Importing from adr after fitting model should prompt new version behaviour
+
+# hint 1.43.0
+
+* Add note icon(s) and dialogs to project history for project/version
 
 # hint 1.42.0
 
@@ -24,7 +52,7 @@
 
 # hint 1.37.0
 
-* Add note field to confirmation dialog when saving new version 
+* Add note field to confirmation dialog when saving new version
 
 # hint 1.37.0
 
@@ -173,7 +201,7 @@
 
 # hint 1.12.2
 
-* Fix casing in French translation of "Spectrum file" 
+* Fix casing in French translation of "Spectrum file"
 
 # hint 1.12.1
 
@@ -307,4 +335,4 @@
 
 # hint 0.0.0
 
-* Initial version of HINT for 2019 workshops. 
+* Initial version of HINT for 2019 workshops.

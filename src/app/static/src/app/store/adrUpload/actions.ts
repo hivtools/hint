@@ -6,7 +6,6 @@ import {ADRUploadState} from "./adrUpload";
 import {ADRUploadMutation} from "./mutations";
 import {constructUploadFile, constructUploadFileWithResourceName} from "../../utils";
 import {Dict, UploadFile} from "../../types";
-import {ADRMutation} from "../adr/mutations";
 import {switches} from "../../featureSwitches";
 import {ValidateInputResponse} from "../../generated";
 
@@ -22,11 +21,15 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
         const project = rootState.projects.currentProject;
 
         if (selectedDataset && project) {
+            let url = `/adr/datasets/${selectedDataset.id}`;
+            if (selectedDataset.release) {
+                url += '?' + new URLSearchParams({release: selectedDataset.release});
+            }
             commit({type: ADRUploadMutation.SetADRUploadError, payload: null});
             await api(context)
                 .withError(ADRUploadMutation.SetADRUploadError)
                 .ignoreSuccess()
-                .get(`/adr/datasets/${selectedDataset.id}`)
+                .get(url)
                 .then((response) => {
                     if (response) {
                         const metadata = response.data;
@@ -126,7 +129,6 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                 break
             }
         }
-        await dispatch("adr/getAndSetDatasets", selectedDatasetId, {root: true});
         await dispatch("getUploadFiles");
     }
 };

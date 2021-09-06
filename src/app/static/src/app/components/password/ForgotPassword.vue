@@ -49,9 +49,9 @@
             };
         },
         computed: mapState<PasswordState>({
-            error: state => state.requestResetLinkError,
-            hasError: state => !!state.requestResetLinkError,
-            resetLinkRequested: state => state.resetLinkRequested
+            error: (state: PasswordState) => state.requestResetLinkError,
+            hasError: (state: PasswordState) => !!state.requestResetLinkError,
+            resetLinkRequested: (state: PasswordState) => state.resetLinkRequested
         }),
         components: {
             ErrorAlert,

@@ -71,7 +71,7 @@ describe("File upload component", () => {
             name: "test-name"
         }, undefined, store);
         expectTranslated(wrapper.find(".custom-file-label"), "Select new file",
-            "Sélectionner un nouveau fichier", store);
+            "Sélectionner un nouveau fichier", "Selecionar novo ficheiro", store);
     });
 
     it("calls upload when file is selected", async () => {

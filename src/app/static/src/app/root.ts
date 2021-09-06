@@ -33,6 +33,7 @@ import {currentHintVersion} from "./hintVersion";
 import {ModelRunMutation, ModelRunUpdates} from "./store/modelRun/mutations";
 import {adr, ADRState, initialADRState} from "./store/adr/adr";
 import {adrUpload, ADRUploadState, initialADRUploadState} from "./store/adrUpload/adrUpload";
+import {GenericChartState, initialGenericChartState, genericChart} from "./store/genericChart/genericChart";
 
 export interface TranslatableState {
     language: Language
@@ -41,6 +42,7 @@ export interface TranslatableState {
 export interface RootState extends TranslatableState {
     version: string,
     adr: ADRState,
+    genericChart: GenericChartState,
     adrUpload: ADRUploadState,
     hintrVersion: HintrVersionState,
     baseline: BaselineState,
@@ -117,6 +119,7 @@ export const emptyState = (): RootState => {
         version: currentHintVersion,
         hintrVersion: initialHintrVersionState(),
         adr: initialADRState(),
+        genericChart: initialGenericChartState(),
         adrUpload: initialADRUploadState(),
         baseline: initialBaselineState(),
         metadata: initialMetadataState(),
@@ -138,6 +141,7 @@ export const storeOptions: StoreOptions<RootState> = {
     state: emptyState(),
     modules: {
         adr,
+        genericChart,
         adrUpload,
         baseline,
         metadata,

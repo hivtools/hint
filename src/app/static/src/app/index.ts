@@ -27,7 +27,7 @@ export const app = new Vue({
         Errors
     },
     computed: mapState<RootState>({
-        language: state => state.language
+        language: (state: RootState) => state.language
     }),
     methods: {
         ...mapActions({loadBaseline: 'baseline/getBaselineData'}),
@@ -36,6 +36,7 @@ export const app = new Vue({
         ...mapActions({loadModelCalibrate: 'modelCalibrate/getResult'}),
         ...mapActions({getADRSchemas: 'adr/getSchemas'}),
         ...mapActions({getCurrentProject: 'projects/getCurrentProject'}),
+        ...mapActions({getGenericChartMetadata: 'genericChart/getGenericChartMetadata'})
     },
     beforeMount: function () {
         this.loadBaseline();
@@ -43,6 +44,7 @@ export const app = new Vue({
         this.loadModelRun();
         this.loadModelCalibrate();
         this.getADRSchemas();
+        this.getGenericChartMetadata();
         this.getCurrentProject();
     }
 });
