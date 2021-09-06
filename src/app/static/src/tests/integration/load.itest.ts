@@ -84,7 +84,7 @@ describe("load actions", () => {
                     }
                 ]
             },
-            "version": "1.47.0"
+            "version": "1.49.0"
         });
     });
 
