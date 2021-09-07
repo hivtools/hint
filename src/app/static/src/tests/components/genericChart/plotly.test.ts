@@ -1,9 +1,9 @@
 // Mock the import of plotly so that we can spy on its exported 'react' method - need to do this
 // before importing Chart
-jest.mock("plotly.js", () => ({
+jest.mock("plotly.js-basic-dist", () => ({
     newPlot: jest.fn()
 }));
-import * as plotly from "plotly.js";
+import * as plotly from "plotly.js-basic-dist";
 import Vue from "vue";
 import { shallowMount } from "@vue/test-utils";
 import Plotly from "../../../app/components/genericChart/Plotly.vue";

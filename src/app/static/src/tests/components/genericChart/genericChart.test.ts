@@ -6,7 +6,7 @@ import GenericChart from "../../../app/components/genericChart/GenericChart.vue"
 import DataSource from "../../../app/components/genericChart/dataSelectors/DataSource.vue";
 import Filters from "../../../app/components/plots/Filters.vue";
 // Mock the import of plotly to avoid import failures in non-browser context
-jest.mock("plotly.js", () => ({
+jest.mock("plotly.js-basic-dist", () => ({
     newPlot: jest.fn()
 }));
 import Plotly from "../../../app/components/genericChart/Plotly.vue";

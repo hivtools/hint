@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-    import Plotly from "plotly.js";
+    import Plotly from "plotly.js-basic-dist";
     import Vue from "vue";
     import jsonata from "jsonata";
     import {Dict} from "../../types";
