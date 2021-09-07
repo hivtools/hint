@@ -496,18 +496,18 @@ describe(`uploadModal `, () => {
             summary: {downloading: false} as any,
             spectrum: {downloading: true} as any
         }
-        const wrapper = mount(UploadModal, {store: createStore(fakeMetadata, downloadResults)})
-
-        await wrapper.setProps({open: true})
+        const wrapper = mount(UploadModal,
+            {
+                store: createStore(fakeMetadata, downloadResults),
+                propsData: {open: true},
+                data() {
+                    return {
+                        uploadFilesToAdr: ["outputZip", "outputSummary"]
+                    }
+                }
+            })
 
         const btn = wrapper.findAll("button");
-        expect(btn.at(0).attributes("disabled")).toBe("disabled");
-
-        const inputs = wrapper.findAll("input.form-check-input")
-        expect(inputs.length).toBe(2)
-        inputs.at(0).setChecked(true)
-        inputs.at(1).setChecked(true)
-
         expect(btn.at(0).attributes("disabled")).toBeUndefined();
         expect(btn.at(1).attributes("disabled")).toBe("disabled");
 
