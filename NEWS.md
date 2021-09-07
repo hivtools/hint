@@ -54,10 +54,6 @@
 
 * Add note field to confirmation dialog when saving new version
 
-# hint 1.37.0
-
-* User can create a new project when enter key event is pressed
-
 # hint 1.36.1
 
 * Correctly scope ADR mutations/actions in upload logic
