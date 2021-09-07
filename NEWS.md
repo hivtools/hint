@@ -1,3 +1,7 @@
+# hint 1.48.1
+
+* Fix erroneous ADR upload file count
+
 # hint 1.48.0
 
 * Use async endpoints for Just-In-time generation of download files from HINT frontend

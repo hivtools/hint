@@ -490,4 +490,33 @@ describe(`uploadModal `, () => {
         expect(labels.at(1).attributes("for")).toBe("id-0-1");
         expect(labels.at(2).attributes("for")).toBe("id-1-0");
     });
+
+    it(`does not send upload files to ADR if files are being prepared for upload`, async () => {
+        const downloadResults = {
+            summary: {downloading: false} as any,
+            spectrum: {downloading: true} as any
+        }
+        const wrapper = mount(UploadModal, {store: createStore(fakeMetadata, downloadResults)})
+
+        await wrapper.setProps({open: true})
+
+        const btn = wrapper.findAll("button");
+        expect(btn.at(0).attributes("disabled")).toBe("disabled");
+
+        const inputs = wrapper.findAll("input.form-check-input")
+        expect(inputs.length).toBe(2)
+        inputs.at(0).setChecked(true)
+        inputs.at(1).setChecked(true)
+
+        expect(btn.at(0).attributes("disabled")).toBeUndefined();
+        expect(btn.at(1).attributes("disabled")).toBe("disabled");
+
+        await btn.at(0).trigger("click")
+        await btn.at(0).trigger("click")
+        expect(mockUploadFilesToADR.mock.calls.length).toBe(0)
+
+        wrapper.vm.$store.state.downloadResults.spectrum.downloading = false
+        await Vue.nextTick()
+        expect(btn.at(1).attributes("disabled")).toBeUndefined();
+    });
 })

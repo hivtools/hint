@@ -41,11 +41,12 @@
                     type="button"
                     class="btn btn-red"
                     :disabled="uploadFilesToAdr.length < 1"
-                    @click.prevent="confirmUpload"
+                    @click.prevent="handleConfirmUpload"
                     v-translate="'ok'"></button>
                 <button
                     type="button"
                     class="btn btn-white"
+                    :disabled="downloadingFiles"
                     @click.prevent="handleCancel"
                     v-translate="'cancel'"></button>
             </template>
@@ -86,6 +87,7 @@
         getUploadMetadata: (id: string) => Promise<void>
         handleDownloadResult: (downloadResults: DownloadResultsDependency) => void,
         stopPolling:(id: number) => void
+        handleConfirmUpload: () => void
     }
 
     interface Computed {
@@ -130,6 +132,11 @@
                 "adrUpload",
                 "uploadFilesToADR"
             ),
+            handleConfirmUpload() {
+                if (!this.downloadingFiles) {
+                    this.confirmUpload()
+                }
+            },
             confirmUpload() {
                 this.uploadFilesToAdr.forEach(value => this.uploadFilesPayload.push(this.uploadFiles[value]));
                 const readyForUpload = this.prepareFilesForUpload();
