@@ -1,30 +1,26 @@
-# hint 1.43.0
+# hint 1.42.0
 
 * User can create a new project when enter key event is pressed
 
-# hint 1.42.0
+# hint 1.41.0
 
 * Make login email case insensitive again
 
-# hint 1.41.0
+# hint 1.40.0
 
 * Add bar chart to model calibrate page
 
-# hint 1.40.0
+# hint 1.39.0
 
 * Create an endpoint for model calibrate bar chart
 
-# hint 1.39.0
+# hint 1.38.0
 
 * Add note text area for copy dialog in project history
 
-# hint 1.38.0
-
-* Support uploading edited input files, behind feature switch for now
-
 # hint 1.37.0
 
-* Add note field to confirmation dialog when saving new version 
+* Support uploading edited input files, behind feature switch for now
 
 # hint 1.36.1
 
