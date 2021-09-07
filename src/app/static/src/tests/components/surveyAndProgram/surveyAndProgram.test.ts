@@ -189,6 +189,7 @@ describe("Survey and programme component", () => {
         const genericChart  = wrapper.find(GenericChart);
         expect(genericChart.props("chartId")).toBe("input-time-series");
         expect(genericChart.props("metadata")).toBe(genericChartMetadata);
+        expect(genericChart.props("chartHeight")).toBe("600px");
 
         expect(wrapper.find(Choropleth).exists()).toBe(false);
     });
