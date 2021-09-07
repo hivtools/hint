@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="form-group">
-            <label class="font-weight-bold" :for="`data-source-${config.id}`" v-translate="config.label"></label>
+            <h4><label :for="`data-source-${config.id}`" v-translate="config.label"></label></h4>
             <select v-model="selected" :id="`data-source-${config.id}`" class="form-control">
                 <option v-for="ds in datasets" :key="ds.id" :value="ds.id" v-translate="ds.label"></option>
             </select>
