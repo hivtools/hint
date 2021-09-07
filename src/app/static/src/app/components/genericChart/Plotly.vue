@@ -44,7 +44,7 @@
                 };
             },
             data() {
-                const j = jsonata(this.chartMetadata)
+                const j = jsonata(this.chartMetadata);
                 const results = j.evaluate(this.inputData);
                 return results
             }
