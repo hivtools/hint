@@ -512,7 +512,6 @@ describe(`uploadModal `, () => {
         expect(btn.at(1).attributes("disabled")).toBe("disabled");
 
         await btn.at(0).trigger("click")
-        await btn.at(0).trigger("click")
         expect(mockUploadFilesToADR.mock.calls.length).toBe(0)
 
         wrapper.vm.$store.state.downloadResults.spectrum.downloading = false
