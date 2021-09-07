@@ -1,10 +1,12 @@
 package org.imperial.mrc.hint.integration
 
+import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.helpers.getTestEntity
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
+import org.springframework.http.HttpStatus
 
 class ChartDataTests :  SecureIntegrationTests()
 {
@@ -27,6 +29,9 @@ class ChartDataTests :  SecureIntegrationTests()
 
         val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-time-series/anc")
         assertSuccess(responseEntity, "InputTimeSeriesResponse")
+
+        val data = getResponseData(responseEntity)
+        assertThat(data["data"][0]["plot"].asText()).startsWith("anc")
     }
 
     @Test
@@ -37,5 +42,15 @@ class ChartDataTests :  SecureIntegrationTests()
 
         val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-time-series/programme")
         assertSuccess(responseEntity, "InputTimeSeriesResponse")
+
+        val data = getResponseData(responseEntity)
+        assertThat(data["data"][0]["plot"].asText()).startsWith("art")
+    }
+
+    @Test
+    fun `can get expected error for unknown chart type`()
+    {
+        val responseEntity = testRestTemplate.getForEntity<String>("/chart-data/input-time-series/not-a-real-type")
+        assertError(responseEntity, HttpStatus.BAD_REQUEST, "OTHER_ERROR", "Unknown input time series type.")
     }
 }
