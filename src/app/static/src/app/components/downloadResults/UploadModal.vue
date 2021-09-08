@@ -40,7 +40,7 @@
                 <button
                     type="button"
                     class="btn btn-red"
-                    :disabled="uploadFilesToAdr.length < 1"
+                    :disabled="uploadFilesToAdr.length < 1 || downloadingFiles"
                     @click.prevent="confirmUpload"
                     v-translate="'ok'"></button>
                 <button
