@@ -1,6 +1,10 @@
+# hint 1.49.0
+
+* Remove validation, reformat display and rename stepper to Review Inputs 
+
 # hint 1.48.0
 
-* Move all file upload controls to Step 1 
+* Add validation to survey and program (SAP) input on Baseline step 
 
 # hint 1.47.0
 
