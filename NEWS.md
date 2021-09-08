@@ -1,3 +1,7 @@
+# hint 1.49.0
+
+* User can create a new project when enter key event is pressed
+
 # hint 1.48.0
 
 * Use async endpoints for Just-In-time generation of download files from HINT frontend
