@@ -11,7 +11,8 @@ export default <S extends TranslatableState>(store: Store<S>) => {
         lng: Language.en,
         resources: {
             en: {translation: locales.en},
-            fr: {translation: locales.fr}
+            fr: {translation: locales.fr},
+            pt: {translation: locales.pt}
         },
         fallbackLng: Language.en
     });

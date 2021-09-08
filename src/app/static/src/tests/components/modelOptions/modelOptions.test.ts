@@ -74,15 +74,25 @@ describe("Model options component", () => {
         const form = rendered.find(DynamicForm);
         expect(form.props("requiredText")).toBe("required");
         expect(form.props("selectText")).toBe("Select...");
+        expect(form.props("submitText")).toBe("Validate");
         expect(rendered.findAll(LoadingSpinner).length).toBe(0);
         expect(rendered.find("#validating").exists()).toBe(false);
     });
 
-    it("translates required text and select text", () => {
+    it("translates required, select and validate text into French", () => {
         const store = createStore({}, mockMutations, mockActions, {language: Language.fr});
         const wrapper = shallowMount(ModelOptions, {store});
         expect(wrapper.find(DynamicForm).props("requiredText")).toBe("obligatoire");
         expect(wrapper.find(DynamicForm).props("selectText")).toBe("Sélectionner...");
+        expect(wrapper.find(DynamicForm).props("submitText")).toBe("Valider");
+    });
+
+    it("translates required, select and validate text into Portuguese", () => {
+        const store = createStore({}, mockMutations, mockActions, {language: Language.pt});
+        const wrapper = shallowMount(ModelOptions, {store});
+        expect(wrapper.find(DynamicForm).props("requiredText")).toBe("necessário");
+        expect(wrapper.find(DynamicForm).props("selectText")).toBe("Selecionar...");
+        expect(wrapper.find(DynamicForm).props("submitText")).toBe("Validar");
     });
 
     it("displays loading spinner while fetching is true", () => {
@@ -91,7 +101,7 @@ describe("Model options component", () => {
         expect(rendered.findAll(DynamicForm).length).toBe(0);
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
         expectTranslated(rendered.find("#loading-message"), "Loading options",
-            "Chargement de vos options.", store);
+            "Chargement de vos options.", "Opções de carregamento", store);
     });
 
     it("renders as expected while validating", () => {
@@ -99,14 +109,14 @@ describe("Model options component", () => {
         const rendered = shallowMount(ModelOptions, {store});
         expect(rendered.find("#validating").find(LoadingSpinner).exists()).toBe(true);
         expectTranslated(rendered.find("#validating"), "Validating...",
-            "Validation en cours...", store);
+            "Validation en cours...", "A validar...", store);
     });
 
     it("displays tick and message if valid is true", () => {
         const store = createStore({valid: true});
         const rendered = shallowMount(ModelOptions, {store});
         expectTranslated(rendered.find("h4"), "Options are valid",
-            "Les options sont valides", store);
+            "Les options sont valides", "As opções são válidas", store);
         expect(rendered.findAll(Tick).length).toBe(1);
         expect(rendered.find("#validating").exists()).toBe(false);
     });

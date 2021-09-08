@@ -1,7 +1,10 @@
+# hint 1.48.0
+
+* Add validation to survey and program (SAP) input on Baseline step 
 
 # hint 1.47.0
 
-* Move all file upload controls to Step 1 
+* Add Portuguese translations
 
 # hint 1.46.0
 
@@ -194,7 +197,7 @@
 
 # hint 1.12.2
 
-* Fix casing in French translation of "Spectrum file" 
+* Fix casing in French translation of "Spectrum file"
 
 # hint 1.12.1
 
@@ -328,4 +331,4 @@
 
 # hint 0.0.0
 
-* Initial version of HINT for 2019 workshops. 
+* Initial version of HINT for 2019 workshops.

@@ -14,16 +14,16 @@ import OnlineSupportMenu from "../../../app/components/header/OnlineSupportMenu.
 
 const localVue = createLocalVue();
 
-const createFrenchStore = () => {
-    const frStore = new Vuex.Store({
+const createLanguageStore = (language: Language) => {
+    const store = new Vuex.Store({
         state: {
             ...emptyState(),
-            language: Language.fr
+            language
         },
         getters: getters
     });
-    registerTranslations(frStore);
-    return frStore;
+    registerTranslations(store);
+    return store;
 };
 
 describe("user header", () => {
@@ -51,7 +51,7 @@ describe("user header", () => {
         const wrapper = getWrapper(currentUser, store);
         const logoutLink = wrapper.find("a[href='/logout']");
         const loginLink = wrapper.findAll("a[href='/login']");
-        expectTranslated(logoutLink, "Logout", "Fermer une session", store);
+        expectTranslated(logoutLink, "Logout", "Fermer une session", "Sair", store);
         expect(loginLink.length).toBe(0);
     });
 
@@ -61,7 +61,7 @@ describe("user header", () => {
         const wrapper = getWrapper(currentUser, store);
         const loginInfo = wrapper.find("span");
         expectTranslated(loginInfo, "Logged in as someone@email.com",
-            "Connecté en tant que someone@email.com", store);
+            "Connecté en tant que someone@email.com", "Sessão iniciada como someone@email.com", store);
     });
 
     it("contains login link if user is guest", () => {
@@ -70,7 +70,7 @@ describe("user header", () => {
         const wrapper = getWrapper(currentUser, store);
         const logoutLink = wrapper.findAll("a[href='/logout']");
         const loginLink = wrapper.find("a[href='/login']");
-        expectTranslated(loginLink, "Log In", "Ouvrir une session", store);
+        expectTranslated(loginLink, "Log In", "Ouvrir une session", "Iniciar Sessão", store);
         expect(logoutLink.length).toBe(0);
     });
 
@@ -93,17 +93,21 @@ describe("user header", () => {
         expect(wrapper.findAll(OnlineSupportMenu).length).toBe(1);
     })
 
-    it("computes language", () => {
+    it("computes help filename", () => {
         const store = createStore()
         const wrapper = shallowMount(UserHeader, {localVue, store, stubs: ["router-link"]});
         const vm = (wrapper as any).vm;
         expect(vm.helpFilename).toStrictEqual("Naomi-basic-instructions.pdf");
 
-        const frStore = createFrenchStore();
+        const frStore = createLanguageStore(Language.fr);
         const frWrapper = shallowMount(UserHeader, {localVue, store: frStore, stubs: ["router-link"]});
         const frVm = (frWrapper as any).vm;
         expect(frVm.helpFilename).toStrictEqual("Naomi-instructions-de-base.pdf");
 
+        const ptStore = createLanguageStore(Language.pt);
+        const ptWrapper = shallowMount(UserHeader, {localVue, store: ptStore, stubs: ["router-link"]});
+        const ptVm = (ptWrapper as any).vm;
+        expect(ptVm.helpFilename).toStrictEqual("Naomi-basic-instructions.pdf");
     });
 
     it("contains Basic steps document links", () => {
@@ -111,9 +115,13 @@ describe("user header", () => {
         const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
         expect(wrapper.find("a[href='public/resources/Naomi-basic-instructions.pdf']").text()).toBe("Basic steps");
 
-        const frStore = createFrenchStore();
+        const frStore = createLanguageStore(Language.fr);
         const frWrapper = shallowMount(UserHeader, {store: frStore, stubs: ["router-link"]});
         expect(frWrapper.find("a[href='public/resources/Naomi-instructions-de-base.pdf']").text()).toBe("Etapes de base");
+
+        const ptStore = createLanguageStore(Language.pt);
+        const ptWrapper = shallowMount(UserHeader, {store: ptStore, stubs: ["router-link"]});
+        expect(ptWrapper.find("a[href='public/resources/Naomi-basic-instructions.pdf']").text()).toBe("Passos básicos");
     });
 
     it("renders Projects link as expected if user is not guest", () => {
@@ -122,7 +130,7 @@ describe("user header", () => {
 
         const link = wrapper.find("router-link-stub");
         expect(link.attributes("to")).toBe("/projects");
-        expectTranslated(link, "Projects", "Projets", store);
+        expectTranslated(link, "Projects", "Projets", "Projetos", store);
     });
 
     it("does not render Projects link if current user is guest", () => {
