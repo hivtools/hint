@@ -142,7 +142,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
         const activeTab = wrapper.find("a.active");
-        expectTranslated(activeTab, "Map", "Carte", store);
+        expectTranslated(activeTab, "Map", "Carte", "Mapa", store);
     });
 
     it("gets selected tab from state", () => {
@@ -150,7 +150,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
         const activeTab = wrapper.find("a.active");
-        expectTranslated(activeTab, "Bar", "Barre", store);
+        expectTranslated(activeTab, "Bar", "Barre", "Bar", store);
     });
 
     it("can change tabs", () => {

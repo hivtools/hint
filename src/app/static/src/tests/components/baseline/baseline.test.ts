@@ -107,7 +107,7 @@ describe("Baseline upload component", () => {
         const store = createSut({country: "Malawi"});
         const wrapper = shallowMount(Baseline, {store, localVue});
         expectTranslated(wrapper.findAll(ManageFile).at(0).find("label"),
-            "Country: Malawi", "Pays: Malawi", store);
+            "Country: Malawi", "Pays: Malawi", "País: Malawi", store);
     });
 
     it("passes pjnz error to file upload", () => {
@@ -143,7 +143,8 @@ describe("Baseline upload component", () => {
         const store = createSut({validating: true});
         const wrapper = shallowMount(Baseline, {store, localVue});
         const validating = wrapper.find("#baseline-validating");
-        expectTranslated(validating.find("span"), "Validating...", "Validation en cours...", store);
+        expectTranslated(validating.find("span"), "Validating...",
+            "Validation en cours...", "A validar...", store);
         expect(validating.findAll(LoadingSpinner).length).toEqual(1)
     });
 

@@ -30,7 +30,8 @@ describe("MapEmptyFeature component", () => {
         expect(wrapper.findAll(LControl).length).toBe(1)
         const noMapData = wrapper.find(LControl).find("span")
         expectTranslated(noMapData, "No data are available for the selected combination. Please review the combination of filter values selected.",
-            "Aucune donnée n'est disponible pour la combinaison sélectionnée. Veuillez examiner la combinaison de valeurs de filtre sélectionnée.", store as any)
+            "Aucune donnée n'est disponible pour la combinaison sélectionnée. Veuillez examiner la combinaison de valeurs de filtre sélectionnée.",
+            "Não existem dados disponíveis para a combinação selecionada. Por favor, reveja a combinação dos valores de filtro selecionados.", store as any)
     });
 
 });
