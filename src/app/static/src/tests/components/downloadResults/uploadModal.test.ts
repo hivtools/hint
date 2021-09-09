@@ -524,4 +524,28 @@ describe(`uploadModal `, () => {
         expect(btn.at(0).attributes("disabled")).toBeUndefined();
         expect(btn.at(1).attributes("disabled")).toBeUndefined();
     });
+
+    it(`does not multiply files when ok button is triggered twice when uploading to ADR`, async () => {
+        const wrapper = mount(UploadModal,
+            {
+                store: createStore(fakeMetadata),
+                propsData: {open: true},
+                data() {
+                    return {
+                        uploadFilesToAdr: ["outputZip", "outputSummary"]
+                    }
+                }
+            })
+
+        const btn = wrapper.findAll("button");
+
+        expect(wrapper.vm.$data.uploadFilesPayload.length).toBe(0)
+
+        expect(btn.at(0).text()).toBe("OK")
+        await btn.at(0).trigger("click")
+        expect(wrapper.vm.$data.uploadFilesPayload.length).toBe(2)
+
+        await btn.at(0).trigger("click")
+        expect(wrapper.vm.$data.uploadFilesPayload.length).toBe(2)
+    });
 })
