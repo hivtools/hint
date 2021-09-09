@@ -84,7 +84,7 @@ describe("load actions", () => {
                     }
                 ]
             },
-            "version": "1.49.0"
+            "version": currentHintVersion
         });
     });
 
