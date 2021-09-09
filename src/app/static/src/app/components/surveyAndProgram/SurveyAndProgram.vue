@@ -9,47 +9,15 @@
         </div>
         <div class="row">
             <div :class="showChoropleth ? 'col-md-3' : 'col-sm-6 col-md-8'" class="upload-section">
-                <form>
-                    <manage-file label="survey"
-                                 :valid="survey.valid"
-                                 :fromADR="survey.fromADR"
-                                 :error="survey.error"
-                                 :upload="uploadSurvey"
-                                 :delete-file="deleteSurvey"
-                                 :existingFileName="survey.existingFileName"
-                                 accept="csv,.csv"
-                                 name="survey">
-                    </manage-file>
-                    <manage-file label="ART"
-                                 :valid="programme.valid"
-                                 :fromADR="programme.fromADR"
-                                 :error="programme.error"
-                                 :upload="uploadProgram"
-                                 :delete-file="deleteProgram"
-                                 :existingFileName="programme.existingFileName"
-                                 accept="csv,.csv"
-                                 name="program">
-                    </manage-file>
-                    <manage-file label="ANC"
-                                 :valid="anc.valid"
-                                 :fromADR="anc.fromADR"
-                                 :error="anc.error"
-                                 :upload="uploadANC"
-                                 :delete-file="deleteANC"
-                                 :existingFileName="anc.existingFileName"
-                                 accept="csv,.csv"
-                                 name="anc">
-                    </manage-file>
-                </form>
                 <div v-if="showChoropleth" id="data-source" class="form-group">
                     <h4 id="data-source-header" v-translate="'dataSource'"></h4>
-                    <treeselect
+                    <tree-select
                             :multiple="false"
                             :clearable="false"
                             :options="dataSourceOptions"
                             :value="selectedDataType"
                             @select="selectDataSource">
-                    </treeselect>
+                    </tree-select>
                 </div>
                 <filters v-if="showChoropleth"
                          :filters="filters"
@@ -85,9 +53,9 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import Treeselect from '@riophae/vue-treeselect';
+    import TreeSelect from '@riophae/vue-treeselect';
     import i18next from "i18next";
-    import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
+    import {mapGetters, mapMutations, mapState} from "vuex";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import TableView from "../plots/table/Table.vue";
     import Filters from "../plots/Filters.vue";
@@ -99,10 +67,8 @@
     import {mapActionByName, mapGettersByNames, mapStateProp} from "../../utils";
     import {
         ChoroplethSelections,
-        PlottingSelectionsState,
-        ScaleSelections
+        PlottingSelectionsState
     } from "../../store/plottingSelections/plottingSelections";
-    import ManageFile from "../files/ManageFile.vue";
     import {BaselineState} from "../../store/baseline/baseline";
     import {Language} from "../../store/translations/locales";
 
@@ -156,26 +122,14 @@
                     return surveyAndProgram.selectedDataType != null;
                 },
                 anc: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
-                    valid: !!surveyAndProgram.anc,
-                    fromADR: !!surveyAndProgram.anc?.fromADR,
-                    error: surveyAndProgram.ancError,
-                    existingFileName: (surveyAndProgram.anc && surveyAndProgram.anc.filename)|| surveyAndProgram.ancErroredFile,
                     available: !surveyAndProgram.ancError && surveyAndProgram.anc
-                } as PartialFileUploadProps),
+                }),
                 programme: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
-                    valid: surveyAndProgram.program != null,
-                    fromADR: !!surveyAndProgram.program?.fromADR,
-                    error: surveyAndProgram.programError,
-                    existingFileName: (surveyAndProgram.program && surveyAndProgram.program.filename) || surveyAndProgram.programErroredFile,
                     available: !surveyAndProgram.programError && surveyAndProgram.program
-                } as PartialFileUploadProps),
+                }),
                 survey: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
-                    valid: surveyAndProgram.survey != null,
-                    fromADR: !!surveyAndProgram.survey?.fromADR,
-                    error: surveyAndProgram.surveyError,
-                    existingFileName: (surveyAndProgram.survey && surveyAndProgram.survey.filename) || surveyAndProgram.surveyErroredFile,
                     available: !surveyAndProgram.surveyError && surveyAndProgram.survey
-                } as PartialFileUploadProps),
+                }),
                 features: ({baseline} : {baseline: BaselineState}) => baseline.shape ? baseline.shape.data.features : [] as Feature[],
                 featureLevels: ({baseline} : {baseline: BaselineState}) => baseline.shape ? baseline.shape.filters.level_labels : [],
                 plottingSelections: ({plottingSelections}: {plottingSelections: PlottingSelectionsState}) => plottingSelections.sapChoropleth
@@ -206,14 +160,6 @@
             }
         },
         methods: {
-            ...mapActions({
-                uploadSurvey: 'surveyAndProgram/uploadSurvey',
-                uploadProgram: 'surveyAndProgram/uploadProgram',
-                uploadANC: 'surveyAndProgram/uploadANC',
-                deleteSurvey: 'surveyAndProgram/deleteSurvey',
-                deleteProgram: 'surveyAndProgram/deleteProgram',
-                deleteANC: 'surveyAndProgram/deleteANC',
-            }),
             ...mapMutations({
                 updateChoroplethSelections: "plottingSelections/updateSAPChoroplethSelections",
                 updateSAPColourScales: "plottingSelections/updateSAPColourScales",
@@ -227,8 +173,7 @@
             Choropleth,
             Filters,
             TableView,
-            ManageFile,
-            Treeselect
+            TreeSelect
         }
     })
 </script>

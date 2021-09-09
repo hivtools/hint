@@ -4,6 +4,10 @@
 
 # hint 1.49.0
 
+* Move all file upload controls to Step 1 
+
+# hint 1.49.0
+
 * User can create a new project when enter key event is pressed
 
 # hint 1.48.0
