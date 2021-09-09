@@ -1,3 +1,7 @@
+# hint 1.49.1
+
+* Fix erroneous ADR upload file count
+
 # hint 1.49.0
 
 * User can create a new project when enter key event is pressed

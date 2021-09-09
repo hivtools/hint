@@ -40,12 +40,13 @@
                 <button
                     type="button"
                     class="btn btn-red"
-                    :disabled="uploadFilesToAdr.length < 1"
+                    :disabled="uploadFilesToAdr.length < 1 || downloadingFiles"
                     @click.prevent="confirmUpload"
                     v-translate="'ok'"></button>
                 <button
                     type="button"
                     class="btn btn-white"
+                    :disabled="downloadingFiles"
                     @click.prevent="handleCancel"
                     v-translate="'cancel'"></button>
             </template>
@@ -131,7 +132,7 @@
                 "uploadFilesToADR"
             ),
             confirmUpload() {
-                this.uploadFilesToAdr.forEach(value => this.uploadFilesPayload.push(this.uploadFiles[value]));
+                this.uploadFilesPayload = this.uploadFilesToAdr.map(value => this.uploadFiles[value]);
                 const readyForUpload = this.prepareFilesForUpload();
 
                 if (readyForUpload) {
