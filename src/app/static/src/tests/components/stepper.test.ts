@@ -608,9 +608,18 @@ describe("Stepper component", () => {
 
     it("does not push router to projects if guest user", () => {
         const mockRouterPush = jest.fn();
+        const realLocation = window.location
+        delete window.location;
+        window.location = {...window.location, assign: jest.fn()};
+
+        expect(window.location.assign).not.toHaveBeenCalled()
         const wrapper = createSut({}, {}, {}, {}, {}, {}, {}, mockRouterPush, {currentUser: 'guest'});
 
         expect(mockRouterPush.mock.calls.length).toBe(0);
+
+        expect(window.location.assign).toHaveBeenCalledTimes(1)
+        expect(window.location.assign).toHaveBeenCalledWith("/login")
+        window.location = realLocation
     });
 
     it("does not push router to projects if logged in user and currentProject set", () => {
