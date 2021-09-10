@@ -1,5 +1,5 @@
-// Mock the import of plotly so that we can spy on its exported 'react' method - need to do this
-// before importing Chart
+// Mock the import of plotly so that we can spy on its exported 'newPlot' method - need to do this
+// before importing Plotly
 jest.mock("plotly.js-basic-dist", () => ({
     newPlot: jest.fn()
 }));

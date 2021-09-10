@@ -58,7 +58,7 @@ describe("GenericChart component", () => {
                         id: "age",
                         column_id: "age",
                         label: "Age",
-                        allowMultipe: false,
+                        allowMultiple: false,
                         options: [
                             {id: "1", label: "1"},
                             {id: "2", label: "2"}
@@ -68,7 +68,7 @@ describe("GenericChart component", () => {
                         id: "year",
                         column_id: "year",
                         label: "Year",
-                        allowMultipe: false,
+                        allowMultiple: false,
                         options: [
                             {id: "2020", label: "2020"},
                             {id: "2021", label: "2021"}
@@ -304,7 +304,7 @@ describe("GenericChart component", () => {
                             id: "type",
                             column_id: "type",
                             label: "Type",
-                            allowMultipe: false,
+                            allowMultiple: false,
                             options: [
                                 {id: "test", label: "test"},
                                 {id: "other", label: "other"}

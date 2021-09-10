@@ -4,8 +4,8 @@ $lineColor := "rgb(51, 51, 51)";
 $highlightColor := "rgb(255, 51, 51)";
 $subplotHeight := 1/subplots.rows * 0.6;
 {
-    "data":(
-        $mapped := $map($areaNames, function($v, $i) {(
+    "data":
+        $map($areaNames, function($v, $i) {(
             $areaData := data[area_name=$v];
             [
                 {
@@ -27,7 +27,7 @@ $subplotHeight := 1/subplots.rows * 0.6;
                     "y": $map(data[area_name=$v].value, function($thv, $thi) {
                            (($thi > 0) and $thv > (1.25 * ($areaData.value)[$thi-1]))
                            or
-                           (($thi < $count($areaData.value)-1) and ($areaData.value)[$thi+1] > (1.25 * $thv))
+                           (($thi < $count($areaData.value)-1) and (($areaData.value)[$thi+1] > (1.25 * $thv)))
                            or
                            (($thi > 0) and $thv < (0.75 * ($areaData.value)[$thi-1]))
                            or
@@ -42,9 +42,8 @@ $subplotHeight := 1/subplots.rows * 0.6;
                     }
                 }
             ]
-        )});
-        $count($mapped[0]) = 2 ? $mapped.* : $mapped
-    ),
+        )}
+    )[].*,
     "config": {
         "responsive": true,
         "scrollZoom": false,
