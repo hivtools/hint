@@ -56,6 +56,7 @@
     import {getDatasetPayload} from "../../store/genericChart/actions";
     import {FilterOption} from "../../generated";
     import Plotly from "./Plotly.vue";
+    import {filterData} from "./utils";
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections
@@ -159,7 +160,7 @@
                 const subplots = this.chartMetadata.subplots;
                 if (subplots && this.chartData) {
                     const distinctAreas = new Set(this.chartData["data"].map((row: any) => row[subplots.distinctColumn]));
-                    const numberOfPlots = [...distinctAreas].length;
+                    const numberOfPlots = distinctAreas.size;
                     const rows = Math.ceil(numberOfPlots / subplots.columns);
                     layoutData.subplots = {
                         ...subplots,
@@ -196,19 +197,7 @@
                         return null; //Do not attempt to initialise if we are missing any datasets, or selections not initialised
                     }
 
-                    const includeRow = (row: any, idx: number) => {
-                        let filterOutRow = false;
-                        for (const filter of filters) {
-                            const filterValues = selectedFilterOptions[filter.id]?.map(n => n.id);
-                            if (filterValues?.indexOf(row[filter.column_id].toString()) < 0) {
-                                filterOutRow = true;
-                                break;
-                            }
-                        }
-
-                        return !filterOutRow;
-                    };
-                    result[dataSourceId] = unfilteredData.filter((row: any, idx: number) => includeRow(row, idx));
+                    result[dataSourceId] = filterData(unfilteredData, filters, selectedFilterOptions);
                 }
                 return result;
             }

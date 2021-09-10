@@ -338,7 +338,7 @@ describe("GenericChart component", () => {
                     rows: 3
                 }
             });
-            expect(plotly.element.style.height).toBe("340px");
+            expect(plotly.element.style.height).toBe("256px");
             done();
         });
     });
