@@ -5,19 +5,9 @@
 .chart {
   width: 100%;
 }
-.annotation-text {
-  font-weight: bold;
-}
 
-.modebar-group {
-  a[data-title='Zoom'],
-  a[data-title='Pan'],
-  a[data-title='Box Select'],
-  a[data-title='Lasso Select'],
-  a[data-title='Zoom in'],
-  a[data-title='Zoom out'],
-  a[data-title='Autoscale'],
-  a[data-title='Reset axes'] {
-    display: none;
+.plotly {
+  .annotation-text {
+    font-weight: bold;
   }
 }

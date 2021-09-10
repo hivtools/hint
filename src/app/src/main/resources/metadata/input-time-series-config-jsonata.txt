@@ -1,5 +1,7 @@
 (
 $areaNames := $distinct(data.area_name);
+$lineColor := "rgb(51, 51, 51)";
+$highlightColor := "rgb(255, 51, 51)";
 {
     "data":(
         $mapped := $map($areaNames, function($v, $i) {(
@@ -42,9 +44,14 @@ $areaNames := $distinct(data.area_name);
         )});
         $count($mapped[0]) = 2 ? $mapped.* : $mapped
     ),
-    "config": {"responsive": true, "scrollZoom": false},
+    "config": {
+        "responsive": true,
+        "scrollZoom": false,
+        "modeBarButtonsToRemove": ['zoom2d', 'pan2d', 'select2d', 'lasso2d', 'autoScale2d', 'resetScale2d', 'zoomIn2d', 'zoomOut2d']
+        },
     "layout": $merge([
         {
+            "margin": {"t": 16},
             "dragmode": false,
             "grid": {"columns": subplots.columns, "rows": subplots.rows, "pattern": 'independent'},
             "annotations": [$map($areaNames, function($v, $i) {
@@ -55,25 +62,32 @@ $areaNames := $distinct(data.area_name);
                     "x": 0.5,
                     "xanchor": "middle",
                     "xref": "x" & ($i+1) & " domain",
-                    "y": 1,
+                    "y": 1.1,
                     "yanchor": "middle",
                     "yref": "y" & ($i+1) & " domain"
                 }
             })]
         },
-        [1..$count($areaNames)]{
-            "yaxis"&$: {
-                "rangemode": "tozero",
-                "zeroline": false,
-                "tickfont": {
-                    "color": "grey"
-                }
-            },
-            "xaxis"&$: {
-                "tickfont": {
-                    "color": "grey"
-                }
-            }
-        }
+        $merge([1..$count($areaNames)].(
+           $row := $floor($/$$.subplots.columns);
+           {
+               "yaxis"&$: {
+                   "rangemode": "tozero",
+                   "zeroline": false,
+                   "tickfont": {
+                       "color": "grey"
+                   },
+                   "domain": [
+                       1 - ($row/$$.subplots.rows),
+                       1 - (($row/$$.subplots.rows) + (1/$$.subplots.rows * 0.6))
+                   ]
+               },
+               "xaxis"&$: {
+                   "tickfont": {
+                       "color": "grey"
+                   }
+               }
+           })
+        )
     ])
 })
