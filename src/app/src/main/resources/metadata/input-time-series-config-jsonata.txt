@@ -68,7 +68,7 @@ $highlightColor := "rgb(255, 51, 51)";
                 }
             })]
         },
-        $merge([1..$count($areaNames)].(
+        [1..$count($areaNames)].(
            $row := $floor($/$$.subplots.columns);
            {
                "yaxis"&$: {
@@ -87,7 +87,7 @@ $highlightColor := "rgb(255, 51, 51)";
                        "color": "grey"
                    }
                }
-           })
+           }
         )
     ])
 })
