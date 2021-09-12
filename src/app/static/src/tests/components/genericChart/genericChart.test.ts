@@ -281,7 +281,7 @@ describe("GenericChart component", () => {
                 subplots: {
                     columns: 2,
                     distinctColumn: "area",
-                    heightPerRow: 80
+                    heightPerRow: 100
                 },
                 chartConfig: [{
                     id: "scatter",
@@ -334,11 +334,11 @@ describe("GenericChart component", () => {
                 subplots: {
                     columns: 2,
                     distinctColumn: "area",
-                    heightPerRow: 80,
+                    heightPerRow: 100,
                     rows: 3
                 }
             });
-            expect(plotly.element.style.height).toBe("256px");
+            expect(plotly.element.style.height).toBe("354px");
             done();
         });
     });

@@ -166,8 +166,8 @@
                         ...subplots,
                         rows
                     };
-                    //Height per row plus enough to accommodate margin
-                    scrollHeight = `${(subplots.heightPerRow * rows) + 16}px`;
+                    //Height per row plus enough to accommodate margin and padding
+                    scrollHeight = `${(subplots.heightPerRow * rows) + 54}px`;
                 }
 
                 // The metadata supports multiple chart types per chart e.g Scatter and Bar, but for now we only need to
