@@ -44,7 +44,7 @@
                         <div class="mt-3 form-check">
                             <input class="form-check-input"
                                    type="checkbox"
-                                   :disabled="choiceUpload === 'createRelease'"
+                                   :disabled="createRelease"
                                    :value="key"
                                    v-model="uploadFilesToAdr"
                                    :id="`id-${sectionIndex}-${index}`">
@@ -100,7 +100,7 @@
     import DownloadProgress from "./DownloadProgress.vue";
 
     interface Methods {
-        uploadFilesToADRAction: (uploadFilesPayload: {uploadFiles: UploadFile[], createRelease: boolean}) => void;
+        uploadFilesToADRAction: (selectedUploadFiles: {uploadFiles: UploadFile[], createRelease: boolean}) => void;
         createReleaseAction: () => void;
         confirmUpload: () => void;
         handleCancel: () => void
@@ -121,7 +121,7 @@
 
     interface Computed {
         dataset: string
-        uploadFiles: Dict<UploadFile>,
+        uploadableFiles: Dict<UploadFile>,
         uploadFileSections: Array<Dict<UploadFile>>
         currentLanguage: Language;
         uploadDisabled: boolean;
@@ -130,13 +130,14 @@
         outputSummary: string,
         outputSpectrum: string,
         downloadingFiles: boolean
+        createRelease: boolean
     }
 
     interface Data {
         uploadFilesToAdr: string[]
         uploadDescToAdr: string
         choiceUpload: "createRelease" | "uploadFiles"
-        uploadFilesPayload: UploadFile[]
+        selectedUploadFiles: UploadFile[]
     }
 
     interface Props {
@@ -158,7 +159,7 @@
                 uploadFilesToAdr: [],
                 uploadDescToAdr: "",
                 choiceUpload: "createRelease",
-                uploadFilesPayload: []
+                selectedUploadFiles: []
             }
         },
         methods: {
@@ -171,7 +172,7 @@
                 "createRelease"
             ),
             confirmUpload() {
-                this.uploadFilesToAdr.forEach(value => this.uploadFilesPayload.push(this.uploadFiles[value]));
+                this.uploadFilesToAdr.forEach(value => this.selectedUploadFiles.push(this.uploadableFiles[value]));
                 const readyForUpload = this.prepareFilesForUpload();
 
                 if (readyForUpload) {
@@ -179,8 +180,8 @@
                 }
             },
             sendUploadFilesToADR() {
-                this.uploadFilesToADRAction({uploadFiles: this.uploadFilesPayload, createRelease: this.choiceUpload === 'createRelease'});
-                this.uploadFilesPayload = [];
+                this.uploadFilesToADRAction({uploadFiles: this.selectedUploadFiles, createRelease: this.choiceUpload === 'createRelease'});
+                this.selectedUploadFiles = [];
 
                 this.$emit("close");
             },
@@ -196,8 +197,8 @@
                 return this.downloadIsReady();
             },
             findSelectedUploadFiles() {
-                const summary = this.uploadFilesPayload.find(upload => upload.resourceType === this.outputSummary);
-                const spectrum = this.uploadFilesPayload.find(upload => upload.resourceType === this.outputSpectrum);
+                const summary = this.selectedUploadFiles.find(upload => upload.resourceType === this.outputSummary);
+                const spectrum = this.selectedUploadFiles.find(upload => upload.resourceType === this.outputSpectrum);
 
                 return {summary, spectrum}
             },
@@ -223,7 +224,7 @@
             },
             setDefaultCheckedItems: function () {
                 this.uploadFilesToAdr = [...outputFileTypes, ...inputFileTypes]
-                    .filter(key => this.uploadFiles.hasOwnProperty(key))
+                    .filter(key => this.uploadableFiles.hasOwnProperty(key))
             },
             stopPolling(id) {
                 clearInterval(id)
@@ -272,20 +273,23 @@
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
                 dataset: state => state.selectedDataset?.title
             }),
+            createRelease(){
+                return this.choiceUpload === 'createRelease';
+            },
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
             ),
-            uploadFiles: mapStateProp<ADRUploadState, Dict<UploadFile>>("adrUpload",
+            uploadableFiles: mapStateProp<ADRUploadState, Dict<UploadFile>>("adrUpload",
                 (state) => state.uploadFiles!
             ),
             uploadFileSections() {
-                if (this.uploadFiles) {
-                    return Object.keys(this.uploadFiles).reduce((sections, key) => {
+                if (this.uploadableFiles) {
+                    return Object.keys(this.uploadableFiles).reduce((sections, key) => {
                         if (outputFileTypes.includes(key)) {
-                            sections[0][key] = this.uploadFiles[key];
+                            sections[0][key] = this.uploadableFiles[key];
                         } else {
-                            sections[1][key] = this.uploadFiles[key];
+                            sections[1][key] = this.uploadableFiles[key];
                         }
                         return sections;
                     }, [{} as any, {} as any]);
@@ -294,11 +298,7 @@
                 }
             },
             uploadDisabled(){
-                if (this.choiceUpload === 'uploadFiles' && this.uploadFilesToAdr.length < 1){
-                    return true
-                } else {
-                    return false
-                }
+                return !this.createRelease && this.uploadFilesToAdr.length < 1;
             },
             downloadingFiles() {
                 return !!this.spectrum.downloading || !!this.summary.downloading;
@@ -310,11 +310,11 @@
             DownloadProgress
         },
         watch: {
-            uploadFiles() {
+            uploadableFiles() {
                 this.setDefaultCheckedItems()
             },
             choiceUpload(){
-                if (this.choiceUpload === 'createRelease'){
+                if (this.createRelease){
                     this.setDefaultCheckedItems()
                 }
             },
