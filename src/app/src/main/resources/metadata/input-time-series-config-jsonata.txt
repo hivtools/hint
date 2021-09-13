@@ -17,7 +17,7 @@ $subplotHeight := 1/subplots.rows * 0.6;
                     "yaxis": 'y' & ($i+1),
                     "type": "scatter",
                     "line": {
-                        "color": "rgb(51, 51, 51)"
+                        "color": $lineColor
                     }
                 },
                 {
@@ -38,7 +38,7 @@ $subplotHeight := 1/subplots.rows * 0.6;
                     "yaxis": 'y' & ($i+1),
                     "type": "scatter",
                     "line": {
-                        "color": "rgb(255, 51, 51)"
+                        "color": $highlightColor
                     }
                 }
             ]
