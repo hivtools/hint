@@ -19,7 +19,7 @@ This diagram shows the main constituents and data flow involved in showing Gener
 When the app is first loaded, Generic Chart metadata is fetched from the endpoint, and is stored for the duration of the 
 front end app. It is stored in GenericChart state. This metadata consists of a dictionary of chart ids, with 
 configuration for each, which instructs the component how to display the chart, including what data sources to use, 
-what filters to apply, and a jsonata template describing the plotly configuration to use. See below for further details. 
+what filters to apply, and a [JSONata](https://jsonata.org/) template describing the plotly configuration to use. See below for further details. 
 
 Generic Chart metadata is currently kept in resource files in the back end of HINT. However we may in future hand over 
 this metadata to hintr, and have HINT fetch metadata from hintr as well as data. 
@@ -32,7 +32,7 @@ Currently, GenericChart component is only located in the SurveyAndProgram compon
 GenericChart has these sub-components:
 - **DataSource**: used to select a dataset to display in the chart for a given datasource. There could potentially be multiple datasources per GenericChart (e.g. one for each of X and Y axis), but for Input Time Series, we only have one. 'Data source', for which the available datasets are 'ART' and 'ANC Testing'. Selecting a new data set, or loading the component with default datasets selected, causes the component to invoke the store to fetch any datasets which have not yet been fetched. 
 - **Filters**: this is the same Filters component used elsewhere in HINT. There is one Filters component per data source. Currently, we use filter options defined in the dataset response itself, as for other datasets in HINT. We could potentially customise filters for other applications of GenericChart e.g. some filter options might not be available for some charts. 
-- **Plotly**: an implementation which combines provided chart data and metadata as a jsonata template to a full plotly configuration and loads it using the Plotly library. This is very similar to the Chart component in comet. Minor changes from that impleentation are that we are using the `newPlot` method instead of `react` to accommodate updates to chart height when the number of subplots change due to filter changes (particularly are level), and we are using a more light-weight Plotly distribution, plotly-js.basic-dist.
+- **Plotly**: an implementation which combines provided chart data and metadata as a JSONata template to a full plotly configuration and loads it using the Plotly library. This is very similar to the Chart component in comet. Minor changes from that impleentation are that we are using the `newPlot` method instead of `react` to accommodate updates to chart height when the number of subplots change due to filter changes (particularly are level), and we are using a more light-weight Plotly distribution, plotly-js.basic-dist.
 
 ### Generic Chart Metadata
 
@@ -133,7 +133,7 @@ The Generic Chart Metadata consists of a dictionary of GenericChartMetadata obje
 	  // When implemented, this is the translation key for the label to be displayed for this chart type's option 	
           "label": "Scatter",
 		
-          "config": "...The jsonata config string goes here - see below for more details on this..."
+          "config": "...The JSONata config string goes here - see below for more details on this..."
         }
       ]
     }
@@ -141,6 +141,98 @@ The Generic Chart Metadata consists of a dictionary of GenericChartMetadata obje
 ```
 
 ### Chart Config Jsonata
+
+Chart configuration is defined using [JSONata](https://jsonata.org/), a generic json transformation language - at runtime, the Plotly
+component invokes the transformation on the filtered chart data given the chart configuration JSONata to provide the 
+full Plotly chart configuration.
+
+The full Jsonata for the Input Time Series can be found 
+[here](https://github.com/mrc-ide/hint/blob/mrc-2537/src/app/src/main/resources/metadata/input-time-series-config-jsonata.txt),
+
+Some explanation for the parts which may not be self-explanatory:
+
+`$areaNames := $distinct(data.area_name);`
+This sets a [variable](https://docs.jsonata.org/programming#variables) value, allowing a value to be reused without 
+needing to be recalculated. Note that the expression setting the variable value must be followed by a semicolon, and 
+that this expression, together with the following expressions providing the jsonata output must be contained in 
+parentheses. This variable contains the distinct area names in the input data. The same technique is used in a few other places, 
+including for `$areaData`, to filter data to the current area.
+
+`$subplotHeight := 1/subplots.rows * 0.6;`
+Calculate the height of a subplot row, as a fraction of the total plot height, given the number of rows, and including 
+40% spacing. 
+
+`$map($areaNames, function($v, $i) {..}.*,`
+This uses the [map](https://docs.jsonata.org/higher-order-functions#map) function to map the area names to a new array, 
+to contain the scatter traces forming the subplots. The first item returned from the map function is the main (black) 
+trace containing all data points, the second is the highlighted (red) trace containing only those line segments 
+representing a greater than 25% increase or decrease. `$v` is the value in the source array, `$i` is the index.
+
+The final `[].*` first ensure that the result is an array (it is not if the input array has length 1), then flattens 
+out the array of arrays returned by the map function to a single array containing all traces 
+(since each iteration of the map function returns an array containing its two traces - can't track down the docs for this,
+ but referenced in second answer [here](https://stackoverflow.com/questions/49570172/jsonata-query-to-flatten-array-of-arrays)).
+
+
+
+```
+"xaxis": 'x' & ($i+1),
+"yaxis": 'y' & ($i+1),
+```
+
+This defines for each subplot which axes it should use. Plotly will interpret these values together with the `grid` 
+config to draw the traces on subplots arranged on a grid with the configured number of rows and columns. `&` does 
+string [concatenation](https://docs.jsonata.org/other-operators#-concatenation) in jsonata, and `($i+1)` ensures that 
+axis indexes start from 1.
+
+
+
+```
+"y": $map(data[area_name=$v].value, function($thv, $thi) {
+   (($thi > 0) and $thv > (1.25 * ($areaData.value)[$thi-1]))
+   or
+   (($thi < $count($areaData.value)-1) and (($areaData.value)[$thi+1] > (1.25 * $thv)))
+   or
+   (($thi > 0) and $thv < (0.75 * ($areaData.value)[$thi-1]))
+   or
+   (($thi < $count($areaData.value)-1) and ($areaData.value)[$thi+1] < (0.75 * $thv))
+   ? $thv : null
+})
+```
+
+This code selects how to draw the highlight trace, by mapping each value for the area to either that value (to include 
+it in the trace) or null (to exclude it) based on whether it is at the end or the start of a greater than 25% increase 
+(the first two clauses), or at the end of the start (the second two clauses) of a greater than 25% decrease.
+This uses JSONata's [ternary operator](https://docs.jsonata.org/other-operators#--conditional) and the `and` and `or` 
+[boolean operators](https://docs.jsonata.org/boolean-operators).
+
+//TODO FROM HERE
+
+```
+`"annotations": $map($areaNames, function($v, $i) {
+  {
+  "text": $v & " (" & (data[area_name=$v].area_id)[0] & ")",
+  "textfont": {},
+  "showarrow": false,
+  "x": 0.5,
+  "xanchor": "middle",
+  "xref": "x" & ($i+1) & " domain",
+  "y": 1,
+  "yanchor": "middle",
+  "yref": "y" & ($i+1) & " domain"
+  }
+})
+```
+
+We use annotations to add titles to the subplots, as this is the only means Plotly supports. This uses the area names and corresponding area ids to make the text of the title, uses the 'x1', 'y1' etc axis identifiers to specify the domain in which to place the annotation (`xref` and `yref`) and uses the `x`, `y`, `xanchor` and `yanchor` values to place the annotations within the domains.
+
+
+
+`layout": $merge([`
+This indicates that the `layout` will be constructed by [merging](https://docs.jsonata.org/object-functions#merge) the object contained in the parameter array into a single object. This is required because we need to add layout keys for each of the axes, to set some axis parameters, as indicated by:
+`[1..$count($areaNames)]{`
+which maps the numeric range of subplots to objects, each containing the required x and y axis values.
+
     
 
 ### GenericChart component logic
