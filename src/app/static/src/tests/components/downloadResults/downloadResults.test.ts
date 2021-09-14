@@ -36,7 +36,7 @@ describe("Download Results component", () => {
         jest.useRealTimers()
     })
 
-    const createStore = (hasUploadPermission = true, getUserCanUpload = jest.fn(), uploading = false, uploadComplete = false, uploadError: any = null, downloadResults?: Partial<DownloadResultsState>, releaseCreated = false, releaseFailed = false) => {
+    const createStore = (hasUploadPermission = true, getUserCanUpload = jest.fn(), uploading = false, uploadComplete = false, uploadError: any = null, downloadResults?: Partial<DownloadResultsState>, releaseCreated = false, releaseFailed = false, ClearStatus = jest.fn()) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -64,6 +64,9 @@ describe("Download Results component", () => {
                     }),
                     actions: {
                         getUploadFiles: jest.fn()
+                    },
+                    mutations: {
+                        ClearStatus
                     }
                 },
                 downloadResults: {
@@ -643,11 +646,10 @@ describe("Download Results component", () => {
         expect(wrapper.find("#error").text()).toBe("TEST FAILED")
     });
 
-    it("destroys as expected", () => {
-        const store = createStore();
+    it("calls clear status mutation before mount", () => {
         const spy = jest.fn()
-        const rendered = shallowMount(DownloadResults, {store, methods: { clearStatus: spy }});
-        rendered.destroy();
+        const store = createStore(true, jest.fn(), false, false, null, undefined, false, false, spy);
+        shallowMount(DownloadResults, {store});
         expect(spy).toHaveBeenCalledTimes(1)
     });
 

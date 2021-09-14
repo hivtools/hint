@@ -180,7 +180,7 @@
                 }
             },
             sendUploadFilesToADR() {
-                this.uploadFilesToADRAction({uploadFiles: this.selectedUploadFiles, createRelease: this.choiceUpload === 'createRelease'});
+                this.uploadFilesToADRAction({uploadFiles: this.selectedUploadFiles, createRelease: this.createRelease});
                 this.selectedUploadFiles = [];
 
                 this.$emit("close");
@@ -333,7 +333,7 @@
         },
         directives: {
             tooltip: VTooltip,
-        },
+        }
     });
 </script>
 

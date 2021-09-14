@@ -238,7 +238,7 @@
             this.getUserCanUpload();
             this.getUploadFiles()
         },
-        destroyed(){
+        beforeMount(){
             this.clearStatus();
         },
         components: {

@@ -315,13 +315,13 @@ describe(`uploadModal `, () => {
             {
                 store: createStore(),
                 computed: {
-                    uploadFiles: mockUploadFiles
+                    uploadableFiles: mockUploadFiles
                 }
             })
         expect(mockUploadFiles).toHaveBeenCalledTimes(1)
     })
 
-    it(`can send upload files to ADR when download status is complete`, async () => {
+    it(`can send upload files to ADR when download status is complete and createRelease is flagged`, async () => {
         const downloadResults = {
             summary: {complete: true, downloading: false} as any,
             spectrum: {complete: true, downloading: false} as any,
@@ -344,6 +344,7 @@ describe(`uploadModal `, () => {
 
         store.state.downloadResults = downloadResults
         await Vue.nextTick()
+        expect(wrapper.vm.$data.choiceUpload).toBe("createRelease")
         expect(mockUploadFilesToADR.mock.calls.length).toBe(2)
         expect(mockUploadMetadataAction.mock.calls.length).toBe(2)
     });
