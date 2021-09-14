@@ -1,6 +1,18 @@
-# hint 1.48.1
+# hint 1.49.2
 
 * Upload release to ADR: upload to core output resources
+
+# hint 1.49.1
+
+* Fix erroneous ADR upload file count
+
+# hint 1.49.0
+
+* Move all file upload controls to Step 1 
+
+# hint 1.49.0
+
+* User can create a new project when enter key event is pressed
 
 # hint 1.48.0
 

@@ -29,15 +29,17 @@ describe("load actions", () => {
 
     it("can set files as guest user", async () => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const fakeState = JSON.stringify({
             files: {"shape": shape},
             state: {
-                version: currentHintVersion
+                version: currentHintVersion,
+                stepper: {}
             }
         });
         const fakeFileContents = addCheckSum(fakeState);
         const rootGetters = {isGuest: true};
-        await actions.setFiles({commit, dispatch: jest.fn(), state: {}, rootState, rootGetters} as any,
+        await actions.setFiles({commit, dispatch, state: {}, rootState, rootGetters} as any,
             {savedFileContents: fakeFileContents, projectName: "new project"});
 
         expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
@@ -49,6 +51,41 @@ describe("load actions", () => {
                 fromADR: false
             }
         });
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({
+            stepper: {
+                steps: [
+                    {
+                        "number": 1,
+                        "textKey": "uploadInputs"
+                    },
+                    {
+                        "number": 2,
+                        "textKey": "reviewInputs"
+                    },
+                    {
+                        "number": 3,
+                        "textKey": "modelOptions"
+                    },
+                    {
+                        "number": 4,
+                        "textKey": "fitModel"
+                    },
+                    {
+                        "number": 5,
+                        "textKey": "calibrateModel"
+                    },
+                    {
+                        "number": 6,
+                        "textKey": "reviewOutput"
+                    },
+                    {
+                        "number": 7,
+                        "textKey": "downloadResults"
+                    }
+                ]
+            },
+            "version": currentHintVersion
+        });
     });
 
     it("can create project and set files as logged in user", async () => {
@@ -58,7 +95,8 @@ describe("load actions", () => {
             state: {
                 version: currentHintVersion,
                 projects: {},
-                baseline: "TEST BASELINE"
+                baseline: "TEST BASELINE",
+                stepper: {}
             }
         });
         const fakeFileContents = addCheckSum(fakeState);
