@@ -1,10 +1,10 @@
 ## Generic Chart
 
-We have a Generic Chart in the front end. This is currently only used to display Input Time Series charts - 
+HINT has a `GenericChart` vue component in the front end. This is currently only used to display Input Time Series charts - 
 however it has been designed to generically accept configuration, chart metadata, and chart data and to display the 
 resultant chart using the [Plotly](https://plotly.com/javascript/) library. 
 
-GenericChart is intended to be rather self-contained, for example, including its own filter and data source components. 
+`GenericChart` is intended to be rather self-contained, for example, including its own filter and data source components. 
 However it does make use of the store to handle chart data and metadata. This is to avoid the chart needing to re-fetch 
 data when it is reloaded.  
 
@@ -17,7 +17,7 @@ This diagram shows the main constituents and data flow involved in showing Gener
 
 
 When the app is first loaded, Generic Chart metadata is fetched from the endpoint, and is stored for the duration of the 
-front end app. It is stored in GenericChart state. This metadata consists of a dictionary of chart ids, with 
+front end app. It is stored in `genericChart` state. This metadata consists of a dictionary of chart ids, with 
 configuration for each, which instructs the component how to display the chart, including what data sources to use, 
 what filters to apply, and a [JSONata](https://jsonata.org/) template describing the plotly configuration to use. See 
 [below](#chart-config-jsonata) for further details. 
@@ -25,21 +25,32 @@ what filters to apply, and a [JSONata](https://jsonata.org/) template describing
 Generic Chart metadata is currently kept in resource files in the back end of HINT. However we may in future hand over 
 this metadata to hintr, and have HINT fetch metadata from hintr as well as data. 
 
-Wherever the GenericChart component appears, it is provided with its chart id in a prop, and pulls out the relevant 
+Wherever the `GenericChart component` appears, it is provided with its chart id in a prop, and pulls out the relevant 
 section from the metadata. The chart metadata defines urls from which to fetch datasets (e.g. the custom input time series 
 datasets) - the component invokes an action on the GenericChart state to retrieve this data when required, and it is 
 stored in the GenericChart state along with dataset id. 
 
-Currently, GenericChart component is only located in the SurveyAndProgram component, on the 'Time series' tab.
+Currently, `GenericChart` component is only located in the `SurveyAndProgram component`, on the 'Time series' tab.
 
 GenericChart has these sub-components:
-- **DataSource**: used to select a dataset to display in the chart for a given datasource. There could potentially be multiple datasources per GenericChart (e.g. one for each of X and Y axis), but for Input Time Series, we only have one. 'Data source', for which the available datasets are 'ART' and 'ANC Testing'. Selecting a new data set, or loading the component with default datasets selected, causes the component to invoke the store to fetch any datasets which have not yet been fetched. 
-- **Filters**: this is the same Filters component used elsewhere in HINT. There is one Filters component per data source. Currently, we use filter options defined in the dataset response itself, as for other datasets in HINT. We could potentially customise filters for other applications of GenericChart e.g. some filter options might not be available for some charts. 
-- **Plotly**: an implementation which combines provided chart data and metadata as a JSONata template to a full plotly configuration and loads it using the Plotly library. This is very similar to the Chart component in comet. Minor changes from that impleentation are that we are using the `newPlot` method instead of `react` to accommodate updates to chart height when the number of subplots change due to filter changes (particularly are level), and we are using a more light-weight Plotly distribution, plotly-js.basic-dist.
+- `DataSource`: used to select a dataset to display in the chart for a given datasource. There could potentially be 
+multiple datasources per GenericChart (e.g. one for each of X and Y axis), but for Input Time Series, we only have one, 
+'Data source', for which the available datasets are 'ART' and 'ANC Testing'. Selecting a new data set, or loading the 
+component with default datasets selected, causes the component to invoke the store to fetch any datasets which have not 
+yet been fetched. 
+- `Filters`: this is the same Filters component used elsewhere in HINT. There is one Filters component per data source. 
+Currently, we use filter options defined in the dataset response itself, as for other datasets in HINT. We could 
+potentially customise filters for other applications of GenericChart e.g. some filter options might not be available 
+for some charts. 
+- `Plotly`: an implementation which combines provided chart data and metadata as a JSONata template to a full plotly 
+configuration and loads it using the Plotly library. This is very similar to the Chart component in comet. Minor changes 
+from that implementation are that we are using the `newPlot` method instead of `react` to accommodate updates to chart 
+height when the number of subplots change due to filter changes (particularly are level), and we are using a more 
+lightweight Plotly distribution, plotly-js.basic-dist.
 
 ### Generic Chart Metadata
 
-The Generic Chart Metadata consists of a dictionary of GenericChartMetadata objects, whose keys are the chart ids. 
+The Generic Chart Metadata consists of a dictionary of `GenericChartMetadata` objects, whose keys are the chart ids. 
 Here is an annotated example of GenericChartMetadata:
 ```
 {
@@ -146,7 +157,7 @@ Here is an annotated example of GenericChartMetadata:
 
 ### Chart Config Jsonata
 
-Chart configuration is defined using [JSONata](https://jsonata.org/), a generic json transformation language - at runtime, the Plotly
+Chart configuration is defined using [JSONata](https://jsonata.org/), a generic json transformation language - at runtime, the `Plotly`
 component invokes the transformation on the filtered chart data given the chart configuration JSONata to provide the 
 full Plotly chart configuration.
 
@@ -155,24 +166,30 @@ The full Jsonata for the Input Time Series can be found
 
 Some explanation for the parts which may not be self-explanatory:
 
-`$areaNames := $distinct(data.area_name);`
+```
+$areaNames := $distinct(data.area_name);
+```
 This sets a [variable](https://docs.jsonata.org/programming#variables) value, allowing a value to be reused without 
 needing to be recalculated. Note that the expression setting the variable value must be followed by a semicolon, and 
 that this expression, together with the following expressions providing the jsonata output must be contained in 
 parentheses. This variable contains the distinct area names in the input data. The same technique is used in a few other places, 
 including for `$areaData`, to filter data to the current area.
 
-`$subplotHeight := 1/subplots.rows * 0.6;`
+```
+$subplotHeight := 1/subplots.rows * 0.6;
+```
 Calculate the height of a subplot row, as a fraction of the total plot height, given the number of rows, and including 
 40% spacing. 
 
-`$map($areaNames, function($v, $i) {..}.*,`
+```
+$map($areaNames, function($v, $i) {..}[].*
+```
 This uses the [map](https://docs.jsonata.org/higher-order-functions#map) function to map the area names to a new array, 
 to contain the scatter traces forming the subplots. The first item returned from the map function is the main (black) 
 trace containing all data points, the second is the highlighted (red) trace containing only those line segments 
 representing a greater than 25% increase or decrease. `$v` is the value in the source array, `$i` is the index.
 
-The final `[].*` first ensure that the result is an array (it is not if the input array has length 1), then flattens 
+The final `[].*` first ensures that the result is an array (it is not if the input array has length 1), then flattens 
 out the array of arrays returned by the map function to a single array containing all traces 
 (since each iteration of the map function returns an array containing its two traces - can't track down the docs for this,
  but referenced in second answer [here](https://stackoverflow.com/questions/49570172/jsonata-query-to-flatten-array-of-arrays)).
@@ -182,7 +199,7 @@ out the array of arrays returned by the map function to a single array containin
 "yaxis": 'y' & ($i+1),
 ```
 
-This defines for each subplot which axes it should use. Plotly will interpret these values together with the `grid` 
+This defines for each subplot which axes it should use. `Plotly` will interpret these values together with the `grid` 
 config to draw the traces on subplots arranged on a grid with the configured number of rows and columns. `&` does 
 string [concatenation](https://docs.jsonata.org/other-operators#-concatenation) in jsonata, and `($i+1)` ensures that 
 axis indexes start from 1.
@@ -227,7 +244,9 @@ and corresponding area ids to make the text of the title, uses the 'x1', 'y1' et
 in which to place the annotation (`xref` and `yref`) and uses the `x`, `y`, `xanchor` and `yanchor` values to place the 
 annotations within the domains.
 
-`layout": $merge(..)[]`
+```
+layout": $merge(..)[]
+```
 This indicates that the `layout` will be constructed by [merging](https://docs.jsonata.org/object-functions#merge) the 
 object contained in the parameter array into a single object. This is required because we need to add layout keys for 
 each of the axes, to set some axis parameters, as indicated by:
@@ -242,7 +261,7 @@ which maps the numeric range of subplots to objects, each containing the require
 ```  
 This calculates the domain of each y axis as a two-element array, where the first element is the distance to the top of
 the axis from the bottom of the entire plot area, as a fraction of the total plot height, and the second element is the
-distance to the top of the axis from the bottom of the entire plot area, as a fraction of the total plot height.
+distance to the bottom of the axis from the bottom of the entire plot area, as a fraction of the total plot height.
 
 ### GenericChart component logic
 
@@ -256,7 +275,7 @@ the store's metadata response.
 #### chartConfigValues
 
 This assembles configuration values and selections into a form in which child components can use them as props. These are:
-- **dataSourceConfigValues**: Information about data sources metadata and current selections, and about its associated filters. 
+- **dataSourceConfigValues**: Information about data sources' metadata and current selections, and about their associated filters. 
 - **layoutData**: Special data which `Plotly` will include with the chart data to instruct plotly on how to layout the chart. This
 includes subplots configuration. 
 - **scrollHeight**: The height of the scrollable area which `Plotly` should give to the chart area, calculated from the number
@@ -265,23 +284,23 @@ of rows and configured height per row.
 
 #### chartData
 
-The chart data to be provided to `Plotly`, found by taking the selected dataset(s) and applying filter selection to them.
+The chart data to be provided to `Plotly`, found by taking the selected dataset(s) and applying filter selections to them.
 
 ### Front end data types
 
-There are a variety of data types used to support generic chart configuration:
+The following  data types are used to support generic chart configuration:
 
 #### GenericChartMetadata
 
 A dictionary of these objects make up the `GenericChartMetadataResponse`. Their structure is described [above](#generic-chart-metadata)).
-This type is defined in `types.ts` and contains these sub-types:
+This type is defined in `types.ts` and contains props with these sub-types:
 - `DataSetConfig`
 - `DataSourceConfig`
 
 #### ChartConfigValues
 
-This types defines the `chartConfigValues` built in the `GenericChart` component, which it provides to its child components. 
-This type is defined in `GenericChart.vue` and contains the subtype `DataSourceConfigValues`.
+This type defines the `chartConfigValues` built in the `GenericChart` component, which it provides to its child components. 
+This type is defined in `GenericChart.vue` and contains a prop with subtype `DataSourceConfigValues`.
 
 #### DataSourceConfigValues
 
