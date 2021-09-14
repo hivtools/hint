@@ -19,13 +19,16 @@ This diagram shows the main constituents and data flow involved in showing Gener
 When the app is first loaded, Generic Chart metadata is fetched from the endpoint, and is stored for the duration of the 
 front end app. It is stored in GenericChart state. This metadata consists of a dictionary of chart ids, with 
 configuration for each, which instructs the component how to display the chart, including what data sources to use, 
-what filters to apply, and a [JSONata](https://jsonata.org/) template describing the plotly configuration to use. See below for further details. 
+what filters to apply, and a [JSONata](https://jsonata.org/) template describing the plotly configuration to use. See 
+[below](#chart-config-jsonata) for further details. 
 
 Generic Chart metadata is currently kept in resource files in the back end of HINT. However we may in future hand over 
 this metadata to hintr, and have HINT fetch metadata from hintr as well as data. 
 
 Wherever the GenericChart component appears, it is provided with its chart id in a prop, and pulls out the relevant 
-section from the metadata. The chart metadata defines urls from which to fetch datasets (e.g. the custom input time series datasets) - the component invokes an action on the GenericChart state to retrieve this data when required, and it is stored in the GenericChart state along with dataset id. 
+section from the metadata. The chart metadata defines urls from which to fetch datasets (e.g. the custom input time series 
+datasets) - the component invokes an action on the GenericChart state to retrieve this data when required, and it is 
+stored in the GenericChart state along with dataset id. 
 
 Currently, GenericChart component is only located in the SurveyAndProgram component, on the 'Time series' tab.
 
@@ -36,7 +39,8 @@ GenericChart has these sub-components:
 
 ### Generic Chart Metadata
 
-The Generic Chart Metadata consists of a dictionary of GenericChartMetadata objects, whose keys are the chart ids. Here is an annotated example of GenericChartMetadata:
+The Generic Chart Metadata consists of a dictionary of GenericChartMetadata objects, whose keys are the chart ids. 
+Here is an annotated example of GenericChartMetadata:
 ```
 {
       // This section configures the datasets available to the charts, and where to get them from
@@ -173,8 +177,6 @@ out the array of arrays returned by the map function to a single array containin
 (since each iteration of the map function returns an array containing its two traces - can't track down the docs for this,
  but referenced in second answer [here](https://stackoverflow.com/questions/49570172/jsonata-query-to-flatten-array-of-arrays)).
 
-
-
 ```
 "xaxis": 'x' & ($i+1),
 "yaxis": 'y' & ($i+1),
@@ -184,8 +186,6 @@ This defines for each subplot which axes it should use. Plotly will interpret th
 config to draw the traces on subplots arranged on a grid with the configured number of rows and columns. `&` does 
 string [concatenation](https://docs.jsonata.org/other-operators#-concatenation) in jsonata, and `($i+1)` ensures that 
 axis indexes start from 1.
-
-
 
 ```
 "y": $map(data[area_name=$v].value, function($thv, $thi) {
@@ -199,14 +199,12 @@ axis indexes start from 1.
    ? $thv : null
 })
 ```
-
 This code selects how to draw the highlight trace, by mapping each value for the area to either that value (to include 
 it in the trace) or null (to exclude it) based on whether it is at the end or the start of a greater than 25% increase 
 (the first two clauses), or at the end of the start (the second two clauses) of a greater than 25% decrease.
 This uses JSONata's [ternary operator](https://docs.jsonata.org/other-operators#--conditional) and the `and` and `or` 
 [boolean operators](https://docs.jsonata.org/boolean-operators).
 
-//TODO FROM HERE
 
 ```
 `"annotations": $map($areaNames, function($v, $i) {
@@ -217,28 +215,81 @@ This uses JSONata's [ternary operator](https://docs.jsonata.org/other-operators#
   "x": 0.5,
   "xanchor": "middle",
   "xref": "x" & ($i+1) & " domain",
-  "y": 1,
+  "y": 1.1,
   "yanchor": "middle",
   "yref": "y" & ($i+1) & " domain"
   }
 })
 ```
 
-We use annotations to add titles to the subplots, as this is the only means Plotly supports. This uses the area names and corresponding area ids to make the text of the title, uses the 'x1', 'y1' etc axis identifiers to specify the domain in which to place the annotation (`xref` and `yref`) and uses the `x`, `y`, `xanchor` and `yanchor` values to place the annotations within the domains.
+We use annotations to add titles to the subplots, as this is the only means Plotly supports. This uses the area names 
+and corresponding area ids to make the text of the title, uses the 'x1', 'y1' etc axis identifiers to specify the domain 
+in which to place the annotation (`xref` and `yref`) and uses the `x`, `y`, `xanchor` and `yanchor` values to place the 
+annotations within the domains.
 
-
-
-`layout": $merge([`
-This indicates that the `layout` will be constructed by [merging](https://docs.jsonata.org/object-functions#merge) the object contained in the parameter array into a single object. This is required because we need to add layout keys for each of the axes, to set some axis parameters, as indicated by:
+`layout": $merge(..)[]`
+This indicates that the `layout` will be constructed by [merging](https://docs.jsonata.org/object-functions#merge) the 
+object contained in the parameter array into a single object. This is required because we need to add layout keys for 
+each of the axes, to set some axis parameters, as indicated by:
 `[1..$count($areaNames)]{`
 which maps the numeric range of subplots to objects, each containing the required x and y axis values.
 
-    
+```
+"domain": [
+    1 - ($row/$$.subplots.rows),
+    1 - (($row/$$.subplots.rows) + $subplotHeight)
+]
+```  
+This calculates the domain of each y axis as a two-element array, where the first element is the distance to the top of
+the axis from the bottom of the entire plot area, as a fraction of the total plot height, and the second element is the
+distance to the top of the axis from the bottom of the entire plot area, as a fraction of the total plot height.
 
 ### GenericChart component logic
 
 In order to provide its child components with the data and metadata they need, GenericChart computes the following properties:
 
+#### chartMetadata
 
+This selects the chartMetadata config object (described [above](#generic-chart-metadata)) for the `chartId` prop out of 
+the store's metadata response.
+
+#### chartConfigValues
+
+This assembles configuration values and selections into a form in which child components can use them as props. These are:
+- **dataSourceConfigValues**: Information about data sources metadata and current selections, and about its associated filters. 
+- **layoutData**: Special data which `Plotly` will include with the chart data to instruct plotly on how to layout the chart. This
+includes subplots configuration. 
+- **scrollHeight**: The height of the scrollable area which `Plotly` should give to the chart area, calculated from the number
+of rows and configured height per row. 
+- **chartConfig**: string containing the JSONata config for the chart, provided to `Plotly`
+
+#### chartData
+
+The chart data to be provided to `Plotly`, found by taking the selected dataset(s) and applying filter selection to them.
 
 ### Front end data types
+
+There are a variety of data types used to support generic chart configuration:
+
+#### GenericChartMetadata
+
+A dictionary of these objects make up the `GenericChartMetadataResponse`. Their structure is described [above](#generic-chart-metadata)).
+This type is defined in `types.ts` and contains these sub-types:
+- `DataSetConfig`
+- `DataSourceConfig`
+
+#### ChartConfigValues
+
+This types defines the `chartConfigValues` built in the `GenericChart` component, which it provides to its child components. 
+This type is defined in `GenericChart.vue` and contains the subtype `DataSourceConfigValues`.
+
+#### DataSourceConfigValues
+
+This type defines the config values for a single data source, and includes:
+- `DataSourceSelections`
+- `DataSourceConfig`
+- `DisplayFilter` - the standard type defining filter metadata, used elsewhere in HINT
+
+#### DataSourceSelections
+
+This types defines the selected datasetId and filter selections for a single data source. 
