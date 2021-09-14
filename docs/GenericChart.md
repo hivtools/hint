@@ -311,4 +311,4 @@ This type defines the config values for a single data source, and includes:
 
 #### DataSourceSelections
 
-This types defines the selected datasetId and filter selections for a single data source. 
+This type defines the selected datasetId and filter selections for a single data source. 
