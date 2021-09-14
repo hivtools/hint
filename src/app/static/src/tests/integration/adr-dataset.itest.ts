@@ -78,11 +78,10 @@ describe("ADR dataset-related actions", () => {
         const commit = jest.fn();
 
         await adrActions.getDatasets({commit, rootState} as any);
-        const datasetId = commit.mock.calls[2][0]["payload"].find((dataset: Dataset) => dataset.title.includes("Antarctica")).id;
 
         jest.resetAllMocks();
         
-        await adrActions.getReleases({commit, rootState} as any, datasetId);
+        await adrActions.getReleases({commit, rootState} as any, "antarctica-inputs-unaids-estimates-2021");
         expect(commit.mock.calls[0][0].type).toBe(ADRMutation.SetReleases)
         expect(commit.mock.calls[0][0].payload.length).toBeGreaterThan(0);
         expect(commit.mock.calls[0][0].payload[0].name).toBeTruthy();

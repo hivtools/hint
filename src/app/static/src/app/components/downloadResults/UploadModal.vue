@@ -71,6 +71,7 @@
                 <button
                     type="button"
                     class="btn btn-white"
+                    :disabled="downloadingFiles"
                     @click.prevent="handleCancel"
                     v-translate="'cancel'"></button>
             </template>
@@ -172,7 +173,7 @@
                 "createRelease"
             ),
             confirmUpload() {
-                this.uploadFilesToAdr.forEach(value => this.selectedUploadFiles.push(this.uploadableFiles[value]));
+                this.selectedUploadFiles = this.uploadFilesToAdr.map(value => this.uploadableFiles[value]);
                 const readyForUpload = this.prepareFilesForUpload();
 
                 if (readyForUpload) {
@@ -298,7 +299,7 @@
                 }
             },
             uploadDisabled(){
-                return !this.createRelease && this.uploadFilesToAdr.length < 1;
+                return (!this.createRelease && this.uploadFilesToAdr.length < 1) || this.downloadingFiles;
             },
             downloadingFiles() {
                 return !!this.spectrum.downloading || !!this.summary.downloading;
