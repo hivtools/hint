@@ -6,7 +6,6 @@ import {ADRUploadState} from "./adrUpload";
 import {ADRUploadMutation} from "./mutations";
 import {constructUploadFile, constructUploadFileWithResourceName} from "../../utils";
 import {Dict, UploadFile} from "../../types";
-import {switches} from "../../featureSwitches";
 import {ValidateInputResponse} from "../../generated";
 
 export interface ADRUploadActions {

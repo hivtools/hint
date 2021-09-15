@@ -41,7 +41,7 @@
                         <span class="font-weight-bold" v-translate="'uploadComplete'"></span>
                     </div>
                     <div class="d-flex align-items-center height-40">
-                        <tick color="#e31837" v-if="uploadComplete" width="20px"></tick>
+                        <tick color="#e31837" v-if="uploadComplete"></tick>
                     </div>
                 </div>
                 <div id="releaseCreated" v-if="releaseCreated || releaseFailed" class="d-flex align-items-end">
@@ -49,8 +49,7 @@
                         <span class="font-weight-bold" v-translate="releaseCreated ? 'releaseCreated' : 'releaseFailed'"></span>
                     </div>
                     <div class="d-flex align-items-center height-40">
-                        <tick color="#e31837" v-if="releaseCreated" width="20px"></tick>
-                        <cross color="#e31837" v-if="releaseFailed" width="20px"></cross>
+                        <component :is="releaseCreated ? 'tick' : 'cross'" color="#e31837"></component>
                     </div>
                 </div>
                 <error-alert v-if="uploadError" :error="uploadError"></error-alert>
@@ -63,8 +62,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {mapActionByName, mapStateProp, mapStateProps, mapMutationByName} from "../../utils";
-    import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
-    import {DownloadIcon, UploadIcon} from "vue-feather-icons";
+    import {UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
     import LoadingSpinner from "../LoadingSpinner.vue";

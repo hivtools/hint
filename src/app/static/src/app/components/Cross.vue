@@ -7,6 +7,6 @@
 
 <script lang="ts">
     export default {
-        props: ["color", "width"]
+        props: ["color"]
     }
 </script>

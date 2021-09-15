@@ -4,6 +4,8 @@ import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 import moment from 'moment';
 import {DynamicControlGroup, DynamicControlSection, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import i18next from "i18next";
+import {store} from "./main"
 
 export type ComputedWithType<T> = () => T;
 
@@ -297,4 +299,8 @@ export function getFilenameFromImportUrl(url: string) {
 export function getFilenameFromUploadFormData(formdata: FormData) {
     const file = formdata.get("file");
     return (file as File).name;
+}
+
+export function translate(text: string) {
+    return i18next.t(text, { lng: store.state.language });
 }
