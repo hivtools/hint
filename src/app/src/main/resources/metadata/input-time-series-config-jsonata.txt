@@ -51,7 +51,7 @@ $subplotHeight := 1/subplots.rows * 0.6;
         },
     "layout": $merge([
         {
-            "margin": {"t": 16},
+            "margin": {"t": 32},
             "dragmode": false,
             "grid": {"columns": subplots.columns, "rows": subplots.rows, "pattern": 'independent'},
             "annotations": $map($areaNames, function($v, $i) {
