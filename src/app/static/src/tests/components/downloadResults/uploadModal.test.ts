@@ -332,21 +332,17 @@ describe(`uploadModal `, () => {
             spectrum: {downloading: true} as any
         }
         const store = createStore(fakeMetadata, downloadResults)
-        const wrapper = mount(UploadModal, {store})
-
-        await wrapper.setProps({open: true})
+        const wrapper = mount(UploadModal, {
+            store,
+            propsData: {open: true}
+        })
 
         const okBtn = wrapper.find("button");
         expect(okBtn.attributes("disabled")).toBe("disabled");
 
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
-        inputs.at(0).setChecked(true)
-        inputs.at(1).setChecked(true)
-
-        expect(okBtn.attributes("disabled")).toBeUndefined();
         expect(okBtn.text()).toBe("OK")
-        await okBtn.trigger("click")
 
         expect(wrapper.find(DownloadProgress).props())
             .toEqual({"downloading": true, "translateKey": "downloadProgressForADR"})
@@ -489,5 +485,67 @@ describe(`uploadModal `, () => {
         expect(labels.at(0).attributes("for")).toBe("id-0-0");
         expect(labels.at(1).attributes("for")).toBe("id-0-1");
         expect(labels.at(2).attributes("for")).toBe("id-1-0");
+    });
+
+    it(`ok and cancel buttons are disabled when upload to ADR is in progress`, async () => {
+        const downloadResults = {
+            summary: {downloading: false} as any,
+            spectrum: {downloading: true} as any
+        }
+        const wrapper = mount(UploadModal,
+            {
+                store: createStore(fakeMetadata, downloadResults),
+                propsData: {open: true},
+                data() {
+                    return {
+                        uploadFilesToAdr: ["outputZip", "outputSummary"]
+                    }
+                }
+            })
+
+        const btn = wrapper.findAll("button");
+        expect(btn.at(0).attributes("disabled")).toBe("disabled");
+        expect(btn.at(1).attributes("disabled")).toBe("disabled");
+    });
+
+    it(`ok and cancel buttons are enabled when upload to Download/ADR is not in progress`, async () => {
+        const wrapper = mount(UploadModal,
+            {
+                store: createStore(fakeMetadata),
+                propsData: {open: true},
+                data() {
+                    return {
+                        uploadFilesToAdr: ["outputZip", "outputSummary"]
+                    }
+                }
+            })
+
+        const btn = wrapper.findAll("button");
+        expect(btn.at(0).attributes("disabled")).toBeUndefined();
+        expect(btn.at(1).attributes("disabled")).toBeUndefined();
+    });
+
+    it(`does not multiply files when ok button is triggered twice when uploading to ADR`, async () => {
+        const wrapper = mount(UploadModal,
+            {
+                store: createStore(fakeMetadata),
+                propsData: {open: true},
+                data() {
+                    return {
+                        uploadFilesToAdr: ["outputZip", "outputSummary"]
+                    }
+                }
+            })
+
+        const btn = wrapper.findAll("button");
+
+        expect(wrapper.vm.$data.uploadFilesPayload.length).toBe(0)
+
+        expect(btn.at(0).text()).toBe("OK")
+        await btn.at(0).trigger("click")
+        expect(wrapper.vm.$data.uploadFilesPayload.length).toBe(2)
+
+        await btn.at(0).trigger("click")
+        expect(wrapper.vm.$data.uploadFilesPayload.length).toBe(2)
     });
 })

@@ -22,11 +22,11 @@ export const initialStepperState = (): StepperState => {
         steps: [
             {
                 number: 1,
-                textKey: "uploadBaseline"
+                textKey: "uploadInputs"
             },
             {
                 number: 2,
-                textKey: "uploadSurvey"
+                textKey: "reviewInputs"
             },
             {
                 number: 3,
