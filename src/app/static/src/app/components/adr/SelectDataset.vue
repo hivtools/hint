@@ -115,7 +115,6 @@
     import LoadingSpinner from "../LoadingSpinner.vue";
     import { BaselineState } from "../../store/baseline/baseline";
     import {
-        ADRSchemas,
         Dataset,
         DatasetResourceSet,
     } from "../../types";
@@ -151,7 +150,6 @@
     }
 
     interface Computed {
-        schemas: ADRSchemas;
         datasets: any[];
         fetchingDatasets: boolean;
         adrError: Error | null;
@@ -217,10 +215,6 @@
             hasShapeFile: mapStateProp<BaselineState, boolean>(
                 "baseline",
                 (state: BaselineState) => !!state.shape
-            ),
-            schemas: mapStateProp<ADRState, ADRSchemas>(
-                namespace,
-                (state: ADRState) => state.schemas!
             ),
             selectedDataset: mapStateProp<BaselineState, Dataset | null>(
                 "baseline",
