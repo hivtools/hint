@@ -100,7 +100,7 @@
         getDataset: (payload: getDatasetPayload) => void,
         setDataSourceDefaultFilterSelections: (dataSourceId: string, datasetId: string) => void,
         updateDataSource: (dataSourceId: string, datasetId: string) => void,
-        updateSelectedFilterOptions: (dataSourceId: string, options: Dict<FilterOption[]>) => void
+        updateSelectedFilterOptions: (dataSourceId: string, options: Dict<FilterOption[]> | null) => void
     }
 
     const namespace = "genericChart";
@@ -190,7 +190,7 @@
                     const datasetId = dataSourceSelections.datasetId;
                     const unfilteredData = this.datasets[datasetId]?.data;
 
-                    const filters = this.datasets[dataSourceSelections.datasetId]?.metadata.filters || [];
+                    const filters = this.datasets[datasetId]?.metadata.filters || [];
                     const selectedFilterOptions = dataSourceSelections.selectedFilterOptions;
 
                     if (!unfilteredData || !selectedFilterOptions) {
@@ -211,17 +211,21 @@
                 }
             },
             async updateDataSource(dataSourceId: string, datasetId: string) {
-                this.dataSourceSelections[dataSourceId]!.datasetId = datasetId;
+                //clear current datasource filter selections while we fetch & show spinner
+                this.updateSelectedFilterOptions(dataSourceId, null);
                 await this.ensureDataset(datasetId);
                 this.setDataSourceDefaultFilterSelections(dataSourceId, datasetId);
             },
             setDataSourceDefaultFilterSelections(dataSourceId: string, datasetId: string) {
                 const selectedFilterOptions = this.datasets[datasetId].metadata.defaults.selected_filter_options;
                 if (selectedFilterOptions) {
-                    this.updateSelectedFilterOptions(dataSourceId, {...selectedFilterOptions});
+                    this.dataSourceSelections[dataSourceId] = {
+                        datasetId,
+                        selectedFilterOptions
+                    };
                 }
             },
-            updateSelectedFilterOptions(dataSourceId: string, options: Dict<FilterOption[]>) {
+            updateSelectedFilterOptions(dataSourceId: string, options: Dict<FilterOption[]> | null) {
                 this.dataSourceSelections[dataSourceId].selectedFilterOptions = options;
             }
         },
