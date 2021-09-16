@@ -24,7 +24,6 @@ import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {testUploadComponent} from "./fileUploads";
 import {GenericChartState} from "../../../app/store/genericChart/genericChart";
-import {mutations as genericMutations} from "../../../app/store/genericChart/mutations";
 
 const localVue = createLocalVue();
 
@@ -36,17 +35,7 @@ describe("Baseline upload component", () => {
     let sapActions: jest.Mocked<SurveyAndProgramActions>;
     let sapMutations = {};
 
-    const datasets =  {
-        dataset1: {
-            data: [
-                {age: "1", year: "2020", value: 1},
-            ],
-            metadata: {
-                filters: [],
-                defaults: {}
-            }
-        }
-    } as any;
+    const datasets =  {data: "TEST DATA"} as any;
 
     testUploadComponent("surveys", 3);
     testUploadComponent("program", 4);
@@ -95,8 +84,7 @@ describe("Baseline upload component", () => {
                 },
                 genericChart: {
                     namespaced: true,
-                    state: mockGenericChartState(genericChartState),
-                    mutations: {...genericMutations}
+                    state: mockGenericChartState(genericChartState)
                 }
             }
         });
@@ -448,7 +436,6 @@ describe("Baseline upload component", () => {
                 clearDataset: mockClearDataset
             }
         });
-
         wrapper.vm.$store.state.surveyAndProgram.program = mockProgramResponse()
         expect(mockClearDataset.mock.calls.length).toBe(1)
 
