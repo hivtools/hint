@@ -2,7 +2,7 @@ import {MutationTree} from "vuex";
 import {Dict, PayloadWithType, UploadFile} from "../../types";
 import {Error} from "../../generated";
 import {ADRUploadState} from "./adrUpload";
-import {translate} from "../../utils";
+import i18next from "i18next";
 
 export enum ADRUploadMutation {
     SetUploadFiles = "SetUploadFiles",
@@ -53,13 +53,13 @@ export const mutations: MutationTree<ADRUploadState> = {
     [ADRUploadMutation.ReleaseFailed](state: ADRUploadState, action: PayloadWithType<Error | null>) {
         state.releaseFailed = true;
         const alteredPayload = action.payload
-        switch(action.payload?.detail) {
+        switch (action.payload?.detail) {
             case "Version already exists for this activity":
-                alteredPayload!.detail = translate("releaseExists")
-              break;
+                alteredPayload!.detail = i18next.t("releaseExists", this.currentLanguage)
+                break;
             case "Version names must be unique per dataset":
-                alteredPayload!.detail = translate("releaseNameUnique")
-              break;
+                alteredPayload!.detail = i18next.t("releaseNameUnique", this.currentLanguage)
+                break;
         }
         state.uploadError = alteredPayload;
     },

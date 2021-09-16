@@ -128,11 +128,12 @@ describe("Download Results component", () => {
                 }
             });
 
-        expect(wrapper.find(UploadModal).exists()).toBe(true)
+        expect(wrapper.find(UploadModal).exists()).toBe(false)
         expect(wrapper.vm.$data.uploadModalOpen).toBe(false)
 
         const upload = wrapper.find("#upload").find("button")
         await upload.trigger("click")
+        expect(wrapper.find(UploadModal).exists()).toBe(true)
         expect(wrapper.vm.$data.uploadModalOpen).toBe(true)
 
         const modal = wrapper.find(UploadModal)
