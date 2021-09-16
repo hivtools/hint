@@ -172,13 +172,14 @@ describe(`uploadModal `, () => {
             })
     }
 
-    it(`renders modal as expected`, () => {
+    it(`renders modal as expected`, async () => {
         const wrapper = getWrapper()
         const store = wrapper.vm.$store
 
         const dialog = wrapper.find("#dialog")
         expect(dialog.exists()).toBe(true)
         const text = dialog.find("h4")
+        await Vue.nextTick()
         expectTranslated(text, "Upload to ADR", "Télécharger vers ADR", "Carregar para o ADR", store)
     })
 
@@ -215,12 +216,12 @@ describe(`uploadModal `, () => {
 
         const store = wrapper.vm.$store
         store.state.language = Language.fr;
-        expect(mockTooltip.mock.calls[2][1].value).toBe("Créer une version étiquetée dans l'ensemble de données ADR, pour inclure tous les fichiers d'entrée et de sortie");
-        expect(mockTooltip.mock.calls[3][1].value).toBe("Télécharger de nouvelles versions des fichiers sélectionnés sans créer de version");
+        expect(mockTooltip.mock.calls[4][1].value).toBe("Créer une version étiquetée dans l'ensemble de données ADR, pour inclure tous les fichiers d'entrée et de sortie");
+        expect(mockTooltip.mock.calls[5][1].value).toBe("Télécharger de nouvelles versions des fichiers sélectionnés sans créer de version");
 
         store.state.language = Language.pt;
-        expect(mockTooltip.mock.calls[4][1].value).toBe("Crie uma versão rotulada no conjunto de dados ADR, para incluir todos os arquivos de entrada e saída");
-        expect(mockTooltip.mock.calls[5][1].value).toBe("Faça upload de novas versões dos arquivos selecionados sem criar uma versão");
+        expect(mockTooltip.mock.calls[6][1].value).toBe("Crie uma versão rotulada no conjunto de dados ADR, para incluir todos os arquivos de entrada e saída");
+        expect(mockTooltip.mock.calls[7][1].value).toBe("Faça upload de novas versões dos arquivos selecionados sem criar uma versão");
     });
 
     it(`renders Output files, inputs, and labels as expected`, () => {
@@ -243,10 +244,8 @@ describe(`uploadModal `, () => {
     })
 
     it(`checkboxes are set by default`, async () => {
-        const store = createStore({})
+        const store = createStore(metadataWithInput)
         const wrapper = shallowMount(UploadModal, {store})
-        store.state.adrUpload.uploadFiles = metadataWithInput
-        await Vue.nextTick()
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(3)
 
@@ -309,18 +308,6 @@ describe(`uploadModal `, () => {
         expect(wrapper.emitted("close").length).toBe(1)
     })
 
-    it(`can call uploadFiles as expected`, () => {
-        const mockUploadFiles = jest.fn()
-        mount(UploadModal,
-            {
-                store: createStore(),
-                computed: {
-                    uploadableFiles: mockUploadFiles
-                }
-            })
-        expect(mockUploadFiles).toHaveBeenCalledTimes(1)
-    })
-
     it(`can send upload files to ADR when download status is complete and createRelease is flagged`, async () => {
         const downloadResults = {
             summary: {complete: true, downloading: false} as any,
@@ -361,12 +348,9 @@ describe(`uploadModal `, () => {
         await radialInput.trigger("click")
 
         const okBtn = wrapper.find("button");
-        expect(okBtn.attributes("disabled")).toBe("disabled");
 
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
-        inputs.at(0).setChecked(true)
-        inputs.at(1).setChecked(true)
 
         expect(okBtn.attributes("disabled")).toBeUndefined();
         expect(okBtn.text()).toBe("OK")
@@ -410,12 +394,9 @@ describe(`uploadModal `, () => {
         await radialInput.trigger("click")
 
         const okBtn = wrapper.find("button");
-        expect(okBtn.attributes("disabled")).toBe("disabled");
 
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
-        inputs.at(0).setChecked(true)
-        inputs.at(1).setChecked(true)
 
         expect(okBtn.attributes("disabled")).toBeUndefined();
         expect(okBtn.text()).toBe("OK")
@@ -426,16 +407,13 @@ describe(`uploadModal `, () => {
     });
 
     it("can clear timer when download action is complete", async () => {
-        const store = createStore(fakeMetadata, {
+        const store = createStore({outputZip: fakeMetadata.outputZip}, {
             summary: {complete: false, downloading: false } as any,
             spectrum: {complete: false, downloading: false } as any
         });
         const wrapper = mount(UploadModal, {store})
 
         await wrapper.setProps({open: true})
-
-        //Refresh adrUpload upload files to trigger watch, which populates uploadFilesToADR
-        store.state.adrUpload.uploadFiles= {outputZip: fakeMetadata.outputZip};
 
         //Click ok to trigger population of uploadFilesPayload
         const okBtn = wrapper.find(".modal button.btn-red");
@@ -471,11 +449,10 @@ describe(`uploadModal `, () => {
         await radialInput.trigger("click")
 
         const okBtn = wrapper.find("button");
-        expect(okBtn.attributes("disabled")).toBe("disabled");
 
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
-        inputs.at(0).setChecked(true)
+        inputs.at(1).setChecked(false)
 
         expect(okBtn.attributes("disabled")).toBeUndefined();
         expect(okBtn.text()).toBe("OK")
@@ -494,11 +471,10 @@ describe(`uploadModal `, () => {
         await radialInput.trigger("click")
 
         const okBtn = wrapper.find("button");
-        expect(okBtn.attributes("disabled")).toBe("disabled");
 
         const inputs = wrapper.findAll("input.form-check-input")
         expect(inputs.length).toBe(2)
-        inputs.at(1).setChecked(true)
+        inputs.at(0).setChecked(false)
 
         expect(okBtn.attributes("disabled")).toBeUndefined();
         expect(okBtn.text()).toBe("OK")

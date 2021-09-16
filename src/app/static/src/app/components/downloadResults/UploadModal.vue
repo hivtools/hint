@@ -311,9 +311,6 @@
             DownloadProgress
         },
         watch: {
-            uploadableFiles() {
-                this.setDefaultCheckedItems()
-            },
             choiceUpload(){
                 if (this.createRelease){
                     this.setDefaultCheckedItems()
@@ -334,6 +331,9 @@
         },
         directives: {
             tooltip: VTooltip,
+        },
+        mounted(){
+            this.setDefaultCheckedItems()
         }
     });
 </script>
