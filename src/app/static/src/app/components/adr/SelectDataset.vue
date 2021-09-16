@@ -413,6 +413,18 @@
             },
             toggleModal() {
                 this.open = !this.open;
+                if (this.open){
+                    // if (this.selectedDataset?.release && this.releases.length && this.selectedDataset?.id){
+                    //     const selectedReleaseId = this.selectedDataset.release
+                    //     if (this.releases.some(release => release.id === selectedReleaseId)){
+                    //         this.newDatasetId = this.selectedDataset.id;
+                    //     }
+                    // }
+
+                    if (this.selectedDataset?.id){
+                        this.newDatasetId = this.selectedDataset.id;
+                    }
+                }
             },
             confirmImport() {
                 if (this.editsRequireConfirmation) {
@@ -447,6 +459,16 @@
                 this.valid = valid;
             }
         },
+        // watch: {
+        //     releases(){
+        //         if (this.selectedDataset?.release && this.releases.length && this.selectedDataset?.id){
+        //             const selectedReleaseId = this.selectedDataset.release
+        //             if (this.releases.some(release => release.id === selectedReleaseId)){
+        //                 this.newDatasetId = this.selectedDataset.id;
+        //             }
+        //         }
+        //     }
+        // },
         mounted() {
             this.refreshDatasetMetadata();
             this.startPolling();
