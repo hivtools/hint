@@ -410,7 +410,7 @@ describe("GenericChart component", () => {
         setTimeout(async () => {
             await wrapper.findAll(DataSource).at(0).vm.$emit("update", "dataset2");
 
-            // expect filter selections to have been set up null while ensure dataset
+            // expect filter selections to have been set to null while ensure dataset
             expect(wrapper.vm.$data.dataSourceSelections.visible1.selectedFilterOptions).toBe(null);
             setTimeout(() => {
                 expect(mockAxios.history.get.length).toBe(1);
