@@ -195,7 +195,7 @@
                         if (!this.initialised) {
                             return {max: 1, min: 0}
                         }
-                        return {max: this.colorIndicator.max, min: this.colorIndicator.min}
+                        return {max: this.colorIndicator?.max, min: this.colorIndicator?.min}
                 }
             },
             selectedAreaIds() {
