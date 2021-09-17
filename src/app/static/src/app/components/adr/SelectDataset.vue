@@ -6,8 +6,7 @@
                 v-translate="'selectedDataset'"
                 id="selectedDatasetSpan"
             ></span>
-            <!-- <a v-if="releaseName" :href="selectedDataset.url.replace('inputs-unaids-estimates', 'dataset') + '?activity_id=' + selectedDataset.release" target="_blank"> -->
-            <a v-if="releaseName" :href="selectedDataset.url + '/releases?__no_cache__=True'" target="_blank">
+            <a v-if="releaseName" :href="selectedDataset.url + '/releases'" target="_blank">
                 {{ selectedDataset.title }} — {{ releaseName }}
             </a>
             <a v-else :href="selectedDataset.url" target="_blank">
@@ -153,6 +152,7 @@
         cancelEditing: () => void;
         updateDatasetRelease: (id: string) => void;
         updateValid: (valid: boolean) => void;
+        preSelectDataset: () => void;
     }
 
     interface Computed {
@@ -245,15 +245,10 @@
                 (state: ADRState) => state.adrError
             ),
             releaseName(){
-                // console.log('everything', this.selectedDataset, this.selectedDataset.release, this.releases.length)
                 const selectedDataset = this.selectedDataset
                 if (selectedDataset?.release && this.releases.length){
-                    const selectedRelease = this.releases.find( release => release.id === selectedDataset.release)
-                    if (selectedRelease?.name){
-                        return selectedRelease.name
-                    } else {
-                        return null
-                    }
+                    const selectedRelease = this.releases.find(release => release.id === selectedDataset.release)
+                    return selectedRelease?.name || null
                 } else {
                     return null
                 }
@@ -414,16 +409,13 @@
             toggleModal() {
                 this.open = !this.open;
                 if (this.open){
-                    // if (this.selectedDataset?.release && this.releases.length && this.selectedDataset?.id){
-                    //     const selectedReleaseId = this.selectedDataset.release
-                    //     if (this.releases.some(release => release.id === selectedReleaseId)){
-                    //         this.newDatasetId = this.selectedDataset.id;
-                    //     }
-                    // }
-
-                    if (this.selectedDataset?.id){
-                        this.newDatasetId = this.selectedDataset.id;
-                    }
+                    this.preSelectDataset();
+                }
+            },
+            preSelectDataset(){
+                const selectedDatasetId = this.selectedDataset?.id
+                if (selectedDatasetId && this.datasets.length && this.datasets.some(dataset => dataset.id === selectedDatasetId)){
+                    this.newDatasetId = selectedDatasetId;
                 }
             },
             confirmImport() {
@@ -459,28 +451,17 @@
                 this.valid = valid;
             }
         },
-        // watch: {
-        //     releases(){
-        //         if (this.selectedDataset?.release && this.releases.length && this.selectedDataset?.id){
-        //             const selectedReleaseId = this.selectedDataset.release
-        //             if (this.releases.some(release => release.id === selectedReleaseId)){
-        //                 this.newDatasetId = this.selectedDataset.id;
-        //             }
-        //         }
-        //     }
-        // },
+        watch: {
+            newDatasetId(){
+                console.log("newdatasetId", this.newDatasetId)
+            }
+        },
         mounted() {
             this.refreshDatasetMetadata();
             this.startPolling();
             if (this.selectedDataset?.id){
                 this.getReleases(this.selectedDataset.id);
-                if (this.datasets.length){
-                    // this.newDatasetId = this.selectedDataset.title;
-                    const selectedDatasetId = this.selectedDataset.id
-                    this.newDatasetId = this.datasets.find( dataset => dataset.id === selectedDatasetId).title
-                }
             }
-                // console.log('everything', this.selectedDataset, this.selectedDataset.release, this.releases)
         },
         beforeDestroy() {
             this.stopPolling();

@@ -83,9 +83,7 @@
 
     interface Computed {
         releases: Release[];
-        initialDataset: string | undefined;
         initialRelease: string | undefined;
-        // releaseName: string | null;
         valid: boolean;
         releaseOptions: any[];
         useRelease: boolean;
@@ -117,10 +115,6 @@
                 namespace,
                 (state: ADRState) => state.releases
             ),
-            initialDataset: mapStateProp<BaselineState, string | undefined>(
-                "baseline",
-                (state: BaselineState) => state.selectedDataset?.id
-            ),
             initialRelease: mapStateProp<BaselineState, string | undefined>(
                 "baseline",
                 (state: BaselineState) => state.selectedDataset?.release
@@ -138,14 +132,6 @@
                     </div>`,
                 }));
             },
-            // releaseName(){
-            //     // console.log('everything', this.releaseId, this.releases.length, this.releases.find( release => release.id === this.releaseId))
-            //     if (this.releaseId && this.releases.length){
-            //         return this.releases.find( release => release.id === this.releaseId).name
-            //     } else {
-            //         return null
-            //     }
-            // },
             useRelease() {
                 return this.choiceADR === "useRelease";
             },
@@ -187,38 +173,14 @@
             valid() {
                 this.$emit("valid", this.valid);
             },
-            releases(releases, releasesBefore){
-                // if (releases.length && !releasesBefore.length){
-                //     this.choiceADR = "useRelease"
-                //     this.releaseId = this.initialRelease;
-                // }
-                console.log("releases changed", releases, releasesBefore)
-                // const selectedReleaseId = this.initialRelease
+            releases(){
                 this.preSelectRelease();
-                // if (selectedReleaseId && this.releases.length && this.releases.some(release => release.id === selectedReleaseId)){
-                //     this.choiceADR = "useRelease"
-                //     this.releaseId = selectedReleaseId;
-                // }
             }
         },
         mounted(){
             this.$emit("selected-dataset-release", this.releaseId);
             this.$emit("valid", this.valid);
-            console.log(this.initialRelease, this.releases.length, this.initialDataset)
-            // const selectedReleaseId = this.initialRelease
-            //     if (selectedReleaseId && this.releases.length && this.releases.some(release => release.id === selectedReleaseId)){
-            //         this.choiceADR = "useRelease"
-            //         this.releaseId = selectedReleaseId;
-            //     }
             this.preSelectRelease();
-            // if (this.initialRelease && this.releases.length){
-            //     this.choiceADR = "useRelease"
-            //     this.releaseId = this.initialRelease;
-            // }
-            // if (this.initialRelease && this.initialDataset){
-            //     this.getReleases(this.initialDataset)
-            // }
-            console.log('releaseId', this.releaseId)
         },
         directives: {
             tooltip: VTooltip,
