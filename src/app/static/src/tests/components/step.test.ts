@@ -18,19 +18,21 @@ describe("Step component", () => {
             localVue,
             store,
             propsData: {
-                textKey: "uploadBaseline"
+                textKey: "uploadInputs"
             }
         });
 
-        expectTranslated(wrapper.find("div"),"Upload baseline data", "Télécharger les données de base",
-            "Carregar dados de base", store);
+        expectTranslated(wrapper.find("div"),
+            "Upload inputs",
+            "Télécharger les entrées",
+            "Carregar entradas", store);
     });
 
     it("renders enabled step", () => {
         const wrapper = shallowMount(Step, {
             localVue,
             propsData: {
-                textKey: "uploadBaseline",
+                textKey: "uploadInputs",
                 enabled: true
             }
         });
@@ -42,7 +44,7 @@ describe("Step component", () => {
         const wrapper = shallowMount(Step, {
             localVue,
             propsData: {
-                textKey: "uploadBaseline",
+                textKey: "uploadInputs",
                 active: true,
                 enabled: true
             }
@@ -56,7 +58,7 @@ describe("Step component", () => {
         const wrapper = shallowMount(Step, {
             localVue,
             propsData: {
-                textKey: "uploadBaseline",
+                textKey: "uploadInputs",
                 active: false
             }
         });
@@ -69,7 +71,7 @@ describe("Step component", () => {
         const wrapper = shallowMount(Step, {
             localVue,
             propsData: {
-                textKey: "uploadBaseline",
+                textKey: "uploadInputs",
                 enabled: true,
                 number: 2
             }
@@ -88,7 +90,7 @@ describe("Step component", () => {
         const wrapper = shallowMount(Step, {
             localVue,
             propsData: {
-                textKey: "uploadBaseline",
+                textKey: "uploadInputs",
                 enabled: true,
                 complete: true
             }
@@ -102,7 +104,7 @@ describe("Step component", () => {
         const wrapper = shallowMount(Step, {
             localVue,
             propsData: {
-                textKey: "uploadBaseline",
+                textKey: "uploadInputs",
                 enabled: false
             }
         });
