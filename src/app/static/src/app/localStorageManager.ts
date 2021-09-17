@@ -53,14 +53,6 @@ export class LocalStorageManager {
             return null;
         }
     };
-
-    saveContinueAsGuest() {
-        window.localStorage.setItem(GUEST_KEY, GUEST)
-    }
-
-    getContinueAsGuest() {
-        return window.localStorage.getItem(GUEST_KEY)
-    }
 }
 
 export const localStorageManager = new LocalStorageManager();

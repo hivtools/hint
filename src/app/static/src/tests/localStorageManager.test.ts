@@ -116,10 +116,10 @@ describe("LocalStorageManager", () => {
     });
 
     it("can save and get continue as guest from session", () => {
-        localStorageManager.saveContinueAsGuest();
-        let result = localStorageManager.getContinueAsGuest();
+        sessionStorage.setItem("asGuest", "continueAsGuest")
+        let result = sessionStorage.getItem("asGuest")
 
         expect(result).not.toBe(null);
-        expect(localStorage.getItem("asGuest")).toBe("continueAsGuest");
+        expect(sessionStorage.getItem("asGuest")).toBe("continueAsGuest");
     });
 });

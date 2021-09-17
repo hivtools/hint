@@ -10,12 +10,11 @@ import {mapActions, mapState} from "vuex";
 import {RootState} from "./root";
 import VueRouter, {NavigationGuardNext} from "vue-router";
 import {Route} from "vue-router/types/router";
-import {localStorageManager} from "./localStorageManager";
 
 Vue.use(VueRouter);
 
 export const beforeEnter = (to: Route, from: Route, next: NavigationGuardNext) => {
-    if (store.state.currentUser === "guest" && !localStorageManager.getContinueAsGuest()) {
+    if (store.state.currentUser === "guest" && !sessionStorage.getItem("asGuest")) {
         window.location.assign("/login");
     } else {
         next();

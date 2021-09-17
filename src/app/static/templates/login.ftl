@@ -21,7 +21,7 @@
         }
 
         function continueAsGuest() {
-            localStorage.setItem("asGuest", "continueAsGuest")
+            sessionStorage.setItem("asGuest", "continueAsGuest")
         }
     </script>
 </head>
