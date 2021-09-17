@@ -1,3 +1,7 @@
+# hint 1.50.0
+
+* Show selected release name and preselected in modal
+
 # hint 1.49.1
 
 * Fix erroneous ADR upload file count
