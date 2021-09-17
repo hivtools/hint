@@ -7,6 +7,7 @@ import {mockRootState} from "../../mocks";
 import {expectTranslated} from "../../testHelpers";
 import TreeSelect from '@riophae/vue-treeselect';
 import {Language} from "../../../app/store/translations/locales";
+import {Dataset} from "../../../app/types";
 
 describe("select release", () => {
 
@@ -22,10 +23,25 @@ describe("select release", () => {
             notes: null
         }
     ]
+    const fakeDataset = {
+        id: "datasetId",
+        title: "Some data",
+        url: "www.adr.com/naomi-data/some-data",
+        organization: {id: "org-id"},
+        release: "releaseId",
+        resources: {
+            pjnz: null,
+            program: null,
+            pop: null,
+            survey: null,
+            shape: null,
+            anc: null
+        }
+    }
     const getReleasesMock = jest.fn();
     const clearReleasesMock = jest.fn();
     
-    const getStore = (releases = releasesArray) => {
+    const getStore = (releases = releasesArray, selectedDataset: Dataset | null = null) => {
         const store = new Vuex.Store({
             state: mockRootState(),
             modules: {
@@ -43,6 +59,12 @@ describe("select release", () => {
                         [ADRMutation.SetReleases]: jest.fn()
                     }
                 },
+                baseline: {
+                    namespaced: true,
+                    state: {
+                        selectedDataset
+                    }
+                }
             }
         });
         registerTranslations(store);
@@ -72,6 +94,7 @@ describe("select release", () => {
         const select = rendered.find(TreeSelect);
         expect(select.props("multiple")).toBe(false);
         expect(select.props("searchable")).toBe(true);
+        expect(rendered.vm.$data.releaseId).toBeUndefined();
 
         const expectedOptions = [
             {
@@ -161,6 +184,24 @@ describe("select release", () => {
         const selectRelease = rendered.findAll("input").at(1)
         await selectRelease.trigger("click")
         expect(select.attributes("disabled")).toBeUndefined();
+        done()
+    });
+
+    it("radial toggles automatically toggles and selects release if selectedDataset has an appropriate releaseId", async (done) => {
+        let store = getStore(releasesArray, fakeDataset)
+        const rendered = shallowMount(SelectRelease, {store, propsData: {datasetId: "datasetId"}});
+        const select = rendered.find(TreeSelect);
+        expect(select.attributes("disabled")).toBeUndefined();
+        expect(rendered.vm.$data.releaseId).toBe("releaseId");
+        done()
+    });
+
+    it("does not automatically select release if no matching release", async (done) => {
+        let store = getStore([releasesArray[1]], fakeDataset)
+        const rendered = shallowMount(SelectRelease, {store, propsData: {datasetId: "datasetId"}});
+        const select = rendered.find(TreeSelect);
+        expect(select.attributes("disabled")).toBe("true");
+        expect(rendered.vm.$data.releaseId).toBeUndefined();
         done()
     });
 

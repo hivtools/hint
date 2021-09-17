@@ -1,6 +1,6 @@
 import Vuex, {ActionTree} from "vuex";
 import Vue from "vue";
-import {mount, shallowMount} from "@vue/test-utils";
+import {createWrapper, mount, shallowMount} from "@vue/test-utils";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
 import SelectRelease from "../../../app/components/adr/SelectRelease.vue";
 import Modal from "../../../app/components/Modal.vue";
@@ -21,7 +21,7 @@ import {BaselineMutation} from "../../../app/store/baseline/mutations";
 import {ADRMutation} from "../../../app/store/adr/mutations";
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
-import {ADRSchemas} from "../../../app/types";
+import {ADRSchemas, Release} from "../../../app/types";
 import {InfoIcon} from "vue-feather-icons";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
@@ -154,6 +154,35 @@ describe("select dataset", () => {
             anc: null
         }
     };
+    
+    const fakeDatasetWithRelease = {
+        id: "id1",
+        title: "Some data",
+        url: "www.adr.com/naomi-data/some-data",
+        organization: {id: "org-id"},
+        release: "release1",
+        resources: {
+            pjnz: null,
+            program: null,
+            pop: null,
+            survey: null,
+            shape: mockDatasetResource({
+                url: "shape.geojson",
+                lastModified: "2020-11-03",
+                metadataModified: "2020-11-04",
+                name: "Shape Resource"
+            }),
+            anc: null
+        }
+    };
+
+    const fakeReleases =[
+        {
+            id: "release1",
+            name: "release1",
+            notes: "some notes"
+        }
+    ]
 
     const setDatasetMock = jest.fn();
     const markResourcesUpdatedMock = jest.fn();
@@ -181,7 +210,7 @@ describe("select dataset", () => {
 
     let currentVersion = {id: "version-id", created: "", updated: "", versionNumber: 1}
 
-    const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}, requireConfirmation: boolean = false) => {
+    const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}, requireConfirmation: boolean = false, releases: Release[] = [], getReleases = getReleasesMock) => {
         const store = new Vuex.Store({
             state: mockRootState(),
             getters: rootGetters,
@@ -191,12 +220,12 @@ describe("select dataset", () => {
                     state: {
                         schemas: schemas,
                         datasets: fakeRawDatasets,
-                        releases: [],
+                        releases,
                         ...adrProps
                     },
                     actions: {
                         getDatasets: getDatasetsMock,
-                        getReleases: getReleasesMock,
+                        getReleases,
                         getDataset: getDatasetMock
                     },
                     mutations: {
@@ -467,6 +496,17 @@ describe("select dataset", () => {
         expect(rendered.find("a").attributes("href")).toBe("www.adr.com/naomi-data/some-data");
     });
 
+    it("renders selected dataset and selected release with url pointing to releases page", () => {
+        let store = getStore({
+            selectedDataset: fakeDatasetWithRelease
+        }, {}, false, fakeReleases)
+        const rendered = shallowMount(SelectDataset, {store});
+        expectTranslated(rendered.find(".font-weight-bold"), "Selected dataset:",
+            "Ensemble de données sélectionné :", "Conjunto de dados selecionado:", store);
+        expect(rendered.find("a").text()).toBe("Some data — release1");
+        expect(rendered.find("a").attributes("href")).toBe("www.adr.com/naomi-data/some-data/releases");
+    });
+
     it("does not render selected dataset if it doesn't exist", () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});
         expect(rendered.findAll("#selectedDatasetSpan").length).toBe(0);
@@ -542,7 +582,7 @@ describe("select dataset", () => {
             store,
             stubs: ["tree-select"]
         });
-
+        expect(rendered.vm.$data.newDatasetId).toBe(null);
         // open modal
         rendered.find("button").trigger("click");
 
@@ -554,8 +594,8 @@ describe("select dataset", () => {
         expectTranslated(rendered.find("div > label"), "Datasets", "Ensembles de données",
             "Conjuntos de dados", store);
 
-        // select dataset from dropdown and click button to import
-        rendered.setData({newDatasetId: "id2"});
+        // dataset is preselected in dropdown and click button to import
+        expect(rendered.vm.$data.newDatasetId).toBe("id2");
         const selectRelease = rendered.find(SelectRelease)
         await selectRelease.vm.$emit("selected-dataset-release", "1.0");
         rendered.find(Modal).find("button").trigger("click");
@@ -580,6 +620,17 @@ describe("select dataset", () => {
 
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+
+    it("current dataset is not preselected if there is no selectedDataset", async () => {
+        let store = getStore({});
+        const rendered = mount(SelectDataset, {
+            store,
+            stubs: ["tree-select"]
+        });
+        
+        rendered.find("button").trigger("click");
+        expect(rendered.vm.$data.newDatasetId).toBe(null);
     });
 
     it("renders select release", async () => {
@@ -925,4 +976,18 @@ describe("select dataset", () => {
         expect(rendered.find(Modal).find("button").attributes("disabled")).toBe("disabled");
 
     });
+
+    it("calls getReleases action on mount if there is a selected dataset", () => {
+        const spy = jest.fn()
+        const store = getStore({selectedDataset: fakeDataset}, {}, false, [], spy);
+        shallowMount(SelectDataset, {store});
+        expect(spy).toHaveBeenCalledTimes(1)
+    })
+
+    it("does not call getReleases action on mount if there is no selected dataset", () => {
+        const spy = jest.fn()
+        const store = getStore({}, {}, false, [], spy);
+        shallowMount(SelectDataset, {store});
+        expect(spy).toHaveBeenCalledTimes(0)
+    })
 });
