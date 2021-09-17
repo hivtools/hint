@@ -3,6 +3,8 @@ $areaNames := $distinct(data.area_name);
 $lineColor := "rgb(51, 51, 51)";
 $highlightColor := "rgb(255, 51, 51)";
 $subplotHeight := 1/subplots.rows * 0.6;
+/* Where there are few time values, enforce "dtick": 1 to prevent half-year ticks, otherwise allow default behaviour with 0 */
+$xAxisDTick := $count($distinct(data.time_period)) > 4 ? 0 : 1;
 {
     "data":
         $map($areaNames, function($v, $i) {(
@@ -83,7 +85,7 @@ $subplotHeight := 1/subplots.rows * 0.6;
                    ]
                },
                "xaxis"&$: {
-                   "dtick": 1,
+                   "dtick": $xAxisDTick,
                    "tickfont": {
                        "color": "grey"
                    }
