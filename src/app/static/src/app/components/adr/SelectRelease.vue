@@ -66,7 +66,7 @@
     import { Language } from "../../store/translations/locales";
     import { RootState } from "../../root";
     import {ADRMutation} from "../../store/adr/mutations";
-    import { Release, Dataset } from "../../types";
+    import { Release } from "../../types";
     import { BaselineState } from "../../store/baseline/baseline";
 
     interface Data {

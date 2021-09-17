@@ -247,8 +247,9 @@
             releaseName(){
                 const selectedDataset = this.selectedDataset
                 if (selectedDataset?.release && this.releases.length){
-                    const selectedRelease = this.releases.find(release => release.id === selectedDataset.release)
-                    return selectedRelease?.name || null
+                    // const selectedRelease = this.releases.find(release => release.id === selectedDataset.release)
+                    // return selectedRelease?.name || null
+                    return this.releases.find(release => release.id === selectedDataset.release)?.name || null
                 } else {
                     return null
                 }
@@ -449,11 +450,6 @@
             },
             updateValid(valid){
                 this.valid = valid;
-            }
-        },
-        watch: {
-            newDatasetId(){
-                console.log("newdatasetId", this.newDatasetId)
             }
         },
         mounted() {
