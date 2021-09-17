@@ -83,6 +83,7 @@ $subplotHeight := 1/subplots.rows * 0.6;
                    ]
                },
                "xaxis"&$: {
+                   "dtick": 1,
                    "tickfont": {
                        "color": "grey"
                    }
