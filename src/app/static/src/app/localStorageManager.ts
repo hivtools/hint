@@ -27,6 +27,9 @@ export const serialiseState = (rootState: RootState): Partial<RootState> => {
 
 declare const currentUser: string;
 
+const GUEST = "continueAsGuest";
+const GUEST_KEY = "asGuest";
+
 export class LocalStorageManager {
 
     saveState = (state: RootState) => {
@@ -50,6 +53,14 @@ export class LocalStorageManager {
             return null;
         }
     };
+
+    saveContinueAsGuest() {
+        window.localStorage.setItem(GUEST_KEY, GUEST)
+    }
+
+    getContinueAsGuest() {
+        return window.localStorage.getItem(GUEST_KEY)
+    }
 }
 
 export const localStorageManager = new LocalStorageManager();

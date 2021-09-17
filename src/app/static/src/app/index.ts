@@ -8,12 +8,26 @@ import Projects from "./components/projects/Projects.vue";
 import Accessibility from "./components/Accessibility.vue";
 import {mapActions, mapState} from "vuex";
 import {RootState} from "./root";
-import VueRouter from "vue-router";
+import VueRouter, {NavigationGuardNext} from "vue-router";
+import {Route} from "vue-router/types/router";
+import {localStorageManager} from "./localStorageManager";
 
 Vue.use(VueRouter);
 
+export const beforeEnter = (to: Route, from: Route, next: NavigationGuardNext) => {
+    if (store.state.currentUser === "guest" && !localStorageManager.getContinueAsGuest()) {
+        window.location.assign("/login");
+    } else {
+        next();
+    }
+}
+
 router.addRoutes([
-    {path: "/", component: Stepper},
+    {
+        path: "/",
+        component: Stepper,
+        beforeEnter
+    },
     {path: "/accessibility", component: Accessibility},
     {path: "/projects", component: Projects}
 ]);
