@@ -8,7 +8,7 @@
                        v-translate="'map'"
                        v-on:click="selectTab(0)"></a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" v-if="anc.available || programme.available">
                     <a class="nav-link"
                        :class="{'active': selectedTab === 1}"
                        v-translate="'timeSeries'"
