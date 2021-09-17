@@ -247,8 +247,6 @@
             releaseName(){
                 const selectedDataset = this.selectedDataset
                 if (selectedDataset?.release && this.releases.length){
-                    // const selectedRelease = this.releases.find(release => release.id === selectedDataset.release)
-                    // return selectedRelease?.name || null
                     return this.releases.find(release => release.id === selectedDataset.release)?.name || null
                 } else {
                     return null
