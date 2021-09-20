@@ -42,7 +42,7 @@ class LoginTests
 
         assertThat(doc.select("#continue-as-guest").text()).isEqualTo("OR Continue as guest")
         assertThat(doc.select("#continue-as-guest a").attr("href")).isEqualTo("/")
-        assertThat(doc.select("#continue-as-guest a").attr("onclick")).isEqualTo("continueAsGuest();")
+        assertThat(doc.select("#continue-as-guest a").attr("onclick")).isEqualTo("continueAsGuest()")
     }
 
     @Test
