@@ -236,7 +236,7 @@ This uses JSONata's [ternary operator](https://docs.jsonata.org/other-operators#
   "yanchor": "middle",
   "yref": "y" & ($i+1) & " domain"
   }
-})
+})[]
 ```
 
 We use annotations to add titles to the subplots, as this is the only means Plotly supports. This uses the area names 
