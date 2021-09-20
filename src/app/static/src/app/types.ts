@@ -228,6 +228,6 @@ export interface GenericChartDataset {
 }
 
 export interface DefaultDataSource {
-    datasetId: string,
+    datasetId: string | null,
     showDataPicker: boolean
 }

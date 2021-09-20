@@ -193,8 +193,8 @@
                 return options;
             },
             defaultDataSource() {
-                const selectDefaultDataset = !this.programme.available && this.anc.available ? "anc" : "art"
-                const showDataSourcePicker = this.anc.available && this.programme.available
+                const selectDefaultDataset = !this.programme.available && this.anc.available ? "anc" : null
+                const showDataSourcePicker = !!this.anc.available && !!this.programme.available
 
                 return {
                     datasetId: selectDefaultDataset,

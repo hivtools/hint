@@ -128,7 +128,7 @@
                 .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => ({
                     ...running,
                     [dataSource.id]: {
-                        datasetId: this.defaultDataSource.datasetId,
+                        datasetId: this.defaultDataSource.datasetId || dataSource.datasetId,
                         selectedFilterOptions: null
                     }
                 }), {});

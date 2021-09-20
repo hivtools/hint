@@ -146,7 +146,15 @@ describe("GenericChart component", () => {
         mockAxios.reset();
     });
 
-    const getWrapper = (state: Partial<GenericChartState> = {}, metadataProp: GenericChartMetadataResponse = metadata) => {
+    const data = {
+        chartId: "test-chart",
+        defaultDataSource: {
+            datasetId: "",
+            showDataPicker: true
+        }
+    };
+
+    const getWrapper = (state: Partial<GenericChartState> = {}, metadataProp: GenericChartMetadataResponse = metadata, ChartPropsData = data) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -158,9 +166,10 @@ describe("GenericChart component", () => {
                 }
             }
         });
+
         const propsData = {
-            metadata: metadataProp,
-            chartId: "test-chart"
+            ...ChartPropsData,
+            metadata: metadataProp
         };
         registerTranslations(store);
         return shallowMount(GenericChart,{store, propsData});
@@ -240,6 +249,82 @@ describe("GenericChart component", () => {
             expect(wrapper.find(ErrorAlert).exists()).toBe(false);
             done();
         });
+    });
+
+    it("does not render DataSource component when some data is not available ", async(done) => {
+        const state = {datasets};
+        const reducedMetadata =  {
+            "test-chart": {
+                datasets: metadata["test-chart"].datasets,
+                dataSelectors: {
+                    dataSources: [
+                        {id: "visible1", type: "editable", label: "First", datasetId: "dataset3", showFilters: true, showIndicators: false},
+                        {id: "hidden", type: "fixed", datasetId: "dataset2", showFilters: true, showIndicators: false}
+                    ]
+                },
+                chartConfig: metadata["test-chart"].chartConfig
+            }
+        } as any;
+
+        const propsData = {
+            chartId: "test-chart",
+            defaultDataSource: {
+                datasetId: "dataset2",
+                showDataPicker: false
+            }
+        };
+        const wrapper = getWrapper(state, reducedMetadata, propsData);
+        setTimeout(() => {
+            const dataSources = wrapper.findAll(DataSource);
+            expect(dataSources.exists()).toBe(false);
+
+            expect(wrapper.find("filters-stub").exists()).toBeTruthy()
+            expect(wrapper.find("plotly-stub").exists()).toBeTruthy()
+
+            const chartData = wrapper.find(Plotly).props("chartData");
+            expect(chartData).toStrictEqual({
+                hidden: [{"age": "10", "value": 10, "year": "2020"}],
+                visible1: [{"age": "10", "value": 10, "year": "2020"}]
+            });
+
+            done()
+        })
+    });
+
+    it("renders DataSource component and set available data as default", async(done) => {
+        const state = {datasets};
+        const reducedMetadata =  {
+            "test-chart": {
+                datasets: metadata["test-chart"].datasets,
+                dataSelectors: {
+                    dataSources: [
+                        {id: "visible1", type: "editable", label: "First", datasetId: "dataset3", showFilters: true, showIndicators: false},
+                        {id: "hidden", type: "fixed", datasetId: "dataset2", showFilters: true, showIndicators: false}
+                    ]
+                },
+                chartConfig: metadata["test-chart"].chartConfig
+            }
+        } as any;
+
+        const propsData = {
+            chartId: "test-chart",
+            defaultDataSource: {
+                datasetId: "dataset2",
+
+                //value is set to true for testing purpose, this should be false.
+                showDataPicker: true
+            }
+        };
+
+        const wrapper = getWrapper(state, reducedMetadata, propsData);
+
+        setTimeout(() => {
+            const dataSources = wrapper.findAll(DataSource);
+            expect(dataSources.exists()).toBe(true);
+            expect(dataSources.length).toBe(1);
+            expect(dataSources.at(0).props("value")).toBe("dataset2");
+            done()
+        })
     });
 
     it("updates filter selections and chart data on filters update", (done) => {
