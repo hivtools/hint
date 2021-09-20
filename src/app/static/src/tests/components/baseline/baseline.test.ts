@@ -2,10 +2,11 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {
+    mockAncResponse,
     mockBaselineState,
-    mockError,
+    mockError, mockGenericChartState,
     mockMetadataState,
-    mockPopulationResponse,
+    mockPopulationResponse, mockProgramResponse,
     mockShapeResponse,
     mockSurveyAndProgramState
 } from "../../mocks";
@@ -22,6 +23,7 @@ import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actio
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {testUploadComponent} from "./fileUploads";
+import {GenericChartState} from "../../../app/store/genericChart/genericChart";
 
 const localVue = createLocalVue();
 
@@ -33,13 +35,16 @@ describe("Baseline upload component", () => {
     let sapActions: jest.Mocked<SurveyAndProgramActions>;
     let sapMutations = {};
 
+    const datasets =  {data: "TEST DATA"} as any;
+
     testUploadComponent("surveys", 3);
     testUploadComponent("program", 4);
     testUploadComponent("anc", 5);
 
     const createSut = (baselineState?: Partial<BaselineState>,
                        metadataState?: Partial<MetadataState>,
-                       surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey}) => {
+                       surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey},
+                       genericChartState?: Partial<GenericChartState>) => {
 
         actions = {
             refreshDatasetMetadata: jest.fn(),
@@ -76,6 +81,10 @@ describe("Baseline upload component", () => {
                     mutations: {...sapMutations},
                     actions: {...sapActions},
                     getters: getters
+                },
+                genericChart: {
+                    namespaced: true,
+                    state: mockGenericChartState(genericChartState)
                 }
             }
         });
@@ -416,4 +425,53 @@ describe("Baseline upload component", () => {
             done();
         });
     }
+
+    it("can clear cached genericChat datasets if art and anc/or file upload changes", () => {
+        const mockClearDataset = jest.fn()
+        const store = createSut({}, {}, {}, {datasets: datasets});
+        const wrapper = shallowMount(Baseline, {
+            store,
+            localVue,
+            methods: {
+                clearDataset: mockClearDataset
+            }
+        });
+        wrapper.vm.$store.state.surveyAndProgram.program = mockProgramResponse()
+        expect(mockClearDataset.mock.calls.length).toBe(1)
+
+        wrapper.vm.$store.state.surveyAndProgram.anc = mockAncResponse()
+        expect(mockClearDataset.mock.calls.length).toBe(2)
+    });
+
+    it("does not clear cached genericChat datasets if state is empty", () => {
+        const mockClearDataset = jest.fn()
+        const store = createSut({}, {}, {}, {datasets: undefined});
+        const wrapper = shallowMount(Baseline, {
+            store,
+            localVue,
+            methods: {
+                clearDataset: mockClearDataset
+            }
+        });
+
+        wrapper.vm.$store.state.surveyAndProgram.program = mockProgramResponse()
+        expect(mockClearDataset.mock.calls.length).toBe(0)
+
+        wrapper.vm.$store.state.surveyAndProgram.anc = mockAncResponse()
+        expect(mockClearDataset.mock.calls.length).toBe(0)
+    });
+
+    it("does not clear cached genericChat datasets if art and anc/or file upload has no changes", () => {
+        const mockClearDataset = jest.fn()
+        const store = createSut({}, {}, {anc: mockAncResponse(), program: mockProgramResponse()}, {datasets: datasets});
+        shallowMount(Baseline, {
+            store,
+            localVue,
+            methods: {
+                clearDataset: mockClearDataset
+            }
+        });
+
+        expect(mockClearDataset.mock.calls.length).toBe(0)
+    });
 });

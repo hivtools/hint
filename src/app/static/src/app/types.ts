@@ -226,3 +226,8 @@ export interface GenericChartDataset {
         }
     }
 }
+
+export interface DefaultDataSource {
+    datasetId: string,
+    showDataPicker: boolean
+}

@@ -3,7 +3,7 @@
         <div class="row" v-if="chartData">
             <div class="col-3">
                 <div v-for="ds in chartConfigValues.dataSourceConfigValues" :key="ds.config.id">
-                    <data-source v-if="ds.editable"
+                    <data-source v-if="ds.editable && defaultDataSource.showDataPicker"
                                  :config="ds.config"
                                  :datasets="chartMetadata.datasets"
                                  :value="ds.selections.datasetId"
@@ -45,7 +45,7 @@
         Dict, DisplayFilter,
         GenericChartDataset,
         GenericChartMetadata,
-        GenericChartMetadataResponse
+        GenericChartMetadataResponse, DefaultDataSource
     } from "../../types";
     import DataSource from "./dataSelectors/DataSource.vue";
     import Filters from "../plots/Filters.vue";
@@ -57,6 +57,7 @@
     import {FilterOption} from "../../generated";
     import Plotly from "./Plotly.vue";
     import {filterData} from "./utils";
+    import {config} from "@vue/test-utils";
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections
@@ -85,6 +86,7 @@
         metadata: GenericChartMetadataResponse
         chartId: string
         chartHeight: string
+        defaultDataSource: DefaultDataSource
     }
 
     interface Computed {
@@ -110,7 +112,8 @@
         props: {
             metadata: Object,
             chartId: String,
-            chartHeight: String
+            chartHeight: String,
+            defaultDataSource: Object
         },
         components: {
             DataSource,
@@ -125,7 +128,7 @@
                 .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => ({
                     ...running,
                     [dataSource.id]: {
-                        datasetId: dataSource.datasetId,
+                        datasetId: this.defaultDataSource.datasetId,
                         selectedFilterOptions: null
                     }
                 }), {});

@@ -16,6 +16,12 @@ describe("genericChart mutations", () => {
         expect(state.datasets).toStrictEqual({dataset1: ["TEST DATASET"]});
     });
 
+    it("can clear datasets",  () => {
+        const state = mockGenericChartState();
+        mutations.ClearDataset(state);
+        expect(state.datasets).toEqual({});
+    });
+
     it("sets error", () => {
         const state = mockGenericChartState();
         const error = {"detail": "TEST ERROR", "error": "OTHER_ERROR"};
