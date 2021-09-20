@@ -18,7 +18,32 @@
             "id": "time_step",
             "source": "data"
           }
-        ]
+        ],
+        "table": {
+          "columns": [
+            {
+              "dataColumn": "area_name",
+              "label": {
+                "type": "string",
+                "value": "Area"
+              }
+            },
+            {
+              "dataColumn": "time_period",
+              "label": {
+                "type": "string",
+                "value": "Time Period"
+              }
+            },
+            {
+              "dataColumn": "value",
+              "label": {
+                "type": "selectedFilterOption",
+                "filterId": "plot_type"
+              }
+            }
+          ]
+        }
       },
       {
         "id": "anc",

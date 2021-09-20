@@ -181,10 +181,28 @@ export interface SelectedADRUploadFiles {
     coarseOutput?: any
 }
 
+export interface GenericChartTableStringLabel {
+    type: "string",
+    value: string
+}
+
+export interface GenericChartTableSelectedFilterOptionLabel {
+    type: "selectedFilterOption",
+    filterId: string
+}
+
+export interface GenericChartTableConfig {
+    columns: {
+        dataColumn: string,
+        label: GenericChartTableStringLabel | GenericChartTableSelectedFilterOptionLabel
+    }[]
+}
+
 export interface DatasetConfig {
     id: string
     label: string
     url: string
+    table?: GenericChartTableConfig
 }
 
 export interface DataSourceConfig {
