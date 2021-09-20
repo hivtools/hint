@@ -114,12 +114,4 @@ describe("LocalStorageManager", () => {
         expect(spy.mock.calls[0][0]).toBe(`hintAppState_v${currentHintVersion}`);
         expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState));
     });
-
-    it("can save and get continue as guest from session", () => {
-        sessionStorage.setItem("asGuest", "continueAsGuest")
-        let result = sessionStorage.getItem("asGuest")
-
-        expect(result).not.toBe(null);
-        expect(sessionStorage.getItem("asGuest")).toBe("continueAsGuest");
-    });
 });
