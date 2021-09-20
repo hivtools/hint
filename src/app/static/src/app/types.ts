@@ -192,8 +192,8 @@ export interface DataSourceConfig {
     type: "fixed" | "editable"
     label?: string
     datasetId: string
-    showFilters: true
-    showIndicators: true
+    showFilters: boolean
+    showIndicators: boolean
 }
 
 export interface GenericChartMetadata {
@@ -219,5 +219,10 @@ export interface GenericChartMetadataResponse {
 
 export interface GenericChartDataset {
     data: Dict<unknown>[],
-    metadata: unknown
+    metadata: {
+        filters: DisplayFilter[],
+        defaults: {
+            selected_filter_options: Dict<FilterOption[]>
+        }
+    }
 }

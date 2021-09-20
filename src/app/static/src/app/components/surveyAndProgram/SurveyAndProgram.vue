@@ -60,6 +60,7 @@
         <div v-if="selectedTab === 1">
             <generic-chart v-if="genericChartMetadata"
                            chart-id="input-time-series"
+                           chart-height="600px"
                            :metadata="genericChartMetadata"></generic-chart>
         </div>
     </div>

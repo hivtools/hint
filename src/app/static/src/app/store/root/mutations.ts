@@ -16,6 +16,7 @@ import {router} from '../../router';
 import {initialModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {initialADRUploadState} from "../adrUpload/adrUpload";
 import {initialDownloadResultsState} from "../downloadResults/downloadResults";
+import {initialGenericChartState} from "../genericChart/genericChart";
 
 export enum RootMutation {
     Reset = "Reset",
@@ -38,11 +39,14 @@ export const mutations: MutationTree<RootState> = {
             hintrVersion: state.hintrVersion,
             language: state.language,
             adr: state.adr,
-            genericChart: state.genericChart,
             adrUpload: initialADRUploadState(),
             baseline: maxValidStep < 1 ? initialBaselineState() : state.baseline,
             metadata: maxValidStep < 1 ? initialMetadataState() : state.metadata,
             surveyAndProgram: maxValidStep < 2 ? initialSurveyAndProgramState() : state.surveyAndProgram,
+            genericChart: maxValidStep < 2 ? {
+                ...initialGenericChartState(),
+                genericChartMetadata: state.genericChart.genericChartMetadata
+            } : state.genericChart,
             modelOptions: maxValidStep < 3 ? initialModelOptionsState() : state.modelOptions,
             modelRun: maxValidStep < 4 ? initialModelRunState() : state.modelRun,
             modelCalibrate: initialModelCalibrateState(),
@@ -74,7 +78,10 @@ export const mutations: MutationTree<RootState> = {
             language: state.language,
             hintrVersion: state.hintrVersion,
             adr: state.adr,
-            genericChart: state.genericChart,
+            genericChart: {
+                ...initialGenericChartState(),
+                genericChartMetadata: state.genericChart.genericChartMetadata
+            },
             projects: {
                 ...initialProjectsState(),
                 currentProject: action.payload,

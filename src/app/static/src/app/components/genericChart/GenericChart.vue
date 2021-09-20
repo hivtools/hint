@@ -1,18 +1,39 @@
 <template>
-    <div class="row">
-        <div class="col-3">
-            <div v-for="ds in chartConfigValues.dataSourceConfigValues" :key="ds.config.id">
-                <data-source v-if="ds.editable"
-                             :config="ds.config"
-                             :datasets="chartMetadata.datasets"
-                             :value="ds.selections.datasetId"
-                             @update="updateDataSource(ds.config.id, $event)">
-                </data-source>
+    <div>
+        <div class="row" v-if="chartData">
+            <div class="col-3">
+                <div v-for="ds in chartConfigValues.dataSourceConfigValues" :key="ds.config.id">
+                    <data-source v-if="ds.editable"
+                                 :config="ds.config"
+                                 :datasets="chartMetadata.datasets"
+                                 :value="ds.selections.datasetId"
+                                 @update="updateDataSource(ds.config.id, $event)">
+                    </data-source>
+                    <filters v-if="ds.config.showFilters && ds.filters && ds.selections.selectedFilterOptions"
+                                :filters="ds.filters"
+                                :selected-filter-options="ds.selections.selectedFilterOptions"
+                                @update="updateSelectedFilterOptions(ds.config.id, $event)">
+                    </filters>
+                </div>
+            </div>
+            <div class="col-9">
+                <div class="chart-container" :style="{height: chartHeight}">
+                    <plotly class="chart"
+                           :chart-metadata="chartConfigValues.chartConfig"
+                           :chart-data="chartData"
+                           :layout-data="chartConfigValues.layoutData"
+                           :style="{height: chartConfigValues.scrollHeight}"></plotly>
+                </div>
             </div>
         </div>
-        <div class="col-9">
-            {{ chartId }} coming soon
-            <error-alert v-if="error" :error="error"></error-alert>
+        <div class="row" v-if="!chartData">
+            <div class="text-center col-12">
+                <loading-spinner size="lg"></loading-spinner>
+                <h2 id="loading-message" v-translate="'loadingData'"></h2>
+            </div>
+        </div>
+        <div v-if="error" class="row">
+            <error-alert :error="error"></error-alert>
         </div>
     </div>
 </template>
@@ -21,37 +42,49 @@
     import Vue from "vue";
     import {
         DataSourceConfig,
+        Dict, DisplayFilter,
         GenericChartDataset,
         GenericChartMetadata,
         GenericChartMetadataResponse
     } from "../../types";
     import DataSource from "./dataSelectors/DataSource.vue";
+    import Filters from "../plots/Filters.vue";
     import ErrorAlert from "../ErrorAlert.vue";
+    import LoadingSpinner from "../LoadingSpinner.vue";
     import {mapActionByName, mapStateProp} from "../../utils";
     import {GenericChartState} from "../../store/genericChart/genericChart";
     import {getDatasetPayload} from "../../store/genericChart/actions";
+    import {FilterOption} from "../../generated";
+    import Plotly from "./Plotly.vue";
+    import {filterData} from "./utils";
 
     interface DataSourceConfigValues {
-        selections: DataSourceSelections,
-        editable: boolean,
+        selections: DataSourceSelections
+        editable: boolean
         config: DataSourceConfig
+        filters: DisplayFilter[] | null
     }
 
     interface ChartConfigValues {
         dataSourceConfigValues: DataSourceConfigValues[]
+        layoutData: Dict<unknown>
+        scrollHeight: string
+        chartConfig: string
     }
 
     interface DataSourceSelections {
-        datasetId: string
+        datasetId: string,
+        selectedFilterOptions: Dict<FilterOption[]> | null
     }
 
     interface Data {
-        dataSourceSelections:  Record<string, DataSourceSelections>
+        dataSourceSelections:  Dict<DataSourceSelections>
     }
 
     interface Props {
         metadata: GenericChartMetadataResponse
         chartId: string
+        chartHeight: string
     }
 
     interface Computed {
@@ -59,12 +92,15 @@
         error: Error | null
         chartMetadata: GenericChartMetadata
         chartConfigValues: ChartConfigValues
+        chartData: Dict<unknown[]> | null
     }
 
     interface Methods {
         ensureDataset: (datasetId: string) => void,
         getDataset: (payload: getDatasetPayload) => void,
-        updateDataSource: (dataSourceId: string, datasetId: string) => void
+        setDataSourceDefaultFilterSelections: (dataSourceId: string, datasetId: string) => void,
+        updateDataSource: (dataSourceId: string, datasetId: string) => void,
+        updateSelectedFilterOptions: (dataSourceId: string, options: Dict<FilterOption[]> | null) => void
     }
 
     const namespace = "genericChart";
@@ -73,18 +109,25 @@
         name: "GenericChart",
         props: {
             metadata: Object,
-            chartId: String
+            chartId: String,
+            chartHeight: String
         },
         components: {
             DataSource,
-            ErrorAlert
+            Filters,
+            Plotly,
+            ErrorAlert,
+            LoadingSpinner
         },
         data: function() {
             const chart = this.metadata[this.chartId];
             const dataSourceSelections = chart.dataSelectors.dataSources
                 .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => ({
                     ...running,
-                    [dataSource.id]: {datasetId: dataSource.datasetId}
+                    [dataSource.id]: {
+                        datasetId: dataSource.datasetId,
+                        selectedFilterOptions: null
+                    }
                 }), {});
 
             return {
@@ -101,34 +144,96 @@
             },
             chartConfigValues() {
                 const dataSourceConfigValues = this.chartMetadata.dataSelectors.dataSources.map((dataSourceConfig) => {
+                    const selections = this.dataSourceSelections[dataSourceConfig.id];
                     return {
-                        selections: this.dataSourceSelections[dataSourceConfig.id],
+                        selections,
                         editable: dataSourceConfig.type === "editable",
-                        config: dataSourceConfig
+                        config: dataSourceConfig,
+                        filters: this.datasets[selections.datasetId]?.metadata.filters
                     }
                 });
+
+                //Provide additional metadata to jsonata relating to subplots (rows and columns)
+                //and define scroll height
+                const layoutData = {} as Dict<unknown>;
+                let scrollHeight = "100%";
+                const subplots = this.chartMetadata.subplots;
+                if (subplots && this.chartData) {
+                    const distinctAreas = new Set(this.chartData["data"].map((row: any) => row[subplots.distinctColumn]));
+                    const numberOfPlots = distinctAreas.size;
+                    const rows = Math.ceil(numberOfPlots / subplots.columns);
+                    layoutData.subplots = {
+                        ...subplots,
+                        rows
+                    };
+                    //Height per row plus enough to accommodate margin and padding
+                    scrollHeight = `${(subplots.heightPerRow * rows) + 70}px`;
+                }
+
+                // The metadata supports multiple chart types per chart e.g Scatter and Bar, but for now we only need to
+                // support one chart type, so here we select the first config in the array
+                const chartConfig = this.chartMetadata.chartConfig[0].config;
+
                 return {
-                    dataSourceConfigValues
+                    dataSourceConfigValues,
+                    layoutData,
+                    scrollHeight,
+                    chartConfig
                 };
+            },
+            chartData() {
+                const result = {} as Dict<unknown[]>;
+
+                for (const dataSource of this.chartMetadata.dataSelectors.dataSources) {
+                    const dataSourceId = dataSource.id;
+                    const dataSourceSelections = this.dataSourceSelections[dataSourceId];
+                    const datasetId = dataSourceSelections.datasetId;
+                    const unfilteredData = this.datasets[datasetId]?.data;
+
+                    const filters = this.datasets[datasetId]?.metadata.filters || [];
+                    const selectedFilterOptions = dataSourceSelections.selectedFilterOptions;
+
+                    if (!unfilteredData || !selectedFilterOptions) {
+                        return null; //Do not attempt to initialise if we are missing any datasets, or selections not initialised
+                    }
+
+                    result[dataSourceId] = filterData(unfilteredData, filters, selectedFilterOptions);
+                }
+                return result;
             }
         },
         methods: {
             getDataset: mapActionByName(namespace, 'getDataset'),
-            ensureDataset(datasetId: string) {
+            async ensureDataset(datasetId: string) {
                 if (datasetId && !this.datasets[datasetId]) {
-                    const dataset = this.chartMetadata.datasets.find(dataset => dataset.id === datasetId)!;
-                    this.getDataset({datasetId, url: dataset.url});
+                    const datasetConfig = this.chartMetadata.datasets.find(dataset => dataset.id === datasetId)!;
+                    await this.getDataset({datasetId, url: datasetConfig.url});
                 }
             },
-            updateDataSource(dataSourceId: string, datasetId: string) {
-                this.dataSourceSelections[dataSourceId]!.datasetId = datasetId;
-                this.ensureDataset(datasetId);
+            async updateDataSource(dataSourceId: string, datasetId: string) {
+                //clear current datasource filter selections while we fetch & show spinner
+                this.updateSelectedFilterOptions(dataSourceId, null);
+                await this.ensureDataset(datasetId);
+                this.setDataSourceDefaultFilterSelections(dataSourceId, datasetId);
+            },
+            setDataSourceDefaultFilterSelections(dataSourceId: string, datasetId: string) {
+                const selectedFilterOptions = this.datasets[datasetId].metadata.defaults.selected_filter_options;
+                if (selectedFilterOptions) {
+                    this.dataSourceSelections[dataSourceId] = {
+                        datasetId,
+                        selectedFilterOptions
+                    };
+                }
+            },
+            updateSelectedFilterOptions(dataSourceId: string, options: Dict<FilterOption[]> | null) {
+                this.dataSourceSelections[dataSourceId].selectedFilterOptions = options;
             }
         },
-        mounted() {
-            this.chartConfigValues.dataSourceConfigValues.forEach((dataSourceValues) => {
-                this.ensureDataset(dataSourceValues.selections.datasetId);
-            });
+        async mounted() {
+            for (const dataSourceValues of this.chartConfigValues.dataSourceConfigValues) {
+                await this.ensureDataset(dataSourceValues.selections.datasetId);
+                this.setDataSourceDefaultFilterSelections(dataSourceValues.config.id, dataSourceValues.selections.datasetId);
+            }
         }
     });
 </script>
