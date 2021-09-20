@@ -141,6 +141,9 @@
             if ((!this.isGuest) && (this.currentProject == null) && (!this.projectLoading)) {
                 this.$router.push('/projects');
             }
+            if(this.isGuest && !localStorage.getItem("asGuest")) {
+                window.location.assign("/login");
+            }
         },
         components: {
             AdrIntegration,

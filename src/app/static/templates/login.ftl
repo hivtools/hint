@@ -19,6 +19,10 @@
                 form.classList.add('was-validated');
             }
         }
+
+        function continueAsGuest() {
+            localStorage.setItem("asGuest", "continueAsGuest")
+        }
     </script>
 </head>
 <body>
@@ -50,7 +54,7 @@
     </div>
     <div class="text-center mt-3">
         <div class="mb-3">OR</div>
-        <a class="btn btn-red" type="submit" href="/">Continue as guest</a>
+        <a class="btn btn-red" onclick="continueAsGuest()" type="submit" href="/">Continue as guest</a>
     </div>
     <div id="partner-logos" class="logos mx-auto mt-5">
       <a href="https://www.fjelltopp.org"><img src="public/images/fjelltopp_logo.png" class="small-logo"></a>
