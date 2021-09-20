@@ -40,7 +40,7 @@ class LoginTests
         assertThat(doc.select("#forgot-password").text()).isEqualTo("Forgotten your password? Click here")
         assertThat(doc.select("#forgot-password a").attr("href")).isEqualTo("/password/forgot-password/")
 
-        assertThat(doc.select("#continue-as-guest").text()).isEqualTo("Continue as guest")
+        assertThat(doc.select("#continue-as-guest").text()).isEqualTo("OR Continue as guest")
         assertThat(doc.select("#continue-as-guest a").attr("href")).isEqualTo("/")
         assertThat(doc.select("#continue-as-guest a").attr("onclick")).isEqualTo("continueAsGuest();")
     }
