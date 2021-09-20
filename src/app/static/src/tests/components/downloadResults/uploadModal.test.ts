@@ -228,7 +228,7 @@ describe(`uploadModal `, () => {
         const wrapper = getWrapper()
         const store = wrapper.vm.$store
 
-        const inputs = wrapper.findAll("input.form-check-input")
+        const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(2)
         expect(inputs.at(0).attributes("disabled")).toBe("disabled");
         expect(inputs.at(0).attributes("id")).toBe("id-0-0");
@@ -246,7 +246,7 @@ describe(`uploadModal `, () => {
     it(`checkboxes are set by default`, async () => {
         const store = createStore(metadataWithInput)
         const wrapper = shallowMount(UploadModal, {store})
-        const inputs = wrapper.findAll("input.form-check-input")
+        const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(3)
 
         const input1 =  inputs.at(0).element as HTMLInputElement
@@ -263,7 +263,7 @@ describe(`uploadModal `, () => {
         const wrapper = getWrapper()
         const radialInput = wrapper.find("#uploadFiles")
         await radialInput.trigger("click")
-        const inputs = wrapper.findAll("input.form-check-input")
+        const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(2)
         inputs.at(0).setChecked(true)
         inputs.at(1).setChecked(true)
@@ -279,7 +279,7 @@ describe(`uploadModal `, () => {
         await Vue.nextTick()
         const radialInput = wrapper.find("#uploadFiles")
         await radialInput.trigger("click")
-        const inputs = wrapper.findAll("input.form-check-input")
+        const inputs = wrapper.findAll("input[type='checkbox']")
         inputs.at(0).setChecked(false)
         inputs.at(1).setChecked(false)
         inputs.at(2).setChecked(false)
@@ -333,6 +333,7 @@ describe(`uploadModal `, () => {
         await Vue.nextTick()
         expect(wrapper.vm.$data.choiceUpload).toBe("createRelease")
         expect(mockUploadFilesToADR.mock.calls.length).toBe(2)
+        expect(mockUploadFilesToADR.mock.calls[1][mockUploadFilesToADR.mock.calls[1].length -2]["createRelease"]).toBe(true)
         expect(mockUploadMetadataAction.mock.calls.length).toBe(2)
     });
 
@@ -349,7 +350,7 @@ describe(`uploadModal `, () => {
 
         const okBtn = wrapper.find("button");
 
-        const inputs = wrapper.findAll("input.form-check-input")
+        const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(2)
 
         expect(okBtn.attributes("disabled")).toBeUndefined();
@@ -373,7 +374,7 @@ describe(`uploadModal `, () => {
         const okBtn = wrapper.find("button");
         expect(okBtn.attributes("disabled")).toBe("disabled");
 
-        const inputs = wrapper.findAll("input.form-check-input")
+        const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(2)
         expect(okBtn.text()).toBe("OK")
 
@@ -395,7 +396,7 @@ describe(`uploadModal `, () => {
 
         const okBtn = wrapper.find("button");
 
-        const inputs = wrapper.findAll("input.form-check-input")
+        const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(2)
 
         expect(okBtn.attributes("disabled")).toBeUndefined();
@@ -450,7 +451,7 @@ describe(`uploadModal `, () => {
 
         const okBtn = wrapper.find("button");
 
-        const inputs = wrapper.findAll("input.form-check-input")
+        const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(2)
         inputs.at(1).setChecked(false)
 
@@ -472,7 +473,7 @@ describe(`uploadModal `, () => {
 
         const okBtn = wrapper.find("button");
 
-        const inputs = wrapper.findAll("input.form-check-input")
+        const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(2)
         inputs.at(0).setChecked(false)
 
@@ -502,7 +503,7 @@ describe(`uploadModal `, () => {
         const store = createStore(metadataWithInput);
         const wrapper = mount(UploadModal, {store});
 
-        const inputs = wrapper.findAll("input.form-check-input");
+        const inputs = wrapper.findAll("input[type='checkbox']");
         expect(inputs.length).toBe(3);
         expect(inputs.at(0).attributes("id")).toBe("id-0-0");
         expect(inputs.at(0).attributes("value")).toBe("outputZip");

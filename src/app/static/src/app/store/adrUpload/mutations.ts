@@ -55,10 +55,10 @@ export const mutations: MutationTree<ADRUploadState> = {
         const alteredPayload = action.payload
         switch (action.payload?.detail) {
             case "Version already exists for this activity":
-                alteredPayload!.detail = i18next.t("releaseExists", this.currentLanguage)
+                alteredPayload!.detail = i18next.t("releaseExists");
                 break;
             case "Version names must be unique per dataset":
-                alteredPayload!.detail = i18next.t("releaseNameUnique", this.currentLanguage)
+                alteredPayload!.detail = i18next.t("releaseNameUnique");
                 break;
         }
         state.uploadError = alteredPayload;

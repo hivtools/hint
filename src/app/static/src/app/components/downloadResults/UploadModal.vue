@@ -6,33 +6,35 @@
                 <div id="dataset-id" class="mt-4">
                     <span v-translate="'uploadFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
-                <div class="pt-3">
+                <div class="pt-3 form-check form-check-inline">
                     <input
                         type="radio"
                         id="createRelease"
                         value="createRelease"
                         v-model="choiceUpload"
+                        class="form-check-input"
                     />
-                    <label for="createRelease" v-translate="'createRelease'" class="pr-1"></label>
-                    <span class="icon-small" v-tooltip="translate('createReleaseTooltip')">
-                        <help-circle-icon></help-circle-icon>
+                    <span class="form-check-label pl-2">
+                        <label for="createRelease" v-translate="'createRelease'" class="d-inline"></label>
+                        <span class="icon-small d-inline" v-tooltip="translate('createReleaseTooltip')">
+                            <help-circle-icon></help-circle-icon>
+                        </span>
                     </span>
                     <br />
                 </div>
-                <div>
+                <div class="form-check form-check-inline">
                     <input
                         type="radio"
                         id="uploadFiles"
                         value="uploadFiles"
                         v-model="choiceUpload"
+                        class="form-check-input"
                     />
-                    <label
-                        for="uploadFiles"
-                        v-translate="'uploadFiles'"
-                        class="pr-1"
-                    ></label>
-                    <span class="icon-small" v-tooltip="translate('uploadFilesTooltip')">
-                        <help-circle-icon></help-circle-icon>
+                    <span class="form-check-label pl-2">
+                        <label for="uploadFiles" v-translate="'uploadFiles'" class="d-inline"></label>
+                        <span class="icon-small d-inline" v-tooltip="translate('uploadFilesTooltip')">
+                            <help-circle-icon></help-circle-icon>
+                        </span>
                     </span>
                     <br />
                 </div>
@@ -299,7 +301,7 @@
                 }
             },
             uploadDisabled(){
-                return (!this.createRelease && this.uploadFilesToAdr.length < 1) || this.downloadingFiles;
+                return !this.uploadFilesToAdr.length || this.downloadingFiles;
             },
             downloadingFiles() {
                 return !!this.spectrum.downloading || !!this.summary.downloading;

@@ -36,7 +36,7 @@ describe("Download Results component", () => {
         jest.useRealTimers()
     })
 
-    const createStore = (hasUploadPermission = true, getUserCanUpload = jest.fn(), uploading = false, uploadComplete = false, uploadError: any = null, downloadResults?: Partial<DownloadResultsState>, releaseCreated = false, releaseFailed = false, ClearStatus = jest.fn()) => {
+    const createStore = (hasUploadPermission = true, getUserCanUpload = jest.fn(), uploading = false, uploadComplete = false, uploadError: any = null, downloadResults?: Partial<DownloadResultsState>, releaseCreated = false, releaseFailed = false, clearStatus = jest.fn()) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -66,7 +66,7 @@ describe("Download Results component", () => {
                         getUploadFiles: jest.fn()
                     },
                     mutations: {
-                        ClearStatus
+                        clearStatus
                     }
                 },
                 downloadResults: {
