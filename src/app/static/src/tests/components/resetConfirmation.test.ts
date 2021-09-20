@@ -19,7 +19,7 @@ const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState
             stepper: {
                 namespaced: true,
                 getters: {
-                    changesToRelevantSteps: () => [{number: 2, textKey: "uploadSurvey"},
+                    changesToRelevantSteps: () => [{number: 2, textKey: "reviewInputs"},
                         {number: 3, textKey: "modelOptions"},
                         {number: 4, textKey: "fitModel"}],
                     ...partialStepperGetters
@@ -335,13 +335,18 @@ describe("Reset confirmation modal", () => {
         const store = rendered.vm.$store;
         const steps = rendered.findAll("li");
         expect(steps.length).toBe(3);
-        expectTranslated(steps.at(0), "Step 2: Upload survey and programme data",
-            "Étape 2: Télécharger les données d'enquête et de programme",
-            "Etapa 2: Carregar dados do inquérito e do programa", store);
+
+        expectTranslated(steps.at(0), "Step 2: Review inputs",
+            "Étape 2: Examiner les entrées",
+            "Etapa 2: Analise as entradas", store);
+
         expectTranslated(steps.at(1), "Step 3: Model options",
-            "Étape 3: Options des modèles", "Etapa 3: Opções de modelos", store);
+            "Étape 3: Options des modèles",
+            "Etapa 3: Opções de modelos", store);
+
         expectTranslated(steps.at(2), "Step 4: Fit model",
-            "Étape 4: Ajuster le modèle", "Etapa 4: Ajustar modelo", store);
+            "Étape 4: Ajuster le modèle",
+            "Etapa 4: Ajustar modelo", store);
     };
 
     const expectRenderedModelRunSteps = (rendered: Wrapper<any>) => {

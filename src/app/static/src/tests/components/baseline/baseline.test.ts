@@ -1,7 +1,14 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import {BaselineActions} from "../../../app/store/baseline/actions";
-import {mockBaselineState, mockError, mockMetadataState, mockPJNZResponse, mockPopulationResponse, mockShapeResponse} from "../../mocks";
+import {
+    mockBaselineState,
+    mockError,
+    mockMetadataState,
+    mockPopulationResponse,
+    mockShapeResponse,
+    mockSurveyAndProgramState
+} from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import Baseline from "../../../app/components/baseline/Baseline.vue";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
@@ -11,6 +18,10 @@ import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
 import {emptyState} from "../../../app/root";
+import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
+import {getters} from "../../../app/store/surveyAndProgram/getters";
+import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
+import {testUploadComponent} from "./fileUploads";
 
 const localVue = createLocalVue();
 
@@ -19,7 +30,16 @@ describe("Baseline upload component", () => {
     let actions: jest.Mocked<BaselineActions>;
     let mutations = {};
 
-    const createSut = (baselineState?: Partial<BaselineState>, metadataState?: Partial<MetadataState>) => {
+    let sapActions: jest.Mocked<SurveyAndProgramActions>;
+    let sapMutations = {};
+
+    testUploadComponent("surveys", 3);
+    testUploadComponent("program", 4);
+    testUploadComponent("anc", 5);
+
+    const createSut = (baselineState?: Partial<BaselineState>,
+                       metadataState?: Partial<MetadataState>,
+                       surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey}) => {
 
         actions = {
             refreshDatasetMetadata: jest.fn(),
@@ -49,6 +69,13 @@ describe("Baseline upload component", () => {
                 metadata: {
                     namespaced: true,
                     state: mockMetadataState(metadataState)
+                },
+                surveyAndProgram: {
+                    namespaced: true,
+                    state: mockSurveyAndProgramState(surveyAndProgramState),
+                    mutations: {...sapMutations},
+                    actions: {...sapActions},
+                    getters: getters
                 }
             }
         });
@@ -287,6 +314,81 @@ describe("Baseline upload component", () => {
         expect(wrapper.findAll("manage-file-stub").at(1).props().fromADR).toBe(false);
         expect(wrapper.findAll("manage-file-stub").at(2).props().fromADR).toBe(false);
         
+    });
+
+    it("passes survey response existing file name to manage file", () => {
+        const store = createSut({}, {}, {survey: {filename: "existing file"} as any});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(3).props("existingFileName")).toBe("existing file");
+    });
+
+    it("passes survey errored file to manage file", () => {
+        const store = createSut({}, {}, {surveyErroredFile: "errored file"});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(3).props("existingFileName")).toBe("errored file");
+    });
+
+    it("passes program response existing file name to manage file", () => {
+        const store = createSut({}, {}, {program: {filename: "existing file"} as any});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(4).props("existingFileName")).toBe("existing file");
+    });
+
+    it("passes program errored file to manage file", () => {
+        const store = createSut({}, {}, {programErroredFile: "errored file"});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(4).props("existingFileName")).toBe("errored file");
+    });
+
+    it("passes anc response existing file name to manage file", () => {
+        const store = createSut({}, {}, {anc: {filename: "existing file"} as any});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(5).props("existingFileName")).toBe("existing file");
+    });
+
+    it("passes anc errored file to manage file", () => {
+        const store = createSut({}, {}, {ancErroredFile: "errored file"});
+        const wrapper = shallowMount(Baseline, {store, localVue});
+        expect(wrapper.findAll(ManageFile).at(5).props("existingFileName")).toBe("errored file");
+    });
+
+    it("can return true when fromADR", async () => {
+        const store = createSut({}, {}, {
+            survey: {
+                "fromADR": true
+            } as any,
+            anc: {
+                "fromADR": true
+            } as any,
+            program: {
+                "fromADR": true
+            } as any
+        });
+        const wrapper = shallowMount(Baseline, {store, localVue})
+
+        expect(wrapper.findAll("manage-file-stub").at(3).props().fromADR).toBe(true);
+        expect(wrapper.findAll("manage-file-stub").at(4).props().fromADR).toBe(true);
+        expect(wrapper.findAll("manage-file-stub").at(5).props().fromADR).toBe(true);
+    });
+
+    it("can return false when not fromADR", async () => {
+        const store = createSut({}, {}, {
+            survey: {
+                "fromADR": ""
+            } as any,
+            anc: {
+                "fromADR": ""
+            } as any,
+            program: {
+                "fromADR": ""
+            } as any
+        });
+        const wrapper = shallowMount(Baseline, {store, localVue});
+
+        expect(wrapper.findAll("manage-file-stub").at(3).props().fromADR).toBe(false);
+        expect(wrapper.findAll("manage-file-stub").at(4).props().fromADR).toBe(false);
+        expect(wrapper.findAll("manage-file-stub").at(5).props().fromADR).toBe(false);
+
     });
 
     const expectUploadToDispatchAction = (index: number,

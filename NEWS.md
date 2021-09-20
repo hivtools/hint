@@ -1,6 +1,18 @@
-# hint 1.49.0
+# hint 1.50.0
 
 * Add input Time series chart
+
+# hint 1.49.1
+
+* Fix erroneous ADR upload file count
+
+# hint 1.49.0
+
+* Move all file upload controls to Step 1 
+
+# hint 1.49.0
+
+* User can create a new project when enter key event is pressed
 
 # hint 1.48.0
 

@@ -338,7 +338,7 @@ describe("GenericChart component", () => {
                     rows: 3
                 }
             });
-            expect(plotly.element.style.height).toBe("354px");
+            expect(plotly.element.style.height).toBe("370px");
             done();
         });
     });
@@ -407,8 +407,11 @@ describe("GenericChart component", () => {
             .reply(200, mockSuccess(datasets.dataset2));
 
         const wrapper = getWrapper({datasets: datasets1And3}, reducedMetadata);
-        setTimeout(() => {
-            wrapper.findAll(DataSource).at(0).vm.$emit("update", "dataset2");
+        setTimeout(async () => {
+            await wrapper.findAll(DataSource).at(0).vm.$emit("update", "dataset2");
+
+            // expect filter selections to have been set to null while ensure dataset
+            expect(wrapper.vm.$data.dataSourceSelections.visible1.selectedFilterOptions).toBe(null);
             setTimeout(() => {
                 expect(mockAxios.history.get.length).toBe(1);
                 expect(mockAxios.history.get[0].url).toBe("/dataset2");
