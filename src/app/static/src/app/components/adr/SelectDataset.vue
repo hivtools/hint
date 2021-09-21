@@ -133,7 +133,6 @@
     interface Methods {
         getDatasets: () => void;
         getDataset: (payload: GetDatasetPayload) => void;
-        // getReleases: (id: string) => void;
         importDataset: () => void;
         toggleModal: () => void;
         importPJNZ: (url: string) => Promise<void>;
@@ -157,7 +156,6 @@
 
     interface Computed {
         datasets: any[];
-        // releases: Release[];
         selectedRelease: Release | null;
         releaseName: string | null;
         releaseURL: string;
@@ -218,10 +216,6 @@
         },
         directives: { tooltip: VTooltip },
         computed: {
-            // releases: mapStateProp<ADRState, any[]>(
-            //     namespace,
-            //     (state: ADRState) => state.releases
-            // ),
             editsRequireConfirmation: mapGetterByName(
                 "stepper",
                 "editsRequireConfirmation"
@@ -250,13 +244,7 @@
                 namespace,
                 (state: ADRState) => state.adrError
             ),
-            // selectedRelease(){
-            //     const selectedDataset = this.selectedDataset
-            //     return selectedDataset ? this.releases.find(release => release.id === selectedDataset.release) || null : null;
-            // },
             releaseName(){
-                // const selectedDataset = this.selectedDataset
-                // return selectedDataset ? this.releases.find(release => release.id === selectedDataset.release)?.name || null : null;
                 return this.selectedRelease?.name || null;
             },
             releaseURL(){
@@ -323,7 +311,6 @@
         methods: {
             getDatasets: mapActionByName("adr", "getDatasets"),
             getDataset: mapActionByName("adr", "getDataset"),
-            // getReleases: mapActionByName(namespace, "getReleases"),
             refreshDatasetMetadata: mapActionByName(
                 "baseline",
                 "refreshDatasetMetadata"
@@ -428,7 +415,6 @@
             preSelectDataset(){
                 const selectedDatasetId = this.selectedDataset?.id
                 if (selectedDatasetId && this.datasets.some(dataset => dataset.id === selectedDatasetId)) {
-                // if (selectedDatasetId && this.datasets.length && this.datasets.some(dataset => dataset.id === selectedDatasetId)){
                     this.newDatasetId = selectedDatasetId;
                 }
             },
@@ -466,9 +452,6 @@
             }
         },
         watch: {
-            // releases(){
-            //     console.log('releases', this.releases)
-            // },
             datasets(){
                 if (this.open){
                     this.preSelectDataset();
@@ -478,10 +461,6 @@
         mounted() {
             this.refreshDatasetMetadata();
             this.startPolling();
-            console.log("selectedRelease", this.selectedRelease, this.selectedDataset)
-            // if (this.selectedDataset?.id){
-            //     this.getReleases(this.selectedDataset.id);
-            // }
         },
         beforeDestroy() {
             this.stopPolling();

@@ -68,23 +68,19 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async getDataset(context, {id, release}) {
-        console.log("release in getDataset action", release)
         const {state, commit} = context;
         let url = `/adr/datasets/${id}`
         if (release?.id) {
             url += '?' + new URLSearchParams({release: release.id});
         }
-        console.log("url in getDataset action", url)
         await api<BaselineMutation, ADRMutation>(context)
             .withError(ADRMutation.SetADRError)
             .ignoreSuccess()
             .get(url)
             .then(response => {
                 if (response) {
-                    console.log("response in getDataset action", response)
                     const releaseId = release?.id
                     const dataset = datasetFromMetadata(response.data, state.schemas!, releaseId);
-                    console.log("datset in getDataset action", dataset)
                     commit(`baseline/${BaselineMutation.SetDataset}`, dataset, {root: true});
                     commit(`baseline/${BaselineMutation.SetRelease}`, release || null, {root: true});
                 }
