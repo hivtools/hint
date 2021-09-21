@@ -62,7 +62,32 @@
             "id": "age",
             "source": "data"
           }
-        ]
+        ],
+        "table": {
+          "columns": [
+            {
+              "dataColumn": "area_name",
+              "label": {
+                "type": "string",
+                "value": "Area"
+              }
+            },
+            {
+              "dataColumn": "age_group",
+              "label": {
+                "type": "string",
+                "value": "Age"
+              }
+            },
+            {
+              "dataColumn": "value",
+              "label": {
+                "type": "selectedFilterOption",
+                "filterId": "plot_type"
+              }
+            }
+          ]
+        }
       }
     ],
     "dataSelectors": {

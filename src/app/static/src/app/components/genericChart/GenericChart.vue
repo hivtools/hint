@@ -24,6 +24,13 @@
                            :layout-data="chartConfigValues.layoutData"
                            :style="{height: chartConfigValues.scrollHeight}"></plotly>
                 </div>
+                <div v-for="dataSource in chartConfigValues.dataSourceConfigValues" :key="dataSource.config.id">
+                    <generic-chart-table v-if="dataSource.tableConfig"
+                                         :table-config="dataSource.tableConfig"
+                                         :filtered-data="chartData[dataSource.config.id]"
+                                         :selected-filter-options="dataSource.selections.selectedFilterOptions"
+                    ></generic-chart-table>
+                </div>
             </div>
         </div>
         <div class="row" v-if="!chartData">
@@ -45,7 +52,7 @@
         Dict, DisplayFilter,
         GenericChartDataset,
         GenericChartMetadata,
-        GenericChartMetadataResponse
+        GenericChartMetadataResponse, GenericChartTableConfig
     } from "../../types";
     import DataSource from "./dataSelectors/DataSource.vue";
     import Filters from "../plots/Filters.vue";
@@ -57,12 +64,14 @@
     import {FilterOption} from "../../generated";
     import Plotly from "./Plotly.vue";
     import {filterData} from "./utils";
+    import GenericChartTable from "./GenericChartTable.vue";
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections
         editable: boolean
         config: DataSourceConfig
         filters: DisplayFilter[] | null
+        tableConfig: GenericChartTableConfig | undefined
     }
 
     interface ChartConfigValues {
@@ -116,6 +125,7 @@
             DataSource,
             Filters,
             Plotly,
+            GenericChartTable,
             ErrorAlert,
             LoadingSpinner
         },
@@ -149,7 +159,8 @@
                         selections,
                         editable: dataSourceConfig.type === "editable",
                         config: dataSourceConfig,
-                        filters: this.datasets[selections.datasetId]?.metadata.filters
+                        filters: this.datasets[selections.datasetId]?.metadata.filters,
+                        tableConfig: this.chartMetadata.datasets.find(d => d.id === selections.datasetId)?.table
                     }
                 });
 

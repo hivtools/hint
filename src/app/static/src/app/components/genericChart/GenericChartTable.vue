@@ -32,8 +32,7 @@
 <script lang="ts">
     import Vue from "vue";
     import i18next from "i18next";
-    import {findPath, iterateDataValues, formatOutput} from "./utils";
-    import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../generated";
+    import {FilterOption} from "../../generated";
     import {
         Dict,
         Filter,
@@ -41,33 +40,16 @@
         GenericChartTableSelectedFilterOptionLabel,
         GenericChartTableStringLabel
     } from "../../types";
-    import {flattenOptions, flattenToIdSet, mapStateProp} from "../../utils";
+    import {mapStateProp} from "../../utils";
     import {BButton, BFormGroup, BFormInput, BInputGroup, BInputGroupAppend, BTable} from 'bootstrap-vue';
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
 
     interface Props {
         filteredData: any[],
-        //filters: Filter[],
         selectedFilterOptions: Dict<FilterOption[]>,
         tableConfig: GenericChartTableConfig
-
-        //tabledata: any[],
-        //indicators: ChoroplethIndicatorMetadata[],
-        //selections: {
-         //   indicatorId: string,
-         //   selectedFilterOptions: Dict<FilterOption[]>,
-          //  detail: number | null
-        //},
-        //filters: Filter[],
-        //countryAreaFilterOption: NestedFilterOption,
-        //areaFilterId: string
     }
-
-    //interface DisplayRow {
-    //    areaLabel: string,
-    //    areaHierarchy: string
-    //}
 
     interface Field {
         key: string,
@@ -79,12 +61,6 @@
     }
 
     interface Computed {
-        //nonAreaFilters: Filter[],
-        //filtersToDisplay: Filter[],
-        //areaFilter: Filter,
-        //flattenedAreas: Dict<NestedFilterOption>,
-        //selectedAreaIds: string[],
-        //selectedAreaFilterOptions: FilterOption[],
         generatedFields: Array<Field>,
         currentLanguage: Language
     }
@@ -118,28 +94,10 @@
         },
         computed: {
             generatedFields() {
-                //const fields: any[] = [];
-                /*fields.push({
-                    key: 'areaLabel',
-                    label: i18next.t('area', {lng: this.currentLanguage})
-                })
-                this.filtersToDisplay.map(value => {
-                    const field: Dict<any> = {};
-                    field.key = value.id
-                    field.label = i18next.t(value.label.toLowerCase(), {lng: this.currentLanguage})
-                    fields.push(field)
-                })
-                this.indicators.map((value, index) => {
-                    const field: Dict<any> = {};
-                    field.key = value.indicator
-                    field.label = value.name
-                    fields.push(field)
-                })*/
-
                 const fields = this.tableConfig.columns.map(c => {
                     let label: string;
                     if (c.label.type === "string") {
-                        label = (c.label as GenericChartTableStringLabel).value;
+                        label = (c.label as GenericChartTableStringLabel).value; //TODO: should be translation keys, not English label
                     } else {
                         const filterId = (c.label as GenericChartTableSelectedFilterOptionLabel).filterId;
                         const selectedFilterOption = this.selectedFilterOptions[filterId][0];
