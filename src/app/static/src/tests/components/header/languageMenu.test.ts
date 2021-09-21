@@ -9,12 +9,22 @@ import DropDown from "../../../app/components/header/DropDown.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 describe("Language menu", () => {
+    const mockPlottingMetadata= jest.fn()
 
     const createStore = () => {
         const store = new Vuex.Store({
             state: emptyState(),
             actions: actions,
-            mutations: mutations
+            mutations: mutations,
+            modules: {
+                metadata: {
+                    namespaced: true,
+                    actions: {
+                        getPlottingMetadata: mockPlottingMetadata
+                    }
+                }
+            },
+
         });
         registerTranslations(store);
         return store;
@@ -29,14 +39,15 @@ describe("Language menu", () => {
     });
 
     it("changes language to French", (done) => {
+        const mockHandleChangeLanguage = jest.fn()
         const store = createStore();
         const wrapper = mount(LanguageMenu, {
             store
         });
 
         wrapper.findAll(".dropdown-item").at(1).trigger("mousedown");
-
         setTimeout(() => {
+            expect(mockPlottingMetadata.mock.calls.length).toBe(1)
             expect(store.state.language).toBe(Language.fr);
             expect(wrapper.find(DropDown).props("text")).toBe("FR");
             done();
