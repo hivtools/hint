@@ -6,6 +6,7 @@ import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
 import qs from 'qs';
 import {getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
+import {GenericChartMutation} from "../genericChart/mutations";
 
 export interface SurveyAndProgramActions {
     importSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
@@ -26,6 +27,10 @@ export interface SurveyAndProgramActions {
 function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
     commit("surveyAndProgram/SelectedDataTypeUpdated",
         {type: "SelectedDataTypeUpdated", payload: dataType}, {root: true})
+}
+
+function commitClearGenericChartDataset(commit: Commit) {
+    commit({type: `genericChart/${GenericChartMutation.ClearDataset}`}, {root: true});
 }
 
 interface UploadImportOptions {
@@ -49,6 +54,7 @@ async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, R
             } else {
                 commit({type: SurveyAndProgramMutation.ANCErroredFile, payload: filename});
             }
+            commitClearGenericChartDataset(commit)
         });
 }
 
@@ -68,6 +74,7 @@ async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramStat
             } else {
                 commit({type: SurveyAndProgramMutation.ProgramErroredFile, payload: filename});
             }
+            commitClearGenericChartDataset(commit)
         });
 }
 
@@ -142,6 +149,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
             .delete("/disease/programme/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
+                commitClearGenericChartDataset(commit)
             });
     },
 
@@ -151,6 +159,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
             .delete("/disease/anc/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
+                commitClearGenericChartDataset(commit)
             });
     },
 
