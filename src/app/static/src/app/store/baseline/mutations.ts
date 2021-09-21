@@ -78,7 +78,7 @@ export const mutations: MutationTree<BaselineState> = {
     },
 
 
-    [BaselineMutation.SetRelease](state: BaselineState, payload: Release) {
+    [BaselineMutation.SetRelease](state: BaselineState, payload: Release | null) {
         state.selectedRelease = payload;
     },
 

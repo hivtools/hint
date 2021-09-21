@@ -92,7 +92,7 @@
 
     interface Props {
         datasetId: string | null;
-        // open: boolean;
+        open: boolean;
     }
 
     const namespace = "adr";
@@ -104,7 +104,7 @@
         },
         props: {
             datasetId: String,
-            // open: Boolean
+            open: Boolean
         },
         data() {
             return {
@@ -150,9 +150,11 @@
             clearReleases: mapMutationByName(namespace, ADRMutation.ClearReleases),
             preSelectRelease(){
                 const selectedReleaseId = this.initialRelease
-                if (selectedReleaseId && this.releases.length && this.releases.some(release => release.id === selectedReleaseId)){
+                if (selectedReleaseId && this.releases.some(release => release.id === selectedReleaseId)){
                     this.choiceADR = "useRelease"
                     this.releaseId = selectedReleaseId;
+                } else if (selectedReleaseId && !this.releases.some(release => release.id === selectedReleaseId)) {
+                    this.choiceADR = "useLatest"
                 }
             }
         },
@@ -170,19 +172,19 @@
                 }
             },
             releaseId() {
-                this.$emit("selected-dataset-release", this.releaseId);
+                this.$emit("selected-dataset-release", this.releases.find(release => release.id === this.releaseId))
             },
             valid() {
                 this.$emit("valid", this.valid);
             },
             releases(){
                 this.preSelectRelease();
+            },
+            open(){
+                if (this.open && this.datasetId){
+                    this.getReleases(this.datasetId);
+                }
             }
-            // open(){
-            //     if (this.open){
-            //         this.preSelectRelease();
-            //     }
-            // }
         },
         mounted(){
             this.$emit("selected-dataset-release", this.releaseId);
