@@ -133,6 +133,7 @@ export interface Release {
     id: string
     name: string
     notes: string
+    activity_id?: string
 }
 
 export interface Organization {

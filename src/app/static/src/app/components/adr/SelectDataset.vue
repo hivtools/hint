@@ -6,7 +6,7 @@
                 v-translate="'selectedDataset'"
                 id="selectedDatasetSpan"
             ></span>
-            <a v-if="releaseName" :href="selectedDataset.url + '/releases'" target="_blank">
+            <a v-if="releaseName" :href="releaseURL" target="_blank">
                 {{ selectedDataset.title }} — {{ releaseName }}
             </a>
             <a v-else :href="selectedDataset.url" target="_blank">
@@ -158,7 +158,9 @@
     interface Computed {
         datasets: any[];
         releases: Release[];
+        selectedRelease: Release | null;
         releaseName: string | null;
+        releaseURL: string;
         fetchingDatasets: boolean;
         adrError: Error | null;
         datasetOptions: any[];
@@ -244,12 +246,20 @@
                 namespace,
                 (state: ADRState) => state.adrError
             ),
-            releaseName(){
+            selectedRelease(){
                 const selectedDataset = this.selectedDataset
-                if (selectedDataset?.release && this.releases.length){
-                    return this.releases.find(release => release.id === selectedDataset.release)?.name || null
+                return selectedDataset ? this.releases.find(release => release.id === selectedDataset.release) || null : null;
+            },
+            releaseName(){
+                // const selectedDataset = this.selectedDataset
+                // return selectedDataset ? this.releases.find(release => release.id === selectedDataset.release)?.name || null : null;
+                return this.selectedRelease?.name || null;
+            },
+            releaseURL(){
+                if (this.selectedDataset?.url){
+                    return this.selectedRelease?.activity_id ? this.selectedDataset.url.replace('inputs-unaids-estimates', 'dataset') + '?activity_id=' + this.selectedRelease.activity_id : "";
                 } else {
-                    return null
+                    return ""
                 }
             },
             datasetOptions() {
@@ -413,7 +423,7 @@
             },
             preSelectDataset(){
                 const selectedDatasetId = this.selectedDataset?.id
-                if (selectedDatasetId && this.datasets.length && this.datasets.some(dataset => dataset.id === selectedDatasetId)){
+                if (selectedDatasetId && this.datasets.some(dataset => dataset.id === selectedDatasetId)) {
                     this.newDatasetId = selectedDatasetId;
                 }
             },
@@ -448,6 +458,11 @@
             },
             updateValid(valid){
                 this.valid = valid;
+            }
+        },
+        watch: {
+            releases(){
+                console.log('releases', this.releases)
             }
         },
         mounted() {
