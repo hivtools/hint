@@ -17,7 +17,7 @@
             <b-table
                     striped hover
                     :fields="generatedFields"
-                    :items="filteredData"
+                    :items="friendlyData"
                     :sort-by.sync="sortBy"
                     :sort-desc.sync="sortDesc"
                     :filter="filter"
@@ -36,9 +36,7 @@
     import {
         Dict,
         Filter,
-        GenericChartTableConfig,
-        GenericChartTableSelectedFilterOptionLabel,
-        GenericChartTableStringLabel
+        GenericChartTableConfig
     } from "../../types";
     import {mapStateProp} from "../../utils";
     import {BButton, BFormGroup, BFormInput, BInputGroup, BInputGroupAppend, BTable} from 'bootstrap-vue';
@@ -47,6 +45,7 @@
 
     interface Props {
         filteredData: any[],
+        filters: Filter[],
         selectedFilterOptions: Dict<FilterOption[]>,
         tableConfig: GenericChartTableConfig
     }
@@ -61,12 +60,16 @@
     }
 
     interface Computed {
-        generatedFields: Array<Field>,
+        generatedFields: Field[],
+        friendlyData: any[],
         currentLanguage: Language
     }
 
     const props = {
         filteredData: {
+            type: Array
+        },
+        filters: {
             type: Array
         },
         selectedFilterOptions: {
@@ -96,16 +99,15 @@
             generatedFields() {
                 const fields = this.tableConfig.columns.map(c => {
                     let label: string;
-                    if (c.label.type === "string") {
-                        label = (c.label as GenericChartTableStringLabel).value; //TODO: should be translation keys, not English label
+                    if (c.header.type === "filterLabel") {
+                        label = this.filters.find(f => f.id === c.header.filterId)?.label || c.header.filterId;
                     } else {
-                        const filterId = (c.label as GenericChartTableSelectedFilterOptionLabel).filterId;
-                        const selectedFilterOption = this.selectedFilterOptions[filterId][0];
+                        const selectedFilterOption = this.selectedFilterOptions[c.header.filterId][0];
                         label = selectedFilterOption.label;
                     }
 
                     return {
-                        key: c.dataColumn,
+                        key: c.data.columnId,
                         label,
                         sortable: true,
                         sortByFormatted: true
@@ -113,6 +115,20 @@
                 });
 
                 return fields
+            },
+            friendlyData() {
+                const filtersDict = this.filters.reduce((dict, filter) => ({...dict, [filter.id]: filter}), {} as Dict<Filter>);
+                const result = this.filteredData.map(row => {
+                    const friendlyRow = {...row};
+                    this.tableConfig.columns.filter(column => column.data.labelFilterId).forEach(column => {
+                        const filter = filtersDict[column.data.labelFilterId!];
+                        const friendlyValue = filter.options.find(option => option.id == row[column.data.columnId])?.label;
+                        friendlyRow[column.data.columnId] = friendlyValue;
+                    });
+
+                    return friendlyRow;
+                });
+                return result;
             },
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language)

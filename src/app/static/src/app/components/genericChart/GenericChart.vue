@@ -28,6 +28,7 @@
                     <generic-chart-table v-if="dataSource.tableConfig"
                                          :table-config="dataSource.tableConfig"
                                          :filtered-data="chartData[dataSource.config.id]"
+                                         :filters="dataSource.filters"
                                          :selected-filter-options="dataSource.selections.selectedFilterOptions"
                     ></generic-chart-table>
                 </div>

@@ -22,22 +22,51 @@
         "table": {
           "columns": [
             {
-              "dataColumn": "area_name",
-              "label": {
-                "type": "string",
-                "value": "Area"
+              "data": {
+                "columnId": "area_name",
+                "labelFilterId": null
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "area_name"
               }
             },
             {
-              "dataColumn": "time_period",
-              "label": {
-                "type": "string",
-                "value": "Time Period"
+              "data": {
+                "columnId": "time_period",
+                "labelFilterId": null
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "time_period"
               }
             },
             {
-              "dataColumn": "value",
-              "label": {
+              "data": {
+                "columnId": "area_level_label",
+                "labelFilterId": "area_level"
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "area_level"
+              }
+            },
+            {
+              "data": {
+                "columnId": "time_step",
+                "labelFilterId": "time_step"
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "time_step"
+              }
+            },
+            {
+              "data": {
+                "columnId": "value",
+                "labelFilterId": null
+              },
+              "header": {
                 "type": "selectedFilterOption",
                 "filterId": "plot_type"
               }
@@ -66,22 +95,51 @@
         "table": {
           "columns": [
             {
-              "dataColumn": "area_name",
-              "label": {
-                "type": "string",
-                "value": "Area"
+              "data": {
+                "columnId": "area_name",
+                "labelFilterId": null
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "area_name"
               }
             },
             {
-              "dataColumn": "age_group",
-              "label": {
-                "type": "string",
-                "value": "Age"
+              "data": {
+                "columnId": "time_period",
+                "labelFilterId": null
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "time_period"
               }
             },
             {
-              "dataColumn": "value",
-              "label": {
+              "data": {
+                "columnId": "area_level_label",
+                "labelFilterId": "area_level"
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "area_level"
+              }
+            },
+            {
+              "data": {
+                "columnId": "age_group",
+                "labelFilterId": "age"
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "age"
+              }
+            },
+            {
+              "data": {
+                "columnId": "value",
+                "labelFilterId": null
+              },
+              "header": {
                 "type": "selectedFilterOption",
                 "filterId": "plot_type"
               }
