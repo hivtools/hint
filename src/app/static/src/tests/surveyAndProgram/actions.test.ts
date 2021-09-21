@@ -13,6 +13,7 @@ import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutatio
 import {expectEqualsFrozen} from "../testHelpers";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import Mock = jest.Mock;
+import {GenericChartMutation} from "../../app/store/genericChart/mutations";
 
 const FormData = require("form-data");
 const rootState = mockRootState();
@@ -170,7 +171,7 @@ describe("Survey and programme actions", () => {
     });
 
     const checkFailedProgramImportUpload = (commit: Mock) => {
-        expect(commit.mock.calls.length).toEqual(3);
+        expect(commit.mock.calls.length).toEqual(4);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ProgramUpdated,
@@ -185,6 +186,10 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[2][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ProgramErroredFile,
             payload: "file.txt"
+        });
+
+        expect(commit.mock.calls[3][0]).toStrictEqual({
+            type: "genericChart/ClearDataset"
         });
     }
 
@@ -249,7 +254,7 @@ describe("Survey and programme actions", () => {
     });
 
     const checkFailedANCImportUpload = (commit: Mock) => {
-        expect(commit.mock.calls.length).toEqual(3);
+        expect(commit.mock.calls.length).toEqual(4);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ANCUpdated,
@@ -264,6 +269,10 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[2][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ANCErroredFile,
             payload: "file.txt"
+        });
+
+        expect(commit.mock.calls[3][0]).toStrictEqual({
+            type: "genericChart/ClearDataset"
         });
     }
 
@@ -409,8 +418,9 @@ describe("Survey and programme actions", () => {
 
         const commit = jest.fn();
         await actions.deleteProgram({commit, rootState} as any);
-        expect(commit).toBeCalledTimes(1);
+        expect(commit).toBeCalledTimes(2);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
+        expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
     });
 
     it("deletes ANC", async () => {
@@ -419,8 +429,9 @@ describe("Survey and programme actions", () => {
 
         const commit = jest.fn();
         await actions.deleteANC({commit, rootState} as any);
-        expect(commit).toBeCalledTimes(1);
+        expect(commit).toBeCalledTimes(2);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
+        expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
     });
 
     it("deletes all", async () => {
@@ -436,11 +447,14 @@ describe("Survey and programme actions", () => {
         const commit = jest.fn();
         await actions.deleteAll({commit, rootState} as any);
         expect(mockAxios.history["delete"].length).toBe(3);
-        expect(commit).toBeCalledTimes(3);
+        expect(commit).toBeCalledTimes(5);
         expect(commit.mock.calls.map(c => c[0]["type"])).toEqual([
             SurveyAndProgramMutation.SurveyUpdated,
             SurveyAndProgramMutation.ProgramUpdated,
-            SurveyAndProgramMutation.ANCUpdated]);
+            "genericChart/ClearDataset",
+            SurveyAndProgramMutation.ANCUpdated,
+            "genericChart/ClearDataset"
+        ]);
     });
 
     it("selects data type", () => {

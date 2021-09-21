@@ -81,16 +81,13 @@
     import Vue from "vue";
     import {mapActions, mapState} from "vuex";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {GenericChartDataset, PartialFileUploadProps} from "../../types";
+    import {PartialFileUploadProps} from "../../types";
     import {MetadataState} from "../../store/metadata/metadata";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import ManageFile from "../files/ManageFile.vue";
     import {RootState} from "../../root";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
-    import {mapMutationByName, mapStateProp} from "../../utils";
-    import {GenericChartMutation} from "../../store/genericChart/mutations";
-    import {GenericChartState} from "../../store/genericChart/genericChart";
 
     const namespace = 'baseline';
 
@@ -124,8 +121,6 @@
             ...mapState<MetadataState>("metadata", {
                 plottingMetadataError: (state: MetadataState) => state.plottingMetadataError
             }),
-            datasets:  mapStateProp<GenericChartState, Record<string, GenericChartDataset>>("genericChart",
-                (state: GenericChartState) => state.datasets),
             ...mapState<RootState>({
                 anc: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     valid: !!surveyAndProgram.anc,
@@ -161,20 +156,7 @@
                 deleteSurvey: 'surveyAndProgram/deleteSurvey',
                 deleteProgram: 'surveyAndProgram/deleteProgram',
                 deleteANC: 'surveyAndProgram/deleteANC'
-            }),
-            clearDataset: mapMutationByName("genericChart", GenericChartMutation.ClearDataset)
-        },
-        watch: {
-            'programme.valid'() {
-                if(this.datasets) {
-                    this.clearDataset()
-                }
-            },
-            'anc.valid'() {
-                if(this.datasets) {
-                    this.clearDataset()
-                }
-            }
+            })
         },
         components: {
             ErrorAlert,
