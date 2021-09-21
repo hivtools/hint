@@ -21,7 +21,7 @@
         }
 
         function continueAsGuest() {
-            localStorage.setItem("asGuest", "continueAsGuest")
+            sessionStorage.setItem("asGuest", "continueAsGuest")
         }
     </script>
 </head>
@@ -52,7 +52,7 @@
             </div>
         </div>
     </div>
-    <div class="text-center mt-3">
+    <div id="continue-as-guest" class="text-center mt-3">
         <div class="mb-3">OR</div>
         <a class="btn btn-red" onclick="continueAsGuest()" type="submit" href="/">Continue as guest</a>
     </div>
