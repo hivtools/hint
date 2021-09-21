@@ -81,7 +81,7 @@
     import Vue from "vue";
     import {mapActions, mapState} from "vuex";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {GenericChartDataset, PartialFileUploadProps} from "../../types";
+    import {PartialFileUploadProps} from "../../types";
     import {MetadataState} from "../../store/metadata/metadata";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
