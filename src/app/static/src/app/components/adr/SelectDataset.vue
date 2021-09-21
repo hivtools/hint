@@ -424,6 +424,7 @@
             preSelectDataset(){
                 const selectedDatasetId = this.selectedDataset?.id
                 if (selectedDatasetId && this.datasets.some(dataset => dataset.id === selectedDatasetId)) {
+                // if (selectedDatasetId && this.datasets.length && this.datasets.some(dataset => dataset.id === selectedDatasetId)){
                     this.newDatasetId = selectedDatasetId;
                 }
             },
@@ -463,6 +464,11 @@
         watch: {
             releases(){
                 console.log('releases', this.releases)
+            },
+            datasets(){
+                if (this.open){
+                    this.preSelectDataset();
+                }
             }
         },
         mounted() {

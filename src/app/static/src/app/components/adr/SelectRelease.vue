@@ -92,6 +92,7 @@
 
     interface Props {
         datasetId: string | null;
+        // open: boolean;
     }
 
     const namespace = "adr";
@@ -103,6 +104,7 @@
         },
         props: {
             datasetId: String,
+            // open: Boolean
         },
         data() {
             return {
@@ -176,6 +178,11 @@
             releases(){
                 this.preSelectRelease();
             }
+            // open(){
+            //     if (this.open){
+            //         this.preSelectRelease();
+            //     }
+            // }
         },
         mounted(){
             this.$emit("selected-dataset-release", this.releaseId);
