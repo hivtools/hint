@@ -5,7 +5,6 @@ import {RootMutation} from "./mutations";
 import {LanguageActions} from "../language/language";
 import {changeLanguage} from "../language/actions";
 import i18next from "i18next";
-import {ISO3} from "../translations/locales";
 
 export interface RootActions extends LanguageActions<RootState>{
     validate: (store: ActionContext<RootState, RootState>) => void;
@@ -52,8 +51,8 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     },
 
     async changeLanguage(context, payload) {
-        const {dispatch} = context
+        const {dispatch, rootState} = context
         await changeLanguage<RootState>(context, payload)
-        await dispatch("metadata/getPlottingMetadata", ISO3[payload])
+        await dispatch("metadata/getPlottingMetadata", rootState.baseline.iso3)
     }
 };

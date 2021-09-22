@@ -185,7 +185,8 @@ describe("root actions", () => {
     it("changes language", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.changeLanguage({commit, dispatch} as any, Language.fr);
+        const rootState = mockRootState({baseline: {iso3: "FRA"} as any})
+        await actions.changeLanguage({commit, dispatch, rootState} as any, Language.fr);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: LanguageMutation.ChangeLanguage,
             payload: "fr"
