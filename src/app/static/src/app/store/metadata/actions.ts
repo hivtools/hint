@@ -12,7 +12,6 @@ export interface MetadataActions {
 export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
 
     async getPlottingMetadata(context, iso3) {
-        console.log(iso3)
         await api<MetadataMutations, MetadataMutations>(context)
             .withSuccess(MetadataMutations.PlottingMetadataFetched)
             .withError(MetadataMutations.PlottingMetadataError)

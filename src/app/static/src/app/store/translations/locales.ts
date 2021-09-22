@@ -1062,7 +1062,7 @@ export const locales = {
 export enum Language {en = "en", fr = "fr", pt = "pt"}
 
 export const ISO3 = {
-    "en": "ENG",
+    "en": "GBR",
     "fr": "FRA",
     "pt": "PRT"
 }
