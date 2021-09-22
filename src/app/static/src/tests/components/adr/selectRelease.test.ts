@@ -196,6 +196,18 @@ describe("select release", () => {
         done()
     });
 
+    it("preselect release occurs if releases are updated", async (done) => {
+        let store = getStore([releasesArray[1]], fakeDataset)
+        const rendered = shallowMount(SelectRelease, {store, propsData: {datasetId: "datasetId"}});
+        const select = rendered.find(TreeSelect);
+        expect(select.attributes("disabled")).toBe("true");
+        expect(rendered.vm.$data.releaseId).toBeUndefined();
+        store.state.adr.releases = releasesArray
+        expect(select.attributes("disabled")).toBeUndefined();
+        expect(rendered.vm.$data.releaseId).toBe("releaseId");
+        done()
+    });
+
     it("does not automatically select release if no matching release and reverts to use latest", async (done) => {
         let store = getStore([releasesArray[1]], fakeDataset)
         const rendered = shallowMount(SelectRelease, {store, propsData: {datasetId: "datasetId", choiceADR: "useRelease"}});
@@ -204,6 +216,7 @@ describe("select release", () => {
         expect(rendered.vm.$data.releaseId).toBeUndefined();
         done()
     });
+    
 
     it("selecting a release emits release id", async (done) => {
         let store = getStore()
