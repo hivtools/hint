@@ -23,20 +23,20 @@ describe("genericChart mutations", () => {
             }
         },
         anc: {
-            data: [{type: "test", value: "test"}],
+            data: [{type: "test2", value: "test2"}],
             metadata: {
                 filters: [
                     {
-                        id: "type",
-                        column_id: "type",
-                        label: "Type",
+                        id: "type2",
+                        column_id: "type2",
+                        label: "Type2",
                         allowMultiple: false,
-                        options: [{id: "test", label: "test"}]
+                        options: [{id: "test2", label: "test2"}]
                     }
                 ],
                 defaults: {
                     selected_filter_options: {
-                        type: [{id: "test", label: "test"}]
+                        type: [{id: "test2", label: "test2"}]
                     }
                 }
             }
