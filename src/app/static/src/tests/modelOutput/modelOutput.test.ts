@@ -75,12 +75,9 @@ describe("modelOutput module", () => {
     });
 
     it("gets barchart indicators", async () => {
-        const testRootGetters = {
-            "metadata/outputIndicatorsMetadata": ["TEST INDICATORS"]
-        };
-        const result = modelOutputGetters.barchartIndicators(mockModelOutputState(), null, rootState, testRootGetters);
-        expect(result.length).toEqual(1);
-        expect(result).toStrictEqual(["TEST INDICATORS"]);
+        const result = modelOutputGetters.barchartIndicators(mockModelOutputState(), null, rootState);
+        expect(result.length).toEqual(2);
+        expect(result).toBe(modelRunResponse.plottingMetadata.barchart.indicators);
     });
 
 

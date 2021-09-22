@@ -13,8 +13,8 @@ export interface ModelOutputState {
 }
 
 export const modelOutputGetters = {
-    barchartIndicators: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): BarchartIndicator[] => {
-        return rootGetters['metadata/outputIndicatorsMetadata'];
+    barchartIndicators: (state: ModelOutputState, getters: any, rootState: RootState): BarchartIndicator[] => {
+        return rootState.modelRun.result!.plottingMetadata.barchart.indicators;
     },
     barchartFilters: (state: ModelOutputState, getters: any, rootState: RootState): Filter[] => {
         return outputPlotFilters(rootState);
