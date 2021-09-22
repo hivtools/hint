@@ -192,7 +192,7 @@ describe("root actions", () => {
         })
 
         expect(dispatch.mock.calls[0][0]).toStrictEqual("metadata/getPlottingMetadata")
-        expect(dispatch.mock.calls[0][1]).toStrictEqual("fr")
+        expect(dispatch.mock.calls[0][1]).toStrictEqual("FRA")
     });
 
 });
