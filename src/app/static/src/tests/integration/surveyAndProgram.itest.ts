@@ -40,6 +40,7 @@ describe("Survey and programme actions", () => {
         await actions.uploadProgram({commit, dispatch, rootState} as any, formData);
 
         expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
+        expect(commit.mock.calls[1][0]["payload"]).toBe("art");
         expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
         expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("programme.csv")
@@ -53,6 +54,7 @@ describe("Survey and programme actions", () => {
         await actions.uploadANC({commit, rootState} as any, formData);
 
         expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
+        expect(commit.mock.calls[1][0]["payload"]).toBe("anc");
         expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
         expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("anc.csv");
