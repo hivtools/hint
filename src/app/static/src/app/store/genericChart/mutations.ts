@@ -19,10 +19,11 @@ export const mutations: MutationTree<GenericChartState> = {
         state.genericChartMetadata = action.payload;
     },
     [GenericChartMutation.SetDataset](state: GenericChartState, action: PayloadWithType<SetDatasetPayload>) {
+        console.log(action.payload.dataset)
         state.datasets[action.payload.datasetId] = action.payload.dataset;
     },
-    [GenericChartMutation.ClearDataset](state: GenericChartState) {
-        state.datasets = {};
+    [GenericChartMutation.ClearDataset](state: GenericChartState, action: PayloadWithType<string>) {
+        state.datasets[action.payload] = {} as GenericChartDataset;
     },
     [GenericChartMutation.SetError](state: GenericChartState, action: PayloadWithType<Error | null>) {
         state.genericChartError = action.payload;

@@ -138,14 +138,19 @@ describe("Survey and programme actions", () => {
             payload: null
         });
 
-        expectEqualsFrozen(commit.mock.calls[1][0], {
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "genericChart/ClearDataset",
+            payload: "art"
+        });
+
+        expectEqualsFrozen(commit.mock.calls[2][0], {
             type: SurveyAndProgramMutation.ProgramUpdated,
             payload: "TEST"
         });
 
         //Should also have set selectedDataType
-        expect(commit.mock.calls[2][0]).toStrictEqual("surveyAndProgram/SelectedDataTypeUpdated");
-        expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Program});
+        expect(commit.mock.calls[3][0]).toStrictEqual("surveyAndProgram/SelectedDataTypeUpdated");
+        expect(commit.mock.calls[3][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Program});
     }
 
     it("sets error message after failed programme upload", async () => {
@@ -179,17 +184,18 @@ describe("Survey and programme actions", () => {
         });
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "genericChart/ClearDataset",
+            payload: "art"
+        });
+
+        expect(commit.mock.calls[2][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ProgramError,
             payload: mockError("error message")
         });
 
-        expect(commit.mock.calls[2][0]).toStrictEqual({
+        expect(commit.mock.calls[3][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ProgramErroredFile,
             payload: "file.txt"
-        });
-
-        expect(commit.mock.calls[3][0]).toStrictEqual({
-            type: "genericChart/ClearDataset"
         });
     }
 
@@ -221,14 +227,19 @@ describe("Survey and programme actions", () => {
             payload: null
         });
 
-        expectEqualsFrozen(commit.mock.calls[1][0], {
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "genericChart/ClearDataset",
+            payload: "anc"
+        });
+
+        expectEqualsFrozen(commit.mock.calls[2][0], {
             type: SurveyAndProgramMutation.ANCUpdated,
             payload: "TEST"
         });
 
         //Should also have set selectedDataType
-        expect(commit.mock.calls[2][0]).toStrictEqual("surveyAndProgram/SelectedDataTypeUpdated");
-        expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.ANC});
+        expect(commit.mock.calls[3][0]).toStrictEqual("surveyAndProgram/SelectedDataTypeUpdated");
+        expect(commit.mock.calls[3][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.ANC});
     }
 
     it("sets error message after failed anc upload", async () => {
@@ -262,17 +273,18 @@ describe("Survey and programme actions", () => {
         });
 
         expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "genericChart/ClearDataset",
+            payload: "anc"
+        });
+
+        expect(commit.mock.calls[2][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ANCError,
             payload: mockError("error message")
         });
 
-        expect(commit.mock.calls[2][0]).toStrictEqual({
+        expect(commit.mock.calls[3][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ANCErroredFile,
             payload: "file.txt"
-        });
-
-        expect(commit.mock.calls[3][0]).toStrictEqual({
-            type: "genericChart/ClearDataset"
         });
     }
 

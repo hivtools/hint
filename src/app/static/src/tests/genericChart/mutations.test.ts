@@ -2,6 +2,47 @@ import {mutations} from "../../app/store/genericChart/mutations";
 ;import {mockGenericChartState} from "../mocks";
 
 describe("genericChart mutations", () => {
+    const datasets = {
+        art: {
+            data: [{type: "test", value: "test"}],
+            metadata: {
+                filters: [
+                    {
+                        id: "type",
+                        column_id: "type",
+                        label: "Type",
+                        allowMultiple: false,
+                        options: [{id: "test", label: "test"}]
+                    }
+                ],
+                defaults: {
+                    selected_filter_options: {
+                        type: [{id: "test", label: "test"}]
+                    }
+                }
+            }
+        },
+        anc: {
+            data: [{type: "test", value: "test"}],
+            metadata: {
+                filters: [
+                    {
+                        id: "type",
+                        column_id: "type",
+                        label: "Type",
+                        allowMultiple: false,
+                        options: [{id: "test", label: "test"}]
+                    }
+                ],
+                defaults: {
+                    selected_filter_options: {
+                        type: [{id: "test", label: "test"}]
+                    }
+                }
+            }
+        }
+    } as any;
+
     it("updates generic chart metadata", () => {
         const state = mockGenericChartState();
         const testMetadata = {metadata: "test"};
@@ -16,10 +57,18 @@ describe("genericChart mutations", () => {
         expect(state.datasets).toStrictEqual({dataset1: ["TEST DATASET"]});
     });
 
-    it("can clear datasets",  () => {
-        const state = mockGenericChartState();
-        mutations.ClearDataset(state);
-        expect(state.datasets).toEqual({});
+    it("can clear anc datasets",  () => {
+        const state = mockGenericChartState({datasets: datasets});
+        mutations.ClearDataset(state, {payload: "anc"});
+        expect(state.datasets["anc"]).toEqual({});
+        expect(state.datasets["art"]).toEqual(datasets["art"]);
+    });
+
+    it("can clear art datasets",  () => {
+        const state = mockGenericChartState({datasets: datasets});
+        mutations.ClearDataset(state, {payload: "art"});
+        expect(state.datasets["art"]).toEqual({});
+        expect(state.datasets["anc"]).toEqual(datasets["anc"]);
     });
 
     it("sets error", () => {
