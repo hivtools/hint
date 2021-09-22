@@ -649,6 +649,7 @@ describe("select dataset", () => {
         rendered.setData({newDatasetId: "id2"});
         const selectRelease = rendered.find(SelectRelease)
         expect(selectRelease.props("datasetId")).toBe("id2");
+        expect(selectRelease.props("open")).toBe(true);
     });
 
     it("select release emits valid and enables import button", async () => {
