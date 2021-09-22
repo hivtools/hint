@@ -7,7 +7,7 @@ import {mockRootState} from "../../mocks";
 import {expectTranslated} from "../../testHelpers";
 import TreeSelect from '@riophae/vue-treeselect';
 import {Language} from "../../../app/store/translations/locales";
-import {Dataset} from "../../../app/types";
+import {Dataset, Release} from "../../../app/types";
 
 describe("select release", () => {
 
@@ -41,7 +41,7 @@ describe("select release", () => {
     const getReleasesMock = jest.fn();
     const clearReleasesMock = jest.fn();
     
-    const getStore = (releases = releasesArray, selectedDataset: Dataset | null = null) => {
+    const getStore = (releases = releasesArray, selectedDataset: Dataset | null = null, getReleases = getReleasesMock) => {
         const store = new Vuex.Store({
             state: mockRootState(),
             modules: {
@@ -52,7 +52,7 @@ describe("select release", () => {
                     },
                     actions: {
                         getDatasets: jest.fn(),
-                        getReleases: getReleasesMock
+                        getReleases
                     },
                     mutations: {
                         [ADRMutation.ClearReleases]: clearReleasesMock,
@@ -187,16 +187,15 @@ describe("select release", () => {
         done()
     });
 
-    it("radial toggles automatically toggles and selects release if selectedDataset has an appropriate releaseId", async (done) => {
+    it("radial toggles automatically toggles and selects release if selectedDataset has an appropriate releaseId", () => {
         let store = getStore(releasesArray, fakeDataset)
         const rendered = shallowMount(SelectRelease, {store, propsData: {datasetId: "datasetId"}});
         const select = rendered.find(TreeSelect);
         expect(select.attributes("disabled")).toBeUndefined();
         expect(rendered.vm.$data.releaseId).toBe("releaseId");
-        done()
     });
 
-    it("preselect release occurs if releases are updated", async (done) => {
+    it("preselect release occurs if releases are updated", () => {
         let store = getStore([releasesArray[1]], fakeDataset)
         const rendered = shallowMount(SelectRelease, {store, propsData: {datasetId: "datasetId"}});
         const select = rendered.find(TreeSelect);
@@ -205,16 +204,26 @@ describe("select release", () => {
         store.state.adr.releases = releasesArray
         expect(select.attributes("disabled")).toBeUndefined();
         expect(rendered.vm.$data.releaseId).toBe("releaseId");
-        done()
     });
 
-    it("does not automatically select release if no matching release and reverts to use latest", async (done) => {
+    it("does not automatically select release if no matching release and reverts to use latest", () => {
         let store = getStore([releasesArray[1]], fakeDataset)
         const rendered = shallowMount(SelectRelease, {store, propsData: {datasetId: "datasetId", choiceADR: "useRelease"}});
         const select = rendered.find(TreeSelect);
         expect(select.attributes("disabled")).toBe("true");
         expect(rendered.vm.$data.releaseId).toBeUndefined();
-        done()
+    });
+
+    it("changes to datasetId and true open prop triggers getRelease method", () => {
+        const spy = jest.fn()
+        let store = getStore(releasesArray, null, spy)
+        const rendered = shallowMount(SelectRelease, {store});
+        rendered.setProps({datasetId: "datasetId"})
+        expect(spy).toHaveBeenCalledTimes(1)
+        expect(spy.mock.calls[0][spy.mock.calls[0].length -2]).toBe("datasetId")
+        rendered.setProps({open: true})
+        expect(spy).toHaveBeenCalledTimes(2)
+        expect(spy.mock.calls[1][spy.mock.calls[1].length -2]).toBe("datasetId")
     });
     
 

@@ -511,6 +511,15 @@ describe("select dataset", () => {
         expect(rendered.find("a").attributes("href")).toBe("www.adr.com/naomi-data/some-data?activity_id=activityId");
     });
 
+    it("release url is empty without selectedDataset url", () => {
+        let store = getStore({
+            selectedDataset: {...fakeDatasetWithRelease, url: ""},
+            selectedRelease: fakeRelease
+        })
+        const rendered = shallowMount(SelectDataset, {store});
+        expect(rendered.find("a").attributes("href")).toBe("");
+    });
+
     it("does not render selected dataset if it doesn't exist", () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});
         expect(rendered.findAll("#selectedDatasetSpan").length).toBe(0);
@@ -635,6 +644,20 @@ describe("select dataset", () => {
         
         rendered.find("button").trigger("click");
         expect(rendered.vm.$data.newDatasetId).toBe(null);
+    });
+
+    it("current dataset is preselected if datasets change", async () => {
+        let store = getStore({selectedDataset: fakeDataset2});
+        const rendered = mount(SelectDataset, {
+            store,
+            stubs: ["tree-select"]
+        });
+        store.state.adr.datasets = [fakeRawDatasets[0]]
+        
+        rendered.find("button").trigger("click");
+        expect(rendered.vm.$data.newDatasetId).toBe(null);
+        store.state.adr.datasets = fakeRawDatasets
+        expect(rendered.vm.$data.newDatasetId).toBe("id2");
     });
 
     it("renders select release", async () => {
