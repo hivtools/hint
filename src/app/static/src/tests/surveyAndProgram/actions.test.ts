@@ -13,7 +13,6 @@ import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutatio
 import {expectEqualsFrozen} from "../testHelpers";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import Mock = jest.Mock;
-import {GenericChartMutation} from "../../app/store/genericChart/mutations";
 
 const FormData = require("form-data");
 const rootState = mockRootState();

@@ -39,10 +39,10 @@ describe("Survey and programme actions", () => {
 
         await actions.uploadProgram({commit, dispatch, rootState} as any, formData);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
-        expect(commit.mock.calls[1][0]["payload"]["filename"])
+        expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
+        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
+        expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("programme.csv")
-        expect(commit.mock.calls[3][0]["type"]).toBe("genericChart/ClearDataset");
     });
 
     it("can upload anc", async () => {
@@ -52,10 +52,10 @@ describe("Survey and programme actions", () => {
 
         await actions.uploadANC({commit, rootState} as any, formData);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
-        expect(commit.mock.calls[1][0]["payload"]["filename"])
+        expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
+        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
+        expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("anc.csv");
-        expect(commit.mock.calls[3][0]["type"]).toBe("genericChart/ClearDataset");
     });
 
     it("can delete survey", async () => {
