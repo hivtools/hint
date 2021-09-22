@@ -66,7 +66,7 @@ describe("Download Results component", () => {
                         getUploadFiles: jest.fn()
                     },
                     mutations: {
-                        clearStatus
+                        ClearStatus: clearStatus
                     }
                 },
                 downloadResults: {
