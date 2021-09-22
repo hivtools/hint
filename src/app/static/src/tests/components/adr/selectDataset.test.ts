@@ -1,6 +1,6 @@
 import Vuex, {ActionTree} from "vuex";
 import Vue from "vue";
-import {createWrapper, mount, shallowMount} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
 import SelectRelease from "../../../app/components/adr/SelectRelease.vue";
 import Modal from "../../../app/components/Modal.vue";
@@ -21,7 +21,7 @@ import {BaselineMutation} from "../../../app/store/baseline/mutations";
 import {ADRMutation} from "../../../app/store/adr/mutations";
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
-import {ADRSchemas, Release} from "../../../app/types";
+import {ADRSchemas} from "../../../app/types";
 import {InfoIcon} from "vue-feather-icons";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
@@ -183,14 +183,6 @@ describe("select dataset", () => {
         activity_id: "activityId",
     }
 
-    // const fakeReleases =[
-    //     {
-            // id: "release1",
-            // name: "release1",
-            // notes: "some notes"
-    //     }
-    // ]
-
     const setDatasetMock = jest.fn();
     const setReleaseMock = jest.fn();
     const markResourcesUpdatedMock = jest.fn();
@@ -218,7 +210,6 @@ describe("select dataset", () => {
 
     let currentVersion = {id: "version-id", created: "", updated: "", versionNumber: 1}
 
-    // const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}, requireConfirmation: boolean = false, releases: Release[] = [], getReleases = getReleasesMock) => {
     const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}, requireConfirmation: boolean = false) => {
 
         const store = new Vuex.Store({
@@ -987,20 +978,5 @@ describe("select dataset", () => {
         rendered.setData({newDatasetId: ""});
 
         expect(rendered.find(Modal).find("button").attributes("disabled")).toBe("disabled");
-
     });
-
-    // it("calls getReleases action on mount if there is a selected dataset", () => {
-    //     const spy = jest.fn()
-    //     const store = getStore({selectedDataset: fakeDataset}, {}, false, [], spy);
-    //     shallowMount(SelectDataset, {store});
-    //     expect(spy).toHaveBeenCalledTimes(1)
-    // })
-
-    // it("does not call getReleases action on mount if there is no selected dataset", () => {
-    //     const spy = jest.fn()
-    //     const store = getStore({}, {}, false, [], spy);
-    //     shallowMount(SelectDataset, {store});
-    //     expect(spy).toHaveBeenCalledTimes(0)
-    // })
 });
