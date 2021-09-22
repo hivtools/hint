@@ -80,6 +80,7 @@
         },
         methods: {
             translate(word: string) {
+                // TEST
                 return i18next.t(word, {lng: this.currentLanguage})
             },
         },
