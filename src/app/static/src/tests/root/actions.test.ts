@@ -185,7 +185,7 @@ describe("root actions", () => {
     it("changes language", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
-        const rootState = mockRootState({baseline: {iso3: "FRA"} as any})
+        const rootState = mockRootState({baseline: {iso3: "MWI"} as any})
         await actions.changeLanguage({commit, dispatch, rootState} as any, Language.fr);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: LanguageMutation.ChangeLanguage,
@@ -193,7 +193,7 @@ describe("root actions", () => {
         })
 
         expect(dispatch.mock.calls[0][0]).toStrictEqual("metadata/getPlottingMetadata")
-        expect(dispatch.mock.calls[0][1]).toStrictEqual("FRA")
+        expect(dispatch.mock.calls[0][1]).toStrictEqual("MWI")
     });
 
 });
