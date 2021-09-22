@@ -196,9 +196,9 @@ describe("select release", () => {
         done()
     });
 
-    it("does not automatically select release if no matching release", async (done) => {
+    it("does not automatically select release if no matching release and reverts to use latest", async (done) => {
         let store = getStore([releasesArray[1]], fakeDataset)
-        const rendered = shallowMount(SelectRelease, {store, propsData: {datasetId: "datasetId"}});
+        const rendered = shallowMount(SelectRelease, {store, propsData: {datasetId: "datasetId", choiceADR: "useRelease"}});
         const select = rendered.find(TreeSelect);
         expect(select.attributes("disabled")).toBe("true");
         expect(rendered.vm.$data.releaseId).toBeUndefined();
@@ -212,7 +212,7 @@ describe("select release", () => {
         const selectRelease = rendered.findAll("input").at(1)
         await selectRelease.trigger("click")
         rendered.setData({releaseId: "releaseId"})
-        expect(rendered.emitted("selected-dataset-release")).toStrictEqual([[undefined], ["releaseId"]])
+        expect(rendered.emitted("selected-dataset-release")).toStrictEqual([[undefined], [releasesArray[0]]])
         done()
     });
 

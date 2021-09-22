@@ -6,6 +6,7 @@ import {
     mockError,
     mockPJNZResponse,
     mockPopulationResponse,
+    mockRelease,
     mockRootState,
     mockShapeResponse,
     mockValidateBaselineResponse
@@ -228,6 +229,14 @@ describe("Baseline mutations", () => {
         mutations[BaselineMutation.SetDataset](testState, fakeDataset);
 
         expect(testState.selectedDataset).toEqual(fakeDataset);
+    });
+
+    it("SetRelease sets current releease", () => {
+        const testState = mockBaselineState();
+        const fakeRelease = mockRelease();
+        mutations[BaselineMutation.SetRelease](testState, fakeRelease);
+
+        expect(testState.selectedRelease).toEqual(fakeRelease);
     });
 
     it("UpdateDatasetResources marks resource as out of date and updates metadata if previously null", () => {
