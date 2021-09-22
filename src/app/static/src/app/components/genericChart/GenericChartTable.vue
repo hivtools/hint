@@ -1,47 +1,17 @@
 <template>
-    <div>
-        <br>
-        <div v-if="filteredData.length > 0">
-            <b-form-group class="mb-0">
-                <b-input-group size="sm">
-                    <b-form-input
-                            v-model="filter"
-                            type="search"
-                            id="filterInput"
-                            :placeholder="translate('typeSearch')"></b-form-input>
-                    <b-input-group-append>
-                        <b-button :disabled="!filter" @click="filter = ''" v-translate="'clearText'"></b-button>
-                    </b-input-group-append>
-                </b-input-group>
-            </b-form-group>
-            <b-table
-                    striped hover
-                    :fields="generatedFields"
-                    :items="friendlyData"
-                    :sort-by.sync="sortBy"
-                    :sort-desc.sync="sortDesc"
-                    :filter="filter"
-                    responsive="sm"
-                    show-empty>
-            </b-table>
-        </div>
-        <div v-else v-translate="'noData'"></div>
-    </div>
+    <table-view :fields="generatedFields" :filtered-data="filteredData">
+    </table-view>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
-    import i18next from "i18next";
     import {FilterOption} from "../../generated";
     import {
         Dict,
         Filter,
         GenericChartTableConfig
     } from "../../types";
-    import {mapStateProp} from "../../utils";
-    import {BButton, BFormGroup, BFormInput, BInputGroup, BInputGroupAppend, BTable} from 'bootstrap-vue';
-    import {RootState} from "../../root";
-    import {Language} from "../../store/translations/locales";
+    import TableView, {Field} from "../plots/table/Table.vue";;
 
     interface Props {
         filteredData: any[],
@@ -50,19 +20,9 @@
         tableConfig: GenericChartTableConfig
     }
 
-    interface Field {
-        key: string,
-        label?: string
-    }
-
-    interface Methods {
-        translator: string
-    }
-
     interface Computed {
         generatedFields: Field[],
-        friendlyData: any[],
-        currentLanguage: Language
+        friendlyData: any[]
     }
 
     const props = {
@@ -78,10 +38,10 @@
         tableConfig: {
             type: Object
         }
-    }
+    };
 
     export default Vue.extend<unknown, unknown, Computed, Props>({
-        name: "table-view",
+        name: "GenericChartTable",
         props: props,
         data() {
             return {
@@ -89,11 +49,6 @@
                 sortDesc: false,
                 filter: null
             }
-        },
-        methods: {
-            translate(word: string) {
-                return i18next.t(word, {lng: this.currentLanguage})
-            },
         },
         computed: {
             generatedFields() {
@@ -129,17 +84,10 @@
                     return friendlyRow;
                 });
                 return result;
-            },
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language)
+            }
         },
         components: {
-            BTable,
-            BFormGroup,
-            BFormInput,
-            BInputGroup,
-            BButton,
-            BInputGroupAppend
+            TableView
         }
     });
 </script>
