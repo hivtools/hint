@@ -182,7 +182,7 @@ describe("root actions", () => {
         expect(mockContext.dispatch).not.toHaveBeenCalled();
     });
 
-    it("changes language", async () => {
+    it("changes language and fetch plotting metadata", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const rootState = mockRootState({baseline: {iso3: "MWI"} as any})
@@ -194,6 +194,19 @@ describe("root actions", () => {
 
         expect(dispatch.mock.calls[0][0]).toStrictEqual("metadata/getPlottingMetadata")
         expect(dispatch.mock.calls[0][1]).toStrictEqual("MWI")
+    });
+
+    it("changes language does not fetch metadata if country code is empty", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const rootState = mockRootState({baseline: {iso3: ""} as any})
+        await actions.changeLanguage({commit, dispatch, rootState} as any, Language.fr);
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: LanguageMutation.ChangeLanguage,
+            payload: "fr"
+        })
+
+        expect(dispatch.mock.calls.length).toBe(0)
     });
 
 });

@@ -9,21 +9,12 @@ import DropDown from "../../../app/components/header/DropDown.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 describe("Language menu", () => {
-    const mockPlottingMetadata = jest.fn()
 
     const createStore = () => {
         const store = new Vuex.Store({
             state: emptyState(),
             actions: actions,
-            mutations: mutations,
-            modules: {
-                metadata: {
-                    namespaced: true,
-                    actions: {
-                        getPlottingMetadata: mockPlottingMetadata
-                    }
-                }
-            },
+            mutations: mutations
         });
         registerTranslations(store);
         return store;
@@ -48,7 +39,6 @@ describe("Language menu", () => {
         setTimeout(() => {
             expect(store.state.language).toBe(Language.fr);
             expect(wrapper.find(DropDown).props("text")).toBe("FR");
-            expect(mockPlottingMetadata.mock.calls.length).toBe(1)
             done();
         })
     });
@@ -64,7 +54,6 @@ describe("Language menu", () => {
         setTimeout(() => {
             expect(store.state.language).toBe(Language.pt);
             expect(wrapper.find(DropDown).props("text")).toBe("PT");
-            expect(mockPlottingMetadata.mock.calls.length).toBe(2)
             done();
         })
     });
