@@ -196,7 +196,7 @@ describe("root actions", () => {
         expect(dispatch.mock.calls[0][1]).toStrictEqual("MWI")
     });
 
-    it("changes language does not fetch metadata if country code is empty", async () => {
+    it("changes language and does not fetch plotting metadata if country code is empty", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const rootState = mockRootState({baseline: {iso3: ""} as any})
