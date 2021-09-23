@@ -287,7 +287,8 @@ describe("ADR actions", () => {
         const release = {
             id: "V 1.0",
             name: "releaseName",
-            notes: "releaseNotes"
+            notes: "releaseNotes",
+            activity_id: "activityId"
         }
 
         await actions.getDataset({commit, state, rootState} as any, {id: "abc123", release});
