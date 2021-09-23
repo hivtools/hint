@@ -23,7 +23,9 @@
                 :filter="filter"
                 responsive="sm"
                 show-empty>
-                <slot></slot>
+                <template v-for="(_, slot) in $scopedSlots" v-slot:[slot]="props">
+                    <slot :name="slot" v-bind="props" />
+                </template>
             </b-table>
         </div>
         <div v-else v-translate="'noData'"></div>
@@ -80,7 +82,6 @@
         },
         methods: {
             translate(word: string) {
-                // TEST
                 return i18next.t(word, {lng: this.currentLanguage})
             },
         },
