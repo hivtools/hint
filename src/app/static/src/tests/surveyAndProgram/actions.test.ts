@@ -431,7 +431,10 @@ describe("Survey and programme actions", () => {
         await actions.deleteProgram({commit, rootState} as any);
         expect(commit).toBeCalledTimes(2);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
-        expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
+        expect(commit.mock.calls[1][0]).toEqual({
+            type: "genericChart/ClearDataset",
+            payload: "art"
+        });
     });
 
     it("deletes ANC", async () => {
@@ -442,7 +445,10 @@ describe("Survey and programme actions", () => {
         await actions.deleteANC({commit, rootState} as any);
         expect(commit).toBeCalledTimes(2);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
-        expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
+        expect(commit.mock.calls[1][0]).toEqual({
+            type: "genericChart/ClearDataset",
+            payload: "anc"
+        });
     });
 
     it("deletes all", async () => {
