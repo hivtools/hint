@@ -1,4 +1,4 @@
-# hint 2.0.0
+# hint 1.51.0
 
 * Re-fetch all metadata when language changes
 
