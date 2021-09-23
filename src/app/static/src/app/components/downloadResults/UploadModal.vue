@@ -38,36 +38,6 @@
                     </span>
                     <br />
                 </div>
-                <!-- <div class="mt-3 form-check">
-                    <input
-                        type="radio"
-                        id="createRelease"
-                        value="createRelease"
-                        v-model="choiceUpload"
-                        class="form-check-input"
-                    />
-                    <span class="form-check-label">
-                        <label for="createRelease" v-translate="'createRelease'" class="d-inline"></label>
-                        <span class="icon-small d-inline" v-tooltip="translate('createReleaseTooltip')">
-                            <help-circle-icon></help-circle-icon>
-                        </span>
-                    </span>
-                </div>
-                <div class="form-check">
-                    <input
-                        type="radio"
-                        id="uploadFiles"
-                        value="uploadFiles"
-                        v-model="choiceUpload"
-                        class="form-check-input"
-                    />
-                    <span class="form-check-label">
-                        <label for="uploadFiles" v-translate="'uploadFiles'" class="d-inline"></label>
-                        <span class="icon-small d-inline" v-tooltip="translate('uploadFilesTooltip')">
-                            <help-circle-icon></help-circle-icon>
-                        </span>
-                    </span>
-                </div> -->
                 <div v-for="(uploadFileSection, sectionIndex) in uploadFileSections" :key="sectionIndex" class="pl-4">
                     <h5 v-if="Object.keys(uploadFileSections[1]).length > 0"
                         v-translate="sectionIndex === 0 ? 'outputFiles' : 'inputFiles'"
