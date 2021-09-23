@@ -248,11 +248,7 @@
                 return this.selectedRelease?.name || null;
             },
             releaseURL(){
-                if (this.selectedDataset?.url){
-                    return this.selectedRelease?.activity_id ? new URL(this.selectedDataset.url).origin + '/dataset/' + this.selectedDataset.title.replace(/\s+/g,"-").toLowerCase() + '?activity_id=' + this.selectedRelease.activity_id : "";
-                } else {
-                    return ""
-                }
+                return new URL(this.selectedDataset!.url).origin + '/dataset/' + this.selectedDataset!.id + '?activity_id=' + this.selectedRelease!.activity_id;
             },
             datasetOptions() {
                 return this.datasets.map((d) => ({

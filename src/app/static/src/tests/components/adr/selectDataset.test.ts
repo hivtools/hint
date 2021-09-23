@@ -508,16 +508,7 @@ describe("select dataset", () => {
             "Ensemble de données sélectionné :", "Conjunto de dados selecionado:", store);
 
         expect(rendered.find("a").text()).toBe("Some data — release1");
-        expect(rendered.find("a").attributes("href")).toBe("https://adr.com/dataset/some-data?activity_id=activityId");
-    });
-
-    it("release url is empty without selectedDataset url", () => {
-        let store = getStore({
-            selectedDataset: {...fakeDatasetWithRelease, url: ""},
-            selectedRelease: fakeRelease
-        })
-        const rendered = shallowMount(SelectDataset, {store});
-        expect(rendered.find("a").attributes("href")).toBe("");
+        expect(rendered.find("a").attributes("href")).toBe("https://adr.com/dataset/id1?activity_id=activityId");
     });
 
     it("does not render selected dataset if it doesn't exist", () => {
