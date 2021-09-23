@@ -1,4 +1,4 @@
-# hint 1.51.0
+# hint 2.0.0
 
 * Remove genericChart dataset when corresponding input file changes
 
