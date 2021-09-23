@@ -22,7 +22,7 @@ export const mutations: MutationTree<GenericChartState> = {
         state.datasets[action.payload.datasetId] = action.payload.dataset;
     },
     [GenericChartMutation.ClearDataset](state: GenericChartState, action: PayloadWithType<string>) {
-        state.datasets[action.payload] = {} as GenericChartDataset;
+        delete state.datasets[action.payload]
     },
     [GenericChartMutation.SetError](state: GenericChartState, action: PayloadWithType<Error | null>) {
         state.genericChartError = action.payload;
