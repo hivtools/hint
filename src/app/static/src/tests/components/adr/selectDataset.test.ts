@@ -158,7 +158,7 @@ describe("select dataset", () => {
     const fakeDatasetWithRelease = {
         id: "id1",
         title: "Some data",
-        url: "www.adr.com/naomi-data/some-data",
+        url: "https://adr.com/naomi-data/some-data",
         organization: {id: "org-id"},
         release: "release1",
         resources: {
@@ -508,7 +508,7 @@ describe("select dataset", () => {
             "Ensemble de données sélectionné :", "Conjunto de dados selecionado:", store);
 
         expect(rendered.find("a").text()).toBe("Some data — release1");
-        expect(rendered.find("a").attributes("href")).toBe("www.adr.com/naomi-data/some-data?activity_id=activityId");
+        expect(rendered.find("a").attributes("href")).toBe("https://adr.com/dataset/some-data?activity_id=activityId");
     });
 
     it("release url is empty without selectedDataset url", () => {

@@ -231,7 +231,7 @@ describe("Baseline mutations", () => {
         expect(testState.selectedDataset).toEqual(fakeDataset);
     });
 
-    it("SetRelease sets current releease", () => {
+    it("SetRelease sets current release", () => {
         const testState = mockBaselineState();
         const fakeRelease = mockRelease();
         mutations[BaselineMutation.SetRelease](testState, fakeRelease);

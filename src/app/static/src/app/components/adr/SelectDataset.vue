@@ -249,7 +249,7 @@
             },
             releaseURL(){
                 if (this.selectedDataset?.url){
-                    return this.selectedRelease?.activity_id ? this.selectedDataset.url.replace('inputs-unaids-estimates', 'dataset') + '?activity_id=' + this.selectedRelease.activity_id : "";
+                    return this.selectedRelease?.activity_id ? new URL(this.selectedDataset.url).origin + '/dataset/' + this.selectedDataset.title.replace(/\s+/g,"-").toLowerCase() + '?activity_id=' + this.selectedRelease.activity_id : "";
                 } else {
                     return ""
                 }
