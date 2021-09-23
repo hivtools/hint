@@ -1,25 +1,33 @@
 import {
-    mockBaselineState, mockDataset,
+    mockBaselineState,
+    mockDataset,
     mockError,
+    mockHintrVersionState,
     mockMetadataState,
+    mockModelCalibrateState,
     mockModelOptionsState,
     mockModelOutputState,
     mockModelRunState,
     mockPlottingSelections,
-    mockStepperState,
-    mockSurveyAndProgramState,
     mockProjectsState,
-    mockModelCalibrateState,
-    mockHintrVersionState
+    mockStepperState,
+    mockSurveyAndProgramState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
 import {DataType} from "../app/store/surveyAndProgram/surveyAndProgram";
 import {currentHintVersion} from "../app/hintVersion";
+import {Language} from "../app/store/translations/locales";
+import {store} from "../app/main";
 
 declare const currentUser: string; // set in jest config, or on the index page when run for real
 
 describe("LocalStorageManager", () => {
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    })
+
     it("serialiseState removes errors, saves selected data type", async () => {
         const mockRoot = {
             version: "1.0.0",
@@ -113,5 +121,25 @@ describe("LocalStorageManager", () => {
 
         expect(spy.mock.calls[0][0]).toBe(`hintAppState_v${currentHintVersion}`);
         expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState));
+    });
+
+    it("returns default language if language not in local storage", () => {
+        localStorage.clear()
+        expect(localStorageManager.getLanguage()).toBe(Language.en)
+    });
+
+    it("can get Portuguese language from local storage", () => {
+        localStorageManager.saveLanguage(Language.pt);
+        expect(localStorageManager.getLanguage()).toBe(Language.pt)
+    });
+
+    it("can get French language from local storage", () => {
+        localStorageManager.saveLanguage(Language.fr);
+        expect(localStorageManager.getLanguage()).toBe(Language.fr)
+    });
+
+    it("can get English language from local storage", () => {
+        localStorageManager.saveLanguage(Language.en);
+        expect(localStorageManager.getLanguage()).toBe(Language.en)
     });
 });

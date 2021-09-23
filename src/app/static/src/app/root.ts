@@ -41,6 +41,7 @@ import {
 } from "./store/downloadResults/downloadResults";
 import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibrate/mutations";
 import {GenericChartState, initialGenericChartState, genericChart} from "./store/genericChart/genericChart";
+import {LanguageMutation} from "./store/language/mutations";
 
 export interface TranslatableState {
     language: Language
@@ -76,6 +77,10 @@ const persistState = (store: Store<RootState>): void => {
     store.subscribe((mutation: MutationPayload, state: RootState) => {
         console.log(mutation.type);
         localStorageManager.saveState(state);
+
+        if (mutation.type === LanguageMutation.ChangeLanguage) {
+            localStorageManager.saveLanguage(state.language)
+        }
 
         const {dispatch} = store;
         const type = stripNamespace(mutation.type);
@@ -127,7 +132,7 @@ declare const currentUser: string;
 
 export const emptyState = (): RootState => {
     return {
-        language: Language.en,
+        language: localStorageManager.getLanguage(),
         version: currentHintVersion,
         hintrVersion: initialHintrVersionState(),
         adr: initialADRState(),

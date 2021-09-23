@@ -1,5 +1,6 @@
 import {RootState} from "./root";
 import {currentHintVersion} from "./hintVersion";
+import {Language} from "./store/translations/locales";
 
 const appStateKey = `hintAppState_v${currentHintVersion}`;
 
@@ -37,6 +38,18 @@ export class LocalStorageManager {
     savePartialState = (partialState: Partial<RootState>) => {
         window.localStorage.setItem(appStateKey, JSON.stringify(partialState));
     };
+
+    saveLanguage = (lang: Language) => {
+        localStorage.setItem("language", lang)
+    }
+
+    getLanguage = () => {
+        const lang = localStorage.getItem("language")
+
+        return lang === Language.pt ? Language.pt
+            : lang === Language.fr ? Language.fr
+                : Language.en
+    }
 
     getState = (): Partial<RootState> | null => {
         if (currentUser != window.localStorage.getItem("user")) {
