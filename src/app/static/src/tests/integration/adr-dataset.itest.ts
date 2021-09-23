@@ -220,8 +220,8 @@ describe("ADR dataset-related actions", () => {
             type: "genericChart/ClearDataset",
             payload: "art"
         });
-        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
-        expect(commit.mock.calls[1][0]["payload"]["filename"])
+        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
+        expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("programme.csv")
     }, 7000);
 
