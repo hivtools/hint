@@ -22,7 +22,8 @@ export const serialiseState = (rootState: RootState): Partial<RootState> => {
         plottingSelections: rootState.plottingSelections,
         surveyAndProgram: {selectedDataType: rootState.surveyAndProgram.selectedDataType} as any,
         projects: rootState.projects,
-        hintrVersion: rootState.hintrVersion
+        hintrVersion: rootState.hintrVersion,
+        language: rootState.language
     };
 };
 
@@ -38,18 +39,6 @@ export class LocalStorageManager {
     savePartialState = (partialState: Partial<RootState>) => {
         window.localStorage.setItem(appStateKey, JSON.stringify(partialState));
     };
-
-    saveLanguage = (lang: Language) => {
-        localStorage.setItem("language", lang)
-    }
-
-    getLanguage = () => {
-        const lang = localStorage.getItem("language")
-
-        return lang === Language.pt ? Language.pt
-            : lang === Language.fr ? Language.fr
-                : Language.en
-    }
 
     getState = (): Partial<RootState> | null => {
         if (currentUser != window.localStorage.getItem("user")) {

@@ -7,6 +7,7 @@ import {mutations} from "../../../app/store/root/mutations";
 import {Language} from "../../../app/store/translations/locales";
 import DropDown from "../../../app/components/header/DropDown.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {localStorageManager} from "../../../app/localStorageManager";
 
 describe("Language menu", () => {
 
@@ -56,5 +57,10 @@ describe("Language menu", () => {
             expect(wrapper.find(DropDown).props("text")).toBe("PT");
             done();
         })
+    });
+
+    it("can return English as default if language is not persisted in local storage", () => {
+        const store = createStore();
+        expect(store.state.language).toEqual(Language.en)
     });
 });

@@ -43,7 +43,8 @@ describe("LocalStorageManager", () => {
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: mockSurveyAndProgramState({selectedDataType: DataType.Survey}),
             projects: mockProjectsState(),
-            hintrVersion: mockHintrVersionState()
+            hintrVersion: mockHintrVersionState(),
+            language: Language.en
         } as RootState;
 
         const result = serialiseState(mockRoot);
@@ -59,7 +60,8 @@ describe("LocalStorageManager", () => {
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: {selectedDataType: DataType.Survey},
             projects: mockProjectsState(),
-            hintrVersion: mockHintrVersionState()
+            hintrVersion: mockHintrVersionState(),
+            language: Language.en
         });
     });
 
@@ -79,7 +81,8 @@ describe("LocalStorageManager", () => {
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: mockSurveyAndProgramState(),
             projects: mockProjectsState(),
-            hintrVersion: mockHintrVersionState()
+            hintrVersion: mockHintrVersionState(),
+            language: Language.en
         } as RootState;
 
         const result = serialiseState(mockRoot);
@@ -97,7 +100,8 @@ describe("LocalStorageManager", () => {
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: {selectedDataType: null},
             projects: mockProjectsState(),
-            hintrVersion: mockHintrVersionState()
+            hintrVersion: mockHintrVersionState(),
+            language: Language.en
         });
     });
 
@@ -123,23 +127,13 @@ describe("LocalStorageManager", () => {
         expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState));
     });
 
-    it("returns default language if language not in local storage", () => {
-        localStorage.clear()
-        expect(localStorageManager.getLanguage()).toBe(Language.en)
-    });
+    it("can get language from local storage", () => {
+        const spy = jest.spyOn(Storage.prototype, "setItem");
 
-    it("can get Portuguese language from local storage", () => {
-        localStorageManager.saveLanguage(Language.pt);
-        expect(localStorageManager.getLanguage()).toBe(Language.pt)
-    });
+        const testState = {language: Language.pt};
+        localStorageManager.savePartialState(testState);
 
-    it("can get French language from local storage", () => {
-        localStorageManager.saveLanguage(Language.fr);
-        expect(localStorageManager.getLanguage()).toBe(Language.fr)
-    });
-
-    it("can get English language from local storage", () => {
-        localStorageManager.saveLanguage(Language.en);
-        expect(localStorageManager.getLanguage()).toBe(Language.en)
+        expect(localStorageManager.getState()?.language).toBe(Language.pt)
+        expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState))
     });
 });

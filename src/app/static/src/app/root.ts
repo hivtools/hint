@@ -78,10 +78,6 @@ const persistState = (store: Store<RootState>): void => {
         console.log(mutation.type);
         localStorageManager.saveState(state);
 
-        if (mutation.type === LanguageMutation.ChangeLanguage) {
-            localStorageManager.saveLanguage(state.language)
-        }
-
         const {dispatch} = store;
         const type = stripNamespace(mutation.type);
         if (type[0] !== "projects" && type[0] !== "errors") {
@@ -132,7 +128,7 @@ declare const currentUser: string;
 
 export const emptyState = (): RootState => {
     return {
-        language: localStorageManager.getLanguage(),
+        language: localStorageManager.getState()?.language || Language.en,
         version: currentHintVersion,
         hintrVersion: initialHintrVersionState(),
         adr: initialADRState(),

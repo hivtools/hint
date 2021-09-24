@@ -116,7 +116,8 @@ describe("File menu", () => {
                 baseline: {selectedDataset: null},
                 modelRun: mockModelRunState(),
                 metadata: mockMetadataState(),
-                surveyAndProgram: {selectedDataType: null}
+                surveyAndProgram: {selectedDataType: null},
+                language: Language.en
             },
             files: {
                 pjnz: {hash: "2csv", filename: "2.csv"},
