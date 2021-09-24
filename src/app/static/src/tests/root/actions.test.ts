@@ -1,8 +1,7 @@
 import {actions} from "../../app/store/root/actions";
-import {mockAxios, mockError, mockRootState, mockStepperState, mockSuccess} from "../mocks";
+import {mockAxios, mockRootState, mockStepperState} from "../mocks";
 import {Language} from "../../app/store/translations/locales";
 import {LanguageMutation} from "../../app/store/language/mutations";
-import {RootMutation} from "../../app/store/root/mutations";
 
 describe("root actions", () => {
 
