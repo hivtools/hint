@@ -51,6 +51,11 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     },
 
     async changeLanguage(context, payload) {
+        const {dispatch, rootState} = context
         await changeLanguage<RootState>(context, payload)
-    },
+
+        if (rootState.baseline?.iso3) {
+            await dispatch("metadata/getPlottingMetadata", rootState.baseline.iso3)
+        }
+    }
 };
