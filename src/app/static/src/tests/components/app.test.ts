@@ -109,6 +109,15 @@ describe("App", () => {
         expect(spy).toHaveBeenCalled();
     });
 
+    it("does not save language to local storage if ChangeLanguage mutation is not triggered", () => {
+        const store = getStore();
+        const spy = jest.spyOn(localStorageManager, "saveLanguage");
+        store.commit(BaselineMutation.PopulationUploadError, {payload: "pt"});
+
+        expect(spy).not.toHaveBeenCalled();
+        expect(localStorageManager.getLanguage()).toEqual("en")
+    });
+
     it("save language to local storage on every ChangeLanguage mutation", () => {
         const store = getStore();
         const spy = jest.spyOn(localStorageManager, "saveLanguage");
