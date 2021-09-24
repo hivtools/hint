@@ -1,10 +1,14 @@
+# hint 1.51.0
+
+* Re-fetch all metadata when language changes
+
+# hint 1.50.0
+
+* Move all file upload controls to Step 1
+
 # hint 1.49.1
 
 * Fix erroneous ADR upload file count
-
-# hint 1.49.0
-
-* Move all file upload controls to Step 1 
 
 # hint 1.49.0
 
