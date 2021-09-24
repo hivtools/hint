@@ -24,7 +24,7 @@
                 responsive="sm"
                 show-empty>
                 <template v-for="(_, slot) in $scopedSlots" v-slot:[slot]="props">
-                    <slot :name="slot" v-bind="props" />
+                    <slot :name="slot" v-bind="props" />-
                 </template>
             </b-table>
         </div>
@@ -35,10 +35,7 @@
 <script lang="ts">
     import Vue from "vue";
     import i18next from "i18next";
-    import {findPath, iterateDataValues, formatOutput} from "../utils";
-    import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
-    import {Dict, Filter} from "../../../types";
-    import {flattenOptions, flattenToIdSet, mapStateProp} from "../../../utils";
+    import {mapStateProp} from "../../../utils";
     import {BButton, BFormGroup, BFormInput, BInputGroup, BInputGroupAppend, BTable} from 'bootstrap-vue';
     import {RootState} from "../../../root";
     import {Language} from "../../../store/translations/locales";

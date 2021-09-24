@@ -86,13 +86,6 @@
     export default Vue.extend<unknown, unknown, Computed, Props>({
         name: "AreaIndicatorsTable",
         props: props,
-        data() {
-            return {
-                sortBy: '',
-                sortDesc: false,
-                filter: null
-            }
-        },
         computed: {
             nonAreaFilters() {
                 return this.filters.filter((f: Filter) => f.id != this.areaFilterId);

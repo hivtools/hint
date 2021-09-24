@@ -41,7 +41,7 @@ const propsData = {
     }
 };
 
-const createStore = (language: Language) => {
+const createStore = (language: Language = Language.en) => {
     const store = new Vuex.Store({
         state: {language}
     });
@@ -55,6 +55,12 @@ const getWrapper = (customPropsData: any = {}, language: Language = Language.en)
 };
 
 describe("areaIndicatorsTable", () => {
+    it('mount test', () => {
+        const store = createStore();
+        mount(AreaIndicatorsTable, {store, propsData});
+    });
+
+
     it('renders Table with correct fields', () => {
         const wrapper = getWrapper();
         const table = wrapper.find(Table);
@@ -442,4 +448,27 @@ describe("areaIndicatorsTable", () => {
 
         expect(table.props("filteredData")).toStrictEqual(expectedCountryLevelData);
     });
+
+    it('area hierarchy is rendered in child Table component', () => {
+        const store = createStore();
+        const wrapper = mount(AreaIndicatorsTable, {store, propsData});
+
+        expect(wrapper.findAll('td').at(0).findAll("div").at(0).text()).toBe('4.1');
+        expect(wrapper.findAll('td').at(0).find(".small").text()).toBe('3.1');
+    });
+
+    it('uncertainty is rendered in child Table component', () => {
+        const customPropsData = {
+            selections: {
+                ...propsData.selections,
+                detail: 3,
+            }
+        };
+
+        const store = createStore();
+        const wrapper = mount(AreaIndicatorsTable, {store, propsData: {...propsData, ...customPropsData}});
+
+        expect(wrapper.findAll('td').at(3).find(".value").text()).toBe('1.00%');
+        expect(wrapper.findAll('td').at(3).find(".small").text()).toBe('(1.00% – 10.00%)');
+    })
 });
