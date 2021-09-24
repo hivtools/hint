@@ -14,11 +14,10 @@ import {
     mockSurveyAndProgramState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
-import {RootState} from "../app/root";
+import {emptyState, RootState} from "../app/root";
 import {DataType} from "../app/store/surveyAndProgram/surveyAndProgram";
 import {currentHintVersion} from "../app/hintVersion";
 import {Language} from "../app/store/translations/locales";
-import {store} from "../app/main";
 
 declare const currentUser: string; // set in jest config, or on the index page when run for real
 
@@ -135,5 +134,16 @@ describe("LocalStorageManager", () => {
 
         expect(localStorageManager.getState()?.language).toBe(Language.pt)
         expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState))
+    });
+
+    it("can return language if persisted in local storage", () => {
+        const state = emptyState()
+        expect(state.language).toEqual(Language.pt)
+    });
+
+    it("can return English as default if language is not persisted in local storage", () => {
+        localStorage.clear()
+        const state = emptyState()
+        expect(state.language).toEqual(Language.en)
     });
 });

@@ -41,7 +41,6 @@ import {
 } from "./store/downloadResults/downloadResults";
 import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibrate/mutations";
 import {GenericChartState, initialGenericChartState, genericChart} from "./store/genericChart/genericChart";
-import {LanguageMutation} from "./store/language/mutations";
 
 export interface TranslatableState {
     language: Language

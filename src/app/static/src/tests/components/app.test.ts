@@ -109,7 +109,7 @@ describe("App", () => {
         expect(spy).toHaveBeenCalled();
     });
 
-    it("saves language to local storage on every mutation", () => {
+    it("updates language in local storage on every mutation", () => {
         const store = getStore();
         const spy = jest.spyOn(localStorageManager, "saveState");
         store.commit( LanguageMutation.ChangeLanguage, {payload: Language.pt});

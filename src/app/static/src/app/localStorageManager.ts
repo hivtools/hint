@@ -1,6 +1,5 @@
 import {RootState} from "./root";
 import {currentHintVersion} from "./hintVersion";
-import {Language} from "./store/translations/locales";
 
 const appStateKey = `hintAppState_v${currentHintVersion}`;
 
