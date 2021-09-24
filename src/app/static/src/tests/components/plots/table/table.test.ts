@@ -22,6 +22,24 @@ const createStoreFr = () => {
 };
 
 const propsData = {
+    filteredData: [
+        ...testData.chartdata,
+        {
+            area_id: "MWI_4_1", plhiv: 20, prevalence: 0.8, age: "15:30", sex: "female"
+        },
+        {
+            area_id: "MWI_4_2", plhiv: 20, prevalence: 0.3, age: "0:15", sex: "female"
+        }
+    ],
+    fields: [
+        {key: "area_id", label: "Area"},
+        {key: "age",  label: "Age"},
+        {key: "sex", label: "Sex"},
+        {key: "prevalence", "HIV prevalence"}
+    ]
+};
+
+/*const propsData2 = {
     ...testData,
     selections: {
         indicatorId: "prevalence",
@@ -60,7 +78,7 @@ const propsData = {
             {"id": "MWI_3_2", "label": "3.2", "children": [{"id": "MWI_4_2", "label": "4.2", "children": []}]}
         ]
     }
-}
+}*/
 
 const getWrapper = (customPropsData: any = {}) => {
     const store = createStore();
@@ -79,6 +97,7 @@ describe('Table from testdata', () => {
         expect(wrapper.contains('table')).toBe(true);
         expect(wrapper.contains('br')).toBe(true);
     });
+
     it('renders correct markup', () => {
         const wrapper = getWrapper();
         expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
@@ -91,345 +110,15 @@ describe('Table from testdata', () => {
         expect(wrapper.findAll('td').at(3).text()).toBe('10.00%');
         expect(wrapper.findAll('tr').length).toBe(3);
     });
-    it('renders correct markup when male selected', () => {
-        const wrapper = getWrapper({
-            selections: {
-                ...propsData.selections,
-                selectedFilterOptions: {
-                    ...propsData.selections.selectedFilterOptions,
-                    sex: [{id: "male", label: "Male"}]
-                }
-            }
-        });
-        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
-        expect(wrapper.find('td').text()).toBe('4.2 3.2');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(2).text()).toBe('Male');
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('10.00%');
-        expect(wrapper.findAll('tr').length).toBe(3);
-    });
-    it('renders correct markup when detail set to 3', () => {
-        const wrapper = getWrapper({
-            selections: {
-                ...propsData.selections,
-                detail: 3,
-            }
-        });
-        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
-        expect(wrapper.find('td').text()).toBe('3.1');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        const div = wrapper.findAll('td').at(3).findAll("div")
-        expect(div.at(1).text()).toBe('1.00%');
-        expect(div.at(2).text()).toBe('(1.00% – 10.00%)');
-        expect(wrapper.findAll('tr').length).toBe(3);
-    });
+
     it('renders correct markup when no data are available for selected filters', () => {
         const wrapper = getWrapper({
-            selections: {
-                ...propsData.selections,
-                selectedFilterOptions: {
-                    age: [{id: "15:30", label: "15-30"}],
-                    sex: [{id: "male", label: "Male"}],
-                    area: []
-                }
-            }
+            filteredData: []
         });
         expect(wrapper.contains('table')).toBe(false);
         expect(wrapper.text()).toContain('No data are available for these selections.')
-    });
-    it('renders correct markup when plhiv indicator is selected', () => {
-        const wrapper = getWrapper({
-            selections: {
-                ...propsData.selections,
-                indicatorId: "plhiv"
-            },
-            indicators: [{
-                ...propsData.indicators,
-                indicator: "plhiv", value_column: "plhiv", name: "PLHIV", format: "0,0", scale: 10
-            }]
-        });
-        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
-        expect(wrapper.find('td').text()).toBe('4.1 3.1');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-        expect(wrapper.findAll('th').at(3).text()).toBe('PLHIV (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('100');
-        expect(wrapper.findAll('tr').length).toBe(3);
-    });
-    it('renders correct markup when 3.2 is selected only', () => {
-        const wrapper = getWrapper({
-            selections: {
-                ...propsData.selections,
-                selectedFilterOptions: {
-                    ...propsData.selections.selectedFilterOptions,
-                    area: [{
-                        "id": "MWI_3_2",
-                        "label": "3.2",
-                        "children": [{"id": "MWI_4_2", "label": "4.2", "children": []}]
-                    }]
-                }
-            },
-            filters: [
-                {
-                    ...propsData.filters[0],
-                    options: [
-                        {
-                            "id": "MWI_3_1",
-                            "label": "3.1",
-                            "children": [{"id": "MWI_4_1", "label": "4.1", "children": []}]
-                        },
-                        {
-                            "id": "MWI_3_2",
-                            "label": "3.2",
-                            "children": [{"id": "MWI_4_2", "label": "4.2", "children": []}]
-                        }
-                    ]
-                },
-                {...propsData.filters[1]},
-                {...propsData.filters[2]}
-            ]
-        });
-        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
-        expect(wrapper.find('td').text()).toBe('4.2 3.2');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('30.00%');
-        expect(wrapper.findAll('tr').length).toBe(2);
-    });
-    it('renders correct markup when 3.2 is selected only and detail is set to 3', () => {
-        const wrapper = getWrapper({
-            selections: {
-                ...propsData.selections,
-                detail: 3,
-                selectedFilterOptions: {
-                    ...propsData.selections.selectedFilterOptions,
-                    area: [{
-                        "id": "MWI_3_2",
-                        "label": "3.2",
-                        "children": [{"id": "MWI_4_2", "label": "4.2", "children": []}]
-                    }]
-                }
-            },
-            filters: [
-                {
-                    ...propsData.filters[0],
-                    options: [
-                        {
-                            "id": "MWI_3_1",
-                            "label": "3.1",
-                            "children": [{"id": "MWI_4_1", "label": "4.1", "children": []}]
-                        },
-                        {
-                            "id": "MWI_3_2",
-                            "label": "3.2",
-                            "children": [{"id": "MWI_4_2", "label": "4.2", "children": []}]
-                        }
-                    ]
-                },
-                {...propsData.filters[1]},
-                {...propsData.filters[2]}
-            ]
-        });
-        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
-        expect(wrapper.find('td').text()).toBe('3.2');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('0.00%');
-        expect(wrapper.findAll('tr').length).toBe(2);
-    });
-    it('renders correct markup when detail set to 0', () => {
-        const wrapper = getWrapper({
-            selections: {
-                ...propsData.selections,
-                detail: 0
-            },
-            tabledata: [
-                ...propsData.tabledata,
-                {
-                    area_id: "MWI", plhiv: 25, prevalence: 0.5, age: "0:15", sex: "female"
-                }
-            ],
-            filters: [
-                {
-                    ...propsData.filters[0],
-                    options: [
-                        {
-                            id: "MWI", label: "Malawi", children: [
-                                {
-                                    "id": "MWI_3_1",
-                                    "label": "3.1",
-                                    "children": [{"id": "MWI_4_1", "label": "4.1", "children": []}]
-                                },
-                                {
-                                    "id": "MWI_3_2",
-                                    "label": "3.2",
-                                    "children": [{"id": "MWI_4_2", "label": "4.2", "children": []}]
-                                }
-                            ]
-                        },
-                    ]
-                },
-                {...propsData.filters[1]},
-                {...propsData.filters[2]}
-            ]
-        });
-        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
-        expect(wrapper.find('td').text()).toBe('Malawi');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('50.00%');
-        expect(wrapper.findAll('tr').length).toBe(2);
-    });
-    it('renders correct markup when detail set to null', () => {
-        const wrapper = getWrapper({
-            selections: {
-                ...propsData.selections,
-                detail: null,
-                selectedFilterOptions: {
-                    ...propsData.selections.selectedFilterOptions,
-                    area: [
-                        {
-                            id: "MWI", label: "Malawi", children: [
-                                {
-                                    "id": "MWI_3_1",
-                                    "label": "3.1",
-                                    "children": [{"id": "MWI_4_1", "label": "4.1", "children": []}]
-                                },
-                                {
-                                    "id": "MWI_3_2",
-                                    "label": "3.2",
-                                    "children": [{"id": "MWI_4_2", "label": "4.2", "children": []}]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            },
-            tabledata: [
-                ...propsData.tabledata,
-                {
-                    area_id: "MWI", plhiv: 25, prevalence: 0.5, age: "0:15", sex: "female"
-                }
-            ],
-            filters: [
-                {
-                    ...propsData.filters[0],
-                    options: [
-                        {
-                            id: "MWI", label: "Malawi", children: [
-                                {
-                                    "id": "MWI_3_1",
-                                    "label": "3.1",
-                                    "children": [{"id": "MWI_4_1", "label": "4.1", "children": []}]
-                                },
-                                {
-                                    "id": "MWI_3_2",
-                                    "label": "3.2",
-                                    "children": [{"id": "MWI_4_2", "label": "4.2", "children": []}]
-                                }
-                            ]
-                        },
-                    ]
-                },
-                {...propsData.filters[1]},
-                {...propsData.filters[2]}
-            ]
-        });
-        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
-        expect(wrapper.find('td').text()).toBe('Malawi');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('50.00%');
-        expect(wrapper.findAll('tr').length).toBe(2);
-    });
-    it('renders correct markup when detail set to 0 but 3.2 is selected', () => {
-        const wrapper = getWrapper({
-            selections: {
-                ...propsData.selections,
-                detail: 0,
-                selectedFilterOptions: {
-                    ...propsData.selections.selectedFilterOptions,
-                    area: [{
-                        "id": "MWI_3_2",
-                        "label": "3.2",
-                        "children": [{"id": "MWI_4_2", "label": "4.2", "children": []}]
-                    }]
-                }
-            },
-            tabledata: [
-                ...propsData.tabledata,
-                {
-                    area_id: "MWI", plhiv: 25, prevalence: 0.5, age: "0:15", sex: "female"
-                }
-            ],
-            filters: [
-                {
-                    ...propsData.filters[0],
-                    options: [
-                        {
-                            id: "MWI", label: "Malawi", children: [
-                                {
-                                    "id": "MWI_3_1",
-                                    "label": "3.1",
-                                    "children": [{"id": "MWI_4_1", "label": "4.1", "children": []}]
-                                },
-                                {
-                                    "id": "MWI_3_2",
-                                    "label": "3.2",
-                                    "children": [{"id": "MWI_4_2", "label": "4.2", "children": []}]
-                                }
-                            ]
-                        },
-                    ]
-                },
-                {...propsData.filters[1]},
-                {...propsData.filters[2]}
-            ]
-        });
-        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
-        expect(wrapper.find('td').text()).toBe('Malawi');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('50.00%');
-        expect(wrapper.findAll('tr').length).toBe(2);
-    });
+    }); //TODO: this test in Fr
 
-    it('renders correct markup in French', () => {
-        const wrapper = getWrapperFr();
-        expect(wrapper.find('th').text()).toBe('Zone (Click to sort Ascending)');
-        expect(wrapper.find('td').text()).toBe('4.1 3.1');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Âge (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(1).text()).toBe('0-15');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sexe (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(2).text()).toBe('Female');
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('10.00%');
-        expect(wrapper.findAll('tr').length).toBe(3);
-    });
     it('renders correct markup when sorting by HIV prevalence ascending', () => {
         const wrapper = getWrapper();
         wrapper.setData({sortBy: 'prevalence'})

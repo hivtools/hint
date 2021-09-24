@@ -51,6 +51,8 @@
     export interface Field {
         key: string,
         label?: string
+        sortable: boolean,
+        sortByFormatted: boolean
     }
 
     interface Methods {
