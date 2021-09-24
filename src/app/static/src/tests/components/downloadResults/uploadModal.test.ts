@@ -299,7 +299,6 @@ describe(`uploadModal `, () => {
     it(`can trigger close modal as expected`, async () => {
         const wrapper = mount(UploadModal, {store: createStore()})
 
-        await wrapper.setProps({open: true})
         const modal = wrapper.find(".modal");
         expect(modal.classes()).toContain("show");
 
@@ -317,7 +316,6 @@ describe(`uploadModal `, () => {
         const store = createStore()
         const wrapper = mount(UploadModal, {store})
 
-        await wrapper.setProps({open: true})
         const modal = wrapper.find(".modal");
         expect(modal.classes()).toContain("show");
 
@@ -333,7 +331,46 @@ describe(`uploadModal `, () => {
         await Vue.nextTick()
         expect(wrapper.vm.$data.choiceUpload).toBe("createRelease")
         expect(mockUploadFilesToADR.mock.calls.length).toBe(2)
-        expect(mockUploadFilesToADR.mock.calls[1][mockUploadFilesToADR.mock.calls[1].length -2]["createRelease"]).toBe(true)
+        const num = mockUploadFilesToADR.mock.calls[0].length -2
+        expect(mockUploadFilesToADR.mock.calls[0][num]["uploadFiles"]).toStrictEqual([fakeMetadata["outputZip"],fakeMetadata["outputSummary"]])
+        expect(mockUploadFilesToADR.mock.calls[0][num]["createRelease"]).toBe(true)
+        expect(mockUploadFilesToADR.mock.calls[1][num]["uploadFiles"]).toStrictEqual([])
+        expect(mockUploadFilesToADR.mock.calls[1][num]["createRelease"]).toBe(true)
+        expect(mockUploadMetadataAction.mock.calls.length).toBe(2)
+    });
+
+    it(`can send upload files to ADR when download status is complete and createRelease is not flagged`, async () => {
+        const downloadResults = {
+            summary: {complete: true, downloading: false} as any,
+            spectrum: {complete: true, downloading: false} as any,
+            coarseOutput: {} as any
+        }
+        const store = createStore()
+        const wrapper = mount(UploadModal, {store})
+
+        const modal = wrapper.find(".modal");
+
+        //Refresh adrUpload upload files to trigger watch, which populates uploadFilesToADR
+        store.state.adrUpload.uploadFiles= {...fakeMetadata};
+
+        // Selects upload specific files radial
+        const radialInput = wrapper.find("#uploadFiles")
+        await radialInput.trigger("click")
+
+        //Click ok to trigger population of uploadFilesPayload
+        const okBtn = modal.find("button.btn-red");
+        expect(okBtn.element)
+        await okBtn.trigger("click");
+
+        store.state.downloadResults = downloadResults
+        await Vue.nextTick()
+        expect(wrapper.vm.$data.choiceUpload).toBe("uploadFiles")
+        expect(mockUploadFilesToADR.mock.calls.length).toBe(2)
+        const num = mockUploadFilesToADR.mock.calls[0].length -2
+        expect(mockUploadFilesToADR.mock.calls[0][num]["uploadFiles"]).toStrictEqual([fakeMetadata["outputZip"],fakeMetadata["outputSummary"]])
+        expect(mockUploadFilesToADR.mock.calls[0][num]["createRelease"]).toBe(false)
+        expect(mockUploadFilesToADR.mock.calls[1][num]["uploadFiles"]).toStrictEqual([])
+        expect(mockUploadFilesToADR.mock.calls[1][num]["createRelease"]).toBe(false)
         expect(mockUploadMetadataAction.mock.calls.length).toBe(2)
     });
 
@@ -344,7 +381,6 @@ describe(`uploadModal `, () => {
         }
         const wrapper = mount(UploadModal, {store: createStore(fakeMetadata, downloadResults)})
 
-        await wrapper.setProps({open: true})
         const radialInput = wrapper.find("#uploadFiles")
         await radialInput.trigger("click")
 
@@ -367,7 +403,6 @@ describe(`uploadModal `, () => {
         const store = createStore(fakeMetadata, downloadResults)
         const wrapper = mount(UploadModal, {store})
 
-        await wrapper.setProps({open: true})
         const radialInput = wrapper.find("#uploadFiles")
         await radialInput.trigger("click")
 
@@ -390,7 +425,6 @@ describe(`uploadModal `, () => {
     it("can invoke summary and spectrum download action", async () => {
         const store = createStore();
         const wrapper = mount(UploadModal, {store})
-        await wrapper.setProps({open: true})
         const radialInput = wrapper.find("#uploadFiles")
         await radialInput.trigger("click")
 
@@ -414,7 +448,6 @@ describe(`uploadModal `, () => {
         });
         const wrapper = mount(UploadModal, {store})
 
-        await wrapper.setProps({open: true})
 
         //Click ok to trigger population of uploadFilesPayload
         const okBtn = wrapper.find(".modal button.btn-red");
@@ -433,7 +466,6 @@ describe(`uploadModal `, () => {
         const store = createStore();
         const wrapper = mount(UploadModal, {store})
 
-        await wrapper.setProps({open: true})
         wrapper.vm.$store.state.downloadResults = failedDownloadResults
         await Vue.nextTick()
 
@@ -445,7 +477,6 @@ describe(`uploadModal `, () => {
         const store = createStore();
         const wrapper = mount(UploadModal, {store})
 
-        await wrapper.setProps({open: true})
         const radialInput = wrapper.find("#uploadFiles")
         await radialInput.trigger("click")
 
@@ -467,7 +498,6 @@ describe(`uploadModal `, () => {
         const store = createStore();
         const wrapper = mount(UploadModal, {store})
 
-        await wrapper.setProps({open: true})
         const radialInput = wrapper.find("#uploadFiles")
         await radialInput.trigger("click")
 
@@ -527,7 +557,6 @@ describe(`uploadModal `, () => {
         const wrapper = mount(UploadModal,
             {
                 store: createStore(fakeMetadata, downloadResults),
-                propsData: {open: true},
                 data() {
                     return {
                         uploadFilesToAdr: ["outputZip", "outputSummary"]
@@ -544,7 +573,6 @@ describe(`uploadModal `, () => {
         const wrapper = mount(UploadModal,
             {
                 store: createStore(fakeMetadata),
-                propsData: {open: true},
                 data() {
                     return {
                         uploadFilesToAdr: ["outputZip", "outputSummary"]
@@ -561,7 +589,6 @@ describe(`uploadModal `, () => {
         const wrapper = mount(UploadModal,
             {
                 store: createStore(fakeMetadata),
-                propsData: {open: true},
                 data() {
                     return {
                         uploadFilesToAdr: ["outputZip", "outputSummary"]

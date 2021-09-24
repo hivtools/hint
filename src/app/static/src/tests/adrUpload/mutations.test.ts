@@ -1,5 +1,6 @@
 import {mockError, mockADRUploadState} from "../mocks";
 import {mutations, ADRUploadMutation} from "../../app/store/adrUpload/mutations";
+import i18next from "i18next";
 
 describe("ADR mutations", () => {
 
@@ -86,5 +87,25 @@ describe("ADR mutations", () => {
         mutations[ADRUploadMutation.ReleaseFailed](state, {payload: mockError("other error")});
         expect(state.releaseFailed).toBe(true);
         expect(state.uploadError!!.detail).toBe("other error");
+    });
+
+    it("can set release failed with error in French", async () => {
+        const state = mockADRUploadState();
+        await i18next.changeLanguage("fr");
+        mutations[ADRUploadMutation.ReleaseFailed](state, {payload: mockError("Version already exists for this activity")});
+        expect(state.uploadError!!.detail).toBe("Une release existe déjà sur ADR pour les derniers fichiers");
+
+        mutations[ADRUploadMutation.ReleaseFailed](state, {payload: mockError("Version names must be unique per dataset")});
+        expect(state.uploadError!!.detail).toBe("Les noms de version doivent être uniques par ensemble de données et une version portant le même nom existe déjà sur ADR. Essayez de renommer le projet pour générer un nouveau nom de version.");
+    });
+
+    it("can set release failed with error in Portuguese", async () => {
+        const state = mockADRUploadState();
+        await i18next.changeLanguage("pt");
+        mutations[ADRUploadMutation.ReleaseFailed](state, {payload: mockError("Version already exists for this activity")});
+        expect(state.uploadError!!.detail).toBe("Já existe uma versão no ADR para os arquivos mais recentes");
+
+        mutations[ADRUploadMutation.ReleaseFailed](state, {payload: mockError("Version names must be unique per dataset")});
+        expect(state.uploadError!!.detail).toBe("Os nomes de versão devem ser exclusivos por conjunto de dados e uma versão com o mesmo nome já existe no ADR. Tente renomear o projeto para gerar um novo nome de versão.");
     });
 });

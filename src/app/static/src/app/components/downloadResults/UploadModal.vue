@@ -1,6 +1,6 @@
 <template>
     <div id="dialog">
-        <modal :open="open">
+        <modal :open="true">
             <h4 v-translate="'uploadFileToAdr'"></h4>
             <div class="container">
                 <div id="dataset-id" class="mt-4">
@@ -143,20 +143,11 @@
         selectedUploadFiles: UploadFile[]
     }
 
-    interface Props {
-        open: boolean
-    }
-
     const outputFileTypes = ["outputZip", "outputSummary"];
     const inputFileTypes = ["anc", "programme", "pjnz", "population", "shape", "survey"];
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         name: "UploadModal",
-        props: {
-            open: {
-                type: Boolean
-            }
-        },
         data(): Data {
             return {
                 uploadFilesToAdr: [],
@@ -233,19 +224,17 @@
                 clearInterval(id)
             },
             async handleDownloadResult(downloadResults) {
-                if (this.open) {
-                    if (this.downloadIsReady()) {
-                        await this.getUploadMetadata(downloadResults.downloadId)
-                        this.sendUploadFilesToADR();
-                    }
+                if (this.downloadIsReady()) {
+                    await this.getUploadMetadata(downloadResults.downloadId)
+                    this.sendUploadFilesToADR();
+                }
 
-                    if(downloadResults.complete) {
-                        this.stopPolling(downloadResults.statusPollId)
-                    }
+                if(downloadResults.complete) {
+                    this.stopPolling(downloadResults.statusPollId)
+                }
 
-                    if (downloadResults.error) {
-                        this.stopPolling(downloadResults.statusPollId)
-                    }
+                if (downloadResults.error) {
+                    this.stopPolling(downloadResults.statusPollId)
                 }
             },
             downloadSpectrum: mapActionByName("downloadResults", "downloadSpectrum"),
