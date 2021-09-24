@@ -11,7 +11,7 @@
         Filter,
         GenericChartTableConfig
     } from "../../types";
-    import TableView, {Field} from "../plots/table/Table.vue";;
+    import TableView, {Field} from "../plots/table/Table.vue";
 
     interface Props {
         filteredData: any[],
