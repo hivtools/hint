@@ -1,5 +1,5 @@
 <template>
-    <table-view :fields="generatedFields" :filtered-data="filteredData">
+    <table-view :fields="generatedFields" :filtered-data="labelledData">
     </table-view>
 </template>
 
@@ -22,7 +22,7 @@
 
     interface Computed {
         generatedFields: Field[],
-        friendlyData: any[]
+        labelledData: any[]
     }
 
     const props = {
@@ -43,26 +43,19 @@
     export default Vue.extend<unknown, unknown, Computed, Props>({
         name: "GenericChartTable",
         props: props,
-        data() {
-            return {
-                sortBy: '',
-                sortDesc: false,
-                filter: null
-            }
-        },
         computed: {
             generatedFields() {
-                const fields = this.tableConfig.columns.map(c => {
+                const fields = this.tableConfig.columns.map(column => {
                     let label: string;
-                    if (c.header.type === "filterLabel") {
-                        label = this.filters.find(f => f.id === c.header.filterId)?.label || c.header.filterId;
+                    if (column.header.type === "filterLabel") {
+                        label = this.filters.find(f => f.id === column.header.filterId)?.label || column.header.filterId;
                     } else {
-                        const selectedFilterOption = this.selectedFilterOptions[c.header.filterId][0];
+                        const selectedFilterOption = this.selectedFilterOptions[column.header.filterId][0];
                         label = selectedFilterOption.label;
                     }
 
                     return {
-                        key: c.data.columnId,
+                        key: column.data.columnId,
                         label,
                         sortable: true,
                         sortByFormatted: true
@@ -71,7 +64,7 @@
 
                 return fields
             },
-            friendlyData() {
+            labelledData() {
                 const filtersDict = this.filters.reduce((dict, filter) => ({...dict, [filter.id]: filter}), {} as Dict<Filter>);
                 const result = this.filteredData.map(row => {
                     const friendlyRow = {...row};

@@ -44,7 +44,7 @@
             {
               "data": {
                 "columnId": "area_level_label",
-                "labelFilterId": "area_level"
+                "labelFilterId": null
               },
               "header": {
                 "type": "filterLabel",
@@ -117,7 +117,7 @@
             {
               "data": {
                 "columnId": "area_level_label",
-                "labelFilterId": "area_level"
+                "labelFilterId": null
               },
               "header": {
                 "type": "filterLabel",
