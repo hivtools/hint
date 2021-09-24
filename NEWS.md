@@ -1,3 +1,7 @@
+# hint 1.52.0
+
+* Show Time series tab and data source picker only when relevant 
+
 # hint 1.51.0
 
 * Remove genericChart dataset when corresponding input file changes

@@ -164,7 +164,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
             .delete("/disease/anc/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
-                commitClearGenericChartDataset(commit, DATASET_TYPE.ART)
+                commitClearGenericChartDataset(commit, DATASET_TYPE.ANC)
             });
     },
 
