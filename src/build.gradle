@@ -3,7 +3,9 @@ buildscript {
 
     repositories {
         mavenCentral()
-        jcenter()
+        maven { // required for detekt < v1.17.0
+            url "https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven"
+        }
     }
 
     dependencies {
@@ -21,7 +23,9 @@ subprojects {
 
     repositories {
         mavenCentral()
-        jcenter()
+        maven { // required for detekt < v1.17.0
+            url "https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven"
+        }
     }
 
     apply plugin: 'io.spring.dependency-management'
