@@ -76,6 +76,10 @@
                     :disabled="downloadingFiles"
                     @click.prevent="handleCancel"
                     v-translate="'cancel'"></button>
+                    <button
+                    type="button"
+                    class="btn btn-white"
+                    @click.prevent="deleteReleaseAction">Delete release</button>
             </template>
         </modal>
     </div>
@@ -105,6 +109,7 @@
     interface Methods {
         uploadFilesToADRAction: (selectedUploadFiles: {uploadFiles: UploadFile[], createRelease: boolean}) => void;
         createReleaseAction: () => void;
+        deleteReleaseAction: () => void;
         confirmUpload: () => void;
         handleCancel: () => void
         setDefaultCheckedItems: () => void
@@ -164,6 +169,10 @@
             createReleaseAction: mapActionByName(
                 "adrUpload",
                 "createRelease"
+            ),
+            deleteReleaseAction: mapActionByName(
+                "adrUpload",
+                "deleteRelease"
             ),
             confirmUpload() {
                 this.selectedUploadFiles = this.uploadFilesToAdr.map(value => this.uploadableFiles[value]);

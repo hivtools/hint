@@ -5,14 +5,15 @@ import qs from "qs";
 import {ADRUploadState} from "./adrUpload";
 import {ADRUploadMutation} from "./mutations";
 import {constructUploadFile, constructUploadFileWithResourceName} from "../../utils";
-import {Dict, UploadFile} from "../../types";
+import {Dict, UploadFile, Release} from "../../types";
 import {ValidateInputResponse} from "../../generated";
 
 export interface ADRUploadActions {
     getUploadFiles: (store: ActionContext<ADRUploadState, RootState>) => void;
     uploadFilesToADR: (store: ActionContext<ADRUploadState, RootState>, uploadFilesPayload: {uploadFiles: UploadFile[], createRelease: boolean}) => void;
     createRelease: (store: ActionContext<ADRUploadState, RootState>) => void;
-    deleteRelease: (store: ActionContext<ADRUploadState, RootState>) => void;
+    deleteRelease: (store: ActionContext<ADRUploadState, RootState>, releaseId: string) => void;
+    // checkForDuplicateReleaseName: (store: ActionContext<ADRUploadState, RootState>, releaseName: string) => string | null;
 }
 
 export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions = {
@@ -142,11 +143,21 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
     },
 
     async createRelease(context) {
-        const {rootState} = context;
+        const {rootState, dispatch} = context;
         const selectedDatasetId = rootState.baseline.selectedDataset!.id;
         const project = rootState.projects.currentProject?.name;
         const version = rootState.projects.currentVersion?.versionNumber;
         const name = {name: `Naomi: ${project} v${version}`}
+
+        // dispatch("checkForDuplicateReleaseName", name);
+        await dispatch("adr/getReleases", {}, {root: true})
+        const releases: Release[] = rootState.adr.releases;
+        console.log({releases})
+        const duplicateReleaseId = releases.find(release => release.name === name.name)?.id
+        console.log({duplicateReleaseId})
+        if (duplicateReleaseId){
+            await dispatch("deleteRelease", duplicateReleaseId)
+        }
 
         await api(context)
                 .withError(ADRUploadMutation.ReleaseFailed)
@@ -154,13 +165,35 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                 .postAndReturn(`/adr/datasets/${selectedDatasetId}/releases`, qs.stringify(name));
     },
 
-    async deleteRelease(context) {
+    async deleteRelease(context, releaseId) {
         const {rootState} = context;
-        const selectedReleaseId = rootState.baseline.selectedDataset!.release;
-
+        // const selectedReleaseId = rootState.baseline.selectedDataset!.release;
+        // const selectedReleaseId = "9c83f7ea-a33f-4dc4-802e-228eac8a263f"
+        console.log("delete release fired")
         await api(context)
                 .withError(ADRUploadMutation.ReleaseFailed)
-                .withSuccess(ADRUploadMutation.ReleaseCreated)
-                .postAndReturn(`/adr/releases/${selectedReleaseId}/delete`);
-    }
+                // .withSuccess(ADRUploadMutation.ReleaseCreated)
+                .ignoreSuccess()
+                .postAndReturn(`/adr/releases/${releaseId}/delete`);
+    },
+
+    // async checkForDuplicateReleaseName(context, releaseName) {
+    //     const {rootState, dispatch} = context;
+    //     // const selectedDatasetId = rootState.baseline.selectedDataset!.id;
+
+    //     // await api(context)
+    //     //         .withError(ADRUploadMutation.ReleaseFailed)
+    //     //         // .withSuccess(ADRUploadMutation.ReleaseCreated)
+    //     //         .ignoreSuccess()
+    //     //         .get(`/adr/datasets/${datasetId}/releases`)
+    //     //         .then((response) => {
+    //     //             if (response) {
+    //     //                 console.log("duplicates response", response)
+    //     //             }
+    //     //         })
+
+    //     await dispatch("getReleases")
+    //     const releases: Release[] = rootState.adr.releases;
+    //     return releases.find(release => release.name === releaseName)?.id || null
+    // }
 };
