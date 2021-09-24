@@ -189,6 +189,13 @@ class ADRController(private val encryption: Encryption,
         return adr.post("dataset_version_create", listOf("dataset_id" to id, "name" to name));
     }
 
+    @PostMapping("/releases/{id}/delete")
+    fun deleteRelease(@PathVariable id: String): ResponseEntity<String>
+    {
+        val adr = adrClientBuilder.build()
+        return adr.post("version_delete", listOf("version_id" to id));
+    }
+
     @PostMapping("/datasets/{id}/resource/{resourceType}/{downloadId}")
     @Suppress("ReturnCount", "LongParameterList", "UnsafeCallOnNullableType")
     fun pushFileToADR(@PathVariable id: String,

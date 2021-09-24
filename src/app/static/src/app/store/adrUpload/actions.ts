@@ -12,6 +12,7 @@ export interface ADRUploadActions {
     getUploadFiles: (store: ActionContext<ADRUploadState, RootState>) => void;
     uploadFilesToADR: (store: ActionContext<ADRUploadState, RootState>, uploadFilesPayload: {uploadFiles: UploadFile[], createRelease: boolean}) => void;
     createRelease: (store: ActionContext<ADRUploadState, RootState>) => void;
+    deleteRelease: (store: ActionContext<ADRUploadState, RootState>) => void;
 }
 
 export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions = {
@@ -151,5 +152,15 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                 .withError(ADRUploadMutation.ReleaseFailed)
                 .withSuccess(ADRUploadMutation.ReleaseCreated)
                 .postAndReturn(`/adr/datasets/${selectedDatasetId}/releases`, qs.stringify(name));
+    },
+
+    async deleteRelease(context) {
+        const {rootState} = context;
+        const selectedReleaseId = rootState.baseline.selectedDataset!.release;
+
+        await api(context)
+                .withError(ADRUploadMutation.ReleaseFailed)
+                .withSuccess(ADRUploadMutation.ReleaseCreated)
+                .postAndReturn(`/adr/releases/${selectedReleaseId}/delete`);
     }
 };
