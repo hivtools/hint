@@ -150,7 +150,7 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
         const name = {name: `Naomi: ${project} v${version}`}
 
         // dispatch("checkForDuplicateReleaseName", name);
-        await dispatch("adr/getReleases", {}, {root: true})
+        await dispatch("adr/getReleases", selectedDatasetId, {root: true})
         const releases: Release[] = rootState.adr.releases;
         console.log({releases})
         const duplicateReleaseId = releases.find(release => release.name === name.name)?.id
@@ -166,12 +166,12 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
     },
 
     async deleteRelease(context, releaseId) {
-        const {rootState} = context;
+        // const {rootState} = context;
         // const selectedReleaseId = rootState.baseline.selectedDataset!.release;
         // const selectedReleaseId = "9c83f7ea-a33f-4dc4-802e-228eac8a263f"
         console.log("delete release fired")
         await api(context)
-                .withError(ADRUploadMutation.ReleaseFailed)
+                .withError(ADRUploadMutation.GeneralError)
                 // .withSuccess(ADRUploadMutation.ReleaseCreated)
                 .ignoreSuccess()
                 .postAndReturn(`/adr/releases/${releaseId}/delete`);
