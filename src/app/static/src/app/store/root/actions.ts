@@ -55,7 +55,13 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         await changeLanguage<RootState>(context, payload)
 
         if (rootState.baseline?.iso3) {
-            await dispatch("metadata/getPlottingMetadata", rootState.baseline.iso3)
+            dispatch("metadata/getPlottingMetadata", rootState.baseline.iso3)
         }
+
+        if (rootState.modelCalibrate.status.done) {
+            dispatch("modelCalibrate/getResult")
+        }
+
+
     }
 };
