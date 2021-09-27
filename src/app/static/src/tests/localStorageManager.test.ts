@@ -136,14 +136,4 @@ describe("LocalStorageManager", () => {
         expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState))
     });
 
-    it("can return language if persisted in local storage", () => {
-        const state = emptyState()
-        expect(state.language).toEqual(Language.pt)
-    });
-
-    it("can return English as default if language is not persisted in local storage", () => {
-        localStorage.clear()
-        const state = emptyState()
-        expect(state.language).toEqual(Language.en)
-    });
 });

@@ -127,7 +127,7 @@ declare const currentUser: string;
 
 export const emptyState = (): RootState => {
     return {
-        language: localStorageManager.getState()?.language || Language.en,
+        language: Language.en,
         version: currentHintVersion,
         hintrVersion: initialHintrVersionState(),
         adr: initialADRState(),
@@ -149,9 +149,10 @@ export const emptyState = (): RootState => {
         downloadResults: initialDownloadResultsState()
     }
 };
+const existingState = localStorageManager.getState();
 
 export const storeOptions: StoreOptions<RootState> = {
-    state: emptyState(),
+    state: {...emptyState(), ...existingState && {language: existingState.language}},
     modules: {
         adr,
         genericChart,
