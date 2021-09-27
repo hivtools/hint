@@ -51,17 +51,23 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     },
 
     async changeLanguage(context, payload) {
-        const {dispatch, rootState} = context
-        await changeLanguage<RootState>(context, payload)
+        const {commit, dispatch, rootState} = context;
+
+        commit({type: RootMutation.SetUpdatingLanguage, payload: true});
+        await changeLanguage<RootState>(context, payload);
+
+        const actions: Promise<unknown>[] = [];
 
         if (rootState.baseline?.iso3) {
-            dispatch("metadata/getPlottingMetadata", rootState.baseline.iso3)
+            actions.push(dispatch("metadata/getPlottingMetadata", rootState.baseline.iso3));
         }
 
         if (rootState.modelCalibrate.status.done) {
-            dispatch("modelCalibrate/getResult")
+            actions.push(dispatch("modelCalibrate/getResult"));
         }
 
-
+        await Promise.all(actions).then(() => {
+            commit({type: RootMutation.SetUpdatingLanguage, payload: false});
+        });
     }
 };
