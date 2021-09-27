@@ -67,6 +67,7 @@
     import { RootState } from "../../root";
     import {ADRMutation} from "../../store/adr/mutations";
     import { Release } from "../../types";
+    import { BaselineState } from "../../store/baseline/baseline";
 
     interface Data {
         releaseId: string | undefined;
@@ -77,10 +78,12 @@
         getReleases: (id: string) => void;
         clearReleases: () => void;
         translate(text: string): string;
+        preSelectRelease: () => void;
     }
 
     interface Computed {
         releases: Release[];
+        initialRelease: string | undefined;
         valid: boolean;
         releaseOptions: any[];
         useRelease: boolean;
@@ -89,6 +92,7 @@
 
     interface Props {
         datasetId: string | null;
+        open: boolean;
     }
 
     const namespace = "adr";
@@ -100,6 +104,7 @@
         },
         props: {
             datasetId: String,
+            open: Boolean
         },
         data() {
             return {
@@ -111,6 +116,10 @@
             releases: mapStateProp<ADRState, any[]>(
                 namespace,
                 (state: ADRState) => state.releases
+            ),
+            initialRelease: mapStateProp<BaselineState, string | undefined>(
+                "baseline",
+                (state: BaselineState) => state.selectedDataset?.release
             ),
             valid() {
                 return (this.choiceADR === "useLatest") || !!this.releaseId;
@@ -138,7 +147,16 @@
             translate(text) {
                 return i18next.t(text, { lng: this.currentLanguage });
             },
-            clearReleases: mapMutationByName(namespace, ADRMutation.ClearReleases)
+            clearReleases: mapMutationByName(namespace, ADRMutation.ClearReleases),
+            preSelectRelease(){
+                const selectedReleaseId = this.initialRelease
+                if (selectedReleaseId && this.releases.some(release => release.id === selectedReleaseId)){
+                    this.choiceADR = "useRelease"
+                    this.releaseId = selectedReleaseId;
+                } else if (selectedReleaseId && !this.releases.some(release => release.id === selectedReleaseId)) {
+                    this.choiceADR = "useLatest"
+                }
+            }
         },
         watch: {
             datasetId(id) {
@@ -154,15 +172,24 @@
                 }
             },
             releaseId() {
-                this.$emit("selected-dataset-release", this.releaseId);
+                this.$emit("selected-dataset-release", this.releases.find(release => release.id === this.releaseId))
             },
             valid() {
                 this.$emit("valid", this.valid);
             },
+            releases(){
+                this.preSelectRelease();
+            },
+            open(){
+                if (this.open && this.datasetId){
+                    this.getReleases(this.datasetId);
+                }
+            }
         },
         mounted(){
             this.$emit("selected-dataset-release", this.releaseId);
             this.$emit("valid", this.valid);
+            this.preSelectRelease();
         },
         directives: {
             tooltip: VTooltip,

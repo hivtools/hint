@@ -1,3 +1,7 @@
+# hint 1.52.0
+
+* Show selected release name and preselected in modal
+
 # hint 1.51.0
 
 * Re-fetch all metadata when language changes
