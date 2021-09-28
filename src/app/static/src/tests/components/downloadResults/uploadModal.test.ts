@@ -100,12 +100,6 @@ describe(`uploadModal `, () => {
             statusPollId: 123
         }
     }
-    // const fakeDownloadResults = {
-    //     summary: {complete: true, downloading: false} as any,
-    //     spectrum: {complete: true, downloading: false} as any,
-    //     coarseOutput: {} as any
-    // }
-    // const fakeUploadFiles = ["outputZip", "outputSummary", "anc", "programme", "pjnz", "population", "shape", "survey"]
 
     const mockSpectrumDownload = jest.fn();
     const mockSummaryDownload = jest.fn();
@@ -312,31 +306,6 @@ describe(`uploadModal `, () => {
         await buttons.at(1).trigger("click")
         expect(wrapper.emitted("close").length).toBe(1)
     })
-
-    // it(`new test`, async () => {
-    //     const downloadResults = {
-    //         summary: {complete: true, downloading: false} as any,
-    //         spectrum: {complete: true, downloading: false} as any,
-    //         coarseOutput: {} as any
-    //     }
-    //     const store = createStore(metadataWithInput, downloadResults)
-    //     const wrapper = mount(UploadModal, {store})
-    //     // wrapper.setData({uploadFilesToAdr: fakeUploadFiles})
-    //     store.state.adrUpload.uploadFiles = {...metadataWithInput};
-
-    //     const modal = wrapper.find(".modal");
-    //     // expect(modal.text()).toBe("show");
-    //     const okBtn = modal.find("button.btn-red");
-    //     await okBtn.trigger("click");
-
-    //     // store.state.downloadResults = downloadResults
-    //     await Vue.nextTick()
-    //     expect(wrapper.vm.$data.choiceUpload).toBe("createRelease")
-    //     expect(mockUploadFilesToADR.mock.calls.length).toBe(1)
-    //     const num = mockUploadFilesToADR.mock.calls[0].length -2
-    //     expect(mockUploadFilesToADR.mock.calls[0][num]["uploadFiles"]).toStrictEqual([metadataWithInput["outputZip"],metadataWithInput["outputSummary"], metadataWithInput["population"]])
-    //     expect(mockUploadFilesToADR.mock.calls[0][num]["createRelease"]).toBe(true)
-    // });
 
     it(`can send upload files to ADR when download status is complete`, async () => {
         const downloadResults = {
