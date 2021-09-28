@@ -30,7 +30,7 @@ const propsData = {
         "format": "0.00%",
         "scale": 1
     }],
-    tabledata: [
+    tableData: [
         ...testData.chartdata
     ],
     countryAreaFilterOption: {
@@ -350,7 +350,7 @@ describe("areaIndicatorsTable", () => {
         ]
     };
     const tableDataWithCountryValue = [
-        ...propsData.tabledata,
+        ...propsData.tableData,
         {
             area_id: "MWI", plhiv: 25, prevalence: 0.5, age: "0:15", sex: "female"
         }
@@ -374,7 +374,7 @@ describe("areaIndicatorsTable", () => {
                 ...propsData.selections,
                 detail: 0
             },
-            tabledata: tableDataWithCountryValue,
+            tableData: tableDataWithCountryValue,
             filters: [
                 countryLevelAreaFilter,
                 {...propsData.filters[1]},
@@ -411,7 +411,7 @@ describe("areaIndicatorsTable", () => {
                     ]
                 }
             },
-            tabledata: tableDataWithCountryValue,
+            tableData: tableDataWithCountryValue,
             filters: [
                 countryLevelAreaFilter,
                 {...propsData.filters[1]},
@@ -437,7 +437,7 @@ describe("areaIndicatorsTable", () => {
                     }]
                 }
             },
-            tabledata: tableDataWithCountryValue,
+            tableData: tableDataWithCountryValue,
             filters: [
                 countryLevelAreaFilter,
                 {...propsData.filters[1]},

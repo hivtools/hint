@@ -29,7 +29,7 @@
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <area-indicators-table class="col-md-9"
-                                :tabledata="chartdata"
+                                :table-data="chartdata"
                                 :area-filter-id="areaFilterId"
                                 :filters="choroplethFilters"
                                 :countryAreaFilterOption="countryAreaFilterOption"
@@ -52,7 +52,7 @@
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <area-indicators-table class="col-md-9"
-                                :tabledata="chartdata"
+                                :table-data="chartdata"
                                 :area-filter-id="areaFilterId"
                                 :filters="barchartFilters"
                                 :countryAreaFilterOption="countryAreaFilterOption"
@@ -77,7 +77,7 @@
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <area-indicators-table class="col-md-9"
-                                :tabledata="chartdata"
+                                :table-data="chartdata"
                                 :area-filter-id="areaFilterId"
                                 :filters="bubblePlotFilters"
                                 :countryAreaFilterOption="countryAreaFilterOption"

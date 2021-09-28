@@ -309,7 +309,7 @@ describe("ModelOutput component", () => {
         expect(table.props().filters).toStrictEqual(["TEST CHORO FILTERS"]);
         expect(table.props().selections).toStrictEqual({test: "TEST CHORO SELECTIONS"});
         expect(table.props().indicators).toStrictEqual(["TEST CHORO INDICATORS"]);
-        expect(table.props().tabledata).toStrictEqual(["TEST DATA"]);
+        expect(table.props().tableData).toStrictEqual(["TEST DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
     });
 
@@ -341,7 +341,7 @@ describe("ModelOutput component", () => {
         expect(table.props().filters).toStrictEqual(["TEST BUBBLE FILTERS"]);
         expect(table.props().selections).toStrictEqual({test: "TEST BUBBLE SELECTIONS"});
         expect(table.props().indicators).toStrictEqual(["TEST BUBBLE INDICATORS", "TEST BUBBLE INDICATORS"]);
-        expect(table.props().tabledata).toStrictEqual(["TEST DATA"]);
+        expect(table.props().tableData).toStrictEqual(["TEST DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
     });
 
@@ -399,7 +399,7 @@ describe("ModelOutput component", () => {
                 age: {id: "a1", label: "0-4"}
             }
         });
-        expect(table.props().tabledata).toStrictEqual(["TEST DATA"]);
+        expect(table.props().tableData).toStrictEqual(["TEST DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
     });
 

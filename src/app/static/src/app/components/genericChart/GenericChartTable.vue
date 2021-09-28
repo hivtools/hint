@@ -45,7 +45,7 @@
         props: props,
         computed: {
             generatedFields() {
-                const fields = this.tableConfig.columns.map(column => {
+                return this.tableConfig.columns.map(column => {
                     let label: string;
                     if (column.header.type === "filterLabel") {
                         label = this.filters.find(f => f.id === column.header.filterId)?.label || column.header.filterId;
@@ -61,12 +61,10 @@
                         sortByFormatted: true
                     };
                 });
-
-                return fields
             },
             labelledData() {
                 const filtersDict = this.filters.reduce((dict, filter) => ({...dict, [filter.id]: filter}), {} as Dict<Filter>);
-                const result = this.filteredData.map(row => {
+                return this.filteredData.map(row => {
                     const friendlyRow = {...row};
                     this.tableConfig.columns.filter(column => column.data.labelFilterId).forEach(column => {
                         const filter = filtersDict[column.data.labelFilterId!];
@@ -76,7 +74,6 @@
 
                     return friendlyRow;
                 });
-                return result;
             }
         },
         components: {

@@ -24,9 +24,9 @@
                            :layout-data="chartConfigValues.layoutData"
                            :style="{height: chartConfigValues.scrollHeight}"></plotly>
                 </div>
-                <div v-for="dataSource in chartConfigValues.dataSourceConfigValues" :key="dataSource.config.id">
-                    <generic-chart-table v-if="dataSource.tableConfig"
-                                         :table-config="dataSource.tableConfig"
+                <div v-for="dataSource in chartConfigValues.dataSourceConfigValues.filter(ds => ds.tableConfig)"
+                     :key="dataSource.config.id">
+                    <generic-chart-table :table-config="dataSource.tableConfig"
                                          :filtered-data="chartData[dataSource.config.id]"
                                          :filters="dataSource.filters"
                                          :selected-filter-options="dataSource.selections.selectedFilterOptions"

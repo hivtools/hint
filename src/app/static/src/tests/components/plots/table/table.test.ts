@@ -79,8 +79,6 @@ describe('Table from testdata', () => {
         expect(wrapper.contains('br')).toBe(true);
     });
 
-    //TODO: test for rendering slots
-
     it('renders correct markup', () => {
         const wrapper = getWrapper();
         expectDefaultTableMarkup(wrapper);

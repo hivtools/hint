@@ -30,7 +30,7 @@
     import {Language} from "../../../store/translations/locales";
 
     interface Props {
-        tabledata: any[],
+        tableData: any[],
         indicators: ChoroplethIndicatorMetadata[],
         selections: {
             indicatorId: string,
@@ -60,7 +60,7 @@
     }
 
     const props = {
-        tabledata: {
+        tableData: {
             type: Array
         },
         filters: {
@@ -123,7 +123,7 @@
             },
             filteredData() {
                 const filteredValues: any[] = [];
-                iterateDataValues(this.tabledata,
+                iterateDataValues(this.tableData,
                     this.indicators,
                     this.selectedAreaIds,
                     this.nonAreaFilters,
@@ -169,19 +169,19 @@
                     key: 'areaLabel',
                     label: i18next.t('area', {lng: this.currentLanguage})
                 })
-                this.filtersToDisplay.map(value => {
+                this.filtersToDisplay.forEach(value => {
                     const field: Dict<any> = {};
                     field.key = value.id
                     field.label = i18next.t(value.label.toLowerCase(), {lng: this.currentLanguage})
                     fields.push(field)
                 })
-                this.indicators.map((value, index) => {
+                this.indicators.forEach(value => {
                     const field: Dict<any> = {};
                     field.key = value.indicator
                     field.label = value.name
                     fields.push(field)
                 })
-                fields.map(field => {
+                fields.forEach(field => {
                     field.sortable = true
                     field.sortByFormatted = true
                 })

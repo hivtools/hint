@@ -358,7 +358,7 @@ describe("Survey and programme component", () => {
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         const table = wrapper.find(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
-        expect(table.props().tabledata).toBe("TEST DATA");
+        expect(table.props().tableData).toBe("TEST DATA");
         expect(table.props().filters[0]).toStrictEqual({
             id: "area",
             column_id: "area_id",

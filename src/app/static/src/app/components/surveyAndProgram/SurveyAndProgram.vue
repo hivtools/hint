@@ -46,7 +46,7 @@
                             @update="updateChoroplethSelections({payload: $event})"
                             @update-colour-scales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
                 <div>
-                    <area-indicators-table :tabledata="data"
+                    <area-indicators-table :table-data="data"
                                 :area-filter-id="areaFilterId"
                                 :filters="filters"
                                 :countryAreaFilterOption="countryAreaFilterOption"
