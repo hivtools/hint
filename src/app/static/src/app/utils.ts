@@ -265,7 +265,6 @@ export const updateForm = (oldForm: DynamicFormMeta, newForm: DynamicFormMeta): 
         newSection.controlGroups.forEach(newGroup => {
             newGroup.controls.forEach(newControl => {
                 if (newControl.name in selectedOptions) {
-                    console.log(`Updating ${newControl.name} from ${newControl.value} to ${selectedOptions[newControl.name]}`);
                     newControl.value = selectedOptions[newControl.name];
                 }
             });
