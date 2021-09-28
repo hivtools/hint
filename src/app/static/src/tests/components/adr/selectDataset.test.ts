@@ -153,8 +153,37 @@ describe("select dataset", () => {
             anc: null
         }
     };
+    
+    const fakeDatasetWithRelease = {
+        id: "id1",
+        title: "Some data",
+        url: "https://adr.com/naomi-data/some-data",
+        organization: {id: "org-id"},
+        release: "release1",
+        resources: {
+            pjnz: null,
+            program: null,
+            pop: null,
+            survey: null,
+            shape: mockDatasetResource({
+                url: "shape.geojson",
+                lastModified: "2020-11-03",
+                metadataModified: "2020-11-04",
+                name: "Shape Resource"
+            }),
+            anc: null
+        }
+    };
+
+    const fakeRelease = {
+        id: "1.0",
+        name: "release1",
+        notes: "some notes",
+        activity_id: "activityId",
+    }
 
     const setDatasetMock = jest.fn();
+    const setReleaseMock = jest.fn();
     const markResourcesUpdatedMock = jest.fn();
     const getDatasetsMock = jest.fn();
     const getReleasesMock = jest.fn();
@@ -181,6 +210,7 @@ describe("select dataset", () => {
     let currentVersion = {id: "version-id", created: "", updated: "", versionNumber: 1}
 
     const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}, requireConfirmation: boolean = false) => {
+
         const store = new Vuex.Store({
             state: mockRootState(),
             getters: rootGetters,
@@ -205,10 +235,11 @@ describe("select dataset", () => {
                 },
                 baseline: {
                     namespaced: true,
-                    state: mockBaselineState(baselineProps),
+                    state: mockBaselineState({selectedDataset: null, selectedRelease: null, ...baselineProps}),
                     actions: baselineActions,
                     mutations: {
                         [BaselineMutation.SetDataset]: setDatasetMock,
+                        [BaselineMutation.SetRelease]: setReleaseMock,
                         [BaselineMutation.MarkDatasetResourcesUpdated]: markResourcesUpdatedMock
                     }
                 },
@@ -468,6 +499,19 @@ describe("select dataset", () => {
         expect(rendered.find("a").attributes("href")).toBe("www.adr.com/naomi-data/some-data");
     });
 
+    it("renders selected dataset and selected release with url pointing to release's activity page", () => {
+        let store = getStore({
+            selectedDataset: fakeDatasetWithRelease,
+            selectedRelease: fakeRelease
+        })
+        const rendered = shallowMount(SelectDataset, {store});
+        expectTranslated(rendered.find(".font-weight-bold"), "Selected dataset:",
+            "Ensemble de données sélectionné :", "Conjunto de dados selecionado:", store);
+
+        expect(rendered.find("a").text()).toBe("Some data — release1");
+        expect(rendered.find("a").attributes("href")).toBe("https://adr.com/dataset/id1?activity_id=activityId");
+    });
+
     it("does not render selected dataset if it doesn't exist", () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});
         expect(rendered.findAll("#selectedDatasetSpan").length).toBe(0);
@@ -543,7 +587,7 @@ describe("select dataset", () => {
             store,
             stubs: ["tree-select"]
         });
-
+        expect(rendered.vm.$data.newDatasetId).toBe(null);
         // open modal
         rendered.find("button").trigger("click");
 
@@ -555,10 +599,10 @@ describe("select dataset", () => {
         expectTranslated(rendered.find("div > label"), "Datasets", "Ensembles de données",
             "Conjuntos de dados", store);
 
-        // select dataset from dropdown and click button to import
-        rendered.setData({newDatasetId: "id2"});
+        // dataset is preselected in dropdown and click button to import
+        expect(rendered.vm.$data.newDatasetId).toBe("id2");
         const selectRelease = rendered.find(SelectRelease)
-        await selectRelease.vm.$emit("selected-dataset-release", "1.0");
+        await selectRelease.vm.$emit("selected-dataset-release", fakeRelease);
         rendered.find(Modal).find("button").trigger("click");
 
         await Vue.nextTick();
@@ -573,7 +617,7 @@ describe("select dataset", () => {
             store);
 
         expect(getDatasetMock.mock.calls[0][1].id).toBe("id2");
-        expect(getDatasetMock.mock.calls[0][1].release).toBe("1.0");
+        expect(getDatasetMock.mock.calls[0][1].release).toBe(fakeRelease);
 
         await Vue.nextTick();
         await Vue.nextTick();
@@ -581,6 +625,31 @@ describe("select dataset", () => {
 
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+
+    it("current dataset is not preselected if there is no selectedDataset", async () => {
+        let store = getStore({});
+        const rendered = mount(SelectDataset, {
+            store,
+            stubs: ["tree-select"]
+        });
+        
+        rendered.find("button").trigger("click");
+        expect(rendered.vm.$data.newDatasetId).toBe(null);
+    });
+
+    it("current dataset is preselected if datasets change", async () => {
+        let store = getStore({selectedDataset: fakeDataset2});
+        const rendered = mount(SelectDataset, {
+            store,
+            stubs: ["tree-select"]
+        });
+        store.state.adr.datasets = [fakeRawDatasets[0]]
+        
+        rendered.find("button").trigger("click");
+        expect(rendered.vm.$data.newDatasetId).toBe(null);
+        store.state.adr.datasets = fakeRawDatasets
+        expect(rendered.vm.$data.newDatasetId).toBe("id2");
     });
 
     it("renders select release", async () => {
@@ -595,6 +664,7 @@ describe("select dataset", () => {
         rendered.setData({newDatasetId: "id2"});
         const selectRelease = rendered.find(SelectRelease)
         expect(selectRelease.props("datasetId")).toBe("id2");
+        expect(selectRelease.props("open")).toBe(true);
     });
 
     it("select release emits valid and enables import button", async () => {
@@ -614,7 +684,7 @@ describe("select dataset", () => {
         expect(importBtn.attributes("disabled")).toBeUndefined();
     });
 
-    it("select release emits selected dataset release and updates release id", async () => {
+    it("select release emits selected dataset release and updates release", async () => {
         let store = getStore({},
             {datasets: [{...fakeRawDatasets[0], ...fakeRawDatasets[1], resources: [shape]}]}
         )
@@ -625,8 +695,8 @@ describe("select dataset", () => {
 
         rendered.setData({newDatasetId: "id2"});
         const selectRelease = rendered.find(SelectRelease)
-        await selectRelease.vm.$emit("selected-dataset-release", "releaseId");
-        expect(rendered.vm.$data.newDatasetReleaseId).toBe("releaseId")
+        await selectRelease.vm.$emit("selected-dataset-release", fakeRelease);
+        expect(rendered.vm.$data.newDatasetRelease).toStrictEqual(fakeRelease)
     });
     
     it("renders reset confirmation dialog when importing a new dataset and then saves new version and imports if click save", async () => {
@@ -924,6 +994,5 @@ describe("select dataset", () => {
         rendered.setData({newDatasetId: ""});
 
         expect(rendered.find(Modal).find("button").attributes("disabled")).toBe("disabled");
-
     });
 });
