@@ -280,7 +280,7 @@ describe("GenericChart component", () => {
         expect(dataSources.exists()).toBe(false);
     });
 
-    it("sets available datasetId as default", () => {
+    it("sets data source's datasetId if default is not available, and hides datasource picker if only one available dataset", () => {
         const state = {datasets};
         const reducedMetadata =  {
             "test-chart": {
