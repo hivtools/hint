@@ -6,12 +6,12 @@ import {
     mockFailure, mockMetadataState,
     mockProjectsState,
     mockRootState,
-    mockSuccess, mockSurveyAndProgramState
+    mockSuccess, mockSurveyAndProgramState,
+    mockModelCalibrateState, mockModelRunState, mockCalibrateResultResponse
 } from "../mocks";
 import {actions} from "../../app/store/adrUpload/actions";
 import {mutations} from "../../app/store/adrUpload/mutations";
 import {UploadFile} from "../../app/types";
-import {switches} from "../../app/featureSwitches";
 import Vuex from "vuex";
 import {RootState} from "../../app/root";
 import {mutations as baselineMutations} from "../../app/store/baseline/mutations";
@@ -25,10 +25,8 @@ describe("ADR upload actions", () => {
         mockAxios.reset();
     });
 
-    const oldADRPushInputsValue = switches.adrPushInputs;
     afterEach(() => {
         (console.log as jest.Mock).mockClear();
-        switches.adrPushInputs = oldADRPushInputsValue;
     });
 
     it("getUploadFiles does nothing if no selected dataset", async () => {
@@ -78,59 +76,6 @@ describe("ADR upload actions", () => {
         expect(commit.mock.calls[1][0].payload).toStrictEqual(mockError("test error"));
     });
 
-    it("getUploadFiles gets dataset details and constructs upload files", async () => {
-        const commit = jest.fn();
-        const datasetWithResources = {
-            resources: [
-                {
-                    resource_type: "output-summary",
-                    id: "123",
-                    name: "Naomi Results and Summary Report",
-                    last_modified: "2021-03-01",
-                    metadata_modified: "2021-03-02",
-                    url: "http://test"
-                }
-            ]
-        };
-        mockAxios.onGet(`/adr/datasets/test-dataset`)
-            .reply(200, mockSuccess(datasetWithResources));
-
-        const root = mockRootState({
-            adr: mockADRState({schemas: {outputZip: "output-zip", outputSummary: "output-summary"} as any}),
-            baseline: mockBaselineState({selectedDataset: {id: "test-dataset"} as any}),
-            projects: mockProjectsState({currentProject: {name: "project1"} as any})
-        });
-
-        await actions.getUploadFiles({commit, state, rootState: root} as any);
-
-        expect(commit.mock.calls[0][0].type).toBe("SetADRUploadError");
-        expect(commit.mock.calls[0][0].payload).toBeNull();
-
-        expect(commit.mock.calls[1][0].type).toBe("SetUploadFiles");
-        expect(commit.mock.calls[1][0].payload).toStrictEqual({
-            outputZip: {
-                index: 0,
-                displayName: "uploadFileOutputZip",
-                resourceType: "output-zip",
-                resourceFilename: "naomi_outputs.zip",
-                resourceName: "Naomi Output ZIP",
-                resourceId: null,
-                lastModified: null,
-                resourceUrl: null
-            },
-            outputSummary: {
-                index: 1,
-                displayName: "uploadFileOutputSummary",
-                resourceType: "output-summary",
-                resourceFilename: "naomi_summary.html",
-                resourceName: "Naomi Results and Summary Report",
-                resourceId: "123",
-                lastModified: "2021-03-02",
-                resourceUrl: "http://test"
-            }
-        });
-    });
-
     it("getUploadFiles takes release into account", async () => {
         const commit = jest.fn();
 
@@ -144,9 +89,7 @@ describe("ADR upload actions", () => {
         expect(mockAxios.history["get"][0]["url"]).toBe("/adr/datasets/test-dataset?release=2.0");
     });
 
-    const testGetUploadFilesInputs = async (enableFeatureSwitch: boolean) => {
-        switches.adrPushInputs = enableFeatureSwitch ? "true" : null;
-
+    const testGetUploadFilesInputs = async () => {
         const commit = jest.fn();
         const datasetWithResources = {
             resources: [
@@ -230,227 +173,34 @@ describe("ADR upload actions", () => {
                 resourceId: "123",
                 lastModified: "2021-03-02",
                 resourceUrl: "http://test"
-            }
-        };
-
-        if (enableFeatureSwitch) {
-            expectedUploadFiles = {
-                ...expectedUploadFiles,
-                shape: {
-                    index: 2,
-                    displayName: "shape",
-                    resourceType: "adr-shape",
-                    resourceFilename: "test-shape.geojson",
-                    resourceName: "Naomi Input Shape file",
-                    resourceId: "456",
-                    lastModified: "2021-04-02",
-                    resourceUrl: "http://adr/test-shape"
-                },
-                programme: {
-                    index: 3,
-                    displayName: "ART",
-                    resourceType: "adr-art",
-                    resourceFilename: "test-program.csv",
-                    resourceName: "Naomi Input ART file",
-                    resourceId: "789",
-                    lastModified: "2021-04-04",
-                    resourceUrl: "http://adr/test-art"
-                }
-            };
-        }
-
-        expect(commit.mock.calls[1][0].payload).toStrictEqual(expectedUploadFiles);
-    };
-
-    it("getUploadFiles includes non-ADR input files when adrPushInputs feature switch is on", async () => {
-        await testGetUploadFilesInputs(true);
-    });
-
-    it("getUploadFiles does not include non-ADR input files when adrPushInputs feature switch is off", async () => {
-        await testGetUploadFilesInputs(false);
-    });
-
-    it("getUploadFiles can include full set of non_ADR input files when adrPushInputs feature switch is on", async () => {
-        switches.adrPushInputs =  "true";
-
-        const commit = jest.fn();
-        const datasetWithResources = {
-            resources: [
-                {
-                    resource_type: "output-summary",
-                    id: "123",
-                    last_modified: "2021-03-01",
-                    metadata_modified: "2021-03-02",
-                    url: "http://test",
-                    name: "Naomi Results and Summary Report"
-                },
-                {
-                    resource_type: "adr-pjnz",
-                    id: "234",
-                    last_modified: "2021-03-03",
-                    metadata_modified: "2021-03-04",
-                    url: "http://adr/test-pjnz",
-                    name: "Naomi Input PJNZ file"
-                },
-                {
-                    resource_type: "adr-shape",
-                    id: "345",
-                    last_modified: "2021-03-05",
-                    metadata_modified: "2021-03-06",
-                    url: "http://adr/test-shape",
-                    name: "Naomi Input Shape file"
-                },
-                {
-                    resource_type: "adr-population",
-                    id: "456",
-                    last_modified: "2021-03-07",
-                    metadata_modified: "2021-03-08",
-                    url: "http://adr/test-pop",
-                    name: "Naomi Input Population file"
-                },
-                {
-                    resource_type: "adr-survey",
-                    id: "567",
-                    last_modified: "2021-03-09",
-                    metadata_modified: "2021-03-10",
-                    url: "http://adr/test-survey",
-                    name: "Naomi Input Survey file"
-                },
-                {
-                    resource_type: "adr-art",
-                    id: "678",
-                    last_modified: "2021-03-11",
-                    metadata_modified: "2021-03-12",
-                    url: "http://adr/test-art",
-                    name: "Naomi Input ART file"
-                },
-                {
-                    resource_type: "adr-anc",
-                    id: "789",
-                    last_modified: "2021-03-13",
-                    metadata_modified: "2021-03-14",
-                    url: "http://adr/test-anc",
-                    name: "Naomi Input ANC file"
-                }
-            ]
-        };
-        mockAxios.onGet(`/adr/datasets/test-dataset`)
-            .reply(200, mockSuccess(datasetWithResources));
-
-        const root = mockRootState({
-            adr: mockADRState({
-                schemas: {
-                    outputZip: "output-zip",
-                    outputSummary: "output-summary",
-                    pjnz: "adr-pjnz",
-                    shape: "adr-shape",
-                    population: "adr-population",
-                    survey: "adr-survey",
-                    programme: "adr-art",
-                    anc: "adr-anc"
-                } as any}),
-            baseline: mockBaselineState({
-                selectedDataset: {id: "test-dataset"},
-                pjnz: {fromADR: false, filename: "test.pjnz"},
-                shape: {fromADR: false, filename: "test-shape.geojson"},
-                population: {fromADR: false, filename: "test-pop.csv"}
-            } as any),
-            surveyAndProgram: mockSurveyAndProgramState({
-                survey: {fromADR: false, filename: "test-survey.csv"},
-                program: {fromADR: false, filename: "test-program.csv"},
-                anc: {fromADR: false, filename: "test-anc.csv"}
-            } as any),
-            projects: mockProjectsState({currentProject: {name: "project1"} as any})
-        });
-
-        await actions.getUploadFiles({commit, state, rootState: root} as any);
-
-        expect(commit.mock.calls[1][0].type).toBe("SetUploadFiles");
-
-        let expectedUploadFiles: Record<string, UploadFile> = {
-            outputZip: {
-                index: 0,
-                displayName: "uploadFileOutputZip",
-                resourceType: "output-zip",
-                resourceFilename: "naomi_outputs.zip",
-                resourceName: "Naomi Output ZIP",
-                resourceId: null,
-                lastModified: null,
-                resourceUrl: null
-            },
-            outputSummary: {
-                index: 1,
-                displayName: "uploadFileOutputSummary",
-                resourceType: "output-summary",
-                resourceFilename: "naomi_summary.html",
-                resourceName: "Naomi Results and Summary Report",
-                resourceId: "123",
-                lastModified: "2021-03-02",
-                resourceUrl: "http://test"
-            },
-            pjnz: {
-                index: 2,
-                displayName: "PJNZ",
-                resourceType: "adr-pjnz",
-                resourceFilename: "test.pjnz",
-                resourceName: "Naomi Input PJNZ file",
-                resourceId: "234",
-                lastModified: "2021-03-04",
-                resourceUrl: "http://adr/test-pjnz"
             },
             shape: {
-                index: 3,
+                index: 2,
                 displayName: "shape",
                 resourceType: "adr-shape",
                 resourceFilename: "test-shape.geojson",
                 resourceName: "Naomi Input Shape file",
-                resourceId: "345",
-                lastModified: "2021-03-06",
+                resourceId: "456",
+                lastModified: "2021-04-02",
                 resourceUrl: "http://adr/test-shape"
             },
-            population: {
-                index: 4,
-                displayName: "population",
-                resourceType: "adr-population",
-                resourceFilename: "test-pop.csv",
-                resourceName: "Naomi Input Population file",
-                resourceId: "456",
-                lastModified: "2021-03-08",
-                resourceUrl: "http://adr/test-pop"
-            },
-            survey: {
-                index: 5,
-                displayName: "survey",
-                resourceType: "adr-survey",
-                resourceFilename: "test-survey.csv",
-                resourceName: "Naomi Input Survey file",
-                resourceId: "567",
-                lastModified: "2021-03-10",
-                resourceUrl: "http://adr/test-survey"
-            },
             programme: {
-                index: 6,
+                index: 3,
                 displayName: "ART",
                 resourceType: "adr-art",
                 resourceFilename: "test-program.csv",
                 resourceName: "Naomi Input ART file",
-                resourceId: "678",
-                lastModified: "2021-03-12",
-                resourceUrl: "http://adr/test-art"
-            },
-            anc: {
-                index: 7,
-                displayName: "ANC",
-                resourceType: "adr-anc",
-                resourceFilename: "test-anc.csv",
-                resourceName: "Naomi Input ANC file",
                 resourceId: "789",
-                lastModified: "2021-03-14",
-                resourceUrl: "http://adr/test-anc"
+                lastModified: "2021-04-04",
+                resourceUrl: "http://adr/test-art"
             }
         };
 
         expect(commit.mock.calls[1][0].payload).toStrictEqual(expectedUploadFiles);
+    };
+
+    it("getUploadFiles includes input files", async () => {
+        await testGetUploadFilesInputs();
     });
 
     it("uploadFilesToADR uploads files sequentially to adr and commits complete on upload of final file", async () => {
@@ -491,7 +241,7 @@ describe("ADR upload actions", () => {
             } as any)
         });
 
-        const uploadFilesPayload = [
+        const uploadFilesPayload = {createRelease: false, uploadFiles: [
             {
                 resourceType: "inputs-unaids-naomi-output-zip",
                 resourceFilename: "file1",
@@ -501,7 +251,7 @@ describe("ADR upload actions", () => {
                 resourceType: "inputs-unaids-naomi-report",
                 resourceFilename: "file2"
             }
-        ] as UploadFile[]
+        ] as UploadFile[]}
 
         const success = {response: "success"}
 
@@ -529,6 +279,116 @@ describe("ADR upload actions", () => {
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/2");
         expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&description=summary");
         expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-report/1");
+    });
+
+    it("uploadFilesToADR dispatches createRelease on upload of final file if instructed to", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const root = mockRootState({
+            adr: mockADRState({
+                datasets: [],
+                schemas: {
+                    baseUrl: "http://test",
+                    outputZip: "inputs-unaids-naomi-output-zip",
+                    outputSummary: "inputs-unaids-naomi-report"
+                } as any
+            }),
+            modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
+            modelRun: mockModelRunState(
+                {
+                    result: mockCalibrateResultResponse({
+                        uploadMetadata: {
+                            outputSummary: {description: "summary"},
+                            outputZip: {description: "zip"}
+                        }
+                    })
+                }),
+            baseline: mockBaselineState({
+                selectedDataset: {
+                    id: "datasetId"
+                }
+            } as any),
+            adrUpload: mockADRUploadState({
+                uploadComplete: true
+            })
+        });
+
+        const uploadFilesPayload = {createRelease: true, uploadFiles: [
+            {
+                resourceType: "inputs-unaids-naomi-output-zip",
+                resourceFilename: "file1",
+                resourceId: "id1"
+            },
+            {
+                resourceType: "inputs-unaids-naomi-report",
+                resourceFilename: "file2"
+            }
+        ] as UploadFile[]}
+
+        const success = {response: "success"}
+
+        mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId`)
+            .reply(200, mockSuccess(null));
+        mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId`)
+            .reply(200, mockSuccess(success));
+        mockAxios.onGet(`adr/datasets/datasetId`)
+            .reply(200, mockSuccess(null));
+
+        await actions.uploadFilesToADR({commit, dispatch, rootState: root} as any, uploadFilesPayload);
+        expect(dispatch.mock.calls.length).toBe(2);
+        expect(dispatch.mock.calls[0][0]).toBe("getUploadFiles");
+        expect(dispatch.mock.calls[1][0]).toBe("createRelease");
+        
+    });
+
+    it("uploadFilesToADR does not dispatch createRelease on upload fail", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const root = mockRootState({
+            adr: mockADRState({
+                datasets: [],
+                schemas: {
+                    baseUrl: "http://test",
+                    outputZip: "inputs-unaids-naomi-output-zip",
+                    outputSummary: "inputs-unaids-naomi-report"
+                } as any
+            }),
+            modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
+            modelRun: mockModelRunState(
+                {
+                    result: mockCalibrateResultResponse({
+                        uploadMetadata: {
+                            outputSummary: {description: "summary"},
+                            outputZip: {description: "zip"}
+                        }
+                    })
+                }),
+            baseline: mockBaselineState({
+                selectedDataset: {
+                    id: "datasetId"
+                }
+            } as any),
+            adrUpload: mockADRUploadState({
+                uploadComplete: false
+            })
+        });
+
+        const uploadFilesPayload = {createRelease: true, uploadFiles: [
+            {
+                resourceType: "inputs-unaids-naomi-output-zip",
+                resourceFilename: "file1",
+                resourceId: "id1"
+            },
+            {
+                resourceType: "inputs-unaids-naomi-report",
+                resourceFilename: "file2"
+            }
+        ] as UploadFile[]}
+
+        await actions.uploadFilesToADR({commit, dispatch, rootState: root} as any, uploadFilesPayload);
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("getUploadFiles");
+        
     });
 
     it("uploadFilesToADR sets upload failure and prevents subsequent uploads", async () => {
@@ -569,7 +429,7 @@ describe("ADR upload actions", () => {
             } as any)
         });
 
-        const uploadFilesPayload = [
+        const uploadFilesPayload = {createRelease: false, uploadFiles: [
             {
                 resourceType: "inputs-unaids-naomi-report",
                 resourceFilename: "file1",
@@ -580,7 +440,7 @@ describe("ADR upload actions", () => {
                 resourceFilename: "file2",
                 resourceId: "id2"
             }
-        ] as UploadFile[]
+        ] as UploadFile[]}
 
         const success2 = {response: "success2"}
 
@@ -634,7 +494,7 @@ describe("ADR upload actions", () => {
             } as any)
         });
 
-        const uploadFilesPayload = [
+        const uploadFilesPayload = {createRelease: false, uploadFiles: [
             {
                 resourceType: "inputs-unaids-naomi-output-zip",
                 resourceFilename: "file1",
@@ -644,7 +504,7 @@ describe("ADR upload actions", () => {
                 resourceType: "inputs-unaids-naomi-report",
                 resourceFilename: "file2"
             }
-        ] as UploadFile[]
+        ] as UploadFile[]}
 
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/2`)
             .reply(200, mockSuccess("success"));
@@ -660,14 +520,14 @@ describe("ADR upload actions", () => {
     });
 
     it("uploadFilesToADR invokes actions to update datasets on upload success", async () => {
-        const uploadFilesPayload = [
+        const uploadFilesPayload = {createRelease: false, uploadFiles: [
             {
                 resourceType: "inputs-unaids-naomi-output-zip"
             },
             {
                 resourceType: "inputs-unaids-naomi-report"
             }
-        ] as UploadFile[]
+        ] as UploadFile[]}
 
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/2`)
             .reply(200, mockSuccess(null));
@@ -738,5 +598,86 @@ describe("ADR upload actions", () => {
 
         expect(store.state.adrUpload.uploadComplete).toBe(true);
         expect(getUploadFiles.mock.calls.length).toBe(1);
+    });
+
+    it("createRelease posts release name to releases endpoint", async () => {
+        const commit = jest.fn();
+        const root = mockRootState({
+            adr: mockADRState({
+                datasets: [],
+                schemas: {
+                    baseUrl: "http://test"
+                } as any
+            }),
+            baseline: mockBaselineState({
+                selectedDataset: {
+                    id: "datasetId"
+                }
+            } as any),
+            projects: mockProjectsState({
+                currentProject: {
+                    name: "projectName",
+                    id: 1,
+                    versions: []
+                },
+                currentVersion: {
+                    versionNumber: 1,
+                    id: "1",
+                    created: "then",
+                    updated: "now"
+                }
+            })
+        });
+
+        mockAxios.onPost(`adr/datasets/datasetId/releases`)
+            .reply(200, mockSuccess(null));
+
+        await actions.createRelease({commit, rootState: root} as any);
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ReleaseCreated");
+        expect(commit.mock.calls[0][0]["payload"]).toBe(null);
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0]["data"]).toBe("name=Naomi%3A%20projectName%20v1");
+        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/releases")
+    });
+
+    it("createRelease commits release not created on failure", async () => {
+        const commit = jest.fn();
+        const root = mockRootState({
+            adr: mockADRState({
+                datasets: [],
+                schemas: {
+                    baseUrl: "http://test"
+                } as any
+            }),
+            baseline: mockBaselineState({
+                selectedDataset: {
+                    id: "datasetId"
+                }
+            } as any),
+            projects: mockProjectsState({
+                currentProject: {
+                    name: "projectName",
+                    id: 1,
+                    versions: []
+                },
+                currentVersion: {
+                    versionNumber: 1,
+                    id: "1",
+                    created: "then",
+                    updated: "now"
+                }
+            })
+        });
+
+        mockAxios.onPost(`adr/datasets/datasetId/releases`)
+            .reply(500, mockFailure("failed"));
+
+        await actions.createRelease({commit, rootState: root} as any);
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ReleaseFailed");
+        expect(commit.mock.calls[0][0]["payload"]).toStrictEqual({"detail": "failed", "error": "OTHER_ERROR"});
     });
 });

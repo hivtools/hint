@@ -6,12 +6,12 @@ import {ADRUploadState} from "./adrUpload";
 import {ADRUploadMutation} from "./mutations";
 import {constructUploadFile, constructUploadFileWithResourceName} from "../../utils";
 import {Dict, UploadFile} from "../../types";
-import {switches} from "../../featureSwitches";
 import {ValidateInputResponse} from "../../generated";
 
 export interface ADRUploadActions {
     getUploadFiles: (store: ActionContext<ADRUploadState, RootState>) => void;
-    uploadFilesToADR: (store: ActionContext<ADRUploadState, RootState>, uploadFilesPayload: UploadFile[]) => void;
+    uploadFilesToADR: (store: ActionContext<ADRUploadState, RootState>, uploadFilesPayload: {uploadFiles: UploadFile[], createRelease: boolean}) => void;
+    createRelease: (store: ActionContext<ADRUploadState, RootState>) => void;
 }
 
 export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions = {
@@ -52,37 +52,33 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                                 "Naomi Results and Summary Report")
                         };
 
-                        if (switches.adrPushInputs) {
-                            const addLocalInputFileToUploads = (
-                                key: string,
-                                schema: string,
-                                response: ValidateInputResponse,
-                                displayName: string) => {
-                                if (!response.fromADR) {
-                                    const uploadFile = constructUploadFile(
-                                        metadata,
-                                        Object.keys(uploadFiles).length,
-                                        schema,
-                                        response.filename,
-                                        displayName
-                                    );
-                                    if (uploadFile) {
-                                        uploadFiles[key] = uploadFile;
-                                    }
-                                }
-                            };
+                        const addLocalInputFileToUploads = (
+                            key: string,
+                            schema: string,
+                            response: ValidateInputResponse,
+                            displayName: string) => {
+                            const uploadFile = constructUploadFile(
+                                metadata,
+                                Object.keys(uploadFiles).length,
+                                schema,
+                                response.filename,
+                                displayName
+                            );
+                            if (uploadFile) {
+                                uploadFiles[key] = uploadFile;
+                            }
+                        };
 
-                            const baseline = rootState.baseline;
-                            addLocalInputFileToUploads("pjnz", schemas.pjnz, baseline.pjnz!, "PJNZ");
-                            addLocalInputFileToUploads("shape", schemas.shape, baseline.shape!, "shape");
-                            addLocalInputFileToUploads("population",  schemas.population, baseline.population!, "population");
+                        const baseline = rootState.baseline;
+                        addLocalInputFileToUploads("pjnz", schemas.pjnz, baseline.pjnz!, "PJNZ");
+                        addLocalInputFileToUploads("shape", schemas.shape, baseline.shape!, "shape");
+                        addLocalInputFileToUploads("population",  schemas.population, baseline.population!, "population");
 
-                            const sap = rootState.surveyAndProgram;
-                            addLocalInputFileToUploads("survey", schemas.survey, sap.survey!, "survey");
-                            addLocalInputFileToUploads("programme", schemas.programme, sap.program!, "ART");
-                            addLocalInputFileToUploads("anc", schemas.anc, sap.anc!, "ANC");
-                        }
-
+                        const sap = rootState.surveyAndProgram;
+                        addLocalInputFileToUploads("survey", schemas.survey, sap.survey!, "survey");
+                        addLocalInputFileToUploads("programme", schemas.programme, sap.program!, "ART");
+                        addLocalInputFileToUploads("anc", schemas.anc, sap.anc!, "ANC");
+                        
                         commit({type: ADRUploadMutation.SetUploadFiles, payload: uploadFiles});
                     }
                 });
@@ -92,15 +88,16 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
     async uploadFilesToADR(context, uploadFilesPayload) {
         const {rootState, commit, dispatch} = context;
         const selectedDatasetId = rootState.baseline.selectedDataset!.id;
+        const {uploadFiles, createRelease} = uploadFilesPayload
         let downloadId;
 
         const uploadMetadata = rootState.metadata.adrUploadMetadata
 
-        commit({type: ADRUploadMutation.ADRUploadStarted, payload: uploadFilesPayload.length});
+        commit({type: ADRUploadMutation.ADRUploadStarted, payload: uploadFiles.length});
 
-        for (let i = 0; i < uploadFilesPayload.length; i++) {
+        for (let i = 0; i < uploadFiles.length; i++) {
             commit({type: ADRUploadMutation.ADRUploadProgress, payload: i + 1});
-            const { resourceType, resourceFilename, resourceName, resourceId } = uploadFilesPayload[i];
+            const { resourceType, resourceFilename, resourceName, resourceId } = uploadFiles[i];
 
             const requestParams: Dict<string> = {resourceFileName: resourceFilename, resourceName};
             if (resourceId) {
@@ -124,7 +121,7 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
 
             let apiRequest = api<ADRUploadMutation, ADRUploadMutation>(context)
                 .withError(ADRUploadMutation.SetADRUploadError);
-            if (i === uploadFilesPayload.length - 1) {
+            if (i === uploadFiles.length - 1) {
                 apiRequest = apiRequest.withSuccess(ADRUploadMutation.ADRUploadCompleted);
             } else {
                 apiRequest = apiRequest.ignoreSuccess();
@@ -136,5 +133,23 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
             }
         }
         await dispatch("getUploadFiles");
+
+        const uploadComplete = rootState.adrUpload.uploadComplete;
+        if (createRelease && uploadComplete){
+            dispatch("createRelease");
+        }
+    },
+
+    async createRelease(context) {
+        const {rootState} = context;
+        const selectedDatasetId = rootState.baseline.selectedDataset!.id;
+        const project = rootState.projects.currentProject?.name;
+        const version = rootState.projects.currentVersion?.versionNumber;
+        const name = {name: `Naomi: ${project} v${version}`}
+
+        await api(context)
+                .withError(ADRUploadMutation.ReleaseFailed)
+                .withSuccess(ADRUploadMutation.ReleaseCreated)
+                .postAndReturn(`/adr/datasets/${selectedDatasetId}/releases`, qs.stringify(name));
     }
 };
