@@ -1,5 +1,14 @@
+import Mock = jest.Mock;
 import {actions} from "../../app/store/root/actions";
-import {mockAxios, mockError, mockRootState, mockStepperState, mockSuccess} from "../mocks";
+import {
+    mockAxios,
+    mockBaselineState,
+    mockError,
+    mockModelCalibrateState,
+    mockRootState,
+    mockStepperState,
+    mockSuccess
+} from "../mocks";
 import {Language} from "../../app/store/translations/locales";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
@@ -182,29 +191,92 @@ describe("root actions", () => {
         expect(mockContext.dispatch).not.toHaveBeenCalled();
     });
 
-    it("changes language and fetch plotting metadata", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
-        const rootState = mockRootState({baseline: {iso3: "MWI"} as any})
-        await actions.changeLanguage({commit, dispatch, rootState} as any, Language.fr);
+    const expectChangeLanguageMutations = (commit: Mock) => {
         expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: RootMutation.SetUpdatingLanguage,
+            payload: true
+        });
+        expect(commit.mock.calls[1][0]).toStrictEqual({
             type: LanguageMutation.ChangeLanguage,
             payload: "fr"
-        })
+        });
 
-        expect(dispatch.mock.calls[0][0]).toStrictEqual("metadata/getPlottingMetadata")
-        expect(dispatch.mock.calls[0][1]).toStrictEqual("MWI")
+        expect(commit.mock.calls[2][0]).toStrictEqual({
+            type: RootMutation.SetUpdatingLanguage,
+            payload: false
+        });
+    };
+
+    it("changeLanguage fetches plotting metadata and calibrate result", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const rootState = mockRootState(
+            {
+                baseline: mockBaselineState({iso3: "MWI"}),
+                modelCalibrate: mockModelCalibrateState({
+                    status: {
+                        done: true
+                    } as any
+                })
+            });
+        await actions.changeLanguage({commit, dispatch, rootState} as any, Language.fr);
+
+        expectChangeLanguageMutations(commit);
+
+        expect(dispatch.mock.calls.length).toBe(2);
+        expect(dispatch.mock.calls[0][0]).toStrictEqual("metadata/getPlottingMetadata");
+        expect(dispatch.mock.calls[0][1]).toStrictEqual("MWI");
+
+        expect(dispatch.mock.calls[1][0]).toStrictEqual("modelCalibrate/getResult");
     });
 
-    it("changes language and does not fetch plotting metadata if country code is empty", async () => {
+    it("changeLanguage does not fetch plotting metadata if country code is empty", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const rootState = mockRootState(
+            {
+                modelCalibrate: mockModelCalibrateState({
+                    status: {
+                        done: true
+                    } as any
+                })
+            });
+        await actions.changeLanguage({commit, dispatch, rootState} as any, Language.fr);
+
+        expectChangeLanguageMutations(commit);
+
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toStrictEqual("modelCalibrate/getResult");
+    });
+
+    it("changeLanguage does not fetch calibrate result if calibrate is not complete", async () =>{
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const rootState = mockRootState(
+            {
+                baseline: mockBaselineState({iso3: "MWI"}),
+                modelCalibrate: mockModelCalibrateState({
+                    status: {
+                        done: false
+                    } as any
+                })
+            });
+        await actions.changeLanguage({commit, dispatch, rootState} as any, Language.fr);
+
+        expectChangeLanguageMutations(commit);
+
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toStrictEqual("metadata/getPlottingMetadata");
+        expect(dispatch.mock.calls[0][1]).toStrictEqual("MWI");
+    });
+
+    it("changeLanguage fetches nothing if no relevant metadata to fetch", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const rootState = mockRootState({baseline: {iso3: ""} as any})
         await actions.changeLanguage({commit, dispatch, rootState} as any, Language.fr);
-        expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: LanguageMutation.ChangeLanguage,
-            payload: "fr"
-        })
+
+        expectChangeLanguageMutations(commit);
 
         expect(dispatch.mock.calls.length).toBe(0)
     });

@@ -200,6 +200,26 @@ describe("Stepper component", () => {
             "Chargement de vos données","A carregar os seus dados", store);
     });
 
+    it("renders loading spinner while updating language", () => {
+        const wrapper = createReadySut(
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            jest.fn(),
+            {updatingLanguage: true});
+
+        const store = wrapper.vm.$store;
+
+        expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
+        expect(wrapper.findAll(".content").length).toBe(0);
+        expectTranslated(wrapper.find("#loading-message"), "Loading your data",
+            "Chargement de vos données","A carregar os seus dados", store);
+    });
+
     it("does not render loading spinner once states are ready", () => {
         const wrapper = createReadySut();
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
