@@ -74,6 +74,12 @@ describe("ADR mutations", () => {
         expect(state.releaseCreated).toBe(true);
     });
 
+    it("can set general error", () => {
+        const state = mockADRUploadState();
+        mutations[ADRUploadMutation.GeneralError](state, {payload: mockError("any error")});
+        expect(state.uploadError!!.detail).toBe("any error");
+    });
+
     it("can set release failed with error", () => {
         const state = mockADRUploadState();
         mutations[ADRUploadMutation.ReleaseFailed](state, {payload: mockError("Version already exists for this activity")});

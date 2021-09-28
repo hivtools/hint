@@ -602,6 +602,7 @@ describe("ADR upload actions", () => {
 
     it("createRelease posts release name to releases endpoint", async () => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const root = mockRootState({
             adr: mockADRState({
                 datasets: [],
@@ -632,11 +633,72 @@ describe("ADR upload actions", () => {
         mockAxios.onPost(`adr/datasets/datasetId/releases`)
             .reply(200, mockSuccess(null));
 
-        await actions.createRelease({commit, rootState: root} as any);
+        await actions.createRelease({commit, dispatch, rootState: root} as any);
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]["type"]).toBe("ReleaseCreated");
         expect(commit.mock.calls[0][0]["payload"]).toBe(null);
+
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("adr/getReleases");
+        expect(dispatch.mock.calls[0][1]).toBe("datasetId");
+        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
+
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0]["data"]).toBe("name=Naomi%3A%20projectName%20v1");
+        expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/releases")
+    });
+
+    it("createRelease dispatches deleteRelease if duplicate name", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const root = mockRootState({
+            adr: mockADRState({
+                datasets: [],
+                releases: [{
+                    id: "otherReleaseId",
+                    name: "Naomi: projectName v1"
+                }],
+                schemas: {
+                    baseUrl: "http://test"
+                } as any
+            }),
+            baseline: mockBaselineState({
+                selectedDataset: {
+                    id: "datasetId"
+                }
+            } as any),
+            projects: mockProjectsState({
+                currentProject: {
+                    name: "projectName",
+                    id: 1,
+                    versions: []
+                },
+                currentVersion: {
+                    versionNumber: 1,
+                    id: "1",
+                    created: "then",
+                    updated: "now"
+                }
+            })
+        });
+
+        mockAxios.onPost(`adr/datasets/datasetId/releases`)
+            .reply(200, mockSuccess(null));
+
+        await actions.createRelease({commit, dispatch, rootState: root} as any);
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ReleaseCreated");
+        expect(commit.mock.calls[0][0]["payload"]).toBe(null);
+
+        expect(dispatch.mock.calls.length).toBe(2);
+        expect(dispatch.mock.calls[0][0]).toBe("adr/getReleases");
+        expect(dispatch.mock.calls[0][1]).toBe("datasetId");
+        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
+        expect(dispatch.mock.calls[1][0]).toBe("deleteRelease");
+        expect(dispatch.mock.calls[1][1]).toBe("otherReleaseId");
+
         expect(mockAxios.history.post.length).toBe(1);
         expect(mockAxios.history.post[0]["data"]).toBe("name=Naomi%3A%20projectName%20v1");
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/releases")
@@ -644,6 +706,7 @@ describe("ADR upload actions", () => {
 
     it("createRelease commits release not created on failure", async () => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const root = mockRootState({
             adr: mockADRState({
                 datasets: [],
@@ -674,10 +737,41 @@ describe("ADR upload actions", () => {
         mockAxios.onPost(`adr/datasets/datasetId/releases`)
             .reply(500, mockFailure("failed"));
 
-        await actions.createRelease({commit, rootState: root} as any);
+        await actions.createRelease({commit, dispatch, rootState: root} as any);
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]["type"]).toBe("ReleaseFailed");
         expect(commit.mock.calls[0][0]["payload"]).toStrictEqual({"detail": "failed", "error": "OTHER_ERROR"});
+
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("adr/getReleases");
+        expect(dispatch.mock.calls[0][1]).toBe("datasetId");
+        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
+    });
+
+    it("deleteRelease posts release id to delete release endpoint", async () => {
+        const commit = jest.fn();
+        mockAxios.onPost(`adr/releases/releaseId/delete`)
+            .reply(200, mockSuccess(null));
+
+        await actions.deleteRelease({commit, rootState: mockRootState()} as any, "releaseId");
+        expect(commit.mock.calls.length).toBe(0);
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0]["data"]).toBeUndefined();
+        expect(mockAxios.history.post[0]["url"]).toBe("/adr/releases/releaseId/delete")
+    });
+
+    it("deleteRelease commits general error on failure", async () => {
+        const commit = jest.fn();
+        mockAxios.onPost(`adr/releases/releaseId/delete`)
+            .reply(500, mockFailure("failed"));
+
+        await actions.deleteRelease({commit, rootState: mockRootState()} as any, "releaseId");
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe("GeneralError");
+        expect(commit.mock.calls[0][0]["payload"]).toStrictEqual({"detail": "failed", "error": "OTHER_ERROR"});
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0]["data"]).toBeUndefined();
+        expect(mockAxios.history.post[0]["url"]).toBe("/adr/releases/releaseId/delete")
     });
 });
