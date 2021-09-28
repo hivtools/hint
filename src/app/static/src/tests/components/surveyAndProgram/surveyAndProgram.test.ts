@@ -369,7 +369,7 @@ describe("Survey and programme component", () => {
         expect((wrapper.vm as any).availableDatasetIds).toEqual(["anc", "art"]);
     });
 
-    it("sets anc as default dataset when program data is not available", () => {
+    it("sets anc as only available datasetId when program data is not available", () => {
         const store = createStore(
             {
                 anc: mockAncResponse(),
