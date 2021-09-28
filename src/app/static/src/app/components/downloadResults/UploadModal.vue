@@ -104,7 +104,6 @@
 
     interface Methods {
         uploadFilesToADRAction: (selectedUploadFiles: {uploadFiles: UploadFile[], createRelease: boolean}) => void;
-        // createReleaseAction: () => void;
         confirmUpload: () => void;
         handleCancel: () => void
         setDefaultCheckedItems: () => void
@@ -159,10 +158,6 @@
                 "adrUpload",
                 "uploadFilesToADR"
             ),
-            // createReleaseAction: mapActionByName(
-            //     "adrUpload",
-            //     "createRelease"
-            // ),
             confirmUpload() {
                 this.selectedUploadFiles = this.uploadFilesToAdr.map(value => this.uploadableFiles[value]);
                 const readyForUpload = this.prepareFilesForUpload();
@@ -305,9 +300,6 @@
                     this.setDefaultCheckedItems()
                 }
             },
-            // uploadFilesToAdr(){
-            //     console.log("uploadfilestoadr", this.uploadFilesToAdr)
-            // },
             summary: {
                 handler(summary) {
                     this.handleDownloadResult(summary)
