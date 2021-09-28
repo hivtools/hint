@@ -148,10 +148,7 @@ describe("GenericChart component", () => {
 
     const data = {
         chartId: "test-chart",
-        defaultDataSource: {
-            datasetId: "",
-            showDataPicker: true
-        }
+        availableDatasetIds: ["dataset1", "dataset2", "dataset3"]
     };
 
     const getWrapper = (state: Partial<GenericChartState> = {}, metadataProp: GenericChartMetadataResponse = metadata, ChartPropsData = data) => {
@@ -251,14 +248,21 @@ describe("GenericChart component", () => {
         });
     });
 
-    it("does not render DataSource component when some data is not available ", async(done) => {
+    it("does not render DataSource component when available datasetIds length is not greater than 1", () => {
         const state = {datasets};
-        const reducedMetadata =  {
+        const reducedMetadata = {
             "test-chart": {
                 datasets: metadata["test-chart"].datasets,
                 dataSelectors: {
                     dataSources: [
-                        {id: "visible1", type: "editable", label: "First", datasetId: "dataset3", showFilters: true, showIndicators: false},
+                        {
+                            id: "visible1",
+                            type: "editable",
+                            label: "First",
+                            datasetId: "dataset1",
+                            showFilters: true,
+                            showIndicators: false
+                        },
                         {id: "hidden", type: "fixed", datasetId: "dataset2", showFilters: true, showIndicators: false}
                     ]
                 },
@@ -268,37 +272,22 @@ describe("GenericChart component", () => {
 
         const propsData = {
             chartId: "test-chart",
-            defaultDataSource: {
-                datasetId: "dataset2",
-                showDataPicker: false
-            }
+            availableDatasetIds: ["dataset1"]
         };
+
         const wrapper = getWrapper(state, reducedMetadata, propsData);
-        setTimeout(() => {
-            const dataSources = wrapper.findAll(DataSource);
-            expect(dataSources.exists()).toBe(false);
-
-            expect(wrapper.find("filters-stub").exists()).toBeTruthy()
-            expect(wrapper.find("plotly-stub").exists()).toBeTruthy()
-
-            const chartData = wrapper.find(Plotly).props("chartData");
-            expect(chartData).toStrictEqual({
-                hidden: [{"age": "10", "value": 10, "year": "2020"}],
-                visible1: [{"age": "10", "value": 10, "year": "2020"}]
-            });
-
-            done()
-        })
+        const dataSources = wrapper.findAll(DataSource);
+        expect(dataSources.exists()).toBe(false);
     });
 
-    it("renders DataSource component and set available data as default", async(done) => {
+    it("sets available datasetId as default", () => {
         const state = {datasets};
         const reducedMetadata =  {
             "test-chart": {
-                datasets: metadata["test-chart"].datasets,
+                datasets: metadata["test-chart"].datasets[0],
                 dataSelectors: {
                     dataSources: [
-                        {id: "visible1", type: "editable", label: "First", datasetId: "dataset3", showFilters: true, showIndicators: false},
+                        {id: "visible1", type: "editable", label: "First", datasetId: "dataset1", showFilters: true, showIndicators: false},
                         {id: "hidden", type: "fixed", datasetId: "dataset2", showFilters: true, showIndicators: false}
                     ]
                 },
@@ -308,23 +297,15 @@ describe("GenericChart component", () => {
 
         const propsData = {
             chartId: "test-chart",
-            defaultDataSource: {
-                datasetId: "dataset2",
-
-                //value is set to true for testing purpose, this should be false.
-                showDataPicker: true
-            }
+            availableDatasetIds: ["dataset2"]
         };
 
         const wrapper = getWrapper(state, reducedMetadata, propsData);
-
-        setTimeout(() => {
-            const dataSources = wrapper.findAll(DataSource);
-            expect(dataSources.exists()).toBe(true);
-            expect(dataSources.length).toBe(1);
-            expect(dataSources.at(0).props("value")).toBe("dataset2");
-            done()
-        })
+        const dataSources = wrapper.findAll(DataSource);
+        expect(dataSources.exists()).toBe(false);
+        const vm = wrapper.vm as any
+        expect(vm.dataSourceSelections.visible1.datasetId).toEqual("dataset2")
+        expect(vm.dataSourceSelections.hidden.datasetId).toEqual("dataset2")
     });
 
     it("updates filter selections and chart data on filters update", (done) => {

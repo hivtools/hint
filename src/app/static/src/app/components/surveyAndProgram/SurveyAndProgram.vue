@@ -61,7 +61,7 @@
             <generic-chart v-if="genericChartMetadata"
                            chart-id="input-time-series"
                            chart-height="600px"
-                           :default-data-source="defaultDataSource"
+                           :available-dataset-ids="availableDatasetIds"
                            :metadata="genericChartMetadata"></generic-chart>
         </div>
     </div>
@@ -79,8 +79,7 @@
         Filter,
         GenericChartMetadataResponse,
         LevelLabel,
-        PartialFileUploadProps,
-        DefaultDataSource
+        PartialFileUploadProps
     } from "../../types";
     import {RootState} from "../../root";
     import {DataType, SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
@@ -125,7 +124,7 @@
         features: Feature[],
         featureLevels: LevelLabel[],
         plottingSelections: ChoroplethSelections,
-        defaultDataSource: DefaultDataSource | null,
+        availableDatasetIds: string[],
         filterTableIndicators: ChoroplethIndicatorMetadata[],
         currentLanguage: Language,
         dataSourceOptions: FilterOption[],
@@ -192,14 +191,17 @@
                 }
                 return options;
             },
-            defaultDataSource() {
-                const selectDefaultDataset = !this.programme.available && this.anc.available ? "anc" : null
-                const showDataSourcePicker = !!this.anc.available && !!this.programme.available
-
-                return {
-                    datasetId: selectDefaultDataset,
-                    showDataPicker: showDataSourcePicker
+            availableDatasetIds() {
+                const data = []
+                if (this.anc.available) {
+                    data.push("anc")
                 }
+
+                if (this.programme.available) {
+                    data.push("art")
+                }
+
+                return data;
             }
         },
         methods: {

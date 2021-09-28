@@ -3,7 +3,7 @@
         <div class="row" v-if="chartData">
             <div class="col-3">
                 <div v-for="ds in chartConfigValues.dataSourceConfigValues" :key="ds.config.id">
-                    <data-source v-if="ds.editable && defaultDataSource.showDataPicker"
+                    <data-source v-if="ds.editable && availableDatasetIds.length > 1"
                                  :config="ds.config"
                                  :datasets="chartMetadata.datasets"
                                  :value="ds.selections.datasetId"
@@ -45,7 +45,7 @@
         Dict, DisplayFilter,
         GenericChartDataset,
         GenericChartMetadata,
-        GenericChartMetadataResponse, DefaultDataSource
+        GenericChartMetadataResponse
     } from "../../types";
     import DataSource from "./dataSelectors/DataSource.vue";
     import Filters from "../plots/Filters.vue";
@@ -86,7 +86,7 @@
         metadata: GenericChartMetadataResponse
         chartId: string
         chartHeight: string
-        defaultDataSource: DefaultDataSource
+        availableDatasetIds: string[]
     }
 
     interface Computed {
@@ -113,7 +113,7 @@
             metadata: Object,
             chartId: String,
             chartHeight: String,
-            defaultDataSource: Object
+            availableDatasetIds: Array
         },
         components: {
             DataSource,
@@ -128,7 +128,7 @@
                 .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => ({
                     ...running,
                     [dataSource.id]: {
-                        datasetId: this.defaultDataSource.datasetId || dataSource.datasetId,
+                        datasetId: this.availableDatasetIds.find(id => id === dataSource.datasetId) || this.availableDatasetIds[0],
                         selectedFilterOptions: null
                     }
                 }), {});

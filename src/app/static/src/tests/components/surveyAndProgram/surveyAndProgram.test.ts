@@ -366,23 +366,17 @@ describe("Survey and programme component", () => {
                 program: mockProgramResponse()
             });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect((wrapper.vm as any).defaultDataSource).toEqual({
-            datasetId: null,
-            showDataPicker: true
-        });
+        expect((wrapper.vm as any).availableDatasetIds).toEqual(["anc", "art"]);
     });
 
-    it("sets anc as default dataset and sets data picker to false when program data is not available", () => {
+    it("sets anc as default dataset when program data is not available", () => {
         const store = createStore(
             {
                 anc: mockAncResponse(),
                 survey: mockSurveyResponse()
             });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        expect((wrapper.vm as any).defaultDataSource).toEqual({
-            datasetId: "anc",
-            showDataPicker: false
-        });
+        expect((wrapper.vm as any).availableDatasetIds).toEqual(["anc"]);
     });
 
     it("renders table as expected", () => {
