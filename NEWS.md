@@ -1,6 +1,10 @@
-# hint 1.52.0
+# hint 1.53.0
 
 * Refresh output metadata and options when language changes
+
+# hint 1.52.0
+
+* Show selected release name and preselected in modal
 
 # hint 1.51.0
 
