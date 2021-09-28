@@ -1,3 +1,7 @@
+# hint 1.52.0
+
+* Refresh output metadata and options when language changes
+
 # hint 1.51.0
 
 * Re-fetch all metadata when language changes
