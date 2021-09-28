@@ -307,7 +307,7 @@ describe(`uploadModal `, () => {
         expect(wrapper.emitted("close").length).toBe(1)
     })
 
-    it(`can send upload files to ADR when download status is complete and createRelease is flagged`, async () => {
+    it(`can send upload files to ADR when download status is complete`, async () => {
         const downloadResults = {
             summary: {complete: true, downloading: false} as any,
             spectrum: {complete: true, downloading: false} as any,
@@ -316,6 +316,7 @@ describe(`uploadModal `, () => {
         const store = createStore()
         const wrapper = mount(UploadModal, {store})
 
+        await wrapper.setProps({open: true})
         const modal = wrapper.find(".modal");
         expect(modal.classes()).toContain("show");
 
@@ -329,49 +330,82 @@ describe(`uploadModal `, () => {
 
         store.state.downloadResults = downloadResults
         await Vue.nextTick()
-        expect(wrapper.vm.$data.choiceUpload).toBe("createRelease")
         expect(mockUploadFilesToADR.mock.calls.length).toBe(2)
-        const num = mockUploadFilesToADR.mock.calls[0].length -2
-        expect(mockUploadFilesToADR.mock.calls[0][num]["uploadFiles"]).toStrictEqual([fakeMetadata["outputZip"],fakeMetadata["outputSummary"]])
-        expect(mockUploadFilesToADR.mock.calls[0][num]["createRelease"]).toBe(true)
-        expect(mockUploadFilesToADR.mock.calls[1][num]["uploadFiles"]).toStrictEqual([])
-        expect(mockUploadFilesToADR.mock.calls[1][num]["createRelease"]).toBe(true)
         expect(mockUploadMetadataAction.mock.calls.length).toBe(2)
     });
 
-    it(`can send upload files to ADR when download status is complete and createRelease is not flagged`, async () => {
+    it(`can set createRelease and upload files in uploadFilesToAdrAction`, async () => {
         const downloadResults = {
             summary: {complete: true, downloading: false} as any,
             spectrum: {complete: true, downloading: false} as any,
             coarseOutput: {} as any
         }
-        const store = createStore()
+        const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
 
         const modal = wrapper.find(".modal");
+        store.state.adrUpload.uploadFiles= {...metadataWithInput};
+        const okBtn = modal.find("button.btn-red");
+        await okBtn.trigger("click");
 
-        //Refresh adrUpload upload files to trigger watch, which populates uploadFilesToADR
-        store.state.adrUpload.uploadFiles= {...fakeMetadata};
+        await Vue.nextTick()
+        expect(wrapper.vm.$data.choiceUpload).toBe("createRelease")
+        expect(mockUploadFilesToADR.mock.calls.length).toBe(1)
+        const num = mockUploadFilesToADR.mock.calls[0].length -2
+        expect(mockUploadFilesToADR.mock.calls[0][num]["uploadFiles"]).toStrictEqual([fakeMetadata["outputZip"],fakeMetadata["outputSummary"], metadataWithInput["population"]])
+        expect(mockUploadFilesToADR.mock.calls[0][num]["createRelease"]).toBe(true)
+    });
 
-        // Selects upload specific files radial
+    it(`can set upload files in uploadFilesToAdrAction and not set createRelease`, async () => {
+        const downloadResults = {
+            summary: {complete: true, downloading: false} as any,
+            spectrum: {complete: true, downloading: false} as any,
+            coarseOutput: {} as any
+        }
+        const store = createStore(metadataWithInput, downloadResults)
+        const wrapper = mount(UploadModal, {store})
+
+        const modal = wrapper.find(".modal");
+        store.state.adrUpload.uploadFiles= {...metadataWithInput};
+        const radialInput = wrapper.find("#uploadFiles")
+        await radialInput.trigger("click")
+        const okBtn = modal.find("button.btn-red");
+        await okBtn.trigger("click");
+
+        await Vue.nextTick()
+        expect(wrapper.vm.$data.choiceUpload).toBe("uploadFiles")
+        expect(mockUploadFilesToADR.mock.calls.length).toBe(1)
+        const num = mockUploadFilesToADR.mock.calls[0].length -2
+        expect(mockUploadFilesToADR.mock.calls[0][num]["uploadFiles"]).toStrictEqual([fakeMetadata["outputZip"],fakeMetadata["outputSummary"], metadataWithInput["population"]])
+        expect(mockUploadFilesToADR.mock.calls[0][num]["createRelease"]).toBe(false)
+    });
+
+    it(`can remove some upload files from uploadFilesToAdrAction`, async () => {
+        const downloadResults = {
+            summary: {complete: true, downloading: false} as any,
+            spectrum: {complete: true, downloading: false} as any,
+            coarseOutput: {} as any
+        }
+        const store = createStore(metadataWithInput, downloadResults)
+        const wrapper = mount(UploadModal, {store})
+
+        const modal = wrapper.find(".modal");
+        store.state.adrUpload.uploadFiles= {...metadataWithInput};
         const radialInput = wrapper.find("#uploadFiles")
         await radialInput.trigger("click")
 
-        //Click ok to trigger population of uploadFilesPayload
+        const checkInputs = wrapper.findAll("input[type='checkbox']")
+        await checkInputs.at(1).setChecked(false)
+        await checkInputs.at(2).setChecked(false)
         const okBtn = modal.find("button.btn-red");
-        expect(okBtn.element)
         await okBtn.trigger("click");
 
-        store.state.downloadResults = downloadResults
         await Vue.nextTick()
         expect(wrapper.vm.$data.choiceUpload).toBe("uploadFiles")
-        expect(mockUploadFilesToADR.mock.calls.length).toBe(2)
+        expect(mockUploadFilesToADR.mock.calls.length).toBe(1)
         const num = mockUploadFilesToADR.mock.calls[0].length -2
-        expect(mockUploadFilesToADR.mock.calls[0][num]["uploadFiles"]).toStrictEqual([fakeMetadata["outputZip"],fakeMetadata["outputSummary"]])
+        expect(mockUploadFilesToADR.mock.calls[0][num]["uploadFiles"]).toStrictEqual([fakeMetadata["outputZip"]])
         expect(mockUploadFilesToADR.mock.calls[0][num]["createRelease"]).toBe(false)
-        expect(mockUploadFilesToADR.mock.calls[1][num]["uploadFiles"]).toStrictEqual([])
-        expect(mockUploadFilesToADR.mock.calls[1][num]["createRelease"]).toBe(false)
-        expect(mockUploadMetadataAction.mock.calls.length).toBe(2)
     });
 
     it(`ok button is enabled when inputs are set and triggers close modal`, async () => {

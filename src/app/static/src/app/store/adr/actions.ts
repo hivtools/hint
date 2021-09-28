@@ -5,7 +5,7 @@ import qs from "qs";
 import {ADRState} from "./adr";
 import {ADRMutation} from "./mutations";
 import {datasetFromMetadata} from "../../utils";
-import {Organization} from "../../types";
+import {Organization, Release} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
 
 export interface ADRActions {
@@ -21,7 +21,7 @@ export interface ADRActions {
 
 export interface GetDatasetPayload {
     id: string
-    release?: string
+    release?: Release
 }
 
 export const actions: ActionTree<ADRState, RootState> & ADRActions = {
@@ -71,8 +71,8 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     async getDataset(context, {id, release}) {
         const {state, commit} = context;
         let url = `/adr/datasets/${id}`
-        if (release) {
-            url += '?' + new URLSearchParams({release});
+        if (release?.id) {
+            url += '?' + new URLSearchParams({release: release.id});
         }
         await api<BaselineMutation, ADRMutation>(context)
             .withError(ADRMutation.SetADRError)
@@ -80,8 +80,10 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
             .get(url)
             .then(response => {
                 if (response) {
-                    const dataset = datasetFromMetadata(response.data, state.schemas!, release);
+                    const releaseId = release?.id
+                    const dataset = datasetFromMetadata(response.data, state.schemas!, releaseId);
                     commit(`baseline/${BaselineMutation.SetDataset}`, dataset, {root: true});
+                    commit(`baseline/${BaselineMutation.SetRelease}`, release || null, {root: true});
                 }
             });
     },

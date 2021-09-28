@@ -113,7 +113,7 @@ describe("File menu", () => {
 
         const expectedJson = JSON.stringify({
             state: {
-                baseline: {selectedDataset: null},
+                baseline: {selectedDataset: null, selectedRelease: null},
                 modelRun: mockModelRunState(),
                 metadata: mockMetadataState(),
                 surveyAndProgram: {selectedDataType: null}
