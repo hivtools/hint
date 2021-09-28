@@ -358,7 +358,7 @@ describe("Survey and programme component", () => {
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.Program);
     });
 
-    it("does not set datasetId and sets data picker to true when anc and program are available", () => {
+    it("set datasetId when anc and program are available", () => {
         const store = createStore(
             {
                 anc: mockAncResponse(),
