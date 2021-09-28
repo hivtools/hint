@@ -57,7 +57,6 @@
     import {FilterOption} from "../../generated";
     import Plotly from "./Plotly.vue";
     import {filterData} from "./utils";
-    import {config} from "@vue/test-utils";
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections
