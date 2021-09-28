@@ -307,6 +307,19 @@ describe(`uploadModal `, () => {
         expect(wrapper.emitted("close").length).toBe(1)
     })
 
+    it(`new test`, async () => {
+        const downloadResults = {
+            summary: {complete: true, downloading: false} as any,
+            spectrum: {complete: true, downloading: false} as any,
+            coarseOutput: {} as any
+        }
+        const store = createStore()
+        const wrapper = mount(UploadModal, {store})
+
+        const modal = wrapper.find(".modal");
+        expect(modal.text()).toBe("show");
+    });
+
     it(`can send upload files to ADR when download status is complete and createRelease is flagged`, async () => {
         const downloadResults = {
             summary: {complete: true, downloading: false} as any,

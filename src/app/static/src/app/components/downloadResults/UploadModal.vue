@@ -138,7 +138,6 @@
 
     interface Data {
         uploadFilesToAdr: string[]
-        uploadDescToAdr: string
         choiceUpload: "createRelease" | "uploadFiles"
         selectedUploadFiles: UploadFile[]
     }
@@ -151,7 +150,6 @@
         data(): Data {
             return {
                 uploadFilesToAdr: [],
-                uploadDescToAdr: "",
                 choiceUpload: "createRelease",
                 selectedUploadFiles: []
             }
