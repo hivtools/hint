@@ -358,7 +358,7 @@ describe("Survey and programme component", () => {
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.Program);
     });
 
-    it("set datasetId when anc and program are available", () => {
+    it("set availableDatasetIds when anc and program are available", () => {
         const store = createStore(
             {
                 anc: mockAncResponse(),
