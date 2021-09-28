@@ -14,10 +14,13 @@ import {
     mockSurveyAndProgramState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
-import {emptyState, RootState} from "../app/root";
+import {RootState} from "../app/root";
 import {DataType} from "../app/store/surveyAndProgram/surveyAndProgram";
 import {currentHintVersion} from "../app/hintVersion";
 import {Language} from "../app/store/translations/locales";
+import registerTranslations from "../app/store/translations/registerTranslations";
+import Vuex from 'vuex';
+import i18next from "i18next";
 
 declare const currentUser: string; // set in jest config, or on the index page when run for real
 
@@ -129,7 +132,7 @@ describe("LocalStorageManager", () => {
         expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState));
     });
 
-    it("can get language from local storage", () => {
+    it("can set and get language from local storage", () => {
         const spy = jest.spyOn(Storage.prototype, "setItem");
 
         const testState = {language: Language.pt};
@@ -139,4 +142,12 @@ describe("LocalStorageManager", () => {
         expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState))
     });
 
+    it("can initiate default language from store", () => {
+        const store = new Vuex.Store({
+            state: {language: Language.fr}
+        });
+
+        registerTranslations(store);
+        expect(i18next.language).toBe("fr");
+    });
 });
