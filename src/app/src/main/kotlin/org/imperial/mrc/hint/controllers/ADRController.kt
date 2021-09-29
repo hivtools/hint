@@ -186,6 +186,11 @@ class ADRController(private val encryption: Encryption,
     fun createRelease(@PathVariable id: String, @RequestParam name: String): ResponseEntity<String>
     {
         val adr = adrClientBuilder.build()
+        val releases = adr.get("/dataset_version_list?dataset_id=${id}")
+        val duplicateReleaseId = releases.find { it.name == name }.id
+        if (duplicateReleaseId != null) {
+            adr.post("version_delete", listOf("version_id" to duplicateReleaseId));
+        }
         return adr.post("dataset_version_create", listOf("dataset_id" to id, "name" to name));
     }
 
