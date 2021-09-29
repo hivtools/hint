@@ -1,3 +1,7 @@
+# hint 1.54.0
+
+* Add tooltips for indicators in Time series chart
+
 # hint 1.53.0
 
 * Remove genericChart dataset when corresponding input file changes

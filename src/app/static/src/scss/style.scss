@@ -153,3 +153,8 @@ a.down::after {
     width: 20px;
     vertical-align: sub;
   }
+
+.filter-select .tooltip-inner {
+  text-align: left !important;
+  min-width: 32em;
+}
