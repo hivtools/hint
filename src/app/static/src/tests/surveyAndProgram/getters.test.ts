@@ -1,6 +1,8 @@
 import {DataType, SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {getters} from "../../app/store/surveyAndProgram/getters";
 import {mockAncResponse, mockError, mockProgramResponse, mockSurveyAndProgramState, mockSurveyResponse} from "../mocks";
+import {Language} from "../../app/store/translations/locales";
+import registerTranslations from "../../app/store/translations/registerTranslations";
 
 describe("survey and program getters", () => {
 
@@ -33,10 +35,11 @@ describe("survey and program getters", () => {
         }
     };
 
-    const testExpectedFilters = function (dataType: DataType, shouldIncludeSexOptions: boolean) {
+    const testExpectedFilters = function (dataType: DataType, shouldIncludeSexOptions: boolean, language: Language = Language.en) {
         const testState = getTestState({selectedDataType: dataType});
 
-        const filters = getters.filters(testState, null, testRootState as any);
+        const rootState = {...testRootState, language} as any;
+        const filters = getters.filters(testState, null, rootState);
         expect(filters.length).toBe(6);
         expect(filters[0]).toStrictEqual({
             id: "area",
@@ -64,8 +67,28 @@ describe("survey and program getters", () => {
         const countryAreaFilterOption = getters.countryAreaFilterOption(testState, null, testRootState as any);
         expect(countryAreaFilterOption).toStrictEqual({children: ["REGION OPTIONS"]});
 
+        let bothLabel;
+        let femaleLabel;
+        let maleLabel;
+        switch (language.toString()) {
+            case("fr"):
+                bothLabel = "Les deux";
+                femaleLabel = "Femelle";
+                maleLabel = "Mâle";
+                break;
+            case("pt"):
+                bothLabel = "Ambos";
+                femaleLabel = "Fêmea";
+                maleLabel = "Macho";
+                break;
+            default:
+                bothLabel = "Both";
+                femaleLabel = "Female";
+                maleLabel = "Male";
+        }
+
         const sexFilterOptions = shouldIncludeSexOptions ?
-            [{id: "both", label: "both"}, {id: "female", label: "female"}, {id: "male", label: "male"}] : [];
+            [{id: "both", label: bothLabel}, {id: "female", label: femaleLabel}, {id: "male", label: maleLabel}] : [];
         expect(filters[3]).toStrictEqual({
             id: "sex",
             column_id: "sex",
@@ -175,5 +198,11 @@ describe("survey and program getters", () => {
         testExpectedFilters(DataType.ANC, false);
     });
 
+    it("gets expected filters when root language is French", () => {
+        testExpectedFilters(DataType.Survey, true, Language.fr);
+    });
 
+    it("gets expected filters when root language is Portuguese", () => {
+        testExpectedFilters(DataType.Survey, true, Language.pt);
+    })
 });
