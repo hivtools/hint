@@ -66,8 +66,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             actions.push(dispatch("modelCalibrate/getResult"));
         }
 
-        await Promise.all(actions).then(() => {
-            commit({type: RootMutation.SetUpdatingLanguage, payload: false});
-        });
+        await Promise.all(actions);
+        commit({type: RootMutation.SetUpdatingLanguage, payload: false});
     }
 };
