@@ -53,6 +53,10 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     async changeLanguage(context, payload) {
         const {commit, dispatch, rootState} = context;
 
+        if (rootState.language === payload) {
+            return;
+        }
+
         commit({type: RootMutation.SetUpdatingLanguage, payload: true});
         await changeLanguage<RootState>(context, payload);
 

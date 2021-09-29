@@ -1,14 +1,6 @@
 import Mock = jest.Mock;
 import {actions} from "../../app/store/root/actions";
-import {
-    mockAxios,
-    mockBaselineState,
-    mockError,
-    mockModelCalibrateState,
-    mockRootState,
-    mockStepperState,
-    mockSuccess
-} from "../mocks";
+import {mockAxios, mockBaselineState, mockModelCalibrateState, mockRootState, mockStepperState} from "../mocks";
 import {Language} from "../../app/store/translations/locales";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
@@ -281,4 +273,22 @@ describe("root actions", () => {
         expect(dispatch.mock.calls.length).toBe(0)
     });
 
+    it("changeLanguage does nothing if new language is the same as current language", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const rootState = mockRootState(
+            {
+                language: Language.fr,
+                baseline: mockBaselineState({iso3: "MWI"}),
+                modelCalibrate: mockModelCalibrateState({
+                    status: {
+                        done: true
+                    } as any
+                })
+            });
+        await actions.changeLanguage({commit, dispatch, rootState} as any, Language.fr);
+
+        expect(commit.mock.calls.length).toBe(0);
+        expect(dispatch.mock.calls.length).toBe(0);
+    });
 });
