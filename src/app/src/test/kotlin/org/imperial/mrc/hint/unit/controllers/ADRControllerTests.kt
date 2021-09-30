@@ -752,11 +752,15 @@ class ADRControllerTests : HintrControllerTests()
     }
 
     @Test
-    fun `creates a release`()
+    fun `creates a release if no release exists on ADR with the same name`()
     {
-        val expectedUrl = "dataset_version_create"
+        val data = mapOf("data" to listOf<Any>())
         val mockClient = mock<ADRClient> {
-            on { post(expectedUrl, listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity
+            on { get("dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
+                    .ok()
+                    .body(objectMapper.writeValueAsString(data))
+                    // .body("whatever")
+            on { post("dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity
                     .ok()
                     .body("whatever")
         }
