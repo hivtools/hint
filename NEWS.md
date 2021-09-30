@@ -1,6 +1,10 @@
-# hint 1.54.0
+# hint 1.55.0
 
 * Show Time series tab and data source picker only when relevant 
+
+# hint 1.54.0
+
+* Add tooltips for indicators in Time series chart
 
 # hint 1.53.0
 
