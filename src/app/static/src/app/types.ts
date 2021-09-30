@@ -226,3 +226,4 @@ export interface GenericChartDataset {
         }
     }
 }
+

@@ -3,7 +3,7 @@
         <div class="row" v-if="chartData">
             <div class="col-3">
                 <div v-for="ds in chartConfigValues.dataSourceConfigValues" :key="ds.config.id">
-                    <data-source v-if="ds.editable"
+                    <data-source v-if="ds.editable && availableDatasetIds.length > 1"
                                  :config="ds.config"
                                  :datasets="chartMetadata.datasets"
                                  :value="ds.selections.datasetId"
@@ -85,6 +85,7 @@
         metadata: GenericChartMetadataResponse
         chartId: string
         chartHeight: string
+        availableDatasetIds: string[]
     }
 
     interface Computed {
@@ -110,7 +111,8 @@
         props: {
             metadata: Object,
             chartId: String,
-            chartHeight: String
+            chartHeight: String,
+            availableDatasetIds: Array
         },
         components: {
             DataSource,
@@ -125,7 +127,7 @@
                 .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => ({
                     ...running,
                     [dataSource.id]: {
-                        datasetId: dataSource.datasetId,
+                        datasetId: this.availableDatasetIds.find(id => id === dataSource.datasetId) || this.availableDatasetIds[0],
                         selectedFilterOptions: null
                     }
                 }), {});

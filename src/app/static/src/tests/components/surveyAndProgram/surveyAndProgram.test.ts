@@ -23,7 +23,6 @@ import {expectTranslated} from "../../testHelpers";
 import GenericChart from "../../../app/components/genericChart/GenericChart.vue";
 import {GenericChartState} from "../../../app/store/genericChart/genericChart";
 import Choropleth from "../../../app/components/plots/choropleth/Choropleth.vue";
-import {testUploadComponent} from "../baseline/fileUploads";
 
 const localVue = createLocalVue();
 
@@ -98,7 +97,9 @@ describe("Survey and programme component", () => {
     };
 
     it("renders tabs", () => {
-        const store = createStore();
+        const store = createStore({
+            anc: mockAncResponse()
+        });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         const tabItems = wrapper.findAll("li.nav-item a");
         expect(tabItems.length).toBe(2);
@@ -106,6 +107,14 @@ describe("Survey and programme component", () => {
         expectTranslated(tabItems.at(0), "Map", "Carte", "Mapa", store);
         expect(tabItems.at(1).classes()).not.toContain("active");
         expectTranslated(tabItems.at(1), "Time series", "Séries chronologiques", "Séries temporais", store);
+    });
+
+    it("does not render time series tab when anc or program dataset is not available", () => {
+        const store = createStore({});
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const tabItems = wrapper.findAll("li.nav-item a");
+        expect(tabItems.length).toBe(1)
+        expect(tabItems.at(0).text()).not.toBe("Time series");
     });
 
     it("renders choropleth controls if there is a selected data type and selectedTab is 0", () => {
@@ -168,9 +177,11 @@ describe("Survey and programme component", () => {
 
     });
 
-    it("renders generic chart component when generic chart metadata exists and selectedTab is 1", () => {
+    it("renders time series tab and component when generic chart metadata exists and selectedTab is 1", () => {
         const genericChartMetadata = {value: "TEST"} as any;
-        const store = createStore({}, {
+        const store = createStore({
+            program: mockProgramResponse()
+        }, {
             genericChartMetadata
         });
         const data = () => {
@@ -199,10 +210,12 @@ describe("Survey and programme component", () => {
         expect(wrapper.find(Choropleth).exists()).toBe(false);
     });
 
-    it("clicking tab item changes tab", async () => {
+    it("can display generic chart tab and clicking tab item changes tab", async () => {
         const genericChartMetadata = {value: "TEST"} as any;
-        const store = createStore(
-            {selectedDataType: DataType.Survey},
+        const store = createStore({
+                selectedDataType: DataType.Survey,
+            anc: mockAncResponse()
+            },
             {genericChartMetadata}
         );
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
@@ -343,6 +356,27 @@ describe("Survey and programme component", () => {
             });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.Program);
+    });
+
+    it("set availableDatasetIds when anc and program are available", () => {
+        const store = createStore(
+            {
+                anc: mockAncResponse(),
+                survey: mockSurveyResponse(),
+                program: mockProgramResponse()
+            });
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        expect((wrapper.vm as any).availableDatasetIds).toEqual(["anc", "art"]);
+    });
+
+    it("sets anc as only available datasetId when program data is not available", () => {
+        const store = createStore(
+            {
+                anc: mockAncResponse(),
+                survey: mockSurveyResponse()
+            });
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        expect((wrapper.vm as any).availableDatasetIds).toEqual(["anc"]);
     });
 
     it("renders table as expected", () => {
