@@ -1,3 +1,7 @@
+# hint 1.53.0
+
+* Persist current language in browser storage
+
 # hint 1.52.0
 
 * Show selected release name and preselected in modal
