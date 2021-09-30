@@ -1,6 +1,10 @@
-# hint 1.53.0
+# hint 1.54.0
 
 * Refresh output metadata and options when language changes
+
+# hint 1.53.0
+
+* Persist current language in browser storage
 
 # hint 1.52.0
 

@@ -151,9 +151,10 @@ export const emptyState = (): RootState => {
         downloadResults: initialDownloadResultsState()
     }
 };
+const existingState = localStorageManager.getState();
 
 export const storeOptions: StoreOptions<RootState> = {
-    state: emptyState(),
+    state: {...emptyState(), ...existingState && {language: existingState.language}},
     modules: {
         adr,
         genericChart,
