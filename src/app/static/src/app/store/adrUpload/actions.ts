@@ -149,15 +149,14 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
         const version = rootState.projects.currentVersion?.versionNumber;
         const name = {name: `Naomi: ${project} v${version}`}
 
-        // dispatch("checkForDuplicateReleaseName", name);
-        await dispatch("adr/getReleases", selectedDatasetId, {root: true})
-        const releases: Release[] = rootState.adr.releases;
-        console.log({releases})
-        const duplicateReleaseId = releases.find(release => release.name === name.name)?.id
-        console.log({duplicateReleaseId})
-        if (duplicateReleaseId){
-            await dispatch("deleteRelease", duplicateReleaseId)
-        }
+        // await dispatch("adr/getReleases", selectedDatasetId, {root: true})
+        // const releases: Release[] = rootState.adr.releases;
+        // console.log({releases})
+        // const duplicateReleaseId = releases.find(release => release.name === name.name)?.id
+        // console.log({duplicateReleaseId})
+        // if (duplicateReleaseId){
+        //     await dispatch("deleteRelease", duplicateReleaseId)
+        // }
 
         await api(context)
                 .withError(ADRUploadMutation.ReleaseFailed)
@@ -166,34 +165,9 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
     },
 
     async deleteRelease(context, releaseId) {
-        // const {rootState} = context;
-        // const selectedReleaseId = rootState.baseline.selectedDataset!.release;
-        // const selectedReleaseId = "9c83f7ea-a33f-4dc4-802e-228eac8a263f"
-        console.log("delete release fired")
         await api(context)
                 .withError(ADRUploadMutation.GeneralError)
-                // .withSuccess(ADRUploadMutation.ReleaseCreated)
                 .ignoreSuccess()
                 .postAndReturn(`/adr/releases/${releaseId}/delete`);
     },
-
-    // async checkForDuplicateReleaseName(context, releaseName) {
-    //     const {rootState, dispatch} = context;
-    //     // const selectedDatasetId = rootState.baseline.selectedDataset!.id;
-
-    //     // await api(context)
-    //     //         .withError(ADRUploadMutation.ReleaseFailed)
-    //     //         // .withSuccess(ADRUploadMutation.ReleaseCreated)
-    //     //         .ignoreSuccess()
-    //     //         .get(`/adr/datasets/${datasetId}/releases`)
-    //     //         .then((response) => {
-    //     //             if (response) {
-    //     //                 console.log("duplicates response", response)
-    //     //             }
-    //     //         })
-
-    //     await dispatch("getReleases")
-    //     const releases: Release[] = rootState.adr.releases;
-    //     return releases.find(release => release.name === releaseName)?.id || null
-    // }
 };
