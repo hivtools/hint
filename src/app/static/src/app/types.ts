@@ -240,3 +240,4 @@ export interface GenericChartDataset {
         }
     }
 }
+

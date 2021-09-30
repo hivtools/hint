@@ -6,6 +6,7 @@ import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
 import qs from 'qs';
 import {getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
+import {GenericChartMutation} from "../genericChart/mutations";
 
 export interface SurveyAndProgramActions {
     importSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
@@ -23,9 +24,18 @@ export interface SurveyAndProgramActions {
     validateSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, RootState>) => void;
 }
 
+const enum DATASET_TYPE  {
+    ANC = "anc",
+    ART = "art"
+}
+
 function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
     commit("surveyAndProgram/SelectedDataTypeUpdated",
         {type: "SelectedDataTypeUpdated", payload: dataType}, {root: true})
+}
+
+function commitClearGenericChartDataset(commit: Commit, dataType: string) {
+    commit({type: `genericChart/${GenericChartMutation.ClearDataset}`, payload: dataType}, {root: true});
 }
 
 interface UploadImportOptions {
@@ -37,6 +47,7 @@ async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, R
                                  filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
+    commitClearGenericChartDataset(commit, DATASET_TYPE.ANC);
 
     await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
         .withError(SurveyAndProgramMutation.ANCError)
@@ -56,6 +67,7 @@ async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramStat
                                      filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
+    commitClearGenericChartDataset(commit, DATASET_TYPE.ART);
 
     await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
         .withError(SurveyAndProgramMutation.ProgramError)
@@ -142,6 +154,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
             .delete("/disease/programme/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
+                commitClearGenericChartDataset(commit, DATASET_TYPE.ART)
             });
     },
 
@@ -151,6 +164,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
             .delete("/disease/anc/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
+                commitClearGenericChartDataset(commit, DATASET_TYPE.ANC)
             });
     },
 

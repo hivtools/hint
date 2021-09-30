@@ -5,6 +5,7 @@ import {Dict, GenericChartDataset, GenericChartMetadataResponse, PayloadWithType
 export enum GenericChartMutation {
     GenericChartMetadataFetched = "GenericChartMetadataFetched",
     SetDataset = "SetDataset",
+    ClearDataset = "ClearDataset",
     SetError = "SetError"
 }
 
@@ -19,6 +20,9 @@ export const mutations: MutationTree<GenericChartState> = {
     },
     [GenericChartMutation.SetDataset](state: GenericChartState, action: PayloadWithType<SetDatasetPayload>) {
         state.datasets[action.payload.datasetId] = action.payload.dataset;
+    },
+    [GenericChartMutation.ClearDataset](state: GenericChartState, action: PayloadWithType<string>) {
+        delete state.datasets[action.payload]
     },
     [GenericChartMutation.SetError](state: GenericChartState, action: PayloadWithType<Error | null>) {
         state.genericChartError = action.payload;
