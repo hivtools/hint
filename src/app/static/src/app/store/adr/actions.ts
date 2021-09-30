@@ -61,7 +61,6 @@ export const actions: ActionTree<ADRState, RootState> & ADRActions = {
     },
 
     async getReleases(context, selectedDatasetId) {
-        console.log("get releases was fired")
         await api<ADRMutation, BaselineMutation>(context)
             .withError(BaselineMutation.BaselineError)
             .withSuccess(ADRMutation.SetReleases)

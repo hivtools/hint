@@ -5,15 +5,13 @@ import qs from "qs";
 import {ADRUploadState} from "./adrUpload";
 import {ADRUploadMutation} from "./mutations";
 import {constructUploadFile, constructUploadFileWithResourceName} from "../../utils";
-import {Dict, UploadFile, Release} from "../../types";
+import {Dict, UploadFile} from "../../types";
 import {ValidateInputResponse} from "../../generated";
 
 export interface ADRUploadActions {
     getUploadFiles: (store: ActionContext<ADRUploadState, RootState>) => void;
     uploadFilesToADR: (store: ActionContext<ADRUploadState, RootState>, uploadFilesPayload: {uploadFiles: UploadFile[], createRelease: boolean}) => void;
     createRelease: (store: ActionContext<ADRUploadState, RootState>) => void;
-    deleteRelease: (store: ActionContext<ADRUploadState, RootState>, releaseId: string) => void;
-    // checkForDuplicateReleaseName: (store: ActionContext<ADRUploadState, RootState>, releaseName: string) => string | null;
 }
 
 export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions = {
@@ -143,31 +141,15 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
     },
 
     async createRelease(context) {
-        const {rootState, dispatch} = context;
+        const {rootState} = context;
         const selectedDatasetId = rootState.baseline.selectedDataset!.id;
         const project = rootState.projects.currentProject?.name;
         const version = rootState.projects.currentVersion?.versionNumber;
         const name = {name: `Naomi: ${project} v${version}`}
 
-        // await dispatch("adr/getReleases", selectedDatasetId, {root: true})
-        // const releases: Release[] = rootState.adr.releases;
-        // console.log({releases})
-        // const duplicateReleaseId = releases.find(release => release.name === name.name)?.id
-        // console.log({duplicateReleaseId})
-        // if (duplicateReleaseId){
-        //     await dispatch("deleteRelease", duplicateReleaseId)
-        // }
-
         await api(context)
                 .withError(ADRUploadMutation.ReleaseFailed)
                 .withSuccess(ADRUploadMutation.ReleaseCreated)
                 .postAndReturn(`/adr/datasets/${selectedDatasetId}/releases`, qs.stringify(name));
-    },
-
-    async deleteRelease(context, releaseId) {
-        await api(context)
-                .withError(ADRUploadMutation.GeneralError)
-                .ignoreSuccess()
-                .postAndReturn(`/adr/releases/${releaseId}/delete`);
-    },
+    }
 };

@@ -310,36 +310,4 @@ describe("ADR dataset-related actions", () => {
         expect(commit.mock.calls[0][0]["payload"]).toStrictEqual({"detail": "Not found: Dataset not found", "error": "ADR_ERROR"});
     });
 
-    it("attempts to delete release and gets appropriate error", async () => {
-        const commit = jest.fn();
-
-        // const root = {
-        //     ...rootState,
-        //     baseline: {
-        //         selectedDataset: {
-        //             id: "datasetId"
-        //         }
-        //     } as any,
-        //     projects: {
-        //         currentProject: {
-        //             name: "projectName",
-        //             id: 1,
-        //             versions: []
-        //         },
-        //         currentVersion: {
-        //             versionNumber: 1,
-        //             id: "1",
-        //             created: "then",
-        //             updated: "now"
-        //         }
-        //     }
-        // };
-
-        await adrUploadActions.deleteRelease({commit, rootState} as any, "releaseId");
-
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("GeneralError");
-        expect(commit.mock.calls[0][0]["payload"]).toStrictEqual({"detail": "Not found: Dataset not found", "error": "ADR_ERROR"});
-    });
-
 });

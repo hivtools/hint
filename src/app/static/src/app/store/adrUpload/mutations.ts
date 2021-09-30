@@ -12,7 +12,6 @@ export enum ADRUploadMutation {
     ReleaseCreated = "ReleaseCreated",
     ClearStatus = "ClearStatus",
     ReleaseFailed = "ReleaseFailed",
-    GeneralError = "GeneralError",
     SetADRUploadError = "SetADRUploadError",
 }
 
@@ -63,10 +62,6 @@ export const mutations: MutationTree<ADRUploadState> = {
                 break;
         }
         state.uploadError = alteredPayload;
-    },
-
-    [ADRUploadMutation.GeneralError](state: ADRUploadState, action: PayloadWithType<Error | null>) {
-        state.uploadError = action.payload;
     },
 
     [ADRUploadMutation.SetADRUploadError](state: ADRUploadState, action: PayloadWithType<Error | null>) {

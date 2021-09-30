@@ -295,31 +295,6 @@ class ADRTests : SecureIntegrationTests()
         }
     }
 
-    @ParameterizedTest
-    @EnumSource(IsAuthorized::class)
-    fun `can delete an ADR release`(isAuthorized: IsAuthorized)
-    {
-        testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
-
-        val releaseName = "1.0"
-
-        val added = testRestTemplate.postForEntity<String>(
-                "/adr/datasets/hint_test/releases",
-                getPostEntityWithKey(mapOf("name" to listOf(releaseName)))
-        )
-
-        if (isAuthorized == IsAuthorized.TRUE)
-        {
-            val releaseId = ObjectMapper().readTree(added.body!!)["data"]["id"]
-
-            val deleted = testRestTemplate.postForEntity<String>(
-                    "/adr/releases/${releaseId}/delete"
-            )
-            val data = ObjectMapper().readTree(deleted.body!!)["data"]
-            assertThat(data["name"]).isEqualTo(null)
-        }
-    }
-
     private fun getPostEntityWithKey(values: Map<String, List<String>> = emptyMap()): HttpEntity<LinkedMultiValueMap<String, String>>
     {
         val map = LinkedMultiValueMap<String, String>()

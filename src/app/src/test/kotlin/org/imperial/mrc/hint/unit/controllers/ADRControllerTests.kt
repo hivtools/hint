@@ -777,32 +777,6 @@ class ADRControllerTests : HintrControllerTests()
         assertThat(result.body!!).isEqualTo("whatever")
     }
 
-    @Test
-    fun `deletes a release`()
-    {
-        val expectedUrl = "version_delete"
-        val mockClient = mock<ADRClient> {
-            on { post(expectedUrl, listOf("version_id" to "release-1")) } doReturn ResponseEntity
-                    .ok()
-                    .body("whatever")
-        }
-        val mockBuilder = mock<ADRClientBuilder> {
-            on { build() } doReturn mockClient
-        }
-        val sut = ADRController(
-                mock(),
-                mock(),
-                mockBuilder,
-                objectMapper,
-                mockProperties,
-                mock(),
-                mock(),
-                mockSession,
-                mock())
-        val result = sut.deleteRelease("release-1")
-        assertThat(result.body!!).isEqualTo("whatever")
-    }
-
     private fun makeFakeSuccessResponse(): ResponseEntity<String>
     {
         val resultWithResources = mapOf("resources" to listOf(1, 2))
