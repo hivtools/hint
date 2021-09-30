@@ -23,6 +23,7 @@ import {expectTranslated} from "../../testHelpers";
 import GenericChart from "../../../app/components/genericChart/GenericChart.vue";
 import {GenericChartState} from "../../../app/store/genericChart/genericChart";
 import Choropleth from "../../../app/components/plots/choropleth/Choropleth.vue";
+import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
 
 const localVue = createLocalVue();
 
@@ -390,9 +391,9 @@ describe("Survey and programme component", () => {
             } as any,
         });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        const table = wrapper.find("table-view-stub");
+        const table = wrapper.find(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
-        expect(table.props().tabledata).toBe("TEST DATA");
+        expect(table.props().tableData).toBe("TEST DATA");
         expect(table.props().filters[0]).toStrictEqual({
             id: "area",
             column_id: "area_id",

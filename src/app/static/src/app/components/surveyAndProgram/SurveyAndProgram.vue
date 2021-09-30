@@ -46,14 +46,14 @@
                             @update="updateChoroplethSelections({payload: $event})"
                             @update-colour-scales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
                 <div>
-                    <table-view :tabledata="data"
+                    <area-indicators-table :table-data="data"
                                 :area-filter-id="areaFilterId"
                                 :filters="filters"
                                 :countryAreaFilterOption="countryAreaFilterOption"
                                 :indicators="filterTableIndicators"
                                 :selections="plottingSelections"
                                 :selectedFilterOptions="plottingSelections.selectedFilterOptions"
-                    ></table-view>
+                    ></area-indicators-table>
                 </div>
             </div>
         </div>
@@ -73,7 +73,7 @@
     import i18next from "i18next";
     import {mapGetters, mapMutations, mapState} from "vuex";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
-    import TableView from "../plots/table/Table.vue";
+    import AreaIndicatorsTable from "../plots/table/AreaIndicatorsTable.vue";
     import Filters from "../plots/Filters.vue";
     import {
         Filter,
@@ -220,7 +220,7 @@
         components: {
             Choropleth,
             Filters,
-            TableView,
+            AreaIndicatorsTable,
             TreeSelect,
             GenericChart
         }

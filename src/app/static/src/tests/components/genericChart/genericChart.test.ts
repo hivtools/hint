@@ -19,6 +19,7 @@ import {GenericChartMetadataResponse} from "../../../app/types";
 import {actions} from "../../../app/store/genericChart/actions";
 import {mutations} from "../../../app/store/genericChart/mutations";
 import {mockAxios} from "../../mocks";
+import GenericChartTable from "../../../app/components/genericChart/GenericChartTable.vue";
 
 describe("GenericChart component", () => {
 
@@ -284,7 +285,7 @@ describe("GenericChart component", () => {
         const state = {datasets};
         const reducedMetadata =  {
             "test-chart": {
-                datasets: metadata["test-chart"].datasets[0],
+                datasets: [metadata["test-chart"].datasets[0]],
                 dataSelectors: {
                     dataSources: [
                         {id: "visible1", type: "editable", label: "First", datasetId: "dataset1", showFilters: true, showIndicators: false},
@@ -525,5 +526,62 @@ describe("GenericChart component", () => {
         const genericChartError = {error: "TEST-ERROR"} as any;
         const wrapper = getWrapper( {datasets, genericChartError});
         expect(wrapper.find(ErrorAlert).props("error")).toBe(genericChartError);
+    });
+
+    it("does not render table if no table config for data source's dataset", () => {
+        const state = {datasets};
+        const wrapper = getWrapper(state);
+
+        setTimeout(() => {
+            expect(wrapper.findAll(GenericChartTable).length).toBe(0);
+        });
+    });
+
+    it("renders table if table config exists for data source's dataset", (done) => {
+        const tableConfig1 = {
+            columns: [
+                {
+                    data: {columnId: "age", labelFilterId: null},
+                    header: {type: "filterLabel", filterId: "age"}
+                }
+            ]
+        };
+        const tableConfig2 = {
+            columns: [
+                {
+                    data: {columnId: "year", labelFilterId: "year"},
+                    header: {type: "filterLabel", filterId: "year"}
+                }
+            ]
+        };
+
+        const customMetadata = {
+            "test-chart": {
+                ...metadata["test-chart"],
+                datasets: [
+                    {...metadata["test-chart"].datasets[0], table: tableConfig1},
+                    {...metadata["test-chart"].datasets[1], table: tableConfig2},
+                    metadata["test-chart"].datasets[2]
+                ] as any
+            }
+        };
+        const state = {datasets};
+        const wrapper = getWrapper(state, customMetadata);
+
+        setTimeout(() => {
+            const tables = wrapper.findAll(GenericChartTable);
+            expect(tables.length).toBe(2);
+            expect(tables.at(0).props("tableConfig")).toBe(tableConfig1);
+            expect(tables.at(0).props("filteredData")).toStrictEqual([{age: "1", year: "2021", value: 2}]);
+            expect(tables.at(0).props("filters")).toBe(datasets.dataset1.metadata.filters);
+            expect(tables.at(0).props("selectedFilterOptions")).toStrictEqual(datasets.dataset1.metadata.defaults.selected_filter_options);
+
+            expect(tables.at(1).props("tableConfig")).toBe(tableConfig2);
+            expect(tables.at(1).props("filteredData")).toStrictEqual([{age: "10", year: "2020", value: 10}]);
+            expect(tables.at(1).props("filters")).toBe(datasets.dataset2.metadata.filters);
+            expect(tables.at(1).props("selectedFilterOptions")).toStrictEqual(datasets.dataset2.metadata.defaults.selected_filter_options);
+
+            done();
+        });
     });
 });

@@ -18,7 +18,61 @@
             "id": "time_step",
             "source": "data"
           }
-        ]
+        ],
+        "table": {
+          "columns": [
+            {
+              "data": {
+                "columnId": "area_name",
+                "labelFilterId": null
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "area_name"
+              }
+            },
+            {
+              "data": {
+                "columnId": "time_period",
+                "labelFilterId": null
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "time_period"
+              }
+            },
+            {
+              "data": {
+                "columnId": "area_level_label",
+                "labelFilterId": null
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "area_level"
+              }
+            },
+            {
+              "data": {
+                "columnId": "time_step",
+                "labelFilterId": "time_step"
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "time_step"
+              }
+            },
+            {
+              "data": {
+                "columnId": "value",
+                "labelFilterId": null
+              },
+              "header": {
+                "type": "selectedFilterOption",
+                "filterId": "plot_type"
+              }
+            }
+          ]
+        }
       },
       {
         "id": "anc",
@@ -37,7 +91,61 @@
             "id": "age",
             "source": "data"
           }
-        ]
+        ],
+        "table": {
+          "columns": [
+            {
+              "data": {
+                "columnId": "area_name",
+                "labelFilterId": null
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "area_name"
+              }
+            },
+            {
+              "data": {
+                "columnId": "time_period",
+                "labelFilterId": null
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "time_period"
+              }
+            },
+            {
+              "data": {
+                "columnId": "area_level_label",
+                "labelFilterId": null
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "area_level"
+              }
+            },
+            {
+              "data": {
+                "columnId": "age_group",
+                "labelFilterId": "age"
+              },
+              "header": {
+                "type": "filterLabel",
+                "filterId": "age"
+              }
+            },
+            {
+              "data": {
+                "columnId": "value",
+                "labelFilterId": null
+              },
+              "header": {
+                "type": "selectedFilterOption",
+                "filterId": "plot_type"
+              }
+            }
+          ]
+        }
       }
     ],
     "dataSelectors": {
