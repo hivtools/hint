@@ -115,6 +115,8 @@ describe("survey and program getters", () => {
         });
     };
 
+    registerTranslations({state: {language: Language.en}} as any);
+
     it("gets data when selectedDataType is Survey", () => {
         const testState = getTestState({selectedDataType: DataType.Survey});
 
