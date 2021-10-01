@@ -3,12 +3,11 @@ import {Language, locales} from "./locales";
 import {Store} from "vuex";
 import {TranslatableState} from "../../root";
 import Vue from "vue";
-import Translated from "../../components/Translated.vue";
 import translate from "../../directives/translate";
 
 export default <S extends TranslatableState>(store: Store<S>) => {
     i18next.init({
-        lng: Language.en,
+        lng: store.state.language,
         resources: {
             en: {translation: locales.en},
             fr: {translation: locales.fr},

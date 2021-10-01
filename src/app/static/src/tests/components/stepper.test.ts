@@ -76,12 +76,18 @@ describe("Stepper component", () => {
                     namespaced: true,
                     state: mockBaselineState(baselineState),
                     getters: baselineGetters,
+                    actions: {
+                        deleteAll: jest.fn()
+                    },
                     mutations
                 },
                 surveyAndProgram: {
                     namespaced: true,
                     state: mockSurveyAndProgramState(surveyAndProgramState),
                     getters: surveyAndProgramGetters,
+                    actions: {
+                        deleteAll: jest.fn()
+                    },
                     mutations: surveyAndProgramMutations
                 },
                 modelRun: {
@@ -416,7 +422,7 @@ describe("Stepper component", () => {
     it("active step only becomes active once state becomes ready", async () => {
 
         const wrapper = createSut(completedBaselineState,
-            {},
+            completedSurveyAndProgramState,
             {plottingMetadata: mockPlottingMetadataResponse()},
             {ready: true},
             {activeStep: 2});
@@ -679,10 +685,17 @@ describe("Stepper component", () => {
     it("complete step only becomes active/complete once state becomes ready", async () => {
 
         const wrapper = createSut(completedBaselineState,
-            {},
+            completedSurveyAndProgramState,
             {plottingMetadata: mockPlottingMetadataResponse()},
-            {ready: true},
-            {activeStep: 7});
+            {ready: true, status: {success: true} as any, result: {complete: true} as any},
+            {activeStep: 7},
+            {},
+            {},
+            jest.fn(),
+            {},
+            {valid: true},
+            {complete: true}
+            );
 
         let steps = wrapper.findAll(Step);
         expect(steps.filter(s => s.props().active).length).toBe(0);
