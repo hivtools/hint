@@ -192,10 +192,10 @@ class ADRController(private val encryption: Encryption,
             val duplicateRelease = releases.find { it["name"].asText() == name }
             if (duplicateRelease != null) {
                 val duplicateReleaseId = duplicateRelease["id"].asText()
-                adr.post("version_delete", listOf("version_id" to duplicateReleaseId));
+                adr.post("/version_delete", listOf("version_id" to duplicateReleaseId));
             }
         }
-        return adr.post("dataset_version_create", listOf("dataset_id" to id, "name" to name));
+        return adr.post("/dataset_version_create", listOf("dataset_id" to id, "name" to name));
     }
 
     @PostMapping("/datasets/{id}/resource/{resourceType}/{downloadId}")
