@@ -285,7 +285,7 @@ describe("GenericChart component", () => {
         const state = {datasets};
         const reducedMetadata =  {
             "test-chart": {
-                datasets: metadata["test-chart"].datasets[0],
+                datasets: [metadata["test-chart"].datasets[0]],
                 dataSelectors: {
                     dataSources: [
                         {id: "visible1", type: "editable", label: "First", datasetId: "dataset1", showFilters: true, showIndicators: false},
