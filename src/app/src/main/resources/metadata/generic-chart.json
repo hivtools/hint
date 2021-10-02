@@ -95,18 +95,17 @@
             {
               "data": {
                 "columnId": "area_name",
-                "labelColumn": null,
-                "hierarchyColumn": "area_id"
+                "hierarchyColumn": "area"
               },
               "header": {
                 "type": "columnLabel",
-                "column": "area_name"
+                "column": "area"
               }
             },
             {
               "data": {
                 "columnId": "time_period",
-                "labelColumn": null
+                "labelColumn": "time_period"
               },
               "header": {
                 "type": "columnLabel",
@@ -115,8 +114,8 @@
             },
             {
               "data": {
-                "columnId": "area_level_label",
-                "labelColumn": null
+                "columnId": "area_level",
+                "labelColumn": "area_level"
               },
               "header": {
                 "type": "columnLabel",
