@@ -147,7 +147,12 @@ describe("GenericChart component", () => {
         mockAxios.reset();
     });
 
-    const getWrapper = (state: Partial<GenericChartState> = {}, metadataProp: GenericChartMetadataResponse = metadata) => {
+    const data = {
+        chartId: "test-chart",
+        availableDatasetIds: ["dataset1", "dataset2", "dataset3"]
+    };
+
+    const getWrapper = (state: Partial<GenericChartState> = {}, metadataProp: GenericChartMetadataResponse = metadata, ChartPropsData = data) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -159,9 +164,10 @@ describe("GenericChart component", () => {
                 }
             }
         });
+
         const propsData = {
-            metadata: metadataProp,
-            chartId: "test-chart"
+            ...ChartPropsData,
+            metadata: metadataProp
         };
         registerTranslations(store);
         return shallowMount(GenericChart,{store, propsData});
@@ -241,6 +247,66 @@ describe("GenericChart component", () => {
             expect(wrapper.find(ErrorAlert).exists()).toBe(false);
             done();
         });
+    });
+
+    it("does not render DataSource component when available datasetIds length is not greater than 1", () => {
+        const state = {datasets};
+        const reducedMetadata = {
+            "test-chart": {
+                datasets: metadata["test-chart"].datasets,
+                dataSelectors: {
+                    dataSources: [
+                        {
+                            id: "visible1",
+                            type: "editable",
+                            label: "First",
+                            datasetId: "dataset1",
+                            showFilters: true,
+                            showIndicators: false
+                        },
+                        {id: "hidden", type: "fixed", datasetId: "dataset2", showFilters: true, showIndicators: false}
+                    ]
+                },
+                chartConfig: metadata["test-chart"].chartConfig
+            }
+        } as any;
+
+        const propsData = {
+            chartId: "test-chart",
+            availableDatasetIds: ["dataset1"]
+        };
+
+        const wrapper = getWrapper(state, reducedMetadata, propsData);
+        const dataSources = wrapper.findAll(DataSource);
+        expect(dataSources.exists()).toBe(false);
+    });
+
+    it("sets data source's datasetId if default is not available, and hides datasource picker if only one available dataset", () => {
+        const state = {datasets};
+        const reducedMetadata =  {
+            "test-chart": {
+                datasets: metadata["test-chart"].datasets[0],
+                dataSelectors: {
+                    dataSources: [
+                        {id: "visible1", type: "editable", label: "First", datasetId: "dataset1", showFilters: true, showIndicators: false},
+                        {id: "hidden", type: "fixed", datasetId: "dataset2", showFilters: true, showIndicators: false}
+                    ]
+                },
+                chartConfig: metadata["test-chart"].chartConfig
+            }
+        } as any;
+
+        const propsData = {
+            chartId: "test-chart",
+            availableDatasetIds: ["dataset2"]
+        };
+
+        const wrapper = getWrapper(state, reducedMetadata, propsData);
+        const dataSources = wrapper.findAll(DataSource);
+        expect(dataSources.exists()).toBe(false);
+        const vm = wrapper.vm as any
+        expect(vm.dataSourceSelections.visible1.datasetId).toEqual("dataset2")
+        expect(vm.dataSourceSelections.hidden.datasetId).toEqual("dataset2")
     });
 
     it("updates filter selections and chart data on filters update", (done) => {

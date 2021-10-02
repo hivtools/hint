@@ -8,7 +8,7 @@
                        v-translate="'map'"
                        v-on:click="selectTab(0)"></a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" v-if="availableDatasetIds.length">
                     <a class="nav-link"
                        :class="{'active': selectedTab === 1}"
                        v-translate="'timeSeries'"
@@ -61,6 +61,7 @@
             <generic-chart v-if="genericChartMetadata"
                            chart-id="input-time-series"
                            chart-height="600px"
+                           :available-dataset-ids="availableDatasetIds"
                            :metadata="genericChartMetadata"></generic-chart>
         </div>
     </div>
@@ -78,8 +79,7 @@
         Filter,
         GenericChartMetadataResponse,
         LevelLabel,
-        PartialFileUploadProps,
-        PayloadWithType
+        PartialFileUploadProps
     } from "../../types";
     import {RootState} from "../../root";
     import {DataType, SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
@@ -124,7 +124,7 @@
         features: Feature[],
         featureLevels: LevelLabel[],
         plottingSelections: ChoroplethSelections,
-        selectedDataSource: string,
+        availableDatasetIds: string[],
         filterTableIndicators: ChoroplethIndicatorMetadata[],
         currentLanguage: Language,
         dataSourceOptions: FilterOption[],
@@ -190,6 +190,18 @@
                     options.push({id: "0", label: i18next.t("ANC", lang)});
                 }
                 return options;
+            },
+            availableDatasetIds() {
+                const data = []
+                if (this.anc.available) {
+                    data.push("anc")
+                }
+
+                if (this.programme.available) {
+                    data.push("art")
+                }
+
+                return data;
             }
         },
         methods: {

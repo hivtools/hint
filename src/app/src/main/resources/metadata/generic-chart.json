@@ -24,51 +24,49 @@
             {
               "data": {
                 "columnId": "area_name",
-                "labelFilterId": null
+                "hierarchyColumn": "area"
               },
               "header": {
-                "type": "filterLabel",
-                "filterId": "area_name"
+                "type": "columnLabel",
+                "column": "area"
               }
             },
             {
               "data": {
-                "columnId": "time_period",
-                "labelFilterId": null
+                "columnId": "time_period"
               },
               "header": {
-                "type": "filterLabel",
-                "filterId": "time_period"
+                "type": "columnLabel",
+                "column": "time_period"
               }
             },
             {
               "data": {
-                "columnId": "area_level_label",
-                "labelFilterId": null
+                "columnId": "area_level",
+                "labelColumn": "area_level"
               },
               "header": {
-                "type": "filterLabel",
-                "filterId": "area_level"
+                "type": "columnLabel",
+                "column": "area_level"
               }
             },
             {
               "data": {
                 "columnId": "time_step",
-                "labelFilterId": "time_step"
+                "labelColumn": "time_step"
               },
               "header": {
-                "type": "filterLabel",
-                "filterId": "time_step"
+                "type": "columnLabel",
+                "column": "time_step"
               }
             },
             {
               "data": {
-                "columnId": "value",
-                "labelFilterId": null
+                "columnId": "value"
               },
               "header": {
                 "type": "selectedFilterOption",
-                "filterId": "plot_type"
+                "column": "plot_type"
               }
             }
           ]
@@ -97,51 +95,52 @@
             {
               "data": {
                 "columnId": "area_name",
-                "labelFilterId": null
+                "labelColumn": null,
+                "hierarchyColumn": "area_id"
               },
               "header": {
-                "type": "filterLabel",
-                "filterId": "area_name"
+                "type": "columnLabel",
+                "column": "area_name"
               }
             },
             {
               "data": {
                 "columnId": "time_period",
-                "labelFilterId": null
+                "labelColumn": null
               },
               "header": {
-                "type": "filterLabel",
-                "filterId": "time_period"
+                "type": "columnLabel",
+                "column": "time_period"
               }
             },
             {
               "data": {
                 "columnId": "area_level_label",
-                "labelFilterId": null
+                "labelColumn": null
               },
               "header": {
-                "type": "filterLabel",
-                "filterId": "area_level"
+                "type": "columnLabel",
+                "column": "area_level"
               }
             },
             {
               "data": {
                 "columnId": "age_group",
-                "labelFilterId": "age"
+                "labelColumn": "age"
               },
               "header": {
-                "type": "filterLabel",
-                "filterId": "age"
+                "type": "columnLabel",
+                "column": "age"
               }
             },
             {
               "data": {
                 "columnId": "value",
-                "labelFilterId": null
+                "labelColumn": null
               },
               "header": {
                 "type": "selectedFilterOption",
-                "filterId": "plot_type"
+                "column": "plot_type"
               }
             }
           ]

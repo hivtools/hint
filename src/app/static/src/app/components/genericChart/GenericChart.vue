@@ -3,7 +3,7 @@
         <div class="row" v-if="chartData">
             <div class="col-3">
                 <div v-for="ds in chartConfigValues.dataSourceConfigValues" :key="ds.config.id">
-                    <data-source v-if="ds.editable"
+                    <data-source v-if="ds.editable && availableDatasetIds.length > 1"
                                  :config="ds.config"
                                  :datasets="chartMetadata.datasets"
                                  :value="ds.selections.datasetId"
@@ -28,7 +28,7 @@
                      :key="dataSource.config.id">
                     <generic-chart-table :table-config="dataSource.tableConfig"
                                          :filtered-data="chartData[dataSource.config.id]"
-                                         :filters="dataSource.filters"
+                                         :columns="dataSource.columns"
                                          :selected-filter-options="dataSource.selections.selectedFilterOptions"
                     ></generic-chart-table>
                 </div>
@@ -50,7 +50,7 @@
     import Vue from "vue";
     import {
         DataSourceConfig,
-        Dict, DisplayFilter,
+        Dict, DisplayFilter, GenericChartColumn,
         GenericChartDataset,
         GenericChartMetadata,
         GenericChartMetadataResponse, GenericChartTableConfig
@@ -60,11 +60,11 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {mapActionByName, mapStateProp} from "../../utils";
-    import {GenericChartState} from "../../store/genericChart/genericChart";
+    import {genericChart, GenericChartState} from "../../store/genericChart/genericChart";
     import {getDatasetPayload} from "../../store/genericChart/actions";
     import {FilterOption} from "../../generated";
     import Plotly from "./Plotly.vue";
-    import {filterData} from "./utils";
+    import {filterData, genericChartColumnsToFilters} from "./utils";
     import GenericChartTable from "./GenericChartTable.vue";
 
     interface DataSourceConfigValues {
@@ -72,6 +72,7 @@
         editable: boolean
         config: DataSourceConfig
         filters: DisplayFilter[] | null
+        columns: GenericChartColumn[] | null
         tableConfig: GenericChartTableConfig | undefined
     }
 
@@ -95,6 +96,7 @@
         metadata: GenericChartMetadataResponse
         chartId: string
         chartHeight: string
+        availableDatasetIds: string[]
     }
 
     interface Computed {
@@ -103,6 +105,7 @@
         chartMetadata: GenericChartMetadata
         chartConfigValues: ChartConfigValues
         chartData: Dict<unknown[]> | null
+        filters: Dict<DisplayFilter[]>
     }
 
     interface Methods {
@@ -120,7 +123,8 @@
         props: {
             metadata: Object,
             chartId: String,
-            chartHeight: String
+            chartHeight: String,
+            availableDatasetIds: Array
         },
         components: {
             DataSource,
@@ -136,7 +140,7 @@
                 .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => ({
                     ...running,
                     [dataSource.id]: {
-                        datasetId: dataSource.datasetId,
+                        datasetId: this.availableDatasetIds.find(id => id === dataSource.datasetId) || this.availableDatasetIds[0],
                         selectedFilterOptions: null
                     }
                 }), {});
@@ -153,6 +157,24 @@
             chartMetadata() {
                 return this.metadata[this.chartId]!;
             },
+            filters() {
+                const result = {} as Dict<DisplayFilter[]>;
+                for (const datasetConfig of this.chartMetadata.datasets) {
+                    const datasetId = datasetConfig.id;
+                    if (!this.datasets[datasetId]) {
+                        continue;
+                    }
+
+                    let filterColumns: GenericChartColumn[] = [];
+                    if (datasetConfig.filters) {
+                        const configuredFilterIds = datasetConfig.filters.map(filter => filter.id);
+                        const allColumns = this.datasets[datasetId]?.metadata.columns || [];
+                        filterColumns = allColumns.filter(column => configuredFilterIds.includes(column.id));
+                    }
+                    result[datasetId] = genericChartColumnsToFilters(filterColumns);
+                }
+                return result;
+            },
             chartConfigValues() {
                 const dataSourceConfigValues = this.chartMetadata.dataSelectors.dataSources.map((dataSourceConfig) => {
                     const selections = this.dataSourceSelections[dataSourceConfig.id];
@@ -160,7 +182,8 @@
                         selections,
                         editable: dataSourceConfig.type === "editable",
                         config: dataSourceConfig,
-                        filters: this.datasets[selections.datasetId]?.metadata.filters,
+                        columns: this.datasets[selections.datasetId]?.metadata.columns,
+                        filters: this.filters[selections.datasetId],
                         tableConfig: this.chartMetadata.datasets.find(d => d.id === selections.datasetId)?.table
                     }
                 });
@@ -202,7 +225,7 @@
                     const datasetId = dataSourceSelections.datasetId;
                     const unfilteredData = this.datasets[datasetId]?.data;
 
-                    const filters = this.datasets[datasetId]?.metadata.filters || [];
+                    const filters = this.filters[datasetId] || [];
                     const selectedFilterOptions = dataSourceSelections.selectedFilterOptions;
 
                     if (!unfilteredData || !selectedFilterOptions) {
