@@ -21,10 +21,6 @@ export const mutations: MutationTree<GenericChartState> = {
     },
     [GenericChartMutation.SetDataset](state: GenericChartState, action: PayloadWithType<SetDatasetPayload>) {
         Vue.set(state.datasets, action.payload.datasetId, action.payload.dataset);
-        //state.datasets[action.payload.datasetId] = action.payload.dataset;
-        //const newDatasets = {...state.datasets};
-        //newDatasets[action.payload.datasetId] = action.payload.dataset;
-        //state.datasets = newDatasets;
     },
     [GenericChartMutation.ClearDataset](state: GenericChartState, action: PayloadWithType<string>) {
         delete state.datasets[action.payload]
