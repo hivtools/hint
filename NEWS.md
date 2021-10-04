@@ -1,3 +1,7 @@
+# hint 1.54.0
+
+* Switch Naomi to pull and push to ADR 2022 package
+
 # hint 1.53.0
 
 * Persist current language in browser storage
