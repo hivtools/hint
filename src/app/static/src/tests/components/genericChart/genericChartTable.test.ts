@@ -109,4 +109,38 @@ describe("GenericChartTable component", () => {
         ];
         expect(table.props("filteredData")).toStrictEqual(expectedData);
     });
+
+    it("renders table component with hierarchy field", () => {
+        const tableConfigWithHierarchy = {
+            "columns": [
+                {
+                    "data": {
+                        "columnId": "area_name",
+                        "hierarchyColumn": "area"
+                    },
+                    "header": {
+                        "type": "columnLabel",
+                        "column": "area_name"
+                    }
+                }
+             ]
+        };
+
+        const columnsWithHierarchy = [
+            {
+                id: "area",
+                label: "Area",
+                values: [
+                    {
+                        id: "MWI",
+                        label: "Malawi"
+                    }
+                ]
+            }
+        ];
+
+        const filteredData = [
+            {area_name: "Malawi", area_level_id: 0, age_group: "0:15", plot_type: "prevalence", value: 200},
+            {area_name: "Chitipa", area_level_id: 1, age_group: "15:49", plot_type: "prevalence", value: 100}
+        ];
 });
