@@ -7,42 +7,40 @@ describe("GenericChartTable component", () => {
         "columns": [
             {
                 "data": {
-                    "columnId": "area_name",
-                    "labelFilterId": null
+                    "columnId": "area_name"
                 },
                 "header": {
-                    "type": "filterLabel",
-                    "filterId": "area_name"
+                    "type": "columnLabel",
+                    "column": "area_name"
                 }
             },
             {
                 "data": {
                     "columnId": "area_level_id",
-                    "labelFilterId": "area_level"
+                    "labelColumn": "area_level"
                 },
                 "header": {
-                    "type": "filterLabel",
-                    "filterId": "area_level"
+                    "type": "columnLabel",
+                    "column": "area_level"
                 }
             },
             {
                 "data": {
                     "columnId": "age_group",
-                    "labelFilterId": "age"
+                    "labelColumn": "age"
                 },
                 "header": {
-                    "type": "filterLabel",
-                    "filterId": "age"
+                    "type": "columnLabel",
+                    "column": "age"
                 }
             },
             {
                 "data": {
-                    "columnId": "value",
-                    "labelFilterId": null
+                    "columnId": "value"
                 },
                 "header": {
                     "type": "selectedFilterOption",
-                    "filterId": "plot_type"
+                    "column": "plot_type"
                 }
             }
         ]
@@ -53,11 +51,11 @@ describe("GenericChartTable component", () => {
         {area_name: "Chitipa", area_level_id: 1, age_group: "15:49", plot_type: "prevalence", value: 100}
     ];
 
-    const filters = [
+    const columns = [
         {
             id: "area_level",
             label: "Area level",
-            options: [
+            values: [
                 {id: 0, label: "Country"},
                 {id: 1, label: "Region"}
             ]
@@ -65,7 +63,7 @@ describe("GenericChartTable component", () => {
         {
             id: "age",
             label: "Age",
-            options: [
+            values: [
                 {id: "0:15", label: "0-15"},
                 {id: "15:49", label: "15-49"}
             ]
@@ -73,7 +71,7 @@ describe("GenericChartTable component", () => {
         {
             id: "plot_type",
             label: "Plot type",
-            options: [
+            values: [
                 {id: "prevalence", label: "HIV prevalence"},
                 {id: "plhiv", label: "PLHIV"}
             ]
@@ -86,7 +84,7 @@ describe("GenericChartTable component", () => {
     };
 
     const getWrapper = () => {
-        const propsData = {tableConfig, filteredData, filters, selectedFilterOptions};
+        const propsData = {tableConfig, filteredData, columns, selectedFilterOptions};
         return shallowMount(GenericChartTable, {propsData});
     };
 
