@@ -10,11 +10,22 @@ data when it is reloaded.
 
 Input Time Series, the sole current implementation for Generic Chart, has custom datasets which must be fetched from 
 hintr - the url to use is included in the dataset config. However, the chart config could be extended to allow generic 
-chart visualisations of the standard input and output datasets in the store. 
+chart visualisations of the standard input and output datasets in the store.
+
+There is a distinction between *data source* and *dataset* in Generic Chart configuration. A *dataset* refers to some data, 
+with the associated url from which to fetch it and an id by which to refer to it. A *data source* configures how data
+will fill a role in a particular Generic Chart configuration. For example, a chart might configure two data sources, which 
+will provide values to the X and Y axes separately. In the Input Time Series, we have only one data source, 'Data source'.
+
+A data source is fulfilled by a dataset, and configuration defines which datasets should be available for which data sources. In 
+Input Time Series, both the ANC and ART datasets are available for 'Data source', and the user selects which to use 
+from the data source control. 
 
 This diagram shows the main constituents and data flow involved in showing Generic Chart:
  ![Diagram of Generic Chart](GenericChart.png "Diagram of Generic Chart")
 
+This is how they look when rendered in HINT to display the Input Time Series chart:
+ ![Generic Chart Components](GenericChartComponents.png "Generic Chart Components")
 
 When the app is first loaded, Generic Chart metadata is fetched from the endpoint, and is stored for the duration of the 
 front end app. It is stored in `genericChart` state. This metadata consists of a dictionary of chart ids, with 
@@ -33,9 +44,7 @@ stored in the GenericChart state along with dataset id.
 Currently, `GenericChart` component is only located in the `SurveyAndProgram component`, on the 'Time series' tab.
 
 GenericChart has these sub-components:
-- `DataSource`: used to select a dataset to display in the chart for a given datasource. There could potentially be 
-multiple datasources per GenericChart (e.g. one for each of X and Y axis), but for Input Time Series, we only have one, 
-'Data source', for which the available datasets are 'ART' and 'ANC Testing'. Selecting a new data set, or loading the 
+- `DataSource`: used to select a dataset to display in the chart for a given datasource. Selecting a new data set, or loading the 
 component with default datasets selected, causes the component to invoke the store to fetch any datasets which have not 
 yet been fetched. 
 - `Filters`: this is the same Filters component used elsewhere in HINT. There is one Filters component per data source. 
