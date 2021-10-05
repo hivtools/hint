@@ -11,12 +11,17 @@
                target="_blank"
                v-translate="'contact'">
             </a>
+            <a class="dropdown-item"
+               @click="toggleErrorReportModal"
+               v-translate="'reportIssues'">
+            </a>
             <router-link id="accessibility-link"
                          to="/accessibility"
                          class="dropdown-item"
                          v-translate="'axe'">
             </router-link>
         </drop-down>
+        <error-report :open="errorReportOpen" @close="toggleErrorReportModal"></error-report>
     </div>
 </template>
 <script lang="ts">
@@ -27,7 +32,7 @@
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import {switches} from "../../featureSwitches";
-
+    import ErrorReport from "../ErrorReport.vue";
 
     interface Computed {
         support: string
@@ -37,7 +42,20 @@
         faqLocation: string
     }
 
-    export default Vue.extend<unknown, unknown, Computed, unknown>({
+    interface Data {
+        errorReportOpen: boolean
+    }
+
+    interface Methods {
+        toggleErrorReportModal: () => void
+    }
+
+    export default Vue.extend<Data, Methods, Computed, unknown>({
+        data: function () {
+            return {
+                errorReportOpen: false
+            }
+        },
         computed: {
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
@@ -61,11 +79,17 @@
                     return filename;
                 }),
             faqLocation() {
-                return  "https://mrc-ide.github.io/naomi-troubleshooting/" + this.troubleFilename;
+                return "https://mrc-ide.github.io/naomi-troubleshooting/" + this.troubleFilename;
+            }
+        },
+        methods: {
+           toggleErrorReportModal() {
+                this.errorReportOpen = !this.errorReportOpen
             }
         },
         components: {
-            DropDown
+            DropDown,
+            ErrorReport
         }
     })
 </script>

@@ -1,10 +1,10 @@
 <template>
     <div>
         <modal :open="open">
-            <h4 v-if="isGuest" v-translate="'haveYouSaved'"></h4>
-            <h4 v-if="!isGuest" v-translate="'saveVersion'"></h4>
+                <h4 v-if="isGuest" v-translate="'haveYouSaved'"></h4>
+                <h4 v-if="!isGuest" v-translate="'saveVersion'"></h4>
 
-            <p v-translate="'discardWarning'"></p>
+                <p v-translate="'discardWarning'"></p>
             <ul>
             <li v-for="step in changesToRelevantSteps" :key="step.number">
                     <span v-translate="'step'"></span> {{ step.number }}: <span v-translate="step.textKey"></span>
