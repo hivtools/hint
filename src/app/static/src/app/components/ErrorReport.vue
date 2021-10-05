@@ -8,7 +8,8 @@
                 </div>
                 <div class="col-8">
                     <select class="form-control"
-                            v-model="currentSection">
+                            v-model="currentSection"
+                            id="section">
                         <option v-for="step in steps"
                                 :key="step.number"
                                 v-translate:value="step.textKey"
@@ -109,8 +110,7 @@
             cancelErrorReport() {
                 this.resetData();
                 this.$emit("close")
-            }
-            ,
+            },
             sendErrorReport() {
                 // TODO call through to an action that will
                 // combine this form data with data derived
