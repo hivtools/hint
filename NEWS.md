@@ -1,6 +1,10 @@
+# hint 1.55.0
+
+* Refresh output metadata and options when language changes
+
 # hint 1.54.0
 
-* Switch Naomi to pull and push to ADR 2022 package
+* Switch Naomi to pull and push to ADR 2022 packager
 
 # hint 1.53.0
 

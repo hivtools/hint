@@ -1,4 +1,4 @@
-package org.imperial.mrc.hint.integration.clients
+package org.imperial.mrc.hint.integration.adr
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper

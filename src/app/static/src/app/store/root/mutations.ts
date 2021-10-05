@@ -23,7 +23,8 @@ export enum RootMutation {
     ResetOptions = "ResetOptions",
     ResetOutputs = "ResetOutputs",
     SetProject = "SetProject",
-    ResetDownload = "ResetDownload"
+    ResetDownload = "ResetDownload",
+    SetUpdatingLanguage = "SetUpdatingLanguage"
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -37,6 +38,7 @@ export const mutations: MutationTree<RootState> = {
             version: state.version,
             hintrVersion: state.hintrVersion,
             language: state.language,
+            updatingLanguage: false,
             adr: state.adr,
             genericChart: state.genericChart,
             adrUpload: initialADRUploadState(),
@@ -141,6 +143,10 @@ export const mutations: MutationTree<RootState> = {
         });
         Object.assign(state.adrUpload, initialADRUploadState());
         Object.assign(state.downloadResults, initialDownloadResultsState());
+    },
+
+    [RootMutation.SetUpdatingLanguage](state: RootState, action: PayloadWithType<boolean>) {
+        state.updatingLanguage = action.payload;
     },
 
     ...languageMutations
