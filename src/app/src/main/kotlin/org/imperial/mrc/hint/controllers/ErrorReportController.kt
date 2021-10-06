@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.models.EmptySuccessResponse
 import org.imperial.mrc.hint.models.ErrorReport
 import org.imperial.mrc.hint.models.asResponseEntity
@@ -10,7 +11,9 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.postForEntity
 
 @RestController
-class ErrorReportController(private val objectMapper: ObjectMapper)
+class ErrorReportController(
+        private val objectMapper: ObjectMapper,
+        private val appProperties: AppProperties)
 {
     @PostMapping("/error-report")
     @ResponseBody
@@ -34,10 +37,7 @@ class ErrorReportController(private val objectMapper: ObjectMapper)
         headers.contentType = MediaType.APPLICATION_JSON
 
         val httpEntity = HttpEntity(errorReportJson, headers)
-
-        val url = "https://prod-58.westeurope.logic.azure.com:443/workflows/a13847fef9034c6099297b59490f8be2/triggers" +
-                "/manual/paths/invoke?api-version=2016-06-01&sp=/triggers/manual/run&sv=1.0&sig" +
-                "=cVhgcE7b75SnaFfLsYZBYHaSvBRFHLk4enyZ2H7yMj4"
+        val url = appProperties.teamsWebhook
 
         val restTemplate = RestTemplate()
 

@@ -33,6 +33,7 @@ interface AppProperties
     val dbPassword: String
     val dbUrl: String
     val supportEmail: String
+    val teamsWebhook: String
 }
 
 //prevent auto-wiring of default Properties
@@ -66,6 +67,7 @@ class ConfiguredAppProperties(private val props: HintProperties = properties) : 
     override val dbPassword: String = propString("db_password")
     override val dbUrl: String = propString("db_url")
     override val supportEmail: String = propString("support_email")
+    override val teamsWebhook: String = propString("teams_webhook")
 
     companion object
     {
