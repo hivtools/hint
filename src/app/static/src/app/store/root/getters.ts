@@ -6,7 +6,7 @@ interface RootGetters {
 }
 
 export const getters: RootGetters & GetterTree<RootState, RootState> = {
-    isGuest: (state: RootState, getters: any) => {
+    isGuest: (state: RootState) => {
         return state.currentUser == "guest";
     }
 };

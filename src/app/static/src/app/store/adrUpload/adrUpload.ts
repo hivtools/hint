@@ -4,7 +4,7 @@ import {Error} from "../../generated";
 import {Dict, UploadFile} from "../../types";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
-
+:
 export interface ADRUploadState {
     currentFileUploading: number | null,
     totalFilesUploading: number | null,
@@ -23,9 +23,16 @@ export const initialADRUploadState = (): ADRUploadState => ({
     uploadFiles: null
 });
 
+export const adrUploadGetters = {
+    errors: (state: ADRUploadState) => {
+        return [state.uploadError]
+    }
+};
+
 export const adrUpload: Module<ADRUploadState, RootState> = {
     namespaced: true,
     state: {...initialADRUploadState()},
+    getters: adrUploadGetters,
     actions,
     mutations
 };

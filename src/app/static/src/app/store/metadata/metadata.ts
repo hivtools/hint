@@ -32,6 +32,9 @@ export const metadataGetters = {
     complete: (state: MetadataState) => {
         return !!state.plottingMetadata
     },
+    errors: (state: MetadataState) => {
+        return [state.adrUploadMetadataError, state.plottingMetadataError]
+    },
     sapIndicatorsMetadata: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
         const plottingMetadata = state.plottingMetadata;
 

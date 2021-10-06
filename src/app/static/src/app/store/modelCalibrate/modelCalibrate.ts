@@ -41,6 +41,9 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
 };
 
 export const modelCalibrateGetters = {
+    errors: (state:ModelCalibrateState) => {
+        return [state.error]
+    },
     indicators: (state: ModelCalibrateState, getters: any, rootState: RootState): BarchartIndicator[] => {
         return rootState.modelCalibrate.calibratePlotResult!.plottingMetadata.barchart.indicators;
     },

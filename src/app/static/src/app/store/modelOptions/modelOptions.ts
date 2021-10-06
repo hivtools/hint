@@ -36,6 +36,9 @@ export const modelOptionsGetters = {
     complete: (state: ModelOptionsState) => {
         return state.valid
     },
+    errors: (state: ModelOptionsState) => {
+        return [state.validateError, state.optionsError]
+    },
     hasChanges: (state: ModelOptionsState) => {
         return state.changes
     }

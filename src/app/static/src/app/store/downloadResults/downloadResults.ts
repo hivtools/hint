@@ -34,9 +34,16 @@ export const initialDownloadResultsState = (): DownloadResultsState => {
     }
 }
 
+export const downloadResultsGetters = {
+    errors: (state: DownloadResultsState) => {
+        return [state.spectrum.error, state.coarseOutput.error, state.summary.error]
+    }
+};
+
 export const downloadResults: Module<DownloadResultsState, RootState> = {
     namespaced: true,
     state: {...initialDownloadResultsState()},
+    getters: downloadResultsGetters,
     actions,
     mutations
 
