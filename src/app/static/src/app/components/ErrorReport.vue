@@ -2,6 +2,29 @@
     <modal :open="open">
         <h4 v-translate="'reportIssues'"></h4>
         <form class="form">
+            <div class="form-row" v-if="projectName">
+                <div class="col-4">
+                    <label for="project" v-translate="'project'"></label>
+                </div>
+                <div class="col-8">
+                    <input type="text"
+                           disabled
+                           id="project"
+                           :value="projectName"
+                           class="form-control"/>
+                </div>
+            </div>
+            <div class="form-row" v-if="isGuest">
+                <div class="col-4">
+                    <label for="email" v-translate="'email'"></label>
+                </div>
+                <div class="col-8">
+                    <input type="text"
+                           id="email"
+                           v-model="email"
+                           class="form-control"/>
+                </div>
+            </div>
             <div class="form-row">
                 <div class="col-4">
                     <label for="section" v-translate="'section'"></label>
@@ -19,7 +42,7 @@
                                 v-translate="'login'"
                                 value="login"></option>
                         <option key="projects" v-translate="'projects'"
-                               value="projects"></option>
+                                value="projects"></option>
                         <option key="other"
                                 value="other"
                                 v-translate="'other'"></option>
@@ -61,17 +84,16 @@
 </template>
 <script lang="ts">
     import Vue from "vue"
-    import {mapStateProp} from "../utils";
+    import {mapGetterByName, mapStateProp} from "../utils";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
-    import {RootState} from "../root";
-    import {Language} from "../store/translations/locales";
-    import i18next from "i18next";
+    import {ProjectsState} from "../store/projects/projects"
     import Modal from "./Modal.vue";
 
     interface Data {
         description: string
         reproduce: string
         section: string
+        email: string
     }
 
     interface Methods {
@@ -83,7 +105,9 @@
     interface Computed {
         currentSectionKey: string
         currentSection: string
+        isGuest: boolean
         steps: StepDescription[]
+        projectName: string | undefined
     }
 
     interface Props {
@@ -100,7 +124,8 @@
             return {
                 description: "",
                 reproduce: "",
-                section: ""
+                section: "",
+                email: ""
             }
         },
         computed: {
@@ -115,6 +140,8 @@
                     this.section = newVal
                 }
             },
+            isGuest: mapGetterByName(null, "isGuest"),
+            projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
             steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps)
         },
         methods: {
@@ -126,7 +153,7 @@
                 // TODO call through to an action that will
                 // combine this form data with data derived
                 // from the state, and POST to the backend
-                console.log(this.description, this.reproduce, this.currentSection)
+                console.log(this.description, this.reproduce, this.currentSection, this.email)
                 this.resetData();
                 this.$emit("close")
             },
@@ -134,6 +161,7 @@
                 this.description = "";
                 this.reproduce = "";
                 this.section = "";
+                this.email = "";
             }
         }
     })

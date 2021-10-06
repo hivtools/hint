@@ -2,20 +2,30 @@ import {shallowMount, mount} from '@vue/test-utils';
 import ErrorReport from "../../app/components/ErrorReport.vue";
 import Modal from "../../app/components/Modal.vue";
 import Vuex from "vuex";
-import {mockRootState, mockStepperState} from "../mocks";
+import {mockProjectsState, mockRootState, mockStepperState} from "../mocks";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {StepperState} from "../../app/store/stepper/stepper";
+import {ProjectsState} from "../../app/store/projects/projects";
 
 describe("Error report component", () => {
 
-    const createStore = (stepperState: Partial<StepperState> = {}) => {
+    const createStore = (stepperState: Partial<StepperState> = {},
+                         projectsState: Partial<ProjectsState> = {},
+                         isGuest = false) => {
         const store = new Vuex.Store({
             state: mockRootState(),
             modules: {
                 stepper: {
                     namespaced: true,
                     state: mockStepperState(stepperState)
+                },
+                projects: {
+                    namespaced: true,
+                    state: mockProjectsState(projectsState)
                 }
+            },
+            getters: {
+                isGuest: () => isGuest
             }
         });
         registerTranslations(store);
@@ -98,6 +108,52 @@ describe("Error report component", () => {
             .toBe("downloadResults");
         expect(wrapper.vm.$data.section).toBe("downloadResults");
         expect((wrapper.vm as any).currentSection).toBe("downloadResults");
+    });
+
+    it("shows email field if user is guest", () => {
+        const wrapper = shallowMount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore({}, {}, true)
+        });
+
+        expect(wrapper.findAll("input#email").length).toBe(1);
+    });
+
+    it("does not shows email field if user is logged in", () => {
+        const wrapper = shallowMount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore({}, {}, false)
+        });
+
+        expect(wrapper.findAll("input#email").length).toBe(0);
+    });
+
+    it("shows disabled, auto-populated project field if there is a current project", () => {
+        const wrapper = shallowMount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore({}, {currentProject: {name: "p1", id: 1, versions: []}}, false)
+        });
+
+        expect(wrapper.findAll("input#project").length).toBe(1);
+        expect((wrapper.find("input#project").element as HTMLInputElement).value)
+            .toBe("p1");
+    });
+
+    it("does not show project field if there is no current project", () => {
+        const wrapper = shallowMount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore({}, {}, true)
+        });
+
+        expect(wrapper.findAll("input#project").length).toBe(0);
     });
 
     it("emits close event on cancel", () => {
