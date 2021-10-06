@@ -25,10 +25,6 @@ const actions = {
     getADRSchemas: jest.fn()
 };
 
-const genericChartActions = {
-    getGenericChartMetadata: jest.fn()
-}
-
 storeOptions.modules!!.baseline!!.actions = baselineActions;
 storeOptions.modules!!.surveyAndProgram!!.actions = surveyAndProgramActions;
 storeOptions.modules!!.modelRun!!.actions = modelRunActions;
