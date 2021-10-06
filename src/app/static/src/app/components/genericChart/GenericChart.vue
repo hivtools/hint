@@ -158,6 +158,8 @@
                 return this.metadata[this.chartId]!;
             },
             filters() {
+                // Convert 'columns' in the metadata section of all fetched datasets into filters which we can pass
+                // to the Filters components. Build a dictionary keyed by dataset id, of related DisplayFilter[].
                 const result = {} as Dict<DisplayFilter[]>;
                 for (const datasetConfig of this.chartMetadata.datasets) {
                     const datasetId = datasetConfig.id;
@@ -167,6 +169,7 @@
 
                     let filterColumns: GenericChartColumn[] = [];
                     if (datasetConfig.filters) {
+                        // Only include columns which are configured as filters in the dataset config
                         const configuredFilterIds = datasetConfig.filters.map(filter => filter.id);
                         const allColumns = this.datasets[datasetId]?.metadata.columns || [];
                         filterColumns = allColumns.filter(column => configuredFilterIds.includes(column.id));

@@ -1,5 +1,5 @@
-import {Dict, DisplayFilter, Filter, GenericChartColumn} from "../../../app/types";
-import {FilterOption} from "../../../app/generated";
+import {Dict, DisplayFilter, GenericChartColumn} from "../../types";
+import {FilterOption} from "../../generated";
 
 export const filterData = (
     unfilteredData: Dict<unknown>[],

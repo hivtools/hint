@@ -1,7 +1,7 @@
 import Vue from "vue";
 import {MutationTree} from 'vuex';
 import {GenericChartState} from "./genericChart";
-import {Dict, GenericChartDataset, GenericChartMetadataResponse, PayloadWithType} from "../../types";
+import {GenericChartDataset, GenericChartMetadataResponse, PayloadWithType} from "../../types";
 
 export enum GenericChartMutation {
     GenericChartMetadataFetched = "GenericChartMetadataFetched",
