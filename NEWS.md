@@ -1,3 +1,7 @@
+# hint 1.56.0
+
+* Endpoint for posting error report to Teams
+
 # hint 1.55.0
 
 * Refresh output metadata and options when language changes
