@@ -10,6 +10,13 @@ export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
 }
 
+export interface ErrorReportPayload {
+    section: string,
+    description: string,
+    reproduce: string,
+    email: string
+}
+
 export const actions: ActionTree<RootState, RootState> & RootActions = {
     async validate(store) {
         const {state, getters, commit, dispatch} = store;
@@ -57,6 +64,24 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         if (rootState.baseline?.iso3) {
             await dispatch("metadata/getPlottingMetadata", rootState.baseline.iso3)
         }
-    }
-};
+    },
 
+    async generateErrorReport({state}, payload) {
+        const errorReport =
+            {
+                email: payload.email || state.currentUser,
+                country: state.baseline.country,
+                project: state.projects.currentProject?.name,
+                browserAgent: navigator.userAgent,
+                timeStamp: new Date().toISOString(),
+                jobId: state.modelRun.modelRunId,
+                description: payload.description,
+                section: payload.section,
+                stepsToReproduce: payload.reproduce
+            }
+
+        console.log(errorReport);
+
+        //TODO actually send it
+    }
+}

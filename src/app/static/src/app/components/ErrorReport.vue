@@ -84,19 +84,14 @@
 </template>
 <script lang="ts">
     import Vue from "vue"
-    import {mapGetterByName, mapStateProp} from "../utils";
+    import {mapGetterByName, mapStateProp, mapActionByName} from "../utils";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {ProjectsState} from "../store/projects/projects"
     import Modal from "./Modal.vue";
-
-    interface Data {
-        description: string
-        reproduce: string
-        section: string
-        email: string
-    }
+    import {ErrorReportPayload} from "../store/root/actions";
 
     interface Methods {
+        generateErrorReport: (payload: ErrorReportPayload) => void
         sendErrorReport: () => void
         cancelErrorReport: () => void
         resetData: () => void
@@ -114,7 +109,7 @@
         open: boolean
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default Vue.extend<ErrorReportPayload, Methods, Computed, Props>({
         components: {Modal},
         props: {
             open: Boolean
@@ -145,15 +140,18 @@
             steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps)
         },
         methods: {
+            generateErrorReport: mapActionByName(null, "generateErrorReport"),
             cancelErrorReport() {
                 this.resetData();
                 this.$emit("close")
             },
             sendErrorReport() {
-                // TODO call through to an action that will
-                // combine this form data with data derived
-                // from the state, and POST to the backend
-                console.log(this.description, this.reproduce, this.currentSection, this.email)
+                this.generateErrorReport({
+                    section: this.currentSection,
+                    description: this.description,
+                    reproduce: this.reproduce,
+                    email: this.email
+                })
                 this.resetData();
                 this.$emit("close")
             },
