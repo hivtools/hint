@@ -55,9 +55,6 @@ export const baselineGetters = {
     complete: (state: BaselineState) => {
         return state.validatedConsistent &&
             !!state.country && !!state.iso3 && !!state.shape && !!state.population
-    },
-    errors: (state: BaselineState) => {
-        return [state.pjnzError, state.baselineError, state.shapeError, state.populationError]
     }
 };
 

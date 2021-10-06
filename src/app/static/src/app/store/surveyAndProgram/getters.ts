@@ -28,10 +28,6 @@ export const getters = {
         return !!state.survey && !state.programError && !state.ancError
     },
 
-    errors: (state: SurveyAndProgramState) => {
-      return [state.ancError, state.programError, state.surveyError]
-    },
-
     hasChanges: (state: SurveyAndProgramState) => {
         return !!state.survey || !!state.program || !!state.anc
     },

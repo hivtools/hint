@@ -20,16 +20,9 @@ export const initialLoadState = (): LoadState => {
 
 const namespaced = true;
 
-export const loadGetters = {
-    errors: (state: LoadState) => {
-        return [state.loadError]
-    }
-}
-
 export const load: Module<LoadState, RootState> = {
     namespaced,
     state: initialLoadState(),
-    getters: loadGetters,
     actions,
     mutations
 };
