@@ -6,9 +6,15 @@ import {
     flattenToIdSet,
     formatDateTime,
     validateEmail,
-    versionLabel, rootOptionChildren, constructUploadFile, constructUploadFileWithResourceName, getFilenameFromImportUrl
+    versionLabel,
+    rootOptionChildren,
+    constructUploadFile,
+    constructUploadFileWithResourceName,
+    getFilenameFromImportUrl,
+    updateForm
 } from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
+import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 
 describe("utils", () => {
 
@@ -283,5 +289,182 @@ describe("utils", () => {
 
     it("getFilenameFromImportUrl interprets URL with query string", () => {
         expect(getFilenameFromImportUrl("http://a/b.csv?c=d")).toBe("b.csv");
+    });
+
+    it("updateForm merges old and new form metadata as expected", () => {
+        const oldForm: DynamicFormMeta = {
+            controlSections:[
+                {
+                    label: "old-section-1",
+                    controlGroups: [
+                        {
+                            label: "old-group-1-1",
+                            controls: [
+                                {
+                                    name: "control-1",
+                                    type: "number",
+                                    required: true,
+                                    value: 1
+                                },
+                                {
+                                    name: "control-2",
+                                    type: "select",
+                                    required: true,
+                                    value: 2
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    label: "section-2",
+                    controlGroups: [
+                        {
+                            label: "group-2-1",
+                            controls: [
+                                {
+                                    name: "control-3",
+                                    type: "number",
+                                    required: false,
+                                    value: 3
+                                }
+                            ]
+                        },
+                        {
+                            label: "group-2-2",
+                            controls: [
+                                {
+                                    name: "control-4",
+                                    type: "select",
+                                    required: false,
+                                    value: 4
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Changes from oldForm:
+        // 1. old-section/group 1 => new-section/group 1
+        // 2. remove control-2
+        // 3. add control 5 to group-2-1
+        // 4. changes to required and type
+        // 5. Different values in controls - should be overwritten by old values
+        const newForm: DynamicFormMeta = {
+            controlSections:[
+                {
+                    label: "new-section-1",
+                    controlGroups: [
+                        {
+                            label: "new-group-1-1",
+                            controls: [
+                                {
+                                    name: "control-1",
+                                    type: "select",
+                                    required: false,
+                                    value: 10
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    label: "section-2",
+                    controlGroups: [
+                        {
+                            label: "group-2-1",
+                            controls: [
+                                {
+                                    name: "control-3",
+                                    type: "select",
+                                    required: true,
+                                    value: 30
+                                }
+                            ]
+                        },
+                        {
+                            label: "group-2-2",
+                            controls: [
+                                {
+                                    name: "control-4",
+                                    type: "select",
+                                    required: true,
+                                    value: 40
+                                },
+                                {
+                                    name: "control-5",
+                                    type: "select",
+                                    required: false,
+                                    value: 50
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        // Old values are retained, even if they are in different group/section in new metadata
+        // Old values are removed if they are not in new metadata
+        // New values are added if they were not previously present
+        // New control config (required etc) is used
+        const expectedResult = {
+            controlSections:[
+                {
+                    label: "new-section-1",
+                    controlGroups: [
+                        {
+                            label: "new-group-1-1",
+                            controls: [
+                                {
+                                    name: "control-1",
+                                    type: "select",
+                                    required: false,
+                                    value: 1
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    label: "section-2",
+                    controlGroups: [
+                        {
+                            label: "group-2-1",
+                            controls: [
+                                {
+                                    name: "control-3",
+                                    type: "select",
+                                    required: true,
+                                    value: 3
+                                }
+                            ]
+                        },
+                        {
+                            label: "group-2-2",
+                            controls: [
+                                {
+                                    name: "control-4",
+                                    type: "select",
+                                    required: true,
+                                    value: 4
+                                },
+                                {
+                                    name: "control-5",
+                                    type: "select",
+                                    required: false,
+                                    value: 50
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        const result = updateForm(oldForm, newForm);
+        expect(result).toStrictEqual(expectedResult);
     });
 });
