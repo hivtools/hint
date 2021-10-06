@@ -24,8 +24,6 @@ from the data source control.
 This diagram shows the main constituents and data flow involved in showing Generic Chart:
  ![Diagram of Generic Chart](GenericChart.png "Diagram of Generic Chart")
 
-This is how they look when rendered in HINT to display the Input Time Series chart:
- ![Generic Chart Components](GenericChartComponents.png "Generic Chart Components")
 
 When the app is first loaded, Generic Chart metadata is fetched from the endpoint, and is stored for the duration of the 
 front end app. It is stored in `genericChart` state. This metadata consists of a dictionary of chart ids, with 
@@ -39,7 +37,9 @@ this metadata to hintr, and have HINT fetch metadata from hintr as well as data.
 Wherever the `GenericChart component` appears, it is provided with its chart id in a prop, and pulls out the relevant 
 section from the metadata. The chart metadata defines urls from which to fetch datasets (e.g. the custom input time series 
 datasets) - the component invokes an action on the GenericChart state to retrieve this data when required, and it is 
-stored in the GenericChart state along with dataset id. 
+stored in the GenericChart state along with dataset id. In the case of the Input Time Series chart, the url to fetch
+data from the HINT backend is of the form `/chart-data/input-time-series/{type}` where `{type}` is either `programme` (ART) 
+or `anc`.
 
 Currently, `GenericChart` component is only located in the `SurveyAndProgram component`, on the 'Time series' tab.
 
@@ -56,6 +56,9 @@ configuration and loads it using the Plotly library. This is very similar to the
 from that implementation are that we are using the `newPlot` method instead of `react` to accommodate updates to chart 
 height when the number of subplots change due to filter changes (particularly are level), and we are using a more 
 lightweight Plotly distribution, plotly-js.basic-dist.
+
+This is how they look when rendered in HINT to display the Input Time Series chart:
+ ![Generic Chart Components](GenericChartComponents.png "Generic Chart Components")
 
 ### Generic Chart Metadata
 
