@@ -10,7 +10,7 @@ import {expectTranslated} from "../../testHelpers";
 import DropDown from "../../../app/components/header/DropDown.vue";
 import VueRouter from 'vue-router'
 import ErrorReport from "../../../app/components/ErrorReport.vue";
-import {mockStepperState} from "../../mocks";
+import {mockProjectsState, mockStepperState} from "../../mocks";
 
 const localVue = createLocalVue()
 localVue.use(VueRouter)
@@ -27,7 +27,14 @@ describe("Online support menu", () => {
                 stepper: {
                     namespaced: true,
                     state: mockStepperState()
+                },
+                projects: {
+                    namespaced: true,
+                    state: mockProjectsState()
                 }
+            },
+            getters: {
+                isGuest: () => false
             }
         });
         registerTranslations(store);

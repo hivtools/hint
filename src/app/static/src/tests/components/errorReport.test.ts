@@ -141,8 +141,9 @@ describe("Error report component", () => {
         });
 
         expect(wrapper.findAll("input#project").length).toBe(1);
-        expect((wrapper.find("input#project").element as HTMLInputElement).value)
-            .toBe("p1");
+        const el = wrapper.find("input#project").element as HTMLInputElement
+        expect(el.value).toBe("p1");
+        expect(el.disabled).toBe(true);
     });
 
     it("does not show project field if there is no current project", () => {
@@ -189,22 +190,25 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore()
+            store: createStore({}, {}, true)
         });
 
         wrapper.find("#description").setValue("something");
         wrapper.find("#reproduce").setValue("reproduce steps");
         wrapper.find("#section").setValue("downloadResults");
+        wrapper.find("#email").setValue("test@email.com");
 
         expect(wrapper.vm.$data.description).toBe("something");
         expect(wrapper.vm.$data.reproduce).toBe("reproduce steps");
         expect(wrapper.vm.$data.section).toBe("downloadResults");
+        expect(wrapper.vm.$data.email).toBe("test@email.com");
 
         wrapper.find(".btn-white").trigger("click");
 
         expect(wrapper.vm.$data.description).toBe("");
         expect(wrapper.vm.$data.reproduce).toBe("");
         expect(wrapper.vm.$data.section).toBe("");
+        expect(wrapper.vm.$data.email).toBe("");
     });
 
     it("resets data on send", () => {
@@ -212,23 +216,25 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore()
+            store: createStore({}, {}, true)
         });
 
         wrapper.find("#description").setValue("something");
         wrapper.find("#reproduce").setValue("reproduce steps");
         wrapper.find("#section").setValue("downloadResults");
+        wrapper.find("#email").setValue("test@email.com");
 
         expect(wrapper.vm.$data.description).toBe("something");
         expect(wrapper.vm.$data.reproduce).toBe("reproduce steps");
         expect(wrapper.vm.$data.section).toBe("downloadResults");
+        expect(wrapper.vm.$data.email).toBe("test@email.com");
 
         wrapper.find(".btn-red").trigger("click");
 
         expect(wrapper.vm.$data.description).toBe("");
         expect(wrapper.vm.$data.reproduce).toBe("");
         expect(wrapper.vm.$data.section).toBe("");
+        expect(wrapper.vm.$data.email).toBe("");
     });
-
 
 });
