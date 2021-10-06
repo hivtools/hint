@@ -31,7 +31,7 @@ configuration for each, which instructs the component how to display the chart, 
 what filters to apply, and a [JSONata](https://jsonata.org/) template describing the plotly configuration to use. See 
 [below](#chart-config-jsonata) for further details. 
 
-Generic Chart metadata is currently kept in resource files in the back end of HINT. However we may in future hand over 
+Generic Chart metadata is currently kept in resource files in the back end of HINT. However, we may in future hand over 
 this metadata to hintr, and have HINT fetch metadata from hintr as well as data. 
 
 Wherever the `GenericChart` component appears, it is provided with its chart id in a prop, and pulls out the relevant 
@@ -44,7 +44,7 @@ or `anc`.
 Currently, `GenericChart` component is only located in the `SurveyAndProgram` component, on the 'Time series' tab.
 
 GenericChart has these sub-components:
-- `DataSource`: used to select a dataset to display in the chart for a given datasource. Selecting a new data set, or loading the 
+- `DataSource`: used to select a dataset to display in the chart for a given datasource. Selecting a new dataset, or loading the 
 component with default datasets selected, causes the component to invoke the store to fetch any datasets which have not 
 yet been fetched. 
 - `Filters`: this is the same Filters component used elsewhere in HINT. There is one Filters component per data source. 
@@ -300,7 +300,7 @@ The chart data to be provided to `Plotly`, found by taking the selected dataset(
 
 ### Front end data types
 
-The following  data types are used to support generic chart configuration:
+The following data types are used to support generic chart configuration:
 
 #### GenericChartMetadata
 
