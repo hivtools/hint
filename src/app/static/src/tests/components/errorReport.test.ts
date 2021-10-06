@@ -44,7 +44,7 @@ describe("Error report component", () => {
         expect(wrapper.find(Modal).props("open")).toBe(false);
     });
 
-    it("renders steps as options", () => {
+    it("renders steps as options with project, login and other as extra sections", () => {
         const wrapper = shallowMount(ErrorReport, {
             propsData: {
                 open: true
@@ -53,14 +53,20 @@ describe("Error report component", () => {
         });
         const options = wrapper.findAll("option");
 
-        expect(options.length).toBe(7);
+        expect(options.length).toBe(10);
         expect(options.at(0).text()).toBe("Upload inputs");
         expect(options.at(1).text()).toBe("Review inputs");
         expect(options.at(6).text()).toBe("Save results");
+        expect(options.at(7).text()).toBe("Login");
+        expect(options.at(8).text()).toBe("Projects");
+        expect(options.at(9).text()).toBe("Other");
 
-        expect((options.at(0).element as HTMLOptionElement).value).toBe("Upload inputs");
-        expect((options.at(1).element as HTMLOptionElement).value).toBe("Review inputs");
-        expect((options.at(6).element as HTMLOptionElement).value).toBe("Save results");
+        expect((options.at(0).element as HTMLOptionElement).value).toBe("uploadInputs");
+        expect((options.at(1).element as HTMLOptionElement).value).toBe("reviewInputs");
+        expect((options.at(6).element as HTMLOptionElement).value).toBe("downloadResults");
+        expect((options.at(7).element as HTMLOptionElement).value).toBe("login");
+        expect((options.at(8).element as HTMLOptionElement).value).toBe("projects");
+        expect((options.at(9).element as HTMLOptionElement).value).toBe("other");
     });
 
     it("selects current step by default", () => {
@@ -72,7 +78,7 @@ describe("Error report component", () => {
         });
 
         expect((wrapper.find("select#section").element as HTMLSelectElement).value)
-            .toBe("Review inputs")
+            .toBe("reviewInputs")
     });
 
     it("can update section", () => {
@@ -84,14 +90,14 @@ describe("Error report component", () => {
         });
 
         expect((wrapper.find("select#section").element as HTMLSelectElement).value)
-            .toBe("Review inputs");
+            .toBe("reviewInputs");
 
-        wrapper.find("#section").setValue("Save results");
+        wrapper.find("#section").setValue("downloadResults");
 
         expect((wrapper.find("select#section").element as HTMLSelectElement).value)
-            .toBe("Save results");
-        expect(wrapper.vm.$data.section).toBe("Save results");
-        expect((wrapper.vm as any).currentSection).toBe("Save results");
+            .toBe("downloadResults");
+        expect(wrapper.vm.$data.section).toBe("downloadResults");
+        expect((wrapper.vm as any).currentSection).toBe("downloadResults");
     });
 
     it("emits close event on cancel", () => {
@@ -132,11 +138,11 @@ describe("Error report component", () => {
 
         wrapper.find("#description").setValue("something");
         wrapper.find("#reproduce").setValue("reproduce steps");
-        wrapper.find("#section").setValue("Save results");
+        wrapper.find("#section").setValue("downloadResults");
 
         expect(wrapper.vm.$data.description).toBe("something");
         expect(wrapper.vm.$data.reproduce).toBe("reproduce steps");
-        expect(wrapper.vm.$data.section).toBe("Save results");
+        expect(wrapper.vm.$data.section).toBe("downloadResults");
 
         wrapper.find(".btn-white").trigger("click");
 
@@ -155,11 +161,11 @@ describe("Error report component", () => {
 
         wrapper.find("#description").setValue("something");
         wrapper.find("#reproduce").setValue("reproduce steps");
-        wrapper.find("#section").setValue("Save results");
+        wrapper.find("#section").setValue("downloadResults");
 
         expect(wrapper.vm.$data.description).toBe("something");
         expect(wrapper.vm.$data.reproduce).toBe("reproduce steps");
-        expect(wrapper.vm.$data.section).toBe("Save results");
+        expect(wrapper.vm.$data.section).toBe("downloadResults");
 
         wrapper.find(".btn-red").trigger("click");
 

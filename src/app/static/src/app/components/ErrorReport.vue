@@ -12,9 +12,17 @@
                             id="section">
                         <option v-for="step in steps"
                                 :key="step.number"
-                                v-translate:value="step.textKey"
+                                :value="step.textKey"
                                 v-translate="step.textKey">
                         </option>
+                        <option key="login"
+                                v-translate="'login'"
+                                value="login"></option>
+                        <option key="projects" v-translate="'projects'"
+                               value="projects"></option>
+                        <option key="other"
+                                value="other"
+                                v-translate="'other'"></option>
                     </select>
                 </div>
             </div>
@@ -73,15 +81,20 @@
     }
 
     interface Computed {
-        currentLanguage: Language
         currentSectionKey: string
         currentSection: string
         steps: StepDescription[]
     }
 
-    export default Vue.extend<Data, Methods, Computed, "open">({
+    interface Props {
+        open: boolean
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
         components: {Modal},
-        props: ["open"],
+        props: {
+            open: Boolean
+        },
         name: "ErrorReport",
         data: function () {
             return {
@@ -91,14 +104,12 @@
             }
         },
         computed: {
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
             currentSectionKey: mapStateProp<StepperState, string>("stepper", state => {
                 return state.steps[state.activeStep - 1].textKey;
             }),
             currentSection: {
                 get() {
-                    return this.section || i18next.t(this.currentSectionKey, {lng: this.currentLanguage});
+                    return this.section || this.currentSectionKey
                 },
                 set(newVal: string) {
                     this.section = newVal
@@ -118,8 +129,7 @@
                 console.log(this.description, this.reproduce, this.currentSection)
                 this.resetData();
                 this.$emit("close")
-            }
-            ,
+            },
             resetData() {
                 this.description = "";
                 this.reproduce = "";
