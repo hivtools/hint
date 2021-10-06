@@ -1,4 +1,11 @@
-## Generic Chart
+# Generic Chart
+
+[Introduction](#introduction)\
+[Generic Chart metadata](#generic-chart-metadata)\
+[Chart Config Jsonata](#chart-config-jsonata)\
+[GenericChart component logic](#genericchart-component-logic)\
+
+## Introducution
 
 HINT has a `GenericChart` vue component in the front end. This is currently only used to display Input Time Series charts - 
 however it has been designed to generically accept configuration, chart metadata, and chart data and to display the 
