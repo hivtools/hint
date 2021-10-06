@@ -36,7 +36,7 @@ import {
 } from "../app/store/plottingSelections/plottingSelections";
 import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
 import {ColourScalesState, initialColourScalesState} from "../app/store/plottingSelections/plottingSelections";
-import {Dataset, DatasetResource} from "../app/types";
+import {Dataset, DatasetResource, Release} from "../app/types";
 import {initialProjectsState, ProjectsState} from "../app/store/projects/projects";
 import {initialModelCalibrateState, ModelCalibrateState} from "../app/store/modelCalibrate/modelCalibrate";
 import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrVersion/hintrVersion";
@@ -401,6 +401,16 @@ export const mockDataset = (props: Partial<Dataset> = {}): Dataset => {
         organization: {
           id: "456"
         },
+        ...props
+    }
+};
+
+export const mockRelease = (props: Partial<Release> = {}): Release => {
+    return {
+        id: "releaseId",
+        name: "releaseName",
+        notes: "releaseNotes",
+        activity_id: "activityId",
         ...props
     }
 };

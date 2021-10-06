@@ -17,7 +17,7 @@ export const modelOutputGetters = {
         return rootState.modelRun.result!.plottingMetadata.barchart.indicators;
     },
     barchartFilters: (state: ModelOutputState, getters: any, rootState: RootState): Filter[] => {
-        return outputPlotFilters(rootState);
+       return outputPlotFilters(rootState);
     },
     bubblePlotIndicators: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): ChoroplethIndicatorMetadata[] => {
         return rootGetters['metadata/outputIndicatorsMetadata'];

@@ -6,7 +6,10 @@
                 v-translate="'selectedDataset'"
                 id="selectedDatasetSpan"
             ></span>
-            <a :href="selectedDataset.url" target="_blank">
+            <a v-if="releaseName" :href="releaseURL" target="_blank">
+                {{ selectedDataset.title }} — {{ releaseName }}
+            </a>
+            <a v-else :href="selectedDataset.url" target="_blank">
                 {{ selectedDataset.title }}
             </a>
             <span class="color-red">
@@ -52,7 +55,7 @@
                     >
                     </label>
                 </tree-select>
-                <select-release :dataset-id="newDatasetId" @selected-dataset-release="updateDatasetRelease" @valid="updateValid"></select-release>
+                <select-release :dataset-id="newDatasetId" :open="open" @selected-dataset-release="updateDatasetRelease" @valid="updateValid"></select-release>
                 <div
                     :class="fetchingDatasets ? 'visible' : 'invisible'"
                     style="margin-top: 15px"
@@ -117,6 +120,7 @@
     import {
         Dataset,
         DatasetResourceSet,
+        Release
     } from "../../types";
     import { InfoIcon } from "vue-feather-icons";
     import { VTooltip } from "v-tooltip";
@@ -145,12 +149,16 @@
         confirmImport: () => void;
         continueEditing: () => void;
         cancelEditing: () => void;
-        updateDatasetRelease: (id: string) => void;
+        updateDatasetRelease: (release: Release) => void;
         updateValid: (valid: boolean) => void;
+        preSelectDataset: () => void;
     }
 
     interface Computed {
         datasets: any[];
+        selectedRelease: Release | null;
+        releaseName: string | null;
+        releaseURL: string;
         fetchingDatasets: boolean;
         adrError: Error | null;
         datasetOptions: any[];
@@ -170,7 +178,7 @@
         showConfirmation: boolean;
         loading: boolean;
         newDatasetId: string | null;
-        newDatasetReleaseId: string | undefined;
+        newDatasetRelease: Release | undefined;
         pollingId: number | null;
         valid: boolean;
     }
@@ -195,7 +203,7 @@
                 newDatasetId: null,
                 pollingId: null,
                 valid: true,
-                newDatasetReleaseId: undefined
+                newDatasetRelease: undefined
             };
         },
         components: {
@@ -220,6 +228,10 @@
                 "baseline",
                 (state: BaselineState) => state.selectedDataset
             ),
+            selectedRelease: mapStateProp<BaselineState, Release | null>(
+                "baseline",
+                (state: BaselineState) => state.selectedRelease
+            ),
             datasets: mapStateProp<ADRState, any[]>(
                 namespace,
                 (state: ADRState) => state.datasets
@@ -232,6 +244,12 @@
                 namespace,
                 (state: ADRState) => state.adrError
             ),
+            releaseName(){
+                return this.selectedRelease?.name || null;
+            },
+            releaseURL(){
+                return new URL(this.selectedDataset!.url).origin + '/dataset/' + this.selectedDataset!.id + '?activity_id=' + this.selectedRelease!.activity_id;
+            },
             datasetOptions() {
                 return this.datasets.map((d) => ({
                     id: d.id,
@@ -305,7 +323,7 @@
             importANC: mapActionByName("surveyAndProgram", "importANC"),
             async importDataset() {
                 this.loading = true;
-                await this.getDataset({id: this.newDatasetId!, release: this.newDatasetReleaseId});
+                await this.getDataset({id: this.newDatasetId!, release: this.newDatasetRelease});
 
                 const {
                     pjnz,
@@ -386,6 +404,15 @@
             },
             toggleModal() {
                 this.open = !this.open;
+                if (this.open){
+                    this.preSelectDataset();
+                }
+            },
+            preSelectDataset(){
+                const selectedDatasetId = this.selectedDataset?.id
+                if (selectedDatasetId && this.datasets.some(dataset => dataset.id === selectedDatasetId)) {
+                    this.newDatasetId = selectedDatasetId;
+                }
             },
             confirmImport() {
                 if (this.editsRequireConfirmation) {
@@ -413,11 +440,18 @@
                     window.clearInterval(this.pollingId);
                 }
             },
-            updateDatasetRelease(releaseId){
-                this.newDatasetReleaseId = releaseId;
+            updateDatasetRelease(release){
+                this.newDatasetRelease = release;
             },
             updateValid(valid){
                 this.valid = valid;
+            }
+        },
+        watch: {
+            datasets(){
+                if (this.open){
+                    this.preSelectDataset();
+                }
             }
         },
         mounted() {
