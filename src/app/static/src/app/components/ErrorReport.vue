@@ -2,52 +2,40 @@
     <modal :open="open">
         <h4 v-translate="'reportIssues'"></h4>
         <form class="form">
-            <div class="form-row" v-if="projectName">
-                <div class="col-4">
-                    <label for="project" v-translate="'project'"></label>
-                </div>
-                <div class="col-8">
-                    <input type="text"
-                           disabled
-                           id="project"
-                           :value="projectName"
-                           class="form-control"/>
-                </div>
+            <div class="form-group" v-if="projectName">
+                <label for="project" v-translate="'project'"></label>
+                <input type="text"
+                       disabled
+                       id="project"
+                       :value="projectName"
+                       class="form-control"/>
             </div>
-            <div class="form-row" v-if="isGuest">
-                <div class="col-4">
-                    <label for="email" v-translate="'email'"></label>
-                </div>
-                <div class="col-8">
-                    <input type="text"
-                           id="email"
-                           v-model="email"
-                           class="form-control"/>
-                </div>
+            <div class="form-group" v-if="isGuest">
+                <label for="email" v-translate="'email'"></label>
+                <input type="text"
+                       id="email"
+                       v-model="email"
+                       class="form-control"/>
             </div>
-            <div class="form-row">
-                <div class="col-4">
-                    <label for="section" v-translate="'section'"></label>
-                </div>
-                <div class="col-8">
-                    <select class="form-control"
-                            v-model="currentSection"
-                            id="section">
-                        <option v-for="step in steps"
-                                :key="step.number"
-                                :value="step.textKey"
-                                v-translate="step.textKey">
-                        </option>
-                        <option key="login"
-                                v-translate="'login'"
-                                value="login"></option>
-                        <option key="projects" v-translate="'projects'"
-                                value="projects"></option>
-                        <option key="other"
-                                value="other"
-                                v-translate="'other'"></option>
-                    </select>
-                </div>
+            <div class="form-group">
+                <label for="section" v-translate="'section'"></label>
+                <select class="form-control"
+                        v-model="currentSection"
+                        id="section">
+                    <option v-for="step in steps"
+                            :key="step.number"
+                            :value="step.textKey"
+                            v-translate="step.textKey">
+                    </option>
+                    <option key="login"
+                            v-translate="'login'"
+                            value="login"></option>
+                    <option key="projects" v-translate="'projects'"
+                            value="projects"></option>
+                    <option key="other"
+                            value="other"
+                            v-translate="'other'"></option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="description"

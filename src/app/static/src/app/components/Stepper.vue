@@ -69,15 +69,17 @@
     import {LoadingState, LoadState} from "../store/load/load";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
     import VersionStatus from "./projects/VersionStatus.vue";
-    import {mapGettersByNames, mapStateProps} from "../utils";
+    import {mapGettersByNames, mapStateProp, mapStateProps} from "../utils";
     import {Project} from "../types";
     import {ProjectsState} from "../store/projects/projects";
+    import {RootState} from "../root";
 
     interface ComputedState {
         activeStep: number,
         steps: StepDescription[],
         currentProject: Project | null
-        projectLoading: boolean
+        projectLoading: boolean,
+        updatingLanguage: boolean
     }
 
     interface ComputedGetters {
@@ -102,9 +104,12 @@
                 currentProject: state => state.currentProject,
                 projectLoading: state => state.loading
             }),
+            updatingLanguage: mapStateProp<RootState, boolean>(null,
+                (state: RootState) => state.updatingLanguage
+            ),
             ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"]),
             loading: function () {
-                return this.loadingFromFile || !this.ready;
+                return this.loadingFromFile || this.updatingLanguage || !this.ready;
             },
             ...mapGetters(["isGuest"]),
         },
