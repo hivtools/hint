@@ -1,10 +1,30 @@
+# hint 1.55.0
+
+* Refresh output metadata and options when language changes
+
+# hint 1.54.0
+
+* Switch Naomi to pull and push to ADR 2022 packager
+
+# hint 1.53.0
+
+* Persist current language in browser storage
+
+# hint 1.52.0
+
+* Show selected release name and preselected in modal
+
+# hint 1.51.0
+
+* Re-fetch all metadata when language changes
+
+# hint 1.50.0
+
+* Move all file upload controls to Step 1
+
 # hint 1.49.1
 
 * Fix erroneous ADR upload file count
-
-# hint 1.49.0
-
-* Move all file upload controls to Step 1 
 
 # hint 1.49.0
 

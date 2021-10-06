@@ -267,9 +267,11 @@ describe("ADR actions", () => {
 
         await actions.getDataset({commit, state, rootState} as any, {id: "abc123"});
 
-        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toBe("baseline/SetDataset");
         expect(commit.mock.calls[0][1].id).toBe("abc123");
+        expect(commit.mock.calls[1][0]).toBe("baseline/SetRelease");
+        expect(commit.mock.calls[1][1]).toBe(null);
     });
 
     it("fetches dataset with release", async () => {
@@ -282,13 +284,21 @@ describe("ADR actions", () => {
             }));
 
         const commit = jest.fn();
+        const release = {
+            id: "V 1.0",
+            name: "releaseName",
+            notes: "releaseNotes",
+            activity_id: "activityId"
+        }
 
-        await actions.getDataset({commit, state, rootState} as any, {id: "abc123", release: "V 1.0"});
+        await actions.getDataset({commit, state, rootState} as any, {id: "abc123", release});
 
-        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toBe("baseline/SetDataset");
         expect(commit.mock.calls[0][1].id).toBe("abc123");
-        expect(commit.mock.calls[0][1].release).toBe("V 1.0");
+        expect(commit.mock.calls[0][1].release).toStrictEqual(release.id);
+        expect(commit.mock.calls[1][0]).toBe("baseline/SetRelease");
+        expect(commit.mock.calls[1][1]).toBe(release);
     });
 
 });

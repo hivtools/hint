@@ -6,7 +6,10 @@ const appStateKey = `hintAppState_v${currentHintVersion}`;
 export const serialiseState = (rootState: RootState): Partial<RootState> => {
     return {
         version: rootState.version,
-        baseline: {selectedDataset: rootState.baseline.selectedDataset} as any,
+        baseline: {
+            selectedDataset: rootState.baseline.selectedDataset,
+            selectedRelease: rootState.baseline.selectedRelease
+        } as any,
         modelRun: {
             ...rootState.modelRun,
             statusPollId: -1,
@@ -21,7 +24,8 @@ export const serialiseState = (rootState: RootState): Partial<RootState> => {
         plottingSelections: rootState.plottingSelections,
         surveyAndProgram: {selectedDataType: rootState.surveyAndProgram.selectedDataType} as any,
         projects: rootState.projects,
-        hintrVersion: rootState.hintrVersion
+        hintrVersion: rootState.hintrVersion,
+        language: rootState.language
     };
 };
 
