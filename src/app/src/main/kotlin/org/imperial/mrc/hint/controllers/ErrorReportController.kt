@@ -37,7 +37,7 @@ class ErrorReportController(
         headers.contentType = MediaType.APPLICATION_JSON
 
         val httpEntity = HttpEntity(errorReportJson, headers)
-        val url = appProperties.teamsWebhook
+        val url = appProperties.issueReportUrl
 
         val restTemplate = RestTemplate()
 
