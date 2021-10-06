@@ -34,14 +34,14 @@ what filters to apply, and a [JSONata](https://jsonata.org/) template describing
 Generic Chart metadata is currently kept in resource files in the back end of HINT. However we may in future hand over 
 this metadata to hintr, and have HINT fetch metadata from hintr as well as data. 
 
-Wherever the `GenericChart component` appears, it is provided with its chart id in a prop, and pulls out the relevant 
+Wherever the `GenericChart` component appears, it is provided with its chart id in a prop, and pulls out the relevant 
 section from the metadata. The chart metadata defines urls from which to fetch datasets (e.g. the custom input time series 
 datasets) - the component invokes an action on the GenericChart state to retrieve this data when required, and it is 
 stored in the GenericChart state along with dataset id. In the case of the Input Time Series chart, the url to fetch
 data from the HINT backend is of the form `/chart-data/input-time-series/{type}` where `{type}` is either `programme` (ART) 
 or `anc`.
 
-Currently, `GenericChart` component is only located in the `SurveyAndProgram component`, on the 'Time series' tab.
+Currently, `GenericChart` component is only located in the `SurveyAndProgram` component, on the 'Time series' tab.
 
 GenericChart has these sub-components:
 - `DataSource`: used to select a dataset to display in the chart for a given datasource. Selecting a new data set, or loading the 
@@ -236,7 +236,7 @@ This uses JSONata's [ternary operator](https://docs.jsonata.org/other-operators#
 
 
 ```
-`"annotations": $map($areaNames, function($v, $i) {
+"annotations": $map($areaNames, function($v, $i) {
   {
   "text": $v & " (" & (data[area_name=$v].area_id)[0] & ")",
   "textfont": {},
@@ -257,7 +257,7 @@ in which to place the annotation (`xref` and `yref`) and uses the `x`, `y`, `xan
 annotations within the domains.
 
 ```
-layout": $merge(..)[]
+"layout": $merge(..)[]
 ```
 This indicates that the `layout` will be constructed by [merging](https://docs.jsonata.org/object-functions#merge) the 
 object contained in the parameter array into a single object. This is required because we need to add layout keys for 
