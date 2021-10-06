@@ -4,6 +4,7 @@
 [Generic Chart metadata](#generic-chart-metadata)\
 [Chart Config Jsonata](#chart-config-jsonata)\
 [GenericChart component logic](#genericchart-component-logic)\
+[Generic Chart Table](#generic-chart-table)
 
 ## Introducution
 
@@ -29,7 +30,7 @@ Input Time Series, both the ANC and ART datasets are available for 'Data source'
 from the data source control. 
 
 This diagram shows the main constituents and data flow involved in showing Generic Chart:
- ![Diagram of Generic Chart](GenericChart.png "Diagram of Generic Chart")
+![Diagram of Generic Chart](GenericChart.png "Diagram of Generic Chart")
 
 
 When the app is first loaded, Generic Chart metadata is fetched from the endpoint, and is stored for the duration of the 
@@ -65,7 +66,7 @@ height when the number of subplots change due to filter changes (particularly ar
 lightweight Plotly distribution, plotly-js.basic-dist.
 
 This is how they look when rendered in HINT to display the Input Time Series chart:
- ![Generic Chart Components](GenericChartComponents.png "Generic Chart Components")
+![Generic Chart Components](GenericChartComponents.png "Generic Chart Components")
 
 ### Generic Chart Metadata
 
@@ -85,8 +86,8 @@ Here is an annotated example of GenericChartMetadata:
           // endpoint from which to fetch this dataset
           "url": "/chart-data/input-time-series/programme",
 
-	  // which filters to display for this dataset, and where to get their metadata (i.e. their filter options). 
-	  // "data" is the only currently supported option i.e. get the filters from the metadata property dataset itself	
+	      // which filters to display for this dataset, and where to get their metadata (i.e. their filter options). 
+	      // "data" is the only currently supported option i.e. get the filters from the metadata property dataset itself	
           "filters": [ 
             {
               "id": "plot_type",
@@ -305,6 +306,12 @@ of rows and configured height per row.
 
 The chart data to be provided to `Plotly`, found by taking the selected dataset(s) and applying filter selections to them.
 
+#### filters
+This method converts 'columns' in the metadata section of all fetched datasets into filters which can be passed to the 
+Filters components. Not all columns in the dataset are converted, but only those which are configured as filters in the 
+dataset config. Columns in the dataset are very similar to Filters - they just just have `values` instead of `options` but
+the structure of these objects is nearly identical. 
+
 ### Front end data types
 
 The following data types are used to support generic chart configuration:
@@ -331,3 +338,91 @@ This type defines the config values for a single data source, and includes:
 #### DataSourceSelections
 
 This type defines the selected datasetId and filter selections for a single data source. 
+
+#### GenericChartDataset
+
+This type defines the expected format of response from the urls from which we fetch datasets. A dataset is expected to 
+contain a `data` property which includes the actual data (as `Dict<unknown>[]`), and a `metadata` property containing supporting
+metadata:
+- `columns` - an array of `GenericChartColumn`. These objects are similar to `Filters` as they define data values with 
+associated display labels. However not all columns are filters, hence the distinction. 
+- `defaults` - selected filter options
+
+### Generic Chart Table
+
+Configuration for a dataset can optionally includes a `table` property, which defines how to display filtered dataset data
+as a table beneath the main chart:
+
+![Generic CHart with Table](GenericChartWithTable.png "Generic Chart with Table")
+
+#### Configuration
+
+Here is an annotated example of dataset configuration with table property:
+```
+{
+    "id": "art",
+    "label": "ART",
+    "url":  "/chart-data/input-time-series/programme",
+    // Filters as above. Columns in the table do not need to be defined as filters
+    "filters": [...],
+    "table": {
+      // Table configuration consists of an array of columns
+      "columns": [
+        {
+          // The data property defines what data to show in this column and how to display it
+          "data": {
+            // columnId refers to the field in the dataset data from which to take data
+            "columnId": "area_level",
+            // If defined, labelColumn specfies which column in the dataset metadata will define labels associated with 
+            // ids in the data itself e.g. that an area_level of '1' should have the label 'Region'. These labels will be
+            // displayed in the table instead of the raw data values
+            "labelColumn": "area_level"
+          },
+          // The header property defines how to display the column header  
+          "header": {
+            // If type is 'columnLabel' the header will be the label defined for the column in the dataset's metadata
+            // whose id is given in the 'column' property
+            "type": "columnLabel",
+            "column": "area_level"
+          }
+        },
+        {
+          "data": {
+            "columnId": "value"
+          },
+          "header": {
+            // If type is 'selectedFilterOption' the header will be the label of the selected filter option for the filter
+            // corresponding to the column whose id is given in the 'column' property. For example, if the selected plot
+            // type is 'HIV prevalence' that will be used as the header for the column containing values from the 'value'
+            // column.
+            "type": "selectedFilterOption",
+            "column": "plot_type"
+          }
+        },
+        {
+          "data": {
+            "columnId": "area_name",
+            // If defined, 'hierarchyColumn' specifies a column by id which is expected to contain nested values. The
+            // value of that column for a given row will be used with those nested values to determine a hierarchy label
+            // e.g. an area hierarchy like 'Malawi/Northen/Chitipa'
+            "hierarchyColumn": "area"
+          },
+          "header": {
+            "type": "columnLabel",
+            "column": "area"
+          }
+        }
+      ]
+    }
+}
+```
+
+#### Components
+
+A `GenericChartTable` component is rendered by `GenericChart` below the `Plotly` components when a selected dataset has 
+table configuration. The table component receives props containing the table configuration, the filtered data, the
+column metadata from the dataset, and the selected filter options. From these, it generates fields, and modifies 
+(labels) the data to pass to the generalist `Table` component for display.
+
+When defined, hierarchy values are rendered in `Table` in a slot template. 
+
