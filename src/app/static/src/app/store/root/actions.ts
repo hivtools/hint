@@ -8,6 +8,8 @@ import i18next from "i18next";
 
 export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
+    generateErrorReport: (store: ActionContext<RootState, RootState>,
+                          payload: ErrorReportPayload) => ErrorReport;
 }
 
 export interface ErrorReportPayload {
@@ -15,6 +17,19 @@ export interface ErrorReportPayload {
     description: string,
     reproduce: string,
     email: string
+}
+
+export interface ErrorReport {
+    email: string
+    country: string,
+    project: string | undefined,
+    browserAgent: string,
+    timeStamp: string,
+    jobId: string,
+    description: string,
+    section: string,
+    stepsToReproduce: string,
+    errors: Error[]
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -66,22 +81,19 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         }
     },
 
-    async generateErrorReport({state}, payload) {
-        const errorReport =
-            {
-                email: payload.email || state.currentUser,
-                country: state.baseline.country,
-                project: state.projects.currentProject?.name,
-                browserAgent: navigator.userAgent,
-                timeStamp: new Date().toISOString(),
-                jobId: state.modelRun.modelRunId,
-                description: payload.description,
-                section: payload.section,
-                stepsToReproduce: payload.reproduce
-            }
-
-        console.log(errorReport);
-
-        //TODO actually send it
+    generateErrorReport({state, getters}, payload) {
+        // TODO: instead of returning this object, POST it to the server
+        return {
+            email: payload.email || state.currentUser,
+            country: state.baseline.country,
+            project: state.projects.currentProject?.name,
+            browserAgent: navigator.userAgent,
+            timeStamp: new Date().toISOString(),
+            jobId: state.modelRun.modelRunId,
+            description: payload.description,
+            section: payload.section,
+            stepsToReproduce: payload.reproduce,
+            errors: getters.errors
+        };
     }
 }
