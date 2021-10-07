@@ -1,5 +1,5 @@
-import {Dict, DisplayFilter} from "../../../app/types";
-import {FilterOption} from "../../../app/generated";
+import {Dict, DisplayFilter, GenericChartColumn} from "../../types";
+import {FilterOption} from "../../generated";
 
 export const filterData = (
     unfilteredData: Dict<unknown>[],
@@ -12,3 +12,15 @@ export const filterData = (
     );
     return unfilteredData.filter((row: any) => includeRow(row));
 };
+
+export function genericChartColumnsToFilters(columns: GenericChartColumn[]): DisplayFilter[] {
+    return columns.map((column) => {
+        return {
+            id: column.id,
+            column_id: column.column_id,
+            label: column.label,
+            options: column.values,
+            allowMultiple: false
+        }
+    });
+}

@@ -183,22 +183,29 @@ export interface SelectedADRUploadFiles {
 }
 
 export interface GenericChartTableConfig {
-    columns: {
-        data: {
-            columnId: string,
-            labelFilterId: string | null
-        },
-        header: {
-            type: "filterLabel" | "selectedFilterOption",
-            filterId: string
-        }
-    }[]
+    columns: GenericChartTableColumnConfig[]
+}
+
+export interface GenericChartTableColumnConfig {
+    data: {
+        columnId: string,
+        labelColumn?: string
+        hierarchyColumn?: string
+    },
+    header: {
+        type: "columnLabel" | "selectedFilterOption",
+        column: string
+    }
 }
 
 export interface DatasetConfig {
     id: string
     label: string
     url: string
+    filters?: {
+       id: string,
+       source: string
+    }[],
     table?: GenericChartTableConfig
 }
 
@@ -232,10 +239,17 @@ export interface GenericChartMetadataResponse {
     [key: string]: GenericChartMetadata;
 }
 
+export interface GenericChartColumn {
+    id: string,
+    column_id: string,
+    label: string,
+    values: FilterOption[]
+}
+
 export interface GenericChartDataset {
     data: Dict<unknown>[],
     metadata: {
-        filters: DisplayFilter[],
+        columns: GenericChartColumn[],
         defaults: {
             selected_filter_options: Dict<FilterOption[]>
         }

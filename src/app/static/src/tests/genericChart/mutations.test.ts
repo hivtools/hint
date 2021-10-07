@@ -1,5 +1,6 @@
+import Vue from "vue";
 import {mutations} from "../../app/store/genericChart/mutations";
-;import {mockGenericChartState} from "../mocks";
+import {mockGenericChartState} from "../mocks";
 
 describe("genericChart mutations", () => {
 
@@ -12,9 +13,13 @@ describe("genericChart mutations", () => {
 
     it("sets dataset",  () => {
         const state = mockGenericChartState();
+        const vueSetSpy = jest.spyOn(Vue, "set");
         const payload = {datasetId: "dataset1", dataset: ["TEST DATASET"]};
         mutations.SetDataset(state, {payload});
         expect(state.datasets).toStrictEqual({dataset1: ["TEST DATASET"]});
+        expect(vueSetSpy.mock.calls[0][0]).toBe(state.datasets);
+        expect(vueSetSpy.mock.calls[0][1]).toBe("dataset1");
+        expect(vueSetSpy.mock.calls[0][2]).toStrictEqual(["TEST DATASET"]);
     });
 
     it("can clear anc datasets", () => {
