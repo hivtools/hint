@@ -15,6 +15,7 @@ import {
 } from "../mocks";
 import {RootState} from "../../app/root";
 import {initialDownloadResults} from "../../app/store/downloadResults/downloadResults";
+import {baseline} from "../../app/store/baseline/baseline";
 
 describe("root getters", () => {
 
@@ -188,5 +189,21 @@ describe("root getters", () => {
         const result = getResult({surveyAndProgram: stateWithErrors});
         expectArraysEqual(result, [surveyErr, ancErr, progErr]);
     });
+
+    it("gets errors from multiple modules", async () => {
+        const surveyErr = mockError("survey");
+        const shapeErr = mockError("shape");
+
+        const result = getResult({
+            surveyAndProgram: mockSurveyAndProgramState({
+                surveyError: surveyErr
+            }),
+            baseline: mockBaselineState({
+                shapeError: shapeErr
+            })
+        });
+        expectArraysEqual(result, [surveyErr, shapeErr]);
+    });
+
 
 });
