@@ -127,39 +127,39 @@ Here is an annotated example of GenericChartMetadata for a single chart:
         }
       ],
       "dataSelectors": {
-	// Data source is currently the only type of data selector supported.
-	// A data source has a particular role in the chart. The user selects which dataset to use for each data source. 
+	    // Data source is currently the only type of data selector supported.
+	    // A data source has a particular role in the chart. The user selects which dataset to use for each data source. 
         "dataSources": [
           {
-            // Id for this data source
-            "id": "dataSource",
+            // Id for this data source. This is used in chart jsonata to refer to data in each data source. 
+            "id": "data",
 
-	    // A data source might not be editable if only one dataset was available
+	        // A data source might not be editable if only one dataset was available
             "type": "editable", 
 
             // Translation key for the label to use for the data source selector		
             "label": "dataSource",  
 
-	    // Default dataset id to use for the data source		
+	        // Default dataset id to use for the data source		
             "datasetId": "art",
 
-	    // Will be used to show or hide controls for user to select indicator (not yet implemented)
+	        // Will be used to show or hide controls for user to select indicator (not yet implemented)
             "showIndicators": false,
 
-	    // Show or hide controls for user to select filter values
+	         // Show or hide controls for user to select filter values
             "showFilters": true
           }
         ]
       },
       // Subplot configuration for the chart, if any. Used by GenericChart component to calculate the scroll height area.
       "subplots": {
-	// Number of subplots to display per row
+	    // Number of subplots to display per row
         "columns": 3,
 
-	// The column in the data for which a subplot will be shown for each distinct value. 
+	    // The column in the data for which a subplot will be shown for each distinct value. 
         "distinctColumn": "area_name",
 
-	// Height in pixels which should be allowed for each row of subplts.
+	    // Height in pixels which should be allowed for each row of subplts.
         "heightPerRow": 140
       },
       // This is an array as a future implementation may allow multiple chart types per chart e.g. scatter and bar. 
@@ -168,7 +168,7 @@ Here is an annotated example of GenericChartMetadata for a single chart:
         {
           "id": "scatter",
 
-	  // When implemented, this is the translation key for the label to be displayed for this chart type's option 	
+	      // When implemented, this is the translation key for the label to be displayed for this chart type's option 	
           "label": "Scatter",
 		
           "config": "...The JSONata config string goes here - see below for more details on this..."
