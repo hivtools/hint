@@ -26,9 +26,31 @@ describe("GenericChart component", () => {
     const metadata: GenericChartMetadataResponse = {
         "test-chart": {
             datasets: [
-                {id: "dataset1", label:"Dataset 1", url: "/dataset1"},
-                {id: "dataset2", label:"Dataset 2", url: "/dataset2"},
-                {id: "dataset3", label:"Dataset 3", url: "/dataset3"}
+                {
+                    id: "dataset1",
+                    label:"Dataset 1",
+                    url: "/dataset1",
+                    filters: [
+                        {id: "age", source: "data"},
+                        {id: "year", source: "data"}
+                    ]
+                },
+                {
+                    id: "dataset2",
+                    label:"Dataset 2",
+                    url: "/dataset2",
+                    filters: [
+                        {id: "year", source: "data"}
+                    ]
+                },
+                {
+                    id: "dataset3",
+                    label:"Dataset 3",
+                    url: "/dataset3",
+                    filters: [
+                        {id: "type", source: "data"}
+                    ]
+                }
             ],
             dataSelectors: {
                 dataSources: [
@@ -54,13 +76,12 @@ describe("GenericChart component", () => {
                 {age: "2", year: "2021", value: 4}
             ],
             metadata: {
-                filters: [
+                columns: [
                     {
                         id: "age",
                         column_id: "age",
                         label: "Age",
-                        allowMultiple: false,
-                        options: [
+                        values: [
                             {id: "1", label: "1"},
                             {id: "2", label: "2"}
                         ]
@@ -69,8 +90,7 @@ describe("GenericChart component", () => {
                         id: "year",
                         column_id: "year",
                         label: "Year",
-                        allowMultiple: false,
-                        options: [
+                        values: [
                             {id: "2020", label: "2020"},
                             {id: "2021", label: "2021"}
                         ]
@@ -92,12 +112,11 @@ describe("GenericChart component", () => {
                 {age: "20", year: "2021", value: 40}
             ],
             metadata: {
-                filters: [
+                columns: [
                     {
                         id: "age",
                         column_id: "age",
                         label: "Age",
-                        allowMultiple: false,
                         options: [
                             {id: "10", label: "10"},
                             {id: "20", label: "20"}
@@ -107,7 +126,6 @@ describe("GenericChart component", () => {
                         id: "year",
                         column_id: "year",
                         label: "Year",
-                        allowMultiple: false,
                         options: [
                             {id: "2020", label: "2020"},
                             {id: "2021", label: "2021"}
@@ -125,13 +143,12 @@ describe("GenericChart component", () => {
         dataset3: {
             data: [{type: "test", value: "test"}],
             metadata: {
-                filters: [
+                columns: [
                     {
                         id: "type",
                         column_id: "type",
                         label: "Type",
-                        allowMultiple: false,
-                        options: [{id: "test", label: "test"}]
+                        values: [{id: "test", label: "test"}]
                     }
                 ],
                 defaults: {
@@ -229,16 +246,48 @@ describe("GenericChart component", () => {
 
             const filters = wrapper.findAll(Filters);
             expect(filters.length).toBe(2);
-            expect(filters.at(0).props("filters")).toBe(datasets.dataset1.metadata.filters);
+            expect(filters.at(0).props("filters")).toStrictEqual([
+                {
+                    id: "age",
+                    column_id: "age",
+                    label: "Age",
+                    allowMultiple: false,
+                    options: [
+                        {id: "1", label: "1"},
+                        {id: "2", label: "2"}
+                    ]
+                },
+                {
+                    id: "year",
+                    column_id: "year",
+                    label: "Year",
+                    allowMultiple: false,
+                    options: [
+                        {id: "2020", label: "2020"},
+                        {id: "2021", label: "2021"}
+                    ]
+                }
+            ],);
             expect(filters.at(0).props("selectedFilterOptions")).toStrictEqual(datasets.dataset1.metadata.defaults.selected_filter_options);
-            expect(filters.at(1).props("filters")).toBe(datasets.dataset3.metadata.filters);
+            expect(filters.at(1).props("filters")).toStrictEqual( [
+                {
+                    id: "type",
+                    column_id: "type",
+                    label: "Type",
+                    allowMultiple: false,
+                    options: [{id: "test", label: "test"}]
+                }
+            ]);
             expect(filters.at(1).props("selectedFilterOptions")).toStrictEqual(datasets.dataset3.metadata.defaults.selected_filter_options);
 
             const plotly = wrapper.find(Plotly);
             expect(plotly.props("chartMetadata")).toBe("Test Chart Config");
             expect(plotly.props("chartData")).toStrictEqual({
                 visible1: [{age: "1", year: "2021", value: 2}],
-                visible2: [{age: "10", year: "2020", value: 10}],
+                visible2: [
+                    {age: "10", year: "2020", value: 10},
+                    {age: "20", year: "2020", value: 30}
+                ],
                 hidden: [{type: "test", value: "test"}]
             });
             expect(plotly.props("layoutData")).toStrictEqual({});
@@ -326,7 +375,10 @@ describe("GenericChart component", () => {
                 const chartData = wrapper.find(Plotly).props("chartData");
                 expect(chartData).toStrictEqual({
                     visible1: [{age: "2", year: "2020", value: 3}],
-                    visible2: [{age: "10", year: "2020", value: 10}],
+                    visible2: [
+                        {age: "10", year: "2020", value: 10},
+                        {age: "20", year: "2020", value: 30}
+                    ],
                     hidden: [{type: "test", value: "test"}]
                 });
                 done();
@@ -366,7 +418,7 @@ describe("GenericChart component", () => {
                     {type: "test", area:"e",value: 5}
                 ],
                 metadata: {
-                    filters: [
+                    columns: [
                         {
                             id: "type",
                             column_id: "type",
@@ -573,12 +625,15 @@ describe("GenericChart component", () => {
             expect(tables.length).toBe(2);
             expect(tables.at(0).props("tableConfig")).toBe(tableConfig1);
             expect(tables.at(0).props("filteredData")).toStrictEqual([{age: "1", year: "2021", value: 2}]);
-            expect(tables.at(0).props("filters")).toBe(datasets.dataset1.metadata.filters);
+            expect(tables.at(0).props("columns")).toBe(datasets.dataset1.metadata.columns);
             expect(tables.at(0).props("selectedFilterOptions")).toStrictEqual(datasets.dataset1.metadata.defaults.selected_filter_options);
 
             expect(tables.at(1).props("tableConfig")).toBe(tableConfig2);
-            expect(tables.at(1).props("filteredData")).toStrictEqual([{age: "10", year: "2020", value: 10}]);
-            expect(tables.at(1).props("filters")).toBe(datasets.dataset2.metadata.filters);
+            expect(tables.at(1).props("filteredData")).toStrictEqual([
+                {age: "10", year: "2020", value: 10},
+                {age: "20", year: "2020", value: 30}
+            ]);
+            expect(tables.at(1).props("columns")).toBe(datasets.dataset2.metadata.columns);
             expect(tables.at(1).props("selectedFilterOptions")).toStrictEqual(datasets.dataset2.metadata.defaults.selected_filter_options);
 
             done();
