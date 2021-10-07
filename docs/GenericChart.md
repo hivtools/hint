@@ -6,9 +6,12 @@
 [GenericChart component logic](#genericchart-component-logic)\
 [Generic Chart Table](#generic-chart-table)
 
-## Introducution
+Source for the diagrams in this document can be found [here](https://docs.google.com/presentation/d/1fv7yiD4eQU3UWThHeYJpI8LeHk2WgivjiPfcYTMAxWw/edit?usp=sharing)
 
-HINT has a `GenericChart` vue component in the front end. This is currently only used to display Input Time Series charts - 
+## Introduction
+
+HINT has a [`GenericChart`](https://github.com/mrc-ide/hint/tree/master/src/app/static/src/app/components/genericChart) 
+vue component in the front end. This is currently only used to display Input Time Series charts - 
 however it has been designed to generically accept configuration, chart metadata, and chart data and to display the 
 resultant chart using the [Plotly](https://plotly.com/javascript/) library. 
 
@@ -16,7 +19,7 @@ resultant chart using the [Plotly](https://plotly.com/javascript/) library.
 However it does make use of the store to handle chart data and metadata. This is to avoid the chart needing to re-fetch 
 data when it is reloaded.  
 
-Input Time Series, the sole current implementation for Generic Chart, has custom datasets which must be fetched from 
+[Input Time Series](https://github.com/mrc-ide/hint/blob/master/src/app/src/main/resources/metadata/generic-chart.json#L2), the sole current implementation for Generic Chart, has custom datasets which must be fetched from 
 hintr - the url to use is included in the dataset config. However, the chart config could be extended to allow generic 
 chart visualisations of the standard input and output datasets in the store.
 
@@ -25,7 +28,7 @@ with the associated url from which to fetch it and an id by which to refer to it
 will fill a role in a particular Generic Chart configuration. For example, a chart might configure two data sources, which 
 will provide values to the X and Y axes separately. In the Input Time Series, we have only one data source, 'Data source'.
 
-A data source is fulfilled by a dataset, and configuration defines which datasets should be available for which data sources. In 
+A data source is fulfilled by a dataset, and the chart configuration defines which datasets should be available for which data sources. In 
 Input Time Series, both the ANC and ART datasets are available for 'Data source', and the user selects which to use 
 from the data source control. 
 
@@ -71,7 +74,7 @@ This is how they look when rendered in HINT to display the Input Time Series cha
 ### Generic Chart Metadata
 
 The Generic Chart Metadata consists of a dictionary of `GenericChartMetadata` objects, whose keys are the chart ids. 
-Here is an annotated example of GenericChartMetadata:
+Here is an annotated example of GenericChartMetadata for a single chart:
 ```
 {
       // This section configures the datasets available to the charts, and where to get them from
@@ -129,7 +132,7 @@ Here is an annotated example of GenericChartMetadata:
         "dataSources": [
           {
             // Id for this data source
-            "id": "data",
+            "id": "dataSource",
 
 	    // A data source might not be editable if only one dataset was available
             "type": "editable", 
@@ -182,7 +185,7 @@ component invokes the transformation on the filtered chart data given the chart 
 full Plotly chart configuration.
 
 The full Jsonata for the Input Time Series can be found 
-[here](https://github.com/mrc-ide/hint/blob/mrc-2537/src/app/src/main/resources/metadata/input-time-series-config-jsonata.txt),
+[here](https://github.com/mrc-ide/hint/blob/mrc-2537/src/app/src/main/resources/metadata/input-time-series-config-jsonata.txt).
 
 Some explanation for the parts which may not be self-explanatory:
 
