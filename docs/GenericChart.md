@@ -10,7 +10,7 @@ Source for the diagrams in this document can be found [here](https://docs.google
 
 ## Introduction
 
-HINT has a [`GenericChart`](https://github.com/mrc-ide/hint/tree/master/src/app/static/src/app/components/genericChart) 
+HINT has a [`GenericChart`](https://github.com/mrc-ide/hint/blob/mrc-2537/src/app/static/src/app/components/genericChart/GenericChart.vue) 
 vue component in the front end. This is currently only used to display Input Time Series charts - 
 however it has been designed to generically accept configuration, chart metadata, and chart data and to display the 
 resultant chart using the [Plotly](https://plotly.com/javascript/) library. 
