@@ -1,6 +1,10 @@
+# hint 1.56.0
+
+* Show Input Time Series plots
+
 # hint 1.55.0
 
-* Show Time series tab and data source picker only when relevant 
+* Refresh output metadata and options when language changes
 
 # hint 1.54.0
 
@@ -13,6 +17,21 @@
 # hint 1.52.0
 
 * Add input Time series chart
+
+* Refresh output metadata and options when language changes
+
+# hint 1.54.0
+
+* Switch Naomi to pull and push to ADR 2022 packager
+
+# hint 1.53.0
+
+* Persist current language in browser storage
+
+# hint 1.52.0
+
+* Show selected release name and preselected in modal
+>>>>>>> master
 
 # hint 1.51.0
 

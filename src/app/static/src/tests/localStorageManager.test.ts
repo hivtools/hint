@@ -1,25 +1,35 @@
 import {
     mockBaselineState, mockDataset,
+    mockRelease,
     mockError,
+    mockHintrVersionState,
     mockMetadataState,
+    mockModelCalibrateState,
     mockModelOptionsState,
     mockModelOutputState,
     mockModelRunState,
     mockPlottingSelections,
-    mockStepperState,
-    mockSurveyAndProgramState,
     mockProjectsState,
-    mockModelCalibrateState,
-    mockHintrVersionState
+    mockStepperState,
+    mockSurveyAndProgramState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
 import {DataType} from "../app/store/surveyAndProgram/surveyAndProgram";
 import {currentHintVersion} from "../app/hintVersion";
+import {Language} from "../app/store/translations/locales";
+import registerTranslations from "../app/store/translations/registerTranslations";
+import Vuex from 'vuex';
+import i18next from "i18next";
 
 declare const currentUser: string; // set in jest config, or on the index page when run for real
 
 describe("LocalStorageManager", () => {
+
+    afterEach(() => {
+        jest.clearAllMocks();
+    })
+
     it("serialiseState removes errors, saves selected data type", async () => {
         const mockRoot = {
             version: "1.0.0",
@@ -35,13 +45,14 @@ describe("LocalStorageManager", () => {
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: mockSurveyAndProgramState({selectedDataType: DataType.Survey}),
             projects: mockProjectsState(),
-            hintrVersion: mockHintrVersionState()
+            hintrVersion: mockHintrVersionState(),
+            language: Language.en
         } as RootState;
 
         const result = serialiseState(mockRoot);
         expect(result).toStrictEqual({
             version: "1.0.0",
-            baseline: {selectedDataset: null},
+            baseline: {selectedDataset: null, selectedRelease: null},
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
@@ -51,16 +62,19 @@ describe("LocalStorageManager", () => {
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: {selectedDataType: DataType.Survey},
             projects: mockProjectsState(),
-            hintrVersion: mockHintrVersionState()
+            hintrVersion: mockHintrVersionState(),
+            language: Language.en
         });
     });
 
-    it("serialiseState saves selectedDataset from baseline", async () => {
+    it("serialiseState saves selectedDataset and selectedRelease from baseline", async () => {
         const dataset = mockDataset();
+        const release = mockRelease();
         const mockRoot = {
             version: "1.0.0",
             baseline: mockBaselineState({
-                selectedDataset: dataset
+                selectedDataset: dataset,
+                selectedRelease: release
             }),
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
@@ -71,14 +85,16 @@ describe("LocalStorageManager", () => {
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: mockSurveyAndProgramState(),
             projects: mockProjectsState(),
-            hintrVersion: mockHintrVersionState()
+            hintrVersion: mockHintrVersionState(),
+            language: Language.en
         } as RootState;
 
         const result = serialiseState(mockRoot);
         expect(result).toStrictEqual({
             version: "1.0.0",
             baseline: {
-                selectedDataset: dataset
+                selectedDataset: dataset,
+                selectedRelease: release
             },
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
@@ -89,7 +105,8 @@ describe("LocalStorageManager", () => {
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: {selectedDataType: null},
             projects: mockProjectsState(),
-            hintrVersion: mockHintrVersionState()
+            hintrVersion: mockHintrVersionState(),
+            language: Language.en
         });
     });
 
@@ -113,5 +130,24 @@ describe("LocalStorageManager", () => {
 
         expect(spy.mock.calls[0][0]).toBe(`hintAppState_v${currentHintVersion}`);
         expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState));
+    });
+
+    it("can set and get language from local storage", () => {
+        const spy = jest.spyOn(Storage.prototype, "setItem");
+
+        const testState = {language: Language.pt};
+        localStorageManager.savePartialState(testState);
+
+        expect(localStorageManager.getState()?.language).toBe(Language.pt)
+        expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState))
+    });
+
+    it("can initiate default language from store", () => {
+        const store = new Vuex.Store({
+            state: {language: Language.fr}
+        });
+
+        registerTranslations(store);
+        expect(i18next.language).toBe("fr");
     });
 });

@@ -65,7 +65,8 @@ export interface RootState extends TranslatableState {
     errors: ErrorsState,
     projects: ProjectsState
     currentUser: string,
-    downloadResults: DownloadResultsState
+    downloadResults: DownloadResultsState,
+    updatingLanguage: boolean
 }
 
 export interface ReadyState {
@@ -129,6 +130,7 @@ export const emptyState = (): RootState => {
     return {
         language: Language.en,
         version: currentHintVersion,
+        updatingLanguage: false,
         hintrVersion: initialHintrVersionState(),
         adr: initialADRState(),
         genericChart: initialGenericChartState(),
@@ -149,9 +151,10 @@ export const emptyState = (): RootState => {
         downloadResults: initialDownloadResultsState()
     }
 };
+const existingState = localStorageManager.getState();
 
 export const storeOptions: StoreOptions<RootState> = {
-    state: emptyState(),
+    state: {...emptyState(), ...existingState && {language: existingState.language}},
     modules: {
         adr,
         genericChart,

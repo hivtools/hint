@@ -80,8 +80,8 @@ describe("ADR dataset-related actions", () => {
         await adrActions.getDatasets({commit, rootState} as any);
 
         jest.resetAllMocks();
-        
-        await adrActions.getReleases({commit, rootState} as any, "antarctica-inputs-unaids-estimates-2021");
+
+        await adrActions.getReleases({commit, rootState} as any, "antarctica-country-estimates-2022-1");
         expect(commit.mock.calls[0][0].type).toBe(ADRMutation.SetReleases)
         expect(commit.mock.calls[0][0].payload.length).toBeGreaterThan(0);
         expect(commit.mock.calls[0][0].payload[0].name).toBeTruthy();
@@ -98,7 +98,7 @@ describe("ADR dataset-related actions", () => {
         expect(commit.mock.calls[2][0].type).toStrictEqual(ADRMutation.SetDatasets);
         const datasets = commit.mock.calls[2][0]["payload"];
         const dataset = datasets.find((dataset: any) => dataset.organization.name === "naomi-development-team");
-        expect(dataset).not.toBeNull()
+        expect(dataset).not.toBeUndefined();
 
         // 3. check can upload
         commit.mockClear();
