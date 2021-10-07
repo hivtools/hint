@@ -58,6 +58,6 @@ const extractErrorsRecursively = (state: any, errors: Error[]) => {
         const keys = Object.keys(state);
         const errorKeys = keys.filter(key => /error$/i.test(key));
         errors.push(...errorKeys.map(key => state[key]).filter(err => !!err && !!err.error));
-        keys.map(key => extractErrorsRecursively(state[key], errors));
+        keys.forEach(key => extractErrorsRecursively(state[key], errors));
     }
 };
