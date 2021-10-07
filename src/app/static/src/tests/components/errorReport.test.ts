@@ -2,20 +2,30 @@ import {shallowMount, mount} from '@vue/test-utils';
 import ErrorReport from "../../app/components/ErrorReport.vue";
 import Modal from "../../app/components/Modal.vue";
 import Vuex from "vuex";
-import {mockRootState, mockStepperState} from "../mocks";
+import {mockProjectsState, mockRootState, mockStepperState} from "../mocks";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {StepperState} from "../../app/store/stepper/stepper";
+import {ProjectsState} from "../../app/store/projects/projects";
 
 describe("Error report component", () => {
 
-    const createStore = (stepperState: Partial<StepperState> = {}) => {
+    const createStore = (stepperState: Partial<StepperState> = {},
+                         projectsState: Partial<ProjectsState> = {},
+                         isGuest = false) => {
         const store = new Vuex.Store({
             state: mockRootState(),
             modules: {
                 stepper: {
                     namespaced: true,
                     state: mockStepperState(stepperState)
+                },
+                projects: {
+                    namespaced: true,
+                    state: mockProjectsState(projectsState)
                 }
+            },
+            getters: {
+                isGuest: () => isGuest
             }
         });
         registerTranslations(store);
@@ -100,6 +110,53 @@ describe("Error report component", () => {
         expect((wrapper.vm as any).currentSection).toBe("downloadResults");
     });
 
+    it("shows email field if user is guest", () => {
+        const wrapper = shallowMount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore({}, {}, true)
+        });
+
+        expect(wrapper.findAll("input#email").length).toBe(1);
+    });
+
+    it("does not shows email field if user is logged in", () => {
+        const wrapper = shallowMount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore({}, {}, false)
+        });
+
+        expect(wrapper.findAll("input#email").length).toBe(0);
+    });
+
+    it("shows disabled, auto-populated project field if there is a current project", () => {
+        const wrapper = shallowMount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore({}, {currentProject: {name: "p1", id: 1, versions: []}}, false)
+        });
+
+        expect(wrapper.findAll("input#project").length).toBe(1);
+        const el = wrapper.find("input#project").element as HTMLInputElement
+        expect(el.value).toBe("p1");
+        expect(el.disabled).toBe(true);
+    });
+
+    it("does not show project field if there is no current project", () => {
+        const wrapper = shallowMount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore({}, {}, true)
+        });
+
+        expect(wrapper.findAll("input#project").length).toBe(0);
+    });
+
     it("emits close event on cancel", () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
@@ -133,22 +190,25 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore()
+            store: createStore({}, {}, true)
         });
 
         wrapper.find("#description").setValue("something");
         wrapper.find("#reproduce").setValue("reproduce steps");
         wrapper.find("#section").setValue("downloadResults");
+        wrapper.find("#email").setValue("test@email.com");
 
         expect(wrapper.vm.$data.description).toBe("something");
         expect(wrapper.vm.$data.reproduce).toBe("reproduce steps");
         expect(wrapper.vm.$data.section).toBe("downloadResults");
+        expect(wrapper.vm.$data.email).toBe("test@email.com");
 
         wrapper.find(".btn-white").trigger("click");
 
         expect(wrapper.vm.$data.description).toBe("");
         expect(wrapper.vm.$data.reproduce).toBe("");
         expect(wrapper.vm.$data.section).toBe("");
+        expect(wrapper.vm.$data.email).toBe("");
     });
 
     it("resets data on send", () => {
@@ -156,23 +216,25 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore()
+            store: createStore({}, {}, true)
         });
 
         wrapper.find("#description").setValue("something");
         wrapper.find("#reproduce").setValue("reproduce steps");
         wrapper.find("#section").setValue("downloadResults");
+        wrapper.find("#email").setValue("test@email.com");
 
         expect(wrapper.vm.$data.description).toBe("something");
         expect(wrapper.vm.$data.reproduce).toBe("reproduce steps");
         expect(wrapper.vm.$data.section).toBe("downloadResults");
+        expect(wrapper.vm.$data.email).toBe("test@email.com");
 
         wrapper.find(".btn-red").trigger("click");
 
         expect(wrapper.vm.$data.description).toBe("");
         expect(wrapper.vm.$data.reproduce).toBe("");
         expect(wrapper.vm.$data.section).toBe("");
+        expect(wrapper.vm.$data.email).toBe("");
     });
-
 
 });
