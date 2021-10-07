@@ -162,7 +162,7 @@ class AppPropertiesTests
     @Test
     fun `can read issue report  url`()
     {
-        val props = readPropsFromTempFile("teams_webhook=https://webhook.azure")
+        val props = readPropsFromTempFile("issue_report_url=https://webhook.azure")
         val sut = ConfiguredAppProperties(props)
         assertThat(sut.issueReportUrl).isEqualTo("https://webhook.azure")
     }
