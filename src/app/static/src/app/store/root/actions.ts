@@ -9,26 +9,22 @@ import i18next from "i18next";
 export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
     generateErrorReport: (store: ActionContext<RootState, RootState>,
-                          payload: ErrorReportPayload) => ErrorReport;
+                          payload: ErrorReportManualDetails) => ErrorReport;
 }
 
-export interface ErrorReportPayload {
+export interface ErrorReportManualDetails {
     section: string,
     description: string,
-    reproduce: string,
+    stepsToReproduce: string,
     email: string
 }
 
-export interface ErrorReport {
-    email: string
+export interface ErrorReport extends ErrorReportManualDetails {
     country: string,
     project: string | undefined,
     browserAgent: string,
     timeStamp: string,
     jobId: string,
-    description: string,
-    section: string,
-    stepsToReproduce: string,
     errors: Error[]
 }
 
@@ -107,7 +103,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             jobId: state.modelRun.modelRunId,
             description: payload.description,
             section: payload.section,
-            stepsToReproduce: payload.reproduce,
+            stepsToReproduce: payload.stepsToReproduce,
             errors: getters.errors
         }
     }

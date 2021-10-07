@@ -1,4 +1,4 @@
-import {actions, ErrorReportPayload} from "../../app/store/root/actions";
+import {actions, ErrorReportManualDetails} from "../../app/store/root/actions";
 import Mock = jest.Mock;
 import {
     mockAxios,
@@ -296,9 +296,9 @@ describe("root actions", () => {
             errors: [err]
         }
 
-        const payload: ErrorReportPayload = {
+        const payload: ErrorReportManualDetails = {
             email: "test@test.com",
-            reproduce: "repro",
+            stepsToReproduce: "repro",
             section: "reviewInputs",
             description: "desc"
         }
@@ -322,9 +322,9 @@ describe("root actions", () => {
             errors: []
         }
 
-        const payload: ErrorReportPayload = {
+        const payload: ErrorReportManualDetails = {
             email: "",
-            reproduce: "",
+            stepsToReproduce: "",
             section: "",
             description: ""
         }
@@ -348,9 +348,9 @@ describe("root actions", () => {
             errors: []
         }
 
-        const payload: ErrorReportPayload = {
+        const payload: ErrorReportManualDetails = {
             email: "",
-            reproduce: "repro",
+            stepsToReproduce: "repro",
             section: "reviewInputs",
             description: "desc"
         }

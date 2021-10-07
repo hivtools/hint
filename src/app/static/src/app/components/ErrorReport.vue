@@ -52,7 +52,7 @@
                        v-translate="'reproduce'"></label>
                 <div class="small text-muted" v-translate="'reproduceErrorHelp'"></div>
                 <textarea id="reproduce"
-                          v-model="reproduce"
+                          v-model="stepsToReproduce"
                           class="form-control"></textarea>
             </div>
         </form>
@@ -76,10 +76,10 @@
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {ProjectsState} from "../store/projects/projects"
     import Modal from "./Modal.vue";
-    import {ErrorReportPayload} from "../store/root/actions";
+    import {ErrorReportManualDetails} from "../store/root/actions";
 
     interface Methods {
-        generateErrorReport: (payload: ErrorReportPayload) => void
+        generateErrorReport: (payload: ErrorReportManualDetails) => void
         sendErrorReport: () => void
         cancelErrorReport: () => void
         resetData: () => void
@@ -97,7 +97,7 @@
         open: boolean
     }
 
-    export default Vue.extend<ErrorReportPayload, Methods, Computed, Props>({
+    export default Vue.extend<ErrorReportManualDetails, Methods, Computed, Props>({
         components: {Modal},
         props: {
             open: Boolean
@@ -106,7 +106,7 @@
         data: function () {
             return {
                 description: "",
-                reproduce: "",
+                stepsToReproduce: "",
                 section: "",
                 email: ""
             }
@@ -137,7 +137,7 @@
                 this.generateErrorReport({
                     section: this.currentSection,
                     description: this.description,
-                    reproduce: this.reproduce,
+                    stepsToReproduce: this.stepsToReproduce,
                     email: this.email
                 })
                 this.resetData();
@@ -145,7 +145,7 @@
             },
             resetData() {
                 this.description = "";
-                this.reproduce = "";
+                this.stepsToReproduce = "";
                 this.section = "";
                 this.email = "";
             }
