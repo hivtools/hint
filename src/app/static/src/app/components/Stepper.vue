@@ -17,20 +17,7 @@
                 </div>
             </template>
         </div>
-        <div class="row mt-2">
-            <div class="col">
-                <a href="#" id="back"
-                   v-on:click="back"
-                   class="text-uppercase font-weight-bold pr-1"
-                   :class="{'disabled': activeStep === 1}"
-                   v-translate="'back'"></a>/
-                <a href="#" id="continue"
-                   v-on:click="next"
-                   class="text-uppercase font-weight-bold"
-                   :class="{'disabled': activeContinue(activeStep)}"
-                   v-translate="'continue'"></a>
-            </div>
-        </div>
+        <stepper-navigation v-bind="navigationProps"/>
         <hr/>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
@@ -49,6 +36,10 @@
                 <download-results v-if="isActive(7)"></download-results>
             </div>
         </div>
+        <template v-if="activeStep === 3">
+            <hr class="mt-3"/>
+            <stepper-navigation v-bind="navigationProps"/>
+        </template>
     </div>
 </template>
 
@@ -73,13 +64,15 @@
     import {Project} from "../types";
     import {ProjectsState} from "../store/projects/projects";
     import {RootState} from "../root";
+    import StepperNavigation, {Props as StepperNavigationProps} from "./StepperNavigation.vue";
 
     interface ComputedState {
         activeStep: number,
         steps: StepDescription[],
         currentProject: Project | null
         projectLoading: boolean,
-        updatingLanguage: boolean
+        updatingLanguage: boolean,
+        navigationProps: StepperNavigationProps
     }
 
     interface ComputedGetters {
@@ -112,6 +105,14 @@
                 return this.loadingFromFile || this.updatingLanguage || !this.ready;
             },
             ...mapGetters(["isGuest"]),
+            navigationProps: function() {
+                return {
+                    back: this.back,
+                    backDisabled: this.activeStep === 1,
+                    next: this.next,
+                    nextDisabled: this.activeContinue(this.activeStep)
+                };
+            }
         },
         methods: {
             ...mapActions(namespace, ["jump", "next"]),
@@ -158,7 +159,8 @@
             ModelOutput,
             ModelOptions,
             DownloadResults,
-            VersionStatus
+            VersionStatus,
+            StepperNavigation
         },
         watch: {
             complete: function (){
