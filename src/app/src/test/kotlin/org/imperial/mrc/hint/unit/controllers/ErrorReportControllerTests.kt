@@ -17,27 +17,28 @@ import java.time.Instant
 
 class ErrorReportControllerTests
 {
-    val objectMapper = ObjectMapper()
+    private val objectMapper = ObjectMapper()
+
+    private val data = ErrorReport(
+            "test.user@example.com",
+            "Kenya",
+            "Kenya2022",
+            "Model",
+            "123",
+            listOf(
+                    Errors("#65ae0d095ea", "test error msg", "fomot-hasah-livad"),
+                    Errors("#25ae0d095e1", "test error msg2", "fomot-hasah-livid")
+            ),
+            "test desc",
+            "test steps",
+            "test agent",
+            Instant.now()
+    )
 
     @Test
     fun `can post error report to teams`()
     {
         val url = "https://azure.com"
-
-        val data = ErrorReport(
-                "test.user@example.com",
-                "Kenya",
-                "Kenya2022",
-                "Model",
-                listOf(
-                        Errors("#65ae0d095ea", "test error msg"),
-                        Errors("#25ae0d095e1", "test error msg2")
-                ),
-                "test desc",
-                "test steps",
-                "test agent",
-                Instant.now()
-        )
 
         val mockAppProperties = mock<AppProperties> {
             on { issueReportUrl } doReturn url
@@ -58,21 +59,6 @@ class ErrorReportControllerTests
     fun `can return error response when request is unsuccessful `()
     {
         val url = "https://azure.com"
-
-        val data = ErrorReport(
-                "test.user@example.com",
-                "Kenya",
-                "Kenya2022",
-                "Model",
-                listOf(
-                        Errors("#65ae0d095ea", "test error msg"),
-                        Errors("#25ae0d095e1", "test error msg2")
-                ),
-                "test desc",
-                "test steps",
-                "test agent",
-                Instant.now()
-        )
 
         val mockAppProperties = mock<AppProperties> {
             on { issueReportUrl } doReturn url

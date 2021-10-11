@@ -24,7 +24,7 @@ class ErrorReportController(
     @ResponseBody
     fun postErrorReport(@RequestBody errorReport: ErrorReport): ResponseEntity<String>
     {
-        val response = errorReport(errorReport)
+        val response = notifyTeams(errorReport)
 
         if (response.statusCode != HttpStatus.OK)
         {
@@ -34,14 +34,16 @@ class ErrorReportController(
         return EmptySuccessResponse.asResponseEntity()
     }
 
-    fun errorReport(errorReport: ErrorReport): ResponseEntity<String>
+    fun notifyTeams(errorReport: ErrorReport): ResponseEntity<String>
     {
         val errorReportJson = objectMapper.writeValueAsString(errorReport)
 
         val headers = HttpHeaders()
+
         headers.contentType = MediaType.APPLICATION_JSON
 
         val httpEntity = HttpEntity(errorReportJson, headers)
+
         val url = appProperties.issueReportUrl
 
         return restTemplate.postForEntity(url, httpEntity)

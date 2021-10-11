@@ -7,11 +7,12 @@ data class ErrorReport(
         val country: String? = "",
         val projectName: String,
         val section: String,
+        val jobId: String? = "",
         val errors: List<Errors>,
         val description: String? = "",
         val stepsToReproduce: String? = "",
         val browserAgent: String,
-        val timeStamp: Instant? = Instant.now()
+        val timeStamp: Instant
 )
 
-data class Errors(val jobId: String? = "", val errorMessage: String? = "")
+data class Errors(val detail: String? = "", val error: String? = "", val key: String? = "")
