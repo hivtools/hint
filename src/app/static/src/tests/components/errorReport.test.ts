@@ -65,14 +65,6 @@ describe("Error report component", () => {
         });
         const options = wrapper.findAll("option");
 
-        expect(options.length).toBe(10);
-        expect(options.at(0).text()).toBe("Upload inputs");
-        expect(options.at(1).text()).toBe("Review inputs");
-        expect(options.at(6).text()).toBe("Save results");
-        expect(options.at(7).text()).toBe("Login");
-        expect(options.at(8).text()).toBe("Projects");
-        expect(options.at(9).text()).toBe("Other");
-
         expect((options.at(0).element as HTMLOptionElement).value).toBe("uploadInputs");
         expect((options.at(1).element as HTMLOptionElement).value).toBe("reviewInputs");
         expect((options.at(6).element as HTMLOptionElement).value).toBe("downloadResults");
@@ -172,7 +164,7 @@ describe("Error report component", () => {
     });
 
     it(`renders modal options in English, French and Portuguese`, () => {
-        const store = createStore({}, {currentProject: {name: "p1", id: 1, versions: []}}, false)
+        const store = createStore()
 
         const wrapper = shallowMount(ErrorReport, {
             propsData: {
