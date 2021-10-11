@@ -43,7 +43,7 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
     }
 }
 
-const extractErrors = (state: any) => {
+export const extractErrors = (state: any) => {
     const errors = [] as Error[];
     extractErrorsRecursively(state, errors);
     return errors;

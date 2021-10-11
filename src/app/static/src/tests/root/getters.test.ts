@@ -1,4 +1,4 @@
-import {getters} from "../../app/store/root/getters";
+import {extractErrors, getters} from "../../app/store/root/getters";
 import {
     mockADRState,
     mockADRUploadState,
@@ -15,7 +15,6 @@ import {
 } from "../mocks";
 import {RootState} from "../../app/root";
 import {initialDownloadResults} from "../../app/store/downloadResults/downloadResults";
-import {baseline} from "../../app/store/baseline/baseline";
 
 describe("root getters", () => {
 
@@ -191,6 +190,7 @@ describe("root getters", () => {
     });
 
     it("gets errors from multiple modules", async () => {
+        const err = mockError("err");
         const surveyErr = mockError("survey");
         const shapeErr = mockError("shape");
 
@@ -200,10 +200,66 @@ describe("root getters", () => {
             }),
             baseline: mockBaselineState({
                 shapeError: shapeErr
+            }),
+            modelRun: mockModelRunState({
+                errors: [err]
             })
         });
-        expectArraysEqual(result, [surveyErr, shapeErr]);
+        expectArraysEqual(result, [surveyErr, shapeErr, err]);
     });
 
+    describe("extractErrors", () => {
+
+        it("can extract top level errors", () => {
+            const test = {
+                error: mockError("e1")
+            }
+
+            expect(extractErrors(test)).toEqual([mockError("e1")])
+        });
+
+        it("can extract nested errors", () => {
+            const test = {
+                something: {
+                    error: mockError("e1")
+                }
+            }
+
+            expect(extractErrors(test)).toEqual([mockError("e1")])
+        });
+
+        it("is case insensitive", () => {
+            const test = {
+                something: {
+                    anError: mockError("e1"),
+                    anothererror: mockError("e2")
+                }
+            }
+
+            expect(extractErrors(test)).toEqual([mockError("e1"), mockError("e2")])
+        });
+
+        it("only matches words ending in 'error'", () => {
+            const test = {
+                something: {
+                    anError: mockError("e1"),
+                    shapeErroredFile: "notanerror",
+                    randomProp: "alsonotanerror"
+                }
+            }
+
+            expect(extractErrors(test)).toEqual([mockError("e1")])
+        });
+
+        it("omits nulls", () => {
+            const test = {
+                something: {
+                    anError: null
+                }
+            }
+
+            expect(extractErrors(test)).toEqual([])
+        });
+    })
 
 });
