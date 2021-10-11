@@ -1,16 +1,18 @@
 import {actions, ErrorReportManualDetails} from "../../app/store/root/actions";
-import Mock = jest.Mock;
 import {
     mockAxios,
-    mockBaselineState, mockError,
+    mockBaselineState,
+    mockError,
     mockModelCalibrateState,
-    mockModelRunState, mockProjectsState,
+    mockModelRunState,
+    mockProjectsState,
     mockRootState,
     mockStepperState
 } from "../mocks";
 import {Language} from "../../app/store/translations/locales";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
+import Mock = jest.Mock;
 
 describe("root actions", () => {
 
@@ -278,7 +280,7 @@ describe("root actions", () => {
         expect(dispatch.mock.calls.length).toBe(0)
     });
 
-    it("generates error report", () => {
+    it("generates and sends error report to teams", () => {
         const state = mockRootState({
             baseline: mockBaselineState({
                 country: "Malawi"
@@ -295,6 +297,7 @@ describe("root actions", () => {
         const getters = {
             errors: [err]
         }
+        const commit = jest.fn();
 
         const payload: ErrorReportManualDetails = {
             email: "test@test.com",
@@ -303,7 +306,11 @@ describe("root actions", () => {
             description: "desc"
         }
 
-        const result = actions.generateErrorReport({state, getters} as any, payload);
+        actions.generateErrorReport({commit, state, getters} as any, payload);
+
+        expect(commit.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(commit.mock.calls[0][1]).toBe("surveyAndProgram/deleteAll");
+        /*
         expect(result.email).toBe("test@test.com");
         expect(result.description).toBe("desc");
         expect(result.section).toBe("reviewInputs");
@@ -314,10 +321,13 @@ describe("root actions", () => {
         expect(result.stepsToReproduce).toBe("repro");
         expect(result.project).toBe("p1");
         expect(new Date(result.timeStamp).getDate()).toBe(new Date().getDate());
+
+         */
     });
 
     it("error report can handle nulls", () => {
         const state = mockRootState();
+        const commit = jest.fn();
         const getters = {
             errors: []
         }
@@ -329,7 +339,7 @@ describe("root actions", () => {
             description: ""
         }
 
-        const result = actions.generateErrorReport({state, getters} as any, payload);
+        const result = actions.generateErrorReport({commit, state, getters} as any, payload);
         const expected = {
             country: "",
             project: undefined,
@@ -343,10 +353,11 @@ describe("root actions", () => {
     });
 
     it("error report contains logged in email if not overridden", () => {
-        const state = mockRootState();
+        const state = mockRootState({language: Language.en});
         const getters = {
             errors: []
         }
+        const commit = jest.fn();
 
         const payload: ErrorReportManualDetails = {
             email: "",
@@ -355,8 +366,10 @@ describe("root actions", () => {
             description: "desc"
         }
 
-        const result = actions.generateErrorReport({state, getters} as any, payload);
-        expect(result.email).toBe("some.user@example.com");
+        actions.generateErrorReport({commit, state, getters} as any, payload);
+        //expect(result.email).toBe("some.user@example.com");
+        expect(commit.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(commit.mock.calls[0][1]).toBe("surveyAndProgram/deleteAll");
     });
 
     it("changeLanguage does nothing if new language is the same as current language", async () => {
@@ -378,35 +391,4 @@ describe("root actions", () => {
         expect(dispatch.mock.calls.length).toBe(0);
     });
 
-    it(`sends error report to teams`, () => {
-        const commit = jest.fn();
-        const state = mockRootState({
-            baseline: mockBaselineState({
-                country: "Malawi"
-            }),
-            modelRun: mockModelRunState({
-                modelRunId: "1234"
-            }),
-            projects: mockProjectsState({
-                currentProject: {name: "p1", id: 1, versions: []}
-            })
-        });
-
-        const err = mockError("err")
-        const getters = {
-            errors: [err]
-        }
-
-        const payload: ErrorReportManualDetails = {
-            email: "test@test.com",
-            stepsToReproduce: "repro",
-            section: "reviewInputs",
-            description: "desc"
-        }
-
-        const result = actions.generateErrorReport({commit, state, getters} as any, payload);
-
-        //expect(commit.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
-        //expect(commit.mock.calls[0][1]).toBe("surveyAndProgram/deleteAll");
-    })
 });

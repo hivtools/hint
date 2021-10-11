@@ -154,7 +154,7 @@ export const mutations: MutationTree<RootState> = {
     },
 
     [RootMutation.SendingErrorReport](state: RootState, action: PayloadWithType<boolean>) {
-        state.sendingErrorReport = action.payload;
+        state.sendingErrorReport = false;
         state.errorReportError = null;
     },
 

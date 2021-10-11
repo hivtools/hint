@@ -6,6 +6,7 @@ import {LanguageActions} from "../language/language";
 import {changeLanguage} from "../language/actions";
 import i18next from "i18next";
 import {api} from "../../apiService";
+import qs from "qs";
 
 export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
@@ -94,7 +95,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     },
 
     generateErrorReport(context, payload) {
-        const {state, getters, commit} = context
+        const {commit, state, getters} = context
         const data = {
             email: payload.email || state.currentUser,
             country: state.baseline.country,
@@ -112,7 +113,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         api<RootMutation, RootMutation>(context)
             .ignoreSuccess()
             .withError(RootMutation.ErrorReportError)
-            .postAndReturn("/error-report", data)
+            .postAndReturn("/error-report", qs.stringify(data))
             .then(() => {
                 commit({type: RootMutation.SendingErrorReport, payload: false})
             })
