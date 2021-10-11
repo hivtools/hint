@@ -1,3 +1,7 @@
+# hint 1.56.0
+
+* Include Back/Continue links at bottom of model options page
+
 # hint 1.55.0
 
 * Refresh output metadata and options when language changes
