@@ -53,4 +53,39 @@ class ErrorReportControllerTests
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
+
+    @Test
+    fun `can return error response when request is unsuccessful `()
+    {
+        val url = "https://azure.com"
+
+        val data = ErrorReport(
+                "test.user@example.com",
+                "Kenya",
+                "Kenya2022",
+                "Model",
+                listOf(
+                        Errors("#65ae0d095ea", "test error msg"),
+                        Errors("#25ae0d095e1", "test error msg2")
+                ),
+                "test desc",
+                "test steps",
+                "test agent",
+                Instant.now()
+        )
+
+        val mockAppProperties = mock<AppProperties> {
+            on { issueReportUrl } doReturn url
+        }
+
+        val mockRestTemplate = mock<RestTemplate> {
+            on { postForEntity<String>(anyString(), any(), any()) } doReturn ResponseEntity.badRequest().build()
+        }
+
+        val sut = ErrorReportController(objectMapper, mockRestTemplate, mockAppProperties)
+
+        val result = sut.postErrorReport(data)
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
 }
