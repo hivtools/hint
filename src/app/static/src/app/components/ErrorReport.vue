@@ -52,7 +52,7 @@
                        v-translate="'reproduce'"></label>
                 <div class="small text-muted" v-translate="'reproduceErrorHelp'"></div>
                 <textarea id="reproduce"
-                          v-model="reproduce"
+                          v-model="stepsToReproduce"
                           class="form-control"></textarea>
             </div>
         </form>
@@ -72,19 +72,14 @@
 </template>
 <script lang="ts">
     import Vue from "vue"
-    import {mapGetterByName, mapStateProp} from "../utils";
+    import {mapGetterByName, mapStateProp, mapActionByName} from "../utils";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {ProjectsState} from "../store/projects/projects"
     import Modal from "./Modal.vue";
-
-    interface Data {
-        description: string
-        reproduce: string
-        section: string
-        email: string
-    }
+    import {ErrorReportManualDetails} from "../store/root/actions";
 
     interface Methods {
+        generateErrorReport: (payload: ErrorReportManualDetails) => void
         sendErrorReport: () => void
         cancelErrorReport: () => void
         resetData: () => void
@@ -102,7 +97,7 @@
         open: boolean
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default Vue.extend<ErrorReportManualDetails, Methods, Computed, Props>({
         components: {Modal},
         props: {
             open: Boolean
@@ -111,7 +106,7 @@
         data: function () {
             return {
                 description: "",
-                reproduce: "",
+                stepsToReproduce: "",
                 section: "",
                 email: ""
             }
@@ -133,21 +128,24 @@
             steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps)
         },
         methods: {
+            generateErrorReport: mapActionByName(null, "generateErrorReport"),
             cancelErrorReport() {
                 this.resetData();
                 this.$emit("close")
             },
             sendErrorReport() {
-                // TODO call through to an action that will
-                // combine this form data with data derived
-                // from the state, and POST to the backend
-                console.log(this.description, this.reproduce, this.currentSection, this.email)
+                this.generateErrorReport({
+                    section: this.currentSection,
+                    description: this.description,
+                    stepsToReproduce: this.stepsToReproduce,
+                    email: this.email
+                })
                 this.resetData();
                 this.$emit("close")
             },
             resetData() {
                 this.description = "";
-                this.reproduce = "";
+                this.stepsToReproduce = "";
                 this.section = "";
                 this.email = "";
             }

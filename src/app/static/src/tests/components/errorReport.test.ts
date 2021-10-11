@@ -10,6 +10,8 @@ import {expectTranslated} from "../testHelpers";
 
 describe("Error report component", () => {
 
+    const generateErrorReport = jest.fn();
+
     const createStore = (stepperState: Partial<StepperState> = {},
                          projectsState: Partial<ProjectsState> = {},
                          isGuest = false) => {
@@ -25,6 +27,9 @@ describe("Error report component", () => {
                     state: mockProjectsState(projectsState)
                 }
             },
+            actions: {
+                generateErrorReport
+            },
             getters: {
                 isGuest: () => isGuest
             }
@@ -32,6 +37,10 @@ describe("Error report component", () => {
         registerTranslations(store);
         return store;
     };
+
+    afterEach(() => {
+        jest.resetAllMocks();
+    });
 
     it("modal is open when prop is true", () => {
         const wrapper = shallowMount(ErrorReport, {
@@ -357,14 +366,14 @@ describe("Error report component", () => {
         wrapper.find("#email").setValue("test@email.com");
 
         expect(wrapper.vm.$data.description).toBe("something");
-        expect(wrapper.vm.$data.reproduce).toBe("reproduce steps");
+        expect(wrapper.vm.$data.stepsToReproduce).toBe("reproduce steps");
         expect(wrapper.vm.$data.section).toBe("downloadResults");
         expect(wrapper.vm.$data.email).toBe("test@email.com");
 
         wrapper.find(".btn-white").trigger("click");
 
         expect(wrapper.vm.$data.description).toBe("");
-        expect(wrapper.vm.$data.reproduce).toBe("");
+        expect(wrapper.vm.$data.stepsToReproduce).toBe("");
         expect(wrapper.vm.$data.section).toBe("");
         expect(wrapper.vm.$data.email).toBe("");
     });
@@ -383,16 +392,53 @@ describe("Error report component", () => {
         wrapper.find("#email").setValue("test@email.com");
 
         expect(wrapper.vm.$data.description).toBe("something");
-        expect(wrapper.vm.$data.reproduce).toBe("reproduce steps");
+        expect(wrapper.vm.$data.stepsToReproduce).toBe("reproduce steps");
         expect(wrapper.vm.$data.section).toBe("downloadResults");
         expect(wrapper.vm.$data.email).toBe("test@email.com");
 
         wrapper.find(".btn-red").trigger("click");
 
         expect(wrapper.vm.$data.description).toBe("");
-        expect(wrapper.vm.$data.reproduce).toBe("");
+        expect(wrapper.vm.$data.stepsToReproduce).toBe("");
         expect(wrapper.vm.$data.section).toBe("");
         expect(wrapper.vm.$data.email).toBe("");
+    });
+
+    it("invokes generateErrorReport action on send", () => {
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore()
+        });
+
+        wrapper.find("#description").setValue("something");
+        wrapper.find("#reproduce").setValue("reproduce steps");
+        wrapper.find("#section").setValue("downloadResults");
+
+        expect(wrapper.find(".btn-red").text()).toBe("Send");
+        wrapper.find(".btn-red").trigger("click");
+
+        expect(generateErrorReport.mock.calls[0][1]).toEqual({
+            description: "something",
+            stepsToReproduce: "reproduce steps",
+            section: "downloadResults",
+            email: ""
+        });
+    });
+
+    it("does not invoke generateErrorReport action on cancel", () => {
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore()
+        });
+        
+        expect(wrapper.find(".btn-white").text()).toBe("Cancel");
+        wrapper.find(".btn-white").trigger("click");
+
+        expect(generateErrorReport.mock.calls.length).toBe(0);
     });
 
 });
