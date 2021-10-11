@@ -5,11 +5,12 @@ import {RootMutation} from "./mutations";
 import {LanguageActions} from "../language/language";
 import {changeLanguage} from "../language/actions";
 import i18next from "i18next";
+import {api} from "../../apiService";
 
 export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
     generateErrorReport: (store: ActionContext<RootState, RootState>,
-                          payload: ErrorReportManualDetails) => ErrorReport;
+                          payload: ErrorReportManualDetails) => void;
 }
 
 export interface ErrorReportManualDetails {
@@ -92,9 +93,9 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         commit({type: RootMutation.SetUpdatingLanguage, payload: false});
     },
 
-    generateErrorReport({state, getters}, payload) {
-        // TODO: instead of returning this object, POST it to the server
-        return {
+    generateErrorReport(context, payload) {
+        const {state, getters, commit} = context
+        const data = {
             email: payload.email || state.currentUser,
             country: state.baseline.country,
             project: state.projects.currentProject?.name,
@@ -106,5 +107,14 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             stepsToReproduce: payload.stepsToReproduce,
             errors: getters.errors
         }
+        commit({type: RootMutation.SendingErrorReport, payload: true})
+
+        api<RootMutation, RootMutation>(context)
+            .ignoreSuccess()
+            .withError(RootMutation.ErrorReportError)
+            .postAndReturn("/error-report", data)
+            .then(() => {
+                commit({type: RootMutation.SendingErrorReport, payload: false})
+            })
     }
 }

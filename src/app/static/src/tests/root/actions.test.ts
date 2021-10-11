@@ -377,4 +377,36 @@ describe("root actions", () => {
         expect(commit.mock.calls.length).toBe(0);
         expect(dispatch.mock.calls.length).toBe(0);
     });
+
+    it(`sends error report to teams`, () => {
+        const commit = jest.fn();
+        const state = mockRootState({
+            baseline: mockBaselineState({
+                country: "Malawi"
+            }),
+            modelRun: mockModelRunState({
+                modelRunId: "1234"
+            }),
+            projects: mockProjectsState({
+                currentProject: {name: "p1", id: 1, versions: []}
+            })
+        });
+
+        const err = mockError("err")
+        const getters = {
+            errors: [err]
+        }
+
+        const payload: ErrorReportManualDetails = {
+            email: "test@test.com",
+            stepsToReproduce: "repro",
+            section: "reviewInputs",
+            description: "desc"
+        }
+
+        const result = actions.generateErrorReport({commit, state, getters} as any, payload);
+
+        //expect(commit.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        //expect(commit.mock.calls[0][1]).toBe("surveyAndProgram/deleteAll");
+    })
 });
