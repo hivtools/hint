@@ -46,6 +46,7 @@ import {RootState} from "../../app/root";
 import ModelCalibrate from "../../app/components/modelCalibrate/ModelCalibrate.vue";
 import {getters as rootGetters} from "../../app/store/root/getters";
 import {expectTranslated} from "../testHelpers";
+import StepperNavigation from "../../app/components/StepperNavigation.vue";
 
 const localVue = createLocalVue();
 
@@ -669,7 +670,7 @@ describe("Stepper component", () => {
         expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
 
-    it("does not show ADR keintegrationy on step 4", () => {
+    it("does not show ADR integration on step 4", () => {
         const wrapper = getStepperOnStep(4);
         expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
@@ -725,6 +726,15 @@ describe("Stepper component", () => {
         expect(steps.at(6).props().complete).toBe(true);
 
         expect((wrapper.vm as any).navigationProps.nextDisabled).toBe(true);
+    });
+
+    it("displays Back/Continue twice only on Step 3", () => {
+        expect(getStepperOnStep(1).findAll(StepperNavigation).length).toBe(1);
+        expect(getStepperOnStep(2).findAll(StepperNavigation).length).toBe(1);
+        expect(getStepperOnStep(3).findAll(StepperNavigation).length).toBe(2);
+        expect(getStepperOnStep(4).findAll(StepperNavigation).length).toBe(1);
+        expect(getStepperOnStep(5).findAll(StepperNavigation).length).toBe(1);
+        expect(getStepperOnStep(6).findAll(StepperNavigation).length).toBe(1);
     });
 
 });
