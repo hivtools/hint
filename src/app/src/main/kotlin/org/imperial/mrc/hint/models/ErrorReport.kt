@@ -5,7 +5,7 @@ import java.time.Instant
 data class ErrorReport(
         val email: String,
         val country: String? = "",
-        val projectName: String,
+        val projectName: String? = "",
         val section: String,
         val jobId: String? = "",
         val errors: List<Errors>,
