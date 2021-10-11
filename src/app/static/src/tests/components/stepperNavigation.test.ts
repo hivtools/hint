@@ -41,9 +41,13 @@ describe("Stepper navigation component", () => {
 
         const backLink = wrapper.find("#back");
         expect(backLink.classes("disabled")).toBe(true);
+        backLink.trigger("click");
+        expect(back.mock.calls.length).toBe(0);
 
         const continueLink = wrapper.find("#continue");
         expect(continueLink.classes("disabled")).toBe(true);
+        continueLink.trigger("click");
+        expect(next.mock.calls.length).toBe(0);
     });
 
 });

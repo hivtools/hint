@@ -1,15 +1,16 @@
 <template>
     <div class="row mt-2">
         <div class="col">
-            <a href="#" id="back"
-               v-on:click="back"
+            <a id="back" href="#"
                class="text-uppercase font-weight-bold pr-1"
                :class="{'disabled': backDisabled}"
-               v-translate="'back'"></a>/
-            <a href="#" id="continue"
-               v-on:click="next"
+               v-on="backDisabled ? {} : { click: back }"
+               v-translate="'back'"></a>
+            /
+            <a id="continue" href="#"
                class="text-uppercase font-weight-bold"
                :class="{'disabled': nextDisabled}"
+               v-on="nextDisabled ? {} : { click: next }"
                v-translate="'continue'"></a>
         </div>
     </div>
