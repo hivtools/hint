@@ -1,3 +1,7 @@
+# hint 1.55.1
+
+* Render filter labels verbatim in output tables, do not attempt to translate
+
 # hint 1.55.0
 
 * Refresh output metadata and options when language changes
