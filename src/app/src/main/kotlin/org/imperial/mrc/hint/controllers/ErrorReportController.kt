@@ -6,13 +6,18 @@ import org.imperial.mrc.hint.models.EmptySuccessResponse
 import org.imperial.mrc.hint.models.ErrorReport
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.springframework.http.*
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.postForEntity
+
 
 @RestController
 class ErrorReportController(
         private val objectMapper: ObjectMapper,
+        private val restTemplate: RestTemplate,
         private val appProperties: AppProperties)
 {
     @PostMapping("/error-report")
@@ -38,8 +43,6 @@ class ErrorReportController(
 
         val httpEntity = HttpEntity(errorReportJson, headers)
         val url = appProperties.issueReportUrl
-
-        val restTemplate = RestTemplate()
 
         return restTemplate.postForEntity(url, httpEntity)
     }
