@@ -71,7 +71,6 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
 
             if (response) {
                 const data = freezer.deepFreeze(response.data);
-                // TODO commit warnings
                 commit({type: `modelRun/${ModelRunMutation.RunResultFetched}`, payload: data}, {root: true});
 
                 if (data && data.plottingMetadata && data.plottingMetadata.barchart.defaults) {

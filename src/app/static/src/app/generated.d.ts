@@ -261,7 +261,7 @@ export interface CalibrateResultResponse {
   };
   warnings: {
     text: string;
-    location: "model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results";
+    locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
   }[];
   [k: string]: any;
 }
@@ -530,7 +530,7 @@ export interface ModelOptionsValidate {
   valid: true;
   warnings: {
     text: string;
-    location: "model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results";
+    locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
   }[];
 }
 export interface ModelOptionsValidateRequest {
@@ -593,7 +593,7 @@ export interface ModelResultResponse {
   complete: true;
   warnings: {
     text: string;
-    location: "model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results";
+    locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
   }[];
   [k: string]: any;
 }
@@ -1157,5 +1157,5 @@ export interface VersionInfo {
 }
 export interface Warning {
   text: string;
-  location: "model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results";
+  locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
 }
