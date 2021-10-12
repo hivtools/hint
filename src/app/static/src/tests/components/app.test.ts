@@ -45,8 +45,9 @@ console.error = jest.fn();
 import {app} from "../../app"
 import {RootMutation} from "../../app/store/root/mutations";
 import {ModelRunMutation} from "../../app/store/modelRun/mutations";
-import ModelCalibrate from "../../app/components/modelCalibrate/ModelCalibrate.vue";
 import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
+import {LanguageMutation} from "../../app/store/language/mutations";
+import {Language} from "../../app/store/translations/locales";
 
 describe("App", () => {
 
@@ -106,6 +107,16 @@ describe("App", () => {
         store.commit(prefixNamespace("baseline", BaselineMutation.PopulationUploadError), {payload: "test"});
 
         expect(spy).toHaveBeenCalled();
+    });
+
+    it("updates language in local storage on every mutation", () => {
+        const store = getStore();
+        const spy = jest.spyOn(localStorageManager, "saveState");
+        store.commit( LanguageMutation.ChangeLanguage, {payload: Language.pt});
+
+        expect(spy).toHaveBeenCalled();
+        expect(spy.mock.calls[0][0]?.language).toBe("pt");
+        expect(localStorageManager.getState()?.language).toEqual("pt")
     });
 
     it("resets inputs if baseline update mutation is called and state is ready", () => {
