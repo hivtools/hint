@@ -191,16 +191,14 @@ class ADRController(private val encryption: Encryption,
         val releasesResponse = adr.get("/dataset_version_list?dataset_id=${id}")
         if (releasesResponse.statusCode == HttpStatus.OK) {
             val releases = objectMapper.readTree(releasesResponse.body!!)["data"]
-            val duplicateRelease = releases.find { it["name"].asText() == name }
+            val duplicateRelease = releases.find { it["name"]?.asText() == name }
             if (duplicateRelease != null) {
                 val duplicateReleaseId = duplicateRelease["id"].asText()
-                // if (duplicateReleaseId != null){
-                    // if a release of the same name exists on ADR, requests that it is deleted
-                    val deleteResponse = adr.post("/version_delete", listOf("version_id" to duplicateReleaseId));
-                    if (deleteResponse.statusCode != HttpStatus.OK){
-                        error = deleteResponse
-                    }
-                // }
+                // if a release of the same name exists on ADR, requests that it is deleted
+                val deleteResponse = adr.post("/version_delete", listOf("version_id" to duplicateReleaseId));
+                if (deleteResponse.statusCode != HttpStatus.OK){
+                    error = deleteResponse
+                }
             }
         } else {
             error = releasesResponse
