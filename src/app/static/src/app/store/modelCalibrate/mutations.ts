@@ -9,7 +9,6 @@ import {
     Error,
     VersionInfo
 } from "../../generated";
-import {ModelRunMutation} from "../modelRun/mutations";
 
 export enum ModelCalibrateMutation {
     FetchingModelCalibrateOptions = "FetchingModelCalibrateOptions",

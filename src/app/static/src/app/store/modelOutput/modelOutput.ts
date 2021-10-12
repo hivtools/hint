@@ -1,5 +1,5 @@
 import {Module} from "vuex";
-import {RootState} from "../../root";
+import {RootState, WarningsState} from "../../root";
 import {BarchartIndicator, DisplayFilter, Filter} from "../../types";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {mutations} from "./mutations";
@@ -8,7 +8,7 @@ import {rootOptionChildren} from "../../utils";
 
 const namespaced = true;
 
-export interface ModelOutputState {
+export interface ModelOutputState extends WarningsState {
     selectedTab: string
 }
 
@@ -66,7 +66,8 @@ const outputPlotFilters = (rootState: RootState) => {
 
 export const initialModelOutputState = (): ModelOutputState => {
     return {
-        selectedTab: ""
+        selectedTab: "",
+        warnings: []
     }
 };
 

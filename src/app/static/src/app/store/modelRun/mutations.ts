@@ -41,6 +41,7 @@ export const mutations: MutationTree<ModelRunState> = {
 
     [ModelRunMutation.RunResultFetched](state: ModelRunState, action: PayloadWithType<ModelResultResponse>) {
         state.result = action.payload;
+        state.warnings = action.payload.warnings
     },
 
     [ModelRunMutation.RunResultError](state: ModelRunState, action: PayloadWithType<Error>) {
