@@ -10,7 +10,7 @@ import org.imperial.mrc.hint.asResponseEntity
 import org.springframework.http.ResponseEntity
 import java.io.File
 
-abstract class FuelClient(protected val baseUrl: String? = "")
+abstract class FuelClient(protected val baseUrl: String? = null)
 {
 
     companion object
