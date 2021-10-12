@@ -1,24 +1,19 @@
 package org.imperial.mrc.hint.unit.controllers
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.clients.FlowClient
 import org.imperial.mrc.hint.controllers.ErrorReportController
 import org.imperial.mrc.hint.models.ErrorReport
 import org.imperial.mrc.hint.models.Errors
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyString
 import org.springframework.http.*
-import org.springframework.web.client.RestTemplate
 import java.time.Instant
 
 class ErrorReportControllerTests
 {
-    private val objectMapper = ObjectMapper()
-
     private val data = ErrorReport(
             "test.user@example.com",
             "Kenya",
@@ -35,43 +30,37 @@ class ErrorReportControllerTests
             Instant.now()
     )
 
+    private val url = "https://axure.com"
+
     @Test
     fun `can post error report to teams`()
     {
-        val url = "https://azure.com"
-
-        val mockAppProperties = mock<AppProperties> {
-            on { issueReportUrl } doReturn url
-        }
-
-        val mockRestTemplate = mock<RestTemplate> {
-            on { postForEntity<String>(anyString(), any(), any()) } doReturn ResponseEntity.ok().build()
-        }
-
-        val sut = ErrorReportController(objectMapper, mockRestTemplate, mockAppProperties)
-
-        val result = sut.postErrorReport(data)
-
+        val result = testFlowClient(ResponseEntity.ok("whatever"))
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body).isEqualTo("whatever")
     }
 
     @Test
     fun `can return error response when request is unsuccessful `()
     {
-        val url = "https://azure.com"
+        val result = testFlowClient(ResponseEntity.badRequest().build())
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+    }
 
-        val mockAppProperties = mock<AppProperties> {
+    private fun testFlowClient(response: ResponseEntity<String>): ResponseEntity<String>
+    {
+        val mockAppProperties = mock<AppProperties>
+        {
             on { issueReportUrl } doReturn url
         }
 
-        val mockRestTemplate = mock<RestTemplate> {
-            on { postForEntity<String>(anyString(), any(), any()) } doReturn ResponseEntity.badRequest().build()
+        val mockFlowClient = mock<FlowClient>
+        {
+            on { notifyTeams(url, data) } doReturn response
         }
 
-        val sut = ErrorReportController(objectMapper, mockRestTemplate, mockAppProperties)
+        val sut = ErrorReportController(mockAppProperties, mockFlowClient)
 
-        val result = sut.postErrorReport(data)
-
-        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        return sut.postErrorReport(data)
     }
 }
