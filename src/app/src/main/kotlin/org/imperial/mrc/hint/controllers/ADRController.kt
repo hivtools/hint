@@ -183,6 +183,7 @@ class ADRController(private val encryption: Encryption,
 
 
     @PostMapping("/datasets/{id}/releases")
+    @Suppress("ReturnCount")
     fun createRelease(@PathVariable id: String, @RequestParam name: String): ResponseEntity<String>
     {
         val adr = adrClientBuilder.build()
