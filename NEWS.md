@@ -1,6 +1,10 @@
-# hint 1.56.0
+# hint 1.57.0
 
 * Endpoint for posting error report to Teams
+
+# hint 1.56.0
+
+* Include Back/Continue links at bottom of model options page
 
 # hint 1.55.0
 
