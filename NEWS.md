@@ -1,10 +1,6 @@
 # hint 1.53.0
 
-* Upload release to ADR: front end UI and logic
-
-# hint 1.52.1
-
-* Upload release to ADR: upload to core output resources
+* Upload release to ADR epic
 
 # hint 1.52.0
 
