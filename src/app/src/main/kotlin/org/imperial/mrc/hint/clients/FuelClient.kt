@@ -10,7 +10,7 @@ import org.imperial.mrc.hint.asResponseEntity
 import org.springframework.http.ResponseEntity
 import java.io.File
 
-abstract class FuelClient(protected val baseUrl: String? = "")
+abstract class FuelClient(protected val baseUrl: String? = null)
 {
 
     companion object
@@ -42,14 +42,32 @@ abstract class FuelClient(protected val baseUrl: String? = "")
 
     protected fun postJson(url: String, json: String): ResponseEntity<String>
     {
-        return "$baseUrl/$url".httpPost()
-                .addTimeouts()
-                .header(standardHeaders())
-                .header("Content-Type" to "application/json")
-                .body(json)
-                .response()
-                .second
-                .asResponseEntity()
+        when
+        {
+            baseUrl.isNullOrEmpty() ->
+            {
+                return url.httpPost()
+                        .addTimeouts()
+                        .header(standardHeaders())
+                        .header("Content-Type" to "application/json")
+                        .body(json)
+                        .response()
+                        .second
+                        .asResponseEntity()
+            }
+            else ->
+            {
+                return "$baseUrl/$url".httpPost()
+                        .addTimeouts()
+                        .header(standardHeaders())
+                        .header("Content-Type" to "application/json")
+                        .body(json)
+                        .response()
+                        .second
+                        .asResponseEntity()
+            }
+        }
+
     }
 
     protected fun postEmpty(url: String): ResponseEntity<String>
