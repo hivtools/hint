@@ -12,7 +12,7 @@ interface Flow
 }
 
 @Component
-class FlowClient(val objectMapper: ObjectMapper) : FuelClient(""), Flow
+class FlowClient(val objectMapper: ObjectMapper) : FuelClient(), Flow
 {
 
     override fun standardHeaders(): Map<String, Any>
