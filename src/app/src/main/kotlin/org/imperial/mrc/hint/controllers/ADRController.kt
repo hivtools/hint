@@ -82,7 +82,7 @@ class ADRController(private val encryption: Encryption,
     fun getDatasets(@RequestParam showInaccessible: Boolean = false): ResponseEntity<String>
     {
         val adr = adrClientBuilder.build()
-        var url = "package_search?q=type:${appProperties.adrDatasetSchema}&rows=$MAX_DATASETS"
+        var url = "package_search?q=type:${appProperties.adrDatasetSchema}&rows=$MAX_DATASETS&include_private=true"
         url = if (showInaccessible)
         {
             // this flag is used for testing but will never

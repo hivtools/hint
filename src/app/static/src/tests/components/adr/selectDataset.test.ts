@@ -28,7 +28,6 @@ import {expectTranslated} from "../../testHelpers";
 import {ADRState} from "../../../app/store/adr/adr";
 import {getters as rootGetters} from "../../../app/store/root/getters";
 import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
-import {actions as projectsActions} from "../../../app/store/projects/actions"
 import Mock = jest.Mock;
 
 describe("select dataset", () => {
@@ -255,7 +254,9 @@ describe("select dataset", () => {
                 projects: {
                     namespaced: true,
                     state: mockProjectsState({currentProject: {id: 1, name: "v1", versions: []}, currentVersion}),
-                    actions: projectsActions
+                    actions: {
+                        newVersion: jest.fn()
+                    }
                 },
                 surveyAndProgram: {
                     namespaced: true,

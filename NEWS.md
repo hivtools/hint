@@ -1,6 +1,22 @@
-# hint 1.53.0
+# hint 1.57.0
 
 * Upload release to ADR epic
+
+# hint 1.56.0
+
+* Include Back/Continue links at bottom of model options page
+
+# hint 1.55.0
+
+* Refresh output metadata and options when language changes
+
+# hint 1.54.0
+
+* Switch Naomi to pull and push to ADR 2022 packager
+
+# hint 1.53.0
+
+* Persist current language in browser storage
 
 # hint 1.52.0
 

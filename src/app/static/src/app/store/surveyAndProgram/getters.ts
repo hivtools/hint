@@ -1,8 +1,10 @@
+import i18next from "i18next";
 import {SurveyAndProgramState, DataType} from "./surveyAndProgram";
 import {RootState} from "../../root";
 import {DisplayFilter} from "../../types";
 import {FilterOption} from "../../generated";
 import {rootOptionChildren} from "../../utils";
+import {Language} from "../translations/locales";
 
 function response(state: SurveyAndProgramState) {
     switch (state.selectedDataType) {
@@ -17,10 +19,10 @@ function response(state: SurveyAndProgramState) {
     }
 }
 
-const sexFilterOptions = [
-    {id: "both", label: "both"},
-    {id: "female", label: "female"},
-    {id: "male", label: "male"}
+const sexFilterOptions = (lng: Language) => [
+    {id: "both", label: i18next.t("both", {lng})},
+    {id: "female", label: i18next.t("female", {lng})},
+    {id: "male", label: i18next.t("male", {lng})}
 ];
 
 export const getters = {
@@ -79,8 +81,9 @@ export const getters = {
             allowMultiple: false
         });
 
+        const lng = rootState.language;
         const sexFilterOptionsForType =
-            state.selectedDataType == DataType.Survey || state.selectedDataType == DataType.Program ? sexFilterOptions : [];
+            state.selectedDataType == DataType.Survey || state.selectedDataType == DataType.Program ? sexFilterOptions(lng) : [];
 
         result.push({
             id: "sex",
