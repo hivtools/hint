@@ -66,6 +66,7 @@
         filters: Filter[],
         countryAreaFilterOption: NestedFilterOption,
         areaFilterId: string
+        translateLabels: boolean
     }
 
     interface DisplayRow {
@@ -115,6 +116,10 @@
         },
         selections: {
             type: Object
+        },
+        translateLabels: {
+            type: Boolean,
+            default: true
         }
     }
 
@@ -203,10 +208,10 @@
                         }
                     }
                     const {value, upper, lower} = current
-                    const { indicator, format, scale, accuracy } = current.indicatorMeta
+                    const {indicator, format, scale, accuracy} = current.indicatorMeta
                     displayRows[key][indicator] = formatOutput(value, format, scale, accuracy);
-                    displayRows[key][`${indicator}_lower`] = lower ? formatOutput(lower, format, scale, accuracy): '';
-                    displayRows[key][`${indicator}_upper`] = upper ? formatOutput(upper, format, scale, accuracy): '';
+                    displayRows[key][`${indicator}_lower`] = lower ? formatOutput(lower, format, scale, accuracy) : '';
+                    displayRows[key][`${indicator}_upper`] = upper ? formatOutput(upper, format, scale, accuracy) : '';
                 });
                 return Object.values(displayRows);
             },
@@ -219,7 +224,9 @@
                 this.filtersToDisplay.map(value => {
                     const field: Dict<any> = {};
                     field.key = value.id
-                    field.label = i18next.t(value.label.toLowerCase(), {lng: this.currentLanguage})
+                    field.label = this.translateLabels ?
+                        i18next.t(value.label.toLowerCase(), {lng: this.currentLanguage}) :
+                        value.label
                     fields.push(field)
                 })
                 this.indicators.map((value, index) => {
