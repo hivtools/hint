@@ -791,10 +791,10 @@ class ADRControllerTests : HintrControllerTests()
                     .body(objectMapper.writeValueAsString(data))
             on { post("/dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity
                     .ok()
-                    .body("whatever")
+                    .body("created release")
             on { post("/version_delete", listOf("version_id" to "other-id")) } doReturn ResponseEntity
                     .ok()
-                    .body("whatever")
+                    .body("deleted release")
         }
         val mockBuilder = mock<ADRClientBuilder> {
             on { build() } doReturn mockClient
@@ -810,7 +810,7 @@ class ADRControllerTests : HintrControllerTests()
                 mockSession,
                 mock())
         val result = sut.createRelease("dataset-1", "release-1")
-        assertThat(result.body!!).isEqualTo("whatever")
+        assertThat(result.body!!).isEqualTo("created release")
     }
 
     @Test
