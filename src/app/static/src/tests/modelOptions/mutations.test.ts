@@ -101,7 +101,7 @@ describe("Model run options mutations", () => {
                         {
                             label: "g1",
                             controls: [
-                                {...mockControl, value: 10},
+                                {...mockControl, name: "n1", value: 20},
                                 {...mockControl, name: "new_control"}
                             ]
                         }, {
@@ -172,11 +172,11 @@ describe("Model run options mutations", () => {
                 controlGroups: [
                     {
                         label: "g1",
-                        controls: [{...mockControl, value: 10}]
+                        controls: [{...mockControl, name: "n1", value: 20}]
                     },
                     {
                         label: "g2",
-                        controls: [{...mockControl, value: 10}]
+                        controls: [{...mockControl, name: "n2", value: 10}]
                     }
                 ]
             }
@@ -191,7 +191,7 @@ describe("Model run options mutations", () => {
                     {
                         label: "g1",
                         controls: [
-                            {...mockControl},
+                            {...mockControl, name: "n1", value: 2},
                             {...mockControl, name: "new_control"}
                         ]
                     },

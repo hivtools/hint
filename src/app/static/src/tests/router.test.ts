@@ -21,10 +21,15 @@ const actions = {
     getADRSchemas: jest.fn()
 }
 
+const genericChartActions = {
+    getGenericChartMetadata: jest.fn()
+}
+
 storeOptions.modules!!.baseline!!.actions = baselineActions;
 storeOptions.modules!!.surveyAndProgram!!.actions = surveyAndProgramActions;
 storeOptions.modules!!.modelRun!!.actions = modelRunActions;
 storeOptions.modules!!.projects!!.actions = projectActions;
+storeOptions.modules!!.genericChart!!.actions = genericChartActions;
 storeOptions.actions = actions
 
 console.error = jest.fn();
