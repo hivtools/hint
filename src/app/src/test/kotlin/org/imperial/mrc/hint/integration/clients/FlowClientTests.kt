@@ -30,9 +30,11 @@ class FlowClientTests
                 Instant.now()
         )
 
+        val url = "http://example.com"
+
         val sut = FlowClient(ObjectMapper())
 
-        val result = sut.notifyTeams("", data)
+        val result = sut.notifyTeams(url, data)
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }

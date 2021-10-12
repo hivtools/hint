@@ -30,7 +30,7 @@ class ErrorReportControllerTests
             Instant.now()
     )
 
-    private val url = "https://axure.com"
+    private val url = "https://azure.com"
 
     @Test
     fun `can post error report to teams`()
