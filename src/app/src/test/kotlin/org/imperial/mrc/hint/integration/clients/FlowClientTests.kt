@@ -39,7 +39,7 @@ class FlowClientTests
 
         assertThat(result.statusCodeValue).isEqualTo(500)
         val errors = ObjectMapper().readValue<JsonNode>(result.body!!)["errors"]
-        assertThat(errors.isArray).isTrue()
+        assertThat(errors.isArray).isTrue
         assertThat(errors.count()).isEqualTo(1)
         assertThat(errors[0]["error"].textValue()).isEqualTo("OTHER_ERROR")
         assertThat(errors[0]["detail"].textValue()).isEqualTo("Could not parse response.")
