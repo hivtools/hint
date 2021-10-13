@@ -11,6 +11,7 @@ import {
 import {Language} from "../../app/store/translations/locales";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
+import {currentHintVersion} from "../../app/hintVersion";
 
 describe("root actions", () => {
 
@@ -288,7 +289,15 @@ describe("root actions", () => {
             }),
             projects: mockProjectsState({
                 currentProject: {name: "p1", id: 1, versions: []}
-            })
+            }),
+            hintrVersion: {
+                hintrVersion: {
+                    naomi: "v1",
+                    hintr: "v2",
+                    rrq: "v3",
+                    traduire: "v4"
+                }
+            }
         });
 
         const err = mockError("err")
@@ -314,6 +323,13 @@ describe("root actions", () => {
         expect(result.stepsToReproduce).toBe("repro");
         expect(result.project).toBe("p1");
         expect(new Date(result.timeStamp).getDate()).toBe(new Date().getDate());
+        expect(result.versions).toStrictEqual({
+            naomi: "v1",
+            hintr: "v2",
+            rrq: "v3",
+            traduire: "v4",
+            hint: currentHintVersion
+        });
     });
 
     it("error report can handle nulls", () => {

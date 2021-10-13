@@ -5,6 +5,8 @@ import {RootMutation} from "./mutations";
 import {LanguageActions} from "../language/language";
 import {changeLanguage} from "../language/actions";
 import i18next from "i18next";
+import {VersionInfo} from "../../generated";
+import {currentHintVersion} from "../../hintVersion";
 
 export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
@@ -25,6 +27,7 @@ export interface ErrorReport extends ErrorReportManualDetails {
     browserAgent: string,
     timeStamp: string,
     jobId: string,
+    versions: VersionInfo,
     errors: Error[]
 }
 
@@ -104,6 +107,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             description: payload.description,
             section: payload.section,
             stepsToReproduce: payload.stepsToReproduce,
+            versions: {hint: currentHintVersion, ...state.hintrVersion.hintrVersion as VersionInfo},
             errors: getters.errors
         }
     }
