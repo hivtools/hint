@@ -40,13 +40,15 @@ abstract class FuelClient(protected val baseUrl: String? = null)
                 .asResponseEntity()
     }
 
-    protected fun postJson(urlPath: String, json: String): ResponseEntity<String>
+    fun postJson(urlPath: String, json: String): ResponseEntity<String>
     {
         val url = when
         {
             baseUrl.isNullOrBlank() -> urlPath
             else -> "$baseUrl/$urlPath"
         }
+
+        println(url)
 
         return url.httpPost()
                 .addTimeouts()
