@@ -40,7 +40,7 @@ abstract class FuelClient(protected val baseUrl: String? = null)
                 .asResponseEntity()
     }
 
-    protected fun postJson(url: String, json: String): ResponseEntity<String>
+    fun postJson(url: String, json: String): ResponseEntity<String>
     {
         val urlPath = when
         {
