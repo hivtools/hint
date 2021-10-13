@@ -1,5 +1,5 @@
 import {Module} from "vuex";
-import {RootState, WarningsState} from "../../root";
+import {RootState} from "../../root";
 import {BarchartIndicator, DisplayFilter, Filter} from "../../types";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {mutations} from "./mutations";
