@@ -162,7 +162,7 @@ class HintrApiClientTests
     fun `can initiate FuelClient with param for postJson`()
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val data = """{'test':'data'}""".trim()
+        val data = """{'test':'data'}""".trimIndent()
         val result = sut.postJson("/example", data)
         assertThat(result.statusCodeValue).isEqualTo(404)
     }
