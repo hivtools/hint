@@ -1,6 +1,8 @@
 package org.imperial.mrc.hint.integration.clients
 
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.clients.FlowClient
 import org.imperial.mrc.hint.models.ErrorReport
@@ -36,5 +38,9 @@ class FlowClientTests
         val result = sut.notifyTeams(url, data)
 
         assertThat(result.statusCodeValue).isEqualTo(200)
+
+        val response = ObjectMapper().readValue<JsonNode>(result.body!!)["data"]
+        assertThat(response["statusCode"].asInt()).isEqualTo(200)
+        assertThat(response["description"].textValue()).isEqualTo("OK")
     }
 }
