@@ -157,4 +157,13 @@ class HintrApiClientTests
         val result = sut.cancelModelRun("1234")
         assertThat(result.statusCodeValue).isEqualTo(400)
     }
+
+    @Test
+    fun `can initiate FuelClient with param for postJson`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val data = """{'test':'data'}""".trimIndent()
+        val result = sut.postJson("/example", data)
+        assertThat(result.statusCodeValue).isEqualTo(404)
+    }
 }
