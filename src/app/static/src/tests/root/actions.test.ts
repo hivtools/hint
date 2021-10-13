@@ -1,13 +1,13 @@
-import {actions, ErrorReportManualDetails} from "../../app/store/root/actions";
+import {actions, ErrorReport, ErrorReportManualDetails} from "../../app/store/root/actions";
 import {
     mockAxios,
     mockBaselineState,
-    mockError,
+    mockError, mockFailure,
     mockModelCalibrateState,
     mockModelRunState,
     mockProjectsState,
     mockRootState,
-    mockStepperState
+    mockStepperState, mockSuccess
 } from "../mocks";
 import {Language} from "../../app/store/translations/locales";
 import {LanguageMutation} from "../../app/store/language/mutations";
@@ -206,6 +206,127 @@ describe("root actions", () => {
         });
     };
 
+
+    it("posts error report to teams", async () => {
+
+        const url = "error-report"
+
+        mockAxios.onPost(url)
+            .reply(200, mockSuccess("Ok"));
+
+        const rootState = mockRootState({
+            baseline: mockBaselineState({
+                country: "Malawi"
+            }),
+            modelRun: mockModelRunState({
+                modelRunId: "1234"
+            }),
+            projects: mockProjectsState({
+                currentProject: {name: "p1", id: 1, versions: []}
+            })
+        });
+
+        const err = mockError("err")
+        const getters = {
+            errors: [err]
+        }
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const payload: ErrorReportManualDetails = {
+            email: "test@test.com",
+            stepsToReproduce: "repro",
+            section: "reviewInputs",
+            description: "desc"
+        }
+
+        await actions.generateErrorReport({commit, rootState, getters, dispatch} as any, payload);
+
+        expect(dispatch.mock.calls[0][0]).toEqual("projects/cloneProject");
+        expect(mockAxios.history.post.length).toEqual(1)
+        expect(mockAxios.history.post[0].url).toEqual(url)
+
+        const expected = {
+            email: "test@test.com",
+            country: "Malawi",
+            project: "p1",
+            browserAgent: "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/16.4.0",
+            timeStamp: new Date(),
+            jobId: "1234",
+            description: "desc",
+            section: "reviewInputs",
+            stepsToReproduce: "repro",
+            errors: getters.errors
+        };
+
+        const data = JSON.parse(mockAxios.history.post[0].data) as ErrorReport
+
+        expect(data.email).toStrictEqual(expected.email)
+        expect(data.country).toStrictEqual(expected.country)
+        expect(data.browserAgent).toStrictEqual(expected.browserAgent)
+        expect(data.jobId).toStrictEqual(expected.jobId)
+        expect(new Date(data.timeStamp).getDate()).toBe(expected.timeStamp.getDate());
+        expect(data.description).toStrictEqual(expected.description)
+        expect(data.section).toStrictEqual(expected.section)
+        expect(data.stepsToReproduce).toStrictEqual(expected.stepsToReproduce)
+        expect(data.errors).toStrictEqual(expected.errors)
+    });
+
+    it("can return error when error report failed", async () => {
+        const url = "error-report"
+
+        mockAxios.onPost(url)
+            .reply(500, mockFailure("TestError"));
+
+        const rootState = mockRootState();
+
+        const commit = jest.fn();
+
+        const dispatch = jest.fn();
+
+        const getters = {
+            errors: []
+        }
+
+        const payload: ErrorReportManualDetails = {
+            email: "",
+            stepsToReproduce: "",
+            section: "",
+            description: ""
+        }
+
+        await actions.generateErrorReport({commit, rootState, getters, dispatch} as any, payload);
+
+        const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
+        expect(commit.mock.calls[0][0]).toEqual({payload: expectedError, type: RootMutation.ErrorReportError});
+        expect(mockAxios.history.post.length).toEqual(1)
+        expect(mockAxios.history.post[0].url).toEqual(url)
+
+        const expected = {
+            email: "some.user@example.com",
+            country: "",
+            browserAgent: "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/16.4.0",
+            timeStamp: new Date(),
+            jobId: "",
+            description: "",
+            section: "",
+            stepsToReproduce: "",
+            errors: []
+        };
+
+        const data = JSON.parse(mockAxios.history.post[0].data) as ErrorReport
+
+        expect(data.email).toStrictEqual(expected.email)
+        expect(data.country).toStrictEqual(expected.country)
+        expect(data.browserAgent).toStrictEqual(expected.browserAgent)
+        expect(data.jobId).toStrictEqual(expected.jobId)
+        expect(new Date(data.timeStamp).getDate()).toBe(expected.timeStamp.getDate());
+        expect(data.description).toStrictEqual(expected.description)
+        expect(data.section).toStrictEqual(expected.section)
+        expect(data.stepsToReproduce).toStrictEqual(expected.stepsToReproduce)
+        expect(data.errors).toStrictEqual(expected.errors)
+    });
+
     it("changeLanguage fetches plotting metadata and calibrate result", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -278,98 +399,6 @@ describe("root actions", () => {
         expectChangeLanguageMutations(commit);
 
         expect(dispatch.mock.calls.length).toBe(0)
-    });
-
-    it("generates and sends error report to teams", () => {
-        const state = mockRootState({
-            baseline: mockBaselineState({
-                country: "Malawi"
-            }),
-            modelRun: mockModelRunState({
-                modelRunId: "1234"
-            }),
-            projects: mockProjectsState({
-                currentProject: {name: "p1", id: 1, versions: []}
-            })
-        });
-
-        const err = mockError("err")
-        const getters = {
-            errors: [err]
-        }
-        const commit = jest.fn();
-
-        const payload: ErrorReportManualDetails = {
-            email: "test@test.com",
-            stepsToReproduce: "repro",
-            section: "reviewInputs",
-            description: "desc"
-        }
-
-        actions.generateErrorReport({commit, state, getters} as any, payload);
-
-        expect(commit.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
-        expect(commit.mock.calls[0][1]).toBe("surveyAndProgram/deleteAll");
-        /*
-        expect(result.email).toBe("test@test.com");
-        expect(result.description).toBe("desc");
-        expect(result.section).toBe("reviewInputs");
-        expect(result.country).toBe("Malawi");
-        expect(result.errors).toEqual([err]);
-        expect(result.browserAgent).toContain("jsdom");
-        expect(result.jobId).toBe("1234");
-        expect(result.stepsToReproduce).toBe("repro");
-        expect(result.project).toBe("p1");
-        expect(new Date(result.timeStamp).getDate()).toBe(new Date().getDate());
-
-         */
-    });
-
-    it("error report can handle nulls", () => {
-        const state = mockRootState();
-        const commit = jest.fn();
-        const getters = {
-            errors: []
-        }
-
-        const payload: ErrorReportManualDetails = {
-            email: "",
-            stepsToReproduce: "",
-            section: "",
-            description: ""
-        }
-
-        const result = actions.generateErrorReport({commit, state, getters} as any, payload);
-        const expected = {
-            country: "",
-            project: undefined,
-            jobId: "",
-            description: "",
-            section: "",
-            stepsToReproduce: "",
-            errors: []
-        }
-       expect(result).toMatchObject(expected);
-    });
-
-    it("error report contains logged in email if not overridden", () => {
-        const state = mockRootState({language: Language.en});
-        const getters = {
-            errors: []
-        }
-        const commit = jest.fn();
-
-        const payload: ErrorReportManualDetails = {
-            email: "",
-            stepsToReproduce: "repro",
-            section: "reviewInputs",
-            description: "desc"
-        }
-
-        actions.generateErrorReport({commit, state, getters} as any, payload);
-        //expect(result.email).toBe("some.user@example.com");
-        expect(commit.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
-        expect(commit.mock.calls[0][1]).toBe("surveyAndProgram/deleteAll");
     });
 
     it("changeLanguage does nothing if new language is the same as current language", async () => {

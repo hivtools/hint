@@ -16,6 +16,7 @@ import {router} from '../../router';
 import {initialModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {initialADRUploadState} from "../adrUpload/adrUpload";
 import {initialDownloadResultsState} from "../downloadResults/downloadResults";
+import {Error} from "../../generated";
 
 export enum RootMutation {
     Reset = "Reset",
@@ -25,7 +26,6 @@ export enum RootMutation {
     SetProject = "SetProject",
     ResetDownload = "ResetDownload",
     SetUpdatingLanguage = "SetUpdatingLanguage",
-    SendingErrorReport = "SendingErrorReport",
     ErrorReportError = "ErrorReportError"
 }
 
@@ -39,7 +39,6 @@ export const mutations: MutationTree<RootState> = {
         const resetState: RootState = {
             version: state.version,
             hintrVersion: state.hintrVersion,
-            sendingErrorReport: false,
             errorReportError: null,
             language: state.language,
             updatingLanguage: false,
@@ -151,11 +150,6 @@ export const mutations: MutationTree<RootState> = {
 
     [RootMutation.SetUpdatingLanguage](state: RootState, action: PayloadWithType<boolean>) {
         state.updatingLanguage = action.payload;
-    },
-
-    [RootMutation.SendingErrorReport](state: RootState, action: PayloadWithType<boolean>) {
-        state.sendingErrorReport = false;
-        state.errorReportError = null;
     },
 
     [RootMutation.ErrorReportError](state: RootState, action: PayloadWithType<Error>) {

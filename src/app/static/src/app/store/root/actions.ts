@@ -6,7 +6,6 @@ import {LanguageActions} from "../language/language";
 import {changeLanguage} from "../language/actions";
 import i18next from "i18next";
 import {api} from "../../apiService";
-import qs from "qs";
 
 export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
@@ -94,28 +93,31 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         commit({type: RootMutation.SetUpdatingLanguage, payload: false});
     },
 
-    generateErrorReport(context, payload) {
-        const {commit, state, getters} = context
+    async generateErrorReport(context, payload) {
+        const {dispatch, rootState, getters} = context
         const data = {
-            email: payload.email || state.currentUser,
-            country: state.baseline.country,
-            project: state.projects.currentProject?.name,
+            email: payload.email || rootState.currentUser,
+            country: rootState.baseline.country,
+            project: rootState.projects.currentProject?.name,
             browserAgent: navigator.userAgent,
             timeStamp: new Date().toISOString(),
-            jobId: state.modelRun.modelRunId,
+            jobId: rootState.modelRun.modelRunId,
             description: payload.description,
             section: payload.section,
             stepsToReproduce: payload.stepsToReproduce,
             errors: getters.errors
         }
-        commit({type: RootMutation.SendingErrorReport, payload: true})
 
-        api<RootMutation, RootMutation>(context)
+        await api<RootMutation, RootMutation>(context)
             .ignoreSuccess()
             .withError(RootMutation.ErrorReportError)
-            .postAndReturn("/error-report", qs.stringify(data))
+            .postAndReturn("error-report", data)
             .then(() => {
-                commit({type: RootMutation.SendingErrorReport, payload: false})
+                if (data.project && rootState.errorReportError === null) {
+                    dispatch("projects/cloneProject",
+                        {emails: ["naomi-support@imperial.ac.uk"],
+                            projectId: rootState.projects.currentProject?.id})
+                }
             })
     }
 }

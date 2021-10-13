@@ -158,4 +158,12 @@ class AppPropertiesTests
         val sut = ConfiguredAppProperties(props)
         assertThat(sut.adrOutputSummarySchema).isEqualTo("test-summary-schema")
     }
+
+    @Test
+    fun `can read issue report  url`()
+    {
+        val props = readPropsFromTempFile("issue_report_url=https://webhook.azure")
+        val sut = ConfiguredAppProperties(props)
+        assertThat(sut.issueReportUrl).isEqualTo("https://webhook.azure")
+    }
 }
