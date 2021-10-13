@@ -250,7 +250,6 @@ describe("root actions", () => {
             email: "test@test.com",
             country: "Malawi",
             project: "p1",
-            browserAgent: "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/16.4.0",
             timeStamp: new Date(),
             jobId: "1234",
             description: "desc",
@@ -263,7 +262,7 @@ describe("root actions", () => {
 
         expect(data.email).toStrictEqual(expected.email)
         expect(data.country).toStrictEqual(expected.country)
-        expect(data.browserAgent).toStrictEqual(expected.browserAgent)
+        expect(data.browserAgent).toContain("Mozilla")
         expect(data.jobId).toStrictEqual(expected.jobId)
         expect(new Date(data.timeStamp).getDate()).toBe(expected.timeStamp.getDate());
         expect(data.description).toStrictEqual(expected.description)
@@ -305,7 +304,6 @@ describe("root actions", () => {
         const expected = {
             email: "some.user@example.com",
             country: "",
-            browserAgent: "Mozilla/5.0 (darwin) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/16.4.0",
             timeStamp: new Date(),
             jobId: "",
             description: "",
@@ -318,8 +316,8 @@ describe("root actions", () => {
 
         expect(data.email).toStrictEqual(expected.email)
         expect(data.country).toStrictEqual(expected.country)
-        expect(data.browserAgent).toStrictEqual(expected.browserAgent)
         expect(data.jobId).toStrictEqual(expected.jobId)
+        expect(data.browserAgent).toContain("Mozilla")
         expect(new Date(data.timeStamp).getDate()).toBe(expected.timeStamp.getDate());
         expect(data.description).toStrictEqual(expected.description)
         expect(data.section).toStrictEqual(expected.section)
