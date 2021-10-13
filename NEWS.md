@@ -2,6 +2,10 @@
 
 * Endpoint for posting error report to Teams
 
+# hint 1.56.1
+
+* Render filter labels verbatim in output tables, do not attempt to translate
+
 # hint 1.56.0
 
 * Include Back/Continue links at bottom of model options page

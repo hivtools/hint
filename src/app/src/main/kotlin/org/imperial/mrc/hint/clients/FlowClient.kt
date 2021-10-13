@@ -2,7 +2,6 @@ package org.imperial.mrc.hint.clients
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.imperial.mrc.hint.models.ErrorReport
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
@@ -22,9 +21,7 @@ class FlowClient(val objectMapper: ObjectMapper) : FuelClient(), Flow
 
     override fun notifyTeams(url: String, data: ErrorReport): ResponseEntity<String>
     {
-        val json = objectMapper.writeValueAsString(data)
-
-        return postJson(url, json)
+        return postJson(url, objectMapper.writeValueAsString(data))
     }
 
 }

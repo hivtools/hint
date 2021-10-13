@@ -11,6 +11,7 @@ describe(`root actions`, () => {
         const dispatch = jest.fn();
 
         const state = mockRootState({
+            errorReportError: mockError("Err"),
             ...rootState,
             baseline: mockBaselineState({
                 country: "Malawi"
