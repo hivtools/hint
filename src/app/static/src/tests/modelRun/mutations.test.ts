@@ -54,6 +54,12 @@ describe("Model run mutations", () => {
         });
         mutations.RunResultFetched(testState, {payload: testResponse});
         expect(testState.result).toBe(testResponse);
+    });
+
+    it("sets warnings", () => {
+        const testState = mockModelRunState();
+        const warnings = [mockWarning()]
+        mutations.WarningsFetched(testState, {payload: warnings});
         expect(testState.warnings).toEqual([mockWarning()]);
     });
 

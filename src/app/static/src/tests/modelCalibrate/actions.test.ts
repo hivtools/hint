@@ -5,7 +5,7 @@ import {
     mockModelCalibrateState,
     mockModelRunState,
     mockRootState,
-    mockSuccess
+    mockSuccess, mockWarning
 } from "../mocks";
 import {actions} from "../../app/store/modelCalibrate/actions";
 import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
@@ -154,7 +154,7 @@ describe("ModelCalibrate actions", () => {
         }, 2100);
     });
 
-    it("getResult commits result when successfully fetched, sets default plotting selections, and dispatches getCalibratePlot", async () => {
+    it("getResult commits result and warnings when successfully fetched, sets default plotting selections, and dispatches getCalibratePlot", async () => {
         switches.modelCalibratePlot = "true";
         const testResult = {
             data: "TEST DATA",
@@ -171,7 +171,8 @@ describe("ModelCalibrate actions", () => {
             uploadMetadata: {
                 outputZip: {description: "spectrum output info"},
                 outputSummary: {description: "summary output info"}
-            }
+            },
+            warnings: [mockWarning()]
         };
         mockAxios.onGet(`/model/calibrate/result/1234`)
             .reply(200, mockSuccess(testResult));
@@ -188,12 +189,16 @@ describe("ModelCalibrate actions", () => {
 
         await actions.getResult({commit, state, rootState, dispatch} as any);
 
-        expect(commit.mock.calls.length).toBe(4);
+        expect(commit.mock.calls.length).toBe(5);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type:"modelRun/RunResultFetched",
             payload: testResult
         });
         expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: ModelCalibrateMutation.WarningsFetched,
+            payload: testResult.warnings
+        });
+        expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "plottingSelections/updateBarchartSelections",
             payload: {
                 indicatorId: "test indicator",
@@ -202,8 +207,8 @@ describe("ModelCalibrate actions", () => {
                 selectedFilterOptions: {"test_name": "test_value"}
             }
         });
-        expect(commit.mock.calls[2][0]).toBe("Calibrated");
-        expect(commit.mock.calls[3][0]).toBe("Ready");
+        expect(commit.mock.calls[3][0]).toBe("Calibrated");
+        expect(commit.mock.calls[4][0]).toBe("Ready");
         expect(dispatch.mock.calls[0][0]).toBe("getCalibratePlot");
     });
 
