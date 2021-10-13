@@ -16,7 +16,7 @@ class AppPropertiesTests
         File("tmp").deleteRecursively()
     }
 
-    private fun readPropsFromTempFile(contents: String): HintProperties
+    fun readPropsFromTempFile(contents: String): HintProperties
     {
         File("tmp").mkdir()
         val config = File("tmp/fake.properties")
