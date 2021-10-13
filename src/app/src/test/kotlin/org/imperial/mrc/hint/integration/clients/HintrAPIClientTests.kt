@@ -1,18 +1,15 @@
 package org.imperial.mrc.hint.integration.clients
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.FileType
-import org.imperial.mrc.hint.HintProperties
 import org.imperial.mrc.hint.clients.HintrFuelAPIClient
 import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.imperial.mrc.hint.unit.AppPropertiesTests
 import org.junit.jupiter.api.Test
-import java.io.File
 
 class HintrApiClientTests
 {
@@ -168,8 +165,8 @@ class HintrApiClientTests
         val props = AppPropertiesTests().readPropsFromTempFile("apiUrl=")
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(props), ObjectMapper())
         val data = """{"test":"data"}""".trimIndent()
-        val result = sut.postJson("http://example.com", data)
-        assertThat(result.statusCodeValue).isEqualTo(404)
+        val result = sut.postJson("https://mock.codes/200", data)
+        assertThat(result.statusCodeValue).isEqualTo(200)
     }
 
     @Test
@@ -181,4 +178,3 @@ class HintrApiClientTests
         assertThat(result.statusCodeValue).isEqualTo(404)
     }
 }
-
