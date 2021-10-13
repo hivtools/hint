@@ -320,6 +320,7 @@ class ADRTests : SecureIntegrationTests()
 
             val data2 = ObjectMapper().readTree(result2.body!!)["data"]
             assertThat(data2["name"].textValue()).isEqualTo(releaseName)
+            assertThat(data2["id"].textValue()).isNotEqualTo(data["id"].textValue())
 
             "${ConfiguredAppProperties().adrUrl}api/3/action/version_delete".httpPost(listOf("version_id" to data2["id"].textValue()))
                     .header("Authorization" to ADR_KEY)
