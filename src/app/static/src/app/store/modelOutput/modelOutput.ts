@@ -8,7 +8,7 @@ import {rootOptionChildren} from "../../utils";
 
 const namespaced = true;
 
-export interface ModelOutputState extends WarningsState {
+export interface ModelOutputState {
     selectedTab: string
 }
 
@@ -66,8 +66,7 @@ const outputPlotFilters = (rootState: RootState) => {
 
 export const initialModelOutputState = (): ModelOutputState => {
     return {
-        selectedTab: "",
-        warnings: []
+        selectedTab: ""
     }
 };
 

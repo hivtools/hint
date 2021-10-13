@@ -60,11 +60,10 @@ describe("model calibrate actions integration", () => {
         } as any;
         await actions.getResult({commit, state, rootState} as any);
 
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("SetError");
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
-        expect(commit.mock.calls[1][0]).toBe("WarningsFetched");
-        expect(commit.mock.calls[2][0]).toBe("Ready");
+        expect(commit.mock.calls[1][0]).toBe("Ready");
     });
 
     it("can get calibrate plot", async () => {
