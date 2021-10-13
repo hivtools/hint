@@ -31,7 +31,7 @@ class FlowClientTests
                 Instant.now()
         )
 
-        val url = "http://example.com"
+        val url = "https://mock.codes/200"
 
         val sut = FlowClient(ObjectMapper())
 

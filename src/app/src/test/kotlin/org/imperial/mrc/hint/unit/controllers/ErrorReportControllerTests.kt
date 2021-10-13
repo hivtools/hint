@@ -24,7 +24,7 @@ class ErrorReportControllerTests
                     Errors("#65ae0d095ea", "test error msg", "fomot-hasah-livad"),
                     Errors("#25ae0d095e1", "test error msg2", "fomot-hasah-livid")
             ),
-            "test desc",
+            null,
             "test steps",
             "test agent",
             Instant.now()

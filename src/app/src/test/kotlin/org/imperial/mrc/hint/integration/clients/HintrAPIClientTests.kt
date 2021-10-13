@@ -8,7 +8,6 @@ import org.imperial.mrc.hint.clients.HintrFuelAPIClient
 import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
-import org.imperial.mrc.hint.unit.AppPropertiesTests
 import org.junit.jupiter.api.Test
 
 class HintrApiClientTests
@@ -157,24 +156,5 @@ class HintrApiClientTests
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.cancelModelRun("1234")
         assertThat(result.statusCodeValue).isEqualTo(400)
-    }
-
-    @Test
-    fun `extends FuelClient with empty baseUrl`()
-    {
-        val props = AppPropertiesTests().readPropsFromTempFile("apiUrl=")
-        val sut = HintrFuelAPIClient(ConfiguredAppProperties(props), ObjectMapper())
-        val data = """{"test":"data"}""".trimIndent()
-        val result = sut.postJson("https://mock.codes/200", data)
-        assertThat(result.statusCodeValue).isEqualTo(200)
-    }
-
-    @Test
-    fun `extends FuelClient with baseUrl`()
-    {
-        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val data = """{"test":"data"}""".trimIndent()
-        val result = sut.postJson("/example", data)
-        assertThat(result.statusCodeValue).isEqualTo(404)
     }
 }
