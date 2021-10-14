@@ -4,13 +4,15 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.clients.FlowClient
+import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.clients.FuelFlowClient
+import org.imperial.mrc.hint.integration.SecureIntegrationTests
 import org.imperial.mrc.hint.models.ErrorReport
 import org.imperial.mrc.hint.models.Errors
 import org.junit.jupiter.api.Test
 import java.time.Instant
 
-class FlowClientTests
+class FuelFlowClientTests: SecureIntegrationTests()
 {
     @Test
     fun `can post flow`()
@@ -31,11 +33,11 @@ class FlowClientTests
                 Instant.now()
         )
 
-        val url = "https://mock.codes/200"
+        val props = readPropsFromTempFile("issue_report_url=https://mock.codes/200")
 
-        val sut = FlowClient(ObjectMapper())
+        val sut = FuelFlowClient(ObjectMapper(), ConfiguredAppProperties(props))
 
-        val result = sut.notifyTeams(url, data)
+        val result = sut.notifyTeams(null, data)
 
         assertThat(result.statusCodeValue).isEqualTo(200)
 

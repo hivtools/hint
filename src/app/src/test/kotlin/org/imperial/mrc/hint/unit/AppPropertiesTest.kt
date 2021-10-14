@@ -2,27 +2,18 @@ package org.imperial.mrc.hint.unit
 
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
-import org.imperial.mrc.hint.HintProperties
+import org.imperial.mrc.hint.integration.SecureIntegrationTests
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
-class AppPropertiesTests
+class AppPropertiesTests : SecureIntegrationTests()
 {
 
     @AfterEach
     fun cleanup()
     {
         File("tmp").deleteRecursively()
-    }
-
-    private fun readPropsFromTempFile(contents: String): HintProperties
-    {
-        File("tmp").mkdir()
-        val config = File("tmp/fake.properties")
-        config.createNewFile()
-        config.writeText(contents)
-        return ConfiguredAppProperties.readProperties("tmp/fake.properties")
     }
 
     @Test
