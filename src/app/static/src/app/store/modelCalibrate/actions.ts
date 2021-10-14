@@ -72,6 +72,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             if (response) {
                 const data = freezer.deepFreeze(response.data);
                 commit({type: `modelRun/${ModelRunMutation.RunResultFetched}`, payload: data}, {root: true});
+                commit({type: ModelCalibrateMutation.WarningsFetched, payload: data.warnings});
 
                 if (data && data.plottingMetadata && data.plottingMetadata.barchart.defaults) {
                     const defaults = data.plottingMetadata.barchart.defaults;
@@ -95,16 +96,16 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         commit(ModelCalibrateMutation.Ready);
     },
 
-    async getCalibratePlot(context){
+    async getCalibratePlot(context) {
         const {commit, state} = context;
         const calibrateId = state.calibrateId;
         commit(ModelCalibrateMutation.CalibrationPlotStarted);
 
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
-                .ignoreSuccess()
-                .withError(ModelCalibrateMutation.SetError)
-                .freezeResponse()
-                .get<ModelResultResponse>(`model/calibrate/plot/${calibrateId}`);
+            .ignoreSuccess()
+            .withError(ModelCalibrateMutation.SetError)
+            .freezeResponse()
+            .get<ModelResultResponse>(`model/calibrate/plot/${calibrateId}`);
 
         if (response) {
             const data = freezer.deepFreeze(response.data);
@@ -113,7 +114,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     }
 };
 
-export const getCalibrateStatus = async function(context: ActionContext<ModelCalibrateState, RootState>) {
+export const getCalibrateStatus = async function (context: ActionContext<ModelCalibrateState, RootState>) {
     const {dispatch, state} = context;
     const calibrateId = state.calibrateId;
     return api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
