@@ -19,6 +19,8 @@
         </div>
         <stepper-navigation v-bind="navigationProps"/>
         <hr/>
+        <warnings :location="activeStep" :warnings="['a warning', 'another warning', 'third warning', 'final warning']"></warnings>
+        <warnings :location="activeStep" :warnings="['a warning', 'another warning']"></warnings>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingData'"></h2>
@@ -65,6 +67,7 @@
     import {ProjectsState} from "../store/projects/projects";
     import {RootState} from "../root";
     import StepperNavigation, {Props as StepperNavigationProps} from "./StepperNavigation.vue";
+    import Warnings from "./Warnings.vue";
 
     interface ComputedState {
         activeStep: number,
@@ -160,7 +163,8 @@
             ModelOptions,
             DownloadResults,
             VersionStatus,
-            StepperNavigation
+            StepperNavigation,
+            Warnings
         },
         watch: {
             complete: function (){
