@@ -151,7 +151,7 @@ class AppPropertiesTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `can read issue report  url`()
+    fun `can read issue report url`()
     {
         val props = readPropsFromTempFile("issue_report_url=https://webhook.azure")
         val sut = ConfiguredAppProperties(props)
