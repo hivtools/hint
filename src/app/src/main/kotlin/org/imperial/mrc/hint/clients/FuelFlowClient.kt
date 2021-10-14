@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 interface FlowClient
 {
-    fun notifyTeams(url: String? = null, data: ErrorReport): ResponseEntity<String>
+    fun notifyTeams(url: String?, data: ErrorReport): ResponseEntity<String>
 }
 
 @Component
