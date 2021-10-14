@@ -1,5 +1,5 @@
 import {Payload} from "vuex";
-import {FilterOption, Error, DownloadStatusResponse, DownloadSubmitResponse} from "./generated";
+import {FilterOption, Error, DownloadStatusResponse, DownloadSubmitResponse, Warning} from "./generated";
 
 export interface PayloadWithType<T> extends Payload {
     payload: T
@@ -219,4 +219,10 @@ export interface GenericChartMetadata {
 
 export interface GenericChartMetadataResponse {
     [key: string]: GenericChartMetadata;
+}
+
+export interface WarningProps {
+    modelOptions: Warning[]
+    modelRun: Warning[]
+    modelCalibrate: Warning[]
 }

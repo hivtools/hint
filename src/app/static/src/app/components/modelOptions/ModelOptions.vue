@@ -39,10 +39,11 @@
     import {ModelOptionsMutation} from "../../store/modelOptions/mutations";
     import {ModelOptionsState} from "../../store/modelOptions/modelOptions";
     import ResetConfirmation from "../ResetConfirmation.vue";
-    import {StepDescription} from "../../store/stepper/stepper";
-    import {RootState} from "../../root";
+    import {RootState, STEPS} from "../../root";
     import {Language} from "../../store/translations/locales";
     import ErrorAlert from "../ErrorAlert.vue";
+    import {WarningProps} from "../../types";
+    import {Warning} from "../../generated";
 
     interface Methods {
         fetchOptions: () => void
@@ -52,6 +53,7 @@
         cancelEditing: () => void
         continueEditing: () => void
         confirmEditing: (e: Event) => void
+        warnings: (stepName: String) => WarningProps
     }
 
     interface Computed {
@@ -64,6 +66,7 @@
         selectText: string
         requiredText: string
         validateText: string
+        optionsWarning: Warning[]
     }
 
     interface Data {
@@ -108,6 +111,9 @@
                 set(value: DynamicFormMeta) {
                     this.update(value);
                 }
+            },
+            optionsWarning() {
+                return this.warnings(STEPS.modelOptions).modelOptions
             }
         },
         methods: {
@@ -127,7 +133,8 @@
             update: mapMutationByName(namespace, ModelOptionsMutation.Update),
             unValidate: mapMutationByName(namespace, ModelOptionsMutation.UnValidate),
             fetchOptions: mapActionByName(namespace, "fetchModelRunOptions"),
-            validate: mapActionByName(namespace, "validateModelOptions")
+            validate: mapActionByName(namespace, "validateModelOptions"),
+            warnings: mapGetterByName(null, "warnings")
         },
         components: {
             DynamicForm,
