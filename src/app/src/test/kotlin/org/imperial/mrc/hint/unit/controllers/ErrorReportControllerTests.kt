@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.AppProperties
-import org.imperial.mrc.hint.clients.FlowClient
+import org.imperial.mrc.hint.clients.FuelFlowClient
 import org.imperial.mrc.hint.controllers.ErrorReportController
 import org.imperial.mrc.hint.models.ErrorReport
 import org.imperial.mrc.hint.models.Errors
@@ -24,13 +24,13 @@ class ErrorReportControllerTests
                     Errors("#65ae0d095ea", "test error msg", "fomot-hasah-livad"),
                     Errors("#25ae0d095e1", "test error msg2", "fomot-hasah-livid")
             ),
-            "test desc",
+            null,
             "test steps",
             "test agent",
             Instant.now()
     )
 
-    private val url = "https://azure.com"
+    private val url = ""
 
     @Test
     fun `can post error report to teams`()
@@ -54,12 +54,12 @@ class ErrorReportControllerTests
             on { issueReportUrl } doReturn url
         }
 
-        val mockFlowClient = mock<FlowClient>
+        val mockFlowClient = mock<FuelFlowClient>
         {
             on { notifyTeams(url, data) } doReturn response
         }
 
-        val sut = ErrorReportController(mockAppProperties, mockFlowClient)
+        val sut = ErrorReportController(mockFlowClient)
 
         return sut.postErrorReport(data)
     }

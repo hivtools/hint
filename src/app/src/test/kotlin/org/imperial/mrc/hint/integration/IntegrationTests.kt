@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.treeToValue
 import org.assertj.core.api.Assertions
+import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.HintProperties
 import org.imperial.mrc.hint.helpers.AuthInterceptor
 import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.helpers.getTestEntity
@@ -15,6 +17,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.*
+import java.io.File
 import javax.annotation.PostConstruct
 
 abstract class SecureIntegrationTests : CleanDatabaseTests()
@@ -344,5 +347,14 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
                 "output_aware_plhiv" to "true",
                 "anc_clients_year2" to 2018,
                 "anc_clients_year2_num_months" to "9")
+    }
+
+    fun readPropsFromTempFile(contents: String): HintProperties
+    {
+        File("tmp").mkdir()
+        val config = File("tmp/fake.properties")
+        config.createNewFile()
+        config.writeText(contents)
+        return ConfiguredAppProperties.readProperties("tmp/fake.properties")
     }
 }

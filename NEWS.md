@@ -1,3 +1,7 @@
+# hint 1.58.0
+
+* Action for posting error report
+
 # hint 1.57.0
 
 * Endpoint for posting error report to Teams

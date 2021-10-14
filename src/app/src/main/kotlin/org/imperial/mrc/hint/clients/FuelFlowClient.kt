@@ -1,17 +1,21 @@
 package org.imperial.mrc.hint.clients
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.models.ErrorReport
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
-interface Flow
+interface FlowClient
 {
-    fun notifyTeams(url: String, data: ErrorReport): ResponseEntity<String>
+    fun notifyTeams(url: String? = null, data: ErrorReport): ResponseEntity<String>
 }
 
 @Component
-class FlowClient(val objectMapper: ObjectMapper) : FuelClient(), Flow
+class FuelFlowClient(
+        val objectMapper: ObjectMapper,
+        appProperties: AppProperties
+) : FuelClient(appProperties.issueReportUrl), FlowClient
 {
 
     override fun standardHeaders(): Map<String, Any>
@@ -19,7 +23,7 @@ class FlowClient(val objectMapper: ObjectMapper) : FuelClient(), Flow
         return emptyMap()
     }
 
-    override fun notifyTeams(url: String, data: ErrorReport): ResponseEntity<String>
+    override fun notifyTeams(url: String?, data: ErrorReport): ResponseEntity<String>
     {
         return postJson(url, objectMapper.writeValueAsString(data))
     }

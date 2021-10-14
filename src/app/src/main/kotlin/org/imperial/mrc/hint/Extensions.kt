@@ -63,10 +63,10 @@ fun Response.asResponseEntity(logger: Log = LogFactory.getLog(HintExceptionHandl
 
         if (!json.has("status") && !json.has("success"))
         {
-            logger.error(json)
-            throw IOException("Response does not have status or success properties")
+            if (httpStatus < HttpStatus.BAD_REQUEST ) SuccessResponse(json).asResponseEntity()
+            else ErrorDetail(httpStatus, json.asText()).toResponseEntity<String>()
         }
-        return if (json.has("status"))
+        else if (json.has("status"))
         {
             // this is a hintr response, so already conforms to our response schema
             ResponseEntity.status(httpStatus)
