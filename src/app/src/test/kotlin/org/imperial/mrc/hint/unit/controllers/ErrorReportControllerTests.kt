@@ -30,7 +30,7 @@ class ErrorReportControllerTests
             Instant.now()
     )
 
-    private val url = ""
+    private val url = "fakepath"
 
     @Test
     fun `can post error report to teams`()
@@ -41,7 +41,7 @@ class ErrorReportControllerTests
     }
 
     @Test
-    fun `can return error response when request is unsuccessful `()
+    fun `can return error response when request is unsuccessful`()
     {
         val result = testFlowClient(ResponseEntity.badRequest().build())
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
@@ -49,14 +49,9 @@ class ErrorReportControllerTests
 
     private fun testFlowClient(response: ResponseEntity<String>): ResponseEntity<String>
     {
-        val mockAppProperties = mock<AppProperties>
-        {
-            on { issueReportUrl } doReturn url
-        }
-
         val mockFlowClient = mock<FuelFlowClient>
         {
-            on { notifyTeams(url, data) } doReturn response
+            on { notifyTeams(null, data) } doReturn response
         }
 
         val sut = ErrorReportController(mockFlowClient)
