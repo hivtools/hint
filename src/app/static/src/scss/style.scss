@@ -152,3 +152,35 @@ a.down::after {
     width: 20px;
     vertical-align: sub;
   }
+
+// .expand-transition {
+//     transition: all .5s ease;
+//     // height: 30px;
+//     // padding: 10px;
+//     // overflow: hidden;
+//     max-height: 0px;
+//     padding-top: 0px !important;
+//     padding-bottom: 0px !important;
+//     overflow: hidden;
+// }
+// .expand-enter, .expand-leave {
+//     // height: 0;
+//     // padding: 0 10px;
+//     // opacity: 0;
+//     max-height: 80px;
+// }
+
+// .warning-list-item {
+//     transition: all 0.5s;
+// }
+// .warning-list-enter,
+// .warning-list-leave-to {
+//     max-height: 0px;
+//     padding-top: 0px !important;
+//     padding-bottom: 0px !important;
+//     overflow: hidden;
+// }
+// .warning-list-enter-to,
+// .warning-list-leave {
+//     max-height: 80px;
+// }
