@@ -3,7 +3,6 @@ package org.imperial.mrc.hint.unit.controllers
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
-import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.clients.FuelFlowClient
 import org.imperial.mrc.hint.controllers.ErrorReportController
 import org.imperial.mrc.hint.models.ErrorReport
@@ -24,19 +23,19 @@ class ErrorReportControllerTests
                     Errors("#65ae0d095ea", "test error msg", "fomot-hasah-livad"),
                     Errors("#25ae0d095e1", "test error msg2", "fomot-hasah-livid")
             ),
-            null,
+            "",
             "test steps",
             "test agent",
             Instant.now()
     )
 
-    private val url = "fakepath"
-
     @Test
     fun `can post error report to teams`()
     {
         val result = testFlowClient(ResponseEntity.ok("whatever"))
+
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+
         assertThat(result.body).isEqualTo("whatever")
     }
 
@@ -44,6 +43,7 @@ class ErrorReportControllerTests
     fun `can return error response when request is unsuccessful`()
     {
         val result = testFlowClient(ResponseEntity.badRequest().build())
+
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 

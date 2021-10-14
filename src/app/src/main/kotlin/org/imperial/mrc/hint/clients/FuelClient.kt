@@ -44,7 +44,7 @@ abstract class FuelClient(protected val baseUrl: String)
     {
         val url = when
         {
-            urlPath.isNullOrEmpty() -> baseUrl
+            urlPath.isNullOrBlank() -> baseUrl
             else -> "$baseUrl/$urlPath"
         }
 
