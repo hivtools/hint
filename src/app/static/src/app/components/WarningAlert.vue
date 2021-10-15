@@ -2,11 +2,11 @@
     <div v-if="showAlert">
         <div class="content alert alert-warning">
             <h4 class="alert-heading"><alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>The following issues were reported for this {{ step }}.</h4>
-            <ul class="mb-0">
-                <li v-for="warning in filteredWarnings" :key="warning">{{ warning}}</li>
+            <ul class="mb-0" ref="warningBox">
+                <li v-for="warning in renderedWarnings" :key="warning">{{ warning}}</li>
             </ul>
             <!-- <transition-group name="warning-list" tag="ul" class="mb-0">
-                <li class="warning-list-item" v-for="warning in filteredWarnings" :key="warning">
+                <li class="warning-list-item" v-for="warning in renderedWarnings" :key="warning">
                     {{ warning }}
                 </li>
             </transition-group> -->
@@ -41,7 +41,8 @@
     }
 
     interface Data {
-        showAllWarnings: boolean
+        showAllWarnings: boolean,
+        boxHeight: number | null
     }
 
     // interface Methods {
@@ -50,7 +51,7 @@
 
     interface Computed  {
         currentLanguage: Language,
-        filteredWarnings: string[],
+        renderedWarnings: string[],
         showAlert: boolean,
         buttonText: string
     }
@@ -73,11 +74,12 @@
         },
         data() {
             return {
-                showAllWarnings: false
+                showAllWarnings: false,
+                boxHeight: null
             };
         },
         computed: {
-            filteredWarnings(){
+            renderedWarnings(){
                 if (this.warnings.length <= this.maxWarnings){
                     return this.warnings
                 } else {
@@ -109,6 +111,11 @@
             toggleShowAllWarnings(){
                 this.showAllWarnings = !this.showAllWarnings;
             }
+        },
+        mounted(){
+            this.boxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
+            console.log('boxHeight', this.boxHeight)
+            // if >72px restrict box to 48px and hide overflow; allow toggle to not restrict box size
         },
         components: {
             AlertTriangleIcon,
