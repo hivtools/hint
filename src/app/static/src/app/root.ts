@@ -80,7 +80,7 @@ export interface WarningsState {
 
 export enum STEPS  {
     modelOptions = "model_options",
-    modelFit = "model_fit",
+    modelRun = "model_fit",
     modelCalibrate = "model_calibrate",
     reviewOutput = "review_output",
     downloadResult = "download_results"
