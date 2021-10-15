@@ -1,6 +1,13 @@
 import Mock = jest.Mock;
 import {actions} from "../../app/store/root/actions";
-import {mockAxios, mockBaselineState, mockModelCalibrateState, mockRootState, mockStepperState} from "../mocks";
+import {
+    mockAxios,
+    mockBaselineState,
+    mockGenericChartState,
+    mockModelCalibrateState,
+    mockRootState,
+    mockStepperState
+} from "../mocks";
 import {Language} from "../../app/store/translations/locales";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
@@ -260,6 +267,23 @@ describe("root actions", () => {
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toStrictEqual("metadata/getPlottingMetadata");
         expect(dispatch.mock.calls[0][1]).toStrictEqual("MWI");
+    });
+
+    it("changeLanguage refreshes genericChart datasets, if any", async() => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const rootState = mockRootState(
+            {
+                baseline: mockBaselineState({iso3: "MWI"}),
+                genericChart: mockGenericChartState({datasets: {dataset1: "TEST"}} as any)
+        });
+        await actions.changeLanguage({commit, dispatch, rootState} as any, Language.fr);
+
+        expectChangeLanguageMutations(commit);
+
+        expect(dispatch.mock.calls.length).toBe(2);
+        expect(dispatch.mock.calls[0][0]).toStrictEqual("metadata/getPlottingMetadata");
+        expect(dispatch.mock.calls[1][0]).toStrictEqual("genericChart/refreshDatasets");
     });
 
     it("changeLanguage fetches nothing if no relevant metadata to fetch", async () => {

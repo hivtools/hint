@@ -3,10 +3,12 @@ import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {GenericChartState} from "./genericChart";
 import {GenericChartMutation} from "./mutations";
+import {DatasetConfig, Dict, GenericChartMetadata} from "../../types";
 
 export interface MetadataActions {
     getGenericChartMetadata: (store: ActionContext<GenericChartState, RootState>) => void
     getDataset: (store: ActionContext<GenericChartState, RootState>, payload: getDatasetPayload) => void
+    refreshDatasets: (store: ActionContext<GenericChartState, RootState>) => void
 }
 
 export interface getDatasetPayload {
@@ -40,5 +42,26 @@ export const actions: ActionTree<GenericChartState, RootState> & MetadataActions
                     });
                 }
             });
+    },
+    async refreshDatasets(context){
+        const {dispatch, state} = context;
+        if (!state.genericChartMetadata) {
+            return;
+        }
+
+        const datasetUrls = Object.values(state.genericChartMetadata)
+                            .reduce((urls: Dict<string>, chart: GenericChartMetadata) => {
+                                chart.datasets.forEach((dataset: DatasetConfig) => {
+                                    urls[dataset.id] = dataset.url
+                                });
+                                return urls;
+                            }, {});
+
+        const getDatasetActions: Promise<unknown>[] = [];
+        Object.keys(state.datasets).forEach((datasetId: string) => {
+            const url = datasetUrls[datasetId];
+            getDatasetActions.push(dispatch("getDataset", {datasetId, url}));
+        });
+        await Promise.all(getDatasetActions);
     }
 };
