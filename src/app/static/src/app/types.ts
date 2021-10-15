@@ -1,5 +1,5 @@
 import {Payload} from "vuex";
-import {FilterOption, Error, DownloadStatusResponse, DownloadSubmitResponse, Warning} from "./generated";
+import {FilterOption, Error, DownloadStatusResponse, DownloadSubmitResponse} from "./generated";
 
 export interface PayloadWithType<T> extends Payload {
     payload: T
