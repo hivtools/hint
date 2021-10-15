@@ -1,6 +1,6 @@
 import {createLocalVue, shallowMount, Wrapper} from '@vue/test-utils';
 import Vue from 'vue';
-import Vuex, {Store} from 'vuex';
+import Vuex from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import {
     mockBaselineState,
@@ -46,6 +46,7 @@ import {RootState} from "../../app/root";
 import ModelCalibrate from "../../app/components/modelCalibrate/ModelCalibrate.vue";
 import {getters as rootGetters} from "../../app/store/root/getters";
 import {expectTranslated} from "../testHelpers";
+import StepperNavigation from "../../app/components/StepperNavigation.vue";
 
 const localVue = createLocalVue();
 
@@ -366,10 +367,10 @@ describe("Stepper component", () => {
 
     it("cannot continue when the active step is not complete", () => {
         const wrapper = createReadySut({country: ""});
-        const continueLink = wrapper.find("#continue");
-        expect(continueLink.classes()).toContain("disabled");
+        const vm = wrapper.vm as any;
+        expect(vm.navigationProps.nextDisabled).toBe(true);
 
-        continueLink.trigger("click");
+        vm.navigationProps.next();
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().active).toBe(true);
     });
@@ -379,18 +380,17 @@ describe("Stepper component", () => {
         const wrapper = createReadySut(completedBaselineState,
             completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any});
-        const continueLink = wrapper.find("#continue");
-        expect(continueLink.classes()).not.toContain("disabled");
+        const vm = wrapper.vm as any;
+        expect(vm.navigationProps.nextDisabled).toBe(false);
 
-        continueLink.trigger("click");
+        vm.navigationProps.next();
         const steps = wrapper.findAll(Step);
         expect(steps.at(1).props().active).toBe(true);
     });
 
     it("cannot go back from the first step", () => {
         const wrapper = createReadySut({country: ""});
-        const backLink = wrapper.find("#back");
-        expect(backLink.classes()).toContain("disabled");
+        expect((wrapper.vm as any).navigationProps.backDisabled).toBe(true);
     });
 
     it("can go back from later steps", () => {
@@ -405,10 +405,10 @@ describe("Stepper component", () => {
             {},
             {activeStep: 2});
 
-        const backLink = wrapper.find("#back");
-        expect(backLink.classes()).not.toContain("disabled");
+        const vm = wrapper.vm as any;
+        expect(vm.navigationProps.backDisabled).toBe(false);
 
-        backLink.trigger("click");
+        vm.navigationProps.back();
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().active).toBe(true);
     });
@@ -424,8 +424,8 @@ describe("Stepper component", () => {
         const wrapper = createReadySut(baselineState,
             completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any});
-        const continueLink = wrapper.find("#continue");
-        expect(continueLink.classes()).toContain("disabled");
+        const vm = wrapper.vm as any;
+        expect(vm.navigationProps.nextDisabled).toBe(true);
 
         //invoke the mutation
         wrapper.vm.$store.commit("baseline/Validated", {
@@ -434,7 +434,7 @@ describe("Stepper component", () => {
         });
 
         Vue.nextTick().then(() => {
-            expect(wrapper.find("#continue").classes()).not.toContain("disabled");
+            expect(vm.navigationProps.nextDisabled).toBe(false);
             done();
         });
     });
@@ -670,7 +670,7 @@ describe("Stepper component", () => {
         expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
 
-    it("does not show ADR keintegrationy on step 4", () => {
+    it("does not show ADR integration on step 4", () => {
         const wrapper = getStepperOnStep(4);
         expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
@@ -725,8 +725,16 @@ describe("Stepper component", () => {
         expect(steps.at(6).props().active).toBe(true);
         expect(steps.at(6).props().complete).toBe(true);
 
-        const continueLink = wrapper.find("#continue")
-        expect(continueLink.classes()).toContain("disabled");
+        expect((wrapper.vm as any).navigationProps.nextDisabled).toBe(true);
+    });
+
+    it("displays Back/Continue twice only on Step 3", () => {
+        expect(getStepperOnStep(1).findAll(StepperNavigation).length).toBe(1);
+        expect(getStepperOnStep(2).findAll(StepperNavigation).length).toBe(1);
+        expect(getStepperOnStep(3).findAll(StepperNavigation).length).toBe(2);
+        expect(getStepperOnStep(4).findAll(StepperNavigation).length).toBe(1);
+        expect(getStepperOnStep(5).findAll(StepperNavigation).length).toBe(1);
+        expect(getStepperOnStep(6).findAll(StepperNavigation).length).toBe(1);
     });
 
 });

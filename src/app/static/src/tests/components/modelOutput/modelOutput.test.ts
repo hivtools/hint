@@ -311,6 +311,7 @@ describe("ModelOutput component", () => {
         expect(table.props().indicators).toStrictEqual(["TEST CHORO INDICATORS"]);
         expect(table.props().tableData).toStrictEqual(["TEST DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
+        expect(table.props().translateLabels).toBe(undefined);
     });
 
     it("renders choropleth table with correct indicator props", () => {
@@ -343,6 +344,7 @@ describe("ModelOutput component", () => {
         expect(table.props().indicators).toStrictEqual(["TEST BUBBLE INDICATORS", "TEST BUBBLE INDICATORS"]);
         expect(table.props().tableData).toStrictEqual(["TEST DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
+        expect(table.props().translateLabels).toBe(undefined);
     });
 
     it("renders bubble plot table with correct indicator props", () => {
@@ -401,6 +403,7 @@ describe("ModelOutput component", () => {
         });
         expect(table.props().tableData).toStrictEqual(["TEST DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
+        expect(table.props().translateLabels).toBe(undefined);
     });
 
     it("renders barchart table with correct indicator props", () => {

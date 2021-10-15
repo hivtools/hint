@@ -1,5 +1,5 @@
 import {ModelRunMutation, mutations} from "../../app/store/modelRun/mutations";
-import {mockError, mockModelResultResponse, mockModelRunState, mockModelStatusResponse} from "../mocks";
+import {mockError, mockModelResultResponse, mockModelRunState, mockModelStatusResponse, mockWarning} from "../mocks";
 import {expectAllMutationsDefined} from "../testHelpers";
 import {ModelStatusResponse} from "../../app/generated";
 
@@ -47,11 +47,20 @@ describe("Model run mutations", () => {
         expect(testState.statusPollId).toBe(2);
     });
 
-    it("sets result", () => {
+    it("sets result and warnings", () => {
         const testState = mockModelRunState();
-        const testResponse = mockModelResultResponse();
+        const testResponse = mockModelResultResponse({
+            warnings: [mockWarning()]
+        });
         mutations.RunResultFetched(testState, {payload: testResponse});
         expect(testState.result).toBe(testResponse);
+    });
+
+    it("sets warnings", () => {
+        const testState = mockModelRunState();
+        const warnings = [mockWarning()]
+        mutations.WarningsFetched(testState, {payload: warnings});
+        expect(testState.warnings).toEqual([mockWarning()]);
     });
 
     it("sets result error", () => {

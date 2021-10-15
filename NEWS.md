@@ -1,20 +1,32 @@
-# hint 1.56.0
+# hint 1.60.0
 
 * Show Input Time Series plots
 
-# hint 1.55.0
+# hint 1.59.2
+
+* Save warnings from option validation, model fit and model calibration to app state
+
+# hint 1.59.1
+
+* Render filter labels verbatim in output tables, do not attempt to translate
+
+# hint 1.59.0
+
+* Include Back/Continue links at bottom of model options page
+
+# hint 1.58.0
 
 * Refresh output metadata and options when language changes
 
-# hint 1.54.0
+# hint 1.57.0
 
 * Add tooltips for indicators in Time series chart
 
-# hint 1.53.0
+# hint 1.56.0
 
 * Remove genericChart dataset when corresponding input file changes
 
-# hint 1.52.0
+# hint 1.55.0
 
 * Add input Time series chart
 
@@ -31,7 +43,6 @@
 # hint 1.52.0
 
 * Show selected release name and preselected in modal
->>>>>>> master
 
 # hint 1.51.0
 

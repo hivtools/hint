@@ -259,6 +259,10 @@ export interface CalibrateResultResponse {
       }[];
     };
   };
+  warnings: {
+    text: string;
+    locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+  }[];
   [k: string]: any;
 }
 export interface CalibrateStatusResponse {
@@ -338,6 +342,29 @@ export interface ChoroplethMetadata {
     use_shape_regions?: boolean | null;
   }[];
 }
+export interface Column {
+  id: string;
+  column_id: string;
+  label: string;
+  values:
+    | {
+        label: string;
+        id: string;
+        children?: {
+          [k: string]: any;
+        }[];
+      }
+    | {
+        label: string;
+        id: string;
+        description?: string;
+      }[];
+}
+export type ColumnValues = {
+  label: string;
+  id: string;
+  description?: string;
+}[];
 export interface DownloadStatusResponse {
   id: string;
   done: boolean | null;
@@ -389,6 +416,98 @@ export interface HintrVersionResponse {
 export interface HintrWorkerStatus {
   [k: string]: "BUSY" | "IDLE" | "PAUSED" | "EXITED" | "LOST";
 }
+export type InputTimeSeriesData = {
+  area_id: string;
+  area_name: string;
+  time_step: string;
+  plot: string | null;
+  value: number | null;
+  area_level?: number;
+  age_group?: string;
+  time_period: string;
+}[];
+export interface InputTimeSeriesDefaults {
+  selected_filter_options: {
+    [k: string]: any;
+  };
+}
+export interface InputTimeSeriesMetadata {
+  columns: {
+    id: string;
+    column_id: string;
+    label: string;
+    values:
+      | {
+          label: string;
+          id: string;
+          children?: {
+            [k: string]: any;
+          }[];
+        }
+      | {
+          label: string;
+          id: string;
+          description?: string;
+        }[];
+  }[];
+  defaults: {
+    selected_filter_options: {
+      [k: string]: any;
+    };
+  };
+}
+export interface InputTimeSeriesRequest {
+  data: {
+    [k: string]: any;
+  };
+}
+export interface InputTimeSeriesResponse {
+  data: {
+    area_id: string;
+    area_name: string;
+    time_step: string;
+    plot: string | null;
+    value: number | null;
+    area_level?: number;
+    age_group?: string;
+    time_period: string;
+  }[];
+  metadata: {
+    columns: {
+      id: string;
+      column_id: string;
+      label: string;
+      values:
+        | {
+            label: string;
+            id: string;
+            children?: {
+              [k: string]: any;
+            }[];
+          }
+        | {
+            label: string;
+            id: string;
+            description?: string;
+          }[];
+    }[];
+    defaults: {
+      selected_filter_options: {
+        [k: string]: any;
+      };
+    };
+  };
+}
+export interface InputTimeSeriesRow {
+  area_id: string;
+  area_name: string;
+  time_step: string;
+  plot: string | null;
+  value: number | null;
+  area_level?: number;
+  age_group?: string;
+  time_period: string;
+}
 export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
 export interface LevelLabels {
   id: number;
@@ -409,6 +528,10 @@ export interface ModelCalibrateRequest {
 export type ModelCancelResponse = null;
 export interface ModelOptionsValidate {
   valid: true;
+  warnings: {
+    text: string;
+    locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+  }[];
 }
 export interface ModelOptionsValidateRequest {
   data: {
@@ -468,6 +591,10 @@ export type ModelResultData = {
 export interface ModelResultResponse {
   id: string;
   complete: true;
+  warnings: {
+    text: string;
+    locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+  }[];
   [k: string]: any;
 }
 export interface ModelResultRow {
@@ -650,6 +777,13 @@ export interface ModelSubmitRequest {
 }
 export interface ModelSubmitResponse {
   id: string;
+}
+export interface NestedColumnValue {
+  label: string;
+  id: string;
+  children?: {
+    [k: string]: any;
+  }[];
 }
 export interface NestedFilterOption {
   label: string;
@@ -1020,4 +1154,8 @@ export interface VersionInfo {
   naomi: string;
   rrq: string;
   [k: string]: any;
+}
+export interface Warning {
+  text: string;
+  locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
 }
