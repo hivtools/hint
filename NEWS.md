@@ -1,3 +1,7 @@
+# hint 1.57.0
+
+* Getter to filter warnings from hintr
+
 # hint 1.56.2
 
 * Save warnings from option validation, model fit and model calibration to app state

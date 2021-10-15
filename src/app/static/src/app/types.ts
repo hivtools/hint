@@ -220,9 +220,3 @@ export interface GenericChartMetadata {
 export interface GenericChartMetadataResponse {
     [key: string]: GenericChartMetadata;
 }
-
-export interface WarningProps {
-    modelOptions: Warning[]
-    modelRun: Warning[]
-    modelCalibrate: Warning[]
-}
