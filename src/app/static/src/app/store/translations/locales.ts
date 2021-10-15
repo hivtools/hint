@@ -209,6 +209,8 @@ export interface Translations {
     sharedBy: string,
     shareProject: string,
     shareProjectInstructions: string,
+    showLess: string,
+    showMore: string,
     sizeIndicator: string,
     static: string,
     step: string,
@@ -486,6 +488,8 @@ const en: Translations = {
         "this project with. Press Enter to add a new address. " +
         "These email addresses must be already registered with Naomi." +
         "</p>",
+    showLess: "Show less",
+    showMore: "Show more",
     sizeIndicator: "Size Indicator",
     static: "Static",
     step: "Step",
@@ -759,6 +763,8 @@ const fr: Partial<Translations> = {
         "avec lesquelles vous souhaitez partager ce projet. Appuyez sur Enter pour ajouter une autre adresse. Ces adresses e-mails doivent être " +
         "déjà enregistrées dans Naomi." +
         "</p>",
+    showLess: "Montrer moins",
+    showMore: "Montre plus",
     sizeIndicator: "Indicateur de taille",
     static: "Statique",
     step: "Étape",
@@ -1031,6 +1037,8 @@ const pt: Partial<Translations> = {
         " Por favor, introduza os endereços de e-mail com os quais gostaria de partilhar este projeto. " +
         "Prima Enter para adicionar um novo endereço. Estes endereços de e-mail já devem estar registados na Naomi." +
         "</p>",
+    showLess: "Mostre menos",
+    showMore: "Mostre mais",
     sizeIndicator: "Indicador de tamanho",
     static: "Estático",
     step: "Etapa",

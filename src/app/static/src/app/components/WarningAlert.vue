@@ -29,10 +29,14 @@
     import Vue from "vue";
     import { AlertTriangleIcon } from "vue-feather-icons";
     // import { BCollapse, BButton } from 'bootstrap-vue'
+    import i18next from "i18next";
+    import { mapStateProp } from "../utils";
+    import { RootState } from "../root";
+    import { Language } from "../store/translations/locales";
 
     interface Props {
-        step: number
-        warnings: string[]
+        step: number,
+        warnings: string[],
         maxWarnings: number
     }
 
@@ -44,21 +48,19 @@
     //     dismissAll: () => void
     // }
 
-    // interface ComputedState {
-    //     errors: Error[]
-    // }
-
-    // interface Computed extends ComputedState {
-    //     hasErrors: boolean
-
-    // }
+    interface Computed  {
+        currentLanguage: Language,
+        filteredWarnings: string[],
+        showAlert: boolean,
+        buttonText: string
+    }
 
     interface Warning {
-        text: string;
-        locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+        text: string,
+        locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[]
     };
 
-    export default Vue.extend<Data, unknown, unknown, Props>({
+    export default Vue.extend<Data, unknown, Computed, Props>({
         name: "WarningAlert",
         props: {
             step: Number,
@@ -82,6 +84,10 @@
                     return this.showAllWarnings ? this.warnings : this.warnings.slice(0,this.maxWarnings - 1)
                 }
             },
+            currentLanguage: mapStateProp<RootState, Language>(
+                null,
+                (state: RootState) => state.language
+            ),
             // firstWarnings(){
             //     return this.warnings.length > 3 ? this.warnings.slice(0,2) : this.warnings
             // },
@@ -89,10 +95,14 @@
             //     return this.warnings.length > 3 ? this.warnings.slice(2) : []
             // },
             showAlert(){
-                return this.step > 2 && this.warnings.length
+                return this.step > 2 && this.warnings.length > 0
             },
             buttonText(){
-                return this.showAllWarnings ? 'Show less' : 'Show more'
+                if (this.showAllWarnings) {
+                    return i18next.t("showLess", { lng: this.currentLanguage });
+                } else {
+                    return i18next.t("showMore", { lng: this.currentLanguage });
+                }
             }
         },
         methods: {
