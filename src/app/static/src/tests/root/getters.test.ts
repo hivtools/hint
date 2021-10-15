@@ -5,7 +5,7 @@ import {STEPS} from "../../app/root";
 
 describe(`root getters`, () => {
 
-    const warning: Warning[] = [
+    const warnings: Warning[] = [
         {text: "model option test", locations: ["model_options"]},
         {text: "model calibrate test", locations: ["model_calibrate"]},
         {text: "model run test", locations: ["model_fit"]}
@@ -13,9 +13,9 @@ describe(`root getters`, () => {
 
     const testState = () => {
         return mockRootState({
-            modelOptions: mockModelOptionsState({warnings: warning}),
-            modelRun: mockModelRunState({warnings: warning}),
-            modelCalibrate: mockModelCalibrateState({warnings: warning})
+            modelOptions: mockModelOptionsState({warnings: warnings}),
+            modelRun: mockModelRunState({warnings: warnings}),
+            modelCalibrate: mockModelCalibrateState({warnings: warnings})
         })
     }
 
@@ -24,7 +24,7 @@ describe(`root getters`, () => {
 
         const warn = getters.warnings(rootState, null, testState() as any, null)
         const result = warn(STEPS.modelRun).modelRun
-        expect(result).toEqual([{text: "model run test", locations: [STEPS.modelRun]}])
+        expect(result).toEqual([warnings[2]])
     })
 
     it(`can get model calibrate warnings`, () => {
@@ -32,7 +32,7 @@ describe(`root getters`, () => {
 
         const warn = getters.warnings(rootState, null, testState() as any, null)
         const result = warn(STEPS.modelCalibrate).modelCalibrate
-        expect(result).toEqual([{text: "model calibrate test", locations: [STEPS.modelCalibrate]}])
+        expect(result).toEqual([warnings[1]])
     })
 
     it(`can get model options warnings`, () => {
@@ -40,7 +40,7 @@ describe(`root getters`, () => {
 
         const warn = getters.warnings(rootState, null, testState() as any, null)
         const result = warn(STEPS.modelOptions).modelOptions
-        expect(result).toEqual([{text: "model option test", locations: [STEPS.modelOptions]}])
+        expect(result).toEqual([warnings[0]])
     })
 
 })
