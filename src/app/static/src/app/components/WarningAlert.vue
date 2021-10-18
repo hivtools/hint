@@ -6,7 +6,7 @@
                 <ul class="mb-0" ref="warningBox">
                     <li v-for="warning in warnings" :key="warning">{{ warning }}</li>
                 </ul>
-                <!-- <p ref="line"></p> -->
+                <p ref="line">...</p>
             </div>
             <div v-if="warningsLengthy">
                 <p v-if="!showFullBox" class="ml-4 mb-0">...</p>
@@ -27,13 +27,13 @@
     interface Props {
         step: number,
         warnings: string[],
-        maxBoxHeight: number
+        maxLines: number
     }
 
     interface Data {
         showFullBox: boolean,
-        fullBoxHeight: number | null,
-        // lineHeight: number | null
+        fullBoxHeight: number,
+        lineHeight: number
     }
 
     interface Methods {
@@ -43,6 +43,7 @@
     interface Computed  {
         currentLanguage: Language,
         renderedBoxHeight: number,
+        maxBoxHeight: number,
         containerBox: {
             height: string,
             overflowY: string
@@ -62,8 +63,8 @@
         props: {
             step: Number,
             warnings: Array,
-            maxBoxHeight: {
-                default: 72,
+            maxLines: {
+                default: 3,
                 required: false,
                 type: Number
             }
@@ -71,23 +72,26 @@
         data() {
             return {
                 showFullBox: false,
-                fullBoxHeight: null,
-                // lineHeight: null
+                fullBoxHeight: 0,
+                lineHeight: 0
             };
         },
         computed: {
             renderedBoxHeight(){
-                if (!this.fullBoxHeight){
-                    return 0
-                }
+                // if (!this.fullBoxHeight){
+                //     return 0
+                // }
                 if (!this.warningsLengthy){
                     return this.fullBoxHeight
                 } else {
-                    return this.showFullBox ? this.fullBoxHeight : this.maxBoxHeight - 24
+                    return this.showFullBox ? this.fullBoxHeight : this.maxBoxHeight - this.lineHeight
                 }
             },
+            maxBoxHeight(){
+                return this.maxLines * this.lineHeight
+            },
             warningsLengthy(){
-                return !!this.fullBoxHeight && this.fullBoxHeight > this.maxBoxHeight
+                return this.fullBoxHeight > this.maxBoxHeight
             },
             containerBox(){
                 return {
@@ -121,8 +125,9 @@
             }
         },
         mounted(){
+            this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
             this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
-            // this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
+            // console.log('heights', this.lineHeight, this.fullBoxHeight)
         },
         components: {
             AlertTriangleIcon
