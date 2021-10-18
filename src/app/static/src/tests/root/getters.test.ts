@@ -46,7 +46,7 @@ describe(`root getters`, () => {
         ])
     })
 
-    it(`can get modelCalibrate warnings if exists in a modelOptions step`, () => {
+    it(`can get modelCalibrate warnings if exists in modelOptions step`, () => {
         const rootState = testState()
 
         const warn = getters.warnings(rootState, null, testState() as any, null)
