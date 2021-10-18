@@ -6,7 +6,7 @@
                 <ul class="mb-0" ref="warningBox">
                     <li v-for="warning in warnings" :key="warning">{{ warning }}</li>
                 </ul>
-                <p ref="line">...</p>
+                <p ref="line" style="visibility:hidden">...</p>
             </div>
             <div v-if="warningsLengthy">
                 <p v-if="!showFullBox" class="ml-4 mb-0">...</p>
@@ -25,40 +25,41 @@
     import { Language } from "../store/translations/locales";
 
     interface Props {
-        step: number,
-        warnings: string[],
-        maxLines: number
+        step: number;
+        warnings: string[];
+        maxLines: number;
     }
 
     interface Data {
-        showFullBox: boolean,
-        fullBoxHeight: number,
-        lineHeight: number
+        showFullBox: boolean;
+        fullBoxHeight: number;
+        lineHeight: number;
     }
 
     interface Methods {
-        toggleShowFullBox: () => void
+        toggleShowFullBox: () => void;
+        updateDimensions: () => void;
     }
 
     interface Computed  {
-        currentLanguage: Language,
-        renderedBoxHeight: number,
-        maxBoxHeight: number,
+        currentLanguage: Language;
+        renderedBoxHeight: number;
+        maxBoxHeight: number;
         containerBox: {
             height: string,
             overflowY: string
-        },
-        warningsLengthy: boolean,
-        showAlert: boolean,
-        buttonText: string
+        };
+        warningsLengthy: boolean;
+        showAlert: boolean;
+        buttonText: string;
     }
 
     interface Warning {
-        text: string,
-        locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[]
+        text: string;
+        locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
     };
 
-    export default Vue.extend<Data, unknown, Computed, Props>({
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: "WarningAlert",
         props: {
             step: Number,
@@ -78,9 +79,6 @@
         },
         computed: {
             renderedBoxHeight(){
-                // if (!this.fullBoxHeight){
-                //     return 0
-                // }
                 if (!this.warningsLengthy){
                     return this.fullBoxHeight
                 } else {
@@ -117,17 +115,19 @@
         methods: {
             toggleShowFullBox(){
                 this.showFullBox = !this.showFullBox;
+            },
+            updateDimensions(){
+                this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
+                this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
             }
         },
         watch: {
             warnings(){
-                this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
+                this.updateDimensions()
             }
         },
         mounted(){
-            this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
-            this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
-            // console.log('heights', this.lineHeight, this.fullBoxHeight)
+            this.updateDimensions()
         },
         components: {
             AlertTriangleIcon
