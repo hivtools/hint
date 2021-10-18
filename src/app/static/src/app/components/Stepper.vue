@@ -19,7 +19,7 @@
         </div>
         <stepper-navigation v-bind="navigationProps"/>
         <hr/>
-        <warning-alert :step="activeStep" :warnings="['a warning', 'another warning', 'third warning', 'final warning']"></warning-alert>
+        <warning-alert :step="activeStep" :warnings="['a warning jjjjjjjjjjjjjjj jjjjjjjjjjjjj jjjjjjjjjjjjjjjjjjjjj  jjjjjjjjjjjjjjjjjjjjjjjjjj jjjjjjjjjjjjjjjjjjjjjj jjjjjjjjjjjjjjjjjjj jjjjjjjjjjjjjj jjjjjjjjjjjjjjj jjjjjjjjjjjjj jjjjjjjjjjjjjjjjjjjjj  jjjjjjjjjjjjjjjjjjjjjjjjjj jjjjjjjjjjjjjjjjjjjjjj jjjjjjjjjjjjjjjjjjj jjjjjjjjjjjjjj jjjjjjjjjjjjjjj jjjjjjjjjjjjj jjjjjjjjjjjjjjjjjjjjj  jjjjjjjjjjjjjjjjjjjjjjjjjj jjjjjjjjjjjjjjjjjjjjjj jjjjjjjjjjjjjjjjjjj jjjjjjjjjjjjjj jjjjjjjjjjjjjjj jjjjjjjjjjjjj jjjjjjjjjjjjjjjjjjjjj  jjjjjjjjjjjjjjjjjjjjjjjjjj jjjjjjjjjjjjjjjjjjjjjj jjjjjjjjjjjjjjjjjjj jjjjjjjjjjjjjj', 'another warning', 'third warning', 'final warning']"></warning-alert>
         <warning-alert :step="activeStep" :warnings="['a warning', 'another warning', 'third warning']"></warning-alert>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>

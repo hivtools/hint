@@ -2,24 +2,15 @@
     <div v-if="showAlert">
         <div class="content alert alert-warning">
             <h4 class="alert-heading"><alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>The following issues were reported for this {{ step }}.</h4>
-            <ul class="mb-0" ref="warningBox">
-                <li v-for="warning in renderedWarnings" :key="warning">{{ warning}}</li>
-            </ul>
-            <!-- <transition-group name="warning-list" tag="ul" class="mb-0">
-                <li class="warning-list-item" v-for="warning in renderedWarnings" :key="warning">
-                    {{ warning }}
-                </li>
-            </transition-group> -->
-            <!-- <ul class="mb-0">
-                <li v-for="warning in firstWarnings" :key="warning">{{ warning}}</li>
-                <b-collapse id="collapse-1">
-                    <li v-for="warning in remainingWarnings" :key="warning">{{ warning}}</li>
-                </b-collapse>
-            </ul> -->
-            <div v-if="warnings.length > maxWarnings">
-                <p v-if="!showAllWarnings" class="ml-4 mb-0">...</p>
-                <button @click="toggleShowAllWarnings" class="btn btn-link alert-link">{{ buttonText }}</button>
-                <!-- <b-button v-b-toggle.collapse-1 class="btn btn-link alert-link">{{ buttonText }}</b-button> -->
+            <div :style="containerBox">
+                <ul class="mb-0" ref="warningBox">
+                    <li v-for="warning in warnings" :key="warning">{{ warning }}</li>
+                </ul>
+                <!-- <p ref="line"></p> -->
+            </div>
+            <div v-if="warningsLengthy">
+                <p v-if="!showFullBox" class="ml-4 mb-0">...</p>
+                <button @click="toggleShowFullBox" class="btn btn-link alert-link">{{ buttonText }}</button>
             </div>
         </div>
     </div>
@@ -28,7 +19,6 @@
 <script lang="ts">
     import Vue from "vue";
     import { AlertTriangleIcon } from "vue-feather-icons";
-    // import { BCollapse, BButton } from 'bootstrap-vue'
     import i18next from "i18next";
     import { mapStateProp } from "../utils";
     import { RootState } from "../root";
@@ -37,21 +27,27 @@
     interface Props {
         step: number,
         warnings: string[],
-        maxWarnings: number
+        maxBoxHeight: number
     }
 
     interface Data {
-        showAllWarnings: boolean,
-        boxHeight: number | null
+        showFullBox: boolean,
+        fullBoxHeight: number | null,
+        // lineHeight: number | null
     }
 
-    // interface Methods {
-    //     dismissAll: () => void
-    // }
+    interface Methods {
+        toggleShowFullBox: () => void
+    }
 
     interface Computed  {
         currentLanguage: Language,
-        renderedWarnings: string[],
+        renderedBoxHeight: number,
+        containerBox: {
+            height: string,
+            overflowY: string
+        },
+        warningsLengthy: boolean,
         showAlert: boolean,
         buttonText: string
     }
@@ -66,41 +62,48 @@
         props: {
             step: Number,
             warnings: Array,
-            maxWarnings: {
-                default: 3,
+            maxBoxHeight: {
+                default: 72,
                 required: false,
                 type: Number
             }
         },
         data() {
             return {
-                showAllWarnings: false,
-                boxHeight: null
+                showFullBox: false,
+                fullBoxHeight: null,
+                // lineHeight: null
             };
         },
         computed: {
-            renderedWarnings(){
-                if (this.warnings.length <= this.maxWarnings){
-                    return this.warnings
+            renderedBoxHeight(){
+                if (!this.fullBoxHeight){
+                    return 0
+                }
+                if (!this.warningsLengthy){
+                    return this.fullBoxHeight
                 } else {
-                    return this.showAllWarnings ? this.warnings : this.warnings.slice(0,this.maxWarnings - 1)
+                    return this.showFullBox ? this.fullBoxHeight : this.maxBoxHeight - 24
+                }
+            },
+            warningsLengthy(){
+                return !!this.fullBoxHeight && this.fullBoxHeight > this.maxBoxHeight
+            },
+            containerBox(){
+                return {
+                    height: `${this.renderedBoxHeight}px`,
+                    overflowY: "hidden"
                 }
             },
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
             ),
-            // firstWarnings(){
-            //     return this.warnings.length > 3 ? this.warnings.slice(0,2) : this.warnings
-            // },
-            // remainingWarnings(){
-            //     return this.warnings.length > 3 ? this.warnings.slice(2) : []
-            // },
             showAlert(){
                 return this.step > 2 && this.warnings.length > 0
             },
             buttonText(){
-                if (this.showAllWarnings) {
+                if (this.showFullBox) {
                     return i18next.t("showLess", { lng: this.currentLanguage });
                 } else {
                     return i18next.t("showMore", { lng: this.currentLanguage });
@@ -108,20 +111,21 @@
             }
         },
         methods: {
-            toggleShowAllWarnings(){
-                this.showAllWarnings = !this.showAllWarnings;
+            toggleShowFullBox(){
+                this.showFullBox = !this.showFullBox;
+            }
+        },
+        watch: {
+            warnings(){
+                this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
             }
         },
         mounted(){
-            this.boxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
-            console.log('boxHeight', this.boxHeight)
-            // if >72px restrict box to 48px and hide overflow; allow toggle to not restrict box size
+            this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
+            // this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
         },
         components: {
-            AlertTriangleIcon,
-            // BCollapse,
-            // BButton
-
+            AlertTriangleIcon
         }
     })
 </script>
