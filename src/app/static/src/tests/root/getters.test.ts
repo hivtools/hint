@@ -28,16 +28,16 @@ describe(`root getters`, () => {
     it(`can get modelRun warnings when on model run step`, () => {
         const rootState = testState()
 
-        const warn = getters.warnings(rootState, null, testState() as any, null)
-        const result = warn(Steps.modelRun).modelRun
+        const warnings = getters.warnings(rootState, null, testState() as any, null)
+        const result = warnings(Steps.modelRun).modelRun
         expect(result).toEqual(modelRunWarnings)
     })
 
     it(`can get modelCalibrate warnings when on model calibrate step`, () => {
         const rootState = testState()
 
-        const warn = getters.warnings(rootState, null, testState() as any, null)
-        const result = warn(Steps.modelCalibrate).modelCalibrate
+        const warnings = getters.warnings(rootState, null, testState() as any, null)
+        const result = warnings(Steps.modelCalibrate).modelCalibrate
         expect(result).toEqual([
             {
                 "locations": ["model_options", "model_calibrate"],
@@ -49,8 +49,8 @@ describe(`root getters`, () => {
     it(`can get modelCalibrate warnings if exists in modelOptions step`, () => {
         const rootState = testState()
 
-        const warn = getters.warnings(rootState, null, testState() as any, null)
-        const result = warn(Steps.modelOptions).modelCalibrate
+        const warnings = getters.warnings(rootState, null, testState() as any, null)
+        const result = warnings(Steps.modelOptions).modelCalibrate
         expect(result).toEqual([
             {
                 locations: ["model_options", "model_calibrate"],
@@ -62,16 +62,16 @@ describe(`root getters`, () => {
     it(`does not get modelOptions warnings if it does not exist on modelCalibrate step`, () => {
         const rootState = testState()
 
-        const warn = getters.warnings(rootState, null, testState() as any, null)
-        const result = warn(Steps.modelCalibrate).modelOptions
+        const warnings = getters.warnings(rootState, null, testState() as any, null)
+        const result = warnings(Steps.modelCalibrate).modelOptions
         expect(result).toEqual([])
     })
 
     it(`can get model options warnings`, () => {
         const rootState = testState()
 
-        const warn = getters.warnings(rootState, null, testState() as any, null)
-        const result = warn(Steps.modelOptions).modelOptions
+        const warnings = getters.warnings(rootState, null, testState() as any, null)
+        const result = warnings(Steps.modelOptions).modelOptions
         expect(result).toEqual(modelOptionWarnings)
     })
 

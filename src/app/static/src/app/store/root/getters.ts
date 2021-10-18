@@ -12,21 +12,14 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
         return state.currentUser == "guest";
     },
 
-    warnings: (getters: any, rootGetters: any, rootState: RootState) => (stepName: string) => {
-
-        const warnings = {
-            modelOptions: rootState.modelOptions.warnings,
-            modelRun: rootState.modelRun.warnings,
-            modelCalibrate: rootState.modelCalibrate.warnings
-        }
-
+    warnings: (state: RootState) => (stepName: string) => {
         const filterWarnings = (warnings: Warning[], stepName: string) =>
-            warnings.filter(warning => !!warning.locations.find(location => location === stepName))
+            warnings.filter(warning => warning.locations.find(location => location === stepName))
 
         return {
-            modelOptions: filterWarnings(warnings.modelOptions, stepName),
-            modelRun: filterWarnings(warnings.modelRun, stepName),
-            modelCalibrate: filterWarnings(warnings.modelCalibrate, stepName)
+            modelOptions: filterWarnings(state.modelOptions.warnings, stepName),
+            modelRun: filterWarnings(state.modelRun.warnings, stepName),
+            modelCalibrate: filterWarnings(state.modelCalibrate.warnings, stepName)
         }
     }
 };
