@@ -1,6 +1,7 @@
 import {RootState} from "../../root";
 import {Getter, GetterTree} from "vuex";
 import {Warning} from "../../generated";
+import {StepWarnings} from "../../types";
 
 interface RootGetters {
     isGuest: Getter<RootState, RootState>
@@ -12,7 +13,7 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
         return state.currentUser == "guest";
     },
 
-    warnings: (getters: any, rootGetters: any, rootState: RootState) => (stepName: string) => {
+    warnings: (getters: any, rootGetters: any, rootState: RootState) => (stepName: string): StepWarnings => {
 
         const warnings = {
             modelOptions: rootState.modelOptions.warnings,
