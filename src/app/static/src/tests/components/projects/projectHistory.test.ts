@@ -80,18 +80,43 @@ describe("Project history component", () => {
     });
 
     it("icon buttons have aria-labels", async () => {
-        const wrapper = getWrapper(testProjects);
+        const store = createStore(testProjects)
+        const wrapper = mount(ProjectHistory, {store, stubs: ["share-project"]});
         const buttons = wrapper.findAll("button");
-        expect(buttons.at(0).attributes("aria-label")).toBe("toggle version 1");
-        expect(buttons.at(1).attributes("aria-label")).toBe("Add or edit project notes");
-        expect(buttons.at(2).attributes("aria-label")).toBe("Load");
-        expect(buttons.at(3).attributes("aria-label")).toBe("Rename project");
-        expect(buttons.at(4).attributes("aria-label")).toBe("Delete");
-        expect(buttons.at(5).attributes("aria-label")).toBe("Copy last updated to a new project");
-        expect(buttons.at(6).attributes("aria-label")).toBe("Add or edit version notes");
-        expect(buttons.at(7).attributes("aria-label")).toBe("Load");
-        expect(buttons.at(8).attributes("aria-label")).toBe("Delete");
-        expect(buttons.at(9).attributes("aria-label")).toBe("Copy to a new project");
+
+        const expectTranslatedLabel = function (index: number, en: string, fr: string, pt: string) {
+            expectTranslated(buttons.at(index), en, fr, pt, store, "aria-label");
+        }
+
+        expectTranslatedLabel(0, "toggle version 1",
+            "toggle version 1",
+            "toggle versão 1");
+
+        expectTranslatedLabel(1, "Add or edit project notes",
+            "Ajouter ou modifier des notes de projet",
+            "Adicionar ou editar notas do projeto");
+
+        expectTranslatedLabel(2, "Load", "Charger", "Carregar");
+
+        expectTranslatedLabel(3, "Rename project", "Renommer le projet", "Mudar o nome do projeto");
+
+        expectTranslatedLabel(4, "Delete", "Supprimer", "Eliminar");
+
+        expectTranslatedLabel(5, "Copy last updated to a new project",
+            "Copier la dernière mise à jour dans un nouveau projet",
+            "Copiar última atualização para um novo projeto");
+
+        expectTranslatedLabel(6, "Add or edit version notes",
+            "Ajouter ou modifier des notes de version",
+            "Adicionar ou editar notas de versão");
+
+        expectTranslatedLabel(7, "Load", "Charger", "Carregar");
+
+        expectTranslatedLabel(8, "Delete", "Supprimer", "Eliminar");
+
+        expectTranslatedLabel(9, "Copy to a new project",
+            "Copier dans un nouveau projet",
+            "Copiar para um novo projeto");
     });
 
     it("can render tooltips without an error", () => {

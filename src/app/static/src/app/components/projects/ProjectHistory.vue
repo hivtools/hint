@@ -18,7 +18,7 @@
                 <div class="col-md-1 project-cell">
                     <button
                         v-b-toggle="`versions-${p.id}`"
-                        :aria-label="`toggle version ${p.id}`"
+                        :aria-label="`toggle ${getTranslatedValue('versionCountLabelSingle')} ${p.id}`"
                         class="btn btn-xs bg-transparent shadow-none py-0">
                         <chevron-right-icon
                             size="20"

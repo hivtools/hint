@@ -39,6 +39,19 @@ describe("ShareProject", () => {
         return store;
     }
 
+    it("button has aria-label", () => {
+        const store = createStore();
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store
+        });
+
+        expect(wrapper.find(Modal).props("open")).toBe(false);
+        expectTranslated(wrapper.find("button"), "Share", "Partager", "Partilhar", store, "aria-label");
+    });
+
     it("opens modal on click", () => {
         const wrapper = shallowMount(ShareProject, {
             propsData: {
