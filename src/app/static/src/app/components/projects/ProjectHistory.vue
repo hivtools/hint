@@ -18,6 +18,7 @@
                 <div class="col-md-1 project-cell">
                     <button
                         v-b-toggle="`versions-${p.id}`"
+                        :aria-label="`toggle version ${p.id}`"
                         class="btn btn-xs bg-transparent shadow-none py-0">
                         <chevron-right-icon
                             size="20"
@@ -37,11 +38,13 @@
                     <span class="float-right">
                     <button href="#" class=" btn btn-sm btn-red-icons"
                             v-tooltip="getTranslatedValue('editProjectNote')"
-                            @click.prevent="handleEditProjectNote(p.id)">
+                            @click.prevent="handleEditProjectNote(p.id)"
+                            v-translate:aria-label="'editProjectNote'">
                         <file-text-icon size="20"></file-text-icon>
                     </button>
                     </span>
-                    <small v-if="p.sharedBy" class="text-muted d-flex">{{ getTranslatedValue("sharedBy") }}: {{ p.sharedBy }}</small>
+                    <small v-if="p.sharedBy" class="text-muted d-flex">{{ getTranslatedValue("sharedBy") }}:
+                        {{ p.sharedBy }}</small>
                 </div>
                 <div class="col-md-1 project-cell version-count-cell">
                     <small class="text-muted">{{ versionCountLabel(p) }}</small>
@@ -50,22 +53,25 @@
                     {{ format(p.versions[0].updated) }}
                 </div>
                 <div class="col-md-1 project-cell load-cell"
-                v-tooltip ="getTranslatedValue('load')">
+                     v-tooltip="getTranslatedValue('load')">
                     <button class=" btn btn-sm btn-red-icons"
-                    @click="loadVersion($event, p.id, p.versions[0].id)">
-                    <refresh-cw-icon size="20"></refresh-cw-icon>
+                            v-translate:aria-label="'load'"
+                            @click="loadVersion($event, p.id, p.versions[0].id)">
+                        <refresh-cw-icon size="20"></refresh-cw-icon>
                     </button>
                 </div>
-                 <div class="col-md-1 project-cell rename-cell"
-                v-tooltip ="getTranslatedValue('renameProject')">
+                <div class="col-md-1 project-cell rename-cell"
+                     v-tooltip="getTranslatedValue('renameProject')">
                     <button class="btn btn-sm btn-red-icons"
+                            v-translate:aria-label="'renameProject'"
                             @click="renameProject($event, p.id)">
                         <edit-icon size="20"></edit-icon>
                     </button>
                 </div>
                 <div class="col-md-1 project-cell delete-cell"
-                v-tooltip ="getTranslatedValue('delete')">
+                     v-tooltip="getTranslatedValue('delete')">
                     <button class=" btn btn-sm btn-red-icons"
+                            v-translate:aria-label="'delete'"
                             @click="deleteProject($event, p.id)">
                         <trash-2-icon size="20"></trash-2-icon>
                     </button>
@@ -73,12 +79,13 @@
                 <div class="col-md-1 project-cell copy-cell"
                      v-tooltip="getTranslatedValue('copyLatestToNewProject')">
                     <button class=" btn btn-sm btn-red-icons"
+                            v-translate:aria-label="'copyLatestToNewProject'"
                             @click="promoteVersion(
                                 $event,
                                 p.id,
                                 p.versions[0].id,
                                 p.versions[0].versionNumber)">
-                            <copy-icon size="20"></copy-icon>
+                        <copy-icon size="20"></copy-icon>
                     </button>
                 </div>
 
@@ -96,6 +103,7 @@
                         <span class="float-right">
                             <button href="#" class="btn btn-sm btn-red-icons"
                                     v-tooltip="getTranslatedValue('editVersionNote')"
+                                    v-translate:aria-label="'editVersionNote'"
                                     @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
                             <file-text-icon size="20"></file-text-icon>
                             </button>
@@ -108,8 +116,9 @@
                         {{ format(v.updated) }}
                     </div>
                     <div class="col-md-1 version-cell load-cell"
-                    v-tooltip ="getTranslatedValue('load')">
+                         v-tooltip="getTranslatedValue('load')">
                         <button class=" btn btn-sm btn-red-icons"
+                                v-translate:aria-label="'load'"
                                 @click="loadVersion($event, p.id, v.id)">
                             <refresh-cw-icon size="20"></refresh-cw-icon>
                         </button>
@@ -117,8 +126,9 @@
                     <div class="col-md-1 version-cell">
                     </div>
                     <div class="col-md-1 version-cell delete-cell"
-                    v-tooltip ="getTranslatedValue('delete')">
+                         v-tooltip="getTranslatedValue('delete')">
                         <button class=" btn btn-sm btn-red-icons"
+                                v-translate:aria-label="'delete'"
                                 @click="deleteVersion($event, p.id, v.id)">
                             <trash-2-icon size="20"></trash-2-icon>
                         </button>
@@ -126,6 +136,7 @@
                     <div class="col-md-1 version-cell copy-cell"
                          v-tooltip="getTranslatedValue('copyToNewProject')">
                         <button class=" btn btn-sm btn-red-icons"
+                                v-translate:aria-label="'copyToNewProject'"
                                 @click="promoteVersion(
                                     $event,
                                     p.id,
@@ -244,10 +255,18 @@
     import i18next from "i18next";
     import {Project, Version, VersionIds} from "../../types";
     import {BCollapse, VBToggle} from "bootstrap-vue";
-    import {ChevronDownIcon, ChevronRightIcon, Trash2Icon, CopyIcon, RefreshCwIcon, EditIcon, FileTextIcon} from "vue-feather-icons";
+    import {
+        ChevronDownIcon,
+        ChevronRightIcon,
+        CopyIcon,
+        EditIcon,
+        FileTextIcon,
+        RefreshCwIcon,
+        Trash2Icon
+    } from "vue-feather-icons";
     import Modal from "../Modal.vue";
     import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
-    import {versionPayload, projectPayload} from "../../store/projects/actions";
+    import {projectPayload, versionPayload} from "../../store/projects/actions";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
@@ -352,7 +371,7 @@
                     lng: this.currentLanguage,
                 });
             },
-            editVersionNoteHeader: function (){
+            editVersionNoteHeader: function () {
                 return i18next.t("editVersionNoteHeader", {
                     version: this.selectedVersionNumber,
                     lng: this.currentLanguage,

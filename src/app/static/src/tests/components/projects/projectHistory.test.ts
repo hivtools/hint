@@ -56,7 +56,7 @@ describe("Project history component", () => {
 
     const testProjects = [
         {
-            id: 1, name: "proj1", sharedBy : "shared@email.com", note: "project notes", versions: [
+            id: 1, name: "proj1", sharedBy: "shared@email.com", note: "project notes", versions: [
                 {id: "s11", created: isoDates[0], updated: isoDates[1], versionNumber: 1, note: "version notes"},
                 {id: "s12", created: isoDates[1], updated: isoDates[2], versionNumber: 2}]
         },
@@ -67,7 +67,7 @@ describe("Project history component", () => {
     ];
 
 
-    const getWrapper = (projects = testProjects) =>  {
+    const getWrapper = (projects = testProjects) => {
         return mount(ProjectHistory, {store: createStore(projects), stubs: ["share-project"]});
     };
 
@@ -79,11 +79,28 @@ describe("Project history component", () => {
         expect(wrapper.find("edit-icon").exists).toBeTruthy();
     });
 
+    it("icon buttons have aria-labels", async () => {
+        const wrapper = getWrapper(testProjects);
+        const buttons = wrapper.findAll("button");
+        expect(buttons.at(0).attributes("aria-label")).toBe("toggle version 1");
+        expect(buttons.at(1).attributes("aria-label")).toBe("Add or edit project notes");
+        expect(buttons.at(2).attributes("aria-label")).toBe("Load");
+        expect(buttons.at(3).attributes("aria-label")).toBe("Rename project");
+        expect(buttons.at(4).attributes("aria-label")).toBe("Delete");
+        expect(buttons.at(5).attributes("aria-label")).toBe("Copy last updated to a new project");
+        expect(buttons.at(6).attributes("aria-label")).toBe("Add or edit version notes");
+        expect(buttons.at(7).attributes("aria-label")).toBe("Load");
+        expect(buttons.at(8).attributes("aria-label")).toBe("Delete");
+        expect(buttons.at(9).attributes("aria-label")).toBe("Copy to a new project");
+    });
+
     it("can render tooltips without an error", () => {
         const mockTooltip = jest.fn();
         const store = createStore(testProjects)
-        shallowMount(ProjectHistory, {store,
-             directives: {"tooltip": mockTooltip} });
+        shallowMount(ProjectHistory, {
+            store,
+            directives: {"tooltip": mockTooltip}
+        });
 
         expect(mockTooltip.mock.calls[0][1].value).toBe("Add or edit project notes");
         expect(mockTooltip.mock.calls[1][1].value).toBe("Load");
@@ -98,8 +115,10 @@ describe("Project history component", () => {
         const mockTooltip = jest.fn();
         const store = createStore(testProjects)
         store.state.language = Language.fr;
-        shallowMount(ProjectHistory, {store,
-        directives: {"tooltip": mockTooltip} });
+        shallowMount(ProjectHistory, {
+            store,
+            directives: {"tooltip": mockTooltip}
+        });
 
         expect(mockTooltip.mock.calls[0][1].value).toBe("Ajouter ou modifier des notes de projet");
         expect(mockTooltip.mock.calls[1][1].value).toBe("Charger");
@@ -114,8 +133,10 @@ describe("Project history component", () => {
         const mockTooltip = jest.fn();
         const store = createStore(testProjects)
         store.state.language = Language.pt;
-        shallowMount(ProjectHistory, {store,
-            directives: {"tooltip": mockTooltip} });
+        shallowMount(ProjectHistory, {
+            store,
+            directives: {"tooltip": mockTooltip}
+        });
 
         expect(mockTooltip.mock.calls[0][1].value).toBe("Adicionar ou editar notas do projeto");
         expect(mockTooltip.mock.calls[1][1].value).toBe("Carregar");
@@ -180,7 +201,7 @@ describe("Project history component", () => {
         expect(headers.length).toBe(9);
         expect(headers.at(0).text()).toBe("");
         expectTranslated(headers.at(1), "Project name", "Nom du projet", "Nome do projeto", store);
-        expectTranslated(headers.at(2), "Versions", "Versions","Versões", store);
+        expectTranslated(headers.at(2), "Versions", "Versions", "Versões", store);
         expectTranslated(headers.at(3), "Last updated", "Dernière mise à jour", "Última atualização", store);
         expectTranslated(headers.at(4), "Load", "Charger", "Carregar", store);
         expectTranslated(headers.at(5), "Rename", "Renommer le projet", "Mudar o nome", store);
@@ -188,7 +209,7 @@ describe("Project history component", () => {
         expectTranslated(headers.at(7), "Copy to", "Copier", "Copiar para", store);
         expectTranslated(headers.at(8), "Share", "Partager", "Partilhar", store);
 
-        testRendersProject(wrapper, 1, "proj1",  isoDates[1], 2);
+        testRendersProject(wrapper, 1, "proj1", isoDates[1], 2);
         const proj1Versions = wrapper.find("#versions-1");
         const proj1VersionRows = proj1Versions.findAll(".row");
         expect(proj1VersionRows.length).toBe(2);
@@ -270,7 +291,7 @@ describe("Project history component", () => {
         expectTranslated(modal.find(".modal-body"), "Delete version?",
             "Supprimer cette version?", "Eliminar versão?", store);
         const buttons = modal.find(".modal-footer").findAll("button");
-        expectTranslated(buttons.at(0), "OK", "OK","OK", store);
+        expectTranslated(buttons.at(0), "OK", "OK", "OK", store);
         expectTranslated(buttons.at(1), "Cancel", "Annuler", "Cancelar", store);
     });
 
@@ -327,35 +348,35 @@ describe("Project history component", () => {
     };
 
     it("does show project name as default value when a user clicks rename link", async () => {
-            const wrapper = getWrapper(testProjects);
-            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("button");
-            renameLink.trigger("click");
-            await Vue.nextTick();
+        const wrapper = getWrapper(testProjects);
+        const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("button");
+        renameLink.trigger("click");
+        await Vue.nextTick();
 
-            const modal = wrapper.findAll(".modal").at(2);
-            const proj1 = modal.find("input")
-            const projectName1 = proj1.element as HTMLInputElement
-            expect(projectName1.value).toBe("proj1")
+        const modal = wrapper.findAll(".modal").at(2);
+        const proj1 = modal.find("input")
+        const projectName1 = proj1.element as HTMLInputElement
+        expect(projectName1.value).toBe("proj1")
     });
 
     it("does show project name as default value when a user clicks copy project", async () => {
-            const wrapper = getWrapper();
-            const copyLink = wrapper.find("#p-1").findAll(".project-cell");
+        const wrapper = getWrapper();
+        const copyLink = wrapper.find("#p-1").findAll(".project-cell");
 
-            copyLink.at(7).find("button").trigger("click")
-            await Vue.nextTick();
-            const modal = wrapper.findAll(".modal").at(1);
-            const proj1 = modal.find("input")
-            const projectName1 = proj1.element as HTMLInputElement
-            expect(projectName1.value).toBe("proj1")
+        copyLink.at(7).find("button").trigger("click")
+        await Vue.nextTick();
+        const modal = wrapper.findAll(".modal").at(1);
+        const proj1 = modal.find("input")
+        const projectName1 = proj1.element as HTMLInputElement
+        expect(projectName1.value).toBe("proj1")
 
 
-            copyLink.at(5).find("button").trigger("click")
-            await Vue.nextTick();
-            const modalVersion = wrapper.findAll(".modal").at(1);
-            const projVersion = modalVersion.find("input")
-            const projectNameVersion = projVersion.element as HTMLInputElement
-            expect(projectNameVersion.value).toBe("proj1")
+        copyLink.at(5).find("button").trigger("click")
+        await Vue.nextTick();
+        const modalVersion = wrapper.findAll(".modal").at(1);
+        const projVersion = modalVersion.find("input")
+        const projectNameVersion = projVersion.element as HTMLInputElement
+        expect(projectNameVersion.value).toBe("proj1")
     });
 
     it("shows modal when rename project link is clicked and removes it when cancel is clicked", async () => {
@@ -392,8 +413,8 @@ describe("Project history component", () => {
     it("methods for rename and cancel rename work regardless of feature switch", async () => {
         const wrapper = getWrapper();
         const mockPreventDefault = jest.fn()
-        const mockEvent = { preventDefault: mockPreventDefault }
-        wrapper.setData({ projectToRename: null })
+        const mockEvent = {preventDefault: mockPreventDefault}
+        wrapper.setData({projectToRename: null})
         const vm = wrapper.vm as any
 
         vm.renameProject(mockEvent, 123);
@@ -421,7 +442,7 @@ describe("Project history component", () => {
             "Por favor, introduza um nome para o novo projecto", store);
 
         const input = modal.find("input")
-        expectTranslated(input, "Project name", "Nom du projet","Nome do projeto", store, "placeholder");
+        expectTranslated(input, "Project name", "Nom du projet", "Nome do projeto", store, "placeholder");
         const buttons = modal.find(".modal-footer").findAll("button");
         expectTranslated(buttons.at(0), "Create project", "Créer un projet", "Criar projeto", store);
         expectTranslated(buttons.at(1), "Cancel", "Annuler", "Cancelar", store);
@@ -600,7 +621,7 @@ describe("Project history component", () => {
         await Vue.nextTick();
         const modal = wrapper.findAll(".modal").at(3);
         expect(modal.element.style.getPropertyValue("display")).toBe("block")
-        expect(wrapper.vm.$data.projectNoteToEdit).toBe( 1)
+        expect(wrapper.vm.$data.projectNoteToEdit).toBe(1)
 
         const cancelBtn = modal.find(".modal-footer").findAll("button").at(1);
         await cancelBtn.trigger("click");
@@ -617,7 +638,7 @@ describe("Project history component", () => {
         await Vue.nextTick();
         const modal = wrapper.findAll(".modal").at(3);
         expect(modal.element.style.getPropertyValue("display")).toBe("block")
-        expect(wrapper.vm.$data.versionNoteToEdit).toMatchObject( {"projectId": 1, "versionId": "s11"})
+        expect(wrapper.vm.$data.versionNoteToEdit).toMatchObject({"projectId": 1, "versionId": "s11"})
 
         const cancelBtn = modal.find(".modal-footer").findAll("button").at(1);
         await cancelBtn.trigger("click");
@@ -660,7 +681,7 @@ describe("Project history component", () => {
 
         const editProjectNoteSubHeader = modal.find("#editProjectNoteSubHeader")
         expectTranslated(editProjectNoteSubHeader, "Add or edit project notes for proj1",
-            "Ajouter ou modifier des notes de projet pour proj1",  "Adicionar ou editar notas de projeto para proj1",
+            "Ajouter ou modifier des notes de projet pour proj1", "Adicionar ou editar notas de projeto para proj1",
             store)
 
         const editProjectNoteHeader = modal.find("#editProjectNoteHeader")
@@ -764,34 +785,34 @@ describe("Project history component", () => {
     });
 
     it("can use carriage return to invoke renameProject action", async () => {
-            const wrapper = getWrapper(testProjects);
-            const vm = wrapper.vm as any
-            const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("button");
-            renameLink.trigger("click");
-            await Vue.nextTick();
+        const wrapper = getWrapper(testProjects);
+        const vm = wrapper.vm as any
+        const renameLink = wrapper.find("#p-1").findAll(".project-cell").at(5).find("button");
+        renameLink.trigger("click");
+        await Vue.nextTick();
 
-            const modal = wrapper.findAll(".modal").at(2);
-            const input = modal.find("input");
-            const renameBtn = modal.find(".modal-footer").findAll("button").at(0);
-            input.setValue("renamedProject");
-            expect(renameBtn.attributes("disabled")).toBe(undefined);
-            await input.trigger("keyup.enter")
+        const modal = wrapper.findAll(".modal").at(2);
+        const input = modal.find("input");
+        const renameBtn = modal.find(".modal-footer").findAll("button").at(0);
+        input.setValue("renamedProject");
+        expect(renameBtn.attributes("disabled")).toBe(undefined);
+        await input.trigger("keyup.enter")
 
-            expect(mockRenameProject.mock.calls.length).toBe(1);
-            expect(mockRenameProject.mock.calls[0][1]).toStrictEqual(
-                {
-                    "name": "renamedProject",
-                    "note": "project notes",
-                    "projectId": 1
-                });
-            expect(vm.projectToRename).toBe(null);
-            expect(vm.renamedProjectName).toBe("");
+        expect(mockRenameProject.mock.calls.length).toBe(1);
+        expect(mockRenameProject.mock.calls[0][1]).toStrictEqual(
+            {
+                "name": "renamedProject",
+                "note": "project notes",
+                "projectId": 1
+            });
+        expect(vm.projectToRename).toBe(null);
+        expect(vm.renamedProjectName).toBe("");
     });
 
     it("cannot invoke confirmRename if no project is selected", async () => {
         const wrapper = getWrapper(testProjects);
-        wrapper.setData({ projectToRename: null });
-        wrapper.setData({ renamedProjectName: "renamedProject" });
+        wrapper.setData({projectToRename: null});
+        wrapper.setData({renamedProjectName: "renamedProject"});
         const vm = wrapper.vm as any
         vm.confirmRename("renamedProject");
         await Vue.nextTick();
@@ -807,10 +828,10 @@ describe("Project history component", () => {
         expect(v.at(1).findAll("small").length).toBe(1)
 
         const sharedBy = v.at(1).find("small")
-        expect(sharedBy.text()).toBe("Shared by: shared@email.com")
+        expect(sharedBy.text().replace(/\s+/g, ' ').trim()).toBe("Shared by: shared@email.com")
 
         wrapper.vm.$store.state.language = Language.fr;
-        expect(sharedBy.text()).toBe("Partagé par: shared@email.com")
+        expect(sharedBy.text().replace(/\s+/g, ' ').trim()).toBe("Partagé par: shared@email.com")
 
     });
 
@@ -859,7 +880,7 @@ describe("Project history component", () => {
         const modal = wrapper.findAll(".modal").at(1);
         const textarea = modal.find("#promoteNote label");
         expectTranslated(textarea, "Notes: (your reason for copying project)",
-            "Notes : (votre motif pour copier le projet)" , "Notas: (a sua razão para copiar o projeto)", store)
+            "Notes : (votre motif pour copier le projet)", "Notas: (a sua razão para copiar o projeto)", store)
     });
 
 });

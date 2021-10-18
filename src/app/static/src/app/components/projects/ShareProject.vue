@@ -2,7 +2,8 @@
     <div>
         <button class="btn btn-sm btn-red-icons"
                 v-tooltip="tooltipShare"
-                @click="shareProject">
+                @click="shareProject"
+                v-translate:aria-label="'share'">
             <share-2-icon size="20"></share-2-icon>
         </button>
         <modal :open="open">
@@ -102,7 +103,7 @@
         cloneProject: (payload: CloneProjectPayload) => void
     }
 
-    declare const currentUser: string; 
+    declare const currentUser: string;
 
     export default Vue.extend<Data, Methods, Computed, Props>({
         props: {
