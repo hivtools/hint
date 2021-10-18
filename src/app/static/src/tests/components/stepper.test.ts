@@ -35,14 +35,14 @@ import {StepperState} from "../../app/store/stepper/stepper";
 import {actions as rootActions} from "../../app/store/root/actions"
 import {mutations as rootMutations} from "../../app/store/root/mutations"
 import {metadataGetters, MetadataState} from "../../app/store/metadata/metadata";
-import {ModelStatusResponse} from "../../app/generated";
+import {ModelStatusResponse, Warning} from "../../app/generated";
 import {modelOptionsGetters, ModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 import {LoadingState, LoadState} from "../../app/store/load/load";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {ProjectsState} from "../../app/store/projects/projects";
 import {ModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
 import VersionStatus from "../../app/components/projects/VersionStatus.vue";
-import {RootState} from "../../app/root";
+import {RootState, STEPS} from "../../app/root";
 import ModelCalibrate from "../../app/components/modelCalibrate/ModelCalibrate.vue";
 import {getters as rootGetters} from "../../app/store/root/getters";
 import {expectTranslated} from "../testHelpers";
@@ -563,7 +563,7 @@ describe("Stepper component", () => {
         expect(steps.at(3).props().complete).toBe(true);
     });
 
-    it("model run step becomes complete on success, result fetched, and automatically moves to calibrate step", async () => {
+    const testModelRunCompletion = async (modelRunWarnings: Warning[], expectAdvanceToCalibrate: boolean)=> {
         //store should consider first 3 steps to be complete initially
         const wrapper = createReadySut(
             {
@@ -608,10 +608,32 @@ describe("Stepper component", () => {
             "payload": "TEST"
         });
 
+        wrapper.vm.$store.commit("modelRun/WarningsFetched", {
+            type: "WarningsFetched",
+            payload: modelRunWarnings
+        });
+
         await Vue.nextTick();
         expect(steps.at(3).props().complete).toBe(true);
-        expect(steps.at(3).props().active).toBe(false);
-        expect(steps.at(4).props().active).toBe(true);
+        if (expectAdvanceToCalibrate) {
+            expect(steps.at(3).props().active).toBe(false);
+            expect(steps.at(4).props().active).toBe(true);
+        } else {
+            expect(steps.at(3).props().active).toBe(true);
+            expect(steps.at(4).props().active).toBe(false);
+        }
+    };
+
+    it("model run step becomes complete on success, result fetched, and automatically moves to calibrate step", async () => {
+        testModelRunCompletion([], true);
+    });
+
+    it("model run step does not automatically advance to calibrate step on completion if there are modelRun warnings to display", () => {
+        testModelRunCompletion([{text: "model run warning", locations: [STEPS.modelRun, STEPS.reviewOutput]}], false);
+    });
+
+    it("model run step does automatically advance to calibrate step on completion if there are modelRun warnings, but not for this step to display", () => {
+        testModelRunCompletion([{text: "model run warning", locations: [STEPS.reviewOutput]}], true);
     });
 
     it("validates state once ready", async () => {
