@@ -166,6 +166,7 @@
         watch: {
             complete: function (){
                 // auto-progress from modelRun to modelCalibrate if there are no warnings to display
+                console.log("Here are the warnings: " + JSON.stringify(this.warnings(STEPS.modelRun)))
                 if (this.activeStep === 4 && this.isComplete(4) && this.isEnabled(5) &&
                         this.warnings(STEPS.modelRun).modelRun.length === 0){
                     this.next();
