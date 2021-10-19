@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 interface FlowClient
 {
-    fun notifyTeams(url: String?, data: ErrorReport): ResponseEntity<String>
+    fun notifyTeams(data: ErrorReport): ResponseEntity<String>
 }
 
 @Component
@@ -23,9 +23,9 @@ class FuelFlowClient(
         return emptyMap()
     }
 
-    override fun notifyTeams(url: String?, data: ErrorReport): ResponseEntity<String>
+    override fun notifyTeams(data: ErrorReport): ResponseEntity<String>
     {
-        return postJson(url, objectMapper.writeValueAsString(data))
+        return postJson(null, objectMapper.writeValueAsString(data))
     }
 
 }

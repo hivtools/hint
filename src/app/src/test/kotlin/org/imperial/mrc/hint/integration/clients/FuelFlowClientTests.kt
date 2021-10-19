@@ -37,7 +37,7 @@ class FuelFlowClientTests: SecureIntegrationTests()
 
         val sut = FuelFlowClient(ObjectMapper(), ConfiguredAppProperties(props))
 
-        val result = sut.notifyTeams(null, data)
+        val result = sut.notifyTeams(data)
 
         assertThat(result.statusCodeValue).isEqualTo(200)
 
@@ -67,11 +67,11 @@ class FuelFlowClientTests: SecureIntegrationTests()
                 Instant.now()
         )
 
-        val props = readPropsFromTempFile("issue_report_url=https://mock.codes")
+        val props = readPropsFromTempFile("issue_report_url=https://mock.codes/400")
 
         val sut = FuelFlowClient(ObjectMapper(), ConfiguredAppProperties(props))
 
-        val result = sut.notifyTeams("400", data)
+        val result = sut.notifyTeams(data)
 
         assertThat(result.statusCodeValue).isEqualTo(400)
 

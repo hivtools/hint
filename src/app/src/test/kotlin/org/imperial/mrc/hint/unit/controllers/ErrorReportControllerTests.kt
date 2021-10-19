@@ -51,7 +51,7 @@ class ErrorReportControllerTests
     {
         val mockFlowClient = mock<FuelFlowClient>
         {
-            on { notifyTeams(null, data) } doReturn response
+            on { notifyTeams(data) } doReturn response
         }
 
         val sut = ErrorReportController(mockFlowClient)
