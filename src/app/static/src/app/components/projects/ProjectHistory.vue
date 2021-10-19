@@ -167,9 +167,10 @@
         </modal>
         <modal :open="versionToPromote">
             <h4 v-html="promoteVersionHeader" id="promoteVersionHeader"></h4>
-            <h5 v-translate="'enterProjectName'"></h5>
+            <label class="h5" for="new-project-name" v-translate="'enterProjectName'"></label>
             <input type="text"
                    class="form-control"
+                   id="new-project-name"
                    v-translate:placeholder="'projectName'"
                    @keyup.enter="confirmPromotion(newProjectName)"
                    v-model="newProjectName"/>
@@ -190,16 +191,15 @@
             </template>
         </modal>
         <modal :open="projectToRename">
-            <h4 v-translate="'renameProjectHeader'"></h4>
+            <label class="h4" for="rename-project" v-translate="'renameProjectHeader'"></label>
             <input type="text"
+                   id="rename-project"
                    class="form-control"
                    v-translate:placeholder="'projectName'"
                    @keyup.enter="confirmRename(renamedProjectName)"
                    v-model="renamedProjectName">
             <div class="form-group pt-3">
-                <label class="h5" for="version-note-rename">
-                    <span v-translate="'renameNoteHeader'"></span>
-                </label>
+                <label class="h5" for="version-note-rename" v-translate="'renameNoteHeader'"></label>
                 <textarea class="form-control"
                           id="version-note-rename"
                           placeholder="Notes"
@@ -222,20 +222,26 @@
 
         <modal :open="versionNoteToEdit || projectNoteToEdit">
             <div v-if="versionNoteToEdit">
-                <h4 v-html="editVersionNoteHeader" id="editVersionNoteHeader"></h4>
+                <label class="h4" for="edit-note-id"
+                       v-html="editVersionNoteHeader"
+                    id="editVersionNoteHeader"></label>
                 <div class="pb-3"
                      v-html="editVersionNoteSubHeader"
                      id="editVersionNoteSubHeader"></div>
+                <textarea id="edit-note-id" class="form-control"
+                          v-model="editedNote"></textarea>
             </div>
             <div v-if="projectNoteToEdit">
-                <h4 v-translate="'editProjectNoteHeader'" id="editProjectNoteHeader"></h4>
+                <label class="h4"
+                       for="edit-note-id"
+                       v-translate="'editProjectNoteHeader'"
+                       id="editProjectNoteHeader"></label>
                 <div class="pb-3"
                      v-html="editProjectNoteSubHeader"
                      id="editProjectNoteSubHeader"></div>
+                <textarea id="edit-note-id" class="form-control"
+                          v-model="editedNote"></textarea>
             </div>
-
-            <textarea id="edit-version-note-id" class="form-control"
-                      v-model="editedNote"></textarea>
             <template v-slot:footer>
                 <button type="button"
                         class="btn btn-red"

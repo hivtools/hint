@@ -413,11 +413,11 @@ describe("Project history component", () => {
 
         const modal = wrapper.findAll(".modal").at(2);
         expect(modal.classes()).toContain("show");
-        expectTranslated(modal.find(".modal-body h4"), "Please enter a new name for the project",
+        expectTranslated(modal.find(".modal-body label.h4"), "Please enter a new name for the project",
             "Veuillez entrer un nouveau nom pour le projet",
             "Por favor, introduza um novo nome para o projeto", store);
 
-        expectTranslated(modal.find(".modal-body label"), "Notes: (your reason for renaming the project)",
+        expectTranslated(modal.find(".modal-body label.h5"), "Notes: (your reason for renaming the project)",
             "Remarques : (la raison pour laquelle vous avez renommé le projet)",
             "Notas: (seu motivo para renomear o projeto)", store);
 
@@ -462,7 +462,7 @@ describe("Project history component", () => {
         expectTranslated(modal.find(".modal-body h4"), "Copying version v1 to a new project",
             "Copie de la version v1 dans un nouveau projet",
             "A copiar versão v1 para um novo projeto", store);
-        expectTranslated(modal.find(".modal-body h5"), "Please enter a name for the new project",
+        expectTranslated(modal.find(".modal-body label.h5"), "Please enter a name for the new project",
             "Veuillez entrer un nom pour le nouveau projet",
             "Por favor, introduza um nome para o novo projecto", store);
 
@@ -491,7 +491,7 @@ describe("Project history component", () => {
         expectTranslated(modal.find(".modal-body h4"), "Copying version v1 to a new project",
             "Copie de la version v1 dans un nouveau projet",
             "A copiar versão v1 para um novo projeto", store);
-        expectTranslated(modal.find(".modal-body h5"), "Please enter a name for the new project",
+        expectTranslated(modal.find(".modal-body label.h5"), "Please enter a name for the new project",
             "Veuillez entrer un nom pour le nouveau projet",
             "Por favor, introduza um nome para o novo projecto", store);
         const input = modal.find("input");
