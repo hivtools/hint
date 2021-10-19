@@ -3,31 +3,13 @@
         <div class="content alert alert-warning pt-0">
             <div :style="containerBox">
                 <div ref="warningBox">
-                    <div v-if="warnings.modelOptions.length">
+                    <div v-for="(value, key) in filteredWarnings" :key="key">
                         <h4 class="alert-heading pt-2">
                             <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
-                            Model option validation raised the following warning(s)
+                            Model option validation raised the following warning(s) {{ key }}
                         </h4>
                         <ul class="mb-0">
-                            <li v-for="warning in warnings.modelOptions" :key="warning">{{ warning }}</li>
-                        </ul>
-                    </div>
-                    <div v-if="warnings.modelRun.length">
-                        <h4 class="alert-heading pt-2">
-                            <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
-                            Model fit raised the following warning(s)
-                        </h4>
-                        <ul class="mb-0">
-                            <li v-for="warning in warnings.modelRun" :key="warning">{{ warning }}</li>
-                        </ul>
-                    </div>
-                    <div v-if="warnings.modelCalibrate.length">
-                        <h4 class="alert-heading pt-2">
-                            <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
-                            Model calibration raised the following warning(s)
-                        </h4>
-                        <ul class="mb-0">
-                            <li v-for="warning in warnings.modelCalibrate" :key="warning">{{ warning }}</li>
+                            <li v-for="warning in value" :key="warning">{{ warning }}</li>
                         </ul>
                     </div>
                 </div>
@@ -81,6 +63,7 @@
             height: string,
             overflowY: string
         };
+        filteredWarnings: Warnings;
         warningsLengthy: boolean;
         showAlert: boolean;
         buttonText: string;
@@ -91,11 +74,23 @@
         locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
     };
 
+    // interface Warnings {
+    //     modelOptions: string[];
+    //     modelRun: string[];
+    //     modelCalibrate: string[];
+    // }
+
     interface Warnings {
-        modelOptions: string[];
-        modelRun: string[];
-        modelCalibrate: string[];
+        [key: string]: string[];
     }
+
+    // interface FilteredWarnings {
+    //     modelOptions?: string[];
+    //     modelRun?: string[];
+    //     modelCalibrate?: string[];
+    // }
+
+    // type WarningOrigin = "modelOptions" | "modelRun" | "modelCalibrate"
 
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "WarningAlert",
@@ -136,6 +131,15 @@
                     overflowY: "hidden"
                 }
             },
+            filteredWarnings(){
+                const anObject: Warnings = {}
+                Object.keys(this.warnings).forEach((k) => {
+                    if (this.warnings[k].length > 0){
+                        anObject[k] = this.warnings[k]
+                    }
+                });
+                return anObject
+            },
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
@@ -169,6 +173,7 @@
         mounted(){
             this.updateDimensions()
             // console.log('heights', this.lineHeight, this.fullBoxHeight)
+            console.log('filteredWarnings', this.filteredWarnings)
         },
         components: {
             AlertTriangleIcon

@@ -24,7 +24,11 @@
             modelRun: [],
             modelCalibrate: ['calibrate warning']
             }"></warning-alert>
-        <!-- <warning-alert :step="activeStep" :warnings="['a warning', 'another warning', 'third warning']"></warning-alert> -->
+        <warning-alert :step="activeStep" :warnings="{ 
+            modelOptions: ['a warning', 'another warning', 'third warning'],
+            modelRun: [],
+            modelCalibrate: []
+            }"></warning-alert>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingData'"></h2>
