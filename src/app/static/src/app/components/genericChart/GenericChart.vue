@@ -24,7 +24,7 @@
                            :chart-data="chartData"
                            :layout-data="chartConfigValues.layoutData"
                            :style="{height: chartConfigValues.scrollHeight}"></plotly>
-                    <div v-else class="mt-5">
+                    <div v-else class="mt-5" id="empty-generic-chart-data">
                         <div class="empty-chart-message px-3 py-2">
                             <span class="lead">
                                 <strong v-translate="'noChartData'"></strong>
