@@ -13,7 +13,7 @@
                 <div class="row mb-2" v-for="(email, index) in emailsToShareWith" :key="index">
                     <div class="col">
                         <input autocomplete="no"
-                               title="enter email address to share with"
+                               v-translate:aria-label="'enterEmail'"
                                @keyup.enter="$event.target.blur()"
                                @keyup.delete="removeEmail(email, index)"
                                class="form-control"

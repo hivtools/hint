@@ -51,6 +51,19 @@ describe("ShareProject", () => {
         expectTranslated(wrapper.find("button"), "Share", "Partager", "Partilhar", store, "aria-label");
     });
 
+    it("input has aria-label", () => {
+        const store = createStore();
+        const wrapper = shallowMount(ShareProject, {
+            propsData: {
+                project: {id: 1, name: "p1"}
+            },
+            store
+        });
+
+        expectTranslated(wrapper.find("input"), "Enter email address to share with", "Entrez l'e-mail à partager",
+            "Insira o e-mail para compartilhar", store, "aria-label");
+    });
+
     it("opens modal on click", () => {
         const wrapper = shallowMount(ShareProject, {
             propsData: {
