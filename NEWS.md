@@ -2,6 +2,10 @@
 
 * Endpoint for posting error report to Teams
 
+# hint 1.56.2
+
+* Save warnings from option validation, model fit and model calibration to app state
+
 # hint 1.56.1
 
 * Render filter labels verbatim in output tables, do not attempt to translate

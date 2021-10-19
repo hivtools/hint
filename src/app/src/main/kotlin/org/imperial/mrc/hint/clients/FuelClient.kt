@@ -42,10 +42,13 @@ abstract class FuelClient(protected val baseUrl: String)
 
     protected fun postJson(urlPath: String?, json: String): ResponseEntity<String>
     {
-        val url = when
+        val url = if (urlPath === null)
         {
-            urlPath === null -> baseUrl
-            else -> "$baseUrl/$urlPath"
+            baseUrl
+        }
+        else
+        {
+            "$baseUrl/$urlPath"
         }
 
         return url.httpPost()

@@ -26,10 +26,12 @@ export interface AncFilters {
   year: {
     label: string;
     id: string;
+    description?: string;
   }[];
   indicators: {
     label: string;
     id: string;
+    description?: string;
   }[];
 }
 export type AncResponseData = {
@@ -88,6 +90,7 @@ export interface BarchartMetadata {
     options: {
       label: string;
       id: string;
+      description?: string;
     }[];
     use_shape_regions?: boolean | null;
   }[];
@@ -149,6 +152,7 @@ export interface CalibratePlotResponse {
         options: {
           label: string;
           id: string;
+          description?: string;
         }[];
         use_shape_regions?: boolean | null;
       }[];
@@ -211,6 +215,7 @@ export interface CalibrateResultResponse {
         options: {
           label: string;
           id: string;
+          description?: string;
         }[];
         use_shape_regions?: boolean | null;
       }[];
@@ -248,11 +253,16 @@ export interface CalibrateResultResponse {
         options: {
           label: string;
           id: string;
+          description?: string;
         }[];
         use_shape_regions?: boolean | null;
       }[];
     };
   };
+  warnings: {
+    text: string;
+    locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+  }[];
   [k: string]: any;
 }
 export interface CalibrateStatusResponse {
@@ -327,10 +337,34 @@ export interface ChoroplethMetadata {
     options: {
       label: string;
       id: string;
+      description?: string;
     }[];
     use_shape_regions?: boolean | null;
   }[];
 }
+export interface Column {
+  id: string;
+  column_id: string;
+  label: string;
+  values:
+    | {
+        label: string;
+        id: string;
+        children?: {
+          [k: string]: any;
+        }[];
+      }
+    | {
+        label: string;
+        id: string;
+        description?: string;
+      }[];
+}
+export type ColumnValues = {
+  label: string;
+  id: string;
+  description?: string;
+}[];
 export interface DownloadStatusResponse {
   id: string;
   done: boolean | null;
@@ -350,6 +384,7 @@ export interface DownloadStatusResponse {
 export interface DownloadSubmitResponse {
   id: string;
 }
+export type ErrorCode = string;
 export interface Error {
   error: string;
   detail: string | null;
@@ -357,7 +392,6 @@ export interface Error {
   trace?: string[];
   [k: string]: any;
 }
-export type ErrorCode = string;
 export type FileName = string;
 export type FilePath = string | null;
 export interface Filter {
@@ -367,18 +401,112 @@ export interface Filter {
   options: {
     label: string;
     id: string;
+    description?: string;
   }[];
   use_shape_regions?: boolean | null;
 }
 export interface FilterOption {
   label: string;
   id: string;
+  description?: string;
 }
 export interface HintrVersionResponse {
   [k: string]: string;
 }
 export interface HintrWorkerStatus {
   [k: string]: "BUSY" | "IDLE" | "PAUSED" | "EXITED" | "LOST";
+}
+export type InputTimeSeriesData = {
+  area_id: string;
+  area_name: string;
+  time_step: string;
+  plot: string | null;
+  value: number | null;
+  area_level?: number;
+  age_group?: string;
+  time_period: string;
+}[];
+export interface InputTimeSeriesDefaults {
+  selected_filter_options: {
+    [k: string]: any;
+  };
+}
+export interface InputTimeSeriesMetadata {
+  columns: {
+    id: string;
+    column_id: string;
+    label: string;
+    values:
+      | {
+          label: string;
+          id: string;
+          children?: {
+            [k: string]: any;
+          }[];
+        }
+      | {
+          label: string;
+          id: string;
+          description?: string;
+        }[];
+  }[];
+  defaults: {
+    selected_filter_options: {
+      [k: string]: any;
+    };
+  };
+}
+export interface InputTimeSeriesRequest {
+  data: {
+    [k: string]: any;
+  };
+}
+export interface InputTimeSeriesResponse {
+  data: {
+    area_id: string;
+    area_name: string;
+    time_step: string;
+    plot: string | null;
+    value: number | null;
+    area_level?: number;
+    age_group?: string;
+    time_period: string;
+  }[];
+  metadata: {
+    columns: {
+      id: string;
+      column_id: string;
+      label: string;
+      values:
+        | {
+            label: string;
+            id: string;
+            children?: {
+              [k: string]: any;
+            }[];
+          }
+        | {
+            label: string;
+            id: string;
+            description?: string;
+          }[];
+    }[];
+    defaults: {
+      selected_filter_options: {
+        [k: string]: any;
+      };
+    };
+  };
+}
+export interface InputTimeSeriesRow {
+  area_id: string;
+  area_name: string;
+  time_step: string;
+  plot: string | null;
+  value: number | null;
+  area_level?: number;
+  age_group?: string;
+  time_period: string;
 }
 export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
 export interface LevelLabels {
@@ -400,6 +528,10 @@ export interface ModelCalibrateRequest {
 export type ModelCancelResponse = null;
 export interface ModelOptionsValidate {
   valid: true;
+  warnings: {
+    text: string;
+    locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+  }[];
 }
 export interface ModelOptionsValidateRequest {
   data: {
@@ -459,6 +591,10 @@ export type ModelResultData = {
 export interface ModelResultResponse {
   id: string;
   complete: true;
+  warnings: {
+    text: string;
+    locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+  }[];
   [k: string]: any;
 }
 export interface ModelResultRow {
@@ -642,6 +778,13 @@ export interface ModelSubmitRequest {
 export interface ModelSubmitResponse {
   id: string;
 }
+export interface NestedColumnValue {
+  label: string;
+  id: string;
+  children?: {
+    [k: string]: any;
+  }[];
+}
 export interface NestedFilterOption {
   label: string;
   id: string;
@@ -697,14 +840,17 @@ export interface ProgrammeFilters {
   age: {
     label: string;
     id: string;
+    description?: string;
   }[];
   calendar_quarter: {
     label: string;
     id: string;
+    description?: string;
   }[];
   indicators: {
     label: string;
     id: string;
+    description?: string;
   }[];
 }
 export type ProgrammeResponseData = {
@@ -781,14 +927,17 @@ export interface SurveyFilters {
   age: {
     label: string;
     id: string;
+    description?: string;
   }[];
   surveys: {
     label: string;
     id: string;
+    description?: string;
   }[];
   indicators: {
     label: string;
     id: string;
+    description?: string;
   }[];
 }
 export type SurveyResponseData = {
@@ -905,14 +1054,17 @@ export interface ProgrammeResponse {
     age: {
       label: string;
       id: string;
+      description?: string;
     }[];
     calendar_quarter: {
       label: string;
       id: string;
+      description?: string;
     }[];
     indicators: {
       label: string;
       id: string;
+      description?: string;
     }[];
   };
 }
@@ -939,10 +1091,12 @@ export interface AncResponse {
     year: {
       label: string;
       id: string;
+      description?: string;
     }[];
     indicators: {
       label: string;
       id: string;
+      description?: string;
     }[];
   };
 }
@@ -971,14 +1125,17 @@ export interface SurveyResponse {
     age: {
       label: string;
       id: string;
+      description?: string;
     }[];
     surveys: {
       label: string;
       id: string;
+      description?: string;
     }[];
     indicators: {
       label: string;
       id: string;
+      description?: string;
     }[];
   };
 }
@@ -997,4 +1154,8 @@ export interface VersionInfo {
   naomi: string;
   rrq: string;
   [k: string]: any;
+}
+export interface Warning {
+  text: string;
+  locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
 }
