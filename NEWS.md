@@ -1,3 +1,7 @@
+# hint 1.57.0
+
+* Do not auto-progress to calibrate step if there are model fit warnings
+
 # hint 1.56.2
 
 * Save warnings from option validation, model fit and model calibration to app state
