@@ -15,7 +15,7 @@ import java.time.Instant
 class ErrorReportTests: SecureIntegrationTests()
 {
     @Test
-    fun `foo`()
+    fun `can post error report`()
     {
         val data = ErrorReport(
                 "test.user@example.com",
