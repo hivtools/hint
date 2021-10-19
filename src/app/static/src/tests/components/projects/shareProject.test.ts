@@ -48,7 +48,6 @@ describe("ShareProject", () => {
             store
         });
 
-        expect(wrapper.find(Modal).props("open")).toBe(false);
         expectTranslated(wrapper.find("button"), "Share", "Partager", "Partilhar", store, "aria-label");
     });
 

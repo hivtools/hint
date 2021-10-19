@@ -853,10 +853,10 @@ describe("Project history component", () => {
         expect(v.at(1).findAll("small").length).toBe(1)
 
         const sharedBy = v.at(1).find("small")
-        expect(sharedBy.text().replace(/\s+/g, ' ').trim()).toBe("Shared by: shared@email.com")
+        expect(sharedBy.text()).toBe("Shared by: shared@email.com")
 
         wrapper.vm.$store.state.language = Language.fr;
-        expect(sharedBy.text().replace(/\s+/g, ' ').trim()).toBe("Partagé par: shared@email.com")
+        expect(sharedBy.text()).toBe("Partagé par: shared@email.com")
 
     });
 
