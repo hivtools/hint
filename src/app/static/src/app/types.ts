@@ -202,11 +202,14 @@ export interface DatasetConfig {
     id: string
     label: string
     url: string
-    filters?: {
-       id: string,
-       source: string
-    }[],
+    filters?: DatasetFilterConfig[],
     table?: GenericChartTableConfig
+}
+
+export interface DatasetFilterConfig {
+    id: string,
+    source: string,
+    allowMultiple: boolean
 }
 
 export interface DataSourceConfig {

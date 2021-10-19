@@ -8,15 +8,18 @@
         "filters": [
           {
             "id": "plot_type",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": false
           },
           {
             "id": "area_level",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": true
           },
           {
             "id": "time_step",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": true
           }
         ],
         "table": {
@@ -79,15 +82,18 @@
         "filters": [
           {
             "id": "plot_type",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": false
           },
           {
             "id": "area_level",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": false
           },
           {
             "id": "age",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": false
           }
         ],
         "table": {
