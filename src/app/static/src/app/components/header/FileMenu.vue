@@ -10,7 +10,9 @@
                 <span v-translate="'load'"></span>
                 <upload-icon size="20" class="icon"></upload-icon>
             </a>
-            <input title="Select file" type="file" style="display: none;" ref="loadFile" v-on:change="load" accept=".json">
+            <input v-translate:aria-label="'selectFile'"
+                   type="file"
+                   style="display: none;" ref="loadFile" v-on:change="load" accept=".json">
         </drop-down>
         <modal :open="hasError">
             <h4 v-translate="'loadError'"></h4>

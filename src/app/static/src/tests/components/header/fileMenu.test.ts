@@ -141,7 +141,7 @@ describe("File menu", () => {
         reader.readAsText(actualBlob);
     });
 
-    it("opens file dialog on click load", (done) => {
+    it("file input aria-label is translated", (done) => {
         const store = createStore();
         const wrapper = mount(FileMenu, {store});
 
@@ -152,6 +152,31 @@ describe("File menu", () => {
 
         const input = wrapper.find("input").element as HTMLInputElement;
         input.addEventListener("click", function () {
+            //file dialog was opened
+            done();
+        });
+
+        link.trigger("mousedown");
+    });
+
+    it("opens file dialog on click load", (done) => {
+        const store = createStore();
+        const wrapper = mount(FileMenu, {store});
+
+        wrapper.find(".dropdown-toggle").trigger("click");
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+        const link = wrapper.findAll(".dropdown-item").at(1);
+        expectTranslated(link, "Load", "Charger", "Carregar", store as any);
+
+        const input = wrapper.find("input")
+        expectTranslated(input,
+            "Select file",
+            "Sélectionner un fichier",
+            "Selecionar ficheiro",
+            store as any,
+            "aria-label");
+
+        (input.element as HTMLInputElement).addEventListener("click", function () {
             //file dialog was opened
             done();
         });

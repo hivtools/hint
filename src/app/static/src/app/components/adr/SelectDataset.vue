@@ -1,10 +1,10 @@
 <template>
     <div class="d-flex">
         <div v-if="selectedDataset" style="margin-top: 8px">
-            <span
-                class="font-weight-bold"
-                v-translate="'selectedDataset'"
-                id="selectedDatasetSpan"></span>
+            <span class="font-weight-bold"
+                  v-translate="'selectedDataset'"
+                  id="selectedDatasetSpan">
+            </span>
             <a v-if="releaseName" :href="releaseURL" target="_blank">
                 {{ selectedDataset.title }} — {{ releaseName }}
             </a>
@@ -12,22 +12,21 @@
                 {{ selectedDataset.title }}
             </a>
             <span class="color-red">
-                <info-icon
-                    size="20"
-                    v-if="outOfDateMessage"
-                    v-tooltip="outOfDateMessage"
-                    style="vertical-align: text-bottom"></info-icon>
+                <info-icon size="20"
+                           v-if="outOfDateMessage"
+                           v-tooltip="outOfDateMessage"
+                           style="vertical-align: text-bottom">
+                </info-icon>
             </span>
         </div>
-        <button
-            v-if="outOfDateMessage"
-            class="btn btn-white ml-2"
-            @click="refresh"
-            v-translate="'refresh'"></button>
-        <button
-            class="btn btn-red"
-            :class="selectedDataset && 'ml-2'"
-            @click="toggleModal">
+        <button v-if="outOfDateMessage"
+                class="btn btn-white ml-2"
+                @click="refresh"
+                v-translate="'refresh'">
+        </button>
+        <button class="btn btn-red"
+                :class="selectedDataset && 'ml-2'"
+                @click="toggleModal">
             {{ selectText }}
         </button>
         <modal id="dataset" :open="open">
@@ -35,22 +34,22 @@
             <p v-if="loading" v-translate="'importingFiles'"></p>
             <div v-if="!loading">
                 <label for="datasetSelector" class="font-weight-bold" v-translate="'datasets'"></label>
-                <tree-select
-                    id="datasetSelector"
-                    :multiple="false"
-                    :searchable="true"
-                    :options="datasetOptions"
-                    :placeholder="select"
-                    :disabled="fetchingDatasets"
-                    v-model="newDatasetId">
-                    <label
-                        slot="option-label"
-                        slot-scope="{ node }"
-                        v-html="node.raw.customLabel">
+                <tree-select id="datasetSelector"
+                             :multiple="false"
+                             :searchable="true"
+                             :options="datasetOptions"
+                             :placeholder="select"
+                             :disabled="fetchingDatasets"
+                             v-model="newDatasetId">
+                    <label slot="option-label"
+                           slot-scope="{ node }"
+                           v-html="node.raw.customLabel">
                     </label>
                 </tree-select>
-                <select-release :dataset-id="newDatasetId" :open="open" @selected-dataset-release="updateDatasetRelease"
-                                @valid="updateValid"></select-release>
+                <select-release :dataset-id="newDatasetId" :open="open"
+                                @selected-dataset-release="updateDatasetRelease"
+                                @valid="updateValid">
+                </select-release>
                 <div :class="fetchingDatasets ? 'visible' : 'invisible'"
                      style="margin-top: 15px"
                      id="fetching-datasets">
@@ -59,35 +58,36 @@
                 </div>
                 <div v-if="adrError" id="fetch-error">
                     <div v-translate="'errorFetchingDatasetsFromADR'"></div>
-                    <button
-                        @click="getDatasets"
-                        class="btn btn-red float-right"
-                        v-translate="'tryAgain'"></button>
+                    <button @click="getDatasets"
+                            class="btn btn-red float-right"
+                            v-translate="'tryAgain'">
+                    </button>
                 </div>
             </div>
             <div class="text-center" v-if="loading" id="loading-dataset">
                 <loading-spinner size="sm"></loading-spinner>
             </div>
             <template v-slot:footer v-if="!loading">
-                <button
-                    id="importBtn"
-                    type="button"
-                    :disabled="disableImport"
-                    class="btn btn-red"
-                    v-translate="'import'"
-                    @click.prevent="confirmImport"></button>
-                <button
-                    type="button"
-                    class="btn btn-white"
-                    v-translate="'cancel'"
-                    @click="toggleModal"></button>
+                <button id="importBtn"
+                        type="button"
+                        :disabled="disableImport"
+                        class="btn btn-red"
+                        v-translate="'import'"
+                        @click.prevent="confirmImport">
+                </button>
+                <button type="button"
+                        class="btn btn-white"
+                        v-translate="'cancel'"
+                        @click="toggleModal">
+                </button>
             </template>
         </modal>
         <reset-confirmation
             v-if="showConfirmation"
             :continue-editing="continueEditing"
             :cancel-editing="cancelEditing"
-            :open="showConfirmation"></reset-confirmation>
+            :open="showConfirmation">
+        </reset-confirmation>
     </div>
 </template>
 <script lang="ts">

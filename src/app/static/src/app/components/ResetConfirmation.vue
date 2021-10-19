@@ -16,8 +16,11 @@
 
             <div id="noteHeader" class="form-group">
                 <label :for="`resetVersionNoteControl${uuid}`" v-translate="'noteHeader'"></label>
-                <textarea class="form-control" :id="`resetVersionNoteControl${uuid}`" v-model="versionNote"
-                          rows="3"></textarea>
+                <textarea class="form-control"
+                          :id="`resetVersionNoteControl${uuid}`"
+                          v-model="versionNote"
+                          rows="3">
+                </textarea>
             </div>
 
             <template v-if="!waitingForVersion" v-slot:footer>
@@ -75,7 +78,7 @@
         newVersion: (note: string) => void
     }
 
-    let uuid: number = 0;
+    let uuid = 0;
 
     export default Vue.extend<Data, Methods, Computed, Props>({
         props: {
@@ -134,6 +137,8 @@
             }
         },
         created() {
+            // There are multiple instances of this component on the page
+            // This is appended to the textarea id to avoid duplicate input ids
             this.uuid = uuid.toString()
             uuid += 1
         },
