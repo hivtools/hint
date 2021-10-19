@@ -6,7 +6,7 @@
 
             <p v-translate="'discardWarning'"></p>
             <ul>
-            <li v-for="step in changesToRelevantSteps" :key="step.number">
+                <li v-for="step in changesToRelevantSteps" :key="step.number">
                     <span v-translate="'step'"></span> {{ step.number }}: <span v-translate="step.textKey"></span>
                 </li>
             </ul>
@@ -15,8 +15,9 @@
             <p v-if="!isGuest" v-translate="'savePromptLoggedIn'"></p>
 
             <div id="noteHeader" class="form-group">
-                <label for="resetVersionNoteControl"><span v-translate="'noteHeader'"></span></label>
-                <textarea class="form-control" id="resetVersionNoteControl" v-model="versionNote" rows="3"></textarea>
+                <label :for="`resetVersionNoteControl${uuid}`" v-translate="'noteHeader'"></label>
+                <textarea class="form-control" :id="`resetVersionNoteControl${uuid}`" v-model="versionNote"
+                          rows="3"></textarea>
             </div>
 
             <template v-if="!waitingForVersion" v-slot:footer>
@@ -66,12 +67,15 @@
     interface Data {
         waitingForVersion: boolean
         versionNote: string
+        uuid: string
     }
 
     interface Methods {
         handleConfirm: () => void
         newVersion: (note: string) => void
     }
+
+    let uuid: number = 0;
 
     export default Vue.extend<Data, Methods, Computed, Props>({
         props: {
@@ -82,7 +86,8 @@
         data: function () {
             return {
                 waitingForVersion: false,
-                versionNote: ""
+                versionNote: "",
+                uuid: ""
             }
         },
         computed: {
@@ -127,6 +132,10 @@
                     this.versionNote = this.currentVersionNote;
                 }
             }
+        },
+        created() {
+            this.uuid = uuid.toString()
+            uuid += 1
         },
         components: {
             Modal,
