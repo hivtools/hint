@@ -72,7 +72,7 @@
 </template>
 <script lang="ts">
     import Vue from "vue"
-    import {mapGetterByName, mapStateProp, mapActionByName} from "../utils";
+    import {mapActionByName, mapGetterByName, mapStateProp} from "../utils";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {ProjectsState} from "../store/projects/projects"
     import Modal from "./Modal.vue";
@@ -148,6 +148,15 @@
                 this.stepsToReproduce = "";
                 this.section = "";
                 this.email = "";
+            }
+        },
+        watch: {
+            open (newVal) {
+                if (newVal === true) {
+                    if (this.$route.path.indexOf("projects") > -1) {
+                        this.section = "projects"
+                    }
+                }
             }
         }
     })
