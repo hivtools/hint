@@ -78,7 +78,7 @@ export interface WarningsState {
     warnings: Warning[]
 }
 
-export enum STEPS  {
+export enum Steps  {
     modelOptions = "model_options",
     modelRun = "model_fit",
     modelCalibrate = "model_calibrate",

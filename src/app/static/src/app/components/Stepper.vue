@@ -63,7 +63,7 @@
     import {mapGettersByNames, mapStateProp, mapStateProps} from "../utils";
     import {Project, StepWarnings} from "../types";
     import {ProjectsState} from "../store/projects/projects";
-    import {RootState, STEPS} from "../root";
+    import {RootState, Steps} from "../root";
     import StepperNavigation, {Props as StepperNavigationProps} from "./StepperNavigation.vue";
 
     interface ComputedState {
@@ -166,9 +166,8 @@
         watch: {
             complete: function (){
                 // auto-progress from modelRun to modelCalibrate if there are no warnings to display
-                console.log("Here are the warnings: " + JSON.stringify(this.warnings(STEPS.modelRun)))
                 if (this.activeStep === 4 && this.isComplete(4) && this.isEnabled(5) &&
-                        this.warnings(STEPS.modelRun).modelRun.length === 0){
+                        this.warnings(Steps.modelRun).modelRun.length === 0){
                     this.next();
                 }
             },

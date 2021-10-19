@@ -45,13 +45,14 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
         const {commit, state} = context;
         if (state.status.done) {
             const response = await api<ModelRunMutation, ModelRunMutation>(context)
-                .withSuccess(ModelRunMutation.RunResultFetched)
+                .ignoreSuccess()
                 .withError(ModelRunMutation.RunResultError)
                 .freezeResponse()
                 .get<ModelResultResponse>(`/model/result/${state.modelRunId}`);
 
             if (response) {
                 commit({type: ModelRunMutation.WarningsFetched, payload: response.data.warnings});
+                commit({type: ModelRunMutation.RunResultFetched, payload: response});
             }
         }
         commit({type: "Ready", payload: true});
