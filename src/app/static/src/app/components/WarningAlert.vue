@@ -6,7 +6,7 @@
                     <div v-for="(value, key) in filteredWarnings" :key="key">
                         <h4 class="alert-heading pt-2">
                             <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
-                            Model option validation raised the following warning(s) {{ key }}
+                            {{ headerText(key) }}
                         </h4>
                         <ul class="mb-0">
                             <li v-for="warning in value" :key="warning">{{ warning }}</li>
@@ -36,6 +36,7 @@
     import { mapStateProp } from "../utils";
     import { RootState } from "../root";
     import { Language } from "../store/translations/locales";
+import { switches } from "../featureSwitches";
 
     interface Props {
         step: number;
@@ -53,6 +54,7 @@
     interface Methods {
         toggleShowFullBox: () => void;
         updateDimensions: () => void;
+        headerText: (key: string) => string;
     }
 
     interface Computed  {
@@ -163,6 +165,14 @@
                 this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
                 this.headerHeight = (this.$refs.incHeader as HTMLElement).clientHeight - this.lineHeight;
                 this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
+            },
+            headerText(key){
+                const headers: { [key: string]: string } = {
+                    modelOptions: "warningsHeaderModelOptions",
+                    modelRun: "warningsHeaderModelRun",
+                    modelCalibrate: "warningsHeaderModelCalibrate"
+                }
+                return key in headers ? i18next.t(headers[key], { lng: this.currentLanguage }) : ""
             }
         },
         watch: {

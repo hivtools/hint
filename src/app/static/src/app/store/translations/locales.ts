@@ -241,6 +241,9 @@ export interface Translations {
     versionCountLabelPlural: string,
     versionCountLabelSingle: string,
     versions: string,
+    warningsHeaderModelOptions: string,
+    warningsHeaderModelRun: string,
+    warningsHeaderModelCalibrate: string,
     xAxis: string,
     year: string
 }
@@ -520,6 +523,9 @@ const en: Translations = {
     versionCountLabelPlural: "versions",
     versionCountLabelSingle: "version",
     versions: "Versions",
+    warningsHeaderModelOptions: "Model option validation raised the following warning(s)",
+    warningsHeaderModelRun: "Model fit raised the following warning(s)",
+    warningsHeaderModelCalibrate: "Model calibration raised the following warning(s)",
     xAxis: "X Axis",
     year: "Year"
 };
@@ -795,6 +801,9 @@ const fr: Partial<Translations> = {
     versionCountLabelPlural: "versions",
     versionCountLabelSingle: "version",
     versions: "Versions",
+    warningsHeaderModelOptions: "La validation de l'option de modèle a généré le(s) avertissement(s) suivant(s)",
+    warningsHeaderModelRun: "L'ajustement du modèle a soulevé le(s) avertissement(s) suivant(s)",
+    warningsHeaderModelCalibrate: "L'étalonnage du modèle a déclenché le(s) avertissement(s) suivant(s)",
     xAxis: "Axe X",
     year: "An"
 };
@@ -1069,6 +1078,9 @@ const pt: Partial<Translations> = {
     versionCountLabelPlural: "versões",
     versionCountLabelSingle: "versão",
     versions: "Versões",
+    warningsHeaderModelOptions: "A validação da opção de modelo gerou o (s) seguinte (s) aviso (s)",
+    warningsHeaderModelRun: "O ajuste do modelo gerou o seguinte aviso (s)",
+    warningsHeaderModelCalibrate: "A calibração do modelo gerou o (s) seguinte (s) aviso (s)",
     xAxis: "Eixo X",
     year: "Ano"
 };
