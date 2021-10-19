@@ -1,12 +1,43 @@
 <template>
     <div v-if="showAlert">
-        <div class="content alert alert-warning">
-            <h4 class="alert-heading"><alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>The following issues were reported for this {{ step }}.</h4>
+        <div class="content alert alert-warning pt-0">
             <div :style="containerBox">
-                <ul class="mb-0" ref="warningBox">
-                    <li v-for="warning in warnings" :key="warning">{{ warning }}</li>
-                </ul>
-                <p ref="line" style="visibility:hidden">...</p>
+                <div ref="warningBox">
+                    <div v-if="warnings.modelOptions.length">
+                        <h4 class="alert-heading pt-2">
+                            <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
+                            Model option validation raised the following warning(s)
+                        </h4>
+                        <ul class="mb-0">
+                            <li v-for="warning in warnings.modelOptions" :key="warning">{{ warning }}</li>
+                        </ul>
+                    </div>
+                    <div v-if="warnings.modelRun.length">
+                        <h4 class="alert-heading pt-2">
+                            <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
+                            Model fit raised the following warning(s)
+                        </h4>
+                        <ul class="mb-0">
+                            <li v-for="warning in warnings.modelRun" :key="warning">{{ warning }}</li>
+                        </ul>
+                    </div>
+                    <div v-if="warnings.modelCalibrate.length">
+                        <h4 class="alert-heading pt-2">
+                            <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
+                            Model calibration raised the following warning(s)
+                        </h4>
+                        <ul class="mb-0">
+                            <li v-for="warning in warnings.modelCalibrate" :key="warning">{{ warning }}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div ref="incHeader" class="invisible">
+                    <h4 class="alert-heading pt-2">
+                        <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
+                        Hidden header
+                    </h4>
+                    <p ref="line" class="mb-0">...</p>
+                </div>
             </div>
             <div v-if="warningsLengthy">
                 <p v-if="!showFullBox" class="ml-4 mb-0">...</p>
@@ -26,7 +57,7 @@
 
     interface Props {
         step: number;
-        warnings: string[];
+        warnings: Warnings;
         maxLines: number;
     }
 
@@ -34,6 +65,7 @@
         showFullBox: boolean;
         fullBoxHeight: number;
         lineHeight: number;
+        headerHeight: number;
     }
 
     interface Methods {
@@ -59,11 +91,17 @@
         locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
     };
 
+    interface Warnings {
+        modelOptions: string[];
+        modelRun: string[];
+        modelCalibrate: string[];
+    }
+
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "WarningAlert",
         props: {
             step: Number,
-            warnings: Array,
+            warnings: Object,
             maxLines: {
                 default: 3,
                 required: false,
@@ -74,7 +112,8 @@
             return {
                 showFullBox: false,
                 fullBoxHeight: 0,
-                lineHeight: 0
+                lineHeight: 0,
+                headerHeight: 0
             };
         },
         computed: {
@@ -86,7 +125,7 @@
                 }
             },
             maxBoxHeight(){
-                return this.maxLines * this.lineHeight
+                return (this.maxLines * this.lineHeight) + this.headerHeight
             },
             warningsLengthy(){
                 return this.fullBoxHeight > this.maxBoxHeight
@@ -102,7 +141,7 @@
                 (state: RootState) => state.language
             ),
             showAlert(){
-                return this.step > 2 && this.warnings.length > 0
+                return this.step > 2 && (!!this.warnings?.modelOptions.length || !!this.warnings?.modelRun.length || !!this.warnings?.modelCalibrate.length)
             },
             buttonText(){
                 if (this.showFullBox) {
@@ -118,6 +157,7 @@
             },
             updateDimensions(){
                 this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
+                this.headerHeight = (this.$refs.incHeader as HTMLElement).clientHeight - this.lineHeight;
                 this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
             }
         },
@@ -128,6 +168,7 @@
         },
         mounted(){
             this.updateDimensions()
+            // console.log('heights', this.lineHeight, this.fullBoxHeight)
         },
         components: {
             AlertTriangleIcon
