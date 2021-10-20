@@ -1,4 +1,9 @@
+# hint 1.56.4
+
+* accessibility fixes
+
 # hint 1.56.3
+
 * fix accessibility issue with buttons on projects page
 
 # hint 1.56.2
