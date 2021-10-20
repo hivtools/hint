@@ -1,6 +1,10 @@
-# hint 1.56.4
+# hint 1.57.1
 
 * accessibility fixes
+
+# hint 1.57.0
+
+* New ADR resources should grant permissions to UNAIDS org
 
 # hint 1.56.3
 
