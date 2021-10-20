@@ -1,3 +1,7 @@
+# hint 1.57.0
+
+* New ADR resources should grant permissions to UNAIDS org
+
 # hint 1.56.3
 * fix accessibility issue with buttons on projects page
 
