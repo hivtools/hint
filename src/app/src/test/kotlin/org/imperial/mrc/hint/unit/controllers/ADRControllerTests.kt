@@ -402,6 +402,7 @@ class ADRControllerTests : HintrControllerTests()
                             "hash" to "D41D8CD98F00B204E9800998ECF8427E",
                             "resource_type" to "adr-output-zip",
                             "description" to "Naomi model outputs",
+                            "restricted" to "{\"allowed_organizations\":\"unaids\",\"allowed_users\":\"\",\"level\":\"restricted\"}",
                             "package_id" to "dataset1")), any()) } doReturn ResponseEntity.ok().body("whatever")
         }
         val mockBuilder: ADRClientBuilder = mock {
@@ -431,6 +432,7 @@ class ADRControllerTests : HintrControllerTests()
                             "hash" to "D41D8CD98F00B204E9800998ECF8427E",
                             "resource_type" to "adr-output-summary",
                             "description" to "Naomi summary report",
+                            "restricted" to "{\"allowed_organizations\":\"unaids\",\"allowed_users\":\"\",\"level\":\"restricted\"}",
                             "package_id" to "dataset1")),
                     any()) } doReturn ResponseEntity.ok().body("whatever")
         }

@@ -1,6 +1,6 @@
 import {expectAllMutationsDefined} from "../testHelpers";
 import {ModelCalibrateMutation, mutations} from "../../app/store/modelCalibrate/mutations";
-import {mockError, mockModelCalibrateState,} from "../mocks";
+import {mockError, mockModelCalibrateState, mockWarning,} from "../mocks";
 import {VersionInfo} from "../../app/generated";
 
 describe("ModelCalibrate mutations", () => {
@@ -148,5 +148,12 @@ describe("ModelCalibrate mutations", () => {
         mutations[ModelCalibrateMutation.SetPlotData](state, {payload});
         expect(state.calibratePlotResult).toStrictEqual({ payload });
         expect(state.generatingCalibrationPlot).toBe(false);
+    });
+
+    it("sets warnings", () => {
+        const testState = mockModelCalibrateState();
+        const warnings = [mockWarning()]
+        mutations.WarningsFetched(testState, {payload: warnings});
+        expect(testState.warnings).toEqual([mockWarning()]);
     });
 });

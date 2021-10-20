@@ -1,3 +1,14 @@
+# hint 1.57.0
+
+* New ADR resources should grant permissions to UNAIDS org
+
+# hint 1.56.3
+* fix accessibility issue with buttons on projects page
+
+# hint 1.56.2
+
+* Save warnings from option validation, model fit and model calibration to app state
+
 # hint 1.56.1
 
 * Render filter labels verbatim in output tables, do not attempt to translate
