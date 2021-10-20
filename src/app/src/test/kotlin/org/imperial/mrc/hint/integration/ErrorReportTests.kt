@@ -4,46 +4,52 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions
-import org.imperial.mrc.hint.ConfiguredAppProperties
-import org.imperial.mrc.hint.clients.FuelFlowClient
-import org.imperial.mrc.hint.controllers.ErrorReportController
-import org.imperial.mrc.hint.helpers.readPropsFromTempFile
-import org.imperial.mrc.hint.models.ErrorReport
-import org.imperial.mrc.hint.models.Errors
 import org.junit.jupiter.api.Test
+import org.springframework.boot.test.web.client.postForEntity
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 
-class ErrorReportTests
+class ErrorReportTests: SecureIntegrationTests()
 {
     @Test
     fun `can post error report`()
     {
-        val data = ErrorReport(
-                "test.user@example.com",
-                "Kenya",
-                "Kenya2022",
-                "Model",
-                "123",
-                listOf(
-                        Errors("#65ae0d095ea", "test error msg", "fomot-hasah-livad"),
-                        Errors("#25ae0d095e1", "test error msg2", "fomot-hasah-livid")
-                ),
-                "test desc",
-                "test steps",
-                "test agent",
-                "2021-10-12T14:07:22.759Z"
-        )
+        val data = """{
+            "email":"test.user@example.com",
+            "country":"South Africa",
+            "projectName":"South 2 Worldpop",
+            "section":"Fit model",
+            "jobId":"job12",
+            "errors":[
+            {
+                "detail":"Please contact support for troubleshooting1",
+                "error":"OTHER_ERROR",
+                "key":"go-now-then"
+            },
+            {
+                "detail":"Please contact support for support",
+                "error":"OTHER_ERROR",
+                "key":"go-later-then"
+            }
+            ],
+            "description":"description of the error msg",
+            "stepsToReproduce":"step to reproduce desc",
+            "browserAgent":"Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW)",
+            "timeStamp":"2021-10-12T14:07:22.759Z"
+        }""".trimIndent()
 
-        val props = readPropsFromTempFile("issue_report_url=https://mock.codes/200")
+        val headers = HttpHeaders()
 
-        val fuelFlowClient = FuelFlowClient(ObjectMapper(), ConfiguredAppProperties(props))
+        headers.contentType = MediaType.APPLICATION_JSON
 
-        val sut = ErrorReportController(fuelFlowClient)
+        val entity = HttpEntity(data, headers)
 
-        val result = sut.postErrorReport(data)
+        val responseJson = testRestTemplate.postForEntity<String>("/error-report", entity)
 
-        Assertions.assertThat(result.statusCodeValue).isEqualTo(200)
+        Assertions.assertThat(responseJson.statusCodeValue).isEqualTo(200)
 
-        val response = ObjectMapper().readValue<JsonNode>(result.body!!)["data"]
+        val response = ObjectMapper().readValue<JsonNode>(responseJson.body!!)["data"]
 
         Assertions.assertThat(response["statusCode"].asInt()).isEqualTo(200)
 
