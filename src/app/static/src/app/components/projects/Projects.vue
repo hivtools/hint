@@ -3,15 +3,17 @@
         <div v-if="!loading" id="projects-content" class="row">
             <p class="text-muted col" v-translate="'projectDescription'"></p>
             <div id="projects-header" class="lead col-12">
-                <span v-translate="'projectsHeaderCreate'"></span>
+                <label for="new-project" v-translate="'projectsHeaderCreate'"></label>
                 <span v-if="currentProject">
                     <span v-translate="'or'"></span>
                     <a v-translate="'projectsHeaderReturn'"
                        href="#" @click="handleCurrentProjectClick"></a> ({{ currentProject.name }})
                 </span>
             </div>
-            <div class="my-3 col-6 clearfix">
-                <input type="text" class="form-control"
+            <div class="mb-3 col-6 clearfix">
+                <input type="text"
+                       id="new-project"
+                       class="form-control"
                        v-translate:placeholder="'projectName'"
                        @keyup.enter="createProject(newProjectName)"
                        v-model="newProjectName">
