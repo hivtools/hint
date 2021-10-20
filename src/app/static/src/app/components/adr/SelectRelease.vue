@@ -187,9 +187,10 @@
             }
         },
         mounted(){
+            this.preSelectRelease();
             this.$emit("selected-dataset-release", this.releaseId);
             this.$emit("valid", this.valid);
-            this.preSelectRelease();
+            console.log("Some releas ehere " +this.initialRelease)
         },
         directives: {
             tooltip: VTooltip,

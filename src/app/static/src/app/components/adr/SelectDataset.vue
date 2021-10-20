@@ -434,10 +434,12 @@
                 this.open = false;
             },
             startPolling() {
-                this.pollingId = window.setInterval(
-                    this.refreshDatasetMetadata,
-                    10000
-                );
+                if (!this.selectedDataset?.release) {
+                    this.pollingId = window.setInterval(
+                        this.refreshDatasetMetadata,
+                        10000
+                    );
+                }
             },
             stopPolling() {
                 if (this.pollingId) {
@@ -445,6 +447,7 @@
                 }
             },
             updateDatasetRelease(release){
+                console.log("In Selected Dataset"+ release)
                 this.newDatasetRelease = release;
             },
             updateValid(valid){
@@ -455,11 +458,6 @@
             datasets(){
                 if (this.open){
                     this.preSelectDataset();
-                }
-            },
-            newDatasetRelease() {
-                if (this.newDatasetRelease) {
-                    this.stopPolling();
                 }
             }
         },

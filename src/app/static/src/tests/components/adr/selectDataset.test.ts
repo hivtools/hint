@@ -952,10 +952,6 @@ describe("select dataset", () => {
         );
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
 
-        const pollingId = (rendered.vm as any).pollingId;
-        const clearInterval = jest.spyOn(window, "clearInterval");
-        const setInterval = jest.spyOn(window, "setInterval");
-
         rendered.find("button").trigger("click");
 
         expect(rendered.findAll(TreeSelect).length).toBe(1);
@@ -977,9 +973,6 @@ describe("select dataset", () => {
 
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
-        expect(clearInterval.mock.calls[0][0]).toBe(pollingId);
-        expect(setInterval.mock.calls[0][0]).toBe((rendered.vm as any).refreshDatasetMetadata);
-        expect(setInterval.mock.calls[0][1]).toBe(10000);
     });
 
     it("stops polling dataset metadata on beforeDestroy", () => {
@@ -987,14 +980,6 @@ describe("select dataset", () => {
         const pollingId = (rendered.vm as any).pollingId;
         const spy = jest.spyOn(window, "clearInterval");
         rendered.destroy();
-        expect(spy.mock.calls[0][0]).toBe(pollingId);
-    });
-
-    it("stops polling dataset metadata on newDatasetRelease", () => {
-        const rendered = shallowMount(SelectDataset, {store: getStore()});
-        const pollingId = (rendered.vm as any).pollingId;
-        const spy = jest.spyOn(window, "clearInterval");
-        rendered.setData({newDatasetRelease: {"test": "DATA"} as any})
         expect(spy.mock.calls[0][0]).toBe(pollingId);
     });
 
@@ -1011,4 +996,71 @@ describe("select dataset", () => {
 
         expect(rendered.find(Modal).find("button").attributes("disabled")).toBe("disabled");
     });
+
+    it("does not start polling if release is selected", async () => {
+        const store = getStore(
+            {
+                selectedDataset: {
+                    ...fakeDataset,
+                    release: "DATA"
+                }
+            }
+        );
+
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
+        const clearInterval = jest.spyOn(window, "clearInterval");
+        const setInterval = jest.spyOn(window, "setInterval");
+
+        rendered.find("button").trigger("click");
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: "id1"});
+        await rendered.find(Modal).find("button").trigger("click");
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+
+        await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(clearInterval.mock.calls.length).toBe(0);
+        expect(setInterval.mock.calls.length).toBe(0);
+
+    });
+
+    it("starts polling for update if selected dataset is not release", async () => {
+        const store = getStore(
+            {
+                selectedDataset: {
+                    ...fakeDataset
+                }
+            }
+        );
+
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
+        const clearInterval = jest.spyOn(window, "clearInterval");
+        const setInterval = jest.spyOn(window, "setInterval");
+        const pollingId = (rendered.vm as any).pollingId;
+
+        rendered.find("button").trigger("click");
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: "id1"});
+        await rendered.find(Modal).find("button").trigger("click");
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+
+        await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(clearInterval.mock.calls[0][0]).toBe(pollingId);
+        expect(setInterval.mock.calls[0][0]).toBe((rendered.vm as any).refreshDatasetMetadata);
+        expect(setInterval.mock.calls[0][1]).toBe(10000);
+    });
+
 });
