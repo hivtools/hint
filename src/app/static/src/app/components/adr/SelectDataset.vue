@@ -322,6 +322,8 @@
             importProgram: mapActionByName("surveyAndProgram", "importProgram"),
             importANC: mapActionByName("surveyAndProgram", "importANC"),
             async importDataset() {
+                this.stopPolling();
+
                 this.loading = true;
                 await this.getDataset({id: this.newDatasetId!, release: this.newDatasetRelease});
 
@@ -349,6 +351,8 @@
 
                 this.loading = false;
                 this.open = false;
+
+                this.startPolling();
             },
             async refresh() {
                 this.stopPolling();
@@ -451,6 +455,11 @@
             datasets(){
                 if (this.open){
                     this.preSelectDataset();
+                }
+            },
+            newDatasetRelease() {
+                if (this.newDatasetRelease) {
+                    this.stopPolling();
                 }
             }
         },
