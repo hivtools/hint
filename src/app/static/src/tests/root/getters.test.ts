@@ -1,7 +1,6 @@
 import {mockModelCalibrateState, mockModelOptionsState, mockModelRunState, mockRootState} from "../mocks";
 import {getters} from "../../app/store/root/getters";
 import {Warning} from "../../app/generated";
-import {Steps} from "../../app/root";
 
 describe(`root getters`, () => {
 
@@ -29,7 +28,7 @@ describe(`root getters`, () => {
         const rootState = testState()
 
         const warnings = getters.warnings(rootState, null, testState() as any, null)
-        const result = warnings(Steps.modelRun).modelRun
+        const result = warnings("fitModel").modelRun
         expect(result).toEqual(modelRunWarnings)
     })
 
@@ -37,7 +36,7 @@ describe(`root getters`, () => {
         const rootState = testState()
 
         const warnings = getters.warnings(rootState, null, testState() as any, null)
-        const result = warnings(Steps.modelCalibrate).modelCalibrate
+        const result = warnings("calibrateModel").modelCalibrate
         expect(result).toEqual([
             {
                 "locations": ["model_options", "model_calibrate"],
@@ -50,7 +49,7 @@ describe(`root getters`, () => {
         const rootState = testState()
 
         const warnings = getters.warnings(rootState, null, testState() as any, null)
-        const result = warnings(Steps.modelOptions).modelCalibrate
+        const result = warnings("modelOptions").modelCalibrate
         expect(result).toEqual([
             {
                 locations: ["model_options", "model_calibrate"],
@@ -63,7 +62,7 @@ describe(`root getters`, () => {
         const rootState = testState()
 
         const warnings = getters.warnings(rootState, null, testState() as any, null)
-        const result = warnings(Steps.modelCalibrate).modelOptions
+        const result = warnings("modelCalibrate").modelOptions
         expect(result).toEqual([])
     })
 
@@ -71,7 +70,7 @@ describe(`root getters`, () => {
         const rootState = testState()
 
         const warnings = getters.warnings(rootState, null, testState() as any, null)
-        const result = warnings(Steps.modelOptions).modelOptions
+        const result = warnings("modelOptions").modelOptions
         expect(result).toEqual(modelOptionWarnings)
     })
 

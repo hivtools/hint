@@ -321,7 +321,9 @@ class ADRController(private val encryption: Encryption,
         {
             when (resourceId)
             {
-                null -> adr.postFile("resource_create", commonParameters + listOf("package_id" to datasetId), filePart)
+                null -> adr.postFile("resource_create", commonParameters + listOf("restricted" to
+                        "{\"allowed_organizations\":\"unaids\",\"allowed_users\":\"\",\"level\":\"restricted\"}",
+                        "package_id" to datasetId), filePart)
                 else ->
                 {
                     if (uploadFileHasChanges(resourceId, fileHash))
