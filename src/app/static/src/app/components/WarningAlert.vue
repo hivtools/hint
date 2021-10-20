@@ -36,7 +36,7 @@
     import { mapStateProp } from "../utils";
     import { RootState } from "../root";
     import { Language } from "../store/translations/locales";
-import { switches } from "../featureSwitches";
+    import { switches } from "../featureSwitches";
 
     interface Props {
         warnings: Warnings;
