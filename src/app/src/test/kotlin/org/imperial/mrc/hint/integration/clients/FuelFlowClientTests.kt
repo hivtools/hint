@@ -6,13 +6,12 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.clients.FuelFlowClient
-import org.imperial.mrc.hint.integration.SecureIntegrationTests
+import org.imperial.mrc.hint.helpers.readPropsFromTempFile
 import org.imperial.mrc.hint.models.ErrorReport
 import org.imperial.mrc.hint.models.Errors
 import org.junit.jupiter.api.Test
-import java.time.Instant
 
-class FuelFlowClientTests: SecureIntegrationTests()
+class FuelFlowClientTests
 {
     @Test
     fun `can post flow`()
@@ -30,7 +29,7 @@ class FuelFlowClientTests: SecureIntegrationTests()
                 "test desc",
                 "test steps",
                 "test agent",
-                Instant.now()
+                "2021-10-12T14:07:22.759Z"
         )
 
         val props = readPropsFromTempFile("issue_report_url=https://mock.codes/200")
@@ -64,7 +63,7 @@ class FuelFlowClientTests: SecureIntegrationTests()
                 "test desc",
                 "test steps",
                 "test agent",
-                Instant.now()
+                "2021-10-12T14:07:22.759Z"
         )
 
         val props = readPropsFromTempFile("issue_report_url=https://mock.codes/400")

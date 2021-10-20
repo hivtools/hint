@@ -7,12 +7,12 @@ import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.clients.FuelFlowClient
 import org.imperial.mrc.hint.controllers.ErrorReportController
+import org.imperial.mrc.hint.helpers.readPropsFromTempFile
 import org.imperial.mrc.hint.models.ErrorReport
 import org.imperial.mrc.hint.models.Errors
 import org.junit.jupiter.api.Test
-import java.time.Instant
 
-class ErrorReportTests: SecureIntegrationTests()
+class ErrorReportTests
 {
     @Test
     fun `can post error report`()
@@ -30,7 +30,7 @@ class ErrorReportTests: SecureIntegrationTests()
                 "test desc",
                 "test steps",
                 "test agent",
-                Instant.now()
+                "2021-10-12T14:07:22.759Z"
         )
 
         val props = readPropsFromTempFile("issue_report_url=https://mock.codes/200")

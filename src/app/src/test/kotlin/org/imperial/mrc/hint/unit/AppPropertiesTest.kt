@@ -2,12 +2,12 @@ package org.imperial.mrc.hint.unit
 
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
-import org.imperial.mrc.hint.integration.SecureIntegrationTests
+import org.imperial.mrc.hint.helpers.readPropsFromTempFile
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
-class AppPropertiesTests : SecureIntegrationTests()
+class AppPropertiesTests
 {
 
     @AfterEach

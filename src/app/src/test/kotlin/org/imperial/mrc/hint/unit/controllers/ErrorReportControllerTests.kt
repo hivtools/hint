@@ -12,17 +12,16 @@ import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.clients.FuelFlowClient
 import org.imperial.mrc.hint.controllers.ErrorReportController
-import org.imperial.mrc.hint.integration.SecureIntegrationTests
+import org.imperial.mrc.hint.helpers.readPropsFromTempFile
+
 import org.imperial.mrc.hint.models.ErrorReport
 import org.imperial.mrc.hint.models.Errors
 import org.junit.jupiter.api.Test
 import org.springframework.http.*
 import java.net.URL
-import java.time.Instant
 
-class ErrorReportControllerTests: SecureIntegrationTests()
+class ErrorReportControllerTests
 {
-    private val timeStamp = Instant.now()
 
     private val data = ErrorReport(
             "test.user@example.com",
@@ -37,7 +36,7 @@ class ErrorReportControllerTests: SecureIntegrationTests()
             "",
             "test steps",
             "test agent",
-            timeStamp
+            "2021-10-12T14:07:22.759Z"
     )
 
     @Test
@@ -94,8 +93,7 @@ class ErrorReportControllerTests: SecureIntegrationTests()
             assertThat(response["description"].asText()).isEqualTo("")
             assertThat(response["stepsToReproduce"].asText()).isEqualTo("test steps")
             assertThat(response["browserAgent"].asText()).isEqualTo("test agent")
-            assertThat(Instant.ofEpochSecond(response["timeStamp"]["epochSecond"].asLong()))
-                    .isEqualTo(Instant.ofEpochSecond(timeStamp.epochSecond))
+            assertThat(response["timeStamp"].asText()).isEqualTo("2021-10-12T14:07:22.759Z")
         })
     }
 

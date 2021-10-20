@@ -348,13 +348,4 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
                 "anc_clients_year2" to 2018,
                 "anc_clients_year2_num_months" to "9")
     }
-
-    fun readPropsFromTempFile(contents: String): HintProperties
-    {
-        File("tmp").mkdir()
-        val config = File("tmp/fake.properties")
-        config.createNewFile()
-        config.writeText(contents)
-        return ConfiguredAppProperties.readProperties("tmp/fake.properties")
-    }
 }
