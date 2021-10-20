@@ -1,6 +1,12 @@
-# hint 1.57.0
+# hint 1.58.0
 
 * Endpoint for posting error report to Teams
+
+* New ADR resources should grant permissions to UNAIDS org
+
+# hint 1.56.3
+* fix accessibility issue with buttons on projects page
+>>>>>>> 1de5d826ba619b07fa8491948499e95c98fb81bb
 
 # hint 1.56.2
 
