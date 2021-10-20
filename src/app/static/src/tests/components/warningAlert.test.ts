@@ -9,10 +9,6 @@ const localVue = createLocalVue();
 
 describe("Warning alert component", () => {
 
-    // const createStore = () => {
-    //     return new Vuex.Store({})
-    // };
-
     const warningsMock = {
         modelOptions: [{ text: 'a warning', locations: []}, { text: 'another warning', locations: []}, { text: 'third warning', locations: []}, { text: 'final warning', locations: []}],
         modelRun: [{ text: 'model run warning', locations: []}],

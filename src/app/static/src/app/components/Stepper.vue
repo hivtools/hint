@@ -19,21 +19,6 @@
         </div>
         <stepper-navigation v-bind="navigationProps"/>
         <hr/>
-        <warning-alert :warnings="{ 
-            modelOptions: [{ text: 'a warning', locations: []}, { text: 'another warning', locations: []}, { text: 'third warning', locations: []}, { text: 'final warning', locations: []}],
-            modelRun: [],
-            modelCalibrate: [{ text: 'calibrate warning', locations: []}]
-            }"></warning-alert>
-        <warning-alert :warnings="{ 
-            modelOptions: [{ text: 'a warning', locations: []}, { text: 'another warning', locations: []}, { text: 'third warning', locations: []}],
-            modelRun: [],
-            modelCalibrate: []
-        }"></warning-alert>
-            <warning-alert :warnings="{ 
-            modelOptions: [],
-            modelRun: [],
-            modelCalibrate: []
-            }"></warning-alert>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingData'"></h2>
@@ -80,7 +65,6 @@
     import {ProjectsState} from "../store/projects/projects";
     import {RootState} from "../root";
     import StepperNavigation, {Props as StepperNavigationProps} from "./StepperNavigation.vue";
-    import WarningAlert from "./WarningAlert.vue";
 
     interface ComputedState {
         activeStep: number,
@@ -176,8 +160,7 @@
             ModelOptions,
             DownloadResults,
             VersionStatus,
-            StepperNavigation,
-            WarningAlert
+            StepperNavigation
         },
         watch: {
             complete: function (){

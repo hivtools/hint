@@ -73,24 +73,11 @@ import { switches } from "../featureSwitches";
     interface Warning {
         text: string;
         locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
-    };
-
-    // interface Warnings {
-    //     modelOptions: string[];
-    //     modelRun: string[];
-    //     modelCalibrate: string[];
-    // }
+    }
 
     interface Warnings {
         [key: string]: Warning[];
     }
-    // interface FilteredWarnings {
-    //     modelOptions?: string[];
-    //     modelRun?: string[];
-    //     modelCalibrate?: string[];
-    // }
-
-    // type WarningOrigin = "modelOptions" | "modelRun" | "modelCalibrate"
 
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "WarningAlert",
@@ -145,14 +132,8 @@ import { switches } from "../featureSwitches";
             ),
             showAlert(){
                 return Object.keys(this.warnings).some(key => this.warnings[key].length > 0)
-                // return !!this.warnings?.modelOptions.length || !!this.warnings?.modelRun.length || !!this.warnings?.modelCalibrate.length
             },
             buttonText(){
-                // if (this.showFullBox) {
-                //     return i18next.t("showLess", { lng: this.currentLanguage });
-                // } else {
-                //     return i18next.t("showMore", { lng: this.currentLanguage });
-                // }
                 return i18next.t(this.showFullBox ? "showLess" : "showMore", { lng: this.currentLanguage });
             }
         },
@@ -183,8 +164,6 @@ import { switches } from "../featureSwitches";
         },
         mounted(){
             this.updateDimensions()
-            // console.log('heights', this.lineHeight, this.fullBoxHeight)
-            // console.log('filteredWarnings', this.filteredWarnings)
         },
         components: {
             AlertTriangleIcon
