@@ -19,13 +19,13 @@
         </div>
         <stepper-navigation v-bind="navigationProps"/>
         <hr/>
-        <warning-alert :step="activeStep" :warnings="{ 
-            modelOptions: ['a warning', 'another warning', 'third warning', 'final warning'],
+        <warning-alert :warnings="{ 
+            modelOptions: [{ text: 'a warning', locations: []}, { text: 'another warning', locations: []}, { text: 'third warning', locations: []}, { text: 'final warning', locations: []}],
             modelRun: [],
-            modelCalibrate: ['calibrate warning']
+            modelCalibrate: [{ text: 'calibrate warning', locations: []}]
             }"></warning-alert>
-        <warning-alert :step="activeStep" :warnings="{ 
-            modelOptions: ['a warning', 'another warning', 'third warning'],
+        <warning-alert :warnings="{ 
+            modelOptions: [{ text: 'a warning', locations: []}, { text: 'another warning', locations: []}, { text: 'third warning', locations: []}],
             modelRun: [],
             modelCalibrate: []
             }"></warning-alert>

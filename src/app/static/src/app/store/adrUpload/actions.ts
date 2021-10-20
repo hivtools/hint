@@ -13,7 +13,6 @@ export interface ADRUploadActions {
     getUploadFiles: (store: ActionContext<ADRUploadState, RootState>) => void;
     uploadFilesToADR: (store: ActionContext<ADRUploadState, RootState>, uploadFilesPayload: UploadFile[]) => void;
 }
-// test
 
 export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions = {
     async getUploadFiles(context) {

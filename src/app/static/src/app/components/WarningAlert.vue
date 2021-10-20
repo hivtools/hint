@@ -9,7 +9,7 @@
                             {{ headerText(key) }}
                         </h4>
                         <ul class="mb-0">
-                            <li v-for="warning in value" :key="warning">{{ warning }}</li>
+                            <li v-for="warning in value" :key="warning.text">{{ warning.text }}</li>
                         </ul>
                     </div>
                 </div>
@@ -39,7 +39,6 @@
 import { switches } from "../featureSwitches";
 
     interface Props {
-        step: number;
         warnings: Warnings;
         maxLines: number;
     }
@@ -83,9 +82,8 @@ import { switches } from "../featureSwitches";
     // }
 
     interface Warnings {
-        [key: string]: string[];
+        [key: string]: Warning[];
     }
-
     // interface FilteredWarnings {
     //     modelOptions?: string[];
     //     modelRun?: string[];
@@ -97,7 +95,6 @@ import { switches } from "../featureSwitches";
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "WarningAlert",
         props: {
-            step: Number,
             warnings: Object,
             maxLines: {
                 default: 3,
@@ -147,7 +144,7 @@ import { switches } from "../featureSwitches";
                 (state: RootState) => state.language
             ),
             showAlert(){
-                return this.step > 2 && (!!this.warnings?.modelOptions.length || !!this.warnings?.modelRun.length || !!this.warnings?.modelCalibrate.length)
+                return !!this.warnings?.modelOptions.length || !!this.warnings?.modelRun.length || !!this.warnings?.modelCalibrate.length
             },
             buttonText(){
                 if (this.showFullBox) {
@@ -183,7 +180,7 @@ import { switches } from "../featureSwitches";
         mounted(){
             this.updateDimensions()
             // console.log('heights', this.lineHeight, this.fullBoxHeight)
-            console.log('filteredWarnings', this.filteredWarnings)
+            // console.log('filteredWarnings', this.filteredWarnings)
         },
         components: {
             AlertTriangleIcon
