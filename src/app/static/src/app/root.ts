@@ -78,14 +78,6 @@ export interface WarningsState {
     warnings: Warning[]
 }
 
-export enum Steps  {
-    modelOptions = "model_options",
-    modelRun = "model_fit",
-    modelCalibrate = "model_calibrate",
-    reviewOutput = "review_output",
-    downloadResult = "download_results"
-}
-
 const persistState = (store: Store<RootState>): void => {
     store.subscribe((mutation: MutationPayload, state: RootState) => {
         console.log(mutation.type);
