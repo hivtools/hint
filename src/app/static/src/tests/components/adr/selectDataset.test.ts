@@ -1001,8 +1001,7 @@ describe("select dataset", () => {
         const store = getStore(
             {
                 selectedDataset: {
-                    ...fakeDataset,
-                    release: "DATA"
+                    ...fakeDatasetWithRelease
                 }
             }
         );
@@ -1013,8 +1012,10 @@ describe("select dataset", () => {
 
         rendered.find("button").trigger("click");
 
-        expect(rendered.findAll(TreeSelect).length).toBe(1);
-        rendered.setData({newDatasetId: "id1"});
+        const treeSelect = rendered.find(TreeSelect)
+        expect(treeSelect.exists()).toBe(true);
+        treeSelect.vm.$emit("select", "id1")
+
         await rendered.find(Modal).find("button").trigger("click");
 
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
@@ -1046,11 +1047,11 @@ describe("select dataset", () => {
 
         rendered.find("button").trigger("click");
 
-        expect(rendered.findAll(TreeSelect).length).toBe(1);
-        rendered.setData({newDatasetId: "id1"});
-        await rendered.find(Modal).find("button").trigger("click");
+        const treeSelect = rendered.find(TreeSelect)
+        expect(treeSelect.exists()).toBe(true);
+        treeSelect.vm.$emit("select", "id1")
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        await rendered.find(Modal).find("button").trigger("click");
 
         await Vue.nextTick();
         await Vue.nextTick();
