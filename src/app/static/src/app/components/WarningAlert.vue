@@ -21,7 +21,7 @@
                     <p ref="line" class="mb-0">...</p>
                 </div>
             </div>
-            <div v-if="warningsLengthy">
+            <div v-if="warningsLengthy" id="showToggle">
                 <p v-if="!showFullBox" class="ml-4 mb-0">...</p>
                 <button @click="toggleShowFullBox" class="btn btn-link alert-link">{{ buttonText }}</button>
             </div>

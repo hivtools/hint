@@ -33,11 +33,15 @@ describe("Warning alert component", () => {
         return wrapper
     }
 
+    it("renders no warning alert if there are no warnings", () => {
+        const wrapper = createWrapper({ modelOptions: [], modelRun: [], modelCalibrate: []})
+        expect(wrapper.find(".alert-warning").exists()).toBe(false);
+    });
+
     it("renders warning messages", () => {
         const wrapper = createWrapper()
 
         expect(wrapper.find(".alert-warning").exists()).toBe(true);
-        const warningBox = wrapper.find("#warningBox")
         const warnings = wrapper.findAll("#warningBox>div")
         expect(warnings.length).toBe(3);
 
@@ -73,11 +77,56 @@ describe("Warning alert component", () => {
         expect(modelCalibrateWarning.find("h4").find("alert-triangle-icon-stub").exists()).toBe(true);
         expect(modelCalibrateWarning.findAll("li").length).toBe(1);
         expect(modelCalibrateWarning.findAll("li").at(0).text()).toBe("calibrate warning");
+
+        const hiddenWarning = wrapper.find(".invisible")
+        expect(hiddenWarning.find("h4").find("alert-triangle-icon-stub").exists()).toBe(true);
+        expect(hiddenWarning.find("h4").text()).toBe("Hidden header");
+        expect(hiddenWarning.find("p").text()).toBe("...");
     });
 
-    it("renders no warning alert if there are no warnings", () => {
-        const wrapper = createWrapper({ modelOptions: [], modelRun: [], modelCalibrate: []})
-        expect(wrapper.find(".alert-warning").exists()).toBe(false);
+    it("renders ellipsis and show more/less buttons if many warnings", async () => {
+        const wrapper = createWrapper()
+        wrapper.setData({
+            fullBoxHeight: 232,
+            lineHeight: 24,
+            headerHeight: 56
+        })
+        const showToggle = wrapper.find("#showToggle")
+        expect(showToggle.find("p").text()).toBe("...")
+        expectTranslated(showToggle.find("button"), 
+            "Show more", 
+            "Montre plus", 
+            "Mostre mais", 
+        store)
+        await showToggle.find("button").trigger("click")
+        expect(showToggle.find("p").exists()).toBe(false)
+        expectTranslated(showToggle.find("button"), 
+            "Show less", 
+            "Montrer moins", 
+            "Mostre menos", 
+        store)
+    });
+
+    it("only renders warning messages that have warnings", () => {
+        const wrapper = createWrapper({
+            modelOptions: [],
+            modelRun: [{ text: 'model run warning', locations: []}],
+            modelCalibrate: []
+        })
+
+        expect(wrapper.find(".alert-warning").exists()).toBe(true);
+        const warnings = wrapper.findAll("#warningBox>div")
+        expect(warnings.length).toBe(1);
+      
+        const modelRunWarning = warnings.at(0)
+        expectTranslated(modelRunWarning.find("h4"), 
+            "Model fit raised the following warning(s)", 
+            "L'ajustement du modèle a soulevé le(s) avertissement(s) suivant(s)", 
+            "O ajuste do modelo gerou o seguinte aviso (s)", 
+        store)
+        expect(modelRunWarning.find("h4").find("alert-triangle-icon-stub").exists()).toBe(true);
+        expect(modelRunWarning.findAll("li").length).toBe(1);
+        expect(modelRunWarning.findAll("li").at(0).text()).toBe("model run warning");
     });
 
 })
