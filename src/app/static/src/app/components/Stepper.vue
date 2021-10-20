@@ -28,6 +28,11 @@
             modelOptions: [{ text: 'a warning', locations: []}, { text: 'another warning', locations: []}, { text: 'third warning', locations: []}],
             modelRun: [],
             modelCalibrate: []
+        }"></warning-alert>
+            <warning-alert :warnings="{ 
+            modelOptions: [],
+            modelRun: [],
+            modelCalibrate: []
             }"></warning-alert>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>

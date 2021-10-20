@@ -2,7 +2,7 @@
     <div v-if="showAlert">
         <div class="content alert alert-warning pt-0">
             <div :style="containerBox">
-                <div ref="warningBox">
+                <div ref="warningBox" id="warningBox">
                     <div v-for="(value, key) in filteredWarnings" :key="key">
                         <h4 class="alert-heading pt-2">
                             <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
@@ -144,14 +144,16 @@ import { switches } from "../featureSwitches";
                 (state: RootState) => state.language
             ),
             showAlert(){
-                return !!this.warnings?.modelOptions.length || !!this.warnings?.modelRun.length || !!this.warnings?.modelCalibrate.length
+                return Object.keys(this.warnings).some(key => this.warnings[key].length > 0)
+                // return !!this.warnings?.modelOptions.length || !!this.warnings?.modelRun.length || !!this.warnings?.modelCalibrate.length
             },
             buttonText(){
-                if (this.showFullBox) {
-                    return i18next.t("showLess", { lng: this.currentLanguage });
-                } else {
-                    return i18next.t("showMore", { lng: this.currentLanguage });
-                }
+                // if (this.showFullBox) {
+                //     return i18next.t("showLess", { lng: this.currentLanguage });
+                // } else {
+                //     return i18next.t("showMore", { lng: this.currentLanguage });
+                // }
+                return i18next.t(this.showFullBox ? "showLess" : "showMore", { lng: this.currentLanguage });
             }
         },
         methods: {
@@ -159,9 +161,11 @@ import { switches } from "../featureSwitches";
                 this.showFullBox = !this.showFullBox;
             },
             updateDimensions(){
-                this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
-                this.headerHeight = (this.$refs.incHeader as HTMLElement).clientHeight - this.lineHeight;
-                this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
+                if (this.showAlert){
+                    this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
+                    this.headerHeight = (this.$refs.incHeader as HTMLElement).clientHeight - this.lineHeight;
+                    this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
+                }
             },
             headerText(key){
                 const headers: { [key: string]: string } = {
