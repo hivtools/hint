@@ -42,7 +42,7 @@ import registerTranslations from "../../app/store/translations/registerTranslati
 import {ProjectsState} from "../../app/store/projects/projects";
 import {ModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
 import VersionStatus from "../../app/components/projects/VersionStatus.vue";
-import {RootState, Steps} from "../../app/root";
+import {RootState} from "../../app/root";
 import ModelCalibrate from "../../app/components/modelCalibrate/ModelCalibrate.vue";
 import {getters as rootGetters} from "../../app/store/root/getters";
 import {expectTranslated} from "../testHelpers";
@@ -629,11 +629,11 @@ describe("Stepper component", () => {
     });
 
     it("model run step does not automatically advance to calibrate step on completion if there are modelRun warnings to display", () => {
-        testModelRunCompletion([{text: "model run warning", locations: [Steps.modelRun, Steps.reviewOutput]}], false);
+        testModelRunCompletion([{text: "model run warning", locations: ["model_fit", "review_output"]}], false);
     });
 
     it("model run step does automatically advance to calibrate step on completion if there are modelRun warnings, but not for this step to display", () => {
-        testModelRunCompletion([{text: "model run warning", locations: [Steps.reviewOutput]}], true);
+        testModelRunCompletion([{text: "model run warning", locations: ["review_output"]}], true);
     });
 
     it("validates state once ready", async () => {

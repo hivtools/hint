@@ -63,7 +63,7 @@
     import {mapGettersByNames, mapStateProp, mapStateProps} from "../utils";
     import {Project, StepWarnings} from "../types";
     import {ProjectsState} from "../store/projects/projects";
-    import {RootState, Steps} from "../root";
+    import {RootState} from "../root";
     import StepperNavigation, {Props as StepperNavigationProps} from "./StepperNavigation.vue";
 
     interface ComputedState {
@@ -72,7 +72,8 @@
         currentProject: Project | null
         projectLoading: boolean,
         updatingLanguage: boolean,
-        navigationProps: StepperNavigationProps
+        navigationProps: StepperNavigationProps,
+        activeStepTextKey: string
     }
 
     interface ComputedGetters {
@@ -113,6 +114,9 @@
                     next: this.next,
                     nextDisabled: this.activeContinue(this.activeStep)
                 };
+            },
+            activeStepTextKey: function() {
+                return this.steps.find((step: StepDescription) => step.number === this.activeStep).textKey;
             }
         },
         methods: {
@@ -167,7 +171,7 @@
             complete: function (){
                 // auto-progress from modelRun to modelCalibrate if there are no warnings to display
                 if (this.activeStep === 4 && this.isComplete(4) && this.isEnabled(5) &&
-                        this.warnings(Steps.modelRun).modelRun.length === 0){
+                        this.warnings(this.activeStepTextKey).modelRun.length === 0){
                     this.next();
                 }
             },

@@ -1,11 +1,7 @@
 import {RootState} from "../../root";
 import {Getter, GetterTree} from "vuex";
 import {Warning} from "../../generated";
-<<<<<<< HEAD
-import {StepWarnings} from "../../types";
-=======
 import {Dict} from "../../types";
->>>>>>> master
 
 interface RootGetters {
     isGuest: Getter<RootState, RootState>
