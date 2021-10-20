@@ -2,7 +2,8 @@
     <div>
         <button class="btn btn-sm btn-red-icons"
                 v-tooltip="tooltipShare"
-                @click="shareProject">
+                @click="shareProject"
+                v-translate:aria-label="'share'">
             <share-2-icon size="20"></share-2-icon>
         </button>
         <modal :open="open">
@@ -12,6 +13,7 @@
                 <div class="row mb-2" v-for="(email, index) in emailsToShareWith" :key="index">
                     <div class="col">
                         <input autocomplete="no"
+                               v-translate:aria-label="'enterEmail'"
                                @keyup.enter="$event.target.blur()"
                                @keyup.delete="removeEmail(email, index)"
                                class="form-control"
@@ -102,7 +104,7 @@
         cloneProject: (payload: CloneProjectPayload) => void
     }
 
-    declare const currentUser: string; 
+    declare const currentUser: string;
 
     export default Vue.extend<Data, Methods, Computed, Props>({
         props: {
