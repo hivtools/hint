@@ -1,5 +1,5 @@
 import {Module} from "vuex";
-import {ReadyState, RootState} from "../../root";
+import {ReadyState, RootState, WarningsState} from "../../root";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
@@ -7,7 +7,7 @@ import {actions} from "./actions";
 import {VersionInfo, Error, CalibrateStatusResponse} from "../../generated";
 import {BarchartIndicator, Filter} from "../../types";
 
-export interface ModelCalibrateState extends ReadyState {
+export interface ModelCalibrateState extends ReadyState, WarningsState {
     optionsFormMeta: DynamicFormMeta
     options: DynamicFormData
     fetching: boolean
@@ -36,7 +36,8 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
         generatingCalibrationPlot: false,
         calibratePlotResult: null,
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
-        error: null
+        error: null,
+        warnings: []
     }
 };
 

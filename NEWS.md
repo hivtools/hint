@@ -1,3 +1,35 @@
+# hint 1.59.0
+
+* Do not auto-progress to calibrate step if there are model fit warnings
+
+# hint 1.58.0
+
+* Endpoint for posting error report to Teams
+
+# hint 1.57.1
+
+* accessibility fixes
+
+# hint 1.57.0
+
+* New ADR resources should grant permissions to UNAIDS org
+
+# hint 1.56.3
+
+* fix accessibility issue with buttons on projects page
+
+# hint 1.56.2
+
+* Save warnings from option validation, model fit and model calibration to app state
+
+# hint 1.56.1
+
+* Render filter labels verbatim in output tables, do not attempt to translate
+
+# hint 1.56.0
+
+* Include Back/Continue links at bottom of model options page
+
 # hint 1.55.0
 
 * Refresh output metadata and options when language changes
