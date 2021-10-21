@@ -6,8 +6,26 @@ import {LanguageActions} from "../language/language";
 import {changeLanguage} from "../language/actions";
 import i18next from "i18next";
 
-export interface RootActions extends LanguageActions<RootState>{
+export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
+    generateErrorReport: (store: ActionContext<RootState, RootState>,
+                          payload: ErrorReportManualDetails) => ErrorReport;
+}
+
+export interface ErrorReportManualDetails {
+    section: string,
+    description: string,
+    stepsToReproduce: string,
+    email: string
+}
+
+export interface ErrorReport extends ErrorReportManualDetails {
+    country: string,
+    project: string | undefined,
+    browserAgent: string,
+    timeStamp: string,
+    jobId: string,
+    errors: Error[]
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -72,5 +90,21 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
 
         await Promise.all(actions);
         commit({type: RootMutation.SetUpdatingLanguage, payload: false});
+    },
+
+    generateErrorReport({state, getters}, payload) {
+        // TODO: instead of returning this object, POST it to the server
+        return {
+            email: payload.email || state.currentUser,
+            country: state.baseline.country,
+            project: state.projects.currentProject?.name,
+            browserAgent: navigator.userAgent,
+            timeStamp: new Date().toISOString(),
+            jobId: state.modelRun.modelRunId,
+            description: payload.description,
+            section: payload.section,
+            stepsToReproduce: payload.stepsToReproduce,
+            errors: getters.errors
+        }
     }
-};
+}

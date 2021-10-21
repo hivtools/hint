@@ -2,29 +2,40 @@
     <modal :open="open">
         <h4 v-translate="'reportIssues'"></h4>
         <form class="form">
-            <div class="form-row">
-                <div class="col-4">
-                    <label for="section" v-translate="'section'"></label>
-                </div>
-                <div class="col-8">
-                    <select class="form-control"
-                            v-model="currentSection"
-                            id="section">
-                        <option v-for="step in steps"
-                                :key="step.number"
-                                :value="step.textKey"
-                                v-translate="step.textKey">
-                        </option>
-                        <option key="login"
-                                v-translate="'login'"
-                                value="login"></option>
-                        <option key="projects" v-translate="'projects'"
-                               value="projects"></option>
-                        <option key="other"
-                                value="other"
-                                v-translate="'other'"></option>
-                    </select>
-                </div>
+            <div class="form-group" v-if="projectName">
+                <label for="project" v-translate="'project'"></label>
+                <input type="text"
+                       disabled
+                       id="project"
+                       :value="projectName"
+                       class="form-control"/>
+            </div>
+            <div class="form-group" v-if="isGuest">
+                <label for="email" v-translate="'email'"></label>
+                <input type="text"
+                       id="email"
+                       v-model="email"
+                       class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="section" v-translate="'section'"></label>
+                <select class="form-control"
+                        v-model="currentSection"
+                        id="section">
+                    <option v-for="step in steps"
+                            :key="step.number"
+                            :value="step.textKey"
+                            v-translate="step.textKey">
+                    </option>
+                    <option key="login"
+                            v-translate="'login'"
+                            value="login"></option>
+                    <option key="projects" v-translate="'projects'"
+                            value="projects"></option>
+                    <option key="other"
+                            value="other"
+                            v-translate="'other'"></option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="description"
@@ -41,7 +52,7 @@
                        v-translate="'reproduce'"></label>
                 <div class="small text-muted" v-translate="'reproduceErrorHelp'"></div>
                 <textarea id="reproduce"
-                          v-model="reproduce"
+                          v-model="stepsToReproduce"
                           class="form-control"></textarea>
             </div>
         </form>
@@ -61,20 +72,14 @@
 </template>
 <script lang="ts">
     import Vue from "vue"
-    import {mapStateProp} from "../utils";
+    import {mapActionByName, mapGetterByName, mapStateProp} from "../utils";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
-    import {RootState} from "../root";
-    import {Language} from "../store/translations/locales";
-    import i18next from "i18next";
+    import {ProjectsState} from "../store/projects/projects"
     import Modal from "./Modal.vue";
-
-    interface Data {
-        description: string
-        reproduce: string
-        section: string
-    }
+    import {ErrorReportManualDetails} from "../store/root/actions";
 
     interface Methods {
+        generateErrorReport: (payload: ErrorReportManualDetails) => void
         sendErrorReport: () => void
         cancelErrorReport: () => void
         resetData: () => void
@@ -83,14 +88,16 @@
     interface Computed {
         currentSectionKey: string
         currentSection: string
+        isGuest: boolean
         steps: StepDescription[]
+        projectName: string | undefined
     }
 
     interface Props {
         open: boolean
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default Vue.extend<ErrorReportManualDetails, Methods, Computed, Props>({
         components: {Modal},
         props: {
             open: Boolean
@@ -99,8 +106,9 @@
         data: function () {
             return {
                 description: "",
-                reproduce: "",
-                section: ""
+                stepsToReproduce: "",
+                section: "",
+                email: ""
             }
         },
         computed: {
@@ -115,25 +123,40 @@
                     this.section = newVal
                 }
             },
+            isGuest: mapGetterByName(null, "isGuest"),
+            projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
             steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps)
         },
         methods: {
+            generateErrorReport: mapActionByName(null, "generateErrorReport"),
             cancelErrorReport() {
                 this.resetData();
                 this.$emit("close")
             },
             sendErrorReport() {
-                // TODO call through to an action that will
-                // combine this form data with data derived
-                // from the state, and POST to the backend
-                console.log(this.description, this.reproduce, this.currentSection)
+                this.generateErrorReport({
+                    section: this.currentSection,
+                    description: this.description,
+                    stepsToReproduce: this.stepsToReproduce,
+                    email: this.email
+                })
                 this.resetData();
                 this.$emit("close")
             },
             resetData() {
                 this.description = "";
-                this.reproduce = "";
+                this.stepsToReproduce = "";
                 this.section = "";
+                this.email = "";
+            }
+        },
+        watch: {
+            open (newVal) {
+                if (newVal === true) {
+                    if (this.$route.path.indexOf("projects") > -1) {
+                        this.section = "projects"
+                    }
+                }
             }
         }
     })

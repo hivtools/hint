@@ -10,7 +10,7 @@ import {expectTranslated} from "../../testHelpers";
 import DropDown from "../../../app/components/header/DropDown.vue";
 import VueRouter from 'vue-router'
 import ErrorReport from "../../../app/components/ErrorReport.vue";
-import {mockStepperState} from "../../mocks";
+import {mockProjectsState, mockStepperState} from "../../mocks";
 
 const localVue = createLocalVue()
 localVue.use(VueRouter)
@@ -27,7 +27,14 @@ describe("Online support menu", () => {
                 stepper: {
                     namespaced: true,
                     state: mockStepperState()
+                },
+                projects: {
+                    namespaced: true,
+                    state: mockProjectsState()
                 }
+            },
+            getters: {
+                isGuest: () => false
             }
         });
         registerTranslations(store);
@@ -127,7 +134,7 @@ describe("Online support menu", () => {
         expect(wrapper.find(ErrorReport).props("open")).toBe(false);
 
         const link = wrapper.findAll(".dropdown-item").at(1);
-        expectTranslated(link, "Report issues", "Report issues", "Report issues", store as any);
+        expectTranslated(link, "Report issues", "Signaler des problèmes", "Reportar problemas", store as any);
 
         link.trigger("click");
 
