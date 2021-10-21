@@ -196,6 +196,16 @@ describe("Download Results component", () => {
 
         const uploadButton = wrapper.find("button");
         expect(uploadButton.attributes("disabled")).toBeUndefined();
+        expect(uploadButton.classes()).toEqual(["btn", "btn-lg", "my-3", "btn-red"]);
+    });
+
+    it("disables download button when upload in progress", () => {
+        const store = createStore(true, jest.fn(), true, false);
+        const wrapper = shallowMount(DownloadResults, {store, localVue});
+
+        const uploadButton = wrapper.find("button");
+        expect(uploadButton.attributes("disabled")).toBe("disabled");
+        expect(uploadButton.classes()).toEqual(["btn", "btn-lg", "my-3", "btn-secondary"]);
     });
 
     it("can download spectrum file when download is complete", () => {

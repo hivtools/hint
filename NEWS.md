@@ -1,3 +1,7 @@
+# hint 1.60.0
+
+* ADR upload fails if download attempted while in progress
+
 # hint 1.58.0
 
 * Do not poll for ADR dataset updates when using a release

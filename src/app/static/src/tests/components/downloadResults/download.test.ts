@@ -23,7 +23,8 @@ describe(`download`, () => {
                 propsData: {
                     file: downloadSummary,
                     modalOpen: false,
-                    translateKey: downloadTranslate
+                    translateKey: downloadTranslate,
+                    disable: false
                 },
                 directives: {"translate": mockDirective}
             })
@@ -37,6 +38,12 @@ describe(`download`, () => {
         expect(wrapper.find("download-progress-stub").props()).toEqual({
             "downloading": true,
             "translateKey": "downloading"
+        })
+        expect(wrapper.props()).toEqual({
+            file: downloadSummary,
+            modalOpen: false,
+            translateKey: downloadTranslate,
+            disable: false
         })
     })
 

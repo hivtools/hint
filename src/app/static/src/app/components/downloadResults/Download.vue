@@ -1,7 +1,9 @@
 <template>
   <div id="download">
     <h4 v-translate="translateKey.header"></h4>
-    <button class="btn btn-red btn-lg my-3" @click="download">
+    <button :class="disable ? 'btn btn-secondary btn-lg my-3' : 'btn btn-red btn-lg my-3'"
+            :disabled="disable"
+            @click="download">
       <span v-translate="translateKey.button"></span>
       <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
     </button>
@@ -30,6 +32,7 @@
         file: DownloadResultsDependency,
         translateKey: downloadTranslate,
         modalOpen: boolean
+        disable: boolean
     }
 
     interface Methods {
@@ -39,23 +42,27 @@
     export default Vue.extend<unknown, Methods, unknown, Props>({
         name: "Download",
         components: {
-          DownloadIcon,
-          ErrorAlert,
-          DownloadProgress
+            DownloadIcon,
+            ErrorAlert,
+            DownloadProgress
         },
         props: {
-          file: {
-            required: true,
-            type: Object
-         },
-          translateKey: {
-            required: true,
-            type: Object
-          },
-          modalOpen: {
-            required: true,
-            type: Boolean
-          }
+            file: {
+                required: true,
+                type: Object
+            },
+            translateKey: {
+                required: true,
+                type: Object
+            },
+            modalOpen: {
+                required: true,
+                type: Boolean
+            },
+            disable: {
+                required: true,
+                type: Boolean
+            }
         },
         methods: {
           download() {
