@@ -1,3 +1,7 @@
+# hint 1.58.0
+
+* Do not auto-progress to calibrate step if there are model fit warnings
+
 # hint 1.57.0
 
 * New ADR resources should grant permissions to UNAIDS org

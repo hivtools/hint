@@ -22,9 +22,9 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
     },
 
     warnings: (state: RootState) => (stepName: string) => {
-        const filterWarnings = (warnings: Warning[], stepLocation?: string) =>
+        const filterWarnings = (warnings: Warning[], stepLocation: string) =>
             stepLocation ?
-                warnings.filter(warning => warning.locations.some(location => location === stepLocation)) :
+                (warnings || []).filter(warning => warning.locations.some(location => location === stepLocation)) :
                 [];
 
         const location = warningStepLocationMapping[stepName];
