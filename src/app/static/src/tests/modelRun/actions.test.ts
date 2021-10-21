@@ -2,14 +2,15 @@ import {
     mockAxios,
     mockError,
     mockFailure,
-    mockModelOptionsState,
+    mockModelOptionsState, mockModelResultResponse,
     mockModelRunState,
     mockRootState,
-    mockSuccess
+    mockSuccess, mockWarning
 } from "../mocks";
 import {actions} from "../../app/store/modelRun/actions";
 import {ModelStatusResponse} from "../../app/generated";
 import {expectEqualsFrozen} from "../testHelpers";
+import {ModelRunMutation} from "../../app/store/modelRun/mutations";
 
 const rootState = mockRootState();
 
@@ -142,20 +143,30 @@ describe("Model run actions", () => {
         }, 2100);
     });
 
-    it("getResult commits result when successfully fetched", async () => {
+    it("getResult commits result and warnings when successfully fetched", async () => {
+        const mockResponse = mockModelResultResponse({
+            warnings: [mockWarning()]
+        });
         mockAxios.onGet(`/model/result/1234`)
-            .reply(200, mockSuccess("TEST DATA"));
+            .reply(200, mockSuccess(mockResponse));
 
         const commit = jest.fn();
-        const state = mockModelRunState({modelRunId: "1234", status: {done: true} as ModelStatusResponse});
+        const state = mockModelRunState({
+            modelRunId: "1234",
+            status: {done: true} as ModelStatusResponse
+        });
 
         await actions.getResult({commit, state, rootState} as any);
 
-        expectEqualsFrozen(commit.mock.calls[0][0], {
-            type: "RunResultFetched",
-            payload: "TEST DATA"
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: ModelRunMutation.WarningsFetched,
+            payload: [mockWarning()]
         });
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+        expectEqualsFrozen(commit.mock.calls[1][0], {
+            type: ModelRunMutation.RunResultFetched,
+            payload: mockResponse
+        });
+        expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "Ready",
             payload: true
         });

@@ -1,12 +1,12 @@
 import {Module} from "vuex";
-import {RootState} from "../../root";
+import {RootState, WarningsState} from "../../root";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
 import {actions} from "./actions";
 import {VersionInfo, Error} from "../../generated";
 
-export interface ModelOptionsState {
+export interface ModelOptionsState extends WarningsState {
     optionsFormMeta: DynamicFormMeta
     options: DynamicFormData
     changes: boolean
@@ -28,7 +28,8 @@ export const initialModelOptionsState = (): ModelOptionsState => {
         fetching: false,
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
         validateError: null,
-        optionsError: null
+        optionsError: null,
+        warnings: []
     }
 };
 

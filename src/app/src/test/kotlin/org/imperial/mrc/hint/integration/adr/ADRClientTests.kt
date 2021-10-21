@@ -41,12 +41,12 @@ class ADRClientTests
     {
         val sut = ADRFuelClient(ConfiguredAppProperties(), "fakekey")
         val response = sut.get("garbage")
-        assertThat(response.statusCodeValue).isEqualTo(500)
+        assertThat(response.statusCodeValue).isEqualTo(400)
         val errors = ObjectMapper().readValue<JsonNode>(response.body!!)["errors"]
-        assertThat(errors.isArray).isTrue()
+        assertThat(errors.isArray).isTrue
         assertThat(errors.count()).isEqualTo(1)
         assertThat(errors[0]["error"].textValue()).isEqualTo("OTHER_ERROR")
-        assertThat(errors[0]["detail"].textValue()).isEqualTo("Could not parse response.")
+        assertThat(errors[0]["detail"].textValue()).isEqualTo("Bad request - Action name not known: garbage")
     }
 
     @Test
@@ -54,11 +54,11 @@ class ADRClientTests
     {
         val sut = ADRFuelClient(ConfiguredAppProperties(), "fakekey")
         val response = sut.postFile("garbage", listOf(), Pair("garbage", File("/dev/null")))
-        assertThat(response.statusCodeValue).isEqualTo(500)
+        assertThat(response.statusCodeValue).isEqualTo(400)
         val errors = ObjectMapper().readValue<JsonNode>(response.body!!)["errors"]
-        assertThat(errors.isArray).isTrue()
+        assertThat(errors.isArray).isTrue
         assertThat(errors.count()).isEqualTo(1)
         assertThat(errors[0]["error"].textValue()).isEqualTo("OTHER_ERROR")
-        assertThat(errors[0]["detail"].textValue()).isEqualTo("Could not parse response.")
+        assertThat(errors[0]["detail"].textValue()).isEqualTo("Bad request - Action name not known: garbage")
     }
 }

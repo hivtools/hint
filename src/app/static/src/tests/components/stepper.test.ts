@@ -1,6 +1,6 @@
 import {createLocalVue, shallowMount, Wrapper} from '@vue/test-utils';
 import Vue from 'vue';
-import Vuex, {Store} from 'vuex';
+import Vuex from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import {
     mockBaselineState,
@@ -35,7 +35,7 @@ import {StepperState} from "../../app/store/stepper/stepper";
 import {actions as rootActions} from "../../app/store/root/actions"
 import {mutations as rootMutations} from "../../app/store/root/mutations"
 import {metadataGetters, MetadataState} from "../../app/store/metadata/metadata";
-import {ModelStatusResponse} from "../../app/generated";
+import {ModelStatusResponse, Warning} from "../../app/generated";
 import {modelOptionsGetters, ModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 import {LoadingState, LoadState} from "../../app/store/load/load";
 import registerTranslations from "../../app/store/translations/registerTranslations";
@@ -46,6 +46,7 @@ import {RootState} from "../../app/root";
 import ModelCalibrate from "../../app/components/modelCalibrate/ModelCalibrate.vue";
 import {getters as rootGetters} from "../../app/store/root/getters";
 import {expectTranslated} from "../testHelpers";
+import StepperNavigation from "../../app/components/StepperNavigation.vue";
 
 const localVue = createLocalVue();
 
@@ -366,10 +367,10 @@ describe("Stepper component", () => {
 
     it("cannot continue when the active step is not complete", () => {
         const wrapper = createReadySut({country: ""});
-        const continueLink = wrapper.find("#continue");
-        expect(continueLink.classes()).toContain("disabled");
+        const vm = wrapper.vm as any;
+        expect(vm.navigationProps.nextDisabled).toBe(true);
 
-        continueLink.trigger("click");
+        vm.navigationProps.next();
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().active).toBe(true);
     });
@@ -379,18 +380,17 @@ describe("Stepper component", () => {
         const wrapper = createReadySut(completedBaselineState,
             completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any});
-        const continueLink = wrapper.find("#continue");
-        expect(continueLink.classes()).not.toContain("disabled");
+        const vm = wrapper.vm as any;
+        expect(vm.navigationProps.nextDisabled).toBe(false);
 
-        continueLink.trigger("click");
+        vm.navigationProps.next();
         const steps = wrapper.findAll(Step);
         expect(steps.at(1).props().active).toBe(true);
     });
 
     it("cannot go back from the first step", () => {
         const wrapper = createReadySut({country: ""});
-        const backLink = wrapper.find("#back");
-        expect(backLink.classes()).toContain("disabled");
+        expect((wrapper.vm as any).navigationProps.backDisabled).toBe(true);
     });
 
     it("can go back from later steps", () => {
@@ -405,10 +405,10 @@ describe("Stepper component", () => {
             {},
             {activeStep: 2});
 
-        const backLink = wrapper.find("#back");
-        expect(backLink.classes()).not.toContain("disabled");
+        const vm = wrapper.vm as any;
+        expect(vm.navigationProps.backDisabled).toBe(false);
 
-        backLink.trigger("click");
+        vm.navigationProps.back();
         const steps = wrapper.findAll(Step);
         expect(steps.at(0).props().active).toBe(true);
     });
@@ -424,8 +424,8 @@ describe("Stepper component", () => {
         const wrapper = createReadySut(baselineState,
             completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any});
-        const continueLink = wrapper.find("#continue");
-        expect(continueLink.classes()).toContain("disabled");
+        const vm = wrapper.vm as any;
+        expect(vm.navigationProps.nextDisabled).toBe(true);
 
         //invoke the mutation
         wrapper.vm.$store.commit("baseline/Validated", {
@@ -434,7 +434,7 @@ describe("Stepper component", () => {
         });
 
         Vue.nextTick().then(() => {
-            expect(wrapper.find("#continue").classes()).not.toContain("disabled");
+            expect(vm.navigationProps.nextDisabled).toBe(false);
             done();
         });
     });
@@ -563,7 +563,7 @@ describe("Stepper component", () => {
         expect(steps.at(3).props().complete).toBe(true);
     });
 
-    it("model run step becomes complete on success, result fetched, and automatically moves to calibrate step", async () => {
+    const testModelRunCompletion = async (modelRunWarnings: Warning[], expectAdvanceToCalibrate: boolean)=> {
         //store should consider first 3 steps to be complete initially
         const wrapper = createReadySut(
             {
@@ -608,10 +608,32 @@ describe("Stepper component", () => {
             "payload": "TEST"
         });
 
+        wrapper.vm.$store.commit("modelRun/WarningsFetched", {
+            type: "WarningsFetched",
+            payload: modelRunWarnings
+        });
+
         await Vue.nextTick();
         expect(steps.at(3).props().complete).toBe(true);
-        expect(steps.at(3).props().active).toBe(false);
-        expect(steps.at(4).props().active).toBe(true);
+        if (expectAdvanceToCalibrate) {
+            expect(steps.at(3).props().active).toBe(false);
+            expect(steps.at(4).props().active).toBe(true);
+        } else {
+            expect(steps.at(3).props().active).toBe(true);
+            expect(steps.at(4).props().active).toBe(false);
+        }
+    };
+
+    it("model run step becomes complete on success, result fetched, and automatically moves to calibrate step", async () => {
+        testModelRunCompletion([], true);
+    });
+
+    it("model run step does not automatically advance to calibrate step on completion if there are modelRun warnings to display", () => {
+        testModelRunCompletion([{text: "model run warning", locations: ["model_fit", "review_output"]}], false);
+    });
+
+    it("model run step does automatically advance to calibrate step on completion if there are modelRun warnings, but not for this step to display", () => {
+        testModelRunCompletion([{text: "model run warning", locations: ["review_output"]}], true);
     });
 
     it("validates state once ready", async () => {
@@ -670,7 +692,7 @@ describe("Stepper component", () => {
         expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
 
-    it("does not show ADR keintegrationy on step 4", () => {
+    it("does not show ADR integration on step 4", () => {
         const wrapper = getStepperOnStep(4);
         expect(wrapper.findAll(ADRIntegration).length).toBe(0);
     });
@@ -725,8 +747,16 @@ describe("Stepper component", () => {
         expect(steps.at(6).props().active).toBe(true);
         expect(steps.at(6).props().complete).toBe(true);
 
-        const continueLink = wrapper.find("#continue")
-        expect(continueLink.classes()).toContain("disabled");
+        expect((wrapper.vm as any).navigationProps.nextDisabled).toBe(true);
+    });
+
+    it("displays Back/Continue twice only on Step 3", () => {
+        expect(getStepperOnStep(1).findAll(StepperNavigation).length).toBe(1);
+        expect(getStepperOnStep(2).findAll(StepperNavigation).length).toBe(1);
+        expect(getStepperOnStep(3).findAll(StepperNavigation).length).toBe(2);
+        expect(getStepperOnStep(4).findAll(StepperNavigation).length).toBe(1);
+        expect(getStepperOnStep(5).findAll(StepperNavigation).length).toBe(1);
+        expect(getStepperOnStep(6).findAll(StepperNavigation).length).toBe(1);
     });
 
 });
