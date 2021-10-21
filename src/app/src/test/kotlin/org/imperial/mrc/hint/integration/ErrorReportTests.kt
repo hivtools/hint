@@ -16,27 +16,34 @@ class ErrorReportTests: SecureIntegrationTests()
     fun `can post error report`()
     {
         val data = """{
-            "email":"test.user@example.com",
-            "country":"South Africa",
-            "projectName":"South 2 Worldpop",
-            "section":"Fit model",
-            "jobId":"job12",
-            "errors":[
-            {
-                "detail":"Please contact support for troubleshooting1",
-                "error":"OTHER_ERROR",
-                "key":"go-now-then"
-            },
-            {
-                "detail":"Please contact support for support",
-                "error":"OTHER_ERROR",
-                "key":"go-later-then"
-            }
+            "email": "test.user@example.com",
+            "country": "South Africa",
+            "projectName": "South 2 Worldpop",
+            "section": "Fit model",
+            "jobId": "job12",
+            "errors": [
+                {
+                    "detail": "Please contact support for troubleshooting1",
+                    "error": "OTHER_ERROR",
+                    "key": "go-now-then"
+                },
+                {
+                    "detail": "Please contact support for support",
+                    "error": "OTHER_ERROR",
+                    "key": "go-later-then"
+                }
             ],
-            "description":"description of the error msg",
-            "stepsToReproduce":"step to reproduce desc",
-            "browserAgent":"Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW)",
-            "timeStamp":"2021-10-12T14:07:22.759Z"
+            "description": "description of the error msg",
+            "stepsToReproduce": "step to reproduce desc",
+            "browserAgent": "Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW)",
+            "versions": {
+                "naomi": "v1",
+                "hintr": "v2",
+                "rrq": "v3",
+                "traduire": "v4",
+                "hint": "v5"
+            },
+            "timeStamp": "2021-10-12T14:07:22.759Z"
         }""".trimIndent()
 
         val headers = HttpHeaders()

@@ -36,6 +36,13 @@ class ErrorReportControllerTests
             "",
             "test steps",
             "test agent",
+            mapOf(
+                    "naomi" to "v1",
+                    "hintr" to "v2",
+                    "rrq" to "v3",
+                    "traduire" to "v4",
+                    "hint" to "v5"
+            ),
             "2021-10-12T14:07:22.759Z"
     )
 
@@ -93,6 +100,11 @@ class ErrorReportControllerTests
             assertThat(response["description"].asText()).isEqualTo("")
             assertThat(response["stepsToReproduce"].asText()).isEqualTo("test steps")
             assertThat(response["browserAgent"].asText()).isEqualTo("test agent")
+            assertThat(response["versions"]["naomi"].asText()).isEqualTo("v1")
+            assertThat(response["versions"]["hintr"].asText()).isEqualTo("v2")
+            assertThat(response["versions"]["rrq"].asText()).isEqualTo("v3")
+            assertThat(response["versions"]["traduire"].asText()).isEqualTo("v4")
+            assertThat(response["versions"]["hint"].asText()).isEqualTo("v5")
             assertThat(response["timeStamp"].asText()).isEqualTo("2021-10-12T14:07:22.759Z")
         })
     }
