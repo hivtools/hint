@@ -1,4 +1,4 @@
-import {shallowMount, mount} from '@vue/test-utils';
+import {shallowMount, mount, createLocalVue} from '@vue/test-utils';
 import ErrorReport from "../../app/components/ErrorReport.vue";
 import Modal from "../../app/components/Modal.vue";
 import Vuex from "vuex";
@@ -7,6 +7,7 @@ import registerTranslations from "../../app/store/translations/registerTranslati
 import {StepperState} from "../../app/store/stepper/stepper";
 import {ProjectsState} from "../../app/store/projects/projects";
 import {expectTranslated} from "../testHelpers";
+import VueRouter from "vue-router";
 
 describe("Error report component", () => {
 
@@ -440,5 +441,34 @@ describe("Error report component", () => {
 
         expect(generateErrorReport.mock.calls.length).toBe(0);
     });
+
+    it("sets section to 'projects' if opened on project page", () => {
+        const localVue = createLocalVue()
+        localVue.use(VueRouter)
+        const routes = [
+            {
+                path: '/',
+                component: ErrorReport
+            },
+            {
+                path: '/projects',
+                component: ErrorReport
+            }
+        ]
+        const router = new VueRouter({
+            routes
+        })
+
+        const wrapper = mount(ErrorReport, { localVue, router, store: createStore() })
+        expect(wrapper.vm.$route.path).toBe("/");
+        wrapper.setProps({open: true});
+        expect((wrapper.find("#section").element as HTMLSelectElement).value).toBe("uploadInputs");
+
+        wrapper.setProps({open: false});
+        router.push("/projects");
+        wrapper.setProps({open: true});
+        expect((wrapper.find("#section").element as HTMLSelectElement).value).toBe("projects")
+    });
+
 
 });
