@@ -1,3 +1,7 @@
+# hint 1.59.0
+
+* Include WarningAlert in Stepper
+
 # hint 1.58.0
 
 * Do not auto-progress to calibrate step if there are model fit warnings
