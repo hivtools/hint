@@ -209,54 +209,58 @@ describe("root getters", () => {
         expectArraysEqual(result, [surveyErr, shapeErr, err]);
     });
 
-    it("can extract top level errors", () => {
-        const test = {
-            error: mockError("e1")
-        }
+    describe("extractErrors", () => {
 
-        expect(extractErrors(test)).toEqual([mockError("e1")])
-    });
-
-    it("can extract nested errors", () => {
-        const test = {
-            something: {
+        it("can extract top level errors", () => {
+            const test = {
                 error: mockError("e1")
             }
-        }
 
-        expect(extractErrors(test)).toEqual([mockError("e1")])
-    });
+            expect(extractErrors(test)).toEqual([mockError("e1")])
+        });
 
-    it("is case insensitive", () => {
-        const test = {
-            something: {
-                anError: mockError("e1"),
-                anothererror: mockError("e2")
+        it("can extract nested errors", () => {
+            const test = {
+                something: {
+                    error: mockError("e1")
+                }
             }
-        }
 
-        expect(extractErrors(test)).toEqual([mockError("e1"), mockError("e2")])
-    });
+            expect(extractErrors(test)).toEqual([mockError("e1")])
+        });
 
-    it("only matches words ending in 'error'", () => {
-        const test = {
-            something: {
-                anError: mockError("e1"),
-                shapeErroredFile: "notanerror",
-                randomProp: "alsonotanerror"
+        it("is case insensitive", () => {
+            const test = {
+                something: {
+                    anError: mockError("e1"),
+                    anothererror: mockError("e2")
+                }
             }
-        }
 
-        expect(extractErrors(test)).toEqual([mockError("e1")])
-    });
+            expect(extractErrors(test)).toEqual([mockError("e1"), mockError("e2")])
+        });
 
-    it("omits nulls", () => {
-        const test = {
-            something: {
-                anError: null
+        it("only matches words ending in 'error'", () => {
+            const test = {
+                something: {
+                    anError: mockError("e1"),
+                    shapeErroredFile: "notanerror",
+                    randomProp: "alsonotanerror"
+                }
             }
-        }
-        expect(extractErrors(test)).toEqual([])
+
+            expect(extractErrors(test)).toEqual([mockError("e1")])
+        });
+
+        it("omits nulls", () => {
+            const test = {
+                something: {
+                    anError: null
+                }
+            }
+            expect(extractErrors(test)).toEqual([])
+        });
+
     });
 
     const modelOptionWarnings: Warning[] = [
