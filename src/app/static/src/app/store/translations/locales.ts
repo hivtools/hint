@@ -773,7 +773,7 @@ const fr: Partial<Translations> = {
         "déjà enregistrées dans Naomi." +
         "</p>",
     showLess: "Montrer moins",
-    showMore: "Montre plus",
+    showMore: "Montrer plus",
     sizeIndicator: "Indicateur de taille",
     static: "Statique",
     step: "Étape",

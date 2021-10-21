@@ -1,7 +1,7 @@
 <template>
     <div v-if="showAlert">
         <div class="content alert alert-warning pt-0">
-            <div :style="containerBox">
+            <div :style="{ overflowY: 'hidden', height: `${this.renderedBoxHeight}px` }">
                 <div ref="warningBox" id="warningBox">
                     <div v-for="(value, key) in filteredWarnings" :key="key">
                         <h4 class="alert-heading pt-2">
@@ -13,7 +13,7 @@
                         </ul>
                     </div>
                 </div>
-                <div ref="incHeader" class="invisible">
+                <div ref="headerPlusLine" class="invisible">
                     <h4 class="alert-heading pt-2">
                         <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
                         Hidden header
@@ -36,10 +36,11 @@
     import { mapStateProp } from "../utils";
     import { RootState } from "../root";
     import { Language } from "../store/translations/locales";
-    import { switches } from "../featureSwitches";
+    import { Warning } from "../generated";
+    import { Dict } from "../types";
 
     interface Props {
-        warnings: Warnings;
+        warnings: Dict<Warning[]>;
         maxLines: number;
     }
 
@@ -60,24 +61,24 @@
         currentLanguage: Language;
         renderedBoxHeight: number;
         maxBoxHeight: number;
-        containerBox: {
-            height: string,
-            overflowY: string
-        };
-        filteredWarnings: Warnings;
+        // containerBox: {
+        //     height: string,
+        //     overflowY: string
+        // };
+        filteredWarnings: Dict<Warning[]>;
         warningsLengthy: boolean;
         showAlert: boolean;
         buttonText: string;
     }
 
-    interface Warning {
-        text: string;
-        locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
-    }
+    // interface Warning {
+    //     text: string;
+    //     locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+    // }
 
-    interface Warnings {
-        [key: string]: Warning[];
-    }
+    // interface Warnings {
+    //     [key: string]: Warning[];
+    // }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "WarningAlert",
@@ -111,14 +112,14 @@
             warningsLengthy(){
                 return this.fullBoxHeight > this.maxBoxHeight
             },
-            containerBox(){
-                return {
-                    height: `${this.renderedBoxHeight}px`,
-                    overflowY: "hidden"
-                }
-            },
+            // containerBox(){
+            //     return {
+            //         height: `${this.renderedBoxHeight}px`,
+            //         overflowY: "hidden"
+            //     }
+            // },
             filteredWarnings(){
-                const anObject: Warnings = {}
+                const anObject: Dict<Warning[]> = {}
                 Object.keys(this.warnings).forEach((k) => {
                     if (this.warnings[k].length > 0){
                         anObject[k] = this.warnings[k]
@@ -144,7 +145,7 @@
             updateDimensions(){
                 if (this.showAlert){
                     this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
-                    this.headerHeight = (this.$refs.incHeader as HTMLElement).clientHeight - this.lineHeight;
+                    this.headerHeight = (this.$refs.headerPlusLine as HTMLElement).clientHeight - this.lineHeight;
                     this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
                 }
             },
@@ -155,6 +156,7 @@
                     modelCalibrate: "warningsHeaderModelCalibrate"
                 }
                 return key in headers ? i18next.t(headers[key], { lng: this.currentLanguage }) : ""
+                // return key in headers ? headers[key] : ""
             }
         },
         watch: {

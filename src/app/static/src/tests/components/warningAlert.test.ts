@@ -91,11 +91,11 @@ describe("Warning alert component", () => {
         expect(showToggle.find("p").text()).toBe("...")
         expectTranslated(showToggle.find("button"), 
             "Show more", 
-            "Montre plus", 
+            "Montrer plus", 
             "Mostre mais", 
         store)
         await showToggle.find("button").trigger("click")
-        expect(showToggle.find("p").exists()).toBe(false)
+        expect(wrapper.find("#showToggle>p").exists()).toBe(false)
         expectTranslated(showToggle.find("button"), 
             "Show less", 
             "Montrer moins", 
