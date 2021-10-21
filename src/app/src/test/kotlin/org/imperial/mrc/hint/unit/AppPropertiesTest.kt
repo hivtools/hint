@@ -2,7 +2,7 @@ package org.imperial.mrc.hint.unit
 
 import org.assertj.core.api.Java6Assertions.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
-import org.imperial.mrc.hint.HintProperties
+import org.imperial.mrc.hint.helpers.readPropsFromTempFile
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -14,15 +14,6 @@ class AppPropertiesTests
     fun cleanup()
     {
         File("tmp").deleteRecursively()
-    }
-
-    private fun readPropsFromTempFile(contents: String): HintProperties
-    {
-        File("tmp").mkdir()
-        val config = File("tmp/fake.properties")
-        config.createNewFile()
-        config.writeText(contents)
-        return ConfiguredAppProperties.readProperties("tmp/fake.properties")
     }
 
     @Test
@@ -157,5 +148,13 @@ class AppPropertiesTests
         val props = readPropsFromTempFile("adr_output_summary_schema=test-summary-schema")
         val sut = ConfiguredAppProperties(props)
         assertThat(sut.adrOutputSummarySchema).isEqualTo("test-summary-schema")
+    }
+
+    @Test
+    fun `can read issue report url`()
+    {
+        val props = readPropsFromTempFile("issue_report_url=https://webhook.azure")
+        val sut = ConfiguredAppProperties(props)
+        assertThat(sut.issueReportUrl).isEqualTo("https://webhook.azure")
     }
 }

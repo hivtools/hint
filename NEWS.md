@@ -2,9 +2,13 @@
 
 * ADR upload fails if download attempted while in progress
 
-# hint 1.58.0
+# hint 1.59.0
 
 * Do not poll for ADR dataset updates when using a release
+
+# hint 1.58.0
+
+* Endpoint for posting error report to Teams
 
 # hint 1.57.1
 

@@ -1,5 +1,7 @@
 package org.imperial.mrc.hint.helpers
 
+import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.HintProperties
 import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -25,5 +27,14 @@ fun getTestEntity(fileName: String, acceptGzip: Boolean = false): HttpEntity<Lin
         headers.set("Accept-Encoding", "gzip")
     }
     return HttpEntity(body, headers)
+}
+
+fun readPropsFromTempFile(contents: String): HintProperties
+{
+    File("tmp").mkdir()
+    val config = File("tmp/fake.properties")
+    config.createNewFile()
+    config.writeText(contents)
+    return ConfiguredAppProperties.readProperties("tmp/fake.properties")
 }
 
