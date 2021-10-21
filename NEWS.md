@@ -1,3 +1,8 @@
+
+# hint 1.60.0
+
+* Do not poll for ADR dataset updates when using a release
+
 # hint 1.59.0
 
 * Do not auto-progress to calibrate step if there are model fit warnings
@@ -5,6 +10,7 @@
 # hint 1.58.0
 
 * Endpoint for posting error report to Teams
+
 
 # hint 1.57.1
 
