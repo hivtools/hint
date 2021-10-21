@@ -2,7 +2,7 @@ import {RootState} from "../../root";
 import {Getter, GetterTree} from "vuex";
 import {Error} from "../../generated"
 import {Warning} from "../../generated";
-import {Dict} from "../../types";
+import {Dict, StepWarnings} from "../../types";
 
 interface RootGetters {
     isGuest: Getter<RootState, RootState>
@@ -20,19 +20,6 @@ const warningStepLocationMapping: Dict<string> = {
 export const getters: RootGetters & GetterTree<RootState, RootState> = {
     isGuest: (state: RootState) => {
         return state.currentUser == "guest";
-    },
-
-    warnings: (state: RootState) => (stepName: string) => {
-        const filterWarnings = (warnings: Warning[], stepLocation: string) =>
-            warnings.filter(warning => warning.locations.some(location => location === stepLocation))
-
-        const location = warningStepLocationMapping[stepName]
-
-        return {
-            modelOptions: filterWarnings(state.modelOptions.warnings, location),
-            modelRun: filterWarnings(state.modelRun.warnings, location),
-            modelCalibrate: filterWarnings(state.modelCalibrate.warnings, location)
-        }
     },
 
     errors: (state: RootState) => {
@@ -65,6 +52,18 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
             extractErrors(surveyAndProgram),
             state.modelRun.errors,
             state.errors.errors]);
+    },
+    warnings: (state: RootState) => (stepName: string): StepWarnings => {
+        const filterWarnings = (warnings: Warning[], stepLocation: string) =>
+            warnings.filter(warning => warning.locations.some(location => location === stepLocation))
+
+        const location = warningStepLocationMapping[stepName]
+
+        return {
+            modelOptions: filterWarnings(state.modelOptions.warnings, location),
+            modelRun: filterWarnings(state.modelRun.warnings, location),
+            modelCalibrate: filterWarnings(state.modelCalibrate.warnings, location)
+        }
     }
 }
 
