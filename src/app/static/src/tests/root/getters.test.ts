@@ -51,7 +51,6 @@ describe("root getters", () => {
         })
     }
 
-
     it("gets adr errors", async () => {
 
         const adrError = mockError("something went wrong");
