@@ -3,7 +3,7 @@ import {ModelOptionsState} from "./modelOptions";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {PayloadWithType} from "../../types";
 import {updateForm} from "../../utils";
-import {VersionInfo, Error} from "../../generated";
+import {VersionInfo, Error, ModelOptionsValidate} from "../../generated";
 
 
 export enum ModelOptionsMutation {
@@ -27,8 +27,9 @@ export const mutations: MutationTree<ModelOptionsState> = {
         state.valid = false;
     },
 
-    [ModelOptionsMutation.Validate](state: ModelOptionsState) {
+    [ModelOptionsMutation.Validate](state: ModelOptionsState, action: PayloadWithType<ModelOptionsValidate>) {
         state.valid = true;
+        state.warnings = action.payload.warnings
     },
 
     [ModelOptionsMutation.Validating](state: ModelOptionsState) {

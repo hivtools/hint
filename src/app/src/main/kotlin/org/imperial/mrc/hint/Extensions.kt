@@ -63,8 +63,16 @@ fun Response.asResponseEntity(logger: Log = LogFactory.getLog(HintExceptionHandl
 
         if (!json.has("status") && !json.has("success"))
         {
-            if (httpStatus < HttpStatus.BAD_REQUEST ) SuccessResponse(json).asResponseEntity()
-            else ErrorDetail(httpStatus, json.asText()).toResponseEntity<String>()
+            if (!httpStatus.isError)
+            {
+                SuccessResponse(json).asResponseEntity()
+            }
+            else
+            {
+                val message = json.asText()
+                logger.error(message)
+                ErrorDetail(httpStatus, message).toResponseEntity<String>()
+            }
         }
         else if (json.has("status"))
         {

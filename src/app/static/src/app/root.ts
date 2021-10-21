@@ -28,7 +28,7 @@ import {
 import {errors, ErrorsState, initialErrorsState} from "./store/errors/errors";
 import {Language} from "./store/translations/locales";
 import {modelCalibrate, initialModelCalibrateState, ModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
-import { initialHintrVersionState, hintrVersion, HintrVersionState } from "./store/hintrVersion/hintrVersion";
+import {initialHintrVersionState, hintrVersion, HintrVersionState} from "./store/hintrVersion/hintrVersion";
 import {currentHintVersion} from "./hintVersion";
 import {ModelRunMutation, ModelRunUpdates} from "./store/modelRun/mutations";
 import {adr, ADRState, initialADRState} from "./store/adr/adr";
@@ -42,6 +42,7 @@ import {
 } from "./store/downloadResults/downloadResults";
 import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibrate/mutations";
 import {GenericChartState, initialGenericChartState, genericChart} from "./store/genericChart/genericChart";
+import {Warning} from "./generated";
 
 export interface TranslatableState {
     language: Language
@@ -73,6 +74,10 @@ export interface RootState extends TranslatableState {
 
 export interface ReadyState {
     ready: boolean
+}
+
+export interface WarningsState {
+    warnings: Warning[]
 }
 
 const persistState = (store: Store<RootState>): void => {

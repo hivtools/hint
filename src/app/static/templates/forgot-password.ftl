@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="en">
 <head>
     <title>${title}: Forgot password</title>
     <link rel="shortcut icon" href="/public/favicon.ico"/>

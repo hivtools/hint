@@ -8,6 +8,8 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import LoggedOutHeader from "../../../app/components/header/LoggedOutHeader.vue";
 import {expectTranslatedWithStoreType} from "../../testHelpers";
+import {LanguageMutation, mutations} from "../../../app/store/language/mutations";
+import {Language} from "../../../app/store/translations/locales";
 
 describe("Forgot password component", () => {
 
@@ -23,7 +25,7 @@ describe("Forgot password component", () => {
         const store = new Vuex.Store({
             state: mockPasswordState(passwordState),
             actions: {...actions},
-            mutations: {}
+            mutations
         });
 
         registerTranslations(store);
@@ -150,4 +152,12 @@ describe("Forgot password component", () => {
         const wrapper = createSut(store);
         expect(wrapper.find(LoggedOutHeader).props("title")).toBe("Naomi")
     });
+
+    it("updates html lang when language changes", () => {
+        const store = createStore();
+        createSut(store);
+        store.commit(LanguageMutation.ChangeLanguage, {payload: Language.pt});
+        expect(document.documentElement.lang).toBe("pt");
+    });
+
 });

@@ -15,6 +15,6 @@ class ErrorReportController(private val fuelFlowClient: FuelFlowClient)
     @ResponseBody
     fun postErrorReport(@RequestBody errorReport: ErrorReport): ResponseEntity<String>
     {
-        return fuelFlowClient.notifyTeams(null, errorReport)
+        return fuelFlowClient.notifyTeams(errorReport)
     }
 }

@@ -233,7 +233,7 @@ describe("Root mutations", () => {
 
         const state = mockRootState({
             modelRun: mockModelRunState({modelRunId: "TEST"}),
-            modelOutput: {selectedTab: "TEST"},
+            modelOutput: mockModelOutputState({selectedTab: "TEST"}),
             modelCalibrate: mockModelCalibrateState({complete: true})
         });
 
