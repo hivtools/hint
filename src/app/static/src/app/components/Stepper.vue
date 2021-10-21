@@ -61,7 +61,7 @@
     import ModelOptions from "./modelOptions/ModelOptions.vue";
     import VersionStatus from "./projects/VersionStatus.vue";
     import {mapGettersByNames, mapStateProp, mapStateProps} from "../utils";
-    import {Project} from "../types";
+    import {Project, StepWarnings} from "../types";
     import {ProjectsState} from "../store/projects/projects";
     import {RootState} from "../root";
     import StepperNavigation, {Props as StepperNavigationProps} from "./StepperNavigation.vue";
@@ -72,14 +72,16 @@
         currentProject: Project | null
         projectLoading: boolean,
         updatingLanguage: boolean,
-        navigationProps: StepperNavigationProps
+        navigationProps: StepperNavigationProps,
+        activeStepTextKey: string
     }
 
     interface ComputedGetters {
         ready: boolean,
         complete: boolean,
         loadingFromFile: boolean
-        loading: boolean
+        loading: boolean,
+        warnings: (stepName: string) => StepWarnings
     }
 
     const namespace = 'stepper';
@@ -104,7 +106,7 @@
             loading: function () {
                 return this.loadingFromFile || this.updatingLanguage || !this.ready;
             },
-            ...mapGetters(["isGuest"]),
+            ...mapGetters(["isGuest", "warnings"]),
             navigationProps: function() {
                 return {
                     back: this.back,
@@ -112,6 +114,9 @@
                     next: this.next,
                     nextDisabled: this.activeContinue(this.activeStep)
                 };
+            },
+            activeStepTextKey: function() {
+                return this.steps.find((step: StepDescription) => step.number === this.activeStep).textKey;
             }
         },
         methods: {
@@ -164,8 +169,10 @@
         },
         watch: {
             complete: function (){
-                if (this.activeStep === 4 && this.isComplete(4) && this.isEnabled(5)){
-                    this.next()
+                // auto-progress from modelRun to modelCalibrate if there are no warnings to display
+                if (this.activeStep === 4 && this.isComplete(4) && this.isEnabled(5) &&
+                        this.warnings(this.activeStepTextKey).modelRun.length === 0){
+                    this.next();
                 }
             },
             ready: function (newVal) {
