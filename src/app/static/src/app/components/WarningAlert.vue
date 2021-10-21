@@ -1,17 +1,23 @@
 <template>
     <div>
-        <h5>Model Options warnings</h5>
-        <ul>
-            <li v-for="(warning, index) in warnings.modelOptions" :key="index">{{warning.text}}</li>
-        </ul>
-        <h5>Model Fit warnings</h5>
-        <ul>
-            <li v-for="(warning, index) in warnings.modelRun" :key="index">{{warning.text}}</li>
-        </ul>
-        <h5>Model Calibrate warnings</h5>
-        <ul>
-            <li v-for="(warning, index) in warnings.modelCalibrate" :key="index">{{warning.text}}</li>
-        </ul>
+        <div v-if="warnings.modelOptions.length > 0">
+            <h5>Model Options warnings</h5>
+            <ul>
+                <li v-for="(warning, index) in warnings.modelOptions" :key="index">{{warning.text}}</li>
+            </ul>
+        </div>
+        <div v-if="warnings.modelRun.length > 0">
+            <h5>Model Fit warnings</h5>
+            <ul>
+                <li v-for="(warning, index) in warnings.modelRun" :key="index">{{warning.text}}</li>
+            </ul>
+        </div>
+        <div v-if="warnings.modelCalibrate.length > 0">
+            <h5>Model Calibrate warnings</h5>
+            <ul>
+                <li v-for="(warning, index) in warnings.modelCalibrate" :key="index">{{warning.text}}</li>
+            </ul>
+        </div>
     </div>
 </template>
 
