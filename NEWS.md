@@ -1,4 +1,4 @@
-# hint 1.60.0
+# hint 1.59.1
 
 * ADR upload fails if download attempted while in progress
 
