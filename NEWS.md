@@ -1,10 +1,10 @@
 # hint 1.59.0
 
-* Do not auto-progress to calibrate step if there are model fit warnings
+* Action for posting error report
 
 # hint 1.58.0
 
-* Action for posting error report
+* Do not auto-progress to calibrate step if there are model fit warnings
 
 # hint 1.57.0
 

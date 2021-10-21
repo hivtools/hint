@@ -108,8 +108,7 @@
                 description: "",
                 stepsToReproduce: "",
                 section: "",
-                email: "",
-                timeStamp: ""
+                email: ""
             }
         },
         computed: {

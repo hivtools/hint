@@ -315,15 +315,6 @@ describe("Root mutations", () => {
         expect(state.updatingLanguage).toBe(false);
     });
 
-    it("can set updatingLanguage", () => {
-        const state = mockRootState();
-        mutations.SetUpdatingLanguage(state, {payload: true});
-        expect(state.updatingLanguage).toBe(true);
-
-        mutations.SetUpdatingLanguage(state, {payload: false});
-        expect(state.updatingLanguage).toBe(false);
-    });
-
     it("can set ErrorReportError", () => {
         const error = mockError("Error");
         const state = mockRootState();
