@@ -10,6 +10,7 @@ import {mapActions, mapState} from "vuex";
 import {RootState} from "./root";
 import VueRouter, {NavigationGuardNext} from "vue-router";
 import {Route} from "vue-router/types/router";
+import {Language} from "./store/translations/locales";
 
 Vue.use(VueRouter);
 
@@ -59,5 +60,10 @@ export const app = new Vue({
         this.getADRSchemas();
         this.getGenericChartMetadata();
         this.getCurrentProject();
+    },
+    watch: {
+        language(newVal: Language) {
+            document.documentElement.lang = newVal
+        }
     }
 });
