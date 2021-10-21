@@ -20,18 +20,6 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
     isGuest: (state: RootState) => {
         return state.currentUser == "guest";
     },
-    warnings: (state: RootState) => (stepName: string) => {
-        const filterWarnings = (warnings: Warning[], stepLocation: string) =>
-            warnings.filter(warning => warning.locations.some(location => location === stepLocation))
-
-        const location = warningStepLocationMapping[stepName]
-
-        return {
-            modelOptions: filterWarnings(state.modelOptions.warnings, location),
-            modelRun: filterWarnings(state.modelRun.warnings, location),
-            modelCalibrate: filterWarnings(state.modelCalibrate.warnings, location)
-        }
-    },
     errors: (state: RootState) => {
         const {
             adr,
@@ -62,6 +50,18 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
             extractErrors(surveyAndProgram),
             state.modelRun.errors,
             state.errors.errors]);
+    },
+    warnings: (state: RootState) => (stepName: string): StepWarnings => {
+        const filterWarnings = (warnings: Warning[], stepLocation: string) =>
+            warnings.filter(warning => warning.locations.some(location => location === stepLocation))
+
+        const location = warningStepLocationMapping[stepName]
+
+        return {
+            modelOptions: filterWarnings(state.modelOptions.warnings, location),
+            modelRun: filterWarnings(state.modelRun.warnings, location),
+            modelCalibrate: filterWarnings(state.modelCalibrate.warnings, location)
+        }
     }
 }
 
