@@ -244,7 +244,9 @@ class ADRTests : SecureIntegrationTests()
             val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrOutputSummarySchema}/$downloadId?resourceFileName=output.html&resourceName=TestZip&description=test"
             val createResult = testRestTemplate.postForEntity<String>(url)
             assertSuccess(createResult)
-            val resourceId = ObjectMapper().readTree(createResult.body!!)["data"]["id"].textValue()
+            val data = ObjectMapper().readTree(createResult.body!!)["data"]
+            assertThat(data["restricted"].textValue()).isEqualTo("{\"allowed_organizations\":\"unaids\",\"allowed_users\":\"\",\"level\":\"restricted\"}")
+            val resourceId = data["id"].textValue()
             val updateResult = testRestTemplate.postForEntity<String>("$url&resourceId=$resourceId")
             assertSuccess(updateResult)
         }

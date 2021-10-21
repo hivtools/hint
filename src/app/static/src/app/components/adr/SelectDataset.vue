@@ -1,11 +1,10 @@
 <template>
     <div class="d-flex">
         <div v-if="selectedDataset" style="margin-top: 8px">
-            <span
-                class="font-weight-bold"
-                v-translate="'selectedDataset'"
-                id="selectedDatasetSpan"
-            ></span>
+            <span class="font-weight-bold"
+                  v-translate="'selectedDataset'"
+                  id="selectedDatasetSpan">
+            </span>
             <a v-if="releaseName" :href="releaseURL" target="_blank">
                 {{ selectedDataset.title }} — {{ releaseName }}
             </a>
@@ -13,25 +12,21 @@
                 {{ selectedDataset.title }}
             </a>
             <span class="color-red">
-                <info-icon
-                    size="20"
-                    v-if="outOfDateMessage"
-                    v-tooltip="outOfDateMessage"
-                    style="vertical-align: text-bottom"
-                ></info-icon>
+                <info-icon size="20"
+                           v-if="outOfDateMessage"
+                           v-tooltip="outOfDateMessage"
+                           style="vertical-align: text-bottom">
+                </info-icon>
             </span>
         </div>
-        <button
-            v-if="outOfDateMessage"
-            class="btn btn-white ml-2"
-            @click="refresh"
-            v-translate="'refresh'"
-        ></button>
-        <button
-            class="btn btn-red"
-            :class="selectedDataset && 'ml-2'"
-            @click="toggleModal"
-        >
+        <button v-if="outOfDateMessage"
+                class="btn btn-white ml-2"
+                @click="refresh"
+                v-translate="'refresh'">
+        </button>
+        <button class="btn btn-red"
+                :class="selectedDataset && 'ml-2'"
+                @click="toggleModal">
             {{ selectText }}
         </button>
         <modal id="dataset" :open="open">
@@ -39,71 +34,65 @@
             <p v-if="loading" v-translate="'importingFiles'"></p>
             <div v-if="!loading">
                 <label for="datasetSelector" class="font-weight-bold" v-translate="'datasets'"></label>
-                <tree-select
-                    id="datasetSelector"
-                    :multiple="false"
-                    :searchable="true"
-                    :options="datasetOptions"
-                    :placeholder="select"
-                    :disabled="fetchingDatasets"
-                    v-model="newDatasetId"
-                >
-                    <label
-                        slot="option-label"
-                        slot-scope="{ node }"
-                        v-html="node.raw.customLabel"
-                    >
+                <tree-select id="datasetSelector"
+                             :multiple="false"
+                             :searchable="true"
+                             :options="datasetOptions"
+                             :placeholder="select"
+                             :disabled="fetchingDatasets"
+                             v-model="newDatasetId">
+                    <label slot="option-label"
+                           slot-scope="{ node }"
+                           v-html="node.raw.customLabel">
                     </label>
                 </tree-select>
-                <select-release :dataset-id="newDatasetId" :open="open" @selected-dataset-release="updateDatasetRelease" @valid="updateValid"></select-release>
-                <div
-                    :class="fetchingDatasets ? 'visible' : 'invisible'"
-                    style="margin-top: 15px"
-                    id="fetching-datasets"
-                >
+                <select-release :dataset-id="newDatasetId" :open="open"
+                                @selected-dataset-release="updateDatasetRelease"
+                                @valid="updateValid">
+                </select-release>
+                <div :class="fetchingDatasets ? 'visible' : 'invisible'"
+                     style="margin-top: 15px"
+                     id="fetching-datasets">
                     <loading-spinner size="xs"></loading-spinner>
                     <span v-translate="'loadingDatasets'"></span>
                 </div>
                 <div v-if="adrError" id="fetch-error">
                     <div v-translate="'errorFetchingDatasetsFromADR'"></div>
-                    <button
-                        @click="getDatasets"
-                        class="btn btn-red float-right"
-                        v-translate="'tryAgain'"
-                    ></button>
+                    <button @click="getDatasets"
+                            class="btn btn-red float-right"
+                            v-translate="'tryAgain'">
+                    </button>
                 </div>
             </div>
             <div class="text-center" v-if="loading" id="loading-dataset">
                 <loading-spinner size="sm"></loading-spinner>
             </div>
             <template v-slot:footer v-if="!loading">
-                <button
-                    id="importBtn"
-                    type="button"
-                    :disabled="disableImport"
-                    class="btn btn-red"
-                    v-translate="'import'"
-                    @click.prevent="confirmImport"
-                ></button>
-                <button
-                    type="button"
-                    class="btn btn-white"
-                    v-translate="'cancel'"
-                    @click="toggleModal"
-                ></button>
+                <button id="importBtn"
+                        type="button"
+                        :disabled="disableImport"
+                        class="btn btn-red"
+                        v-translate="'import'"
+                        @click.prevent="confirmImport">
+                </button>
+                <button type="button"
+                        class="btn btn-white"
+                        v-translate="'cancel'"
+                        @click="toggleModal">
+                </button>
             </template>
         </modal>
         <reset-confirmation
             v-if="showConfirmation"
             :continue-editing="continueEditing"
             :cancel-editing="cancelEditing"
-            :open="showConfirmation"
-        ></reset-confirmation>
+            :open="showConfirmation">
+        </reset-confirmation>
     </div>
 </template>
 <script lang="ts">
     import i18next from "i18next";
-    import { Language } from "../../store/translations/locales";
+    import {Language} from "../../store/translations/locales";
     import Vue from "vue";
     import TreeSelect from "@riophae/vue-treeselect";
     import {
@@ -112,23 +101,23 @@
         mapStateProp,
         mapGetterByName,
     } from "../../utils";
-    import { RootState } from "../../root";
+    import {RootState} from "../../root";
     import Modal from "../Modal.vue";
-    import { BaselineMutation } from "../../store/baseline/mutations";
+    import {BaselineMutation} from "../../store/baseline/mutations";
     import LoadingSpinner from "../LoadingSpinner.vue";
-    import { BaselineState } from "../../store/baseline/baseline";
+    import {BaselineState} from "../../store/baseline/baseline";
     import {
         Dataset,
         DatasetResourceSet,
         Release
     } from "../../types";
-    import { InfoIcon } from "vue-feather-icons";
-    import { VTooltip } from "v-tooltip";
-    import { ADRState } from "../../store/adr/adr";
-    import { Error } from "../../generated";
+    import {InfoIcon} from "vue-feather-icons";
+    import {VTooltip} from "v-tooltip";
+    import {ADRState} from "../../store/adr/adr";
+    import {Error} from "../../generated";
     import ResetConfirmation from "../ResetConfirmation.vue";
     import SelectRelease from "./SelectRelease.vue";
-    import { GetDatasetPayload } from "../../store/adr/actions";
+    import {GetDatasetPayload} from "../../store/adr/actions";
 
     interface Methods {
         getDatasets: () => void;
@@ -214,7 +203,7 @@
             ResetConfirmation,
             SelectRelease
         },
-        directives: { tooltip: VTooltip },
+        directives: {tooltip: VTooltip},
         computed: {
             editsRequireConfirmation: mapGetterByName(
                 "stepper",
@@ -244,10 +233,10 @@
                 namespace,
                 (state: ADRState) => state.adrError
             ),
-            releaseName(){
+            releaseName() {
                 return this.selectedRelease?.name || null;
             },
-            releaseURL(){
+            releaseURL() {
                 return new URL(this.selectedDataset!.url).origin + '/dataset/' + this.selectedDataset!.id + '?activity_id=' + this.selectedRelease!.activity_id;
             },
             datasetOptions() {
@@ -263,9 +252,9 @@
             },
             selectText() {
                 if (this.selectedDataset) {
-                    return i18next.t("editBtn", { lng: this.currentLanguage });
+                    return i18next.t("editBtn", {lng: this.currentLanguage});
                 } else {
-                    return i18next.t("selectADR", { lng: this.currentLanguage });
+                    return i18next.t("selectADR", {lng: this.currentLanguage});
                 }
             },
             outOfDateResources() {
@@ -294,13 +283,13 @@
                 return `The following files have been updated in the ADR: ${updatedNames}. Use the refresh button to import the latest files.`;
             },
             select() {
-                return i18next.t("select", { lng: this.currentLanguage });
+                return i18next.t("select", {lng: this.currentLanguage});
             },
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
             ),
-            disableImport(){
+            disableImport() {
                 return !this.newDatasetId || !this.valid
             }
         },
@@ -343,11 +332,11 @@
                 ]);
 
                 (shape || this.hasShapeFile) &&
-                    (await Promise.all([
-                        survey && this.importSurvey(survey.url),
-                        program && this.importProgram(program.url),
-                        anc && this.importANC(anc.url),
-                    ]));
+                (await Promise.all([
+                    survey && this.importSurvey(survey.url),
+                    program && this.importProgram(program.url),
+                    anc && this.importANC(anc.url),
+                ]));
 
                 this.loading = false;
                 this.open = false;
@@ -369,14 +358,14 @@
                 } = this.selectedDataset!.resources;
                 await Promise.all([
                     this.outOfDateResources["pjnz"] &&
-                        pjnz &&
-                        this.importPJNZ(pjnz.url),
+                    pjnz &&
+                    this.importPJNZ(pjnz.url),
                     this.outOfDateResources["pop"] &&
-                        pop &&
-                        this.importPopulation(pop.url),
+                    pop &&
+                    this.importPopulation(pop.url),
                     this.outOfDateResources["shape"] &&
-                        shape &&
-                        this.importShape(shape.url),
+                    shape &&
+                    this.importShape(shape.url),
                 ]);
 
                 const baselineUpdated =
@@ -388,17 +377,17 @@
                 // regardless of whether they have changed, since updating the baseline files will
                 // have wiped these
                 (shape || this.hasShapeFile) &&
-                    (await Promise.all([
-                        (baselineUpdated || this.outOfDateResources["survey"]) &&
-                            survey &&
-                            this.importSurvey(survey.url),
-                        (baselineUpdated || this.outOfDateResources["program"]) &&
-                            program &&
-                            this.importProgram(program.url),
-                        (baselineUpdated || this.outOfDateResources["anc"]) &&
-                            anc &&
-                            this.importANC(anc.url),
-                    ]));
+                (await Promise.all([
+                    (baselineUpdated || this.outOfDateResources["survey"]) &&
+                    survey &&
+                    this.importSurvey(survey.url),
+                    (baselineUpdated || this.outOfDateResources["program"]) &&
+                    program &&
+                    this.importProgram(program.url),
+                    (baselineUpdated || this.outOfDateResources["anc"]) &&
+                    anc &&
+                    this.importANC(anc.url),
+                ]));
 
                 this.markResourcesUpdated();
                 this.loading = false;
@@ -408,11 +397,11 @@
             },
             toggleModal() {
                 this.open = !this.open;
-                if (this.open){
+                if (this.open) {
                     this.preSelectDataset();
                 }
             },
-            preSelectDataset(){
+            preSelectDataset() {
                 const selectedDatasetId = this.selectedDataset?.id
                 if (selectedDatasetId && this.datasets.some(dataset => dataset.id === selectedDatasetId)) {
                     this.newDatasetId = selectedDatasetId;
@@ -446,17 +435,16 @@
                     window.clearInterval(this.pollingId);
                 }
             },
-            updateDatasetRelease(release){
-                console.log("In Selected Dataset"+ release)
+            updateDatasetRelease(release) {
                 this.newDatasetRelease = release;
             },
-            updateValid(valid){
+            updateValid(valid) {
                 this.valid = valid;
             }
         },
         watch: {
-            datasets(){
-                if (this.open){
+            datasets() {
+                if (this.open) {
                     this.preSelectDataset();
                 }
             }

@@ -190,7 +190,6 @@
             this.preSelectRelease();
             this.$emit("selected-dataset-release", this.releaseId);
             this.$emit("valid", this.valid);
-            console.log("Some releas ehere " +this.initialRelease)
         },
         directives: {
             tooltip: VTooltip,
