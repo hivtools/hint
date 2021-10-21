@@ -1,12 +1,21 @@
-# hint 1.58.0
+# hint 1.59.0
 
 * Do not auto-progress to calibrate step if there are model fit warnings
+
+# hint 1.58.0
+
+* Endpoint for posting error report to Teams
+
+# hint 1.57.1
+
+* accessibility fixes
 
 # hint 1.57.0
 
 * New ADR resources should grant permissions to UNAIDS org
 
 # hint 1.56.3
+
 * fix accessibility issue with buttons on projects page
 
 # hint 1.56.2

@@ -78,14 +78,22 @@ class ExtensionTests {
     }
 
     @Test
-    fun `error is returned when response json does not conform to schema`()
+    fun `error is returned when response json does not conform to schema and status code greater than 400`()
     {
         val mockBody = getMockBody("{\"wrong\": \"schema\"}")
-        val res = Response(URL("http://whatever"), 200, body = mockBody)
+        val res = Response(URL("http://whatever"), 500, body = mockBody)
         assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
         val body = ObjectMapper().readTree(res.asResponseEntity().body)
-        val errorDetail = body["errors"].first()["detail"].textValue()
-        assertThat(errorDetail).isEqualTo("Could not parse response.")
+        val error = body["errors"].first()["error"].textValue()
+        assertThat(error).isEqualTo("OTHER_ERROR")
+    }
+
+    @Test
+    fun `returns OK when response json does not conform to schema and status code is less than 400`()
+    {
+        val mockBody = getMockBody("{\"wrong\": \"schema\"}")
+        val res = Response(URL("http://whatever"), 204, body = mockBody)
+        assertThat(res.asResponseEntity().statusCode).isEqualTo(HttpStatus.OK)
     }
 
     @Test
