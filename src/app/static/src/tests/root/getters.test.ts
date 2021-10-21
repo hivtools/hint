@@ -31,27 +31,6 @@ describe("root getters", () => {
         expect(expected).toEqual(expect.arrayContaining(result));
     }
 
-    const modelOptionWarnings: Warning[] = [
-        {text: "model option test", locations: ["model_options"]}
-    ]
-
-    const calibrateWarnings: Warning[] = [
-        {text: "model calibrate test", locations: ["model_options", "model_calibrate"]}
-    ]
-
-    const modelRunWarnings: Warning[] = [
-        {text: "model run test", locations: ["model_fit"]}
-    ]
-
-    const testState = () => {
-        return mockRootState({
-            modelOptions: mockModelOptionsState({warnings: modelOptionWarnings}),
-            modelRun: mockModelRunState({warnings: modelRunWarnings}),
-            modelCalibrate: mockModelCalibrateState({warnings: calibrateWarnings})
-        })
-    }
-
-
     it("gets adr errors", async () => {
 
         const adrError = mockError("something went wrong");
@@ -277,9 +256,28 @@ describe("root getters", () => {
                 anError: null
             }
         }
-
         expect(extractErrors(test)).toEqual([])
     });
+
+    const modelOptionWarnings: Warning[] = [
+        {text: "model option test", locations: ["model_options"]}
+    ]
+
+    const calibrateWarnings: Warning[] = [
+        {text: "model calibrate test", locations: ["model_options", "model_calibrate"]}
+    ]
+
+    const modelRunWarnings: Warning[] = [
+        {text: "model run test", locations: ["model_fit"]}
+    ]
+
+    const testState = () => {
+        return mockRootState({
+            modelOptions: mockModelOptionsState({warnings: modelOptionWarnings}),
+            modelRun: mockModelRunState({warnings: modelRunWarnings}),
+            modelCalibrate: mockModelCalibrateState({warnings: calibrateWarnings})
+        })
+    }
 
     it(`can get modelRun warnings when on model run step`, () => {
         const rootState = testState()
@@ -330,4 +328,4 @@ describe("root getters", () => {
         const result = warnings("modelOptions").modelOptions
         expect(result).toEqual(modelOptionWarnings)
     })
-})
+});
