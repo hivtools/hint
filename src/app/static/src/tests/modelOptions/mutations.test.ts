@@ -1,4 +1,4 @@
-import {mockError, mockModelOptionsState} from "../mocks";
+import {mockError, mockModelOptionsState, mockWarning} from "../mocks";
 import {ModelOptionsMutation, mutations} from "../../app/store/modelOptions/mutations";
 import {DynamicFormMeta, NumberControl} from "@reside-ic/vue-dynamic-form";
 import {VersionInfo} from "../../app/generated";
@@ -27,10 +27,11 @@ describe("Model run options mutations", () => {
         expect(state.fetching).toBe(false)
     });
 
-    it("can valid option", () => {
+    it("can validate options and populate warnings", () => {
         const state = mockModelOptionsState();
-        mutations[ModelOptionsMutation.Validate](state);
+        mutations[ModelOptionsMutation.Validate](state, {payload: {warnings: [mockWarning()]}});
         expect(state.valid).toBe(true);
+        expect(state.warnings).toEqual([mockWarning()]);
     });
 
     it("un-validates", () => {

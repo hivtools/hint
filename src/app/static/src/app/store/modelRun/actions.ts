@@ -4,6 +4,7 @@ import {RootState} from "../../root";
 import {api, APIService} from "../../apiService";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {ModelRunMutation} from "./mutations";
+import {freezer} from "../../utils";
 
 export interface ModelRunActions {
     run: (store: ActionContext<ModelRunState, RootState>) => void
@@ -44,11 +45,16 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
     async getResult(context) {
         const {commit, state} = context;
         if (state.status.done) {
-            await api<ModelRunMutation, ModelRunMutation>(context)
-                .withSuccess(ModelRunMutation.RunResultFetched)
+            const response = await api<ModelRunMutation, ModelRunMutation>(context)
+                .ignoreSuccess()
                 .withError(ModelRunMutation.RunResultError)
-                .freezeResponse()
                 .get<ModelResultResponse>(`/model/result/${state.modelRunId}`);
+
+            if (response) {
+                commit({type: ModelRunMutation.WarningsFetched, payload: response.data.warnings});
+                const frozen = freezer.deepFreeze(response.data);
+                commit({type: ModelRunMutation.RunResultFetched, payload: frozen});
+            }
         }
         commit({type: "Ready", payload: true});
     },

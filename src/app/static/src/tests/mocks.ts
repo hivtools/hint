@@ -21,7 +21,7 @@ import {
     SurveyFilters,
     SurveyResponse,
     ValidateBaselineResponse,
-    Error, CalibrateResultResponse
+    Error, CalibrateResultResponse, Warning
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
@@ -331,6 +331,7 @@ export const mockModelResultResponse = (props: Partial<ModelResultResponse> = {}
     return {
         id: "123",
         complete: true,
+        warnings: [],
         ...props
     };
 };
@@ -361,6 +362,7 @@ export const mockCalibrateResultResponse = (props: Partial<CalibrateResultRespon
             mode: 0.5,
             upper: 0.5
         }],
+        warnings: [],
         ...props
     }
 };
@@ -425,4 +427,12 @@ export const mockDatasetResource = (props: Partial<DatasetResource> = {}): Datas
         name: "mock-resource-name",
         ...props
     }
+};
+
+export const mockWarning = (props: Partial<Warning> = {}): Warning => {
+    return {
+        text: "be careful",
+        locations: ["model_calibrate"],
+        ...props
+    };
 };

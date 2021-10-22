@@ -101,6 +101,20 @@ describe("App", () => {
         expect(rendered.classes()).toContain("en");
     });
 
+    it("updates html lang when language changes", () => {
+        const store = getStore();
+        let c = app.$options;
+        const rendered = shallowMount({
+            computed: c.computed,
+            template: "<div :class='language'></div>",
+            watch: c.watch
+        }, {store});
+
+        store.commit(LanguageMutation.ChangeLanguage, {payload: Language.pt});
+
+        expect(document.documentElement.lang).toBe("pt");
+    });
+
     it("updates local storage on every mutation", () => {
         const store = getStore();
         const spy = jest.spyOn(localStorageManager, "saveState");
@@ -112,7 +126,7 @@ describe("App", () => {
     it("updates language in local storage on every mutation", () => {
         const store = getStore();
         const spy = jest.spyOn(localStorageManager, "saveState");
-        store.commit( LanguageMutation.ChangeLanguage, {payload: Language.pt});
+        store.commit(LanguageMutation.ChangeLanguage, {payload: Language.pt});
 
         expect(spy).toHaveBeenCalled();
         expect(spy.mock.calls[0][0]?.language).toBe("pt");
