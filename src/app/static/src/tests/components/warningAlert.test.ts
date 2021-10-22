@@ -1,5 +1,6 @@
-import {createLocalVue, shallowMount} from '@vue/test-utils';
+import {createLocalVue, shallowMount, Wrapper} from '@vue/test-utils';
 import WarningAlert from "../../app/components/WarningAlert.vue";
+import Vue from "vue";
 import Vuex from "vuex";
 import {emptyState} from "../../app/root";
 import registerTranslations from "../../app/store/translations/registerTranslations";
@@ -27,6 +28,26 @@ describe("Warning alert component", () => {
             localVue
         });
         return wrapper
+    }
+
+    function setDivHeights(wrapper: Wrapper<Vue>, l: number, hpl: number, wb: number) {
+        // const line = wrapper.vm.$refs.line as HTMLDivElement;
+        // const headerPlusLine = wrapper.vm.$refs.headerPlusLine as HTMLDivElement;
+        // const warningBox = wrapper.vm.$refs.warningBox as HTMLDivElement;
+        // jest.spyOn(line, "clientHeight", "get")
+        //     .mockImplementation(() => 1000);
+        // jest.spyOn(headerPlusLine, "clientHeight", "get")
+        //         .mockImplementation(() => 1000);
+        // jest.spyOn(warningBox, "clientHeight", "get")
+        //     .mockImplementation(() => 1000);
+        function internal(refName: string, height: number){
+            const selDiv = wrapper.vm.$refs[refName] as HTMLDivElement;
+            jest.spyOn(selDiv, "clientHeight", "get")
+                .mockImplementation(() => height);
+        }
+        internal("line", l)
+        internal("headerPlusLine", hpl)
+        internal("warningBox", wb)
     }
 
     it("renders no warning alert if there are no warnings", () => {
@@ -82,11 +103,13 @@ describe("Warning alert component", () => {
 
     it("renders ellipsis and show more/less buttons if many warnings", async () => {
         const wrapper = createWrapper()
-        wrapper.setData({
-            fullBoxHeight: 232,
-            lineHeight: 24,
-            headerHeight: 56
-        })
+        // wrapper.setData({
+        //     fullBoxHeight: 232,
+        //     lineHeight: 24,
+        //     headerHeight: 56
+        // })
+        setDivHeights(wrapper, 24, 56, 232)
+        wrapper.setProps({ warnings: {...warningsMock}})
         const showToggle = wrapper.find("#showToggle")
         expect(showToggle.find("p").text()).toBe("...")
         expectTranslated(showToggle.find("button"), 
@@ -101,6 +124,13 @@ describe("Warning alert component", () => {
             "Montrer moins", 
             "Mostre menos", 
         store)
+    });
+
+    it("does not show more/less buttons if few warnings", async () => {
+        const wrapper = createWrapper()
+        setDivHeights(wrapper, 24, 56, 104)
+        wrapper.setProps({ warnings: {...warningsMock}})
+        expect(wrapper.find("#showToggle").exists()).toBe(false)
     });
 
     it("only renders warning messages that have warnings", () => {
