@@ -41,24 +41,33 @@
                         <span class="font-weight-bold" v-translate="'uploadComplete'"></span>
                     </div>
                     <div class="d-flex align-items-center height-40">
-                        <tick color="#e31837" v-if="uploadComplete" width="20px"></tick>
+                        <tick color="#e31837" v-if="uploadComplete"></tick>
+                    </div>
+                </div>
+                <div id="releaseCreated" v-if="releaseCreated || releaseFailed" class="d-flex align-items-end">
+                    <div class="d-flex align-items-center height-40 mr-1">
+                        <span class="font-weight-bold" v-translate="releaseCreated ? 'releaseCreated' : 'releaseFailed'"></span>
+                    </div>
+                    <div class="d-flex align-items-center height-40">
+                        <component :is="releaseCreated ? 'tick' : 'cross'" color="#e31837"></component>
                     </div>
                 </div>
                 <error-alert v-if="uploadError" :error="uploadError"></error-alert>
             </div>
         </div>
-        <upload-modal id="upload-modal" :open="uploadModalOpen" @close="uploadModalOpen = false"></upload-modal>
+        <upload-modal id="upload-modal" v-if="uploadModalOpen" @close="uploadModalOpen = false"></upload-modal>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+    import {mapActionByName, mapStateProp, mapStateProps, mapMutationByName} from "../../utils";
     import {UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
+    import Cross from "../Cross.vue";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import ErrorAlert from "../ErrorAlert.vue";
@@ -75,6 +84,8 @@
         totalFilesUploading: number | null,
         uploading: boolean,
         uploadComplete: boolean,
+        releaseCreated: boolean,
+        releaseFailed: boolean,
         uploadError: null | UploadError,
         hasUploadPermission: boolean,
         downloadingSpectrum: boolean,
@@ -94,6 +105,7 @@
         handleUploadModal: () => void
         getUserCanUpload: () => void
         getUploadFiles: () => void
+        clearStatus: () => void;
         downloadCoarseOutput: () => void
         downloadSpectrum: () => void
         downloadSummary: () => void
@@ -146,6 +158,8 @@
                 totalFilesUploading: state => state.totalFilesUploading,
                 uploading: state => state.uploading,
                 uploadComplete: state => state.uploadComplete,
+                releaseCreated: state => state.releaseCreated,
+                releaseFailed: state => state.releaseFailed,
                 uploadError: state => state.uploadError
             }),
             hasUploadPermission: mapStateProp<ADRState, boolean>("adr",
@@ -210,6 +224,7 @@
                 }
               }
             },
+            clearStatus: mapMutationByName("adrUpload", "ClearStatus"),
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
             getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
             getSpectrumDownload: mapActionByName("downloadResults", "downloadSpectrum"),
@@ -221,10 +236,14 @@
             this.getUserCanUpload();
             this.getUploadFiles()
         },
+        beforeMount(){
+            this.clearStatus();
+        },
         components: {
             UploadIcon,
             LoadingSpinner,
             Tick,
+            Cross,
             ErrorAlert,
             UploadModal,
             Download

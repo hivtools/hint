@@ -36,7 +36,7 @@ describe("Download Results component", () => {
         jest.useRealTimers()
     })
 
-    const createStore = (hasUploadPermission = true, getUserCanUpload = jest.fn(), uploading = false, uploadComplete = false, uploadError: any = null, downloadResults?: Partial<DownloadResultsState>) => {
+    const createStore = (hasUploadPermission = true, getUserCanUpload = jest.fn(), uploading = false, uploadComplete = false, uploadError: any = null, downloadResults?: Partial<DownloadResultsState>, releaseCreated = false, releaseFailed = false, clearStatus = jest.fn()) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -57,11 +57,16 @@ describe("Download Results component", () => {
                         uploading,
                         uploadComplete,
                         uploadError,
+                        releaseCreated,
+                        releaseFailed,
                         currentFileUploading: 1,
                         totalFilesUploading: 2
                     }),
                     actions: {
                         getUploadFiles: jest.fn()
+                    },
+                    mutations: {
+                        ClearStatus: clearStatus
                     }
                 },
                 downloadResults: {
@@ -123,11 +128,12 @@ describe("Download Results component", () => {
                 }
             });
 
-        expect(wrapper.find(UploadModal).exists()).toBe(true)
+        expect(wrapper.find(UploadModal).exists()).toBe(false)
         expect(wrapper.vm.$data.uploadModalOpen).toBe(false)
 
         const upload = wrapper.find("#upload").find("button")
         await upload.trigger("click")
+        expect(wrapper.find(UploadModal).exists()).toBe(true)
         expect(wrapper.vm.$data.uploadModalOpen).toBe(true)
 
         const modal = wrapper.find(UploadModal)
@@ -173,14 +179,32 @@ describe("Download Results component", () => {
         expect(uploadButton.attributes("disabled")).toBe("disabled")
     });
 
-    it("renders upload complete status messages as expected", () => {
-        const store = createStore(true, jest.fn(), false, true);
+    it("renders upload complete and release created status messages as expected", () => {
+        const store = createStore(true, jest.fn(), false, true, null, undefined, true);
         const wrapper = shallowMount(DownloadResults, {store, localVue});
 
         const statusMessage = wrapper.find("#uploadComplete");
         expectTranslated(statusMessage.find("span"), "Upload complete",
             "Téléchargement complet", "Carregamento concluído", store);
         expect(statusMessage.find("tick-stub").exists()).toBe(true)
+
+        const statusMessage2 = wrapper.find("#releaseCreated");
+        expectTranslated(statusMessage2.find("span"), "Release created",
+            "Version créée", "Lançamento criado", store);
+        expect(statusMessage2.find("tick-stub").exists()).toBe(true)
+
+        const uploadButton = wrapper.find("button");
+        expect(uploadButton.attributes("disabled")).toBeUndefined();
+    });
+
+    it("renders release not created status messages as expected", () => {
+        const store = createStore(true, jest.fn(), false, true, null, undefined, false, true);
+        const wrapper = shallowMount(DownloadResults, {store, localVue});
+
+        const statusMessage = wrapper.find("#releaseCreated");
+        expectTranslated(statusMessage.find("span"), "Could not create new release",
+            "Impossible de créer une nouvelle version", "Não foi possível criar um novo lançamento", store);
+        expect(statusMessage.find("cross-stub").exists()).toBe(true)
 
         const uploadButton = wrapper.find("button");
         expect(uploadButton.attributes("disabled")).toBeUndefined();
@@ -621,6 +645,13 @@ describe("Download Results component", () => {
         wrapper.vm.$store.state.downloadResults = coarseTestError
         expect(clearInterval).toHaveBeenCalledTimes(1)
         expect(wrapper.find("#error").text()).toBe("TEST FAILED")
+    });
+
+    it("calls clear status mutation before mount", () => {
+        const spy = jest.fn()
+        const store = createStore(true, jest.fn(), false, false, null, undefined, false, false, spy);
+        shallowMount(DownloadResults, {store});
+        expect(spy).toHaveBeenCalledTimes(1)
     });
 
 });
