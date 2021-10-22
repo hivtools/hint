@@ -183,10 +183,29 @@ class ADRController(private val encryption: Encryption,
 
 
     @PostMapping("/datasets/{id}/releases")
+    @Suppress("ReturnCount")
     fun createRelease(@PathVariable id: String, @RequestParam name: String): ResponseEntity<String>
     {
         val adr = adrClientBuilder.build()
-        return adr.post("dataset_version_create", listOf("dataset_id" to id, "name" to name));
+        // checks for existing releases on ADR with the same name as the release being created
+        val releasesResponse = adr.get("/dataset_version_list?dataset_id=${id}")
+        if (releasesResponse.statusCode != HttpStatus.OK) 
+        {
+            return releasesResponse
+        }
+        val releases = objectMapper.readTree(releasesResponse.body!!)["data"]
+        val duplicateRelease = releases.find { it["name"]?.asText() == name }
+        if (duplicateRelease != null)
+        {
+            val duplicateReleaseId = duplicateRelease["id"].asText()
+            // if a release of the same name exists on ADR, request that it is deleted
+            val deleteResponse = adr.post("/version_delete", listOf("version_id" to duplicateReleaseId))
+            if (deleteResponse.statusCode != HttpStatus.OK)
+            {
+                return deleteResponse
+            }
+        }
+        return adr.post("/dataset_version_create", listOf("dataset_id" to id, "name" to name))
     }
 
     @PostMapping("/datasets/{id}/resource/{resourceType}/{downloadId}")
