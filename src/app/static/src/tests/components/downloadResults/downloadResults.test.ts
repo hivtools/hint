@@ -199,7 +199,7 @@ describe("Download Results component", () => {
         expect(uploadButton.classes()).toEqual(["btn", "btn-lg", "my-3", "btn-red"]);
     });
 
-    it("disables upload buttons when upload in progress", () => {
+    it("disables upload button when upload in progress", () => {
         const store = createStore(true, jest.fn(), true, false);
         const wrapper = shallowMount(DownloadResults, {store, localVue});
 
