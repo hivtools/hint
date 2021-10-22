@@ -39,6 +39,7 @@
     import {mapActions, mapState} from "vuex";
     import {PasswordState} from "../../store/password/password";
     import LoggedOutHeader from "../header/LoggedOutHeader.vue";
+    import {Language} from "../../store/translations/locales";
 
     export default Vue.extend({
         name: "ResetPassword",
@@ -51,7 +52,8 @@
         computed: mapState<PasswordState>({
             error: (state: PasswordState) => state.resetPasswordError,
             hasError: (state: PasswordState) => !!state.resetPasswordError,
-            passwordWasReset: (state: PasswordState) => state.passwordWasReset
+            passwordWasReset: (state: PasswordState) => state.passwordWasReset,
+            language: (state: PasswordState) => state.language
         }),
         components: {
             ErrorAlert,
@@ -66,6 +68,11 @@
                     this.resetPassword({token: this.token, password: this.password});
                 }
                 form.classList.add('was-validated');
+            }
+        },
+        watch: {
+            language(newVal: Language) {
+                document.documentElement.lang = newVal
             }
         }
     });

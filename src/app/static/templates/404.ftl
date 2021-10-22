@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="en">
 <head>
     <title> 404 Error Page</title>
     <link rel="shortcut icon" href="/public/favicon.ico"/>
