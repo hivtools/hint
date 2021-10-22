@@ -794,14 +794,17 @@ describe("Stepper component", () => {
         );
 
         const warnings = wrapper.find(WarningAlert).props("warnings");
-        expect(warnings.modelOptions.length).toBe(1);
-        expect(warnings.modelOptions[0].text).toStrictEqual("Model Options warning");
-        expect(warnings.modelOptions[0].locations).toStrictEqual(["model_options", "model_fit"]);
 
-        expect(warnings.modelRun.length).toBe(1);
-        expect(warnings.modelRun[0].text).toStrictEqual("Model Run warning");
-        expect(warnings.modelRun[0].locations).toStrictEqual(["model_fit"]);
-
-        expect(warnings.modelCalibrate).toStrictEqual([]);
+        expect(warnings).toStrictEqual({
+            modelOptions: [{
+                text: "Model Options warning",
+                locations: ["model_options", "model_fit"],
+            }],
+            modelRun: [{
+                text: "Model Run warning",
+                locations: ["model_fit"]
+            }],
+            modelCalibrate: []
+        });
     });
 });
