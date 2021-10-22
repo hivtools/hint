@@ -109,7 +109,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             description: payload.description,
             section: payload.section,
             stepsToReproduce: payload.stepsToReproduce,
-            versions: {hint: currentHintVersion, ...state.hintrVersion.hintrVersion as VersionInfo},
+            versions: {hint: currentHintVersion, ...rootState.hintrVersion.hintrVersion as VersionInfo},
             errors: getters.errors
         }
 
