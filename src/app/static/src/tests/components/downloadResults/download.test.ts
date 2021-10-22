@@ -53,6 +53,7 @@ describe(`download`, () => {
         const wrapper = getWrapper()
         expect(wrapper.find("download-icon-stub").exists()).toBe(true)
         expect(wrapper.find("button").classes()).toEqual(["btn", "btn-lg", "my-3", "btn-red"])
+        expect(wrapper.find("button").attributes("disabled")).toBeUndefined()
     })
 
     it(`disables button when upload is in progress`, () => {
@@ -65,6 +66,7 @@ describe(`download`, () => {
 
         expect(wrapper.find("download-icon-stub").exists()).toBe(true)
         expect(wrapper.find("button").classes()).toEqual(["btn", "btn-lg", "my-3", "btn-secondary"])
+        expect(wrapper.find("button").attributes("disabled")).toBe("disabled")
     })
 
     it(`can emit download`, async () => {
