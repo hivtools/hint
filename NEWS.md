@@ -1,6 +1,31 @@
+# hint 1.63.0
+
+* Component to display warnings from hintr
+
+# hint 1.62.0
+
+* Upload release to ADR epic
+
+# hint 1.61.0
+
+* Include WarningAlert in Stepper
+
+# hint 1.60.0
+
+* Do not poll for ADR dataset updates when using a releaser
+
+# hint 1.59.0
+
+* Do not auto-progress to calibrate step if there are model fit warnings
+
 # hint 1.58.0
 
-* component to display warnings from hintr
+* Endpoint for posting error report to Teams
+
+
+# hint 1.57.1
+
+* accessibility fixes
 
 # hint 1.57.0
 

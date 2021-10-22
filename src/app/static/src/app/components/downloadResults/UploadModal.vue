@@ -1,13 +1,44 @@
 <template>
     <div id="dialog">
-        <modal :open="open">
+        <modal :open="true">
             <h4 v-translate="'uploadFileToAdr'"></h4>
             <div class="container">
                 <div id="dataset-id" class="mt-4">
                     <span v-translate="'uploadFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
-                <div id="instructions" class="mt-3" v-translate="'uploadFileInstruction'"></div>
-                <div v-for="(uploadFileSection, sectionIndex) in uploadFileSections" :key="sectionIndex">
+                <div class="pt-3 form-check form-check-inline">
+                    <input
+                        type="radio"
+                        id="createRelease"
+                        value="createRelease"
+                        v-model="choiceUpload"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label pl-2">
+                        <label for="createRelease" v-translate="'createRelease'" class="d-inline"></label>
+                        <span class="icon-small d-inline" v-tooltip="translate('createReleaseTooltip')">
+                            <help-circle-icon></help-circle-icon>
+                        </span>
+                    </span>
+                    <br />
+                </div>
+                <div class="form-check form-check-inline">
+                    <input
+                        type="radio"
+                        id="uploadFiles"
+                        value="uploadFiles"
+                        v-model="choiceUpload"
+                        class="form-check-input"
+                    />
+                    <span class="form-check-label pl-2">
+                        <label for="uploadFiles" v-translate="'uploadFiles'" class="d-inline"></label>
+                        <span class="icon-small d-inline" v-tooltip="translate('uploadFilesTooltip')">
+                            <help-circle-icon></help-circle-icon>
+                        </span>
+                    </span>
+                    <br />
+                </div>
+                <div v-for="(uploadFileSection, sectionIndex) in uploadFileSections" :key="sectionIndex" class="pl-4">
                     <h5 v-if="Object.keys(uploadFileSections[1]).length > 0"
                         v-translate="sectionIndex === 0 ? 'outputFiles' : 'inputFiles'"
                         class="mt-3"></h5>
@@ -15,6 +46,7 @@
                         <div class="mt-3 form-check">
                             <input class="form-check-input"
                                    type="checkbox"
+                                   :disabled="createRelease"
                                    :value="key"
                                    v-model="uploadFilesToAdr"
                                    :id="`id-${sectionIndex}-${index}`">
@@ -22,11 +54,6 @@
                             <label class="form-check-label"
                                    :for="`id-${sectionIndex}-${index}`"
                                    v-translate="uploadFile.displayName"></label>
-                            <small v-if="uploadFile.resourceId" class="text-danger row">
-                            <span class="col-auto">
-                            <span v-translate="'uploadFileOverwrite'"></span>{{ lastModified(uploadFile.lastModified) }}
-                            </span>
-                            </small>
                         </div>
                     </div>
                 </div>
@@ -40,7 +67,7 @@
                 <button
                     type="button"
                     class="btn btn-red"
-                    :disabled="uploadFilesToAdr.length < 1 || downloadingFiles"
+                    :disabled="uploadDisabled"
                     @click.prevent="confirmUpload"
                     v-translate="'ok'"></button>
                 <button
@@ -64,18 +91,23 @@
         UploadFile
     } from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {formatDateTime, mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
+    import { HelpCircleIcon } from "vue-feather-icons";
+    import { VTooltip } from "v-tooltip";
+    import i18next from "i18next";
+    import { Language } from "../../store/translations/locales";
+    import { RootState } from "../../root";
     import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
     import {ADRState} from "../../store/adr/adr";
     import DownloadProgress from "./DownloadProgress.vue";
 
     interface Methods {
-        uploadFilesToADRAction: (uploadFilesPayload: UploadFile[]) => void;
+        uploadFilesToADRAction: (selectedUploadFiles: {uploadFiles: UploadFile[], createRelease: boolean}) => void;
         confirmUpload: () => void;
         handleCancel: () => void
-        lastModified: (date: string) => string | null
         setDefaultCheckedItems: () => void
+        translate(text: string): string;
         downloadSpectrum: () => void
         downloadSummary: () => void
         prepareFilesForUpload: () => boolean
@@ -91,39 +123,34 @@
 
     interface Computed {
         dataset: string
-        uploadFiles: Dict<UploadFile>,
-        uploadFileSections: Array<Dict<UploadFile>>,
+        uploadableFiles: Dict<UploadFile>,
+        uploadFileSections: Array<Dict<UploadFile>>
+        currentLanguage: Language;
+        uploadDisabled: boolean;
         spectrum: Partial<DownloadResultsDependency>,
         summary: Partial<DownloadResultsDependency>,
         outputSummary: string,
         outputSpectrum: string,
         downloadingFiles: boolean
+        createRelease: boolean
     }
 
     interface Data {
         uploadFilesToAdr: string[]
-        uploadDescToAdr: string
-        uploadFilesPayload: UploadFile[]
-    }
-
-    interface Props {
-        open: boolean
+        choiceUpload: "createRelease" | "uploadFiles"
+        selectedUploadFiles: UploadFile[]
     }
 
     const outputFileTypes = ["outputZip", "outputSummary"];
+    const inputFileTypes = ["anc", "programme", "pjnz", "population", "shape", "survey"];
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         name: "UploadModal",
-        props: {
-            open: {
-                type: Boolean
-            }
-        },
         data(): Data {
             return {
                 uploadFilesToAdr: [],
-                uploadDescToAdr: "",
-                uploadFilesPayload: []
+                choiceUpload: "createRelease",
+                selectedUploadFiles: []
             }
         },
         methods: {
@@ -132,7 +159,7 @@
                 "uploadFilesToADR"
             ),
             confirmUpload() {
-                this.uploadFilesPayload = this.uploadFilesToAdr.map(value => this.uploadFiles[value]);
+                this.selectedUploadFiles = this.uploadFilesToAdr.map(value => this.uploadableFiles[value]);
                 const readyForUpload = this.prepareFilesForUpload();
 
                 if (readyForUpload) {
@@ -140,8 +167,8 @@
                 }
             },
             sendUploadFilesToADR() {
-                this.uploadFilesToADRAction(this.uploadFilesPayload);
-                this.uploadFilesPayload = [];
+                this.uploadFilesToADRAction({uploadFiles: this.selectedUploadFiles, createRelease: this.createRelease});
+                this.selectedUploadFiles = [];
 
                 this.$emit("close");
             },
@@ -157,8 +184,8 @@
                 return this.downloadIsReady();
             },
             findSelectedUploadFiles() {
-                const summary = this.uploadFilesPayload.find(upload => upload.resourceType === this.outputSummary);
-                const spectrum = this.uploadFilesPayload.find(upload => upload.resourceType === this.outputSpectrum);
+                const summary = this.selectedUploadFiles.find(upload => upload.resourceType === this.outputSummary);
+                const spectrum = this.selectedUploadFiles.find(upload => upload.resourceType === this.outputSpectrum);
 
                 return {summary, spectrum}
             },
@@ -179,30 +206,28 @@
             handleCancel() {
                 this.$emit("close")
             },
-            lastModified: function (date: string) {
-                return formatDateTime(date)
+            translate(text) {
+                return i18next.t(text, { lng: this.currentLanguage });
             },
             setDefaultCheckedItems: function () {
-                this.uploadFilesToAdr = outputFileTypes
-                    .filter(key => this.uploadFiles.hasOwnProperty(key))
+                this.uploadFilesToAdr = [...outputFileTypes, ...inputFileTypes]
+                    .filter(key => this.uploadableFiles.hasOwnProperty(key))
             },
             stopPolling(id) {
                 clearInterval(id)
             },
             async handleDownloadResult(downloadResults) {
-                if (this.open) {
-                    if (this.downloadIsReady()) {
-                        await this.getUploadMetadata(downloadResults.downloadId)
-                        this.sendUploadFilesToADR();
-                    }
+                if (this.downloadIsReady()) {
+                    await this.getUploadMetadata(downloadResults.downloadId)
+                    this.sendUploadFilesToADR();
+                }
 
-                    if(downloadResults.complete) {
-                        this.stopPolling(downloadResults.statusPollId)
-                    }
+                if(downloadResults.complete) {
+                    this.stopPolling(downloadResults.statusPollId)
+                }
 
-                    if (downloadResults.error) {
-                        this.stopPolling(downloadResults.statusPollId)
-                    }
+                if (downloadResults.error) {
+                    this.stopPolling(downloadResults.statusPollId)
                 }
             },
             downloadSpectrum: mapActionByName("downloadResults", "downloadSpectrum"),
@@ -233,16 +258,23 @@
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {
                 dataset: state => state.selectedDataset?.title
             }),
-            uploadFiles: mapStateProp<ADRUploadState, Dict<UploadFile>>("adrUpload",
+            createRelease(){
+                return this.choiceUpload === 'createRelease';
+            },
+            currentLanguage: mapStateProp<RootState, Language>(
+                null,
+                (state: RootState) => state.language
+            ),
+            uploadableFiles: mapStateProp<ADRUploadState, Dict<UploadFile>>("adrUpload",
                 (state) => state.uploadFiles!
             ),
             uploadFileSections() {
-                if (this.uploadFiles) {
-                    return Object.keys(this.uploadFiles).reduce((sections, key) => {
+                if (this.uploadableFiles) {
+                    return Object.keys(this.uploadableFiles).reduce((sections, key) => {
                         if (outputFileTypes.includes(key)) {
-                            sections[0][key] = this.uploadFiles[key];
+                            sections[0][key] = this.uploadableFiles[key];
                         } else {
-                            sections[1][key] = this.uploadFiles[key];
+                            sections[1][key] = this.uploadableFiles[key];
                         }
                         return sections;
                     }, [{} as any, {} as any]);
@@ -250,31 +282,43 @@
                     return [];
                 }
             },
+            uploadDisabled(){
+                return !this.uploadFilesToAdr.length || this.downloadingFiles;
+            },
             downloadingFiles() {
                 return !!this.spectrum.downloading || !!this.summary.downloading;
             }
         },
         components: {
             Modal,
+            HelpCircleIcon,
             DownloadProgress
         },
-      watch: {
-        uploadFiles() {
-          this.setDefaultCheckedItems();
+        watch: {
+            choiceUpload(){
+                if (this.createRelease){
+                    this.setDefaultCheckedItems()
+                }
+            },
+            summary: {
+                handler(summary) {
+                    this.handleDownloadResult(summary)
+                },
+                deep: true
+            },
+            spectrum: {
+                handler(spectrum) {
+                    this.handleDownloadResult(spectrum)
+                },
+                deep: true
+            }
         },
-        summary: {
-          handler(summary) {
-            this.handleDownloadResult(summary)
-          },
-          deep: true
+        directives: {
+            tooltip: VTooltip,
         },
-        spectrum: {
-          handler(spectrum) {
-            this.handleDownloadResult(spectrum)
-          },
-          deep: true
+        mounted(){
+            this.setDefaultCheckedItems()
         }
-      }
     });
 </script>
 

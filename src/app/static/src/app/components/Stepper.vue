@@ -19,6 +19,7 @@
         </div>
         <stepper-navigation v-bind="navigationProps"/>
         <hr/>
+        <warning-alert :warnings="activeStepWarnings"></warning-alert>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingData'"></h2>
@@ -56,12 +57,13 @@
     import ModelCalibrate from "./modelCalibrate/ModelCalibrate.vue";
     import ModelOutput from "./modelOutput/ModelOutput.vue";
     import DownloadResults from "./downloadResults/DownloadResults.vue";
+    import WarningAlert from "./WarningAlert.vue";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {LoadingState, LoadState} from "../store/load/load";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
     import VersionStatus from "./projects/VersionStatus.vue";
     import {mapGettersByNames, mapStateProp, mapStateProps} from "../utils";
-    import {Project} from "../types";
+    import {Project, StepWarnings} from "../types";
     import {ProjectsState} from "../store/projects/projects";
     import {RootState} from "../root";
     import StepperNavigation, {Props as StepperNavigationProps} from "./StepperNavigation.vue";
@@ -72,14 +74,17 @@
         currentProject: Project | null
         projectLoading: boolean,
         updatingLanguage: boolean,
-        navigationProps: StepperNavigationProps
+        navigationProps: StepperNavigationProps,
+        activeStepTextKey: string,
+        activeStepWarnings: StepWarnings
     }
 
     interface ComputedGetters {
         ready: boolean,
         complete: boolean,
         loadingFromFile: boolean
-        loading: boolean
+        loading: boolean,
+        warnings: (stepName: string) => StepWarnings
     }
 
     const namespace = 'stepper';
@@ -104,7 +109,7 @@
             loading: function () {
                 return this.loadingFromFile || this.updatingLanguage || !this.ready;
             },
-            ...mapGetters(["isGuest"]),
+            ...mapGetters(["isGuest", "warnings"]),
             navigationProps: function() {
                 return {
                     back: this.back,
@@ -112,6 +117,12 @@
                     next: this.next,
                     nextDisabled: this.activeContinue(this.activeStep)
                 };
+            },
+            activeStepTextKey: function() {
+                return this.steps.find((step: StepDescription) => step.number === this.activeStep).textKey;
+            },
+            activeStepWarnings: function() {
+                return this.warnings(this.activeStepTextKey);
             }
         },
         methods: {
@@ -160,12 +171,15 @@
             ModelOptions,
             DownloadResults,
             VersionStatus,
-            StepperNavigation
+            StepperNavigation,
+            WarningAlert
         },
         watch: {
             complete: function (){
-                if (this.activeStep === 4 && this.isComplete(4) && this.isEnabled(5)){
-                    this.next()
+                // auto-progress from modelRun to modelCalibrate if there are no warnings to display
+                if (this.activeStep === 4 && this.isComplete(4) && this.isEnabled(5) &&
+                        this.activeStepWarnings.modelRun.length === 0){
+                    this.next();
                 }
             },
             ready: function (newVal) {

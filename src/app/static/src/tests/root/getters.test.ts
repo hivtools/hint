@@ -74,4 +74,25 @@ describe(`root getters`, () => {
         expect(result).toEqual(modelOptionWarnings)
     })
 
+    it(`can get empty warnings when all warnings properties are undefined in state`, () => {
+        // We should be able to remove this test when warnings are fully implemented in hintr, as warnings
+        // array will always be provided. Can also remove defensive code for this case in the getter.
+        const rootState = mockRootState({
+            modelOptions: mockModelOptionsState({warnings: undefined}),
+            modelRun: mockModelRunState({warnings: undefined}),
+            modelCalibrate: mockModelCalibrateState({warnings: undefined})
+        });
+        const warnings = getters.warnings(rootState, null, rootState, null);
+        const expected = {
+            modelOptions: [],
+            modelRun: [],
+            modelCalibrate: []
+        };
+        expect(warnings("modelOptions")).toStrictEqual(expected);
+        expect(warnings("fitModel")).toStrictEqual(expected);
+        expect(warnings("calibrateModel")).toStrictEqual(expected);
+        expect(warnings("reviewOutput")).toStrictEqual(expected);
+        expect(warnings("downloadResults")).toStrictEqual(expected);
+    });
+
 })
