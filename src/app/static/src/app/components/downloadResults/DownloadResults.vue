@@ -5,21 +5,21 @@
                 <div id="spectrum-download">
                     <download :translate-key="translation.spectrum"
                               @click="downloadSpectrum"
-                              :disable="uploading"
+                              :disabled="uploading"
                               :modal-open="uploadModalOpen"
                               :file="spectrum"/>
                 </div>
                 <div id="coarse-output-download">
                     <download :translate-key="translation.coarse"
                               @click="downloadCoarseOutput"
-                              :disable="uploading"
+                              :disabled="uploading"
                               :modal-open="uploadModalOpen"
                               :file="coarseOutput"/>
                 </div>
                 <div id="summary-download">
                     <download :translate-key="translation.summary"
                               @click="downloadSummary"
-                              :disable="uploading"
+                              :disabled="uploading"
                               :modal-open="uploadModalOpen"
                               :file="summary"/>
                 </div>

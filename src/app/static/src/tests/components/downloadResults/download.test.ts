@@ -17,15 +17,17 @@ describe(`download`, () => {
 
     const mockDirective = jest.fn()
 
-    const getWrapper = () => {
+    const propsData = {
+        file: downloadSummary,
+        modalOpen: false,
+        translateKey: downloadTranslate,
+        disabled: false
+    }
+
+    const getWrapper = (props = propsData) => {
         return shallowMount(Download,
             {
-                propsData: {
-                    file: downloadSummary,
-                    modalOpen: false,
-                    translateKey: downloadTranslate,
-                    disable: false
-                },
+                propsData: props,
                 directives: {"translate": mockDirective}
             })
     }
@@ -43,8 +45,26 @@ describe(`download`, () => {
             file: downloadSummary,
             modalOpen: false,
             translateKey: downloadTranslate,
-            disable: false
+            disabled: false
         })
+    })
+
+    it(`does not disable button when upload is not in progress`, () => {
+        const wrapper = getWrapper()
+        expect(wrapper.find("download-icon-stub").exists()).toBe(true)
+        expect(wrapper.find("button").classes()).toEqual(["btn", "btn-lg", "my-3", "btn-red"])
+    })
+
+    it(`disables button when upload is in progress`, () => {
+        const wrapper = getWrapper({
+            file: downloadSummary,
+            modalOpen: false,
+            translateKey: downloadTranslate,
+            disabled: true
+        })
+
+        expect(wrapper.find("download-icon-stub").exists()).toBe(true)
+        expect(wrapper.find("button").classes()).toEqual(["btn", "btn-lg", "my-3", "btn-secondary"])
     })
 
     it(`can emit download`, async () => {

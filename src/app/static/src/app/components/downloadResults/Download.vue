@@ -1,19 +1,19 @@
 <template>
-  <div id="download">
-    <h4 v-translate="translateKey.header"></h4>
-    <button :class="disable ? 'btn btn-secondary btn-lg my-3' : 'btn btn-red btn-lg my-3'"
-            :disabled="disable"
-            @click="download">
-      <span v-translate="translateKey.button"></span>
-      <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-    </button>
-    <div>
-      <download-progress v-if="!modalOpen" id="progress"
-                         :translate-key="'downloading'"
-                         :downloading="file.downloading"/>
+    <div id="download">
+        <h4 v-translate="translateKey.header"></h4>
+        <button class="btn btn-lg my-3" :class="disabled ? 'btn-secondary' : 'btn-red'"
+                :disabled="disabled"
+                @click="download">
+            <span v-translate="translateKey.button"></span>
+            <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
+        </button>
+        <div>
+            <download-progress v-if="!modalOpen" id="progress"
+                               :translate-key="'downloading'"
+                               :downloading="file.downloading"/>
+        </div>
+        <error-alert id="error" v-if="file.error" :error="file.error"></error-alert>
     </div>
-    <error-alert id="error" v-if="file.error" :error="file.error"></error-alert>
-  </div>
 </template>
 
 <script lang="ts">
@@ -32,7 +32,7 @@
         file: DownloadResultsDependency,
         translateKey: downloadTranslate,
         modalOpen: boolean
-        disable: boolean
+        disabled: boolean
     }
 
     interface Methods {
@@ -59,7 +59,7 @@
                 required: true,
                 type: Boolean
             },
-            disable: {
+            disabled: {
                 required: true,
                 type: Boolean
             }
