@@ -25,6 +25,10 @@ describe("load actions", () => {
 
         await baselineActions.uploadShape({commit, dispatch: jest.fn(), rootState} as any, formData);
         shape = (commit.mock.calls[1][0]["payload"] as ShapeResponse);
+
+        const mockLocationReload = jest.fn();
+        delete window.location;
+        window.location = {reload: mockLocationReload} as any;
     });
 
     it("can set files as guest user", async () => {
