@@ -116,7 +116,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
                 if (data.project && rootState.errorReportError === null) {
                     dispatch("projects/cloneProject",
                         {emails: ["naomi-support@imperial.ac.uk"],
-                            projectId: rootState.projects.currentProject?.id})
+                            projectId: rootState.projects.currentProject!.id})
                 }
             })
     }
