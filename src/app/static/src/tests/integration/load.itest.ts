@@ -31,7 +31,7 @@ describe("load actions", () => {
         window.location = {reload: mockLocationReload} as any;
     });
 
-    it("can set files as guest user", (done) => {
+    it("can set files as guest user", async (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const fakeState = JSON.stringify({
@@ -43,7 +43,7 @@ describe("load actions", () => {
         });
         const fakeFileContents = addCheckSum(fakeState);
         const rootGetters = {isGuest: true};
-        actions.setFiles({commit, dispatch, state: {}, rootState, rootGetters} as any,
+        await actions.setFiles({commit, dispatch, state: {}, rootState, rootGetters} as any,
             {savedFileContents: fakeFileContents, projectName: "new project"});
 
         setTimeout(() => {
@@ -95,7 +95,7 @@ describe("load actions", () => {
         });
     });
 
-    it("can create project and set files as logged in user", (done) => {
+    it("can create project and set files as logged in user", async (done) => {
         const commit = jest.fn();
         const fakeState = JSON.stringify({
             files: {"shape": shape},
@@ -130,7 +130,7 @@ describe("load actions", () => {
 
         const dispatch = ((store as any)._modulesNamespaceMap["load/"] as any).context.dispatch;
 
-        actions.setFiles({commit, dispatch, state: {}, rootState: store.state, rootGetters} as any,
+        await actions.setFiles({commit, dispatch, state: {}, rootState: store.state, rootGetters} as any,
             {savedFileContents: fakeFileContents, projectName: "new project"});
 
         setTimeout(() => {
