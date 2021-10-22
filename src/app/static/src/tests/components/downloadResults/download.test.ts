@@ -58,9 +58,7 @@ describe(`download`, () => {
 
     it(`disables button when upload is in progress`, () => {
         const wrapper = getWrapper({
-            file: downloadSummary,
-            modalOpen: false,
-            translateKey: downloadTranslate,
+            ...propsData,
             disabled: true
         })
 
