@@ -1,10 +1,14 @@
-# hint 1.61.0
+# hint 1.61.1
 
 * ADR upload fails if download attempted while in progress
 
+# hint 1.61.0
+
+* Include WarningAlert in Stepper
+
 # hint 1.60.0
 
-* Do not poll for ADR dataset updates when using a release
+* Do not poll for ADR dataset updates when using a releaser
 
 # hint 1.59.0
 

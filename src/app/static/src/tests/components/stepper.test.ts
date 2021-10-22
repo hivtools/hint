@@ -47,6 +47,7 @@ import ModelCalibrate from "../../app/components/modelCalibrate/ModelCalibrate.v
 import {getters as rootGetters} from "../../app/store/root/getters";
 import {expectTranslated} from "../testHelpers";
 import StepperNavigation from "../../app/components/StepperNavigation.vue";
+import WarningAlert from "../../app/components/WarningAlert.vue";
 
 const localVue = createLocalVue();
 
@@ -759,4 +760,51 @@ describe("Stepper component", () => {
         expect(getStepperOnStep(6).findAll(StepperNavigation).length).toBe(1);
     });
 
+    it("renders warning alert with warnings for current step", () => {
+        const wrapper = createReadySut(
+            {
+                validatedConsistent: true,
+                country: "TEST",
+                iso3: "TES",
+                shape: ["TEST SHAPE"] as any,
+                population: ["TEST POP"] as any
+            },
+            {
+                survey: ["TEST SURVEY"] as any
+            },
+            {plottingMetadata: ["TEST METADATA"] as any},
+            {
+                warnings: [{
+                    text: "Model Run warning",
+                    locations: ["model_fit"]
+                }]
+            },
+            {activeStep: 4},
+            {},
+            {},
+            jest.fn(),
+            {},
+            {
+                valid: true,
+                warnings: [{
+                    text: "Model Options warning",
+                    locations: ["model_options", "model_fit"]
+                }]
+            }
+        );
+
+        const warnings = wrapper.find(WarningAlert).props("warnings");
+
+        expect(warnings).toStrictEqual({
+            modelOptions: [{
+                text: "Model Options warning",
+                locations: ["model_options", "model_fit"],
+            }],
+            modelRun: [{
+                text: "Model Run warning",
+                locations: ["model_fit"]
+            }],
+            modelCalibrate: []
+        });
+    });
 });

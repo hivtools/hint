@@ -19,6 +19,7 @@
         </div>
         <stepper-navigation v-bind="navigationProps"/>
         <hr/>
+        <warning-alert :warnings="activeStepWarnings"></warning-alert>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingData'"></h2>
@@ -56,6 +57,7 @@
     import ModelCalibrate from "./modelCalibrate/ModelCalibrate.vue";
     import ModelOutput from "./modelOutput/ModelOutput.vue";
     import DownloadResults from "./downloadResults/DownloadResults.vue";
+    import WarningAlert from "./WarningAlert.vue";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {LoadingState, LoadState} from "../store/load/load";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
@@ -73,7 +75,8 @@
         projectLoading: boolean,
         updatingLanguage: boolean,
         navigationProps: StepperNavigationProps,
-        activeStepTextKey: string
+        activeStepTextKey: string,
+        activeStepWarnings: StepWarnings
     }
 
     interface ComputedGetters {
@@ -117,6 +120,9 @@
             },
             activeStepTextKey: function() {
                 return this.steps.find((step: StepDescription) => step.number === this.activeStep).textKey;
+            },
+            activeStepWarnings: function() {
+                return this.warnings(this.activeStepTextKey);
             }
         },
         methods: {
@@ -165,13 +171,14 @@
             ModelOptions,
             DownloadResults,
             VersionStatus,
-            StepperNavigation
+            StepperNavigation,
+            WarningAlert
         },
         watch: {
             complete: function (){
                 // auto-progress from modelRun to modelCalibrate if there are no warnings to display
                 if (this.activeStep === 4 && this.isComplete(4) && this.isEnabled(5) &&
-                        this.warnings(this.activeStepTextKey).modelRun.length === 0){
+                        this.activeStepWarnings.modelRun.length === 0){
                     this.next();
                 }
             },
