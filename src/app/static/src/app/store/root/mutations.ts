@@ -156,6 +156,7 @@ export const mutations: MutationTree<RootState> = {
 
     [RootMutation.ErrorReportError](state: RootState, action: PayloadWithType<Error>) {
         state.errorReportError = action.payload;
+        state.errorReportSuccess = false;
     },
 
     [RootMutation.ErrorReportSuccess](state: RootState) {
