@@ -1,5 +1,5 @@
 import {actions} from "../../app/store/root/actions";
-import {mockBaselineState, mockError, mockModelRunState, mockProjectsState, mockRootState} from "../mocks";
+import {mockBaselineState, mockError, mockHintrVersionState, mockModelRunState, mockProjectsState, mockRootState} from "../mocks";
 import {ErrorReportManualDetails} from "../../app/store/root/actions";
 import {rootState} from "./integrationTest";
 
