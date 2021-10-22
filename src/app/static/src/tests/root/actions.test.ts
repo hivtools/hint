@@ -3,6 +3,7 @@ import {
     mockAxios,
     mockBaselineState,
     mockError, mockFailure,
+    mockBaselineState, mockError, mockHintrVersionState,
     mockModelCalibrateState,
     mockModelRunState,
     mockProjectsState,
@@ -13,6 +14,8 @@ import {Language} from "../../app/store/translations/locales";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
 import Mock = jest.Mock;
+import {currentHintVersion} from "../../app/hintVersion";
+
 
 describe("root actions", () => {
 
@@ -398,6 +401,102 @@ describe("root actions", () => {
         expectChangeLanguageMutations(commit);
 
         expect(dispatch.mock.calls.length).toBe(0)
+    });
+
+    it("generates error report", () => {
+        const state = mockRootState({
+            baseline: mockBaselineState({
+                country: "Malawi"
+            }),
+            modelRun: mockModelRunState({
+                modelRunId: "1234"
+            }),
+            projects: mockProjectsState({
+                currentProject: {name: "p1", id: 1, versions: []}
+            }),
+            hintrVersion: mockHintrVersionState({
+                hintrVersion: {
+                    naomi: "v1",
+                    hintr: "v2",
+                    rrq: "v3",
+                    traduire: "v4"
+                }
+            })
+        });
+
+        const err = mockError("err")
+        const getters = {
+            errors: [err]
+        }
+
+        const payload: ErrorReportManualDetails = {
+            email: "test@test.com",
+            stepsToReproduce: "repro",
+            section: "reviewInputs",
+            description: "desc"
+        }
+
+        const result = actions.generateErrorReport({state, getters} as any, payload);
+        expect(result.email).toBe("test@test.com");
+        expect(result.description).toBe("desc");
+        expect(result.section).toBe("reviewInputs");
+        expect(result.country).toBe("Malawi");
+        expect(result.errors).toEqual([err]);
+        expect(result.browserAgent).toContain("jsdom");
+        expect(result.jobId).toBe("1234");
+        expect(result.stepsToReproduce).toBe("repro");
+        expect(result.project).toBe("p1");
+        expect(new Date(result.timeStamp).getDate()).toBe(new Date().getDate());
+        expect(result.versions).toStrictEqual({
+            naomi: "v1",
+            hintr: "v2",
+            rrq: "v3",
+            traduire: "v4",
+            hint: currentHintVersion
+        });
+    });
+
+    it("error report can handle nulls", () => {
+        const state = mockRootState();
+        const getters = {
+            errors: []
+        }
+
+        const payload: ErrorReportManualDetails = {
+            email: "",
+            stepsToReproduce: "",
+            section: "",
+            description: ""
+        }
+
+        const result = actions.generateErrorReport({state, getters} as any, payload);
+        const expected = {
+            country: "",
+            project: undefined,
+            jobId: "",
+            description: "",
+            section: "",
+            stepsToReproduce: "",
+            errors: []
+        }
+       expect(result).toMatchObject(expected);
+    });
+
+    it("error report contains logged in email if not overridden", () => {
+        const state = mockRootState();
+        const getters = {
+            errors: []
+        }
+
+        const payload: ErrorReportManualDetails = {
+            email: "",
+            stepsToReproduce: "repro",
+            section: "reviewInputs",
+            description: "desc"
+        }
+
+        const result = actions.generateErrorReport({state, getters} as any, payload);
+        expect(result.email).toBe("some.user@example.com");
     });
 
     it("changeLanguage does nothing if new language is the same as current language", async () => {
