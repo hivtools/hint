@@ -26,7 +26,8 @@ export enum RootMutation {
     SetProject = "SetProject",
     ResetDownload = "ResetDownload",
     SetUpdatingLanguage = "SetUpdatingLanguage",
-    ErrorReportError = "ErrorReportError"
+    ErrorReportError = "ErrorReportError",
+    ErrorReportSuccess = "ErrorReportSuccess"
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -40,6 +41,7 @@ export const mutations: MutationTree<RootState> = {
             version: state.version,
             hintrVersion: state.hintrVersion,
             errorReportError: null,
+            errorReportSuccess: false,
             language: state.language,
             updatingLanguage: false,
             adr: state.adr,
@@ -154,6 +156,11 @@ export const mutations: MutationTree<RootState> = {
 
     [RootMutation.ErrorReportError](state: RootState, action: PayloadWithType<Error>) {
         state.errorReportError = action.payload;
+    },
+
+    [RootMutation.ErrorReportSuccess](state: RootState) {
+        state.errorReportSuccess = true;
+        state.errorReportError = null
     },
 
     ...languageMutations

@@ -70,6 +70,7 @@ export interface RootState extends TranslatableState {
     downloadResults: DownloadResultsState,
     updatingLanguage: boolean,
     errorReportError: Error | null
+    errorReportSuccess: boolean
 }
 
 export interface ReadyState {
@@ -139,6 +140,7 @@ export const emptyState = (): RootState => {
         version: currentHintVersion,
         updatingLanguage: false,
         errorReportError: null,
+        errorReportSuccess: false,
         hintrVersion: initialHintrVersionState(),
         adr: initialADRState(),
         genericChart: initialGenericChartState(),

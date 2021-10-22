@@ -242,6 +242,7 @@ describe("root actions", () => {
 
         await actions.generateErrorReport({commit, rootState, getters, dispatch} as any, payload);
 
+        expect(commit.mock.calls[0][0]).toEqual({payload: "Ok", type: "ErrorReportSuccess"});
         expect(dispatch.mock.calls[0][0]).toEqual("projects/cloneProject");
         expect(mockAxios.history.post.length).toEqual(1)
         expect(mockAxios.history.post[0].url).toEqual(url)

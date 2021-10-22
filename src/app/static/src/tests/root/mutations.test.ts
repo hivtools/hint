@@ -321,4 +321,11 @@ describe("Root mutations", () => {
         mutations.ErrorReportError(state, {payload: error});
         expect(state.errorReportError).toBe(error);
     });
+
+    it("can set ErrorReportSuccess", () => {
+        const state = mockRootState();
+        mutations.ErrorReportSuccess(state);
+        expect(state.errorReportSuccess).toBe(true);
+        expect(state.errorReportError).toBe(null);
+    });
 });
