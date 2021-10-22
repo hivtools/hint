@@ -21,6 +21,14 @@ describe(`root actions`, () => {
             }),
             projects: mockProjectsState({
                 currentProject: {name: "p1", id: 1, versions: []}
+            }),
+            hintrVersion: mockHintrVersionState({
+                hintrVersion: {
+                    naomi: "v1",
+                    hintr: "v2",
+                    rrq: "v3",
+                    traduire: "v4"
+                }
             })
         });
 
