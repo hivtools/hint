@@ -119,7 +119,6 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             .postAndReturn("error-report", data)
             .then(() => {
                 if (data.project && rootState.errorReportError == null) {
-                    console.log(rootState.errorReportSuccess)
                     dispatch("projects/cloneProject",
                         {emails: ["naomi-support@imperial.ac.uk"],
                             projectId: rootState.projects.currentProject!.id})
