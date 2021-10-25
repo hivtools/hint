@@ -18,6 +18,8 @@ const FormData = require("form-data");
 describe("load actions", () => {
 
     let shape: any = {};
+    const realLocation = window.location;
+
     beforeAll(async () => {
         await login();
         const commit = jest.fn();
@@ -29,6 +31,10 @@ describe("load actions", () => {
         const mockLocationReload = jest.fn();
         delete window.location;
         window.location = {reload: mockLocationReload} as any;
+    });
+
+    afterAll(() => {
+        window.location = realLocation;
     });
 
     it("can set files as guest user", async (done) => {
