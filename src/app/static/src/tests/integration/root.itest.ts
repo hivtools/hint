@@ -44,6 +44,11 @@ describe(`root actions`, () => {
         }
 
         await actions.generateErrorReport({commit, rootState: state, getters, dispatch} as any, payload);
+        /**
+         * This message is returned whenever a response format is not recognised
+         * This endpoint is external so success/failure response format is not known to hint.
+         *
+         */
         expect(commit.mock.calls[0][0].payload).toStrictEqual(
             {
                 detail: "Could not parse API response. Please contact support.",
