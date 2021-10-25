@@ -604,14 +604,14 @@ describe("Stepper component", () => {
             }
         });
 
-        wrapper.vm.$store.commit("modelRun/RunResultFetched", {
-            "type": "RunResultFetched",
-            "payload": "TEST"
-        });
-
         wrapper.vm.$store.commit("modelRun/WarningsFetched", {
             type: "WarningsFetched",
             payload: modelRunWarnings
+        });
+
+        wrapper.vm.$store.commit("modelRun/RunResultFetched", {
+            "type": "RunResultFetched",
+            "payload": "TEST"
         });
 
         await Vue.nextTick();
@@ -626,15 +626,15 @@ describe("Stepper component", () => {
     };
 
     it("model run step becomes complete on success, result fetched, and automatically moves to calibrate step", async () => {
-        testModelRunCompletion([], true);
+        await testModelRunCompletion([], true);
     });
 
-    it("model run step does not automatically advance to calibrate step on completion if there are modelRun warnings to display", () => {
-        testModelRunCompletion([{text: "model run warning", locations: ["model_fit", "review_output"]}], false);
+    it("model run step does not automatically advance to calibrate step on completion if there are modelRun warnings to display", async () => {
+        await testModelRunCompletion([{text: "model run warning", locations: ["model_fit", "review_output"]}], false);
     });
 
-    it("model run step does automatically advance to calibrate step on completion if there are modelRun warnings, but not for this step to display", () => {
-        testModelRunCompletion([{text: "model run warning", locations: ["review_output"]}], true);
+    it("model run step does automatically advance to calibrate step on completion if there are modelRun warnings, but not for this step to display", async () => {
+        await testModelRunCompletion([{text: "model run warning", locations: ["review_output"]}], true);
     });
 
     it("validates state once ready", async () => {
