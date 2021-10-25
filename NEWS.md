@@ -1,6 +1,18 @@
-# hint 1.59.0
+# hint 1.62.0
 
 * Action for posting error report
+
+# hint 1.61.0
+
+* Upload release to ADR epic
+
+# hint 1.60.0
+
+* Include WarningAlert in Stepper
+
+# hint 1.59.0
+
+* Do not poll for ADR dataset updates when using a releaser
 
 # hint 1.58.0
 

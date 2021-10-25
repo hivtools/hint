@@ -311,6 +311,8 @@
             importProgram: mapActionByName("surveyAndProgram", "importProgram"),
             importANC: mapActionByName("surveyAndProgram", "importANC"),
             async importDataset() {
+                this.stopPolling();
+
                 this.loading = true;
                 await this.getDataset({id: this.newDatasetId!, release: this.newDatasetRelease});
 
@@ -338,6 +340,8 @@
 
                 this.loading = false;
                 this.open = false;
+
+                this.startPolling();
             },
             async refresh() {
                 this.stopPolling();
@@ -419,10 +423,12 @@
                 this.open = false;
             },
             startPolling() {
-                this.pollingId = window.setInterval(
-                    this.refreshDatasetMetadata,
-                    10000
-                );
+                if (!this.selectedDataset?.release) {
+                    this.pollingId = window.setInterval(
+                        this.refreshDatasetMetadata,
+                        10000
+                    );
+                }
             },
             stopPolling() {
                 if (this.pollingId) {

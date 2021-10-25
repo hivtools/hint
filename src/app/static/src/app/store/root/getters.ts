@@ -55,9 +55,11 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
     },
     warnings: (state: RootState) => (stepName: string): StepWarnings => {
         const filterWarnings = (warnings: Warning[], stepLocation: string) =>
-            warnings.filter(warning => warning.locations.some(location => location === stepLocation))
+            stepLocation ?
+                (warnings || []).filter(warning => warning.locations.some(location => location === stepLocation)) :
+                [];
 
-        const location = warningStepLocationMapping[stepName]
+        const location = warningStepLocationMapping[stepName];
 
         return {
             modelOptions: filterWarnings(state.modelOptions.warnings, location),
