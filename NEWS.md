@@ -1,3 +1,7 @@
+# hint 1.63.0
+
+* Display warning alert at bottom of Model Options step
+
 # hint 1.62.1
 
 * ADR upload fails if download attempted while in progress

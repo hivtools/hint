@@ -806,5 +806,51 @@ describe("Stepper component", () => {
             }],
             modelCalibrate: []
         });
+        //Expect warnings component to be at top, immediately before content div, not at bottom immediately after content
+        expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(true);
+        expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(false);
+    });
+
+    it("renders warning alert for model options after step content", () => {
+        const wrapper = createReadySut(
+            {
+                validatedConsistent: true,
+                country: "TEST",
+                iso3: "TES",
+                shape: ["TEST SHAPE"] as any,
+                population: ["TEST POP"] as any
+            },
+            {
+                survey: ["TEST SURVEY"] as any
+            },
+            {plottingMetadata: ["TEST METADATA"] as any},
+            {},
+            {activeStep: 3},
+            {},
+            {},
+            jest.fn(),
+            {},
+            {
+                valid: true,
+                warnings: [{
+                    text: "Model Options warning",
+                    locations: ["model_options", "model_fit"]
+                }]
+            }
+        );
+
+        const warnings = wrapper.find(WarningAlert).props("warnings");
+
+        expect(warnings).toStrictEqual({
+            modelOptions: [{
+                text: "Model Options warning",
+                locations: ["model_options", "model_fit"],
+            }],
+            modelRun: [],
+            modelCalibrate: []
+        });
+        //Expect warnings component to be at bottom, immediately after content div, not at top immediately before content
+        expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(false);
+        expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(true);
     });
 });
