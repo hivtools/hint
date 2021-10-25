@@ -1,7 +1,9 @@
 import {actions} from "../../app/store/root/actions";
-import {mockBaselineState, mockError, mockHintrVersionState, mockModelRunState, mockProjectsState, mockRootState} from "../mocks";
 import {ErrorReportManualDetails} from "../../app/store/root/actions";
-import {rootState} from "./integrationTest";
+import {initialProjectsState} from "../../app/store/projects/projects";
+import {RootState} from "../../app/root";
+import {Language} from "../../app/store/translations/locales";
+import {initialHintrVersionState} from "../../app/store/hintrVersion/hintrVersion";
 
 describe(`root actions`, () => {
 
@@ -10,27 +12,20 @@ describe(`root actions`, () => {
 
         const dispatch = jest.fn();
 
-        const state = mockRootState({
-            errorReportError: mockError("Err"),
-            ...rootState,
-            baseline: mockBaselineState({
+        const state = {
+            language: Language.en,
+            errorReportError: null,
+            baseline: {
                 country: "Malawi"
-            }),
-            modelRun: mockModelRunState({
+            },
+            modelRun: {
                 modelRunId: "1234"
-            }),
-            projects: mockProjectsState({
-                currentProject: {name: "p1", id: 1, versions: []}
-            }),
-            hintrVersion: mockHintrVersionState({
-                hintrVersion: {
-                    naomi: "v1",
-                    hintr: "v2",
-                    rrq: "v3",
-                    traduire: "v4"
-                }
-            })
-        });
+            },
+            projects: initialProjectsState(),
+            hintrVersion: initialHintrVersionState()
+        } as RootState;
+
+        state.projects.currentProject = {name: "p1", id: 1, versions: []}
 
         const getters = {
             errors: []
@@ -44,18 +39,21 @@ describe(`root actions`, () => {
         }
 
         await actions.generateErrorReport({commit, rootState: state, getters, dispatch} as any, payload);
-        /**
-         * This message is returned whenever a response format is not recognised
-         * This endpoint is external so success/failure response format is not known to hint.
-         *
-         */
-        expect(commit.mock.calls[0][0].payload).toStrictEqual(
+        expect(commit.mock.calls[0][0]).toStrictEqual(
             {
-                detail: "Could not parse API response. Please contact support.",
-                error: "MALFORMED_RESPONSE"
+                payload: {
+                    description: "OK",
+                    statusCode: 200
+                },
+                type: "ErrorReportSuccess"
             });
 
-        expect(commit.mock.calls[0][0].type).toStrictEqual("errors/ErrorAdded");
-        expect(dispatch.mock.calls.length).toBe(0)
+        expect(dispatch.mock.calls.length).toBe(1)
+        expect(dispatch.mock.calls[0][0]).toEqual("projects/cloneProject")
+        expect(dispatch.mock.calls[0][1]).toEqual(
+            {
+                "emails": ["naomi-support@imperial.ac.uk"],
+                "projectId": 1
+            })
     });
 })
