@@ -14,10 +14,10 @@
           {
             "id": "area_level",
             "source": "data",
-            "allowMultiple": true
+            "allowMultiple": false
           },
           {
-            "id": "time_step",
+            "id": "quarter",
             "source": "data",
             "allowMultiple": true
           }
@@ -55,12 +55,12 @@
             },
             {
               "data": {
-                "columnId": "time_step",
-                "labelColumn": "time_step"
+                "columnId": "quarter",
+                "labelColumn": "quarter"
               },
               "header": {
                 "type": "columnLabel",
-                "column": "time_step"
+                "column": "quarter"
               }
             },
             {
@@ -167,7 +167,7 @@
     "subplots": {
       "columns": 3,
       "distinctColumn": "area_name",
-      "heightPerRow": 140
+      "heightPerRow": 180
     },
     "chartConfig": [
       {
