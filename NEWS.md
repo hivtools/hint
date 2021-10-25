@@ -1,6 +1,10 @@
-# hint 1.61.1
+# hint 1.62.1
 
 * ADR upload fails if download attempted while in progress
+
+# hint 1.62.0
+
+* Upload release to ADR epic
 
 # hint 1.61.0
 
