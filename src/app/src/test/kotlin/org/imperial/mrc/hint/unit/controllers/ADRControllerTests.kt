@@ -754,13 +754,164 @@ class ADRControllerTests : HintrControllerTests()
     }
 
     @Test
-    fun `creates a release`()
+    fun `creates a release if no release exists on ADR with the same name`()
     {
-        val expectedUrl = "dataset_version_create"
+        val data = mapOf("data" to listOf<Any>())
         val mockClient = mock<ADRClient> {
-            on { post(expectedUrl, listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity
+            on { get("/dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
+                    .ok()
+                    .body(objectMapper.writeValueAsString(data))
+            on { post("/dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity
                     .ok()
                     .body("whatever")
+        }
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mockBuilder,
+                objectMapper,
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
+        val result = sut.createRelease("dataset-1", "release-1")
+        assertThat(result.body!!).isEqualTo("whatever")
+    }
+
+    @Test
+    fun `deletes release of same name on ADR and creates a new release`()
+    {
+        val existingRelease = mapOf("name" to "release-1", "id" to "other-id")
+        val data = mapOf("data" to listOf(existingRelease))
+        val mockClient = mock<ADRClient> {
+            on { get("/dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
+                    .ok()
+                    .body(objectMapper.writeValueAsString(data))
+            on { post("/dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity
+                    .ok()
+                    .body("created release")
+            on { post("/version_delete", listOf("version_id" to "other-id")) } doReturn ResponseEntity
+                    .ok()
+                    .body("deleted release")
+        }
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mockBuilder,
+                objectMapper,
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
+        val result = sut.createRelease("dataset-1", "release-1")
+        assertThat(result.body!!).isEqualTo("created release")
+    }
+
+    @Test
+    fun `returns error if create release endpoint fails`()
+    {
+        val existingRelease = mapOf("name" to "release-1", "id" to "other-id")
+        val data = mapOf("data" to listOf(existingRelease))
+        val mockClient = mock<ADRClient> {
+            on { get("/dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
+                    .ok()
+                    .body(objectMapper.writeValueAsString(data))
+            on { post("/dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")
+            on { post("/version_delete", listOf("version_id" to "other-id")) } doReturn ResponseEntity
+                    .ok()
+                    .body("whatever")
+        }
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mockBuilder,
+                objectMapper,
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
+        val result = sut.createRelease("dataset-1", "release-1")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_GATEWAY)
+        assertThat(result.body!!).isEqualTo("Bad Gateway")
+    }
+
+    @Test
+    fun `returns error if delete release endpoint fails while trying to create a release`()
+    {
+        val existingRelease = mapOf("name" to "release-1", "id" to "other-id")
+        val data = mapOf("data" to listOf(existingRelease))
+        val mockClient = mock<ADRClient> {
+            on { get("/dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
+                    .ok()
+                    .body(objectMapper.writeValueAsString(data))
+            on { post("/version_delete", listOf("version_id" to "other-id")) } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")
+        }
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mockBuilder,
+                objectMapper,
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
+        val result = sut.createRelease("dataset-1", "release-1")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_GATEWAY)
+        assertThat(result.body!!).isEqualTo("Bad Gateway")
+    }
+
+    @Test
+    fun `returns error if get releases endpoint fails while trying to create a release`()
+    {
+        val mockClient = mock<ADRClient> {
+            on { get("/dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")
+        }
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+                mock(),
+                mock(),
+                mockBuilder,
+                objectMapper,
+                mockProperties,
+                mock(),
+                mock(),
+                mockSession,
+                mock())
+        val result = sut.createRelease("dataset-1", "release-1")
+        assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_GATEWAY)
+        assertThat(result.body!!).isEqualTo("Bad Gateway")
+    }
+
+    @Test
+    fun `attempts to create a release if a release exists on ADR with no name (purely theoretical)`()
+    {
+        val existingRelease = mapOf("id" to "other-id")
+        val data = mapOf("data" to listOf(existingRelease))
+        val mockClient = mock<ADRClient> {
+            on { get("/dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity
+                    .ok()
+                    .body(objectMapper.writeValueAsString(data))
+            on { post("/dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity
+            .ok()
+            .body("whatever")
         }
         val mockBuilder = mock<ADRClientBuilder> {
             on { build() } doReturn mockClient
