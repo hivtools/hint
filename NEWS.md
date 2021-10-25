@@ -1,3 +1,7 @@
+# hint 1.62.1
+
+* ADR upload fails if download attempted while in progress
+
 # hint 1.62.0
 
 * Upload release to ADR epic
@@ -17,7 +21,6 @@
 # hint 1.58.0
 
 * Endpoint for posting error report to Teams
-
 
 # hint 1.57.1
 
