@@ -20,6 +20,7 @@ export interface API<S, E> {
     ignoreSuccess: () => API<S, E>
 
     postAndReturn<T>(url: string, data: any): Promise<void | ResponseWithType<T>>
+
     get<T>(url: string): Promise<void | ResponseWithType<T>>
 
     delete(url: string): Promise<void | true>
