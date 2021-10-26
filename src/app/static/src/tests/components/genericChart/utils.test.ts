@@ -1,5 +1,4 @@
 import {filterData, genericChartColumnsToFilters} from "../../../app/components/genericChart/utils";
-import {FilterOption} from "../../../app/generated";
 
 describe("filterData", () => {
     const data = [
