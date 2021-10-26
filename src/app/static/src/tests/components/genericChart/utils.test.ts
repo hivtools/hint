@@ -1,4 +1,5 @@
-import {filterData} from "../../../app/components/genericChart/utils";
+import {filterData, genericChartColumnsToFilters} from "../../../app/components/genericChart/utils";
+import {FilterOption} from "../../../app/generated";
 
 describe("filterData", () => {
     const data = [
@@ -34,6 +35,67 @@ describe("filterData", () => {
             {"age": 2, "year": 2020, "country": "GB", value: 2},
             {"age": 1, "year": 2020, "country": "FR", value: 5},
             {"age": 2, "year": 2020, "country": "FR", value: 6}
+        ]);
+    });
+});
+
+describe("genericChartColumnsToFilters", () => {
+    const columns = [
+        {
+            id: "year",
+            column_id: "year_col",
+            label: "Year",
+            values: [{id: "2012", label: "Twenty-twelve"}]
+        },
+        {
+            id: "age",
+            column_id: "age_col",
+            label: "Age group",
+            values: [{id: "0:5", label: "0-5"}, {id: "6:10", label: "6-10"}]
+        }
+    ];
+
+    it("returns expected values when no filterConfig provided", () => {
+        const result = genericChartColumnsToFilters(columns, undefined);
+        expect(result).toStrictEqual([
+            {
+                id: "year",
+                column_id: "year_col",
+                label: "Year",
+                options: [{id: "2012", label: "Twenty-twelve"}],
+                allowMultiple: false
+            },
+            {
+                id: "age",
+                column_id: "age_col",
+                label: "Age group",
+                options: [{id: "0:5", label: "0-5"}, {id: "6:10", label: "6-10"}],
+                allowMultiple: false
+            }
+        ]);
+    });
+
+    it("returns expected values when filterConfig is provided", () => {
+        const filterConfig = [
+            { id: "year", source: "data", allowMultiple: false},
+            { id: "age", source: "data", allowMultiple: true}
+        ];
+        const result = genericChartColumnsToFilters(columns, filterConfig);
+        expect(result).toStrictEqual([
+            {
+                id: "year",
+                column_id: "year_col",
+                label: "Year",
+                options: [{id: "2012", label: "Twenty-twelve"}],
+                allowMultiple: false
+            },
+            {
+                id: "age",
+                column_id: "age_col",
+                label: "Age group",
+                options: [{id: "0:5", label: "0-5"}, {id: "6:10", label: "6-10"}],
+                allowMultiple: true
+            }
         ]);
     });
 });
