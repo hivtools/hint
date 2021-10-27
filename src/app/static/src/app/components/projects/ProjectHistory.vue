@@ -565,7 +565,6 @@
                 namespace,
                 "deleteVersion"
             ),
-
             getTranslatedValue(key: string) {
                 return i18next.t(key, {
                     lng: this.currentLanguage,

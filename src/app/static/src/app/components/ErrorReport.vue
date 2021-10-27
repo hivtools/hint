@@ -57,7 +57,17 @@
             </div>
         </form>
         <template v-slot:footer>
-            <button type="button"
+            <div v-if="disabled" class="d-inline-block"
+                 style="cursor: not-allowed;"
+                 v-tooltip="tooltipText">
+                <button disabled
+                        style="pointer-events: none"
+                        type="button"
+                        class="btn btn-red"
+                        v-translate="'send'"></button>
+            </div>
+            <button v-else
+                    type="button"
                     class="btn btn-red"
                     @click="sendErrorReport"
                     v-translate="'send'">
@@ -77,6 +87,10 @@
     import {ProjectsState} from "../store/projects/projects"
     import Modal from "./Modal.vue";
     import {ErrorReportManualDetails} from "../store/root/actions";
+    import {VTooltip} from 'v-tooltip';
+    import i18next from "i18next";
+    import {RootState} from "../root";
+    import {Language} from "../store/translations/locales";
 
     interface Methods {
         generateErrorReport: (payload: ErrorReportManualDetails) => void
@@ -86,11 +100,14 @@
     }
 
     interface Computed {
+        currentLanguage: Language,
         currentSectionKey: string
         currentSection: string
         isGuest: boolean
         steps: StepDescription[]
         projectName: string | undefined
+        disabled: boolean,
+        tooltipText: string
     }
 
     interface Props {
@@ -99,6 +116,7 @@
 
     export default Vue.extend<ErrorReportManualDetails, Methods, Computed, Props>({
         components: {Modal},
+        directives: {tooltip: VTooltip},
         props: {
             open: Boolean
         },
@@ -112,6 +130,7 @@
             }
         },
         computed: {
+            currentLanguage: mapStateProp<RootState, Language>(null, (state: RootState) => state.language),
             currentSectionKey: mapStateProp<StepperState, string>("stepper", state => {
                 return state.steps[state.activeStep - 1].textKey;
             }),
@@ -125,7 +144,13 @@
             },
             isGuest: mapGetterByName(null, "isGuest"),
             projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
-            steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps)
+            steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps),
+            disabled() {
+                return !this.description || !this.stepsToReproduce || (this.isGuest && !this.email)
+            },
+            tooltipText() {
+                return i18next.t("allFieldsRequired", {lng: this.currentLanguage});
+            }
         },
         methods: {
             generateErrorReport: mapActionByName(null, "generateErrorReport"),
@@ -151,7 +176,7 @@
             }
         },
         watch: {
-            open (newVal) {
+            open(newVal) {
                 if (newVal === true) {
                     if (this.$route.path.indexOf("projects") > -1) {
                         this.section = "projects"

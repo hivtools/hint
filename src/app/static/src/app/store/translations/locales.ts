@@ -9,6 +9,7 @@ export interface Translations {
     adrReadWriteTooltip: string,
     adrTooltip: string,
     age: string,
+    allFieldsRequired: string,
     ANC: string,
     area: string,
     ART: string,
@@ -272,6 +273,7 @@ const en: Translations = {
     adrTooltip: "To import data from the ADR you have to provide your ADR access key. " +
         "This can be found on your ADR profile page",
     age: "Age",
+    allFieldsRequired: "Please fill out all fields to proceed",
     ANC: "ANC Testing",
     area: "Area",
     ART: "ART",
