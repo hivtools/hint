@@ -8,6 +8,7 @@ import {StepperState} from "../../app/store/stepper/stepper";
 import {ProjectsState} from "../../app/store/projects/projects";
 import {expectTranslated} from "../testHelpers";
 import VueRouter from "vue-router";
+import {Language} from "../../app/store/translations/locales";
 
 describe("Error report component", () => {
 
@@ -359,6 +360,28 @@ describe("Error report component", () => {
 
         expect(wrapper.findAll("button").length).toBe(2);
         expect(wrapper.findAll("button").at(0).attributes().disabled).toBe("disabled");
+    });
+
+    it("translates button tooltip", () => {
+        const store = createStore({}, {}, true);
+        const mockTooltip = jest.fn();
+        mount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store,
+            directives: {"tooltip": mockTooltip}
+        });
+
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Please fill out all fields to proceed");
+
+        store.state.language = Language.fr
+
+        expect(mockTooltip.mock.calls[1][1].value).toBe("Veuillez remplir tous les champs");
+
+        store.state.language = Language.pt
+
+        expect(mockTooltip.mock.calls[2][1].value).toBe("Por favor, preencha todos os campos");
     });
 
     it("shows disabled, auto-populated project field if there is a current project", () => {
