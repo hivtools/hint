@@ -57,11 +57,11 @@
             </div>
         </form>
         <template v-slot:footer>
-            <div v-if="disabled" class="d-inline-block"
+            <div v-if="disabled" class="tooltip-wrapper"
                  style="cursor: not-allowed;"
                  v-tooltip="tooltipText">
+                <!-- tooltips can't be rendered on disabled elements -->
                 <button disabled
-                        style="pointer-events: none"
                         type="button"
                         class="btn btn-red"
                         v-translate="'send'"></button>
