@@ -158,9 +158,15 @@
             },
             updateDimensions(){
                 if (this.showAlert){
-                    this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
-                    this.headerHeight = (this.$refs.headerPlusLine as HTMLElement).clientHeight - this.lineHeight;
-                    this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
+                    const id = setInterval(() => {
+                        if (this.$refs.warningBox){
+                            this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
+                            this.headerHeight = (this.$refs.headerPlusLine as HTMLElement).clientHeight - this.lineHeight;
+                            this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
+                            // console.log('update dimension called')
+                            clearInterval(id)
+                        }
+                    }, 100)
                 }
             },
             headerText(key){
