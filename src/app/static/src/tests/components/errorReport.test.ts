@@ -8,6 +8,7 @@ import {StepperState} from "../../app/store/stepper/stepper";
 import {ProjectsState} from "../../app/store/projects/projects";
 import {expectTranslated} from "../testHelpers";
 import VueRouter from "vue-router";
+import {Language} from "../../app/store/translations/locales";
 
 describe("Error report component", () => {
 
@@ -300,6 +301,89 @@ describe("Error report component", () => {
         expect(wrapper.findAll("input#email").length).toBe(0);
     });
 
+    it("email field is not required if user is logged in", () => {
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore({}, {}, false)
+        });
+
+        wrapper.find("#description").setValue("something");
+        wrapper.find("#reproduce").setValue("reproduce steps");
+
+        expect(wrapper.findAll("button").length).toBe(2);
+        expect(wrapper.findAll("button").at(0).attributes().disabled).toBeUndefined();
+    });
+
+    it("email field is required if user is not logged in", () => {
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore({}, {}, true)
+        });
+
+        wrapper.find("#description").setValue("something");
+        wrapper.find("#reproduce").setValue("reproduce steps");
+
+        expect(wrapper.findAll("input#email").length).toBe(1);
+        expect(wrapper.findAll("button").length).toBe(2);
+        expect(wrapper.findAll("button").at(0).attributes().disabled).toBe("disabled");
+    });
+
+    it("description field is required", () => {
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore({}, {}, true)
+        });
+
+        wrapper.find("#reproduce").setValue("reproduce steps");
+        wrapper.find("#email").setValue("test@test.com");
+
+        expect(wrapper.findAll("button").length).toBe(2);
+        expect(wrapper.findAll("button").at(0).attributes().disabled).toBe("disabled");
+    });
+
+    it("reproduce steps field is required", () => {
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore({}, {}, true)
+        });
+
+        wrapper.find("#description").setValue("desc");
+        wrapper.find("#email").setValue("test@test.com");
+
+        expect(wrapper.findAll("button").length).toBe(2);
+        expect(wrapper.findAll("button").at(0).attributes().disabled).toBe("disabled");
+    });
+
+    it("translates button tooltip", () => {
+        const store = createStore({}, {}, true);
+        const mockTooltip = jest.fn();
+        mount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store,
+            directives: {"tooltip": mockTooltip}
+        });
+
+        expect(mockTooltip.mock.calls[0][1].value).toBe("Please fill out all fields to proceed");
+
+        store.state.language = Language.fr
+
+        expect(mockTooltip.mock.calls[1][1].value).toBe("Veuillez remplir tous les champs");
+
+        store.state.language = Language.pt
+
+        expect(mockTooltip.mock.calls[2][1].value).toBe("Por favor, preencha todos os campos");
+    });
+
     it("shows disabled, auto-populated project field if there is a current project", () => {
         const wrapper = shallowMount(ErrorReport, {
             propsData: {
@@ -346,6 +430,9 @@ describe("Error report component", () => {
             },
             store: createStore()
         });
+
+        wrapper.find("#description").setValue("desc");
+        wrapper.find("#reproduce").setValue("reproduce steps");
 
         expect(wrapper.find(".btn-red").text()).toBe("Send");
         wrapper.find(".btn-red").trigger("click");
