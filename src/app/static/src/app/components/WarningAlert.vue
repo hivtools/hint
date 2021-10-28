@@ -8,10 +8,6 @@
             <div :style="{ overflowY: 'hidden', height: `${this.renderedBoxHeight}px` }">
                 <div ref="warningBox" id="warningBox">
                     <div v-for="(value, key) in filteredWarnings" :key="key">
-                        <!-- <h4 class="alert-heading pt-2">
-                            <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
-                            {{ headerText(key) }}
-                        </h4> -->
                         <h4 class="alert-heading pt-2">
                             <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
                             <span v-translate="headerText(key)"></span>
@@ -71,24 +67,11 @@
         currentLanguage: Language;
         renderedBoxHeight: number;
         maxBoxHeight: number;
-        // containerBox: {
-        //     height: string,
-        //     overflowY: string
-        // };
         filteredWarnings: Dict<Warning[]>;
         warningsLengthy: boolean;
         showAlert: boolean;
         buttonText: string;
     }
-
-    // interface Warning {
-    //     text: string;
-    //     locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
-    // }
-
-    // interface Warnings {
-    //     [key: string]: Warning[];
-    // }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "WarningAlert",
@@ -126,12 +109,6 @@
             warningsLengthy(){
                 return this.fullBoxHeight > this.maxBoxHeight
             },
-            // containerBox(){
-            //     return {
-            //         height: `${this.renderedBoxHeight}px`,
-            //         overflowY: "hidden"
-            //     }
-            // },
             filteredWarnings(){
                 const anObject: Dict<Warning[]> = {}
                 Object.keys(this.warnings).forEach((k) => {
@@ -163,7 +140,6 @@
                             this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
                             this.headerHeight = (this.$refs.headerPlusLine as HTMLElement).clientHeight - this.lineHeight;
                             this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
-                            // console.log('update dimension called')
                             clearInterval(id)
                         }
                     }, 100)
@@ -175,7 +151,6 @@
                     modelRun: "warningsHeaderModelRun",
                     modelCalibrate: "warningsHeaderModelCalibrate"
                 }
-                // return key in headers ? i18next.t(headers[key], { lng: this.currentLanguage }) : ""
                 return key in headers ? headers[key] : ""
             }
         },
