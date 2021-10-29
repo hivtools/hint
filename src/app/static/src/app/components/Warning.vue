@@ -91,14 +91,12 @@
                 this.showFullBox = !this.showFullBox;
             },
             updateDimensions(){
-                // if (this.showAlert){
-                    const id = setInterval(() => {
-                        if (this.$refs.warningBox){
-                            this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
-                            clearInterval(id)
-                        }
-                    }, 100)
-                // }
+                const id = setInterval(() => {
+                    if (this.$refs.warningBox){
+                        this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
+                        clearInterval(id)
+                    }
+                }, 100)
             },
             headerText(key){
                 const headers: { [key: string]: string } = {
@@ -112,11 +110,6 @@
         watch: {
             warnings(){
                 this.updateDimensions()
-                // console.log(this.fullBoxHeight, this.renderedBoxHeight, this.maxBoxHeight)
-            },
-            maxBoxHeight(){
-                this.updateDimensions()
-                console.log(this.fullBoxHeight, this.renderedBoxHeight, this.maxBoxHeight)
             }
         },
         mounted(){
