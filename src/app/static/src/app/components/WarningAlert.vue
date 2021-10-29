@@ -1,14 +1,18 @@
 <template>
     <div v-if="showAlert">
         <div class="content alert alert-warning pt-0">
+            <!-- <div :style="{ overflowY: 'hidden', height: `${this.renderedContentHeight}px` }">
+                <div ref="content"> -->
+                    <warning v-for="(value, key) in filteredWarnings" :key="key" :origin="key" :warnings="value" :max-lines="maxLines"></warning>
+                    <!-- <p ref="line" class="mb-0 invisible">...</p> -->
+                <!-- </div>
+            </div> -->
             <!-- The outer styled divs are the visible window of warnings and inside them are the 
             full window of warnings (the warningBox), which is always rendered as html but with 
             its overflow hidden by the outer box. The size of the outer box dynamically adjusts 
             depending on the size of the warningBox and whether the user has clicked show more or less. -->
                 <!-- The below html wrapped in invisible divs will never be shown to the user but is used as
                 a proxy to dynamically determine the height in pixels the warnings window should have.  -->
-            <warning v-for="(value, key) in filteredWarnings" :key="key" :origin="key" :warnings="value" :max-box-height="maxBoxHeight"></warning>
-            <p ref="line" class="mb-0 invisible">...</p>
         </div>
     </div>
 </template>
@@ -25,20 +29,23 @@
     }
 
     interface Data {
-        lineHeight: number;
+        // lineHeight: number;
+        // contentHeight: number;
     }
 
     interface Methods {
-        updateLineHeight: () => void;
+        // updateDimensions: () => void;
+        // quickUpdate: () => void;
     }
 
     interface Computed  {
-        maxBoxHeight: number;
+        // maxBoxHeight: number;
         filteredWarnings: Dict<WarningType[]>;
         showAlert: boolean;
+        // renderedContentHeight: number;
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default Vue.extend<unknown, unknown, Computed, Props>({
         name: "WarningAlert",
         props: {
             warnings: Object,
@@ -52,15 +59,19 @@
                 type: Number
             }
         },
-        data() {
-            return {
-                lineHeight: 0
-            };
-        },
+        // data() {
+        //     return {
+        //         lineHeight: 0,
+        //         contentHeight: 0
+        //     };
+        // },
         computed: {
-            maxBoxHeight(){
-                return this.maxLines * this.lineHeight
-            },
+            // maxBoxHeight(){
+            //     return this.maxLines * this.lineHeight
+            // },
+            // renderedContentHeight(){
+            //     return this.contentHeight - this.lineHeight
+            // },
             filteredWarnings(){
                 const anObject: Dict<WarningType[]> = {}
                 Object.keys(this.warnings).forEach((k) => {
@@ -74,26 +85,32 @@
                 return Object.keys(this.warnings).some(key => this.warnings[key].length > 0)
             }
         },
-        methods: {
-            updateLineHeight(){
-                if (this.showAlert){
-                    const id = setInterval(() => {
-                        if (this.$refs.line){
-                            this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
-                            clearInterval(id)
-                        }
-                    }, 100)
-                }
-            }
-        },
-        watch: {
-            warnings(){
-                this.updateLineHeight()
-            }
-        },
-        mounted(){
-            this.updateLineHeight()
-        },
+        // methods: {
+        //     updateDimensions(){
+        //         if (this.showAlert){
+        //             const id = setInterval(() => {
+        //                 if (this.$refs.line){
+        //                     this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
+        //                     this.contentHeight = (this.$refs.content as HTMLElement).clientHeight;
+        //                     clearInterval(id)
+        //                 }
+        //             }, 100)
+        //         }
+        //     },
+        //     quickUpdate(){
+        //         if (this.$refs.content){
+        //             this.contentHeight = (this.$refs.content as HTMLElement).clientHeight;
+        //         }
+        //     }
+        // },
+        // watch: {
+        //     warnings(){
+        //         this.updateDimensions()
+        //     }
+        // },
+        // mounted(){
+        //     this.updateDimensions()
+        // },
         components: {
             Warning
         }

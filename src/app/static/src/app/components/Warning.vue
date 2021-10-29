@@ -8,6 +8,7 @@
             <ul class="mb-0" ref="warningBox" id="warningBox">
                 <li v-for="warning in warnings" :key="warning.text">{{ warning.text }}</li>
             </ul>
+            <p ref="line" class="mb-0 invisible">...</p>
         </div>
         <button @click="toggleShowFullBox" v-if="warningsLengthy" class="btn btn-link alert-link">{{ buttonText }}</button>
     </div>                 
@@ -26,14 +27,14 @@
     interface Props {
         origin: string;
         warnings: Warning[];
-        maxBoxHeight: number;
+        maxLines: number;
+        // maxBoxHeight: number;
     }
 
     interface Data {
         showFullBox: boolean;
         fullBoxHeight: number;
-        // lineHeight: number;
-        // headerHeight: number;
+        lineHeight: number;
     }
 
     interface Methods {
@@ -45,11 +46,9 @@
     interface Computed  {
         currentLanguage: Language;
         renderedBoxHeight: number;
-        // maxBoxHeight: number;
-        // filteredWarnings: Dict<Warning[]>;
         warningsLengthy: boolean;
-        // showAlert: boolean;
         buttonText: string;
+        maxBoxHeight: number;
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -57,14 +56,14 @@
         props: {
             origin: String,
             warnings: Array,
-            maxBoxHeight: Number
+            maxLines: Number
+            // maxBoxHeight: Number
         },
         data() {
             return {
                 showFullBox: false,
                 fullBoxHeight: 0,
-                // lineHeight: 0,
-                // headerHeight: 0
+                lineHeight: 0
             };
         },
         computed: {
@@ -74,6 +73,9 @@
                 } else {
                     return this.showFullBox ? this.fullBoxHeight : this.maxBoxHeight
                 }
+            },
+            maxBoxHeight(){
+                return this.maxLines * this.lineHeight
             },
             warningsLengthy(){
                 return this.fullBoxHeight > this.maxBoxHeight
@@ -93,6 +95,7 @@
             updateDimensions(){
                 const id = setInterval(() => {
                     if (this.$refs.warningBox){
+                        this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
                         this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
                         clearInterval(id)
                     }
