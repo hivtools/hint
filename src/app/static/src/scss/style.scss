@@ -20,7 +20,7 @@ a {
   }
 
   &.disabled {
-    color: $gray-500;
+    color: $gray-600;
     cursor: default;
 
     &:hover {
@@ -62,8 +62,8 @@ a {
   margin-left: 5px;
   margin-bottom: 5px;
   margin-top: -5px;
-  height: 20px;
-  width: 20px;
+  height: 21px;
+  width: 21px;
 
   path {
     transform: scale(0.2);

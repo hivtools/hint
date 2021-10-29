@@ -244,7 +244,9 @@ class ADRTests : SecureIntegrationTests()
             val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrOutputSummarySchema}/$downloadId?resourceFileName=output.html&resourceName=TestZip&description=test"
             val createResult = testRestTemplate.postForEntity<String>(url)
             assertSuccess(createResult)
-            val resourceId = ObjectMapper().readTree(createResult.body!!)["data"]["id"].textValue()
+            val data = ObjectMapper().readTree(createResult.body!!)["data"]
+            assertThat(data["restricted"].textValue()).isEqualTo("{\"allowed_organizations\":\"unaids\",\"allowed_users\":\"\",\"level\":\"restricted\"}")
+            val resourceId = data["id"].textValue()
             val updateResult = testRestTemplate.postForEntity<String>("$url&resourceId=$resourceId")
             assertSuccess(updateResult)
         }
@@ -290,6 +292,39 @@ class ADRTests : SecureIntegrationTests()
             assertThat(data["name"].textValue()).isEqualTo(releaseName)
 
             "${ConfiguredAppProperties().adrUrl}api/3/action/version_delete".httpPost(listOf("version_id" to data["id"].textValue()))
+                    .header("Authorization" to ADR_KEY)
+                    .response()
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
+    fun `can overwrite an ADR release of the same name`(isAuthorized: IsAuthorized)
+    {
+        testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
+
+        val releaseName = "1.0"
+
+        val result = testRestTemplate.postForEntity<String>(
+                "/adr/datasets/hint_test/releases",
+                getPostEntityWithKey(mapOf("name" to listOf(releaseName)))
+        )
+
+        if (isAuthorized == IsAuthorized.TRUE)
+        {
+            val data = ObjectMapper().readTree(result.body!!)["data"]
+            assertThat(data["name"].textValue()).isEqualTo(releaseName)
+
+            val result2 = testRestTemplate.postForEntity<String>(
+                "/adr/datasets/hint_test/releases",
+                getPostEntityWithKey(mapOf("name" to listOf(releaseName)))
+            )
+
+            val data2 = ObjectMapper().readTree(result2.body!!)["data"]
+            assertThat(data2["name"].textValue()).isEqualTo(releaseName)
+            assertThat(data2["id"].textValue()).isNotEqualTo(data["id"].textValue())
+
+            "${ConfiguredAppProperties().adrUrl}api/3/action/version_delete".httpPost(listOf("version_id" to data2["id"].textValue()))
                     .header("Authorization" to ADR_KEY)
                     .response()
         }
