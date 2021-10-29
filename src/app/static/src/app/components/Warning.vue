@@ -6,7 +6,7 @@
         </h4>
         <div :style="{ overflowY: 'hidden', height: `${this.renderedBoxHeight}px` }">
             <ul class="mb-0" ref="warningBox" id="warningBox">
-                <li v-for="warning in warnings" :key="warning.text">{{ warning.text }}</li>
+                <li v-for="warning in warnings" :key="warning.text" >{{ warning.text }}</li>
             </ul>
             <p ref="line" class="mb-0 invisible">...</p>
         </div>
@@ -48,6 +48,7 @@
         warningsLengthy: boolean;
         buttonText: string;
         maxBoxHeight: number;
+        // lineStyling: Dict<string>;
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -55,7 +56,11 @@
         props: {
             origin: String,
             warnings: Array,
-            maxLines: Number
+            maxLines: {
+                default: 2,
+                required: false,
+                type: Number
+            }
         },
         data() {
             return {
@@ -84,7 +89,18 @@
             ),
             buttonText(){
                 return i18next.t(this.showFullBox ? "showLess" : "showMore", { lng: this.currentLanguage });
-            }
+            },
+            // lineStyling(){
+            //     if (this.warningsLengthy){
+            //     // if (this.warningsLengthy && (this.warnings.length >= this.maxLines)){
+            //         return{
+            //             height: `${this.lineHeight}px`,
+            //             textOverflow: "ellipsis",
+            //         }
+            //     } else {
+            //         return {}
+            //     }
+            // }
         },
         methods: {
             toggleShowFullBox(){
