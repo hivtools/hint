@@ -31,8 +31,8 @@ describe("GenericChart component", () => {
                     label:"Dataset 1",
                     url: "/dataset1",
                     filters: [
-                        {id: "age", source: "data"},
-                        {id: "year", source: "data"}
+                        {id: "age", source: "data", allowMultiple: false},
+                        {id: "year", source: "data", allowMultiple: true}
                     ]
                 },
                 {
@@ -40,7 +40,7 @@ describe("GenericChart component", () => {
                     label:"Dataset 2",
                     url: "/dataset2",
                     filters: [
-                        {id: "year", source: "data"}
+                        {id: "year", source: "data", allowMultiple: false}
                     ]
                 },
                 {
@@ -48,7 +48,7 @@ describe("GenericChart component", () => {
                     label:"Dataset 3",
                     url: "/dataset3",
                     filters: [
-                        {id: "type", source: "data"}
+                        {id: "type", source: "data", allowMultiple: false}
                     ]
                 }
             ],
@@ -261,7 +261,7 @@ describe("GenericChart component", () => {
                     id: "year",
                     column_id: "year",
                     label: "Year",
-                    allowMultiple: false,
+                    allowMultiple: true,
                     options: [
                         {id: "2020", label: "2020"},
                         {id: "2021", label: "2021"}
@@ -294,6 +294,85 @@ describe("GenericChart component", () => {
             expect(plotly.element.style.height).toBe("100%");
 
             expect(wrapper.find(ErrorAlert).exists()).toBe(false);
+            expect(wrapper.find("#empty-generic-chart-data").exists()).toBe(false);
+            done();
+        });
+    });
+
+    it("renders as expected with empty chart data", (done) => {
+        const datasetsWithNoMatchingData = {
+            dataset1: {
+                metadata: datasets.dataset1.metadata,
+                data: [
+                    {age: "1", year: "1920", value: 1},
+                    {age: "1", year: "1921", value: 2},
+                    {age: "2", year: "1920", value: 3},
+                    {age: "2", year: "1921", value: 4}
+                ]
+            },
+            dataset2: {
+                metadata: datasets.dataset2.metadata,
+                data: [
+                    {age: "10", year: "1020", value: 10},
+                    {age: "10", year: "1921", value: 20},
+                    {age: "20", year: "1920", value: 30},
+                    {age: "20", year: "1921", value: 40}
+                ]
+            },
+            dataset3: {
+                metadata: datasets.dataset3.metadata,
+                data: []
+            }
+        };
+        const state = {datasets: datasetsWithNoMatchingData};
+        const wrapper = getWrapper(state);
+        setTimeout(() => {
+            expect(wrapper.find(Plotly).exists()).toBe(false);
+            const noDataDiv = wrapper.find("#empty-generic-chart-data");
+            expectTranslated(noDataDiv,
+                "No data are available for the selected combination. Please review the combination of filter values selected.",
+               "Aucune donnée n'est disponible pour la combinaison sélectionnée. Veuillez examiner la combinaison de valeurs de filtre sélectionnée.",
+                "Não existem dados disponíveis para a combinação selecionada. Por favor, reveja a combinação dos valores de filtro selecionados.",
+                wrapper.vm.$store
+            );
+
+            expect(wrapper.findAll(DataSource).length).toBe(2);
+            const filters = wrapper.findAll(Filters);
+            expect(filters.length).toBe(2);
+            expect(filters.at(0).props("filters")).toStrictEqual([
+                {
+                    id: "age",
+                    column_id: "age",
+                    label: "Age",
+                    allowMultiple: false,
+                    options: [
+                        {id: "1", label: "1"},
+                        {id: "2", label: "2"}
+                    ]
+                },
+                {
+                    id: "year",
+                    column_id: "year",
+                    label: "Year",
+                    allowMultiple: true,
+                    options: [
+                        {id: "2020", label: "2020"},
+                        {id: "2021", label: "2021"}
+                    ]
+                }
+            ],);
+            expect(filters.at(0).props("selectedFilterOptions")).toStrictEqual(datasets.dataset1.metadata.defaults.selected_filter_options);
+            expect(filters.at(1).props("filters")).toStrictEqual( [
+                {
+                    id: "type",
+                    column_id: "type",
+                    label: "Type",
+                    allowMultiple: false,
+                    options: [{id: "test", label: "test"}]
+                }
+            ]);
+            expect(filters.at(1).props("selectedFilterOptions")).toStrictEqual(datasets.dataset3.metadata.defaults.selected_filter_options);
+
             done();
         });
     });

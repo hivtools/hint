@@ -8,15 +8,18 @@
         "filters": [
           {
             "id": "plot_type",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": false
           },
           {
             "id": "area_level",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": false
           },
           {
-            "id": "time_step",
-            "source": "data"
+            "id": "quarter",
+            "source": "data",
+            "allowMultiple": true
           }
         ],
         "table": {
@@ -52,12 +55,12 @@
             },
             {
               "data": {
-                "columnId": "time_step",
-                "labelColumn": "time_step"
+                "columnId": "quarter",
+                "labelColumn": "quarter"
               },
               "header": {
                 "type": "columnLabel",
-                "column": "time_step"
+                "column": "quarter"
               }
             },
             {
@@ -79,15 +82,18 @@
         "filters": [
           {
             "id": "plot_type",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": false
           },
           {
             "id": "area_level",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": false
           },
           {
             "id": "age",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": false
           }
         ],
         "table": {
@@ -161,7 +167,7 @@
     "subplots": {
       "columns": 3,
       "distinctColumn": "area_name",
-      "heightPerRow": 140
+      "heightPerRow": 180
     },
     "chartConfig": [
       {

@@ -64,7 +64,7 @@ $xAxisDTick := $count($distinct(data.time_period)) > 4 ? 0 : 1;
                     "x": 0.5,
                     "xanchor": "middle",
                     "xref": "x" & ($i+1) & " domain",
-                    "y": 1.1,
+                    "y": 1,
                     "yanchor": "middle",
                     "yref": "y" & ($i+1) & " domain"
                 }
@@ -86,6 +86,7 @@ $xAxisDTick := $count($distinct(data.time_period)) > 4 ? 0 : 1;
                },
                "xaxis"&$: {
                    "dtick": $xAxisDTick,
+                   "tickangle": 45,
                    "tickfont": {
                        "color": "grey"
                    }

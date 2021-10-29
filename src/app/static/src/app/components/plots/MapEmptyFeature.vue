@@ -2,7 +2,7 @@
     <l-control position="topleft" class="empty-feature-center">
         <div class="map-control empty-feature-size px-3 py-2">
             <span class="lead">
-                <strong v-translate="'noMapData'"></strong>
+                <strong v-translate="'noChartData'"></strong>
             </span>
         </div>
     </l-control>

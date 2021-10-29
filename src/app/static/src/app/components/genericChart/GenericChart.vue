@@ -19,10 +19,18 @@
             <div class="col-9">
                 <div class="chart-container" :style="{height: chartHeight}">
                     <plotly class="chart"
+                            v-if="!this.chartDataIsEmpty"
                            :chart-metadata="chartConfigValues.chartConfig"
                            :chart-data="chartData"
                            :layout-data="chartConfigValues.layoutData"
                            :style="{height: chartConfigValues.scrollHeight}"></plotly>
+                    <div v-else class="mt-5" id="empty-generic-chart-data">
+                        <div class="empty-chart-message px-3 py-2">
+                            <span class="lead">
+                                <strong v-translate="'noChartData'"></strong>
+                            </span>
+                         </div>
+                     </div>
                 </div>
                 <div v-for="dataSource in chartConfigValues.dataSourceConfigValues.filter(ds => ds.tableConfig)"
                      :key="dataSource.config.id">
@@ -105,6 +113,7 @@
         chartMetadata: GenericChartMetadata
         chartConfigValues: ChartConfigValues
         chartData: Dict<unknown[]> | null
+        chartDataIsEmpty: boolean
         filters: Dict<DisplayFilter[]>
     }
 
@@ -174,7 +183,7 @@
                         const allColumns = this.datasets[datasetId]?.metadata.columns || [];
                         filterColumns = allColumns.filter(column => configuredFilterIds.includes(column.id));
                     }
-                    result[datasetId] = genericChartColumnsToFilters(filterColumns);
+                    result[datasetId] = genericChartColumnsToFilters(filterColumns, datasetConfig.filters);
                 }
                 return result;
             },
@@ -238,6 +247,11 @@
                     result[dataSourceId] = filterData(unfilteredData, filters, selectedFilterOptions);
                 }
                 return result;
+            },
+            chartDataIsEmpty() {
+                return !this.chartData ||
+                    !Object.values(this.chartData).some(e => e.length);
+
             }
         },
         methods: {

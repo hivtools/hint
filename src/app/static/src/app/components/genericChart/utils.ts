@@ -1,4 +1,4 @@
-import {Dict, DisplayFilter, GenericChartColumn} from "../../types";
+import {DatasetFilterConfig, Dict, DisplayFilter, GenericChartColumn} from "../../types";
 import {FilterOption} from "../../generated";
 
 export const filterData = (
@@ -13,14 +13,15 @@ export const filterData = (
     return unfilteredData.filter((row: any) => includeRow(row));
 };
 
-export function genericChartColumnsToFilters(columns: GenericChartColumn[]): DisplayFilter[] {
+export function genericChartColumnsToFilters(columns: GenericChartColumn[], filterConfig?: DatasetFilterConfig[]): DisplayFilter[] {
     return columns.map((column) => {
+        const allowMultiple = !!(filterConfig && filterConfig.find(config => config.id == column.id)?.allowMultiple);
         return {
             id: column.id,
             column_id: column.column_id,
             label: column.label,
             options: column.values,
-            allowMultiple: false
+            allowMultiple
         }
     });
 }
