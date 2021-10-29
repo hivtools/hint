@@ -250,7 +250,7 @@
             },
             chartDataIsEmpty() {
                 return !this.chartData ||
-                    Object.keys(this.chartData).every(dataSourceId => this.chartData![dataSourceId].length === 0);
+                    !Object.values(this.chartData).some(e => e.length);
 
             }
         },

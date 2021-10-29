@@ -158,13 +158,13 @@ describe("Model run actions", () => {
 
         await actions.getResult({commit, state, rootState} as any);
 
-        expectEqualsFrozen(commit.mock.calls[0][0], {
-            type: ModelRunMutation.RunResultFetched,
-            payload: mockResponse
-        });
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+        expect(commit.mock.calls[0][0]).toStrictEqual({
             type: ModelRunMutation.WarningsFetched,
             payload: [mockWarning()]
+        });
+        expectEqualsFrozen(commit.mock.calls[1][0], {
+            type: ModelRunMutation.RunResultFetched,
+            payload: mockResponse
         });
         expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "Ready",

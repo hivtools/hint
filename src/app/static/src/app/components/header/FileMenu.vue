@@ -10,7 +10,9 @@
                 <span v-translate="'load'"></span>
                 <upload-icon size="20" class="icon"></upload-icon>
             </a>
-            <input type="file" style="display: none;" ref="loadFile" v-on:change="load" accept=".json">
+            <input v-translate:aria-label="'selectFile'"
+                   type="file"
+                   style="display: none;" ref="loadFile" v-on:change="load" accept=".json">
         </drop-down>
         <modal :open="hasError">
             <h4 v-translate="'loadError'"></h4>
@@ -26,7 +28,7 @@
         </modal>
         <modal id="load-project-name" :open="requestProjectName">
             <h4 v-translate="'loadFileToProjectHeader'"></h4>
-            <h5 v-translate="'enterProjectName'"></h5>
+            <label class="h5" for="project-name-input" v-translate="'enterProjectName'"></label>
             <input id="project-name-input" type="text" class="form-control"
                    v-translate:placeholder="'projectName'" v-model="newProjectName">
             <template v-slot:footer>
