@@ -604,14 +604,14 @@ describe("Stepper component", () => {
             }
         });
 
-        wrapper.vm.$store.commit("modelRun/RunResultFetched", {
-            "type": "RunResultFetched",
-            "payload": "TEST"
-        });
-
         wrapper.vm.$store.commit("modelRun/WarningsFetched", {
             type: "WarningsFetched",
             payload: modelRunWarnings
+        });
+
+        wrapper.vm.$store.commit("modelRun/RunResultFetched", {
+            "type": "RunResultFetched",
+            "payload": "TEST"
         });
 
         await Vue.nextTick();
@@ -626,15 +626,15 @@ describe("Stepper component", () => {
     };
 
     it("model run step becomes complete on success, result fetched, and automatically moves to calibrate step", async () => {
-        testModelRunCompletion([], true);
+        await testModelRunCompletion([], true);
     });
 
-    it("model run step does not automatically advance to calibrate step on completion if there are modelRun warnings to display", () => {
-        testModelRunCompletion([{text: "model run warning", locations: ["model_fit", "review_output"]}], false);
+    it("model run step does not automatically advance to calibrate step on completion if there are modelRun warnings to display", async () => {
+        await testModelRunCompletion([{text: "model run warning", locations: ["model_fit", "review_output"]}], false);
     });
 
-    it("model run step does automatically advance to calibrate step on completion if there are modelRun warnings, but not for this step to display", () => {
-        testModelRunCompletion([{text: "model run warning", locations: ["review_output"]}], true);
+    it("model run step does automatically advance to calibrate step on completion if there are modelRun warnings, but not for this step to display", async () => {
+        await testModelRunCompletion([{text: "model run warning", locations: ["review_output"]}], true);
     });
 
     it("validates state once ready", async () => {
@@ -806,5 +806,51 @@ describe("Stepper component", () => {
             }],
             modelCalibrate: []
         });
+        //Expect warnings component to be at top, immediately before content div, not at bottom immediately after content
+        expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(true);
+        expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(false);
+    });
+
+    it("renders warning alert for model options after step content", () => {
+        const wrapper = createReadySut(
+            {
+                validatedConsistent: true,
+                country: "TEST",
+                iso3: "TES",
+                shape: ["TEST SHAPE"] as any,
+                population: ["TEST POP"] as any
+            },
+            {
+                survey: ["TEST SURVEY"] as any
+            },
+            {plottingMetadata: ["TEST METADATA"] as any},
+            {},
+            {activeStep: 3},
+            {},
+            {},
+            jest.fn(),
+            {},
+            {
+                valid: true,
+                warnings: [{
+                    text: "Model Options warning",
+                    locations: ["model_options", "model_fit"]
+                }]
+            }
+        );
+
+        const warnings = wrapper.find(WarningAlert).props("warnings");
+
+        expect(warnings).toStrictEqual({
+            modelOptions: [{
+                text: "Model Options warning",
+                locations: ["model_options", "model_fit"],
+            }],
+            modelRun: [],
+            modelCalibrate: []
+        });
+        //Expect warnings component to be at bottom, immediately after content div, not at top immediately before content
+        expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(false);
+        expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(true);
     });
 });
