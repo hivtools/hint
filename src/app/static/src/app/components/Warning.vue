@@ -28,7 +28,6 @@
         origin: string;
         warnings: Warning[];
         maxLines: number;
-        // maxBoxHeight: number;
     }
 
     interface Data {
@@ -57,7 +56,6 @@
             origin: String,
             warnings: Array,
             maxLines: Number
-            // maxBoxHeight: Number
         },
         data() {
             return {

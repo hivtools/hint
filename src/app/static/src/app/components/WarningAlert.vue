@@ -1,12 +1,7 @@
 <template>
     <div v-if="showAlert">
         <div class="content alert alert-warning pt-0">
-            <!-- <div :style="{ overflowY: 'hidden', height: `${this.renderedContentHeight}px` }">
-                <div ref="content"> -->
-                    <warning v-for="(value, key) in filteredWarnings" :key="key" :origin="key" :warnings="value" :max-lines="maxLines"></warning>
-                    <!-- <p ref="line" class="mb-0 invisible">...</p> -->
-                <!-- </div>
-            </div> -->
+            <warning v-for="(value, key) in filteredWarnings" :key="key" :origin="key" :warnings="value" :max-lines="maxLines"></warning>
             <!-- The outer styled divs are the visible window of warnings and inside them are the 
             full window of warnings (the warningBox), which is always rendered as html but with 
             its overflow hidden by the outer box. The size of the outer box dynamically adjusts 
@@ -28,21 +23,9 @@
         maxLines: number;
     }
 
-    interface Data {
-        // lineHeight: number;
-        // contentHeight: number;
-    }
-
-    interface Methods {
-        // updateDimensions: () => void;
-        // quickUpdate: () => void;
-    }
-
     interface Computed  {
-        // maxBoxHeight: number;
         filteredWarnings: Dict<WarningType[]>;
         showAlert: boolean;
-        // renderedContentHeight: number;
     }
 
     export default Vue.extend<unknown, unknown, Computed, Props>({
@@ -59,19 +42,7 @@
                 type: Number
             }
         },
-        // data() {
-        //     return {
-        //         lineHeight: 0,
-        //         contentHeight: 0
-        //     };
-        // },
         computed: {
-            // maxBoxHeight(){
-            //     return this.maxLines * this.lineHeight
-            // },
-            // renderedContentHeight(){
-            //     return this.contentHeight - this.lineHeight
-            // },
             filteredWarnings(){
                 const anObject: Dict<WarningType[]> = {}
                 Object.keys(this.warnings).forEach((k) => {
@@ -85,32 +56,6 @@
                 return Object.keys(this.warnings).some(key => this.warnings[key].length > 0)
             }
         },
-        // methods: {
-        //     updateDimensions(){
-        //         if (this.showAlert){
-        //             const id = setInterval(() => {
-        //                 if (this.$refs.line){
-        //                     this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
-        //                     this.contentHeight = (this.$refs.content as HTMLElement).clientHeight;
-        //                     clearInterval(id)
-        //                 }
-        //             }, 100)
-        //         }
-        //     },
-        //     quickUpdate(){
-        //         if (this.$refs.content){
-        //             this.contentHeight = (this.$refs.content as HTMLElement).clientHeight;
-        //         }
-        //     }
-        // },
-        // watch: {
-        //     warnings(){
-        //         this.updateDimensions()
-        //     }
-        // },
-        // mounted(){
-        //     this.updateDimensions()
-        // },
         components: {
             Warning
         }
