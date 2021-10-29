@@ -5,7 +5,7 @@
             full window of warnings (the warningBox), which is always rendered as html but with 
             its overflow hidden by the outer box. The size of the outer box dynamically adjusts 
             depending on the size of the warningBox and whether the user has clicked show more or less. -->
-            <div :style="{ overflowY: 'hidden', height: `${this.renderedBoxHeight}px` }">
+            <!-- <div :style="{ overflowY: 'hidden', height: `${this.renderedBoxHeight}px` }">
                 <div ref="warningBox" id="warningBox">
                     <div v-for="(value, key) in filteredWarnings" :key="key">
                         <h4 class="alert-heading pt-2">
@@ -16,10 +16,10 @@
                             <li v-for="warning in value" :key="warning.text">{{ warning.text }}</li>
                         </ul>
                     </div>
-                </div>
+                </div> -->
                 <!-- The below html wrapped in invisible divs will never be shown to the user but is used as
                 a proxy to dynamically determine the height in pixels the warnings window should have.  -->
-                <div ref="headerPlusLine" class="invisible">
+                <!-- <div ref="headerPlusLine" class="invisible">
                     <h4 class="alert-heading pt-2">
                         <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
                         <span>Hidden header</span>
@@ -30,47 +30,52 @@
             <div v-if="warningsLengthy" id="showToggle">
                 <p v-if="!showFullBox" class="ml-4 mb-0">...</p>
                 <button @click="toggleShowFullBox" class="btn btn-link alert-link pl-0">{{ buttonText }}</button>
-            </div>
+            </div> -->
+
+
+            <warning v-for="(value, key) in filteredWarnings" :key="key" :origin="key" :warnings="value" :max-box-height="maxBoxHeight"></warning>
+            <p ref="line" class="mb-0 invisible">...</p>
         </div>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue";
-    import { AlertTriangleIcon } from "vue-feather-icons";
-    import i18next from "i18next";
-    import { mapStateProp } from "../utils";
-    import { RootState } from "../root";
-    import { Language } from "../store/translations/locales";
-    import { Warning } from "../generated";
+    // import { AlertTriangleIcon } from "vue-feather-icons";
+    // import i18next from "i18next";
+    // import { mapStateProp } from "../utils";
+    // import { RootState } from "../root";
+    // import { Language } from "../store/translations/locales";
+    import { Warning as WarningType } from "../generated";
     import { Dict } from "../types";
+    import Warning from "./Warning.vue"
 
     interface Props {
-        warnings: Dict<Warning[]>;
+        warnings: Dict<WarningType[]>;
         maxLines: number;
     }
 
     interface Data {
-        showFullBox: boolean;
-        fullBoxHeight: number;
+        // showFullBox: boolean;
+        // fullBoxHeight: number;
         lineHeight: number;
-        headerHeight: number;
+        // headerHeight: number;
     }
 
     interface Methods {
-        toggleShowFullBox: () => void;
-        updateDimensions: () => void;
-        headerText: (key: string) => string;
+        // toggleShowFullBox: () => void;
+        updateLineHeight: () => void;
+        // headerText: (key: string) => string;
     }
 
     interface Computed  {
-        currentLanguage: Language;
-        renderedBoxHeight: number;
+        // currentLanguage: Language;
+        // renderedBoxHeight: number;
         maxBoxHeight: number;
-        filteredWarnings: Dict<Warning[]>;
-        warningsLengthy: boolean;
+        filteredWarnings: Dict<WarningType[]>;
+        // warningsLengthy: boolean;
         showAlert: boolean;
-        buttonText: string;
+        // buttonText: string;
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -82,35 +87,22 @@
             // number, the last line will be replaced with an ellipsis and the show more button 
             // will appear.
             maxLines: {
-                default: 3,
+                default: 2,
                 required: false,
                 type: Number
             }
         },
         data() {
             return {
-                showFullBox: false,
-                fullBoxHeight: 0,
-                lineHeight: 0,
-                headerHeight: 0
+                lineHeight: 0
             };
         },
         computed: {
-            renderedBoxHeight(){
-                if (!this.warningsLengthy){
-                    return this.fullBoxHeight
-                } else {
-                    return this.showFullBox ? this.fullBoxHeight : this.maxBoxHeight - this.lineHeight
-                }
-            },
             maxBoxHeight(){
-                return (this.maxLines * this.lineHeight) + this.headerHeight
-            },
-            warningsLengthy(){
-                return this.fullBoxHeight > this.maxBoxHeight
+                return this.maxLines * this.lineHeight
             },
             filteredWarnings(){
-                const anObject: Dict<Warning[]> = {}
+                const anObject: Dict<WarningType[]> = {}
                 Object.keys(this.warnings).forEach((k) => {
                     if (this.warnings[k].length > 0){
                         anObject[k] = this.warnings[k]
@@ -118,52 +110,32 @@
                 });
                 return anObject
             },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
             showAlert(){
                 return Object.keys(this.warnings).some(key => this.warnings[key].length > 0)
-            },
-            buttonText(){
-                return i18next.t(this.showFullBox ? "showLess" : "showMore", { lng: this.currentLanguage });
             }
         },
         methods: {
-            toggleShowFullBox(){
-                this.showFullBox = !this.showFullBox;
-            },
-            updateDimensions(){
+            updateLineHeight(){
                 if (this.showAlert){
                     const id = setInterval(() => {
-                        if (this.$refs.warningBox){
+                        if (this.$refs.line){
                             this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
-                            this.headerHeight = (this.$refs.headerPlusLine as HTMLElement).clientHeight - this.lineHeight;
-                            this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
                             clearInterval(id)
                         }
                     }, 100)
                 }
-            },
-            headerText(key){
-                const headers: { [key: string]: string } = {
-                    modelOptions: "warningsHeaderModelOptions",
-                    modelRun: "warningsHeaderModelRun",
-                    modelCalibrate: "warningsHeaderModelCalibrate"
-                }
-                return key in headers ? headers[key] : ""
             }
         },
         watch: {
             warnings(){
-                this.updateDimensions()
+                this.updateLineHeight()
             }
         },
         mounted(){
-            this.updateDimensions()
+            this.updateLineHeight()
         },
         components: {
-            AlertTriangleIcon
+            Warning
         }
     })
 </script>
