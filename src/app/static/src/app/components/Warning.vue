@@ -6,7 +6,7 @@
         </h4>
         <div :style="{ overflowY: 'hidden', height: `${this.renderedBoxHeight}px` }">
             <ul class="mb-0" ref="warningBox" id="warningBox">
-                <li v-for="warning in warnings" :key="warning.text" >{{ warning.text }}</li>
+                <li v-for="warning in warnings" :key="warning.text"><div :style="lineStyling">{{ warning.text }}</div></li>
             </ul>
             <p ref="line" class="mb-0 invisible">...</p>
         </div>
@@ -49,6 +49,14 @@
         buttonText: string;
         maxBoxHeight: number;
         // lineStyling: Dict<string>;
+        lineStyling: {
+            height?: string,
+            // whiteSpace?: string,
+            // overflow?: string,
+            // textOverflow?: string,
+            // listStylePosition?: string,
+            // marginLeft?: string
+        };
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -90,27 +98,48 @@
             buttonText(){
                 return i18next.t(this.showFullBox ? "showLess" : "showMore", { lng: this.currentLanguage });
             },
-            // lineStyling(){
-            //     if (this.warningsLengthy){
-            //     // if (this.warningsLengthy && (this.warnings.length >= this.maxLines)){
-            //         return{
-            //             height: `${this.lineHeight}px`,
-            //             textOverflow: "ellipsis",
-            //         }
-            //     } else {
-            //         return {}
-            //     }
-            // }
+            lineStyling(){
+                if (this.warningsLengthy && !this.showFullBox){
+                    if (this.warnings.length === 1){
+                        return {
+                            height: `${this.maxBoxHeight}px`,
+                            overflow: "hidden",
+                            "display": "-webkit-box",
+                            "-webkit-line-clamp": this.maxLines,
+                            "-webkit-box-orient": "vertical"
+                        }
+                    } else {
+                        return {
+                            height: `${this.lineHeight}px`,
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            // listStylePosition: "inside",
+                            // marginLeft: "-16px"
+                        }
+
+                    }
+                } else {
+                    return {}
+                }
+            }
         },
         methods: {
             toggleShowFullBox(){
                 this.showFullBox = !this.showFullBox;
+                if (this.showFullBox){
+                    this.updateDimensions();
+                }
             },
             updateDimensions(){
+                let counter = 0
                 const id = setInterval(() => {
+                    counter++
                     if (this.$refs.warningBox){
                         this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
                         this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
+                        clearInterval(id)
+                    } else if (counter > 20){
                         clearInterval(id)
                     }
                 }, 100)
