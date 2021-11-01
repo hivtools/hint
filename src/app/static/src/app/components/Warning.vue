@@ -8,7 +8,7 @@
             <ul class="mb-0" ref="warningBox" id="warningBox">
                 <li v-for="warning in warnings" :key="warning.text"><div :style="lineStyling">{{ warning.text }}</div></li>
             </ul>
-            <p ref="line" class="mb-0 invisible">...</p>
+            <p ref="line" class="mb-0 invisible">Hidden line</p>
         </div>
         <button @click="toggleShowFullBox" v-if="warningsLengthy" class="btn btn-link alert-link">{{ buttonText }}</button>
     </div>                 
