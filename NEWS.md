@@ -1,6 +1,14 @@
-# hint 1.63.0
+# hint 1.64.0
 
 * Component to display warnings from hintr
+
+# hint 1.63.0
+
+* Display warning alert at bottom of Model Options step
+
+# hint 1.62.1
+
+* ADR upload fails if download attempted while in progress
 
 # hint 1.62.0
 
@@ -21,7 +29,6 @@
 # hint 1.58.0
 
 * Endpoint for posting error report to Teams
-
 
 # hint 1.57.1
 
