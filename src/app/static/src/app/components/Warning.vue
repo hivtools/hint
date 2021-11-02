@@ -4,10 +4,16 @@
             <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
             <span v-translate="headerText(origin)"></span>
         </h4>
+        <!-- The outer styled divs are the visible window of warnings and inside them are the 
+        full window of warnings (the warningBox), which is always rendered as html but with 
+        its overflow hidden by the outer box. The size of the outer box dynamically adjusts 
+        depending on the size of the warningBox and whether the user has clicked show more or less. -->
         <div :style="{ overflowY: 'hidden', height: `${this.renderedBoxHeight}px` }">
             <ul class="mb-0" ref="warningBox" id="warningBox">
                 <li v-for="warning in warnings" :key="warning.text"><div :style="lineStyling">{{ warning.text }}</div></li>
             </ul>
+            <!-- The below element will never be shown to the user but is used as a proxy to 
+            dynamically determine the height in pixels the warnings window should have.  -->
             <p ref="line" class="mb-0 invisible">Hidden line</p>
         </div>
         <button @click="toggleShowFullBox" v-if="warningsLengthy" class="btn btn-link alert-link">{{ buttonText }}</button>
@@ -48,14 +54,8 @@
         warningsLengthy: boolean;
         buttonText: string;
         maxBoxHeight: number;
-        // lineStyling: Dict<string>;
         lineStyling: {
-            height?: string,
-            // whiteSpace?: string,
-            // overflow?: string,
-            // textOverflow?: string,
-            // listStylePosition?: string,
-            // marginLeft?: string
+            height?: string
         };
     }
 
@@ -98,6 +98,10 @@
             buttonText(){
                 return i18next.t(this.showFullBox ? "showLess" : "showMore", { lng: this.currentLanguage });
             },
+            // The user has the option to configure the number of lines that will be displayed. 
+            // If the height of the warnings rendered are more than this number, each warning 
+            // will be truncated to one line and the show more button will appear. If there is 
+            // only one warning message, it will be truncated after the max number of lines
             lineStyling(){
                 if (this.warningsLengthy && !this.showFullBox){
                     if (this.warnings.length === 1){
@@ -113,9 +117,7 @@
                             height: `${this.lineHeight}px`,
                             whiteSpace: "nowrap",
                             overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            // listStylePosition: "inside",
-                            // marginLeft: "-16px"
+                            textOverflow: "ellipsis"
                         }
 
                     }
