@@ -28,7 +28,6 @@
     import { RootState } from "../root";
     import { Language } from "../store/translations/locales";
     import { Warning } from "../generated";
-    import { Dict } from "../types";
 
     interface Props {
         origin: string;
@@ -119,7 +118,6 @@
                             overflow: "hidden",
                             textOverflow: "ellipsis"
                         }
-
                     }
                 } else {
                     return {}
