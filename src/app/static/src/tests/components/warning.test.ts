@@ -47,6 +47,16 @@ describe("Warning component", () => {
         internal("warningBox", wb)
     }
 
+    it("empty warnings are not rendered and setIntervals are cleared", async (done) => {
+        const wrapper = createWrapper({origin: "anything", warnings: []})
+        const clearIntervalSpy = jest.spyOn(window, "clearInterval");
+        expect(wrapper.find("div").exists()).toBe(false);
+        setTimeout(() => {
+            expect(clearIntervalSpy.mock.calls[0][0]).toBeTruthy();
+            done();
+        }, 2200)
+    });
+
     it("renders warning messages", () => {
         const wrapper = createWrapper()
         expectTranslated(wrapper.find("h4"), 
@@ -56,6 +66,7 @@ describe("Warning component", () => {
         store)
         expect(wrapper.find("h4").find("alert-triangle-icon-stub").exists()).toBe(true);
         expect(wrapper.findAll("li").length).toBe(4);
+        expect(wrapper.find("li > div").attributes("style")).toBeUndefined();
         expect(wrapper.findAll("li").at(0).text()).toBe("a warning");
         expect(wrapper.findAll("li").at(1).text()).toBe("another warning");
         expect(wrapper.findAll("li").at(2).text()).toBe("third warning");

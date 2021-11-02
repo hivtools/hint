@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="warnings.length > 0">
         <h4 class="alert-heading pt-2">
             <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
             <span v-translate="headerText(origin)"></span>
