@@ -7,9 +7,8 @@
                v-translate="'faq'">
             </a>
             <a class="dropdown-item"
-               :href="bugReportLocation"
-               target="_blank"
-               v-translate="'contact'">
+               @click="toggleErrorReportModal"
+               v-translate="'reportIssues'">
             </a>
             <router-link id="accessibility-link"
                          to="/accessibility"
@@ -17,6 +16,7 @@
                          v-translate="'axe'">
             </router-link>
         </drop-down>
+        <error-report :open="errorReportOpen" @close="toggleErrorReportModal"></error-report>
     </div>
 </template>
 <script lang="ts">
@@ -26,31 +26,34 @@
     import {mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
-    import {switches} from "../../featureSwitches";
-
+    import ErrorReport from "../ErrorReport.vue";
 
     interface Computed {
         support: string
-        bugReportLocation: string
         currentLanguage: Language
         troubleFilename: string
         faqLocation: string
     }
 
-    export default Vue.extend<unknown, unknown, Computed, unknown>({
+    interface Data {
+        errorReportOpen: boolean
+    }
+
+    interface Methods {
+        toggleErrorReportModal: () => void
+    }
+
+    export default Vue.extend<Data, Methods, Computed, unknown>({
+        data: function () {
+            return {
+                errorReportOpen: false
+            }
+        },
         computed: {
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
             support() {
                 return i18next.t("support", this.currentLanguage)
-            },
-            bugReportLocation() {
-                if (switches.modelBugReport) {
-                    return "https://forms.office.com/Pages/ResponsePage.aspx?" +
-                        "id=B3WJK4zudUWDC0-CZ8PTB1APqcgcYz5DmSeKo5rlcfxUN0dWR1VMUEtHU0xDRU9HWFRNOFA5VVc3WCQlQCN0PWcu"
-                } else {
-                    return "https://forms.gle/QxCT1b4ScLqKPg6a7"
-                }
             },
             troubleFilename: mapStateProp<RootState, string>(null,
                 (state: RootState) => {
@@ -61,11 +64,17 @@
                     return filename;
                 }),
             faqLocation() {
-                return  "https://mrc-ide.github.io/naomi-troubleshooting/" + this.troubleFilename;
+                return "https://mrc-ide.github.io/naomi-troubleshooting/" + this.troubleFilename;
+            }
+        },
+        methods: {
+           toggleErrorReportModal() {
+                this.errorReportOpen = !this.errorReportOpen
             }
         },
         components: {
-            DropDown
+            DropDown,
+            ErrorReport
         }
     })
 </script>

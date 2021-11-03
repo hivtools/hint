@@ -9,7 +9,7 @@
                              v-translate="'projects'"
                              style="flex:none"></router-link>
                 <file-menu :title="title"></file-menu>
-                <span v-if="!isGuest" class="pr-2 mr-2 border-right">
+                <span v-if="!isGuest" class="pr-2 mr-2 border-right text-white">
                     <span v-translate="'loggedInAs'"></span> {{ user }}
                 </span>
                 <hintr-version-menu class="pr-2 mr-2 border-right"/>

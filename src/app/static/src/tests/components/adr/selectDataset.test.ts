@@ -951,6 +951,7 @@ describe("select dataset", () => {
             }
         );
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
+
         rendered.find("button").trigger("click");
 
         expect(rendered.findAll(TreeSelect).length).toBe(1);
@@ -995,4 +996,72 @@ describe("select dataset", () => {
 
         expect(rendered.find(Modal).find("button").attributes("disabled")).toBe("disabled");
     });
+
+    it("does not start polling if release is selected", async () => {
+        const store = getStore(
+            {
+                selectedDataset: {
+                    ...fakeDatasetWithRelease
+                }
+            }
+        );
+
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
+        const clearInterval = jest.spyOn(window, "clearInterval");
+        const setInterval = jest.spyOn(window, "setInterval");
+
+        rendered.find("button").trigger("click");
+
+        const treeSelect = rendered.find(TreeSelect)
+        expect(treeSelect.exists()).toBe(true);
+        treeSelect.vm.$emit("select", "id1")
+
+        await rendered.find(Modal).find("button").trigger("click");
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+
+        await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(clearInterval.mock.calls.length).toBe(0);
+        expect(setInterval.mock.calls.length).toBe(0);
+
+    });
+
+    it("starts polling for update if selected dataset is not release", async () => {
+        const store = getStore(
+            {
+                selectedDataset: {
+                    ...fakeDataset
+                }
+            }
+        );
+
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
+        const clearInterval = jest.spyOn(window, "clearInterval");
+        const setInterval = jest.spyOn(window, "setInterval");
+        const pollingId = (rendered.vm as any).pollingId;
+
+        rendered.find("button").trigger("click");
+
+        const treeSelect = rendered.find(TreeSelect)
+        expect(treeSelect.exists()).toBe(true);
+        treeSelect.vm.$emit("select", "id1")
+
+        await rendered.find(Modal).find("button").trigger("click");
+
+        await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(clearInterval.mock.calls[0][0]).toBe(pollingId);
+        expect(setInterval.mock.calls[0][0]).toBe((rendered.vm as any).refreshDatasetMetadata);
+        expect(setInterval.mock.calls[0][1]).toBe(10000);
+    });
+
 });
