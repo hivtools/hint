@@ -254,6 +254,8 @@ describe("root actions", () => {
 
         expect(commit.mock.calls.length).toEqual(1);
         expect(commit.mock.calls[0][0]).toEqual({"payload": "ok", "type": "ErrorReportSuccess"});
+        expect(dispatch.mock.calls.length).toEqual(1);
+        expect(dispatch.mock.calls[0][0]).toEqual("projects/cloneProject");
         expect(mockAxios.history.post.length).toEqual(1)
         expect(mockAxios.history.post[0].url).toEqual(url)
 

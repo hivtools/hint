@@ -118,7 +118,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             .withError(RootMutation.ErrorReportError)
             .postAndReturn("error-report", data)
             .then(() => {
-                if (rootState.errorReportSuccess) {
+                if (rootState.projects.currentProject && !rootState.errorReportError) {
                     dispatch("projects/cloneProject",
                         {
                             emails: ["naomi-support@imperial.ac.uk"],
