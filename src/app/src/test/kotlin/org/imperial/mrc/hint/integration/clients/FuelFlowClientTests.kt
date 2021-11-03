@@ -29,6 +29,13 @@ class FuelFlowClientTests
                 "test desc",
                 "test steps",
                 "test agent",
+                mapOf(
+                        "naomi" to "v1",
+                        "hintr" to "v2",
+                        "rrq" to "v3",
+                        "traduire" to "v4",
+                        "hint" to "v5"
+                ),
                 "2021-10-12T14:07:22.759Z"
         )
 
@@ -63,6 +70,13 @@ class FuelFlowClientTests
                 "test desc",
                 "test steps",
                 "test agent",
+                mapOf(
+                        "naomi" to "v1",
+                        "hintr" to "v2",
+                        "rrq" to "v3",
+                        "traduire" to "v4",
+                        "hint" to "v5"
+                ),
                 "2021-10-12T14:07:22.759Z"
         )
 

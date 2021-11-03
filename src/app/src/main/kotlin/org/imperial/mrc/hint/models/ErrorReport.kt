@@ -10,6 +10,7 @@ data class ErrorReport(
         val description: String,
         val stepsToReproduce: String,
         val browserAgent: String,
+        val versions: Map<String, String>,
         val timeStamp: String
 )
 
