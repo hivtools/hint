@@ -5,9 +5,32 @@ import {RootMutation} from "./mutations";
 import {LanguageActions} from "../language/language";
 import {changeLanguage} from "../language/actions";
 import i18next from "i18next";
+import {api} from "../../apiService";
+import {VersionInfo} from "../../generated";
+import {currentHintVersion} from "../../hintVersion";
 
-export interface RootActions extends LanguageActions<RootState>{
+
+export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
+    generateErrorReport: (store: ActionContext<RootState, RootState>,
+                          payload: ErrorReportManualDetails) => void;
+}
+
+export interface ErrorReportManualDetails {
+    section: string,
+    description: string,
+    stepsToReproduce: string,
+    email: string
+}
+
+export interface ErrorReport extends ErrorReportManualDetails {
+    country: string,
+    project: string | undefined,
+    browserAgent: string,
+    timeStamp: string,
+    jobId: string,
+    versions: VersionInfo,
+    errors: Error[]
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -72,5 +95,34 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
 
         await Promise.all(actions);
         commit({type: RootMutation.SetUpdatingLanguage, payload: false});
+    },
+
+    async generateErrorReport(context, payload) {
+        const {dispatch, rootState, getters} = context
+        const data = {
+            email: payload.email || rootState.currentUser,
+            country: rootState.baseline.country,
+            project: rootState.projects.currentProject?.name,
+            browserAgent: navigator.userAgent,
+            timeStamp: new Date().toISOString(),
+            jobId: rootState.modelRun.modelRunId,
+            description: payload.description,
+            section: payload.section,
+            stepsToReproduce: payload.stepsToReproduce,
+            versions: {hint: currentHintVersion, ...rootState.hintrVersion.hintrVersion as VersionInfo},
+            errors: getters.errors
+        }
+
+        await api<RootMutation, RootMutation>(context)
+            .withSuccess(RootMutation.ErrorReportSuccess)
+            .withError(RootMutation.ErrorReportError)
+            .postAndReturn("error-report", data)
+            .then(() => {
+                if (data.project && rootState.errorReportError == null) {
+                    dispatch("projects/cloneProject",
+                        {emails: ["naomi-support@imperial.ac.uk"],
+                            projectId: rootState.projects.currentProject!.id})
+                }
+            })
     }
 };

@@ -1,3 +1,7 @@
+# hint 1.64.0
+
+* Improve error reporting process
+
 # hint 1.63.0
 
 * Display warning alert at bottom of Model Options step
