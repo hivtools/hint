@@ -54,12 +54,12 @@ describe("Warning component", () => {
 
     it("renders warning messages", () => {
         const wrapper = createWrapper()
-        expectTranslated(wrapper.find("h4"), 
+        expectTranslated(wrapper.find("h5"), 
             "Model option validation raised the following warning(s)", 
             "La validation de l'option de modèle a généré le(s) avertissement(s) suivant(s)", 
             "A validação da opção de modelo gerou o (s) seguinte (s) aviso (s)", 
         store)
-        expect(wrapper.find("h4").find("alert-triangle-icon-stub").exists()).toBe(true);
+        expect(wrapper.find("h5").find("alert-triangle-icon-stub").exists()).toBe(true);
         expect(wrapper.findAll("li").length).toBe(4);
         expect(wrapper.find("li > div").attributes("style")).toBeUndefined();
         expect(wrapper.findAll("li").at(0).text()).toBe("a warning");
@@ -68,22 +68,22 @@ describe("Warning component", () => {
         expect(wrapper.findAll("li").at(3).text()).toBe("final warning");
       
         wrapper.setProps(mockPropsModelRun)
-        expectTranslated(wrapper.find("h4"), 
+        expectTranslated(wrapper.find("h5"), 
             "Model fit raised the following warning(s)", 
             "L'ajustement du modèle a soulevé le(s) avertissement(s) suivant(s)", 
             "O ajuste do modelo gerou o seguinte aviso (s)", 
         store)
-        expect(wrapper.find("h4").find("alert-triangle-icon-stub").exists()).toBe(true);
+        expect(wrapper.find("h5").find("alert-triangle-icon-stub").exists()).toBe(true);
         expect(wrapper.findAll("li").length).toBe(1);
         expect(wrapper.findAll("li").at(0).text()).toBe("model run warning");
 
         wrapper.setProps(mockPropsModelCalibrate)
-        expectTranslated(wrapper.find("h4"), 
+        expectTranslated(wrapper.find("h5"), 
             "Model calibration raised the following warning(s)", 
             "L'étalonnage du modèle a déclenché le(s) avertissement(s) suivant(s)", 
             "A calibração do modelo gerou o (s) seguinte (s) aviso (s)", 
         store)
-        expect(wrapper.find("h4").find("alert-triangle-icon-stub").exists()).toBe(true);
+        expect(wrapper.find("h5").find("alert-triangle-icon-stub").exists()).toBe(true);
         expect(wrapper.findAll("li").length).toBe(1);
         expect(wrapper.findAll("li").at(0).text()).toBe("calibrate warning");
 

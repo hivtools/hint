@@ -1,9 +1,9 @@
 <template>
     <div v-if="warnings.length > 0">
-        <h4 class="alert-heading pt-2">
-            <alert-triangle-icon size="1.5x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
+        <h5 class="alert-heading pt-2">
+            <alert-triangle-icon size="1.0x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
             <span v-translate="headerText(origin)"></span>
-        </h4>
+        </h5>
         <!-- The outer styled divs are the visible window of warnings and inside them are the 
         full window of warnings (the warningBox), which is always rendered as html but with 
         its overflow hidden by the outer box. The size of the outer box dynamically adjusts 
@@ -28,6 +28,7 @@
     import { RootState } from "../root";
     import { Language } from "../store/translations/locales";
     import { Warning } from "../generated";
+    import { Dict } from "../types";
 
     interface Props {
         origin: string;
@@ -53,9 +54,7 @@
         warningsLengthy: boolean;
         buttonText: string;
         maxBoxHeight: number;
-        lineStyling: {
-            height?: string
-        };
+        lineStyling: Dict<string | number | undefined>;
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
