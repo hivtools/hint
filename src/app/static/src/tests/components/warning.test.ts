@@ -47,14 +47,9 @@ describe("Warning component", () => {
         internal("warningBox", wb)
     }
 
-    it("empty warnings are not rendered and setIntervals are cleared", async (done) => {
+    it("empty warnings are not rendered and setIntervals are cleared", () => {
         const wrapper = createWrapper({origin: "anything", warnings: []})
-        const clearIntervalSpy = jest.spyOn(window, "clearInterval");
         expect(wrapper.find("div").exists()).toBe(false);
-        setTimeout(() => {
-            expect(clearIntervalSpy.mock.calls[0][0]).toBeTruthy();
-            done();
-        }, 2200)
     });
 
     it("renders warning messages", () => {
@@ -114,8 +109,8 @@ describe("Warning component", () => {
                     "Mostre menos", 
                 store)
                 done();
-            }, 200)
-        }, 200)
+            })
+        })
     });
 
     it("does not show more/less buttons if warnings are not lengthy", async (done) => {
@@ -125,7 +120,7 @@ describe("Warning component", () => {
         setTimeout(() => {
             expect(wrapper.find("button").exists()).toBe(false)
             done();
-        }, 200)
+        })
     });
 
     it("multiple warnings get truncated to one line each if lengthy", async (done) => {
@@ -136,7 +131,7 @@ describe("Warning component", () => {
             expect(wrapper.findAll("li").length).toBe(4);
             expect(wrapper.find("li > div").attributes("style")).toBe("height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;");
             done();
-        }, 200)
+        })
     });
 
     it("single warnings get truncated to multiple lines if lengthy", async (done) => {
@@ -147,7 +142,7 @@ describe("Warning component", () => {
             expect(wrapper.findAll("li").length).toBe(1);
             expect(wrapper.find("li > div").attributes("style")).toBe("height: 48px; overflow: hidden; display: -webkit-box;");
             done();
-        }, 200)
+        })
     });
 
 })

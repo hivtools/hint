@@ -131,18 +131,12 @@
                     this.updateDimensions();
                 }
             },
-            updateDimensions(){
-                let counter = 0
-                const id = setInterval(() => {
-                    counter++
-                    if (this.$refs.warningBox){
-                        this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
-                        this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
-                        clearInterval(id)
-                    } else if (counter > 20){
-                        clearInterval(id)
-                    }
-                }, 100)
+            async updateDimensions(){
+                await Vue.nextTick()
+                if (this.$refs.warningBox){
+                    this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
+                    this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
+                }
             },
             headerText(key){
                 const headers: { [key: string]: string } = {
