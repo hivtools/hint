@@ -294,7 +294,7 @@ describe("root actions", () => {
         });
     });
 
-    it("can return error when error report failed", async () => {
+    it("can return error and default placeholder when error report failed", async () => {
         const url = "error-report"
 
         mockAxios.onPost(url)
