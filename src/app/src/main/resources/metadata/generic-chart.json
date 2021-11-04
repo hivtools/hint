@@ -55,16 +55,6 @@
             },
             {
               "data": {
-                "columnId": "quarter",
-                "labelColumn": "quarter"
-              },
-              "header": {
-                "type": "columnLabel",
-                "column": "quarter"
-              }
-            },
-            {
-              "data": {
                 "columnId": "value"
               },
               "header": {
@@ -167,7 +157,7 @@
     "subplots": {
       "columns": 3,
       "distinctColumn": "area_name",
-      "heightPerRow": 180
+      "heightPerRow": 140
     },
     "chartConfig": [
       {
