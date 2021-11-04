@@ -293,7 +293,7 @@ describe("root actions", () => {
         });
     });
 
-    it("can use default placeholder when some error report data is empty", async () => {
+    it("sends default values when country, project or jobId are missing", async () => {
         const url = "error-report"
 
         mockAxios.onPost(url)
@@ -362,7 +362,7 @@ describe("root actions", () => {
         expect(data.errors).toStrictEqual(expected.errors)
     });
 
-    it("can return error when error report failed", async () => {
+    it("can return error when error report fails", async () => {
         const url = "error-report"
 
         mockAxios.onPost(url)
