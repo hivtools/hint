@@ -212,7 +212,7 @@ describe("root actions", () => {
 
     it("posts error report to teams", async () => {
 
-        const url = `error-report`
+        const url = "error-report"
 
         mockAxios.onPost(url)
             .reply(200, mockSuccess("ok"));
@@ -237,8 +237,9 @@ describe("root actions", () => {
             })
         });
 
+        const err = mockError("err")
         const getters = {
-            errors: []
+            errors: [err]
         }
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -326,10 +327,10 @@ describe("root actions", () => {
 
         const expected = {
             email: "some.user@example.com",
-            country: "",
-            projectName: "",
+            country: "no associated country",
+            projectName: "no associated project",
             timeStamp: new Date(),
-            jobId: "",
+            jobId: "no associated jobId",
             description: "",
             section: "",
             stepsToReproduce: "",
@@ -339,9 +340,9 @@ describe("root actions", () => {
         const data = JSON.parse(mockAxios.history.post[0].data) as ErrorReport
 
         expect(data.email).toStrictEqual(expected.email)
-        expect(data.country).toStrictEqual("no associated country")
-        expect(data.projectName).toBe("no associated project")
-        expect(data.jobId).toStrictEqual("no associated jobId")
+        expect(data.country).toStrictEqual(expected.country)
+        expect(data.projectName).toBe(expected.projectName)
+        expect(data.jobId).toStrictEqual(expected.jobId)
         expect(data.browserAgent).toContain("Mozilla")
         expect(new Date(data.timeStamp).getDate()).toBe(expected.timeStamp.getDate());
         expect(data.description).toStrictEqual(expected.description)
