@@ -91,58 +91,48 @@ describe("Warning component", () => {
         expect(hiddenWarning.find("p").text()).toBe("Hidden line");
     });
 
-    it("renders show more/less buttons if warnings are lengthy", async (done) => {
+    it("renders show more/less buttons if warnings are lengthy", async () => {
         const wrapper = createWrapper()
         setDivHeights(wrapper, 24, 96)
         wrapper.setProps(mockPropsModelRun)
-        setTimeout(() => {
-            expectTranslated(wrapper.find("button"), 
-                "Show more", 
-                "Montrer plus", 
-                "Mostre mais", 
-            store)
-            wrapper.find("button").trigger("click")
-            setTimeout(() => {
-                expectTranslated(wrapper.find("button"), 
-                    "Show less", 
-                    "Montrer moins", 
-                    "Mostre menos", 
-                store)
-                done();
-            })
-        })
+        await Vue.nextTick()
+        expectTranslated(wrapper.find("button"), 
+            "Show more", 
+            "Montrer plus", 
+            "Mostre mais", 
+        store)
+        await wrapper.find("button").trigger("click")
+        expectTranslated(wrapper.find("button"), 
+            "Show less", 
+            "Montrer moins", 
+            "Mostre menos", 
+        store)
     });
 
-    it("does not show more/less buttons if warnings are not lengthy", async (done) => {
+    it("does not show more/less buttons if warnings are not lengthy", async () => {
         const wrapper = createWrapper()
         setDivHeights(wrapper, 24, 24)
         wrapper.setProps(mockPropsModelRun)
-        setTimeout(() => {
-            expect(wrapper.find("button").exists()).toBe(false)
-            done();
-        })
+        await Vue.nextTick()
+        expect(wrapper.find("button").exists()).toBe(false)
     });
 
-    it("multiple warnings get truncated to one line each if lengthy", async (done) => {
+    it("multiple warnings get truncated to one line each if lengthy", async () => {
         const wrapper = createWrapper(mockPropsModelRun)
         setDivHeights(wrapper, 24, 96)
         wrapper.setProps(mockPropsModelOptions)
-        setTimeout(() => {
-            expect(wrapper.findAll("li").length).toBe(4);
-            expect(wrapper.find("li > div").attributes("style")).toBe("height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;");
-            done();
-        })
+        await Vue.nextTick()
+        expect(wrapper.findAll("li").length).toBe(4);
+        expect(wrapper.find("li > div").attributes("style")).toBe("height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;");
     });
 
-    it("single warnings get truncated to multiple lines if lengthy", async (done) => {
+    it("single warnings get truncated to multiple lines if lengthy", async () => {
         const wrapper = createWrapper()
         setDivHeights(wrapper, 24, 96)
         wrapper.setProps(mockPropsModelRun)
-        setTimeout(() => {
-            expect(wrapper.findAll("li").length).toBe(1);
-            expect(wrapper.find("li > div").attributes("style")).toBe("height: 48px; overflow: hidden; display: -webkit-box;");
-            done();
-        })
+        await Vue.nextTick()
+        expect(wrapper.findAll("li").length).toBe(1);
+        expect(wrapper.find("li > div").attributes("style")).toBe("height: 48px; overflow: hidden; display: -webkit-box;");
     });
 
 })
