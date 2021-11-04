@@ -1,6 +1,6 @@
 # hint 1.64.2
 
-* fix error report anomaly
+* add default placeholder to some error report data
 
 # hint 1.64.1
 
