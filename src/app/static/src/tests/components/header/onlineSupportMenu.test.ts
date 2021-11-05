@@ -5,12 +5,12 @@ import {emptyState} from "../../../app/root";
 import {actions} from "../../../app/store/root/actions";
 import {mutations} from "../../../app/store/root/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {switches} from "../../../app/featureSwitches";
 import {Language} from "../../../app/store/translations/locales";
 import {expectTranslated} from "../../testHelpers";
 import DropDown from "../../../app/components/header/DropDown.vue";
 import VueRouter from 'vue-router'
-
+import ErrorReport from "../../../app/components/ErrorReport.vue";
+import {mockProjectsState, mockStepperState} from "../../mocks";
 
 const localVue = createLocalVue()
 localVue.use(VueRouter)
@@ -22,16 +22,24 @@ describe("Online support menu", () => {
         const store = new Vuex.Store({
             state: emptyState(),
             actions: actions,
-            mutations: mutations
+            mutations: mutations,
+            modules: {
+                stepper: {
+                    namespaced: true,
+                    state: mockStepperState()
+                },
+                projects: {
+                    namespaced: true,
+                    state: mockProjectsState()
+                }
+            },
+            getters: {
+                isGuest: () => false
+            }
         });
         registerTranslations(store);
         return store;
     };
-
-    const oldModelBugReportValue = switches.modelBugReport;
-    afterEach(() => {
-        switches.modelBugReport = oldModelBugReportValue;
-    });
 
     it("renders drop down with delay property true", () => {
         const store = createStore();
@@ -113,8 +121,7 @@ describe("Online support menu", () => {
         expect(link.attributes("href")).toBe("https://mrc-ide.github.io/naomi-troubleshooting/index-en.html");
     });
 
-    it("renders Contact menu-item text and link when modelBugReport switch is true", () => {
-        switches.modelBugReport = true;
+    it("renders error report widget", () => {
 
         const store = createStore();
         const wrapper = shallowMount(OnlineSupportMenu, {
@@ -123,33 +130,15 @@ describe("Online support menu", () => {
             router
         });
 
-        const link = wrapper.findAll(".dropdown-item").at(1);
-        const expectedHref =
-            "https://forms.office.com/Pages/ResponsePage.aspx?" +
-                "id=B3WJK4zudUWDC0-CZ8PTB1APqcgcYz5DmSeKo5rlcfxUN0dWR1VMUEtHU0xDRU9HWFRNOFA5VVc3WCQlQCN0PWcu";
-
-        expect(link.attributes("href")).toBe(expectedHref);
-        expect(link.attributes("target")).toBe("_blank");
-        expectTranslated(link, "Contact", "Contact", "Contacto",  store as any);
-
-    });
-
-    it("renders Contact menu item with old bug report href when modelBugReport switch is false", () => {
-        switches.modelBugReport = false;
-
-        const store = createStore();
-        const wrapper = shallowMount(OnlineSupportMenu, {
-            store,
-            localVue,
-            router
-        });
+        expect(wrapper.findAll(ErrorReport).length).toBe(1);
+        expect(wrapper.find(ErrorReport).props("open")).toBe(false);
 
         const link = wrapper.findAll(".dropdown-item").at(1);
-        const expectedHref = "https://forms.gle/QxCT1b4ScLqKPg6a7";
+        expectTranslated(link, "Report issues", "Signaler des problèmes", "Reportar problemas", store as any);
 
-        expect(link.attributes("href")).toBe(expectedHref);
-        expect(link.attributes("target")).toBe("_blank");
-        expectTranslated(link, "Contact", "Contact", "Contacto", store as any);
+        link.trigger("click");
+
+        expect(wrapper.find(ErrorReport).props("open")).toBe(true);
     });
 
     it("renders accessibility menu-item text and link", () => {
@@ -164,4 +153,5 @@ describe("Online support menu", () => {
         expect(link.attributes("to")).toBe("/accessibility");
         expectTranslated(link, "Accessibility", "Accessibilité", "Acessibilidade", store as any);
     });
+
 });

@@ -1,6 +1,14 @@
-# hint 1.64.0
+# hint 1.65.0
 
 * Show Input Time Series plots
+
+# hint 1.64.1
+
+* Update error report object in backend include version info 
+
+# hint 1.64.0
+
+* Improve error reporting process
 
 # hint 1.63.0
 
