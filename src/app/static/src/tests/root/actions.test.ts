@@ -390,33 +390,6 @@ describe("root actions", () => {
         const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
         expect(commit.mock.calls[0][0]).toEqual({payload: expectedError, type: RootMutation.ErrorReportError});
         expect(dispatch.mock.calls.length).toBe(0)
-        expect(mockAxios.history.post.length).toEqual(1)
-        expect(mockAxios.history.post[0].url).toEqual(url)
-
-        const expected = {
-            email: "some.user@example.com",
-            country: "no associated country",
-            projectName: "no associated project",
-            timeStamp: new Date(),
-            jobId: "no associated jobId",
-            description: "",
-            section: "",
-            stepsToReproduce: "",
-            errors: []
-        };
-
-        const data = JSON.parse(mockAxios.history.post[0].data) as ErrorReport
-
-        expect(data.email).toStrictEqual(expected.email)
-        expect(data.country).toStrictEqual(expected.country)
-        expect(data.projectName).toBe(expected.projectName)
-        expect(data.jobId).toStrictEqual(expected.jobId)
-        expect(data.browserAgent).toContain("Mozilla")
-        expect(new Date(data.timeStamp).getDate()).toBe(expected.timeStamp.getDate());
-        expect(data.description).toStrictEqual(expected.description)
-        expect(data.section).toStrictEqual(expected.section)
-        expect(data.stepsToReproduce).toStrictEqual(expected.stepsToReproduce)
-        expect(data.errors).toStrictEqual(expected.errors)
     });
 
     it("changeLanguage fetches plotting metadata and calibrate result", async () => {
