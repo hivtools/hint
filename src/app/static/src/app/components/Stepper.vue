@@ -87,6 +87,7 @@
         loading: boolean,
         warnings: (stepName: string) => StepWarnings
     }
+    // test
 
     const namespace = 'stepper';
 
