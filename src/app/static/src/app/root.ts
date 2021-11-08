@@ -164,7 +164,7 @@ export const emptyState = (): RootState => {
 const existingState = localStorageManager.getState();
 
 export const storeOptions: StoreOptions<RootState> = {
-    state: {...emptyState(), ...existingState && {language: existingState.language}},
+    state: {...emptyState(), ...existingState},
     modules: {
         adr,
         genericChart,
