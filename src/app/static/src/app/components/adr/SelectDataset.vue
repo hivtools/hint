@@ -83,7 +83,7 @@
             </template>
         </modal>
         <reset-confirmation
-            v-if="showConfirmation"
+            v-if="!dataExplorationMode && showConfirmation"
             :continue-editing="continueEditing"
             :cancel-editing="cancelEditing"
             :open="showConfirmation">
@@ -99,7 +99,7 @@
         mapActionByName,
         mapMutationByName,
         mapStateProp,
-        mapGetterByName,
+        mapGetterByName, mapStatePropByName,
     } from "../../utils";
     import {RootState} from "../../root";
     import Modal from "../Modal.vue";
@@ -144,6 +144,7 @@
     }
 
     interface Computed {
+        dataExplorationMode: boolean;
         datasets: any[];
         selectedRelease: Release | null;
         releaseName: string | null;
@@ -205,10 +206,13 @@
         },
         directives: {tooltip: VTooltip},
         computed: {
-            editsRequireConfirmation: mapGetterByName(
-                "stepper",
-                "editsRequireConfirmation"
-            ),
+            dataExplorationMode: mapStatePropByName(null, "dataExplorationMode"),
+            editsRequireConfirmation() {
+                if (this.dataExplorationMode){
+                    return false
+                }
+                return this.$store.getters["stepper/editsRequireConfirmation"]
+            },
             hasShapeFile: mapStateProp<BaselineState, boolean>(
                 "baseline",
                 (state: BaselineState) => !!state.shape

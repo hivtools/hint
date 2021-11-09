@@ -5,7 +5,7 @@
                 <div class="navbar-header">
                     {{ title }}
                 </div>
-                <div style="flex: 1 1 auto;"><a href="/">Naomi</a></div>
+                <div style="flex: 1 1 auto;" class="ml-2"><a href="/">Run model</a></div>
                 <span v-if="!isGuest" class="pr-2 mr-2 border-right text-white">
                     <span v-translate="'loggedInAs'"></span> {{ user }}
                 </span>

@@ -17,6 +17,7 @@
 </div>
 <script>
     var currentUser = "${user}"
+    var currentMode = "naomi"
 </script>
 </body>
 </html>

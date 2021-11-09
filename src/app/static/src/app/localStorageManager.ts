@@ -30,6 +30,7 @@ export const serialiseState = (rootState: RootState): Partial<RootState> => {
 };
 
 declare const currentUser: string;
+declare const currentMode: string;
 
 export class LocalStorageManager {
 
@@ -46,6 +47,10 @@ export class LocalStorageManager {
         if (currentUser != window.localStorage.getItem("user")) {
             localStorage.clear();
             localStorage.setItem("user", currentUser);
+        }
+        if (currentMode != window.localStorage.getItem("mode")) {
+            localStorage.clear();
+            localStorage.setItem("mode", currentMode);
         }
         const item = window.localStorage.getItem(appStateKey);
         if (item) {
