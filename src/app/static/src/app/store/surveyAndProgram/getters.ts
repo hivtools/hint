@@ -5,6 +5,7 @@ import {DisplayFilter} from "../../types";
 import {FilterOption} from "../../generated";
 import {rootOptionChildren} from "../../utils";
 import {Language} from "../translations/locales";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 function response(state: SurveyAndProgramState) {
     switch (state.selectedDataType) {
@@ -39,11 +40,11 @@ export const getters = {
         return res ? res.data : null;
     },
 
-    countryAreaFilterOption: (state: SurveyAndProgramState, getters: any, rootState: RootState): FilterOption => {
+    countryAreaFilterOption: (state: SurveyAndProgramState, getters: any, rootState: DataExplorationState): FilterOption => {
         return rootState.baseline.shape!.filters!.regions as FilterOption;
     },
 
-    filters: (state: SurveyAndProgramState, getters: any, rootState: RootState): DisplayFilter[] => {
+    filters: (state: SurveyAndProgramState, getters: any, rootState: DataExplorationState): DisplayFilter[] => {
         const result = [] as DisplayFilter[];
 
         if (state.selectedDataType == null) {

@@ -11,6 +11,7 @@ import {
 } from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface MetadataState {
     plottingMetadataError: Error | null
@@ -32,7 +33,7 @@ export const metadataGetters = {
     complete: (state: MetadataState) => {
         return !!state.plottingMetadata
     },
-    sapIndicatorsMetadata: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
+    sapIndicatorsMetadata: (state: MetadataState, getters: any, rootState: DataExplorationState, rootGetters: any) => {
         const plottingMetadata = state.plottingMetadata;
 
         if (!plottingMetadata) {
@@ -56,7 +57,7 @@ export const metadataGetters = {
 
         return (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
     },
-    outputIndicatorsMetadata: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
+    outputIndicatorsMetadata: (state: MetadataState, getters: any, rootState: DataExplorationState, rootGetters: any) => {
         return (state.plottingMetadata && state.plottingMetadata.output.choropleth &&
             state.plottingMetadata.output.choropleth.indicators) || [];
     }
@@ -65,7 +66,7 @@ export const metadataGetters = {
 const namespaced = true;
 const existingState = localStorageManager.getState();
 
-export const metadata: Module<MetadataState, RootState> = {
+export const metadata: Module<MetadataState, DataExplorationState> = {
     namespaced,
     state: {...initialMetadataState(), ...existingState && existingState.metadata},
     actions,

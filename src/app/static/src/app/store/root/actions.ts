@@ -8,29 +8,14 @@ import i18next from "i18next";
 import {api} from "../../apiService";
 import {VersionInfo} from "../../generated";
 import {currentHintVersion} from "../../hintVersion";
+import {ErrorReportManualDetails} from "../../types";
+import {LanguageMutation} from "../language/mutations";
 
 
 export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
     generateErrorReport: (store: ActionContext<RootState, RootState>,
                           payload: ErrorReportManualDetails) => void;
-}
-
-export interface ErrorReportManualDetails {
-    section: string,
-    description: string,
-    stepsToReproduce: string,
-    email: string
-}
-
-export interface ErrorReport extends ErrorReportManualDetails {
-    country: string,
-    projectName: string | undefined,
-    browserAgent: string,
-    timeStamp: string,
-    jobId: string,
-    versions: VersionInfo,
-    errors: Error[]
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -80,7 +65,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             return;
         }
 
-        commit({type: RootMutation.SetUpdatingLanguage, payload: true});
+        commit({type: LanguageMutation.SetUpdatingLanguage, payload: true});
         await changeLanguage<RootState>(context, payload);
 
         const actions: Promise<unknown>[] = [];
@@ -94,7 +79,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         }
 
         await Promise.all(actions);
-        commit({type: RootMutation.SetUpdatingLanguage, payload: false});
+        commit({type: LanguageMutation.SetUpdatingLanguage, payload: false});
     },
 
     async generateErrorReport(context, payload) {

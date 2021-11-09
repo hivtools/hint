@@ -21,7 +21,8 @@
                      :uploading="uploading"
                      @uploading="handleUploading"></file-upload>
         <error-alert v-if="hasError" :error="error"></error-alert>
-        <reset-confirmation :continue-editing="deleteSelectedFile"
+        <reset-confirmation v-if="!dataExplorationMode"
+                            :continue-editing="deleteSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showDeleteConfirmation"></reset-confirmation>
     </div>
@@ -33,7 +34,7 @@
     import Tick from "../Tick.vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import ResetConfirmation from "../ResetConfirmation.vue";
-    import {mapGetterByName} from "../../utils";
+    import {mapStatePropByName} from "../../utils";
     import {Error} from "../../generated";
 
     interface Data {
@@ -44,6 +45,7 @@
     interface Computed {
         hasError: boolean
         editsRequireConfirmation: boolean
+        dataExplorationMode: boolean
     }
 
     interface Methods {
@@ -85,7 +87,13 @@
             }
         },
         computed: {
-            editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
+            dataExplorationMode: mapStatePropByName(null, "dataExplorationMode"),
+            editsRequireConfirmation() {
+                if (this.dataExplorationMode){
+                    return false
+                }
+                return this.$store.getters["stepper/editsRequireConfirmation"]
+            },
             hasError: function () {
                 return !!this.error
             }

@@ -34,6 +34,16 @@ class HomeController(
         return "index"
     }
 
+    @GetMapping(value = ["/explore"])
+    fun explore(model: Model): String
+    {
+        val userProfile = session.getUserProfile()
+        versionRepository.saveVersion(session.getVersionId(), null)
+        model["title"] = "Naomi Data Exploration"
+        model["user"] = userProfile.id
+        return "data-exploration"
+    }
+
     @GetMapping("/metrics", produces = ["text/plain"])
     fun metrics(): ResponseEntity<String>
     {

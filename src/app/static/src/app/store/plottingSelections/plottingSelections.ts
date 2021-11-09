@@ -5,6 +5,7 @@ import {RootState} from "../../root";
 import {mutations} from "./mutations";
 import {getters} from "./getters";
 import {Dict} from "../../types";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface PlottingSelectionsState {
     calibratePlot: BarchartSelections,
@@ -140,7 +141,7 @@ export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
 const namespaced = true;
 const existingState = localStorageManager.getState();
 
-export const plottingSelections: Module<PlottingSelectionsState, RootState> = {
+export const plottingSelections: Module<PlottingSelectionsState, DataExplorationState> = {
     namespaced,
     state: {...initialPlottingSelectionsState(), ...existingState && existingState.plottingSelections},
     mutations,

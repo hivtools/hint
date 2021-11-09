@@ -1,27 +1,27 @@
 import {ActionContext, ActionTree, Dispatch} from 'vuex';
 import {BaselineState} from "./baseline";
-import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineResponse} from "../../generated";
 import {BaselineMutation} from "./mutations";
 import qs from "qs";
 import {findResource, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
 import {DatasetResourceSet} from "../../types";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface BaselineActions {
-    refreshDatasetMetadata: (store: ActionContext<BaselineState, RootState>) => void
-    importPJNZ: (store: ActionContext<BaselineState, RootState>, url: string) => void
-    importShape: (store: ActionContext<BaselineState, RootState>, url: string) => void,
-    importPopulation: (store: ActionContext<BaselineState, RootState>, url: string) => void,
-    uploadPJNZ: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void
-    uploadShape: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void,
-    uploadPopulation: (store: ActionContext<BaselineState, RootState>, formData: FormData) => void,
-    deletePJNZ: (store: ActionContext<BaselineState, RootState>) => void
-    deleteShape: (store: ActionContext<BaselineState, RootState>) => void,
-    deleteAll: (store: ActionContext<BaselineState, RootState>) => void,
-    deletePopulation: (store: ActionContext<BaselineState, RootState>) => void,
-    getBaselineData: (store: ActionContext<BaselineState, RootState>) => void
-    validate: (store: ActionContext<BaselineState, RootState>) => void
+    refreshDatasetMetadata: (store: ActionContext<BaselineState, DataExplorationState>) => void
+    importPJNZ: (store: ActionContext<BaselineState, DataExplorationState>, url: string) => void
+    importShape: (store: ActionContext<BaselineState, DataExplorationState>, url: string) => void,
+    importPopulation: (store: ActionContext<BaselineState, DataExplorationState>, url: string) => void,
+    uploadPJNZ: (store: ActionContext<BaselineState, DataExplorationState>, formData: FormData) => void
+    uploadShape: (store: ActionContext<BaselineState, DataExplorationState>, formData: FormData) => void,
+    uploadPopulation: (store: ActionContext<BaselineState, DataExplorationState>, formData: FormData) => void,
+    deletePJNZ: (store: ActionContext<BaselineState, DataExplorationState>) => void
+    deleteShape: (store: ActionContext<BaselineState, DataExplorationState>) => void,
+    deleteAll: (store: ActionContext<BaselineState, DataExplorationState>) => void,
+    deletePopulation: (store: ActionContext<BaselineState, DataExplorationState>) => void,
+    getBaselineData: (store: ActionContext<BaselineState, DataExplorationState>) => void
+    validate: (store: ActionContext<BaselineState, DataExplorationState>) => void
 }
 
 const uploadCallback = (dispatch: Dispatch, response: any) => {
@@ -37,7 +37,7 @@ interface UploadImportOptions {
 }
 
 
-async function uploadOrImportPJNZ(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions, filename: string) {
+async function uploadOrImportPJNZ(context: ActionContext<BaselineState, DataExplorationState>, options: UploadImportOptions, filename: string) {
     const {commit, dispatch, state} = context;
     commit({type: BaselineMutation.PJNZUpdated, payload: null});
     await api<BaselineMutation, BaselineMutation>(context)
@@ -56,7 +56,7 @@ async function uploadOrImportPJNZ(context: ActionContext<BaselineState, RootStat
         });
 }
 
-async function uploadOrImportPopulation(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions, filename: string) {
+async function uploadOrImportPopulation(context: ActionContext<BaselineState, DataExplorationState>, options: UploadImportOptions, filename: string) {
     const {commit, dispatch} = context;
     commit({type: BaselineMutation.PopulationUpdated, payload: null});
     await api<BaselineMutation, BaselineMutation>(context)
@@ -72,7 +72,7 @@ async function uploadOrImportPopulation(context: ActionContext<BaselineState, Ro
         });
 }
 
-async function uploadOrImportShape(context: ActionContext<BaselineState, RootState>, options: UploadImportOptions, filename: string) {
+async function uploadOrImportShape(context: ActionContext<BaselineState, DataExplorationState>, options: UploadImportOptions, filename: string) {
     const {commit, dispatch} = context;
     commit({type: BaselineMutation.ShapeUpdated, payload: null});
     await api<BaselineMutation, BaselineMutation>(context)
@@ -88,7 +88,7 @@ async function uploadOrImportShape(context: ActionContext<BaselineState, RootSta
         });
 }
 
-export const actions: ActionTree<BaselineState, RootState> & BaselineActions = {
+export const actions: ActionTree<BaselineState, DataExplorationState> & BaselineActions = {
 
     async refreshDatasetMetadata(context) {
         const {commit, state, rootState} = context

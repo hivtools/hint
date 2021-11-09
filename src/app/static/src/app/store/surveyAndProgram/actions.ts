@@ -1,26 +1,26 @@
 import {ActionContext, ActionTree, Commit} from 'vuex';
-import {RootState} from "../../root";
 import {DataType, SurveyAndProgramState} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
 import qs from 'qs';
 import {getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface SurveyAndProgramActions {
-    importSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
-    importProgram: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
-    importANC: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
-    uploadSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void,
-    uploadProgram: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void,
-    uploadANC: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void
-    getSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, RootState>) => void;
-    deleteSurvey: (store: ActionContext<SurveyAndProgramState, RootState>) => void
-    deleteProgram: (store: ActionContext<SurveyAndProgramState, RootState>) => void
-    deleteANC: (store: ActionContext<SurveyAndProgramState, RootState>) => void
-    deleteAll: (store: ActionContext<SurveyAndProgramState, RootState>) => void
-    selectDataType: (store: ActionContext<SurveyAndProgramState, RootState>, payload: DataType) => void
-    validateSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, RootState>) => void;
+    importSurvey: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, url: string) => void,
+    importProgram: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, url: string) => void,
+    importANC: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, url: string) => void,
+    uploadSurvey: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, formData: FormData) => void,
+    uploadProgram: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, formData: FormData) => void,
+    uploadANC: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, formData: FormData) => void
+    getSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void;
+    deleteSurvey: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
+    deleteProgram: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
+    deleteANC: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
+    deleteAll: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
+    selectDataType: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, payload: DataType) => void
+    validateSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void;
 }
 
 function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
@@ -33,7 +33,7 @@ interface UploadImportOptions {
     payload: FormData | string
 }
 
-async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions,
+async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, DataExplorationState>, options: UploadImportOptions,
                                  filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
@@ -52,7 +52,7 @@ async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, R
         });
 }
 
-async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions,
+async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramState, DataExplorationState>, options: UploadImportOptions,
                                      filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
@@ -71,7 +71,7 @@ async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramStat
         });
 }
 
-async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions,
+async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState, DataExplorationState>, options: UploadImportOptions,
                                     filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
@@ -90,7 +90,7 @@ async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState
         });
 }
 
-export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndProgramActions = {
+export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & SurveyAndProgramActions = {
 
     selectDataType(context, payload) {
         const {commit} = context;

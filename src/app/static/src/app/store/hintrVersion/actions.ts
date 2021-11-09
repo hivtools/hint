@@ -1,17 +1,16 @@
-import Vue from "vue";
 import { ActionContext, ActionTree } from "vuex";
 import { api } from "../../apiService";
-import { RootState } from "../../root";
 import { HintrVersionState } from "./hintrVersion";
 import { HintrVersionMutation } from "./mutations";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export type HintrVersionActionTypes = "HintrVersionFetched"
 
 export interface HintrVersionActions {
-    getHintrVersion: (store: ActionContext<HintrVersionState, RootState>) => void
+    getHintrVersion: (store: ActionContext<HintrVersionState, DataExplorationState>) => void
 }
 
-export const actions: ActionTree<HintrVersionState, RootState> & HintrVersionActions = {
+export const actions: ActionTree<HintrVersionState, DataExplorationState> & HintrVersionActions = {
 
     async getHintrVersion(context) 
     {

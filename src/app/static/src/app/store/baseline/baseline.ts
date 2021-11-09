@@ -5,6 +5,7 @@ import {ReadyState, RootState} from "../../root";
 import {NestedFilterOption, PjnzResponse, PopulationResponse, ShapeResponse, Error} from "../../generated";
 import {Dataset, Release, Dict} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface BaselineState extends ReadyState {
     selectedDataset: Dataset | null
@@ -64,7 +65,7 @@ const namespaced = true;
 
 const existingState = localStorageManager.getState();
 
-export const baseline: Module<BaselineState, RootState> = {
+export const baseline: Module<BaselineState, DataExplorationState> = {
     namespaced,
     state: {...initialBaselineState(), ...existingState && existingState.baseline},
     getters,

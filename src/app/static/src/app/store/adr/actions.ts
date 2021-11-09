@@ -7,16 +7,17 @@ import {ADRMutation} from "./mutations";
 import {datasetFromMetadata} from "../../utils";
 import {Organization, Release} from "../../types";
 import {BaselineMutation} from "../baseline/mutations";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface ADRActions {
-    fetchKey: (store: ActionContext<ADRState, RootState>) => void;
-    saveKey: (store: ActionContext<ADRState, RootState>, key: string) => void;
-    deleteKey: (store: ActionContext<ADRState, RootState>) => void;
-    getDatasets: (store: ActionContext<ADRState, RootState>) => void;
-    getReleases: (store: ActionContext<ADRState, RootState>, id: string) => void;
-    getDataset: (store: ActionContext<ADRState, RootState>, payload: GetDatasetPayload) => void;
-    getSchemas: (store: ActionContext<ADRState, RootState>) => void;
-    getUserCanUpload: (store: ActionContext<ADRState, RootState>) => void;
+    fetchKey: (store: ActionContext<ADRState, DataExplorationState>) => void;
+    saveKey: (store: ActionContext<ADRState, DataExplorationState>, key: string) => void;
+    deleteKey: (store: ActionContext<ADRState, DataExplorationState>) => void;
+    getDatasets: (store: ActionContext<ADRState, DataExplorationState>) => void;
+    getReleases: (store: ActionContext<ADRState, DataExplorationState>, id: string) => void;
+    getDataset: (store: ActionContext<ADRState, DataExplorationState>, payload: GetDatasetPayload) => void;
+    getSchemas: (store: ActionContext<ADRState, DataExplorationState>) => void;
+    getUserCanUpload: (store: ActionContext<ADRState, DataExplorationState>) => void;
 }
 
 export interface GetDatasetPayload {
@@ -24,7 +25,7 @@ export interface GetDatasetPayload {
     release?: Release
 }
 
-export const actions: ActionTree<ADRState, RootState> & ADRActions = {
+export const actions: ActionTree<ADRState, DataExplorationState> & ADRActions = {
     async fetchKey(context) {
         await api<ADRMutation, ADRMutation>(context)
             .ignoreErrors()

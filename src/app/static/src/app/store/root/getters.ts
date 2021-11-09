@@ -3,6 +3,7 @@ import {Getter, GetterTree} from "vuex";
 import {Error} from "../../generated"
 import {Warning} from "../../generated";
 import {Dict, StepWarnings} from "../../types";
+import {extractErrors} from "../../utils";
 
 interface RootGetters {
     isGuest: Getter<RootState, RootState>
@@ -68,22 +69,3 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
         }
     }
 }
-
-export const extractErrors = (state: any) => {
-    const errors = [] as Error[];
-    extractErrorsRecursively(state, errors);
-    return errors;
-}
-
-const isComplexObject = (state: any) => {
-    return typeof state === 'object' && !Array.isArray(state) && state !== null
-}
-
-const extractErrorsRecursively = (state: any, errors: Error[]) => {
-    if (isComplexObject(state)) {
-        const keys = Object.keys(state);
-        const errorKeys = keys.filter(key => /error$/i.test(key));
-        errors.push(...errorKeys.map(key => state[key]).filter(err => !!err && !!err.error));
-        keys.forEach(key => extractErrorsRecursively(state[key], errors));
-    }
-};

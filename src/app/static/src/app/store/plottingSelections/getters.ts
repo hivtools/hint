@@ -1,9 +1,9 @@
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
-import {RootState} from "../../root";
 import {ScaleSelections, PlottingSelectionsState, BarchartSelections} from "./plottingSelections";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export const getters = {
-    selectedSAPColourScales: (state: PlottingSelectionsState, getters: any, rootState: RootState): ScaleSelections => {
+    selectedSAPColourScales: (state: PlottingSelectionsState, getters: any, rootState: DataExplorationState): ScaleSelections => {
         const dataType = rootState.surveyAndProgram.selectedDataType;
         switch (dataType) {
             case DataType.Survey:
@@ -16,7 +16,8 @@ export const getters = {
                 return {}
         }
     },
-    calibratePlotDefaultSelections: (state: PlottingSelectionsState, getters: any, rootState: RootState): BarchartSelections => {
-        return rootState.modelCalibrate.calibratePlotResult!.plottingMetadata.barchart.defaults;
+    calibratePlotDefaultSelections: (state: PlottingSelectionsState, getters: any, rootState: DataExplorationState): BarchartSelections => {
+        // TODO find solution to this hack
+        return (rootState as any).modelCalibrate.calibratePlotResult!.plottingMetadata.barchart.defaults;
     }
 };

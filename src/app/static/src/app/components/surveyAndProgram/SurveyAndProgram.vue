@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="row">
+        <div>
             <ul class="nav nav-tabs col-12 mb-3">
                 <li class="nav-item">
                     <a class="nav-link active" v-translate="'map'"></a>
