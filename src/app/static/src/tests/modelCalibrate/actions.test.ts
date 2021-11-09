@@ -155,7 +155,7 @@ describe("ModelCalibrate actions", () => {
     });
 
     it("getResult commits result and warnings when successfully fetched, sets default plotting selections, and dispatches getCalibratePlot", async () => {
-        switches.modelCalibratePlot = "true";
+        switches.modelCalibratePlot = true;
         const testResult = {
             data: "TEST DATA",
             plottingMetadata: {
@@ -213,7 +213,7 @@ describe("ModelCalibrate actions", () => {
     });
 
     it("getResult does not dispatch getCalibratePlot when switches if off", async () => {
-        switches.modelCalibratePlot = "";
+        switches.modelCalibratePlot = false;
         const testResult = {
             data: "TEST DATA",
             plottingMetadata: {
