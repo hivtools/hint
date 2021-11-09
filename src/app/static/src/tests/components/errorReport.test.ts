@@ -1,3 +1,4 @@
+import Vue from "vue";
 import {shallowMount, mount, createLocalVue} from '@vue/test-utils';
 import ErrorReport from "../../app/components/ErrorReport.vue";
 import Modal from "../../app/components/Modal.vue";
@@ -9,6 +10,8 @@ import {ProjectsState} from "../../app/store/projects/projects";
 import {expectTranslated} from "../testHelpers";
 import VueRouter from "vue-router";
 import {Language} from "../../app/store/translations/locales";
+import ErrorAlert from "../../app/components/ErrorAlert.vue";
+import {RootState} from "../../app/root";
 
 describe("Error report component", () => {
 
@@ -16,9 +19,10 @@ describe("Error report component", () => {
 
     const createStore = (stepperState: Partial<StepperState> = {},
                          projectsState: Partial<ProjectsState> = {},
+                         rootState: Partial<RootState> = {},
                          isGuest = false) => {
         const store = new Vuex.Store({
-            state: mockRootState(),
+            state: mockRootState(rootState),
             modules: {
                 stepper: {
                     namespaced: true,
@@ -85,7 +89,7 @@ describe("Error report component", () => {
     });
 
     it(`renders modal text in English, French and Portuguese`, () => {
-        const store = createStore({}, {currentProject: {name: "p1", id: 1, versions: []}}, true)
+        const store = createStore({}, {currentProject: {name: "p1", id: 1, versions: []}}, {}, true)
         const wrapper = shallowMount(ErrorReport, {
             propsData: {
                 open: true
@@ -284,7 +288,7 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore({}, {}, true)
+            store: createStore({}, {}, {}, true)
         });
 
         expect(wrapper.findAll("input#email").length).toBe(1);
@@ -295,7 +299,7 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore({}, {}, false)
+            store: createStore({}, {}, {}, false)
         });
 
         expect(wrapper.findAll("input#email").length).toBe(0);
@@ -306,7 +310,7 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore({}, {}, false)
+            store: createStore({}, {}, {}, false)
         });
 
         wrapper.find("#description").setValue("something");
@@ -321,7 +325,7 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore({}, {}, true)
+            store: createStore({}, {}, {}, true)
         });
 
         wrapper.find("#description").setValue("something");
@@ -337,7 +341,7 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore({}, {}, true)
+            store: createStore({}, {}, {}, true)
         });
 
         wrapper.find("#reproduce").setValue("reproduce steps");
@@ -352,7 +356,7 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore({}, {}, true)
+            store: createStore({}, {}, {}, true)
         });
 
         wrapper.find("#description").setValue("desc");
@@ -363,7 +367,7 @@ describe("Error report component", () => {
     });
 
     it("translates button tooltip", () => {
-        const store = createStore({}, {}, true);
+        const store = createStore({}, {}, {}, true);
         const mockTooltip = jest.fn();
         mount(ErrorReport, {
             propsData: {
@@ -389,7 +393,7 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore({}, {currentProject: {name: "p1", id: 1, versions: []}}, false)
+            store: createStore({}, {currentProject: {name: "p1", id: 1, versions: []}}, {}, false)
         });
 
         expect(wrapper.findAll("input#project").length).toBe(1);
@@ -403,7 +407,7 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore({}, {}, true)
+            store: createStore({}, {}, {}, true)
         });
 
         expect(wrapper.findAll("input#project").length).toBe(0);
@@ -423,29 +427,12 @@ describe("Error report component", () => {
         expect(wrapper.emitted().close).toBeDefined();
     });
 
-    it("emits close event on send", () => {
-        const wrapper = mount(ErrorReport, {
-            propsData: {
-                open: true
-            },
-            store: createStore()
-        });
-
-        wrapper.find("#description").setValue("desc");
-        wrapper.find("#reproduce").setValue("reproduce steps");
-
-        expect(wrapper.find(".btn-red").text()).toBe("Send");
-        wrapper.find(".btn-red").trigger("click");
-
-        expect(wrapper.emitted().close).toBeDefined();
-    });
-
     it("resets data on cancel", () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
                 open: true
             },
-            store: createStore({}, {}, true)
+            store: createStore({}, {}, {}, true)
         });
 
         wrapper.find("#description").setValue("something");
@@ -466,12 +453,12 @@ describe("Error report component", () => {
         expect(wrapper.vm.$data.email).toBe("");
     });
 
-    it("resets data on send", () => {
+    it("resets data on send", async () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
                 open: true
             },
-            store: createStore({}, {}, true)
+            store: createStore({}, {}, {}, true)
         });
 
         wrapper.find("#description").setValue("something");
@@ -485,6 +472,7 @@ describe("Error report component", () => {
         expect(wrapper.vm.$data.email).toBe("test@email.com");
 
         wrapper.find(".btn-red").trigger("click");
+        await Vue.nextTick();
 
         expect(wrapper.vm.$data.description).toBe("");
         expect(wrapper.vm.$data.stepsToReproduce).toBe("");
@@ -492,7 +480,7 @@ describe("Error report component", () => {
         expect(wrapper.vm.$data.email).toBe("");
     });
 
-    it("invokes generateErrorReport action on send", () => {
+    it("invokes generateErrorReport action and sets showFeedback on send", async () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
                 open: true
@@ -506,6 +494,7 @@ describe("Error report component", () => {
 
         expect(wrapper.find(".btn-red").text()).toBe("Send");
         wrapper.find(".btn-red").trigger("click");
+        await Vue.nextTick();
 
         expect(generateErrorReport.mock.calls[0][1]).toEqual({
             description: "something",
@@ -513,6 +502,9 @@ describe("Error report component", () => {
             section: "downloadResults",
             email: ""
         });
+
+        expect((wrapper.vm as any).showFeedback).toBe(true);
+        expect(wrapper.emitted().close).toBeUndefined();
     });
 
     it("does not invoke generateErrorReport action on cancel", () => {
@@ -557,5 +549,86 @@ describe("Error report component", () => {
         expect((wrapper.find("#section").element as HTMLSelectElement).value).toBe("projects")
     });
 
+    it("renders no feedback by default", () => {
+        const wrapper = shallowMount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore()
+        });
+        expect(wrapper.find("#report-success").exists()).toBe(false);
+        expect(wrapper.find("#report-error").exists()).toBe(false);
+        expect(wrapper.find(ErrorAlert).exists()).toBe(false);
+    });
 
+    it("renders success feedback when no error report error", () => {
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore()
+        });
+        wrapper.setData({showFeedback: true});
+
+        expectTranslated(wrapper.find("#report-success"),
+            "Thank you, your report has been sent. We will respond as soon as possible.",
+            "Merci, votre rapport a été envoyé. Nous vous répondrons dans les plus brefs délais.",
+            "Obrigado, seu relatório foi enviado. Nós responderemos o mais rapidamente possível.",
+            wrapper.vm.$store
+        );
+        expectTranslated(wrapper.find(".btn-red"), "Close", "Fermer", "Fechar",
+            wrapper.vm.$store);
+        expect(wrapper.find("#report-error").exists()).toBe(false);
+        expect(wrapper.find(ErrorAlert).exists()).toBe(false);
+    });
+
+    it("renders error feedback when there is an error report error", () => {
+        const errorReportError = {
+            error: "TEST ERROR",
+            detail: "TEST DETAIL"
+        };
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore({}, {}, {errorReportError})
+        });
+        wrapper.setData({showFeedback: true});
+        expectTranslated(wrapper.find("#report-error"),
+            "An error occurred while sending your report:",
+            "Une erreur s'est produite lors de l'envoi de votre rapport :",
+            "Ocorreu um erro ao enviar seu relatório:",
+            wrapper.vm.$store
+        );
+        expect(wrapper.find(ErrorAlert).props("error")).toBe(errorReportError);
+        expectTranslated(wrapper.find(".btn-red"), "Close", "Fermer", "Fechar",
+            wrapper.vm.$store);
+        expect(wrapper.find("#report-success").exists()).toBe(false);
+    });
+
+    it("emits close event on click close button", () => {
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore()
+        });
+        wrapper.setData({showFeedback: true});
+
+        expect(wrapper.find(".btn-red").text()).toBe("Close");
+        wrapper.find(".btn-red").trigger("click");
+
+        expect(wrapper.emitted().close).toBeDefined();
+    });
+
+    it("resets showFeedback on open", () => {
+        const localVue = createLocalVue()
+        localVue.use(VueRouter);
+        const router = new VueRouter({routes: []});
+        const wrapper = mount(ErrorReport, { localVue, router, store: createStore() });
+        wrapper.setData({showFeedback: true});
+
+        wrapper.setProps({open: true});
+        expect((wrapper.vm as any).showFeedback).toBe(false);
+    });
 });

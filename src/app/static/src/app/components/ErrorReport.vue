@@ -1,7 +1,7 @@
 <template>
     <modal :open="open">
         <h4 v-translate="'reportIssues'"></h4>
-        <form class="form" v-if="!showFeedback">
+        <form class="form" id="report-form" v-if="!showFeedback">
             <div class="form-group" v-if="projectName">
                 <label for="project" v-translate="'project'"></label>
                 <input type="text"
@@ -57,9 +57,9 @@
             </div>
         </form>
         <template v-else>
-            <div v-if="!errorReportError" v-translate="'errorReportSuccess'"></div>
+            <div id="report-success" v-if="!errorReportError" v-translate="'errorReportSuccess'"></div>
             <template v-else>
-               <div v-translate="'errorReportError'"></div>
+               <div id="report-error" v-translate="'errorReportError'"></div>
                 <error-alert :error="errorReportError"></error-alert>
             </template>
         </template>
