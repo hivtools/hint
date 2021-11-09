@@ -79,8 +79,7 @@ describe("model calibrate actions integration", () => {
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toBe("CalibrationPlotStarted");
-        expect(commit.mock.calls[1][0]).toBe("SetPlotData");
-        expect(commit.mock.calls[1][1]).toHaveProperty("data");
-        expect(commit.mock.calls[1][1]).toHaveProperty("plottingMetadata.barchart");
+        expect(commit.mock.calls[1][0]["type"]).toBe("SetError");
+        expect(commit.mock.calls[1][0]["payload"].detail).toBe("Failed to fetch result");
     });
 });
