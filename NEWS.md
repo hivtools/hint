@@ -1,3 +1,7 @@
+# hint 1.65.0
+
+Made Calibration plot visible
+
 # hint 1.64.3
 
 * Fix language bug on reload
