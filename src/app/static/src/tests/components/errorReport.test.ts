@@ -94,9 +94,9 @@ describe("Error report component", () => {
         });
 
         expectTranslated(wrapper.find("h4"),
-            "Report issues",
-            "Signaler des problèmes",
-            "Reportar problemas",
+            "Troubleshooting request",
+            "Demande de dépannage",
+            "Solicitação de solução de problemas",
             store)
 
         const labels = wrapper.findAll("label")

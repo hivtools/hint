@@ -8,7 +8,7 @@
             </a>
             <a class="dropdown-item"
                @click="toggleErrorReportModal"
-               v-translate="'reportIssues'">
+               v-translate="'troubleshootingRequest'">
             </a>
             <router-link id="accessibility-link"
                          to="/accessibility"
