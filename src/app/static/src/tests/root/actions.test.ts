@@ -3,13 +3,12 @@ import {
     mockAxios,
     mockFailure,
     mockBaselineState,
-    mockError,
     mockHintrVersionState,
     mockModelCalibrateState,
     mockModelRunState,
     mockProjectsState,
     mockRootState,
-    mockStepperState, mockSuccess
+    mockStepperState, mockSuccess, mockError
 } from "../mocks";
 import {Language} from "../../app/store/translations/locales";
 import {LanguageMutation} from "../../app/store/language/mutations";
@@ -212,11 +211,10 @@ describe("root actions", () => {
 
 
     it("posts error report to teams", async () => {
-
         const url = "error-report"
 
         mockAxios.onPost(url)
-            .reply(200, mockSuccess("Ok"));
+            .reply(200, mockSuccess("ok"));
 
         const rootState = mockRootState({
             baseline: mockBaselineState({
@@ -246,7 +244,7 @@ describe("root actions", () => {
         const dispatch = jest.fn();
 
         const payload: ErrorReportManualDetails = {
-            email: "test@test.com",
+            email: "test@example.com",
             stepsToReproduce: "repro",
             section: "reviewInputs",
             description: "desc"
@@ -254,15 +252,17 @@ describe("root actions", () => {
 
         await actions.generateErrorReport({commit, rootState, getters, dispatch} as any, payload);
 
-        expect(commit.mock.calls[0][0]).toEqual({payload: "Ok", type: "ErrorReportSuccess"});
+        expect(commit.mock.calls.length).toEqual(1);
+        expect(commit.mock.calls[0][0]).toEqual({"payload": "ok", "type": "ErrorReportSuccess"});
+        expect(dispatch.mock.calls.length).toEqual(1);
         expect(dispatch.mock.calls[0][0]).toEqual("projects/cloneProject");
         expect(mockAxios.history.post.length).toEqual(1)
         expect(mockAxios.history.post[0].url).toEqual(url)
 
         const expected = {
-            email: "test@test.com",
+            email: "test@example.com",
             country: "Malawi",
-            project: "p1",
+            projectName: "p1",
             timeStamp: new Date(),
             jobId: "1234",
             description: "desc",
@@ -276,6 +276,7 @@ describe("root actions", () => {
 
         expect(data.email).toStrictEqual(expected.email)
         expect(data.country).toStrictEqual(expected.country)
+        expect(data.projectName).toStrictEqual(expected.projectName)
         expect(data.browserAgent).toContain("Mozilla")
         expect(data.jobId).toStrictEqual(expected.jobId)
         expect(new Date(data.timeStamp).getDate()).toBe(expected.timeStamp.getDate());
@@ -292,7 +293,76 @@ describe("root actions", () => {
         });
     });
 
-    it("can return error when error report failed", async () => {
+    it("sends default values when country, project or jobId are missing", async () => {
+        const url = "error-report"
+
+        mockAxios.onPost(url)
+            .reply(200, mockSuccess("ok"));
+
+        const rootState = mockRootState({
+            baseline: mockBaselineState(),
+            modelRun: mockModelRunState(),
+            projects: mockProjectsState(),
+            hintrVersion: mockHintrVersionState({
+                hintrVersion: {
+                    naomi: "v1",
+                    hintr: "v2",
+                    rrq: "v3",
+                    traduire: "v4"
+                }
+            })
+        });
+
+        const err = mockError("err")
+        const getters = {
+            errors: [err]
+        }
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const payload: ErrorReportManualDetails = {
+            email: "test@example.com",
+            stepsToReproduce: "repro",
+            section: "reviewInputs",
+            description: "desc"
+        }
+
+        await actions.generateErrorReport({commit, rootState, getters, dispatch} as any, payload);
+
+        expect(commit.mock.calls.length).toEqual(1);
+        expect(commit.mock.calls[0][0]).toEqual({"payload": "ok", "type": "ErrorReportSuccess"});
+        expect(dispatch.mock.calls.length).toEqual(0);
+        expect(mockAxios.history.post.length).toEqual(1)
+        expect(mockAxios.history.post[0].url).toEqual(url)
+
+
+        const expected = {
+            email: "test@example.com",
+            country: "no associated country",
+            projectName: "no associated project",
+            timeStamp: new Date(),
+            jobId: "no associated jobId",
+            description: "desc",
+            section: "reviewInputs",
+            stepsToReproduce: "repro",
+            errors: getters.errors
+        };
+
+        const data = JSON.parse(mockAxios.history.post[0].data) as ErrorReport
+
+        expect(data.email).toStrictEqual(expected.email)
+        expect(data.country).toStrictEqual(expected.country)
+        expect(data.projectName).toBe(expected.projectName)
+        expect(data.jobId).toStrictEqual(expected.jobId)
+        expect(data.browserAgent).toContain("Mozilla")
+        expect(new Date(data.timeStamp).getDate()).toBe(expected.timeStamp.getDate());
+        expect(data.description).toStrictEqual(expected.description)
+        expect(data.section).toStrictEqual(expected.section)
+        expect(data.stepsToReproduce).toStrictEqual(expected.stepsToReproduce)
+        expect(data.errors).toStrictEqual(expected.errors)
+    });
+
+    it("can return error when error report fails", async () => {
         const url = "error-report"
 
         mockAxios.onPost(url)
@@ -319,31 +389,7 @@ describe("root actions", () => {
 
         const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
         expect(commit.mock.calls[0][0]).toEqual({payload: expectedError, type: RootMutation.ErrorReportError});
-        expect(mockAxios.history.post.length).toEqual(1)
-        expect(mockAxios.history.post[0].url).toEqual(url)
-
-        const expected = {
-            email: "some.user@example.com",
-            country: "",
-            timeStamp: new Date(),
-            jobId: "",
-            description: "",
-            section: "",
-            stepsToReproduce: "",
-            errors: []
-        };
-
-        const data = JSON.parse(mockAxios.history.post[0].data) as ErrorReport
-
-        expect(data.email).toStrictEqual(expected.email)
-        expect(data.country).toStrictEqual(expected.country)
-        expect(data.jobId).toStrictEqual(expected.jobId)
-        expect(data.browserAgent).toContain("Mozilla")
-        expect(new Date(data.timeStamp).getDate()).toBe(expected.timeStamp.getDate());
-        expect(data.description).toStrictEqual(expected.description)
-        expect(data.section).toStrictEqual(expected.section)
-        expect(data.stepsToReproduce).toStrictEqual(expected.stepsToReproduce)
-        expect(data.errors).toStrictEqual(expected.errors)
+        expect(dispatch.mock.calls.length).toBe(0)
     });
 
     it("changeLanguage fetches plotting metadata and calibrate result", async () => {
