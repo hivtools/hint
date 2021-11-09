@@ -61,9 +61,9 @@ describe("model calibrate actions integration", () => {
         await actions.getResult({commit, state, rootState} as any);
 
         expect(commit.mock.calls.length).toBe(2);
-        expect(commit.mock.calls[0][0]["type"]).toBe("SetError");
-        expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
-        expect(commit.mock.calls[1][0]).toBe("Ready");
+        expect(commit.mock.calls[0][0]).toBe("CalibrationPlotStarted");
+        expect(commit.mock.calls[1][0]["type"]).toBe("SetError");
+        expect(commit.mock.calls[1][0]["payload"].detail).toBe("Failed to fetch result");
     });
 
     it("can get calibrate plot", async () => {
@@ -78,9 +78,8 @@ describe("model calibrate actions integration", () => {
         await actions.getCalibratePlot({commit, state, rootState} as any);
 
         expect(commit.mock.calls.length).toBe(2);
-        expect(commit.mock.calls[0][0]).toBe("CalibrationPlotStarted");
-        expect(commit.mock.calls[1][0]).toBe("SetPlotData");
-        expect(commit.mock.calls[1][1]).toHaveProperty("data");
-        expect(commit.mock.calls[1][1]).toHaveProperty("plottingMetadata.barchart");
+        expect(commit.mock.calls[0][0]).toBe("SetError");
+        expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
+        expect(commit.mock.calls[1][0]).toBe("Ready");
     });
 });
