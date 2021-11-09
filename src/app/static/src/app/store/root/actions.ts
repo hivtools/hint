@@ -25,7 +25,7 @@ export interface ErrorReportManualDetails {
 
 export interface ErrorReport extends ErrorReportManualDetails {
     country: string,
-    project: string | undefined,
+    projectName: string | undefined,
     browserAgent: string,
     timeStamp: string,
     jobId: string,
@@ -105,11 +105,11 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         const {dispatch, rootState, getters} = context
         const data = {
             email: payload.email || rootState.currentUser,
-            country: rootState.baseline.country,
-            project: rootState.projects.currentProject?.name,
+            country: rootState.baseline.country || "no associated country",
+            projectName: rootState.projects.currentProject?.name || "no associated project",
             browserAgent: navigator.userAgent,
             timeStamp: new Date().toISOString(),
-            jobId: rootState.modelRun.modelRunId,
+            jobId: rootState.modelRun.modelRunId || "no associated jobId",
             description: payload.description,
             section: payload.section,
             stepsToReproduce: payload.stepsToReproduce,
@@ -122,10 +122,12 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             .withError(RootMutation.ErrorReportError)
             .postAndReturn("error-report", data)
             .then(() => {
-                if (data.project && rootState.errorReportError == null) {
+                if (rootState.projects.currentProject && !rootState.errorReportError) {
                     dispatch("projects/cloneProject",
-                        {emails: ["naomi-support@imperial.ac.uk"],
-                            projectId: rootState.projects.currentProject!.id})
+                        {
+                            emails: ["naomi-support@imperial.ac.uk"],
+                            projectId: rootState.projects.currentProject!.id
+                        })
                 }
             })
     }

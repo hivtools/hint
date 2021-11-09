@@ -2,6 +2,14 @@
 
 * Show Input Time Series plots
 
+# hint 1.64.3
+
+* Fix language bug on reload
+
+# hint 1.64.2
+
+* add default placeholder to some error report data
+
 # hint 1.64.1
 
 * Update error report object in backend include version info 
