@@ -1,3 +1,7 @@
+# hint 1.64.4
+
+* Rename "Report issues" to "Troubleshooting request"
+
 # hint 1.64.3
 
 * Fix language bug on reload
