@@ -29,14 +29,17 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
                     "showlegend": false,
                     "x": data[area_name=$v].time_period,
                     "y": $map(data[area_name=$v].value, function($thv, $thi) {
-                           (($thi > 0) and $thv > (1.25 * ($areaData.value)[$thi-1]))
-                           or
-                           (($thi < $count($areaData.value)-1) and (($areaData.value)[$thi+1] > (1.25 * $thv)))
-                           or
-                           (($thi > 0) and $thv < (0.75 * ($areaData.value)[$thi-1]))
-                           or
-                           (($thi < $count($areaData.value)-1) and ($areaData.value)[$thi+1] < (0.75 * $thv))
-                           ? $thv : null
+                         ($thv != null)
+                         and
+                         (
+                             ((($areaData.value)[$thi-1] != null) and ($thi > 0) and $thv > (1.25 * ($areaData.value)[$thi-1]))
+                             or
+                             ((($areaData.value)[$thi+1] != null) and ($thi < $count($areaData.value)-1) and (($areaData.value)[$thi+1] > (1.25 * $thv)))
+                             or
+                             ((($areaData.value)[$thi-1] != null) and ($thi > 0) and $thv < (0.75 * ($areaData.value)[$thi-1]))
+                             or
+                             ((($areaData.value)[$thi+1] != null) and ($thi < $count($areaData.value)-1) and ($areaData.value)[$thi+1] < (0.75 * $thv))
+                         )
                      }),
                     "xaxis": 'x' & ($i+1),
                     "yaxis": 'y' & ($i+1),
