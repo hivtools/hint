@@ -1,7 +1,3 @@
-# hint 1.65.0
-
-Made Calibration plot visible
-
 # hint 1.64.3
 
 * Fix language bug on reload
@@ -62,15 +58,29 @@ Made Calibration plot visible
 
 * Save warnings from option validation, model fit and model calibration to app state
 
-# hint 1.56.1
+# hint 1.59.1
 
 * Render filter labels verbatim in output tables, do not attempt to translate
 
-# hint 1.56.0
+# hint 1.59.0
 
 * Include Back/Continue links at bottom of model options page
 
+# hint 1.58.0
+
+* Refresh output metadata and options when language changes
+
+# hint 1.57.0
+
+* Add tooltips for indicators in Time series chart
+
+# hint 1.56.0
+
+* Remove genericChart dataset when corresponding input file changes
+
 # hint 1.55.0
+
+* Add input Time series chart
 
 * Refresh output metadata and options when language changes
 

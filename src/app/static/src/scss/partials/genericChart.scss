@@ -1,0 +1,26 @@
+@import "../../node_modules/bootstrap/scss/_variables.scss";
+
+.chart-container {
+  overflow-y: scroll;
+  width: 100%;
+  border: 0.5px solid $gray-500;
+}
+.chart {
+  width: 100%;
+}
+
+.plotly {
+  .annotation-text {
+    font-weight: bold;
+  }
+}
+
+.empty-chart-message {
+  width: 60%;
+  margin: auto;
+  border: 1px solid #adb5bd;
+}
+
+.xaxislayer-above {
+  transform: translateY(6px);
+}

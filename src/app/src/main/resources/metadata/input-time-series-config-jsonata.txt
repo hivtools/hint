@@ -1,47 +1,66 @@
 (
 $areaNames := $distinct(data.area_name);
+$lineColor := "rgb(51, 51, 51)";
+$highlightColor := "rgb(255, 51, 51)";
+$subplotHeight := 1/subplots.rows * 0.6;
+$timePeriods := $sort(data.time_period);
+$firstXAxisVal := $timePeriods[0];
+$lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
+
 {
-    "data":$map($areaNames, function($v, $i) {(
-        $areaData := data[area_name=$v];
-        [
-            {
-                "name": $v,
-                "showlegend": false,
-                "x": $areaData.time_period,
-                "y": $areaData.value,
-                "xaxis": 'x' & ($i+1),
-                "yaxis": 'y' & ($i+1),
-                "type": "scatter",
-                "line": {
-                    "color": "rgb(51, 51, 51)"
-                }
-            },
-            {
-                "showlegend": false,
-                "x": data[area_name=$v].time_period,
-                "y": $map(data[area_name=$v].value, function($thv, $thi) {
-                       (($thi > 0) and $thv > (1.25 * ($areaData.value)[$thi-1]))
-                       or
-                       (($thi < $count($areaData.value)-1) and ($areaData.value)[$thi+1] > (1.25 * $thv))
-                       or
-                       (($thi > 0) and $thv < (0.75 * ($areaData.value)[$thi-1]))
-                       or
-                       (($thi < $count($areaData.value)-1) and ($areaData.value)[$thi+1] < (0.75 * $thv))
-                       ? $thv : null
-                 }),
-                "xaxis": 'x' & ($i+1),
-                "yaxis": 'y' & ($i+1),
-                "type": "scatter",
-                "line": {
-                    "color": "rgb(255, 51, 51)"
+    "data":
+        $map($areaNames, function($v, $i) {(
+            $areaData := data[area_name=$v];
+            [
+                {
+                    "name": $v,
+                    "showlegend": false,
+                    "x": $areaData.time_period,
+                    "y": $areaData.value,
+                    "xaxis": 'x' & ($i+1),
+                    "yaxis": 'y' & ($i+1),
+                    "type": "scatter",
+                    "line": {
+                        "color": $lineColor
+                    }
                 },
-                "hoverinfo": "none"
-            }
-        ]
-    )}).*,
-    "config": {"responsive": true},
+                {
+                    "name": $v,
+                    "showlegend": false,
+                    "x": data[area_name=$v].time_period,
+                    "y": $map(data[area_name=$v].value, function($thv, $thi) {
+                           ($thv != null)
+                           and
+                           (
+                               ((($areaData.value)[$thi-1] != null) and ($thi > 0) and $thv > (1.25 * ($areaData.value)[$thi-1]))
+                               or
+                               ((($areaData.value)[$thi+1] != null) and ($thi < $count($areaData.value)-1) and (($areaData.value)[$thi+1] > (1.25 * $thv)))
+                               or
+                               ((($areaData.value)[$thi-1] != null) and ($thi > 0) and $thv < (0.75 * ($areaData.value)[$thi-1]))
+                               or
+                               ((($areaData.value)[$thi+1] != null) and ($thi < $count($areaData.value)-1) and ($areaData.value)[$thi+1] < (0.75 * $thv))
+                           )
+                           ? $thv : null
+                     }),
+                    "xaxis": 'x' & ($i+1),
+                    "yaxis": 'y' & ($i+1),
+                    "type": "scatter",
+                    "line": {
+                        "color": $highlightColor
+                    }
+                }
+            ]
+        )}
+    )[].*,
+    "config": {
+        "responsive": true,
+        "scrollZoom": false,
+        "modeBarButtonsToRemove": ['zoom2d', 'pan2d', 'select2d', 'lasso2d', 'autoScale2d', 'resetScale2d', 'zoomIn2d', 'zoomOut2d']
+        },
     "layout": $merge([
         {
+            "margin": {"t": 32},
+            "dragmode": false,
             "grid": {"columns": subplots.columns, "rows": subplots.rows, "pattern": 'independent'},
             "annotations": $map($areaNames, function($v, $i) {
                 {
@@ -51,25 +70,33 @@ $areaNames := $distinct(data.area_name);
                     "x": 0.5,
                     "xanchor": "middle",
                     "xref": "x" & ($i+1) & " domain",
-                    "y": 1,
+                    "y": 1.1,
                     "yanchor": "middle",
                     "yref": "y" & ($i+1) & " domain"
                 }
-            })
+            })[]
         },
-        [1..$count($areaNames)]{
-            "yaxis"&$: {
-                "rangemode": "tozero",
-                "zeroline": false,
-                "tickfont": {
-                    "color": "grey"
-                }
-            },
-            "xaxis"&$: {
-                "tickfont": {
-                    "color": "grey"
-                }
-            }
-        }
+        [1..$count($areaNames)].(
+           $row := $floor($/$$.subplots.columns);
+           {
+               "yaxis"&$: {
+                   "rangemode": "tozero",
+                   "zeroline": false,
+                   "tickfont": {
+                       "color": "grey"
+                   },
+                   "domain": [
+                       1 - ($row/$$.subplots.rows),
+                       1 - (($row/$$.subplots.rows) + $subplotHeight)
+                   ]
+               },
+               "xaxis"&$: {
+                   "tickvals": [$firstXAxisVal, $lastXAxisVal],
+                    "tickfont": {
+                        "color": "grey"
+                    }
+               }
+           }
+        )
     ])
 })
