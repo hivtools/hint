@@ -1,10 +1,14 @@
-# hint 1.65.1
+# hint 1.66.1
 
 * Fix Input Time Series for null values
 
+# hint 1.66.0
+
+Made Calibration plot visible
+
 # hint 1.65.0
 
-* Show Input Time Series plots
+Output Time Series plots
 
 # hint 1.64.3
 
