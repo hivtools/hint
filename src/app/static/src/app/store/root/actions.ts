@@ -93,6 +93,10 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             actions.push(dispatch("modelCalibrate/getResult"));
         }
 
+        if (Object.keys(rootState.genericChart.datasets).length > 0) {
+            actions.push(dispatch("genericChart/refreshDatasets"));
+        }
+
         await Promise.all(actions);
         commit({type: RootMutation.SetUpdatingLanguage, payload: false});
     },

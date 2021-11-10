@@ -3,43 +3,143 @@
     "datasets": [
       {
         "id": "art",
-        "type": "custom",
         "label": "ART",
         "url":  "/chart-data/input-time-series/programme",
         "filters": [
           {
             "id": "plot_type",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": false
           },
           {
             "id": "area_level",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": false
           },
           {
-            "id": "time_step",
-            "source": "data"
+            "id": "quarter",
+            "source": "data",
+            "allowMultiple": true
           }
-        ]
+        ],
+        "table": {
+          "columns": [
+            {
+              "data": {
+                "columnId": "area_name",
+                "hierarchyColumn": "area"
+              },
+              "header": {
+                "type": "columnLabel",
+                "column": "area"
+              }
+            },
+            {
+              "data": {
+                "columnId": "time_period"
+              },
+              "header": {
+                "type": "columnLabel",
+                "column": "time_period"
+              }
+            },
+            {
+              "data": {
+                "columnId": "area_level",
+                "labelColumn": "area_level"
+              },
+              "header": {
+                "type": "columnLabel",
+                "column": "area_level"
+              }
+            },
+            {
+              "data": {
+                "columnId": "value"
+              },
+              "header": {
+                "type": "selectedFilterOption",
+                "column": "plot_type"
+              }
+            }
+          ]
+        }
       },
       {
         "id": "anc",
-        "type": "custom",
         "label": "ANC",
         "url": "/chart-data/input-time-series/anc",
         "filters": [
           {
             "id": "plot_type",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": false
           },
           {
             "id": "area_level",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": false
           },
           {
             "id": "age",
-            "source": "data"
+            "source": "data",
+            "allowMultiple": false
           }
-        ]
+        ],
+        "table": {
+          "columns": [
+            {
+              "data": {
+                "columnId": "area_name",
+                "hierarchyColumn": "area"
+              },
+              "header": {
+                "type": "columnLabel",
+                "column": "area"
+              }
+            },
+            {
+              "data": {
+                "columnId": "time_period",
+                "labelColumn": "time_period"
+              },
+              "header": {
+                "type": "columnLabel",
+                "column": "time_period"
+              }
+            },
+            {
+              "data": {
+                "columnId": "area_level",
+                "labelColumn": "area_level"
+              },
+              "header": {
+                "type": "columnLabel",
+                "column": "area_level"
+              }
+            },
+            {
+              "data": {
+                "columnId": "age_group",
+                "labelColumn": "age"
+              },
+              "header": {
+                "type": "columnLabel",
+                "column": "age"
+              }
+            },
+            {
+              "data": {
+                "columnId": "value",
+                "labelColumn": null
+              },
+              "header": {
+                "type": "selectedFilterOption",
+                "column": "plot_type"
+              }
+            }
+          ]
+        }
       }
     ],
     "dataSelectors": {
@@ -55,9 +155,9 @@
       ]
     },
     "subplots": {
-      "columns": 5,
+      "columns": 3,
       "distinctColumn": "area_name",
-      "heightPerRow": 100
+      "heightPerRow": 140
     },
     "chartConfig": [
       {

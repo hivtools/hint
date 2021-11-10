@@ -119,8 +119,8 @@ class HintrApiClientTests
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.getCalibratePlot("1234")
-        assertThat(result.statusCodeValue).isEqualTo(200)
-        JSONValidator().validateSuccess(result.body!!, "CalibratePlotResponse")
+        assertThat(result.statusCodeValue).isEqualTo(400)
+        JSONValidator().validateError(result.body!!, "FAILED_TO_RETRIEVE_RESULT")
     }
 
     @Test
@@ -156,5 +156,14 @@ class HintrApiClientTests
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.cancelModelRun("1234")
         assertThat(result.statusCodeValue).isEqualTo(400)
+    }
+
+    @Test
+    fun `can get input time series chart data`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val result = sut.getInputTimeSeriesChartData("anc", emptyMap())
+        assertThat(result.statusCodeValue).isEqualTo(400)
+        JSONValidator().validateError(result.body!!, "INVALID_INPUT")
     }
 }
