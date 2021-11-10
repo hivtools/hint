@@ -4,7 +4,7 @@ import Vuex from 'vuex';
 import SurveyAndProgram from "../../../app/components/surveyAndProgram/SurveyAndProgram.vue";
 import {
     mockAncResponse,
-    mockBaselineState,
+    mockBaselineState, mockGenericChartState,
     mockPlottingSelections,
     mockProgramResponse,
     mockSurveyAndProgramState,
@@ -20,6 +20,10 @@ import {mutations as selectionsMutations} from "../../../app/store/plottingSelec
 import {ScaleSelections, ScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 import {Language} from "../../../app/store/translations/locales";
 import {expectTranslated} from "../../testHelpers";
+import GenericChart from "../../../app/components/genericChart/GenericChart.vue";
+import {GenericChartState} from "../../../app/store/genericChart/genericChart";
+import Choropleth from "../../../app/components/plots/choropleth/Choropleth.vue";
+import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
 
 const localVue = createLocalVue();
 
@@ -31,9 +35,10 @@ describe("Survey and programme component", () => {
 
     afterAll(() => {
         Vue.config.silent = false;
-    })
+    });
 
-    const createStore = (surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey}) => {
+    const createStore = (surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey},
+                            genericChartState: Partial<GenericChartState> = {}) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -43,6 +48,10 @@ describe("Survey and programme component", () => {
                     mutations: mutations,
                     actions: actions,
                     getters: getters
+                },
+                genericChart: {
+                    namespaced: true,
+                    state: mockGenericChartState(genericChartState)
                 },
                 baseline: {
                     namespaced: true,
@@ -88,12 +97,34 @@ describe("Survey and programme component", () => {
         return store;
     };
 
-    it("renders choropleth controls if there is a selected data type", () => {
+    it("renders tabs", () => {
+        const store = createStore({
+            anc: mockAncResponse()
+        });
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const tabItems = wrapper.findAll("li.nav-item a");
+        expect(tabItems.length).toBe(2);
+        expect(tabItems.at(0).classes()).toContain("active");
+        expectTranslated(tabItems.at(0), "Map", "Carte", "Mapa", store);
+        expect(tabItems.at(1).classes()).not.toContain("active");
+        expectTranslated(tabItems.at(1), "Time series", "Séries chronologiques", "Séries temporais", store);
+    });
+
+    it("does not render time series tab when anc or program dataset is not available", () => {
+        const store = createStore({});
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const tabItems = wrapper.findAll("li.nav-item a");
+        expect(tabItems.length).toBe(1)
+        expect(tabItems.at(0).text()).not.toBe("Time series");
+    });
+
+    it("renders choropleth controls if there is a selected data type and selectedTab is 0", () => {
         const store = createStore({selectedDataType: DataType.Survey});
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
 
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
         expect(wrapper.findAll("filters-stub").length).toBe(1);
+        expect(wrapper.find(GenericChart).exists()).toBe(false);
     });
 
     it("does not render choropleth controls if there is no selected data type", () => {
@@ -147,6 +178,63 @@ describe("Survey and programme component", () => {
 
     });
 
+    it("renders time series tab and component when generic chart metadata exists and selectedTab is 1", () => {
+        const genericChartMetadata = {value: "TEST"} as any;
+        const store = createStore({
+            program: mockProgramResponse()
+        }, {
+            genericChartMetadata
+        });
+        const data = () => {
+            return {selectedTab: 1};
+        };
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue, data});
+        const tabItems = wrapper.findAll("li.nav-item a");
+        expect(tabItems.at(0).classes()).not.toContain("active");
+        expect(tabItems.at(1).classes()).toContain("active");
+
+        const genericChart  = wrapper.find(GenericChart);
+        expect(genericChart.props("chartId")).toBe("input-time-series");
+        expect(genericChart.props("metadata")).toBe(genericChartMetadata);
+        expect(genericChart.props("chartHeight")).toBe("600px");
+
+        expect(wrapper.find(Choropleth).exists()).toBe(false);
+    });
+
+    it("does not render generic chart component if generic chart metadata does not exist", () => {
+        const store = createStore();
+        const data = ()  => {
+            return {selectedTab: 1}
+        };
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue, data});
+        expect(wrapper.find(GenericChart).exists()).toBe(false);
+        expect(wrapper.find(Choropleth).exists()).toBe(false);
+    });
+
+    it("can display generic chart tab and clicking tab item changes tab", async () => {
+        const genericChartMetadata = {value: "TEST"} as any;
+        const store = createStore({
+                selectedDataType: DataType.Survey,
+            anc: mockAncResponse()
+            },
+            {genericChartMetadata}
+        );
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+
+        const tabItems = wrapper.findAll("li.nav-item a");
+        await tabItems.at(1).trigger("click");
+        expect(tabItems.at(0).classes()).not.toContain("active");
+        expect(tabItems.at(1).classes()).toContain("active");
+        expect(wrapper.find(Choropleth).exists()).toBe(false);
+        expect(wrapper.find(GenericChart).exists()).toBe(true);
+
+        await tabItems.at(0).trigger("click");
+        expect(tabItems.at(0).classes()).toContain("active");
+        expect(tabItems.at(1).classes()).not.toContain("active");
+        expect(wrapper.find(Choropleth).exists()).toBe(true);
+        expect(wrapper.find(GenericChart).exists()).toBe(false);
+    });
+
     it("renders filters as expected", () => {
         const store = createStore({
             selectedDataType: DataType.Survey,
@@ -197,17 +285,17 @@ describe("Survey and programme component", () => {
         expectTranslated(header, "Data source", "Source de données", "Fonte de dados", store);
     });
 
-    it("survey in included in data sources when survey data is present", () => {
+    it("survey is included in data sources when survey data is present", () => {
         expectDataSource({survey: mockSurveyResponse(), selectedDataType: DataType.Survey},
             "Household Survey", "Enquête de ménage", "Inquérito aos agregados familiares", "2");
     });
 
-    it("programme (ART) tab is enabled when programme data is present", () => {
+    it("programme (ART) is included in data sources when programme data is present", () => {
         expectDataSource({program: mockProgramResponse(), selectedDataType: DataType.Program},
             "ART", "ART", "TARV", "1");
     });
 
-    it("ANC tab is enabled when ANC data is present", () => {
+    it("ANC is included in data sources when ANC data is present", () => {
         expectDataSource({anc: mockAncResponse(), selectedDataType: DataType.ANC},
             "ANC Testing", "Test de clinique prénatale", "Teste da CPN", "0");
     });
@@ -230,7 +318,7 @@ describe("Survey and programme component", () => {
         expect(options).toStrictEqual([{id, label:portugueseName}]);
     }
 
-    it("can change tabs", () => {
+    it("can select data source", () => {
         const store = createStore(
             {
                 anc: mockAncResponse(),
@@ -271,6 +359,27 @@ describe("Survey and programme component", () => {
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.Program);
     });
 
+    it("set availableDatasetIds when anc and program are available", () => {
+        const store = createStore(
+            {
+                anc: mockAncResponse(),
+                survey: mockSurveyResponse(),
+                program: mockProgramResponse()
+            });
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        expect((wrapper.vm as any).availableDatasetIds).toEqual(["anc", "art"]);
+    });
+
+    it("sets anc as only available datasetId when program data is not available", () => {
+        const store = createStore(
+            {
+                anc: mockAncResponse(),
+                survey: mockSurveyResponse()
+            });
+        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        expect((wrapper.vm as any).availableDatasetIds).toEqual(["anc"]);
+    });
+
     it("renders table as expected", () => {
         const store = createStore({
             selectedDataType: DataType.Survey,
@@ -282,9 +391,9 @@ describe("Survey and programme component", () => {
             } as any,
         });
         const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
-        const table = wrapper.find("table-view-stub");
+        const table = wrapper.find(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
-        expect(table.props().tabledata).toBe("TEST DATA");
+        expect(table.props().tableData).toBe("TEST DATA");
         expect(table.props().filters[0]).toStrictEqual({
             id: "area",
             column_id: "area_id",

@@ -37,6 +37,7 @@ interface HintrAPIClient
     fun getVersion(): ResponseEntity<String>
     fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions):
             ResponseEntity<String>
+    fun getInputTimeSeriesChartData(type: String, files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
     fun downloadOutputSubmit(type: String, id: String): ResponseEntity<String>
     fun downloadOutputStatus(id: String): ResponseEntity<String>
@@ -203,4 +204,12 @@ class HintrFuelAPIClient(
         return get("meta/adr/${id}")
     }
 
+    override fun getInputTimeSeriesChartData(type: String, files: Map<String, VersionFileWithPath>)
+            : ResponseEntity<String>
+    {
+        val json = objectMapper.writeValueAsString(
+                mapOf("data" to files))
+
+        return postJson("chart-data/input-time-series/$type", json)
+    }
 }
