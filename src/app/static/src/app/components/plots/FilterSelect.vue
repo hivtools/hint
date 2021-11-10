@@ -1,6 +1,9 @@
 <template>
     <div>
-        <label :class="'font-weight-bold' + (disabled ? ' disabled-label' : '')" v-translate="label"></label>
+        <label :class="['font-weight-bold', { 'disabled-label': disabled }]" v-translate="label"></label>
+        <span v-if="labelTooltip" v-tooltip="{content: `<dl>${labelTooltip}</dl>`, classes: 'filter-select'}" class="icon-small">
+            <help-circle-icon></help-circle-icon>
+        </span>
         <treeselect id="survey-filters" :multiple=multiple
                     :clearable="false"
                     :options=options
@@ -17,11 +20,12 @@
     import i18next from "i18next";
     import Vue from "vue";
     import Treeselect from '@riophae/vue-treeselect';
-    import {mapStateProp} from "../../utils";
+    import {flattenOptions, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import {FilterOption} from "../../generated";
-    import {flattenOptions} from "../../utils";
+    import {HelpCircleIcon} from "vue-feather-icons";
+    import {VTooltip} from "v-tooltip";
 
     interface Methods {
         input: (value: string[]) => void
@@ -32,14 +36,15 @@
     interface Computed {
         treeselectValue: string[] | string | null
         currentLanguage: Language
-        placeholder: string
+        placeholder: string,
+        labelTooltip: string
     }
 
     interface Props {
         multiple: boolean,
         label: string,
         disabled: boolean,
-        options: any[],
+        options: FilterOption[],
         value: string[] | string
     }
 
@@ -73,6 +78,12 @@
             placeholder() {
                 const key = this.disabled ? "notUsed" : "select";
                 return i18next.t(key, this.currentLanguage)
+            },
+            labelTooltip() {
+                return this.options.reduce(
+                    (lines, option) => lines.concat(option.description ? `<dt>${option.label}</dt><dd>${option.description}</dd>` : []),
+                    [] as string[]
+                ).join('');
             }
         },
         methods: {
@@ -94,7 +105,13 @@
                 this.$emit("select", this.selectedOptions);
             }
         },
-        components: {Treeselect}
+        components: {
+            Treeselect,
+            HelpCircleIcon
+        },
+        directives: {
+            tooltip: VTooltip
+        }
     });
 </script>
 
