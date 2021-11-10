@@ -1,6 +1,10 @@
+# hint 1.66.0
+
+Made Calibration plot visible
+
 # hint 1.65.0
 
-* Show Input Time Series plots
+Output Time Series plots
 
 # hint 1.64.3
 
