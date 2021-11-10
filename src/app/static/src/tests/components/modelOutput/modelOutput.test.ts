@@ -2,8 +2,10 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import {
-    mockBaselineState, mockCalibrateResultResponse, mockModelCalibrateState,
-    mockModelRunState, mockShapeResponse,
+    mockBaselineState,
+    mockCalibrateResultResponse,
+    mockModelCalibrateState,
+    mockShapeResponse,
 } from "../../mocks";
 import {mutations as modelOutputMutations} from "../../../app/store/modelOutput/mutations";
 import {mutations as plottingSelectionMutations} from "../../../app/store/plottingSelections/mutations";

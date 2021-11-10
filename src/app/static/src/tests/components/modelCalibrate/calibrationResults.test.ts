@@ -1,17 +1,13 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import CalibrationResults from "../../../app/components/modelCalibrate/CalibrationResults.vue";
-import {
-    mockBaselineState, mockCalibrateResultResponse,
-    mockModelRunState, mockShapeResponse,
-} from "../../mocks";
+import {mockCalibrateResultResponse} from "../../mocks";
 import {mutations as modelCalibrateMutations} from "../../../app/store/modelCalibrate/mutations";
 import {mutations as plottingSelectionMutations} from "../../../app/store/plottingSelections/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
-import {inactiveFeatures} from "../../../app/main";
 import {BarChartWithFilters} from "@reside-ic/vue-charts";
-import {modelCalibrate, ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
+import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
 import {expectTranslated} from "../../testHelpers";
 import {BarchartIndicator} from "../../../app/types";
 import Vue from 'vue';

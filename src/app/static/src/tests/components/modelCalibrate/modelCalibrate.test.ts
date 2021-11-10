@@ -1,4 +1,4 @@
-import Vuex, {ActionTree, MutationTree, Store} from "vuex";
+import Vuex, {Store} from "vuex";
 import {mockError, mockModelCalibrateState, mockRootState} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {RootState} from "../../../app/root";
