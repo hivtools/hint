@@ -1,3 +1,7 @@
+# hint 1.65.0
+
+* Show Input Time Series plots
+
 # hint 1.64.3
 
 * Fix language bug on reload
