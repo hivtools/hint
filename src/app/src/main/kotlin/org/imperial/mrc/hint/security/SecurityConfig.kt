@@ -67,8 +67,6 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
     {
         var savedMode = pac4jConfig.sessionStore.get(webContext, MODE) as String?
 
-        println("Setting to mode to $mode - saved mode was $savedMode")
-
         if (savedMode != mode)
         {
             // If mode has changed, clear the session version id too
