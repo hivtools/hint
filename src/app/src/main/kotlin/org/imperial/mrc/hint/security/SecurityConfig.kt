@@ -46,6 +46,7 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
     companion object
     {
         private const val VERSION_ID = "version_id"
+        private const val MODE = "mode"
     }
 
     fun getUserProfile(): CommonProfile
@@ -60,6 +61,20 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
     fun userIsGuest(): Boolean
     {
         return getUserProfile().id == GUEST_USER
+    }
+
+    fun setMode(mode: String)
+    {
+        var savedMode = pac4jConfig.sessionStore.get(webContext, MODE) as String?
+
+        println("Setting to mode to $mode - saved mode was $savedMode")
+
+        if (savedMode != mode)
+        {
+            // If mode has changed, clear the session version id too
+            pac4jConfig.sessionStore.set(webContext, MODE, mode)
+            setVersionId(null)
+        }
     }
 
     fun getVersionId(): String
