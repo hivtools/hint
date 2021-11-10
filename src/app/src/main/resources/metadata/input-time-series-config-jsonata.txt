@@ -40,6 +40,7 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
                              or
                              ((($areaData.value)[$thi+1] != null) and ($thi < $count($areaData.value)-1) and ($areaData.value)[$thi+1] < (0.75 * $thv))
                          )
+                         ? $thv : null
                      }),
                     "xaxis": 'x' & ($i+1),
                     "yaxis": 'y' & ($i+1),
