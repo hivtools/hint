@@ -7,7 +7,7 @@ import {
     mockError,
     mockFile,
     mockLoadState,
-    mockMetadataState, mockModelCalibrateState,
+    mockMetadataState,
     mockModelRunState,
     mockPJNZResponse,
     mockPopulationResponse,
