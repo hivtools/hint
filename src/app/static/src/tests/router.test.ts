@@ -17,13 +17,13 @@ const projectActions = {
     getCurrentProject: jest.fn()
 };
 
-const actions = {
-    getADRSchemas: jest.fn()
-}
-
 const genericChartActions = {
     getGenericChartMetadata: jest.fn()
-}
+};
+
+const actions = {
+    getADRSchemas: jest.fn()
+};
 
 storeOptions.modules!!.baseline!!.actions = baselineActions;
 storeOptions.modules!!.surveyAndProgram!!.actions = surveyAndProgramActions;
