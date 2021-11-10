@@ -571,9 +571,9 @@ describe("Error report component", () => {
         wrapper.setData({showFeedback: true});
 
         expectTranslated(wrapper.find("#report-success"),
-            "Thank you, your report has been sent. We will respond as soon as possible.",
-            "Merci, votre rapport a été envoyé. Nous vous répondrons dans les plus brefs délais.",
-            "Obrigado, seu relatório foi enviado. Nós responderemos o mais rapidamente possível.",
+            "Thank you, your request has been sent. We will respond as soon as possible.",
+            "Merci, votre demande a été envoyé. Nous vous répondrons dans les plus brefs délais.",
+            "Obrigado, sua solicitação foi enviada. Nós responderemos o mais rapidamente possível.",
             wrapper.vm.$store
         );
         expectTranslated(wrapper.find(".btn-red"), "Close", "Fermer", "Fechar",
@@ -595,9 +595,9 @@ describe("Error report component", () => {
         });
         wrapper.setData({showFeedback: true});
         expectTranslated(wrapper.find("#report-error"),
-            "An error occurred while sending your report:",
-            "Une erreur s'est produite lors de l'envoi de votre rapport :",
-            "Ocorreu um erro ao enviar seu relatório:",
+            "An error occurred while sending your request:",
+            "Une erreur s'est produite lors de l'envoi de votre demande :",
+            "Ocorreu um erro ao enviar sua solicitação:",
             wrapper.vm.$store
         );
         expect(wrapper.find(ErrorAlert).props("error")).toBe(errorReportError);
