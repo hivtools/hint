@@ -1,6 +1,6 @@
 import {expectAllMutationsDefined} from "../testHelpers";
 import {ModelCalibrateMutation, mutations} from "../../app/store/modelCalibrate/mutations";
-import {mockError, mockModelCalibrateState, mockWarning,} from "../mocks";
+import {mockCalibrateResultResponse, mockError, mockModelCalibrateState, mockWarning,} from "../mocks";
 import {VersionInfo} from "../../app/generated";
 
 describe("ModelCalibrate mutations", () => {
@@ -155,5 +155,12 @@ describe("ModelCalibrate mutations", () => {
         const warnings = [mockWarning()]
         mutations.WarningsFetched(testState, {payload: warnings});
         expect(testState.warnings).toEqual([mockWarning()]);
+    });
+
+    it("sets model calibrate result", () => {
+        const testState = mockModelCalibrateState();
+        const result = mockCalibrateResultResponse()
+        mutations[ModelCalibrateMutation.CalibrateResultFetched](testState, {payload: result});
+        expect(testState.result).toEqual(result);
     });
 });

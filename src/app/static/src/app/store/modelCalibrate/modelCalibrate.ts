@@ -36,7 +36,7 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
         complete: false,
         generatingCalibrationPlot: false,
         calibratePlotResult: null,
-        result: {} as CalibrateResultResponse,
+        result: null,
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
         error: null,
         warnings: []

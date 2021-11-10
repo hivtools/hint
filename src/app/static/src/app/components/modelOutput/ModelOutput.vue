@@ -210,11 +210,6 @@
                 ]
             },
             selectedTab: mapStateProp<ModelOutputState, string>("modelOutput", state => state.selectedTab),
-            /* chartdata: mapStateProp<ModelRunState, any>("modelRun", state => {
-                return state.result ? state.result.data : [];
-            }),
-
-             */
             chartdata: mapStateProp<ModelCalibrateState, any>("modelCalibrate", state => {
                 return state.result ? state.result.data : [];
             }),

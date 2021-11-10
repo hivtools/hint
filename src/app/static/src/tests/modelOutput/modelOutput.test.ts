@@ -1,6 +1,6 @@
 import {modelOutputGetters} from "../../app/store/modelOutput/modelOutput";
 import {
-    mockBaselineState, mockModelOutputState,
+    mockBaselineState, mockCalibrateResultResponse, mockModelCalibrateState, mockModelOutputState,
     mockModelResultResponse,
     mockModelRunState,
     mockRootState,
@@ -17,7 +17,7 @@ describe("modelOutput module", () => {
         {id: "area", column_id: "area_id", label: "Area", options: [], use_shape_regions: true},
     ];
 
-    const modelRunResponse = mockModelResultResponse({
+    const modelRunResponse = mockCalibrateResultResponse({
         plottingMetadata: {
             barchart: {
                 filters,
@@ -69,7 +69,7 @@ describe("modelOutput module", () => {
             })
         }),
         modelOutput: mockModelOutputState(),
-        modelRun: mockModelRunState({
+        modelCalibrate: mockModelCalibrateState({
             result: modelRunResponse
         })
     });
@@ -87,26 +87,20 @@ describe("modelOutput module", () => {
     });
 
     it("gets bubble plot indicators", async () => {
-        const testRootGetters = {
-            "metadata/outputIndicatorsMetadata": ["TEST INDICATORS"]
-        };
-
-        const result = modelOutputGetters.bubblePlotIndicators(mockModelOutputState(), null, rootState, testRootGetters);
-        expect(result).toStrictEqual(["TEST INDICATORS"]);
+        const result = modelOutputGetters.bubblePlotIndicators(mockModelOutputState(), null, rootState);
+        expect(result.length).toEqual(0);
+        expect(result).toBe(modelRunResponse.plottingMetadata.choropleth.indicators);
     });
 
     it("gets bubble plot filters", async () => {
-        const result = modelOutputGetters.bubblePlotFilters(mockModelOutputState(), null, rootState, null);
+        const result = modelOutputGetters.bubblePlotFilters(mockModelOutputState(), null, rootState);
         expectOutputPlotFilters(result);
     });
 
     it("gets choropleth indicators", async () => {
-        const testRootGetters = {
-            "metadata/outputIndicatorsMetadata": ["TEST INDICATORS"]
-        };
-
-        const result = modelOutputGetters.choroplethIndicators(mockModelOutputState(), null, rootState, testRootGetters);
-        expect(result).toStrictEqual(["TEST INDICATORS"]);
+        const result = modelOutputGetters.choroplethIndicators(mockModelOutputState(), null, rootState);
+        expect(result.length).toEqual(0);
+        expect(result).toBe(modelRunResponse.plottingMetadata.choropleth.indicators);
     });
 
     it("gets choropleth filters", async () => {

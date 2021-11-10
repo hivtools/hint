@@ -1,3 +1,7 @@
+# hint 1.66.0
+
+* Update review output plots to use metadata from modelCalibrate
+
 # hint 1.65.0
 
 * Show Input Time Series plots

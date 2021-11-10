@@ -191,7 +191,7 @@ describe("ModelCalibrate actions", () => {
 
         expect(commit.mock.calls.length).toBe(5);
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type:"modelRun/RunResultFetched",
+            type:"CalibrateResultFetched",
             payload: testResult
         });
         expect(commit.mock.calls[1][0]).toStrictEqual({
