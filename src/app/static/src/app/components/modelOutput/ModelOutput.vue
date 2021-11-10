@@ -120,6 +120,7 @@
     import {mapState} from "vuex";
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {formatOutput} from "../plots/utils";
+    import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
 
     const namespace = 'filteredData';
 
@@ -209,7 +210,12 @@
                 ]
             },
             selectedTab: mapStateProp<ModelOutputState, string>("modelOutput", state => state.selectedTab),
-            chartdata: mapStateProp<ModelRunState, any>("modelRun", state => {
+            /* chartdata: mapStateProp<ModelRunState, any>("modelRun", state => {
+                return state.result ? state.result.data : [];
+            }),
+
+             */
+            chartdata: mapStateProp<ModelCalibrateState, any>("modelCalibrate", state => {
                 return state.result ? state.result.data : [];
             }),
             barchartSelections() {

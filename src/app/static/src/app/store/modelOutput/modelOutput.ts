@@ -14,19 +14,19 @@ export interface ModelOutputState {
 
 export const modelOutputGetters = {
     barchartIndicators: (state: ModelOutputState, getters: any, rootState: RootState): BarchartIndicator[] => {
-        return rootState.modelRun.result!.plottingMetadata.barchart.indicators;
+        return rootState.modelCalibrate.result!.plottingMetadata.barchart.indicators;
     },
     barchartFilters: (state: ModelOutputState, getters: any, rootState: RootState): Filter[] => {
        return outputPlotFilters(rootState);
     },
     bubblePlotIndicators: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): ChoroplethIndicatorMetadata[] => {
-        return rootGetters['metadata/outputIndicatorsMetadata'];
+        return rootState.modelCalibrate.result!.plottingMetadata.choropleth.indicators;
     },
     bubblePlotFilters: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): Filter[] => {
         return outputPlotFilters(rootState);
     },
     choroplethIndicators: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): ChoroplethIndicatorMetadata[] => {
-        return rootGetters['metadata/outputIndicatorsMetadata'];
+        return rootState.modelCalibrate.result!.plottingMetadata.choropleth.indicators;
     },
     choroplethFilters: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): DisplayFilter[] => {
         const outputFilters = outputPlotFilters(rootState) as Filter[];
@@ -46,7 +46,7 @@ export const modelOutputGetters = {
 };
 
 const outputPlotFilters = (rootState: RootState) => {
-    let filters = [...rootState.modelRun.result!.plottingMetadata.barchart.filters];
+    let filters = [...rootState.modelCalibrate.result!.plottingMetadata?.barchart.filters];
     const area = filters.find((f: any) => f.id == "area");
     if (area && area.use_shape_regions) {
         const regions: FilterOption[] = rootState.baseline.shape!.filters!.regions ?
