@@ -1,3 +1,7 @@
+# hint 1.66.0
+
+* Add /explore endpoint
+
 # hint 1.65.0
 
 * Show Input Time Series plots

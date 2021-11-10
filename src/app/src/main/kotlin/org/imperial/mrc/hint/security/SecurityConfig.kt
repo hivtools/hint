@@ -65,8 +65,7 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
 
     fun setMode(mode: String)
     {
-        var savedMode = pac4jConfig.sessionStore.get(webContext, MODE) as String?
-
+        val savedMode = pac4jConfig.sessionStore.get(webContext, MODE) as String?
         if (savedMode != mode)
         {
             // If mode has changed, clear the session version id too

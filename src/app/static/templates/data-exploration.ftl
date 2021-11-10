@@ -11,7 +11,7 @@
 <div id="app" :class="language">
     <div class="container mb-5">
         <div class="row h4 mt-4">
-            Data Exploration Content will go here
+            Data Exploration content will go here
         </div>
     </div>
 </div>

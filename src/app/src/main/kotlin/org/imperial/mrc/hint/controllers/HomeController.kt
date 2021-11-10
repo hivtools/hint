@@ -27,23 +27,23 @@ class HomeController(
     @GetMapping(value = ["/", "/projects", "accessibility"])
     fun index(model: Model): String
     {
-        val userProfile = session.getUserProfile()
-        session.setMode("naomi")
-        versionRepository.saveVersion(session.getVersionId(), null)
-        model["title"] = appProperties.applicationTitle
-        model["user"] = userProfile.id
-        return "index"
+        return loadApp("naomi", appProperties.applicationTitle, "index", model)
     }
 
     @GetMapping(value = ["/explore"])
     fun explore(model: Model): String
     {
+        return loadApp("explore", appProperties.exploreApplicationTitle, "data-exploration", model)
+    }
+
+    private fun loadApp(mode: String, applicationTitle: String, template: String, model: Model): String
+    {
         val userProfile = session.getUserProfile()
-        session.setMode("explore")
+        session.setMode(mode)
         versionRepository.saveVersion(session.getVersionId(), null)
-        model["title"] = "Naomi Data Exploration"
+        model["title"] = applicationTitle
         model["user"] = userProfile.id
-        return "data-exploration"
+        return template
     }
 
     @GetMapping("/metrics", produces = ["text/plain"])
