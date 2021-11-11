@@ -227,6 +227,8 @@ export interface Translations {
     sharedBy: string,
     shareProject: string,
     shareProjectInstructions: string,
+    showLess: string,
+    showMore: string,
     sizeIndicator: string,
     static: string,
     step: string,
@@ -258,6 +260,9 @@ export interface Translations {
     versionCountLabelPlural: string,
     versionCountLabelSingle: string,
     versions: string,
+    warningsHeaderModelOptions: string,
+    warningsHeaderModelRun: string,
+    warningsHeaderModelCalibrate: string,
     xAxis: string,
     year: string
 }
@@ -523,6 +528,8 @@ const en: Translations = {
         "this project with. Press Enter to add a new address. " +
         "These email addresses must be already registered with Naomi." +
         "</p>",
+    showLess: "Show less",
+    showMore: "Show more",
     sizeIndicator: "Size Indicator",
     static: "Static",
     step: "Step",
@@ -554,6 +561,9 @@ const en: Translations = {
     versionCountLabelPlural: "versions",
     versionCountLabelSingle: "version",
     versions: "Versions",
+    warningsHeaderModelOptions: "Model option validation raised the following warning(s)",
+    warningsHeaderModelRun: "Model fit raised the following warning(s)",
+    warningsHeaderModelCalibrate: "Model calibration raised the following warning(s)",
     xAxis: "X Axis",
     year: "Year"
 };
@@ -815,6 +825,8 @@ const fr: Partial<Translations> = {
         "avec lesquelles vous souhaitez partager ce projet. Appuyez sur Enter pour ajouter une autre adresse. Ces adresses e-mails doivent être " +
         "déjà enregistrées dans Naomi." +
         "</p>",
+    showLess: "Montrer moins",
+    showMore: "Montrer plus",
     sizeIndicator: "Indicateur de taille",
     static: "Statique",
     step: "Étape",
@@ -846,6 +858,9 @@ const fr: Partial<Translations> = {
     versionCountLabelPlural: "versions",
     versionCountLabelSingle: "version",
     versions: "Versions",
+    warningsHeaderModelOptions: "La validation de l'option de modèle a généré le(s) avertissement(s) suivant(s)",
+    warningsHeaderModelRun: "L'ajustement du modèle a soulevé le(s) avertissement(s) suivant(s)",
+    warningsHeaderModelCalibrate: "L'étalonnage du modèle a déclenché le(s) avertissement(s) suivant(s)",
     xAxis: "Axe X",
     year: "An"
 };
@@ -1106,6 +1121,8 @@ const pt: Partial<Translations> = {
         " Por favor, introduza os endereços de e-mail com os quais gostaria de partilhar este projeto. " +
         "Prima Enter para adicionar um novo endereço. Estes endereços de e-mail já devem estar registados na Naomi." +
         "</p>",
+    showLess: "Mostre menos",
+    showMore: "Mostre mais",
     sizeIndicator: "Indicador de tamanho",
     static: "Estático",
     step: "Etapa",
@@ -1137,6 +1154,9 @@ const pt: Partial<Translations> = {
     versionCountLabelPlural: "versões",
     versionCountLabelSingle: "versão",
     versions: "Versões",
+    warningsHeaderModelOptions: "A validação da opção de modelo gerou o (s) seguinte (s) aviso (s)",
+    warningsHeaderModelRun: "O ajuste do modelo gerou o seguinte aviso (s)",
+    warningsHeaderModelCalibrate: "A calibração do modelo gerou o (s) seguinte (s) aviso (s)",
     xAxis: "Eixo X",
     year: "Ano"
 };

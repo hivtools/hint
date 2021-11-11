@@ -1,14 +1,18 @@
-# hint 1.67.0
+# hint 1.68.0
 
 * Update review output plots to use metadata from modelCalibrate
 
+# hint 1.67.0
+
+* Component to display warnings from hintr
+
 # hint 1.66.0
 
-Made Calibration plot visible
+* Made Calibration plot visible
 
 # hint 1.65.0
 
-Output Time Series plots
+* Output Time Series plots
 
 # hint 1.64.3
 
