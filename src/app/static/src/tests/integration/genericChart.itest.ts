@@ -31,7 +31,7 @@ describe("genericChart actions", () => {
         expect(response["input-time-series"].chartConfig[0].config.startsWith("(")).toBe(true);
     });
 
-    it("can fetch dataset", async () => {
+    xit("can fetch dataset", async () => {
         await uploadInputFiles();
         const commit = jest.fn();
         const payload = {datasetId: "ART", url: "/chart-data/input-time-series/programme"};
