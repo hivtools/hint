@@ -182,22 +182,43 @@ export interface SelectedADRUploadFiles {
     coarseOutput?: any
 }
 
+export interface GenericChartTableConfig {
+    columns: GenericChartTableColumnConfig[]
+}
+
+export interface GenericChartTableColumnConfig {
+    data: {
+        columnId: string,
+        labelColumn?: string
+        hierarchyColumn?: string
+    },
+    header: {
+        type: "columnLabel" | "selectedFilterOption",
+        column: string
+    }
+}
+
 export interface DatasetConfig {
     id: string
-    type: "standard" | "custom"
     label: string
-    module?: string
-    prop?: string
-    filters?: Filter[]
+    url: string
+    filters?: DatasetFilterConfig[],
+    table?: GenericChartTableConfig
+}
+
+export interface DatasetFilterConfig {
+    id: string,
+    source: string,
+    allowMultiple: boolean
 }
 
 export interface DataSourceConfig {
     id: string
     type: "fixed" | "editable"
-    label: string
+    label?: string
     datasetId: string
-    showFilters: true
-    showIndicators: true
+    showFilters: boolean
+    showIndicators: boolean
 }
 
 export interface GenericChartMetadata {
@@ -219,6 +240,23 @@ export interface GenericChartMetadata {
 
 export interface GenericChartMetadataResponse {
     [key: string]: GenericChartMetadata;
+}
+
+export interface GenericChartColumn {
+    id: string,
+    column_id: string,
+    label: string,
+    values: FilterOption[]
+}
+
+export interface GenericChartDataset {
+    data: Dict<unknown>[],
+    metadata: {
+        columns: GenericChartColumn[],
+        defaults: {
+            selected_filter_options: Dict<FilterOption[]>
+        }
+    }
 }
 
 export interface StepWarnings {

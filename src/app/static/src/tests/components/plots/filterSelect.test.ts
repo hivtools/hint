@@ -4,6 +4,7 @@ import TreeSelect from '@riophae/vue-treeselect';
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {HelpCircleIcon} from "vue-feather-icons";
 
 describe("FilterSelect component", () => {
     const testOptions = [{id: "1", label: "one"}, {id: "2", label: "two"}];
@@ -16,6 +17,30 @@ describe("FilterSelect component", () => {
     it("renders label", () => {
         const wrapper = shallowMount(FilterSelect, {store, propsData: {options: testOptions, label: "testLabel"}});
         expect(wrapper.find("label").text()).toBe("testLabel");
+    });
+
+    it("renders tooltip if any options have descriptions", () => {
+        const tooltip = jest.fn();
+        const wrapper = shallowMount(FilterSelect, {
+            store,
+            propsData: {
+                options: [
+                    ...testOptions,
+                    {id: "3", label: "three", description: "Third option"},
+                    {id: "4", label: "four", description: "Fourth option"}
+                ]
+            },
+            directives: {
+                tooltip
+            }
+        });
+        expect(wrapper.find(HelpCircleIcon).exists()).toBe(true);
+        expect(tooltip.mock.calls[0][1].value.content).toBe("<dl><dt>three</dt><dd>Third option</dd><dt>four</dt><dd>Fourth option</dd></dl>");
+    });
+
+    it("does not render tooltip unless any options have descriptions", () => {
+        const wrapper = shallowMount(FilterSelect, {store, propsData: {options: testOptions, label: "testLabel"}});
+        expect(wrapper.find("span.filter-select").exists()).toBe(false);
     });
 
     it("renders TreeSelect", () => {
