@@ -46,6 +46,7 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
     companion object
     {
         private const val VERSION_ID = "version_id"
+        private const val APP_MODE = "app_mode"
     }
 
     fun getUserProfile(): CommonProfile
@@ -77,6 +78,16 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
     fun setVersionId(value: String?)
     {
         pac4jConfig.sessionStore.set(webContext, VERSION_ID, value)
+    }
+
+    fun getMode(): String?
+    {
+        return pac4jConfig.sessionStore.get(webContext, APP_MODE) as String?
+    }
+
+    fun setMode(value: String?)
+    {
+        pac4jConfig.sessionStore.set(webContext, APP_MODE, value)
     }
 
     fun generateVersionId(): String

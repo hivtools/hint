@@ -28,6 +28,11 @@ class HomeController(
     fun index(model: Model): String
     {
         val userProfile = session.getUserProfile()
+        val mode = session.getMode()
+        if (mode == "explore"){
+            session.setMode(null)
+            session.setVersionId(null)
+        }
         versionRepository.saveVersion(session.getVersionId(), null)
         model["title"] = appProperties.applicationTitle
         model["user"] = userProfile.id
@@ -38,6 +43,11 @@ class HomeController(
     fun explore(model: Model): String
     {
         val userProfile = session.getUserProfile()
+        val mode = session.getMode()
+        if (mode != "explore"){
+            session.setMode("explore")
+            session.setVersionId(null)
+        }
         versionRepository.saveVersion(session.getVersionId(), null)
         model["title"] = "Naomi Data Exploration"
         model["user"] = userProfile.id
