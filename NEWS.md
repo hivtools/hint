@@ -1,6 +1,10 @@
-# hint 1.67.1
+# hint 1.68.1
 
 * moves internal logic from plotting selections module to model calibrate module - no visible change
+
+# hint 1.68.0
+
+* Add /explore endpoint
 
 # hint 1.67.0
 

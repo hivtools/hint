@@ -27,6 +27,13 @@ class HintApplicationTests : SecureIntegrationTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
+    fun `all users can access explore`(isAuthorized: IsAuthorized)
+    {
+        testAllUserAccess("/explore", isAuthorized)
+    }
+
+    @ParameterizedTest
+    @EnumSource(IsAuthorized::class)
     fun `all users can access projects`(isAuthorized: IsAuthorized)
     {
         testAllUserAccess("/projects", isAuthorized)
