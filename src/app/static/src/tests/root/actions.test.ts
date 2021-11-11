@@ -198,7 +198,7 @@ describe("root actions", () => {
 
     const expectChangeLanguageMutations = (commit: Mock) => {
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: RootMutation.SetUpdatingLanguage,
+            type: LanguageMutation.SetUpdatingLanguage,
             payload: true
         });
         expect(commit.mock.calls[1][0]).toStrictEqual({
@@ -207,7 +207,7 @@ describe("root actions", () => {
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: RootMutation.SetUpdatingLanguage,
+            type: LanguageMutation.SetUpdatingLanguage,
             payload: false
         });
     };
