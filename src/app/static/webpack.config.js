@@ -121,7 +121,23 @@ const resetPasswordAppConfig =  {...commonConfig,
     ]
 };
 
-module.exports = [appConfig, forgotPasswordAppConfig, resetPasswordAppConfig];
+const dataExplorationAppConfig = {...commonConfig,
+    entry: './src/app/index.ts', //TODO: replace with './src/app/dataExploration.ts' in mrc-2756
+    output: {
+        path: path.resolve(__dirname, './public'),
+        publicPath: '/public/',
+        filename: 'js/app.js' //TODO: replace with  'js/dataExploration.js' in mrc-2756
+    },
+    plugins: [...commonConfig.plugins,
+        new HtmlWebpackPlugin({
+            hash: true,
+            template: 'public/data-exploration.ftl',
+            filename: 'data-exploration.ftl'
+        })
+    ]
+};
+
+module.exports = [appConfig, forgotPasswordAppConfig, resetPasswordAppConfig, dataExplorationAppConfig];
 
 if (process.env.NODE_ENV === 'production') {
     module.exports.forEach((moduleExport) =>
