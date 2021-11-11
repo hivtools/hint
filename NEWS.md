@@ -1,3 +1,7 @@
+# hint 1.67.1
+
+* moves internal logic from plotting selections module to model calibrate module - no visible change
+
 # hint 1.67.0
 
 * Component to display warnings from hintr
