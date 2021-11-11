@@ -1,6 +1,10 @@
-# hint 1.68.1
+# hint 1.68.2
 
 * moves internal logic from plotting selections module to model calibrate module - no visible change
+
+# hint 1.68.1
+
+* Rename "Report issues" to "Troubleshooting request"
 
 # hint 1.68.0
 
