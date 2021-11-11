@@ -134,7 +134,7 @@ describe("Online support menu", () => {
         expect(wrapper.find(ErrorReport).props("open")).toBe(false);
 
         const link = wrapper.findAll(".dropdown-item").at(1);
-        expectTranslated(link, "Report issues", "Signaler des problèmes", "Reportar problemas", store as any);
+        expectTranslated(link, "Troubleshooting request", "Demande de dépannage", "Solicitação de solução de problemas", store as any);
 
         link.trigger("click");
 
