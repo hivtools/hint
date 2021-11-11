@@ -1,3 +1,7 @@
+# hint 1.68.0
+
+* Add /explore endpoint
+
 # hint 1.67.0
 
 * Component to display warnings from hintr
