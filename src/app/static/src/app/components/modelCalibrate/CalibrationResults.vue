@@ -79,7 +79,7 @@
         },
         computed: {
             ...mapGettersByNames(namespace, ["indicators", "filters"]),
-            ...mapGettersByNames("plottingSelections", [
+            ...mapGettersByNames("modelCalibrate", [
                 "calibratePlotDefaultSelections",
             ]),
             chartData: mapStateProp<ModelCalibrateState, any>(
