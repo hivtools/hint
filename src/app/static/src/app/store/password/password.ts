@@ -1,6 +1,6 @@
 import {Error} from "../../generated";
-import {TranslatableState} from "../../root";
 import {Language} from "../translations/locales";
+import {TranslatableState} from "../../types";
 
 export interface PasswordState extends TranslatableState {
     resetLinkRequested: boolean

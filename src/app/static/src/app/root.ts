@@ -43,12 +43,9 @@ import {
 import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibrate/mutations";
 import {GenericChartState, initialGenericChartState, genericChart} from "./store/genericChart/genericChart";
 import {Warning} from "./generated";
+import {DataExplorationState} from "./store/dataExploration/dataExploration";
 
-export interface TranslatableState {
-    language: Language
-}
-
-export interface RootState extends TranslatableState {
+export interface RootState extends DataExplorationState {
     version: string,
     adr: ADRState,
     genericChart: GenericChartState,
@@ -158,7 +155,8 @@ export const emptyState = (): RootState => {
         errors: initialErrorsState(),
         projects: initialProjectsState(),
         currentUser: currentUser,
-        downloadResults: initialDownloadResultsState()
+        downloadResults: initialDownloadResultsState(),
+        dataExplorationMode: false
     }
 };
 const existingState = localStorageManager.getState();

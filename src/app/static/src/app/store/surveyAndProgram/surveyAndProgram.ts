@@ -5,6 +5,7 @@ import {ReadyState, RootState} from "../../root";
 import {AncResponse, ProgrammeResponse, SurveyResponse, Error} from "../../generated";
 import {getters} from "./getters";
 import {localStorageManager} from "../../localStorageManager";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export enum DataType { ANC, Program, Survey}
 
@@ -40,7 +41,7 @@ export const initialSurveyAndProgramState = (): SurveyAndProgramState => {
 const namespaced = true;
 
 const existingState = localStorageManager.getState();
-export const surveyAndProgram: Module<SurveyAndProgramState, RootState> = {
+export const surveyAndProgram: Module<SurveyAndProgramState, DataExplorationState> = {
     namespaced,
     state: {...initialSurveyAndProgramState(), ...existingState && existingState.surveyAndProgram},
     getters,
