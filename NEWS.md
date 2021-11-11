@@ -1,3 +1,7 @@
+# hint 1.68.1
+
+* Rename "Report issues" to "Troubleshooting request"
+
 # hint 1.68.0
 
 * Add /explore endpoint
