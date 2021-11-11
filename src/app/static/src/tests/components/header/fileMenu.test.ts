@@ -90,7 +90,7 @@ describe("File menu", () => {
         input.trigger("change");
     };
 
-    it("downloads file", (done) => {
+    it("downloads file", () => {
         const store = createStore();
         const wrapper = mount(FileMenu,
             {
@@ -135,7 +135,6 @@ describe("File menu", () => {
             const text = reader.result as string;
             const result = JSON.parse(text)[1];
             expect(result).toEqual(expectedJson);
-            done();
         });
 
         reader.readAsText(actualBlob);
