@@ -90,14 +90,13 @@ describe("File menu", () => {
         input.trigger("change");
     };
 
-    it("downloads file", () => {
+    it("downloads file", (done) => {
         const store = createStore();
         const wrapper = mount(FileMenu,
             {
                 propsData: {title: "naomi"},
                 store
             });
-
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
         let link = wrapper.findAll(".dropdown-item").at(0);
@@ -129,12 +128,12 @@ describe("File menu", () => {
         });
 
         const actualBlob = (mockCreateObjectUrl as jest.Mock).mock.calls[0][0];
-
         const reader = new FileReader();
         reader.addEventListener('loadend', function () {
             const text = reader.result as string;
             const result = JSON.parse(text)[1];
             expect(result).toEqual(expectedJson);
+            done();
         });
 
         reader.readAsText(actualBlob);
