@@ -1,3 +1,7 @@
+# hint 1.69.0
+
+* adds basic data exploration app with loading spinner 
+
 # hint 1.68.2
 
 * moves internal logic from plotting selections module to model calibrate module - no visible change
