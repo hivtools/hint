@@ -7,7 +7,7 @@ import {
     mockError,
     mockFile,
     mockLoadState,
-    mockMetadataState,
+    mockMetadataState, mockModelCalibrateState,
     mockModelRunState,
     mockPJNZResponse,
     mockPopulationResponse,
@@ -113,6 +113,7 @@ describe("File menu", () => {
             state: {
                 baseline: {selectedDataset: null, selectedRelease: null},
                 modelRun: mockModelRunState(),
+                modelCalibrate: {result: null},
                 metadata: mockMetadataState(),
                 surveyAndProgram: {selectedDataType: null},
                 language: Language.en
@@ -132,7 +133,7 @@ describe("File menu", () => {
         reader.addEventListener('loadend', function () {
             const text = reader.result as string;
             const result = JSON.parse(text)[1];
-            expect(result).toEqual(expectedJson);
+            expect(result).toStrictEqual(expectedJson);
             done();
         });
 
