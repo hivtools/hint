@@ -1,3 +1,7 @@
+# hint 1.68.1
+
+* Rename baseline and surveyAndProgram components
+
 # hint 1.68.0
 
 * Add /explore endpoint
