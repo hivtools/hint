@@ -1,12 +1,12 @@
 import {mount, Wrapper} from "@vue/test-utils";
 import Table from "../../../../app/components/plots/table/Table.vue";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
-import Vuex from "vuex";;
+import Vuex from "vuex";
 import {Language} from "../../../../app/store/translations/locales";
 
 const createStore = () => {
     const store = new Vuex.Store({
-        state: {language: Language.en}
+        state: {language: Language.en, updatingLanguage: false}
     });
     registerTranslations(store);
     return store as any;
@@ -14,7 +14,7 @@ const createStore = () => {
 
 const createStoreFr = () => {
     const store = new Vuex.Store({
-        state: {language: Language.fr}
+        state: {language: Language.fr, updatingLanguage: false}
     });
     registerTranslations(store);
     return store as any;
