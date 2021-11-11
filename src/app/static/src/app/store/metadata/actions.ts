@@ -1,15 +1,15 @@
 import {ActionContext, ActionTree} from 'vuex';
-import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {MetadataState} from "./metadata";
 import {MetadataMutations} from "./mutations";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface MetadataActions {
-    getPlottingMetadata: (store: ActionContext<MetadataState, RootState>, country: string) => void
-    getAdrUploadMetadata: (store: ActionContext<MetadataState, RootState>, downloadId: string) => Promise<void>
+    getPlottingMetadata: (store: ActionContext<MetadataState, DataExplorationState>, country: string) => void
+    getAdrUploadMetadata: (store: ActionContext<MetadataState, DataExplorationState>, downloadId: string) => Promise<void>
 }
 
-export const actions: ActionTree<MetadataState, RootState> & MetadataActions = {
+export const actions: ActionTree<MetadataState, DataExplorationState> & MetadataActions = {
 
     async getPlottingMetadata(context, iso3) {
         await api<MetadataMutations, MetadataMutations>(context)

@@ -1,7 +1,6 @@
 import {MutationTree} from "vuex";
-import {PayloadWithType} from "../../types";
+import {PayloadWithType, TranslatableState} from "../../types";
 import {Language} from "../translations/locales";
-import {TranslatableState} from "../../root";
 
 export enum LanguageMutation {
     ChangeLanguage = "ChangeLanguage"
