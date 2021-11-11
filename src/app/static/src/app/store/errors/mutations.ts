@@ -5,7 +5,9 @@ import {ErrorsState} from "./errors";
 
 export enum ErrorsMutation {
     ErrorAdded = "ErrorAdded",
-    DismissAll = "DismissAll"
+    DismissAll = "DismissAll",
+    ErrorReportError = "ErrorReportError",
+    ErrorReportSuccess = "ErrorReportSuccess"
 }
 
 export const mutations: MutationTree<ErrorsState> = {
@@ -16,5 +18,15 @@ export const mutations: MutationTree<ErrorsState> = {
 
     [ErrorsMutation.DismissAll](state: ErrorsState, action: PayloadWithType<null>) {
         state.errors = [];
-    }
+    },
+
+    [ErrorsMutation.ErrorReportError](state: ErrorsState, action: PayloadWithType<Error>) {
+        state.errorReportError = action.payload;
+        state.errorReportSuccess = false;
+    },
+
+    [ErrorsMutation.ErrorReportSuccess](state: ErrorsState) {
+        state.errorReportSuccess = true;
+        state.errorReportError = null
+    },
 };
