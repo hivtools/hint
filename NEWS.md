@@ -1,6 +1,10 @@
-# hint 1.68.0
+# hint 1.69.0
 
 * Update review output plots to use metadata from modelCalibrate
+
+# hint 1.68.0
+
+* Add /explore endpoint
 
 # hint 1.67.0
 
