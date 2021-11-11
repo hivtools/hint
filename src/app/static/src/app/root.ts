@@ -65,7 +65,6 @@ export interface RootState extends DataExplorationState {
     projects: ProjectsState
     currentUser: string,
     downloadResults: DownloadResultsState,
-    updatingLanguage: boolean,
     errorReportError: Error | null
     errorReportSuccess: boolean
 }

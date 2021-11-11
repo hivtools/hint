@@ -268,4 +268,5 @@ export interface StepWarnings {
 
 export interface TranslatableState {
     language: Language
+    updatingLanguage: boolean
 }

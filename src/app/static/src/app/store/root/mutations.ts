@@ -26,7 +26,6 @@ export enum RootMutation {
     ResetOutputs = "ResetOutputs",
     SetProject = "SetProject",
     ResetDownload = "ResetDownload",
-    SetUpdatingLanguage = "SetUpdatingLanguage",
     ErrorReportError = "ErrorReportError",
     ErrorReportSuccess = "ErrorReportSuccess"
 }
@@ -156,10 +155,6 @@ export const mutations: MutationTree<RootState> = {
         });
         Object.assign(state.adrUpload, initialADRUploadState());
         Object.assign(state.downloadResults, initialDownloadResultsState());
-    },
-
-    [RootMutation.SetUpdatingLanguage](state: RootState, action: PayloadWithType<boolean>) {
-        state.updatingLanguage = action.payload;
     },
 
     [RootMutation.ErrorReportError](state: RootState, action: PayloadWithType<Error>) {

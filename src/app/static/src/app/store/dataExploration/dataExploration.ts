@@ -21,6 +21,7 @@ import {localStorageManager} from "../../localStorageManager";
 import {StoreOptions} from "vuex";
 import {Error} from "../../generated";
 import {TranslatableState} from "../../types";
+import {mutations} from "./mutations";
 
 declare const currentUser: string;
 
@@ -75,5 +76,6 @@ export const storeOptions: StoreOptions<DataExplorationState> = {
         plottingSelections,
         errors,
         hintrVersion
-    }
+    },
+    mutations
 };
