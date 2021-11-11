@@ -37,6 +37,7 @@ function getStore(modelCalibrateState: Partial<ModelCalibrateState> = {}, partia
                 getters: {
                     indicators: jest.fn().mockReturnValue(["TEST BARCHART INDICATORS"]),
                     filters: jest.fn().mockReturnValue(["TEST BAR FILTERS"]),
+                    calibratePlotDefaultSelections: jest.fn().mockReturnValue(defaultSelections),
                     ...partialGetters
                 },
                 mutations: modelCalibrateMutations
@@ -48,7 +49,6 @@ function getStore(modelCalibrateState: Partial<ModelCalibrateState> = {}, partia
                     ...partialSelections
                 },
                 getters: {
-                    calibratePlotDefaultSelections: jest.fn().mockReturnValue(defaultSelections),
                     ...partialGetters
                 },
                 mutations: plottingSelectionMutations
@@ -103,7 +103,7 @@ describe("CalibrateResults component", () => {
         const store = getStore();
         const wrapper = shallowMount(CalibrationResults, {store, localVue});
         const vm = (wrapper as any).vm;
-        const { selected_filter_options, indicator_id, x_axis_id, disaggregate_by_id } = defaultSelections
+        const {selected_filter_options, indicator_id, x_axis_id, disaggregate_by_id} = defaultSelections
 
         expect(vm.selections).toStrictEqual({
             ...defaultSelections,
