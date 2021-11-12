@@ -14,7 +14,8 @@
                 <span v-translate="'selectNewFile'"></span>
             </label>
         </div>
-        <reset-confirmation :continue-editing="uploadSelectedFile"
+        <reset-confirmation v-if="!dataExplorationMode"
+                            :continue-editing="uploadSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showUploadConfirmation"></reset-confirmation>
     </div>
@@ -22,7 +23,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapGetterByName} from "../../utils";
+    import {mapGetterByName, mapStatePropByName} from "../../utils";
     import ResetConfirmation from "../ResetConfirmation.vue";
 
     interface Methods {
@@ -37,6 +38,7 @@
 
     interface Computed {
         editsRequireConfirmation: boolean
+        dataExplorationMode: boolean;
     }
 
     interface Props {
@@ -62,7 +64,13 @@
             ResetConfirmation
         },
         computed: {
-            editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation")
+            dataExplorationMode: mapStatePropByName(null, "dataExplorationMode"),
+            editsRequireConfirmation() {
+                if (this.dataExplorationMode){
+                    return false
+                }
+                return this.$store.getters["stepper/editsRequireConfirmation"]
+            }
         },
         methods: {
             handleFileSelect() {

@@ -3,8 +3,8 @@ import Vuex, {mapActions, mapState} from "vuex";
 import registerTranslations from "./store/translations/registerTranslations";
 import {DataExplorationState, storeOptions} from "./store/dataExploration/dataExploration";
 import Errors from "./components/Errors.vue";
-import LoadingSpinner from "./components/LoadingSpinner.vue";
 import {Language} from "./store/translations/locales";
+import DataExploration from "./components/DataExploration.vue";
 
 Vue.use(Vuex);
 
@@ -16,7 +16,7 @@ export const dataExplorationApp = new Vue({
     store,
     components: {
         Errors,
-        LoadingSpinner
+        DataExploration
     },
     computed: mapState<DataExplorationState>({
         language: (state: DataExplorationState) => state.language
