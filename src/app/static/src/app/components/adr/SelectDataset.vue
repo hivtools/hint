@@ -99,7 +99,7 @@
         mapActionByName,
         mapMutationByName,
         mapStateProp,
-        mapGetterByName, mapStatePropByName,
+        mapStatePropByName,
     } from "../../utils";
     import {RootState} from "../../root";
     import Modal from "../Modal.vue";

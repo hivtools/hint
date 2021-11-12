@@ -34,7 +34,7 @@
     import Tick from "../Tick.vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import ResetConfirmation from "../ResetConfirmation.vue";
-    import {mapGetterByName, mapStatePropByName} from "../../utils";
+    import {mapStatePropByName} from "../../utils";
     import {Error} from "../../generated";
 
     interface Data {

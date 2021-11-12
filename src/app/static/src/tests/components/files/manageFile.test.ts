@@ -1,4 +1,3 @@
-import Vue from "vue";
 import {shallowMount, Slots} from '@vue/test-utils';
 
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";

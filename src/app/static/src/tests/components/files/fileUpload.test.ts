@@ -2,7 +2,7 @@ import Vue from "vue";
 import {shallowMount, Slots} from '@vue/test-utils';
 
 import FileUpload from "../../../app/components/files/FileUpload.vue";
-import {mockDataExplorationState, mockFile, mockRootState} from "../../mocks";
+import {mockDataExplorationState, mockFile} from "../../mocks";
 import Vuex, {Store} from "vuex";
 import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";

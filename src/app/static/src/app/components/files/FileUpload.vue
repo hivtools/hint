@@ -23,7 +23,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapGetterByName, mapStatePropByName} from "../../utils";
+    import {mapStatePropByName} from "../../utils";
     import ResetConfirmation from "../ResetConfirmation.vue";
 
     interface Methods {
