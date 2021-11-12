@@ -451,7 +451,7 @@ const en: Translations = {
     missingError: "API response failed but did not contain any error information. Please contact support.",
     modelOptions: "Model options",
     newPassword: "New password",
-    next: "Next",
+    next: "next",
     noData: "No data are available for these selections.",
     noChartData: "No data are available for the selected combination. Please review the combination of filter values selected.",
     noneProvided: "none provided",

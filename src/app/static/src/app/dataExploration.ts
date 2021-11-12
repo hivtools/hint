@@ -4,7 +4,7 @@ import registerTranslations from "./store/translations/registerTranslations";
 import {DataExplorationState, storeOptions} from "./store/dataExploration/dataExploration";
 import Errors from "./components/Errors.vue";
 import {Language} from "./store/translations/locales";
-import DataExploration from "./components/DataExploration.vue";
+import DataExploration from "./components/dataExploration/DataExploration.vue";
 
 Vue.use(Vuex);
 
