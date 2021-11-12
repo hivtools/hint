@@ -66,7 +66,7 @@
         computed: {
             dataExplorationMode: mapStatePropByName(null, "dataExplorationMode"),
             editsRequireConfirmation() {
-                if (this.dataExplorationMode){
+                if (this.dataExplorationMode) {
                     return false
                 }
                 return this.$store.getters["stepper/editsRequireConfirmation"]
