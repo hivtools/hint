@@ -6,7 +6,7 @@ import SelectRelease from "../../../app/components/adr/SelectRelease.vue";
 import Modal from "../../../app/components/Modal.vue";
 import TreeSelect from '@riophae/vue-treeselect'
 import {
-    mockBaselineState,
+    mockBaselineState, mockDataExplorationState,
     mockDataset,
     mockDatasetResource,
     mockError,
@@ -209,10 +209,10 @@ describe("select dataset", () => {
 
     let currentVersion = {id: "version-id", created: "", updated: "", versionNumber: 1}
 
-    const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}, requireConfirmation: boolean = false) => {
+    const getStore = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}, requireConfirmation: boolean = false, customStore: any = mockRootState()) => {
 
         const store = new Vuex.Store({
-            state: mockRootState(),
+            state: customStore,
             getters: rootGetters,
             modules: {
                 adr: {
@@ -761,6 +761,45 @@ describe("select dataset", () => {
                     } as any
                 }
             }
+        );
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
+        rendered.find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: "id1"})
+        rendered.find(Modal).find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+
+        await Vue.nextTick();
+
+        expect((baselineActions.importPJNZ as Mock).mock.calls[0][1]).toBe("pjnz.pjnz");
+        expect((baselineActions.importPopulation as Mock).mock.calls[0][1]).toBe("pop.csv");
+        expect((baselineActions.importShape as Mock).mock.calls[0][1]).toBe("shape.geojson");
+
+        await Vue.nextTick(); // once for baseline actions to return
+        await Vue.nextTick(); // once for survey actions to return
+
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+
+    it("imports baseline files does not trigger confirmation dialog when on data exploration mode", async () => {
+        const store = getStore(
+            {
+                selectedDataset: {
+                    ...fakeDataset,
+                    resources: {
+                        pjnz: mockDatasetResource(pjnz),
+                        pop: mockDatasetResource(pop),
+                        shape: mockDatasetResource(shape)
+                    } as any
+                }
+            }, {}, true, mockDataExplorationState()
         );
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");

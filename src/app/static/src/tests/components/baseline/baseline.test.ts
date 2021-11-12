@@ -16,7 +16,7 @@ import {MetadataState} from "../../../app/store/metadata/metadata";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslatedWithStoreType} from "../../testHelpers";
 import {emptyState} from "../../../app/root";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
@@ -106,7 +106,7 @@ describe("Baseline upload component", () => {
     it("country name is passed to file upload component if country is present", () => {
         const store = createSut({country: "Malawi"});
         const wrapper = shallowMount(Baseline, {store, localVue});
-        expectTranslated(wrapper.findAll(ManageFile).at(0).find("label"),
+        expectTranslatedWithStoreType(wrapper.findAll(ManageFile).at(0).find("label"),
             "Country: Malawi", "Pays: Malawi", "País: Malawi", store);
     });
 
@@ -143,7 +143,7 @@ describe("Baseline upload component", () => {
         const store = createSut({validating: true});
         const wrapper = shallowMount(Baseline, {store, localVue});
         const validating = wrapper.find("#baseline-validating");
-        expectTranslated(validating.find("span"), "Validating...",
+        expectTranslatedWithStoreType(validating.find("span"), "Validating...",
             "Validation en cours...", "A validar...", store);
         expect(validating.findAll(LoadingSpinner).length).toEqual(1)
     });

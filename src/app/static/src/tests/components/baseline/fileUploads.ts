@@ -8,12 +8,13 @@ import {
     mockBaselineState,
     mockError,
     mockMetadataState,
-    mockPlottingSelections,
+    mockPlottingSelections, mockRootState,
     mockSurveyAndProgramState
 } from "../../mocks";
 import Baseline from "../../../app/components/baseline/Baseline.vue";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import {BaselineActions} from "../../../app/store/baseline/actions";
+import {emptyState} from "../../../app/root";
 
 export function testUploadComponent(name: string, position: number) {
 

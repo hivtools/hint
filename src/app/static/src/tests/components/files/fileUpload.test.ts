@@ -2,7 +2,7 @@ import Vue from "vue";
 import {shallowMount, Slots} from '@vue/test-utils';
 
 import FileUpload from "../../../app/components/files/FileUpload.vue";
-import {mockFile} from "../../mocks";
+import {mockDataExplorationState, mockFile, mockRootState} from "../../mocks";
 import Vuex, {Store} from "vuex";
 import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
@@ -11,17 +11,13 @@ import {expectTranslated} from "../../testHelpers";
 
 describe("File upload component", () => {
 
-    const mockGetters = {
-        editsRequireConfirmation: () => false,
-    };
-
-    const createStore = () => {
+    const createStore = (customStore: any = emptyState(), requireConfirmation = false) => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: customStore,
             modules: {
                 stepper: {
                     namespaced: true,
-                    getters: mockGetters
+                    getters: {editsRequireConfirmation: () => requireConfirmation}
                 }
             }
         });
@@ -122,6 +118,48 @@ describe("File upload component", () => {
         await Vue.nextTick();
 
         expect(wrapper.emitted().uploading.length).toBe(1);
+    });
+
+    it("does not trigger confirmation dialog when on data exploration mode", async () => {
+        const wrapper = shallowMount(FileUpload, {
+            store: createStore(mockDataExplorationState(), true),
+            propsData: {
+                uploading: false,
+                upload: jest.fn(),
+                name: "pjnz",
+                accept: "csv"
+            }
+        });
+
+        (wrapper.vm.$refs as any).pjnz = {
+            files: [testFile]
+        };
+        (wrapper.vm as any).handleFileSelect();
+
+        await Vue.nextTick();
+
+        expect(wrapper.emitted().uploading.length).toBe(1);
+    });
+
+    it("can trigger confirmation dialog when not on data exploration mode", async () => {
+        const wrapper = shallowMount(FileUpload, {
+            store: createStore(emptyState(), true),
+            propsData: {
+                uploading: false,
+                upload: jest.fn(),
+                name: "pjnz",
+                accept: "csv"
+            }
+        });
+
+        (wrapper.vm.$refs as any).pjnz = {
+            files: [testFile]
+        };
+        (wrapper.vm as any).handleFileSelect();
+
+        await Vue.nextTick();
+
+        expect(wrapper.emitted("uploading")).toBeUndefined();
     });
 
     it("file input is disabled and label has uploading class when uploading is true", async () => {

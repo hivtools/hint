@@ -7,7 +7,6 @@ import {getters} from "../../../app/store/surveyAndProgram/getters";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
-import {testUploadComponent} from "../baseline/fileUploads";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
 import {expectTranslatedWithStoreType} from "../../testHelpers";
@@ -18,10 +17,6 @@ describe(`data exploration component`, () => {
 
     let sapActions: jest.Mocked<SurveyAndProgramActions>;
     let sapMutations = {};
-
-    testUploadComponent("surveys", 3);
-    testUploadComponent("program", 4);
-    testUploadComponent("anc", 5);
 
     const createSut = (baselineState?: Partial<BaselineState>,
                        surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey}) => {

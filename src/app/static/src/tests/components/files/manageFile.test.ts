@@ -5,7 +5,7 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import Tick from "../../../app/components/Tick.vue";
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
-import {mockError, mockFile} from "../../mocks";
+import {mockDataExplorationState, mockError, mockFile} from "../../mocks";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import Vuex, {Store} from "vuex";
 import {emptyState, RootState} from "../../../app/root";
@@ -14,17 +14,14 @@ import {expectTranslated} from "../../testHelpers";
 
 describe("Manage file component", () => {
 
-    const mockGetters = {
-        editsRequireConfirmation: () => false
-    };
 
-    const createStore = () => {
+    const createStore = (customStore: any = emptyState(), requireConfirmation = false) => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: customStore,
             modules: {
                 stepper: {
                     namespaced: true,
-                    getters: mockGetters
+                    getters: {editsRequireConfirmation: () => requireConfirmation}
                 }
             }
         });
@@ -119,6 +116,31 @@ describe("Manage file component", () => {
             existingFileName: "File.csv",
             deleteFile: removeHandler
         });
+        const removeLink = wrapper.find("a");
+        expect(removeLink.text()).toBe("remove");
+
+        removeLink.trigger("click");
+
+        expect(removeHandler.mock.calls.length).toBe(1);
+    });
+
+    it("renders remove link if existing filename is present when on data exploration mode", () => {
+        const removeHandler = jest.fn();
+
+        const wrapper = shallowMount(ManageFile, {
+            store: createStore(mockDataExplorationState(), true),
+            propsData: {
+                error: null,
+                label: "PJNZ",
+                valid: true,
+                upload: jest.fn(),
+                deleteFile: removeHandler,
+                name: "pjnz",
+                accept: "csv",
+                existingFileName: "File.csv"
+            }
+        });
+
         const removeLink = wrapper.find("a");
         expect(removeLink.text()).toBe("remove");
 
