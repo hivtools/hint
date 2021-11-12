@@ -20,7 +20,7 @@ class ChartDataTests :  SecureIntegrationTests()
 
     }
 
- //   @Test
+    @Test
     fun `can get input time series chart data for anc`()
     {
         val ancPostEntity = getTestEntity("anc.csv")
@@ -33,7 +33,7 @@ class ChartDataTests :  SecureIntegrationTests()
         assertThat(data["data"][0]["plot"].asText()).startsWith("anc")
     }
 
- //   @Test
+    @Test
     fun `can get input time series chart data for programme`()
     {
         val programmePostEntity = getTestEntity("programme.csv")

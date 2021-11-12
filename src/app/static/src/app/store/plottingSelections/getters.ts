@@ -15,8 +15,5 @@ export const getters = {
             default:
                 return {}
         }
-    },
-    calibratePlotDefaultSelections: (state: PlottingSelectionsState, getters: any, rootState: RootState): BarchartSelections => {
-        return rootState.modelCalibrate.calibratePlotResult!.plottingMetadata.barchart.defaults;
     }
 };
