@@ -1,3 +1,7 @@
+# hint 1.70.0
+
+* Add DataExploration app component
+
 # hint 1.69.0
 
 * adds basic data exploration app with loading spinner 
