@@ -27,10 +27,13 @@ describe("Error report component", () => {
                 projects: {
                     namespaced: true,
                     state: mockProjectsState(projectsState)
+                },
+                errors: {
+                    namespaced: true,
+                    actions: {
+                        generateErrorReport
+                    }
                 }
-            },
-            actions: {
-                generateErrorReport
             },
             getters: {
                 isGuest: () => isGuest
