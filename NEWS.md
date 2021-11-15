@@ -1,3 +1,7 @@
+# hint 1.70.1
+
+* bug fix for undefined choropleth while new data is loading
+
 # hint 1.70.0
 
 * adds basic data exploration app with loading spinner 
