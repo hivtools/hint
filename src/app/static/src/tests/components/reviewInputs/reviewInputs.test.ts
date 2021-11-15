@@ -1,7 +1,7 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import SurveyAndProgram from "../../../app/components/surveyAndProgram/SurveyAndProgram.vue";
+import ReviewInputs from "../../../app/components/reviewInputs/ReviewInputs.vue";
 import {
     mockAncResponse,
     mockBaselineState, mockGenericChartState,
@@ -101,7 +101,7 @@ describe("Survey and programme component", () => {
         const store = createStore({
             anc: mockAncResponse()
         });
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue});
         const tabItems = wrapper.findAll("li.nav-item a");
         expect(tabItems.length).toBe(2);
         expect(tabItems.at(0).classes()).toContain("active");
@@ -112,7 +112,7 @@ describe("Survey and programme component", () => {
 
     it("does not render time series tab when anc or program dataset is not available", () => {
         const store = createStore({});
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue});
         const tabItems = wrapper.findAll("li.nav-item a");
         expect(tabItems.length).toBe(1)
         expect(tabItems.at(0).text()).not.toBe("Time series");
@@ -120,7 +120,7 @@ describe("Survey and programme component", () => {
 
     it("renders choropleth controls if there is a selected data type and selectedTab is 0", () => {
         const store = createStore({selectedDataType: DataType.Survey});
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue});
 
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
         expect(wrapper.findAll("filters-stub").length).toBe(1);
@@ -129,7 +129,7 @@ describe("Survey and programme component", () => {
 
     it("does not render choropleth controls if there is no selected data type", () => {
         const store = createStore({selectedDataType: null});
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue});
 
         expect(wrapper.findAll("choropleth-stub").length).toBe(0);
         expect(wrapper.findAll("filters-stub").length).toBe(0);
@@ -145,7 +145,7 @@ describe("Survey and programme component", () => {
                 }
             } as any,
         });
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue});
         const choro = wrapper.find("choropleth-stub");
         expect(choro.props().includeFilters).toBe(false);
         expect(choro.props().areaFilterId).toBe("area");
@@ -188,7 +188,7 @@ describe("Survey and programme component", () => {
         const data = () => {
             return {selectedTab: 1};
         };
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue, data});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue, data});
         const tabItems = wrapper.findAll("li.nav-item a");
         expect(tabItems.at(0).classes()).not.toContain("active");
         expect(tabItems.at(1).classes()).toContain("active");
@@ -206,7 +206,7 @@ describe("Survey and programme component", () => {
         const data = ()  => {
             return {selectedTab: 1}
         };
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue, data});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue, data});
         expect(wrapper.find(GenericChart).exists()).toBe(false);
         expect(wrapper.find(Choropleth).exists()).toBe(false);
     });
@@ -219,7 +219,7 @@ describe("Survey and programme component", () => {
             },
             {genericChartMetadata}
         );
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue});
 
         const tabItems = wrapper.findAll("li.nav-item a");
         await tabItems.at(1).trigger("click");
@@ -245,7 +245,7 @@ describe("Survey and programme component", () => {
                 }
             } as any,
         });
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue});
         const filters = wrapper.find("filters-stub");
         expect(filters.props().filters[0]).toStrictEqual({
             id: "area",
@@ -265,7 +265,7 @@ describe("Survey and programme component", () => {
     });
 
     it("updates state when choropleth selections change", async () => {
-        const wrapper = shallowMount(SurveyAndProgram, {store: createStore(), localVue});
+        const wrapper = shallowMount(ReviewInputs, {store: createStore(), localVue});
         (wrapper.vm as any).updateChoroplethSelections({payload: {selectedFilterOptions: "NEW TEST SELECTIONS"}});
 
         await Vue.nextTick();
@@ -274,13 +274,13 @@ describe("Survey and programme component", () => {
 
     it("data source is not rendered if no selected data type", () => {
         const store = createStore({selectedDataType: null});
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue});
         expect(wrapper.find("#data-source").exists()).toBe(false);
     });
 
     it("renders data source header as expected", () => {
         const store = createStore();
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue});
         const header = wrapper.find("#data-source h4");
         expectTranslated(header, "Data source", "Source de données", "Fonte de dados", store);
     });
@@ -303,7 +303,7 @@ describe("Survey and programme component", () => {
     function expectDataSource(state: Partial<SurveyAndProgramState>, englishName: string, frenchName: string,
                               portugueseName: string, id: string) {
         const store = createStore(state);
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue});
         let options = wrapper.find("#data-source tree-select-stub").props("options");
         expect(options).toStrictEqual([{id, label: englishName}]);
 
@@ -326,7 +326,7 @@ describe("Survey and programme component", () => {
                 program: mockProgramResponse(),
                 selectedDataType: DataType.Program
             });
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue});
 
         const dataSourceSelect = wrapper.find("#data-source tree-select-stub");
         expect(dataSourceSelect.attributes("value")).toBe("1");
@@ -355,7 +355,7 @@ describe("Survey and programme component", () => {
                 program: mockProgramResponse(),
                 selectedDataType: DataType.Program
             });
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue});
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.Program);
     });
 
@@ -366,7 +366,7 @@ describe("Survey and programme component", () => {
                 survey: mockSurveyResponse(),
                 program: mockProgramResponse()
             });
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue});
         expect((wrapper.vm as any).availableDatasetIds).toEqual(["anc", "art"]);
     });
 
@@ -376,7 +376,7 @@ describe("Survey and programme component", () => {
                 anc: mockAncResponse(),
                 survey: mockSurveyResponse()
             });
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue});
         expect((wrapper.vm as any).availableDatasetIds).toEqual(["anc"]);
     });
 
@@ -390,7 +390,7 @@ describe("Survey and programme component", () => {
                 }
             } as any,
         });
-        const wrapper = shallowMount(SurveyAndProgram, {store, localVue});
+        const wrapper = shallowMount(ReviewInputs, {store, localVue});
         const table = wrapper.find(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
         expect(table.props().tableData).toBe("TEST DATA");

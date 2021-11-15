@@ -2,6 +2,10 @@
 
 * adds basic data exploration app with loading spinner 
 
+# hint 1.68.3
+
+* Rename baseline and surveyAndProgram components
+
 # hint 1.68.2
 
 * moves internal logic from plotting selections module to model calibrate module - no visible change
