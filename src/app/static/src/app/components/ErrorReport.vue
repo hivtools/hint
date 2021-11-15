@@ -109,7 +109,7 @@
     import {RootState} from "../root";
     import {Language} from "../store/translations/locales";
     import {Error} from "../generated";
-import { ErrorsState } from "../store/errors/errors";
+    import { ErrorsState } from "../store/errors/errors";
 
 
     interface Methods {
