@@ -148,7 +148,7 @@ describe("LocalStorageManager", () => {
 
     it("can initiate default language from store", () => {
         const store = new Vuex.Store({
-            state: {language: Language.fr}
+            state: {language: Language.fr, updatingLanguage: false}
         });
 
         registerTranslations(store);

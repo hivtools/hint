@@ -1,5 +1,6 @@
 import {Payload} from "vuex";
 import {FilterOption, Error, DownloadStatusResponse, DownloadSubmitResponse, Warning, VersionInfo} from "./generated";
+import {Language} from "./store/translations/locales";
 
 export interface PayloadWithType<T> extends Payload {
     payload: T
@@ -280,4 +281,9 @@ export interface ErrorReport extends ErrorReportManualDetails {
     jobId: string,
     versions: VersionInfo,
     errors: Error[]
+}
+
+export interface TranslatableState {
+    language: Language
+    updatingLanguage: boolean
 }

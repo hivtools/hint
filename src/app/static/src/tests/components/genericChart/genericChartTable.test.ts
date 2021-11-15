@@ -192,7 +192,7 @@ describe("GenericChartTable component", () => {
 
     it("renders markup for hierarchy column", () => {
         const store = new Vuex.Store({
-            state: {language: Language.en}
+            state: {language: Language.en, updatingLanguage: false}
         });
         registerTranslations(store);
         const wrapper = mount(GenericChartTable, {propsData: propsDataWithHierarchy, store});

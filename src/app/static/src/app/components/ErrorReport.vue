@@ -1,7 +1,7 @@
 <template>
     <modal :open="open">
         <h4 v-translate="'troubleshootingRequest'"></h4>
-        <form class="form">
+        <form class="form" id="report-form" v-if="!showFeedback">
             <div class="form-group" v-if="projectName">
                 <label for="project" v-translate="'project'"></label>
                 <input type="text"
@@ -56,27 +56,43 @@
                           class="form-control"></textarea>
             </div>
         </form>
+        <template v-else>
+            <div id="report-success" v-if="!errorReportError" v-translate="'errorReportSuccess'"></div>
+            <template v-else>
+               <div id="report-error" v-translate="'errorReportError'"></div>
+                <error-alert :error="errorReportError"></error-alert>
+            </template>
+        </template>
         <template v-slot:footer>
-            <div v-if="disabled" class="tooltip-wrapper"
-                 style="cursor: not-allowed;"
-                 v-tooltip="tooltipText">
-                <!-- tooltips can't be rendered on disabled elements -->
-                <button disabled
+            <template v-if="!showFeedback">
+                <div v-if="disabled" class="tooltip-wrapper"
+                     style="cursor: not-allowed;"
+                     v-tooltip="tooltipText">
+                    <!-- tooltips can't be rendered on disabled elements -->
+                    <button disabled
+                            type="button"
+                            class="btn btn-red"
+                            v-translate="'send'"></button>
+                </div>
+                <button v-else
                         type="button"
                         class="btn btn-red"
-                        v-translate="'send'"></button>
-            </div>
-            <button v-else
-                    type="button"
-                    class="btn btn-red"
-                    @click="sendErrorReport"
-                    v-translate="'send'">
-            </button>
-            <button type="button"
-                    class="btn btn-white"
-                    @click="cancelErrorReport"
-                    v-translate="'cancel'">
-            </button>
+                        @click="sendErrorReport"
+                        v-translate="'send'">
+                </button>
+                <button type="button"
+                        class="btn btn-white"
+                        @click="cancelErrorReport"
+                        v-translate="'cancel'">
+                </button>
+            </template>
+            <template v-else>
+                <button type="button"
+                        class="btn btn-red"
+                        @click="close"
+                        v-translate="'close'">
+                </button>
+            </template>
         </template>
     </modal>
 </template>
@@ -87,16 +103,21 @@
     import {ProjectsState} from "../store/projects/projects"
     import Modal from "./Modal.vue";
     import {ErrorReportManualDetails} from "../types";
+    import ErrorAlert from "./ErrorAlert.vue";
     import {VTooltip} from 'v-tooltip';
     import i18next from "i18next";
     import {RootState} from "../root";
     import {Language} from "../store/translations/locales";
+    import {Error} from "../generated";
+import { ErrorsState } from "../store/errors/errors";
+
 
     interface Methods {
         generateErrorReport: (payload: ErrorReportManualDetails) => void
         sendErrorReport: () => void
         cancelErrorReport: () => void
         resetData: () => void
+        close: () => void
     }
 
     interface Computed {
@@ -107,15 +128,23 @@
         steps: StepDescription[]
         projectName: string | undefined
         disabled: boolean,
-        tooltipText: string
+        tooltipText: string,
+        errorReportError: Error | null
     }
 
     interface Props {
         open: boolean
     }
 
-    export default Vue.extend<ErrorReportManualDetails, Methods, Computed, Props>({
-        components: {Modal},
+    interface Data extends ErrorReportManualDetails {
+        showFeedback: boolean
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
+        components: {
+            ErrorAlert,
+            Modal
+        },
         directives: {tooltip: VTooltip},
         props: {
             open: Boolean
@@ -126,7 +155,8 @@
                 description: "",
                 stepsToReproduce: "",
                 section: "",
-                email: ""
+                email: "",
+                showFeedback: false
             }
         },
         computed: {
@@ -142,6 +172,7 @@
                     this.section = newVal
                 }
             },
+            errorReportError: mapStateProp<ErrorsState, Error | null>("errors", (state: ErrorsState) => state.errorReportError),
             isGuest: mapGetterByName(null, "isGuest"),
             projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
             steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps),
@@ -158,26 +189,30 @@
                 this.resetData();
                 this.$emit("close")
             },
-            sendErrorReport() {
-                this.generateErrorReport({
+            async sendErrorReport() {
+                await this.generateErrorReport({
                     section: this.currentSection,
                     description: this.description,
                     stepsToReproduce: this.stepsToReproduce,
                     email: this.email
                 })
                 this.resetData();
-                this.$emit("close")
+                this.showFeedback = true;
             },
             resetData() {
                 this.description = "";
                 this.stepsToReproduce = "";
                 this.section = "";
                 this.email = "";
+            },
+            close() {
+                this.$emit("close");
             }
         },
         watch: {
             open(newVal) {
                 if (newVal === true) {
+                    this.showFeedback = false;
                     if (this.$route.path.indexOf("projects") > -1) {
                         this.section = "projects"
                     }

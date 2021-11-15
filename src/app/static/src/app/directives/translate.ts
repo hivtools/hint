@@ -1,9 +1,9 @@
 import i18next from "i18next";
 import {Store} from "vuex";
-import {TranslatableState} from "../root";
 import {DirectiveOptions, VNode} from "vue";
 import {Language} from "../store/translations/locales";
 import {DirectiveBinding} from "vue/types/options";
+import {TranslatableState} from "../types";
 
 export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions => {
 

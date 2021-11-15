@@ -43,7 +43,7 @@ const propsData = {
 
 const createStore = (language: Language = Language.en) => {
     const store = new Vuex.Store({
-        state: {language}
+        state: {language, updatingLanguage: false}
     });
     registerTranslations(store);
     return store as any;

@@ -10,6 +10,7 @@ import {api} from "../../apiService";
 import {ErrorReportManualDetails} from "../../types";
 import {VersionInfo} from "../../generated";
 import {currentHintVersion} from "../../hintVersion";
+import {LanguageMutation} from "../language/mutations";
 
 
 export interface RootActions extends LanguageActions<RootState> {
@@ -65,7 +66,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             return;
         }
 
-        commit({type: RootMutation.SetUpdatingLanguage, payload: true});
+        commit({type: LanguageMutation.SetUpdatingLanguage, payload: true});
         await changeLanguage<RootState>(context, payload);
 
         const actions: Promise<unknown>[] = [];
@@ -83,7 +84,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         }
 
         await Promise.all(actions);
-        commit({type: RootMutation.SetUpdatingLanguage, payload: false});
+        commit({type: LanguageMutation.SetUpdatingLanguage, payload: false});
     },
 
     async generateErrorReport(context, payload) {
