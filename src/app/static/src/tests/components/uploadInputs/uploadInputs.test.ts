@@ -10,7 +10,7 @@ import {
     mockSurveyAndProgramState
 } from "../../mocks";
 import {BaselineState} from "../../../app/store/baseline/baseline";
-import Baseline from "../../../app/components/baseline/Baseline.vue";
+import UploadInputs from "../../../app/components/uploadInputs/UploadInputs.vue";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
 import {MetadataState} from "../../../app/store/metadata/metadata";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
@@ -25,7 +25,7 @@ import {testUploadComponent} from "./fileUploads";
 
 const localVue = createLocalVue();
 
-describe("Baseline upload component", () => {
+describe("UploadInputs upload component", () => {
 
     let actions: jest.Mocked<BaselineActions>;
     let mutations = {};
@@ -86,26 +86,26 @@ describe("Baseline upload component", () => {
 
     it("pjnz upload accepts pjnz or zip files", () => {
         const store = createSut();
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(0).props().accept).toBe("PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP");
     });
 
     it("pjnz is not valid if country is not present", () => {
         const store = createSut();
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(0).props().valid).toBe(false);
         expect(wrapper.findAll(ManageFile).at(0).findAll("label").length).toBe(0);
     });
 
     it("pjnz is valid if country is present", () => {
         const store = createSut({country: "Malawi"});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(0).props().valid).toBe(true);
     });
 
     it("country name is passed to file upload component if country is present", () => {
         const store = createSut({country: "Malawi"});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expectTranslated(wrapper.findAll(ManageFile).at(0).find("label"),
             "Country: Malawi", "Pays: Malawi", "País: Malawi", store);
     });
@@ -113,14 +113,14 @@ describe("Baseline upload component", () => {
     it("passes pjnz error to file upload", () => {
         const error = mockError("File upload went wrong");
         const store = createSut({pjnzError: error});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(0).props().error).toBe(error);
     });
 
     it("shows metadata error if present", () => {
         const plottingMetadataError = mockError("Metadata went wrong");
         const store = createSut({}, {plottingMetadataError});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(0).props().error).toBe(plottingMetadataError);
     });
 
@@ -128,21 +128,21 @@ describe("Baseline upload component", () => {
         const pjnzError = mockError("File upload went wrong");
         const plottingMetadataError = mockError("Metadata went wrong");
         const store = createSut({pjnzError}, {plottingMetadataError});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(0).props().error).toBe(pjnzError);
     });
 
     it("shows baseline error if present", () => {
         const error = mockError("Baseline is inconsistent");
         const store = createSut({baselineError: error});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.find(ErrorAlert).props().error).toBe(error)
     });
 
     it("shows baseline validating indicator", () => {
         const store = createSut({validating: true});
-        const wrapper = shallowMount(Baseline, {store, localVue});
-        const validating = wrapper.find("#baseline-validating");
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
+        const validating = wrapper.find("#upload-inputs-validating");
         expectTranslated(validating.find("span"), "Validating...",
             "Validation en cours...", "A validar...", store);
         expect(validating.findAll(LoadingSpinner).length).toEqual(1)
@@ -150,87 +150,87 @@ describe("Baseline upload component", () => {
 
     it("shape is not valid if shape is not present", () => {
         const store = createSut();
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(1).props().valid).toBe(false);
     });
 
     it("shape is valid if shape is present", () => {
         const store = createSut({shape: mockShapeResponse()});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(1).props().valid).toBe(true);
     });
 
     it("passes shape error to file upload", () => {
         const error = mockError("File upload went wrong");
         const store = createSut({shapeError: error});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(1).props().error).toBe(error);
     });
 
     it("shape upload accepts geojson", () => {
         const store = createSut();
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(1).props().accept).toBe("geojson,.geojson,GEOJSON,.GEOJSON");
     });
 
     it("population is not valid if population is not present", () => {
         const store = createSut();
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(2).props().valid).toBe(false);
     });
 
     it("population is valid if population is present", () => {
         const store = createSut({population: mockPopulationResponse()});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(2).props().valid).toBe(true);
     });
 
     it("passes population error to file upload", () => {
         const error = mockError("File upload went wrong")
         const store = createSut({populationError: error});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(2).props().error).toBe(error);
     });
 
     it("population upload accepts csv", () => {
         const store = createSut();
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(2).props().accept).toBe("csv,.csv");
     });
 
     it("passes pjnz response existing file name to manage file", () => {
         const store = createSut({pjnz: {filename: "existing file"} as any});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(0).props("existingFileName")).toBe("existing file");
     });
 
     it("passes pjnz errored file to manage file", () => {
         const store = createSut({pjnzErroredFile: "errored file"});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(0).props("existingFileName")).toBe("errored file");
     });
 
     it("passes shape response existing file name to manage file", () => {
         const store = createSut({shape: {filename: "existing file"} as any});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(1).props("existingFileName")).toBe("existing file");
     });
 
     it("passes shape errored file to manage file", () => {
         const store = createSut({shapeErroredFile: "errored file"});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(1).props("existingFileName")).toBe("errored file");
     });
 
     it("passes population response existing file name to manage file", () => {
         const store = createSut({population: {filename: "existing file"} as any});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(2).props("existingFileName")).toBe("existing file");
     });
 
     it("passes population errored file to manage file", () => {
         const store = createSut({populationErroredFile: "errored file"});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(2).props("existingFileName")).toBe("errored file");
     });
 
@@ -279,7 +279,7 @@ describe("Baseline upload component", () => {
                 }
             } as any
         });
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
 
         expect(wrapper.findAll("manage-file-stub").at(0).props().fromADR).toBe(true);
         expect(wrapper.findAll("manage-file-stub").at(1).props().fromADR).toBe(true);
@@ -308,7 +308,7 @@ describe("Baseline upload component", () => {
                 }
             } as any
         });
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
 
         expect(wrapper.findAll("manage-file-stub").at(0).props().fromADR).toBe(false);
         expect(wrapper.findAll("manage-file-stub").at(1).props().fromADR).toBe(false);
@@ -318,37 +318,37 @@ describe("Baseline upload component", () => {
 
     it("passes survey response existing file name to manage file", () => {
         const store = createSut({}, {}, {survey: {filename: "existing file"} as any});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(3).props("existingFileName")).toBe("existing file");
     });
 
     it("passes survey errored file to manage file", () => {
         const store = createSut({}, {}, {surveyErroredFile: "errored file"});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(3).props("existingFileName")).toBe("errored file");
     });
 
     it("passes program response existing file name to manage file", () => {
         const store = createSut({}, {}, {program: {filename: "existing file"} as any});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(4).props("existingFileName")).toBe("existing file");
     });
 
     it("passes program errored file to manage file", () => {
         const store = createSut({}, {}, {programErroredFile: "errored file"});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(4).props("existingFileName")).toBe("errored file");
     });
 
     it("passes anc response existing file name to manage file", () => {
         const store = createSut({}, {}, {anc: {filename: "existing file"} as any});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(5).props("existingFileName")).toBe("existing file");
     });
 
     it("passes anc errored file to manage file", () => {
         const store = createSut({}, {}, {ancErroredFile: "errored file"});
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(5).props("existingFileName")).toBe("errored file");
     });
 
@@ -364,7 +364,7 @@ describe("Baseline upload component", () => {
                 "fromADR": true
             } as any
         });
-        const wrapper = shallowMount(Baseline, {store, localVue})
+        const wrapper = shallowMount(UploadInputs, {store, localVue})
 
         expect(wrapper.findAll("manage-file-stub").at(3).props().fromADR).toBe(true);
         expect(wrapper.findAll("manage-file-stub").at(4).props().fromADR).toBe(true);
@@ -383,7 +383,7 @@ describe("Baseline upload component", () => {
                 "fromADR": ""
             } as any
         });
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
 
         expect(wrapper.findAll("manage-file-stub").at(3).props().fromADR).toBe(false);
         expect(wrapper.findAll("manage-file-stub").at(4).props().fromADR).toBe(false);
@@ -395,7 +395,7 @@ describe("Baseline upload component", () => {
                                           action: () => jest.MockInstance<any, any>,
                                           done: jest.DoneCallback) => {
         const store = createSut();
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
 
         wrapper.findAll(ManageFile).at(index).props().upload({name: "TEST"});
         setTimeout(() => {
@@ -408,7 +408,7 @@ describe("Baseline upload component", () => {
                                           action: () => jest.MockInstance<any, any>,
                                           done: jest.DoneCallback) => {
         const store = createSut();
-        const wrapper = shallowMount(Baseline, {store, localVue});
+        const wrapper = shallowMount(UploadInputs, {store, localVue});
 
         wrapper.findAll(ManageFile).at(index).props().deleteFile();
         setTimeout(() => {
