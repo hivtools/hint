@@ -64,7 +64,7 @@ describe(`data exploration component`, () => {
         const store = createSut()
         const wrapper = shallowMount(DataExploration, {store});
         expect(wrapper.find("adr-integration-stub").exists()).toBe(true)
-        expect(wrapper.find("baseline-stub").exists()).toBe(true)
+        expect(wrapper.find("upload-inputs-stub").exists()).toBe(true)
         expect(wrapper.findAll("button").length).toBe(2)
     })
 
@@ -81,10 +81,10 @@ describe(`data exploration component`, () => {
         const store = createSut()
         const wrapper = shallowMount(DataExploration, {store});
         expect(wrapper.findAll("button").length).toBe(2)
-        expect(wrapper.find("survey-and-program-stub").exists()).toBe(false)
+        expect(wrapper.find("review-inputs-stub").exists()).toBe(false)
         const buttons = wrapper.findAll("button")
         buttons.at(1).trigger("click")
-        expect(wrapper.find("survey-and-program-stub").exists()).toBe(true)
+        expect(wrapper.find("review-inputs-stub").exists()).toBe(true)
     })
 
     it(`back button can navigate to uploadInputs`, () => {
@@ -96,10 +96,10 @@ describe(`data exploration component`, () => {
             }
         });
         expect(wrapper.findAll("button").length).toBe(2)
-        expect(wrapper.find("baseline-stub").exists()).toBe(false)
+        expect(wrapper.find("upload-inputs-stub").exists()).toBe(false)
         const buttons = wrapper.findAll("button")
         buttons.at(0).trigger("click")
-        expect(wrapper.find("baseline-stub").exists()).toBe(true)
+        expect(wrapper.find("upload-inputs-stub").exists()).toBe(true)
     })
 
 });

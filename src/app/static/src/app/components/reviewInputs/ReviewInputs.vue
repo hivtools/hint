@@ -138,7 +138,7 @@
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
-        name: "SurveyAndProgram",
+        name: "ReviewInputs",
         data: () => {
             return {
                 areaFilterId: "area",

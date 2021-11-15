@@ -2,8 +2,8 @@
     <div class="content">
         <div class="pt-4">
             <adr-integration></adr-integration>
-            <baseline v-if="step === 1"></baseline>
-            <survey-and-program v-if="step === 2"></survey-and-program>
+            <upload-inputs v-if="step === 1"></upload-inputs>
+            <review-inputs v-if="step === 2"></review-inputs>
             <button type="button"
                     class="btn btn-white shadow-none"
                     v-translate="'back'"
@@ -20,8 +20,8 @@
 <script lang="ts">
     import Vue from "vue";
     import AdrIntegration from "../adr/ADRIntegration.vue";
-    import Baseline from "../baseline/Baseline.vue";
-    import SurveyAndProgram from "../surveyAndProgram/SurveyAndProgram.vue";
+    import UploadInputs from "../uploadInputs/UploadInputs.vue";
+    import ReviewInputs from "../reviewInputs/ReviewInputs.vue";
 
     export default Vue.extend({
         data() {
@@ -39,8 +39,8 @@
         },
         components: {
             AdrIntegration,
-            Baseline,
-            SurveyAndProgram
+            UploadInputs,
+            ReviewInputs
         }
     })
 </script>
