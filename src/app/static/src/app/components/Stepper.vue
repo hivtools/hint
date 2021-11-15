@@ -28,8 +28,8 @@
             <version-status></version-status>
             <div class="pt-4">
                 <adr-integration v-if="isActive(1)"></adr-integration>
-                <baseline v-if="isActive(1)"></baseline>
-                <survey-and-program v-if="isActive(2)"></survey-and-program>
+                <upload-inputs v-if="isActive(1)"></upload-inputs>
+                <review-inputs v-if="isActive(2)"></review-inputs>
                 <model-options v-if="isActive(3)"></model-options>
                 <model-run v-if="isActive(4)"></model-run>
                 <model-calibrate v-if="isActive(5)"></model-calibrate>
@@ -51,8 +51,8 @@
     import {mapActions, mapGetters} from "vuex";
     import AdrIntegration from "./adr/ADRIntegration.vue";
     import Step from "./Step.vue";
-    import Baseline from "./baseline/Baseline.vue";
-    import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
+    import UploadInputs from "./uploadInputs/UploadInputs.vue";
+    import ReviewInputs from "./reviewInputs/ReviewInputs.vue";
     import LoadingSpinner from "./LoadingSpinner.vue";
     import ModelRun from "./modelRun/ModelRun.vue";
     import ModelCalibrate from "./modelCalibrate/ModelCalibrate.vue";
@@ -163,8 +163,8 @@
         components: {
             AdrIntegration,
             Step,
-            Baseline,
-            SurveyAndProgram,
+            UploadInputs,
+            ReviewInputs,
             LoadingSpinner,
             ModelRun,
             ModelCalibrate,
