@@ -44,8 +44,4 @@ describe("PlottingSelections getters", () => {
         expect(unknown).toStrictEqual({});
     });
 
-    it("gets calibratePlotDefaultSelections", async () => {
-        const result = getters.calibratePlotDefaultSelections(mockPlottingSelections(), null, rootState);
-        expect(result).toBe(rootState.modelCalibrate.calibratePlotResult.plottingMetadata.barchart.defaults);
-    });
 });
