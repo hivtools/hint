@@ -1,3 +1,7 @@
+# hint 1.70.0
+
+* adds basic data exploration app with loading spinner 
+
 # hint 1.69.0
 
 * Add feedback to error reporting

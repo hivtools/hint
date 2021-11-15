@@ -122,11 +122,11 @@ const resetPasswordAppConfig =  {...commonConfig,
 };
 
 const dataExplorationAppConfig = {...commonConfig,
-    entry: './src/app/index.ts', //TODO: replace with './src/app/dataExploration.ts' in mrc-2756
+    entry: './src/app/dataExploration.ts',
     output: {
         path: path.resolve(__dirname, './public'),
         publicPath: '/public/',
-        filename: 'js/app.js' //TODO: replace with  'js/dataExploration.js' in mrc-2756
+        filename: 'js/dataExploration.js'
     },
     plugins: [...commonConfig.plugins,
         new HtmlWebpackPlugin({

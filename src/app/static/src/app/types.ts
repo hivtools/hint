@@ -1,5 +1,6 @@
 import {Payload} from "vuex";
 import {FilterOption, Error, DownloadStatusResponse, DownloadSubmitResponse, Warning} from "./generated";
+import {Language} from "./store/translations/locales";
 
 export interface PayloadWithType<T> extends Payload {
     payload: T
@@ -263,4 +264,9 @@ export interface StepWarnings {
     modelOptions: Warning[],
     modelRun: Warning[],
     modelCalibrate: Warning[]
+}
+
+export interface TranslatableState {
+    language: Language
+    updatingLanguage: boolean
 }
