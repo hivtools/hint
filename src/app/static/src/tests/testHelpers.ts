@@ -1,8 +1,8 @@
 import {mockAxios, mockBaselineState, mockError, mockFailure, mockRootState} from "./mocks";
 import {ActionContext, MutationTree, Store} from "vuex";
-import {PayloadWithType} from "../app/types";
+import {PayloadWithType, TranslatableState} from "../app/types";
 import {Wrapper} from "@vue/test-utils";
-import {RootState, TranslatableState} from "../app/root";
+import {RootState} from "../app/root";
 import {Language} from "../app/store/translations/locales";
 import registerTranslations from "../app/store/translations/registerTranslations";
 

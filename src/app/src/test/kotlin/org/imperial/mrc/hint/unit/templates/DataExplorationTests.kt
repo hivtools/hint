@@ -21,6 +21,6 @@ class DataExplorationTests
         val doc = template.jsoupDocFor(model)
 
         assertThat(doc.select("title").text()).isEqualTo("ExploreAppTitle")
-        assertThat(doc.select(".container").text()).isEqualTo("Data Exploration content will go here")
+        assertThat(doc.select("#app").count()).isEqualTo(1)
     }
 }

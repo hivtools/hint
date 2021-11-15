@@ -40,7 +40,7 @@ describe("translate directive", () => {
 
     const createStore = () => {
         const store = new Vuex.Store({
-            state: {language: Language.en}
+            state: {language: Language.en, updatingLanguage: false}
         });
         registerTranslations(store);
         return store as any;
