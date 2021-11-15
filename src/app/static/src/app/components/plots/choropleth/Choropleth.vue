@@ -100,7 +100,7 @@
         flattenedAreas: Dict<NestedFilterOption>,
         selectedAreaFeatures: Feature[],
         selectedAreaIds: string[],
-        colorIndicator: ChoroplethIndicatorMetadata,
+        colorIndicator: ChoroplethIndicatorMetadata | undefined,
         options: GeoJSONOptions,
         emptyFeature: boolean
     }
@@ -159,7 +159,7 @@
             initialised() {
                 const unsetFilters = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
-                    !!this.selections.indicatorId;
+                    !!this.selections.indicatorId && !!this.colorIndicator;
             },
             emptyFeature() {
                 const nonEmptyFeature = (this.currentFeatures.filter(filtered => !!this.featureIndicators[filtered.properties!.area_id]))
@@ -192,7 +192,7 @@
                         };
                     case ScaleType.Default:
                     default:
-                        if (!this.initialised) {
+                        if (!this.colorIndicator) {
                             return {max: 1, min: 0}
                         }
                         return {max: this.colorIndicator.max, min: this.colorIndicator.min}
@@ -272,8 +272,8 @@
                 }
                 return [];
             },
-            colorIndicator(): ChoroplethIndicatorMetadata {
-                return this.indicators.find(i => i.indicator == this.selections.indicatorId)!;
+            colorIndicator(): ChoroplethIndicatorMetadata | undefined {
+                return this.indicators.find(i => i.indicator == this.selections.indicatorId);
             },
             indicatorColourScale(): ScaleSettings | null {
                 const current = this.colourScales[this.selections.indicatorId];
@@ -287,7 +287,14 @@
             },
             options() {
                 const featureIndicators = this.featureIndicators;
-                const {format, scale, accuracy} = this.colorIndicator!;
+                let format = "";
+                let scale = 1;
+                let accuracy: number | null = null;
+                if (this.colorIndicator) {
+                    format = this.colorIndicator.format;
+                    scale = this.colorIndicator.scale;
+                    accuracy = this.colorIndicator.accuracy;
+                }
                 return {
                     onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
                         const area_id = feature.properties && feature.properties["area_id"];
@@ -306,10 +313,10 @@
                             layer.bindTooltip(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${formatOutput(stringVal, format, scale, accuracy)}
-                                <br/>(${formatOutput(stringLower, format, scale, accuracy)+" - "+
+                                <br/>(${formatOutput(stringLower, format, scale, accuracy) + " - " +
                             formatOutput(stringUpper, format, scale, accuracy)})
                             </div>`);
-                        }else {
+                        } else {
                             layer.bindTooltip(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${formatOutput(stringVal, format, scale, accuracy)}

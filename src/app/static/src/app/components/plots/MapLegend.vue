@@ -39,7 +39,7 @@
     import numeral from 'numeral';
 
     interface Props {
-        metadata: ChoroplethIndicatorMetadata,
+        metadata: ChoroplethIndicatorMetadata | undefined,
         colourScale: ScaleSettings,
         colourRange: NumericRange
     }
@@ -103,7 +103,7 @@
                         val = roundToContext(val, [min, max]);
 
                         let valAsProportion = (max != min) ? (val - min) / (max - min) : 0;
-                        if (this.metadata.invert_scale) {
+                        if (this.metadata?.invert_scale) {
                             valAsProportion = 1 - valAsProportion;
                         }
 

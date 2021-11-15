@@ -3,13 +3,14 @@ import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {Dict, Filter, NumericRange} from "../../types";
 import numeral from 'numeral';
 
-export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
+export const getColor = (value: number,
+                         metadata: ChoroplethIndicatorMetadata | undefined,
                          colourRange: NumericRange) => {
 
     const min = colourRange.min;
     const max = colourRange.max;
 
-    const colorFunction = colorFunctionFromName(metadata.colour);
+    const colorFunction = colorFunctionFromName(metadata?.colour);
 
     const rangeNum = ((max !== null) && (max != min)) ? //Avoid dividing by zero if only one value...
         max - (min || 0) :
@@ -23,7 +24,7 @@ export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
         colorValue = 0;
     }
 
-    if (metadata.invert_scale) {
+    if (metadata && metadata.invert_scale) {
         colorValue = 1 - colorValue;
     }
 
@@ -34,8 +35,8 @@ export const scaleStepFromMetadata = function (meta: ChoroplethIndicatorMetadata
     return (meta.max - meta.min) / 10;
 };
 
-export const colorFunctionFromName = function (name: string) {
-    let result = (d3ScaleChromatic as any)[name];
+export const colorFunctionFromName = function (name: string | undefined) {
+    let result = name && (d3ScaleChromatic as any)[name];
     if (!result) {
         //This is trying to be defensive against typos in metadata...
         console.warn(`Unknown color function: ${name}`);
@@ -45,13 +46,13 @@ export const colorFunctionFromName = function (name: string) {
 };
 
 export const getIndicatorRange = function (data: any,
-                                           indicatorMeta: ChoroplethIndicatorMetadata,
+                                           indicatorMeta: ChoroplethIndicatorMetadata | undefined,
                                            filters: Filter[] | null = null,
                                            selectedFilterValues: Dict<FilterOption[]> | null = null,
                                            selectedAreaIds: string[] | null = null): NumericRange {
     let result = {} as NumericRange;
     iterateDataValues(data, [indicatorMeta], selectedAreaIds, filters, selectedFilterValues,
-        (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
+        (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata | undefined, value: number) => {
             if (!result.max) {
                 result = {min: value, max: value};
             } else {
@@ -80,12 +81,12 @@ export const roundRange = function (unrounded: NumericRange) {
 
 export const iterateDataValues = function (
     data: any,
-    indicatorsMeta: ChoroplethIndicatorMetadata[],
+    indicatorsMeta: (ChoroplethIndicatorMetadata | undefined)[],
     selectedAreaIds: string[] | null,
     filters: Filter[] | null,
     selectedFilterValues: Dict<FilterOption[]> | null,
     func: (areaId: string,
-           indicatorMeta: ChoroplethIndicatorMetadata, value: number, row: any) => void) {
+           indicatorMeta: ChoroplethIndicatorMetadata | undefined, value: number, row: any) => void) {
 
     const selectedFilterValueIds: Dict<string[]> = {};
     const validFilters = filters && selectedFilterValues
@@ -108,6 +109,11 @@ export const iterateDataValues = function (
         }
 
         for (const metadata of indicatorsMeta) {
+
+            if (!metadata) {
+                // before initialisation this may be undefined
+                continue;
+            }
 
             if (metadata.indicator_column && metadata.indicator_value != row[metadata.indicator_column]) {
                 //This data is in long format, and the indicator column's value does not match that for this indicator
@@ -163,54 +169,54 @@ const roundToPlaces = function (value: number, decPl: number) {
 // Iteratively passes through the layers of a FilterOption object to find the regional hierarchy above the supplied id
 // Takes param any for obj and returns any because it will iterate through both objects (the NestedFilterOption) and arrays (the array of child options), treating array indices as keys
 export const findPath = function (id: string, obj: any): any {
-  for(const key in obj) {                                         
-      if(obj.hasOwnProperty(key)) {                         
-          if(id === obj[key]) return "";                      
-          else if(obj[key] && typeof obj[key] === "object") {   
-            const path = findPath(id, obj[key]);               
-              if (path != undefined) {
-                return ((obj.label ? obj.label + "/": "") + path).replace(/\/$/, '');   
-              }              
-          }
-      }
-  }
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            if (id === obj[key]) return "";
+            else if (obj[key] && typeof obj[key] === "object") {
+                const path = findPath(id, obj[key]);
+                if (path != undefined) {
+                    return ((obj.label ? obj.label + "/" : "") + path).replace(/\/$/, '');
+                }
+            }
+        }
+    }
 };
 
 export const formatOutput = function (value: number | string, format: string, scale: number, accuracy: number | null) {
     let ans: number
 
-    if (typeof(value) === 'string'){
+    if (typeof (value) === 'string') {
         ans = parseFloat(value)
     } else ans = value
 
-    if (!format.includes('%') && scale){
+    if (!format.includes('%') && scale) {
         ans = ans * scale
     }
 
-    if (!format.includes('%') && accuracy){
+    if (!format.includes('%') && accuracy) {
         ans = Math.round(ans / accuracy) * accuracy
     }
 
-    if (format){
+    if (format) {
         return numeral(ans).format(format)
     } else return ans
 };
 
-export const formatLegend = function(text: string | number, format: string, scale: number): string {
+export const formatLegend = function (text: string | number, format: string, scale: number): string {
     text = formatOutput(text, format, scale, null)
 
-        if (typeof(text) === "string" && text.includes(',')) {
-            text = text.replace(/,/g, '');
-        }
-        if (typeof(text) === "string" && !text.includes('%')) {
-            text = parseFloat(text)
-        }
-        if (typeof text == "number") {
-            if (text >= 1000 && text < 10000 || text >= 1000000 && text < 10000000) {
-                text = numeral(text).format("0.0a")
-            } else if (text >= 1000) {
-                text = numeral(text).format("0a")
-            } else text = text.toString()
-        }
+    if (typeof (text) === "string" && text.includes(',')) {
+        text = text.replace(/,/g, '');
+    }
+    if (typeof (text) === "string" && !text.includes('%')) {
+        text = parseFloat(text)
+    }
+    if (typeof text == "number") {
+        if (text >= 1000 && text < 10000 || text >= 1000000 && text < 10000000) {
+            text = numeral(text).format("0.0a")
+        } else if (text >= 1000) {
+            text = numeral(text).format("0a")
+        } else text = text.toString()
+    }
     return text
 }

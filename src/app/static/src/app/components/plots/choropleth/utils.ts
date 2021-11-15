@@ -5,14 +5,14 @@ import {initialScaleSettings} from "../../../store/plottingSelections/plottingSe
 
 export const getFeatureIndicator = function (data: any[],
                                              selectedAreaIds: string[],
-                                             indicatorMeta: ChoroplethIndicatorMetadata,
+                                             indicatorMeta: ChoroplethIndicatorMetadata | undefined,
                                              colourRange: NumericRange,
                                              filters: Filter[],
                                              selectedFilterValues: Dict<FilterOption[]>): IndicatorValuesDict {
 
     const result = {} as IndicatorValuesDict;
     iterateDataValues(data, [indicatorMeta], selectedAreaIds, filters, selectedFilterValues,
-        (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number, values: any) => {
+        (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata | undefined, value: number, values: any) => {
             result[areaId] = {
                 value: value,
                 color: getColor(value, indicatorMeta, colourRange),
@@ -24,7 +24,7 @@ export const getFeatureIndicator = function (data: any[],
     return result;
 };
 
-export const initialiseScaleFromMetadata = function (meta: ChoroplethIndicatorMetadata) {
+export const initialiseScaleFromMetadata = function (meta: ChoroplethIndicatorMetadata | undefined) {
     const result = initialScaleSettings();
     if (meta) {
         result.customMin = meta.min;
