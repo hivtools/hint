@@ -16,7 +16,7 @@ export const mutations: MutationTree<ErrorsState> = {
         state.errors.push(action.payload);
     },
 
-    [ErrorsMutation.DismissAll](state: ErrorsState, action: PayloadWithType<null>) {
+    [ErrorsMutation.DismissAll](state: ErrorsState) {
         state.errors = [];
     },
 

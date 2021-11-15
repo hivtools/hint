@@ -32,7 +32,7 @@ export interface ErrorReport extends ErrorReportManualDetails {
 export const actions: ActionTree<ErrorsState, RootState> & ErrorsActions = {
 
     async generateErrorReport(context, payload) {
-        const {dispatch, rootState, getters} = context
+        const {dispatch, rootState, rootGetters} = context
         const data = {
             email: payload.email || rootState.currentUser,
             country: rootState.baseline.country || "no associated country",
@@ -44,7 +44,7 @@ export const actions: ActionTree<ErrorsState, RootState> & ErrorsActions = {
             section: payload.section,
             stepsToReproduce: payload.stepsToReproduce,
             versions: {hint: currentHintVersion, ...rootState.hintrVersion.hintrVersion as VersionInfo},
-            errors: getters.errors
+            errors: rootGetters.errors
         }
 
         await api<ErrorsMutation, ErrorsMutation>(context)
