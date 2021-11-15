@@ -1,3 +1,7 @@
+# hint 1.72.0
+
+* Add data exploration header
+
 # hint 1.71.0
 
 * Add DataExploration app component

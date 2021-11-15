@@ -14,9 +14,14 @@ const adrActions = {
     getSchemas: jest.fn()
 };
 
+const genericChartActions = {
+    getGenericChartMetadata: jest.fn()
+};
+
 storeOptions.modules!!.baseline!!.actions = baselineActions;
 storeOptions.modules!!.surveyAndProgram!!.actions = surveyAndProgramActions;
 storeOptions.modules!!.adr!!.actions = adrActions;
+storeOptions.modules!!.genericChart!!.actions = genericChartActions;
 
 console.error = jest.fn();
 
@@ -58,6 +63,7 @@ describe("Data Exploration App", () => {
             expect(baselineActions.getBaselineData).toHaveBeenCalled();
             expect(surveyAndProgramActions.getSurveyAndProgramData).toHaveBeenCalled();
             expect(adrActions.getSchemas).toHaveBeenCalled();
+            expect(genericChartActions.getGenericChartMetadata).toHaveBeenCalled();
             done();
         });
     });
