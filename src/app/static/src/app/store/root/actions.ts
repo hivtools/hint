@@ -88,7 +88,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     },
 
     async generateErrorReport(context, payload) {
-        const {dispatch, rootState, getters, commit} = context
+        const {dispatch, rootState, getters} = context
         const data = {
             email: payload.email || rootState.currentUser,
             country: rootState.baseline.country || "no associated country",

@@ -63,8 +63,7 @@ export interface RootState extends DataExplorationState {
     errors: ErrorsState,
     projects: ProjectsState
     currentUser: string,
-    downloadResults: DownloadResultsState,
-    updatingLanguage: boolean
+    downloadResults: DownloadResultsState
 }
 
 export interface ReadyState {
