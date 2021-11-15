@@ -1,17 +1,13 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import CalibrationResults from "../../../app/components/modelCalibrate/CalibrationResults.vue";
-import {
-    mockBaselineState, mockCalibrateResultResponse,
-    mockModelRunState, mockShapeResponse,
-} from "../../mocks";
+import {mockCalibrateResultResponse} from "../../mocks";
 import {mutations as modelCalibrateMutations} from "../../../app/store/modelCalibrate/mutations";
 import {mutations as plottingSelectionMutations} from "../../../app/store/plottingSelections/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
-import {inactiveFeatures} from "../../../app/main";
 import {BarChartWithFilters} from "@reside-ic/vue-charts";
-import {modelCalibrate, ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
+import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
 import {expectTranslated} from "../../testHelpers";
 import {BarchartIndicator} from "../../../app/types";
 import Vue from 'vue';
@@ -41,6 +37,7 @@ function getStore(modelCalibrateState: Partial<ModelCalibrateState> = {}, partia
                 getters: {
                     indicators: jest.fn().mockReturnValue(["TEST BARCHART INDICATORS"]),
                     filters: jest.fn().mockReturnValue(["TEST BAR FILTERS"]),
+                    calibratePlotDefaultSelections: jest.fn().mockReturnValue(defaultSelections),
                     ...partialGetters
                 },
                 mutations: modelCalibrateMutations
@@ -52,7 +49,6 @@ function getStore(modelCalibrateState: Partial<ModelCalibrateState> = {}, partia
                     ...partialSelections
                 },
                 getters: {
-                    calibratePlotDefaultSelections: jest.fn().mockReturnValue(defaultSelections),
                     ...partialGetters
                 },
                 mutations: plottingSelectionMutations
@@ -107,7 +103,7 @@ describe("CalibrateResults component", () => {
         const store = getStore();
         const wrapper = shallowMount(CalibrationResults, {store, localVue});
         const vm = (wrapper as any).vm;
-        const { selected_filter_options, indicator_id, x_axis_id, disaggregate_by_id } = defaultSelections
+        const {selected_filter_options, indicator_id, x_axis_id, disaggregate_by_id} = defaultSelections
 
         expect(vm.selections).toStrictEqual({
             ...defaultSelections,

@@ -2,6 +2,22 @@
 
 * Add feedback to error reporting
 
+# hint 1.68.4
+
+* Fix Input Time Series for null values
+
+# hint 1.68.3
+
+* Rename baseline and surveyAndProgram components
+
+# hint 1.68.2
+
+* moves internal logic from plotting selections module to model calibrate module - no visible change
+
+# hint 1.68.1
+
+* Rename "Report issues" to "Troubleshooting request"
+
 # hint 1.68.0
 
 * Add /explore endpoint

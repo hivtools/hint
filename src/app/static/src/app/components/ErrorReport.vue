@@ -1,6 +1,6 @@
 <template>
     <modal :open="open">
-        <h4 v-translate="'reportIssues'"></h4>
+        <h4 v-translate="'troubleshootingRequest'"></h4>
         <form class="form" id="report-form" v-if="!showFeedback">
             <div class="form-group" v-if="projectName">
                 <label for="project" v-translate="'project'"></label>
