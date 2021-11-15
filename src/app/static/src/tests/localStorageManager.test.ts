@@ -11,7 +11,7 @@ import {
     mockPlottingSelections,
     mockProjectsState,
     mockStepperState,
-    mockSurveyAndProgramState
+    mockSurveyAndProgramState, mockCalibrateResultResponse
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
@@ -30,6 +30,31 @@ describe("LocalStorageManager", () => {
         jest.clearAllMocks();
     })
 
+    const modelCalibrateResponse = {
+        calibrateId: "",
+        calibratePlotResult: null,
+        calibrating: false,
+        complete: false,
+        error: null,
+        fetching: false,
+        generatingCalibrationPlot: false,
+        options: {},
+        optionsFormMeta: {
+            "controlSections": [],
+        },
+        ready: false,
+        result: null,
+        status: {},
+        statusPollId: -1,
+        version: {
+            "hintr": "unknown",
+            "naomi": "unknown",
+            "rrq": "unknown",
+        },
+        warnings: [],
+    }
+
+
     it("serialiseState removes errors, saves selected data type", async () => {
         const mockRoot = {
             version: "1.0.0",
@@ -39,7 +64,7 @@ describe("LocalStorageManager", () => {
             }),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
-            modelCalibrate: mockModelCalibrateState(),
+            modelCalibrate: mockModelCalibrateState({result: mockCalibrateResultResponse()}),
             stepper: mockStepperState(),
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
             plottingSelections: mockPlottingSelections(),
@@ -56,7 +81,7 @@ describe("LocalStorageManager", () => {
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
-            modelCalibrate: mockModelCalibrateState(),
+            modelCalibrate: modelCalibrateResponse,
             stepper: mockStepperState(),
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
