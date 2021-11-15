@@ -31,12 +31,17 @@ const projectsActions = {
     getCurrentProject: jest.fn()
 };
 
+const genericChartActions = {
+    getGenericChartMetadata: jest.fn()
+};
+
 storeOptions.modules!!.baseline!!.actions = baselineActions;
 storeOptions.modules!!.surveyAndProgram!!.actions = surveyAndProgramActions;
 storeOptions.modules!!.modelRun!!.actions = modelRunActions;
 storeOptions.modules!!.modelCalibrate!!.actions = modelCalibrateActions;
 storeOptions.modules!!.projects!!.actions = projectsActions;
 storeOptions.modules!!.adr!!.actions = adrActions;
+storeOptions.modules!!.genericChart!!.actions = genericChartActions;
 
 console.error = jest.fn();
 
@@ -86,6 +91,7 @@ describe("App", () => {
             expect(modelCalibrateActions.getResult).toHaveBeenCalled();
             expect(adrActions.getSchemas).toHaveBeenCalled();
             expect(projectsActions.getCurrentProject).toHaveBeenCalled();
+            expect(genericChartActions.getGenericChartMetadata).toHaveBeenCalled();
             done();
         });
     });
