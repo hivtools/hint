@@ -7,11 +7,12 @@ import Vuex, {Store} from "vuex";
 import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {BDropdown} from "bootstrap-vue";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslatedWithStoreType} from "../../testHelpers";
+import {DataExplorationState, initialDataExplorationState} from "../../../app/store/dataExploration/dataExploration";
 
 describe("File upload component", () => {
 
-    const createStore = (customStore: any = emptyState(), requireConfirmation = false) => {
+    const createStore = (customStore = initialDataExplorationState(), requireConfirmation = false) => {
         const store = new Vuex.Store({
             state: customStore,
             modules: {
@@ -28,7 +29,7 @@ describe("File upload component", () => {
     const mockHideDropDown = jest.fn();
     const dropdownWithMockedHideMethod = Vue.extend({mixins: [BDropdown], methods: {hide: mockHideDropDown}});
 
-    const createSut = (props?: any, slots?: Slots, store?: Store<RootState>) => {
+    const createSut = (props?: any, slots?: Slots, store?: Store<DataExplorationState>) => {
         return shallowMount(FileUpload, {
             store: store || createStore(),
             propsData: {
@@ -66,7 +67,7 @@ describe("File upload component", () => {
         const wrapper = createSut({
             name: "test-name"
         }, undefined, store);
-        expectTranslated(wrapper.find(".custom-file-label"), "Select new file",
+        expectTranslatedWithStoreType(wrapper.find(".custom-file-label"), "Select new file",
             "Sélectionner un nouveau fichier", "Selecionar novo ficheiro", store);
     });
 

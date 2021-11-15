@@ -47,7 +47,7 @@
     import {ProgressPhase} from "../../generated";
     import ProgressBar from "../progress/ProgressBar.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
-    import ResetConfirmation from "../ResetConfirmation.vue";
+    import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import {ModelRunMutation} from "../../store/modelRun/mutations";
 
     interface ComputedState {

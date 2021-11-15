@@ -27,7 +27,7 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {expectTranslated} from "../../testHelpers";
 import {ADRState} from "../../../app/store/adr/adr";
 import {getters as rootGetters} from "../../../app/store/root/getters";
-import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
+import ResetConfirmation from "../../../app/components/resetConfirmation/ResetConfirmation.vue";
 import Mock = jest.Mock;
 
 describe("select dataset", () => {
