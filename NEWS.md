@@ -1,3 +1,7 @@
+# hint 1.69.0
+
+* Add feedback to error reporting
+
 # hint 1.68.4
 
 * Fix Input Time Series for null values
