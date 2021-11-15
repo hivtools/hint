@@ -2,7 +2,6 @@ import {Module} from "vuex";
 import {RootState} from "../../root";
 import {Error} from "../../generated";
 import {mutations} from "./mutations";
-import {actions} from "./actions";
 
 export interface ErrorsState {
     errors: Error[],
@@ -23,6 +22,5 @@ const namespaced = true;
 export const errors: Module<ErrorsState, RootState> = {
     namespaced,
     state: initialErrorsState(),
-    mutations,
-    actions
+    mutations
 };

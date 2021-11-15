@@ -27,6 +27,6 @@ export const mutations: MutationTree<ErrorsState> = {
 
     [ErrorsMutation.ErrorReportSuccess](state: ErrorsState) {
         state.errorReportSuccess = true;
-        state.errorReportError = null
+        state.errorReportError = null;
     },
 };

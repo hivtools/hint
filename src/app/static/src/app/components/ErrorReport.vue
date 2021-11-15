@@ -86,7 +86,7 @@
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {ProjectsState} from "../store/projects/projects"
     import Modal from "./Modal.vue";
-    import {ErrorReportManualDetails} from "../store/errors/actions";
+    import {ErrorReportManualDetails} from "../types";
     import {VTooltip} from 'v-tooltip';
     import i18next from "i18next";
     import {RootState} from "../root";
@@ -153,7 +153,7 @@
             }
         },
         methods: {
-            generateErrorReport: mapActionByName("errors", "generateErrorReport"),
+            generateErrorReport: mapActionByName(null, "generateErrorReport"),
             cancelErrorReport() {
                 this.resetData();
                 this.$emit("close")

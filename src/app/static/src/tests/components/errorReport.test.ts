@@ -28,12 +28,9 @@ describe("Error report component", () => {
                     namespaced: true,
                     state: mockProjectsState(projectsState)
                 },
-                errors: {
-                    namespaced: true,
-                    actions: {
-                        generateErrorReport
-                    }
-                }
+            },
+            actions: {
+                generateErrorReport
             },
             getters: {
                 isGuest: () => isGuest

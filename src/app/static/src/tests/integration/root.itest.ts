@@ -1,8 +1,8 @@
-import {actions} from "../../app/store/errors/actions";
-import {ErrorReportManualDetails} from "../../app/store/errors/actions";
+import {actions} from "../../app/store/root/actions";
+import {ErrorReportManualDetails} from "../../app/types";
 import {emptyState} from "../../app/root";
 
-describe(`errors actions`, () => {
+describe(`root actions`, () => {
 
     it("can post error report", async () => {
         const commit = jest.fn();
@@ -38,7 +38,7 @@ describe(`errors actions`, () => {
                     description: "OK",
                     statusCode: 200
                 },
-                type: "ErrorReportSuccess"
+                type: "errors/ErrorReportSuccess"
             });
 
         expect(dispatch.mock.calls.length).toBe(1)
