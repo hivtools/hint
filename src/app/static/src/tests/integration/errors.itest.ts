@@ -2,7 +2,7 @@ import {actions} from "../../app/store/errors/actions";
 import {ErrorReportManualDetails} from "../../app/store/errors/actions";
 import {emptyState} from "../../app/root";
 
-describe(`root actions`, () => {
+describe(`errors actions`, () => {
 
     it("can post error report", async () => {
         const commit = jest.fn();

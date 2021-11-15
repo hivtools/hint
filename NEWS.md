@@ -1,6 +1,10 @@
-# hint 1.68.3
+# hint 1.68.4
 
 * Move error reporting related mutations out of root mutations
+
+# hint 1.68.3
+
+* Rename baseline and surveyAndProgram components
 
 # hint 1.68.2
 

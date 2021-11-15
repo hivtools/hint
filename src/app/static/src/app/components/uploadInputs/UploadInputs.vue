@@ -66,7 +66,7 @@
                                  name="anc">
                     </manage-file>
                 </form>
-                <div v-if="validating" id="baseline-validating">
+                <div v-if="validating" id="upload-inputs-validating">
                     <loading-spinner size="xs"></loading-spinner>
                     <span v-translate="'validating'"></span>
                 </div>
@@ -92,7 +92,7 @@
     const namespace = 'baseline';
 
     export default Vue.extend({
-        name: "Baseline",
+        name: "UploadInputs",
         computed: {
             ...mapState<BaselineState>(namespace, {
                 country: (state: BaselineState) => state.country,
