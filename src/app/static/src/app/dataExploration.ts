@@ -5,6 +5,7 @@ import {DataExplorationState, storeOptions} from "./store/dataExploration/dataEx
 import Errors from "./components/Errors.vue";
 import {Language} from "./store/translations/locales";
 import DataExploration from "./components/dataExploration/DataExploration.vue";
+import DataExplorationHeader from "./components/header/DataExplorationHeader.vue";
 
 Vue.use(Vuex);
 
@@ -15,6 +16,7 @@ export const dataExplorationApp = new Vue({
     el: "#app",
     store,
     components: {
+        DataExplorationHeader,
         Errors,
         DataExploration
     },
