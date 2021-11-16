@@ -131,7 +131,7 @@ describe("Error report component", () => {
         expectTranslated(labels.at(4),
             "Steps to reproduce",
             "Étapes à reproduire",
-            "Reportar problemas",
+            "Passos para reproduzir",
             store)
 
         const mutedText = wrapper.findAll("div.small.text-muted")

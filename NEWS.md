@@ -1,3 +1,7 @@
+# hint 1.70.1
+
+* correct Portuguese translation for "Steps to reproduce"
+
 # hint 1.70.0
 
 * adds basic data exploration app with loading spinner 
