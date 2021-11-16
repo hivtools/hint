@@ -1,6 +1,10 @@
-# hint 1.70.1
+# hint 1.70.2
 
 * Move error reporting related mutations out of root mutations
+
+# hint 1.70.1
+
+* correct Portuguese translation for "Steps to reproduce"
 
 # hint 1.70.0
 

@@ -76,7 +76,9 @@
                 </div>
                 <button v-else
                         type="button"
-                        class="btn btn-red"
+                        class="btn"
+                        :class="sendingErrorReport? 'btn-secondary':'btn-red'"
+                        :disabled="sendingErrorReport"
                         @click="sendErrorReport"
                         v-translate="'send'">
                 </button>
@@ -130,6 +132,7 @@
         disabled: boolean,
         tooltipText: string,
         errorReportError: Error | null
+        sendingErrorReport: boolean
     }
 
     interface Props {
@@ -172,7 +175,12 @@
                     this.section = newVal
                 }
             },
-            errorReportError: mapStateProp<ErrorsState, Error | null>("errors", (state: ErrorsState) => state.errorReportError),
+            errorReportError: mapStateProp<ErrorsState, Error | null>(
+                "errors",
+                (state: ErrorsState) => state.errorReportError),
+            sendingErrorReport: mapStateProp<ErrorsState, boolean>(
+                "errors",
+                (state: ErrorsState) => state.sendingErrorReport),
             isGuest: mapGetterByName(null, "isGuest"),
             projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
             steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps),
