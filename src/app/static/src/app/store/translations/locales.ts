@@ -1100,7 +1100,7 @@ const pt: Partial<Translations> = {
     renameProjectHeader: "Por favor, introduza um novo nome para o projeto",
     renameProjectHistoryHeader: "Mudar o nome",
     reportBug: "Comunicar um erro",
-    reproduce: "Reportar problemas",
+    reproduce: "Passos para reproduzir",
     reproduceErrorHelp: "Descreva como reproduzir o erro para que outra pessoa possa seguir seus passos.",
     requestReset: "Solicitar e-mail de reposição de palavra-passe",
     required: "necessário",
