@@ -1,3 +1,7 @@
+# hint 1.70.2
+
+* bug fix for undefined indicator in choropleth while new data is loading
+
 # hint 1.70.1
 
 * correct Portuguese translation for "Steps to reproduce"
