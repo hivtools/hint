@@ -1,17 +1,21 @@
 <template>
     <div class="content">
         <div class="pt-4">
-            <adr-integration></adr-integration>
-            <upload-inputs v-if="step === 1"></upload-inputs>
-            <review-inputs v-if="step === 2"></review-inputs>
+            <adr-integration v-if="isUploadStep"></adr-integration>
+            <upload-inputs v-if="isUploadStep"></upload-inputs>
+            <review-inputs v-if="isReviewStep"></review-inputs>
             <button type="button"
-                    class="btn btn-white shadow-none"
+                    class="btn shadow-none"
+                    :class="isUploadStep? 'btn-secondary':'btn-red'"
                     v-translate="'back'"
+                    :disabled="isUploadStep"
                     @click="back">
             </button>
             <button type="button"
-                    class="btn btn-red shadow-none"
+                    class="btn shadow-none"
+                    :class="isReviewStep? 'btn-secondary':'btn-red'"
                     v-translate="'next'"
+                    :disabled="isReviewStep"
                     @click="next">
             </button>
         </div>
@@ -23,10 +27,32 @@
     import UploadInputs from "../uploadInputs/UploadInputs.vue";
     import ReviewInputs from "../reviewInputs/ReviewInputs.vue";
 
-    export default Vue.extend({
+    interface Computed {
+        isUploadStep: boolean
+        isReviewStep: boolean
+    }
+
+    interface Data {
+        step: number
+    }
+
+    interface Methods {
+        next: () => void
+        back: () => void
+    }
+
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         data() {
             return {
                 step: 1
+            }
+        },
+        computed: {
+            isUploadStep() {
+                return this.step === 1
+            },
+            isReviewStep() {
+                return this.step === 2
             }
         },
         methods: {

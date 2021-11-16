@@ -68,6 +68,37 @@ describe(`data exploration component`, () => {
         expect(wrapper.findAll("button").length).toBe(2)
     })
 
+    it(`disables back button when on upload step`, () => {
+        const store = createSut()
+        const wrapper = shallowMount(DataExploration, {store});
+        const buttons = wrapper.findAll("button")
+        expect(buttons.length).toBe(2)
+        expect(buttons.at(0).classes()).toEqual(["btn", "shadow-none", "btn-secondary"])
+        expect(buttons.at(0).attributes("disabled")).toBe("disabled")
+
+        expect(buttons.at(1).classes()).toEqual(["btn", "shadow-none", "btn-red"])
+        expect(buttons.at(1).attributes("disabled")).toBeUndefined()
+    })
+
+    it(`disables next button when on review step`, () => {
+        const store = createSut()
+        const wrapper = shallowMount(DataExploration, {
+            store,
+            data() {
+                return {step: 2}
+            }
+        });
+
+        const buttons = wrapper.findAll("button")
+        expect(buttons.length).toBe(2)
+        expect(buttons.at(0).classes()).toEqual(["btn", "shadow-none", "btn-red"])
+        expect(buttons.at(0).attributes("disabled")).toBeUndefined()
+
+        expect(buttons.at(1).classes()).toEqual(["btn", "shadow-none", "btn-secondary"])
+        expect(buttons.at(1).attributes("disabled")).toBe("disabled")
+
+    })
+
     it(`can translate button texts`, () => {
         const store = createSut()
         const wrapper = shallowMount(DataExploration, {store});
