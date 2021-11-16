@@ -128,7 +128,7 @@
                     this.selectedAreaIds,
                     this.nonAreaFilters,
                     this.selections.selectedFilterOptions,
-                    (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata | undefined, value: number, row: any) => {
+                    (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number, row: any) => {
                         const filterValues: Dict<any> = {};
                         this.filtersToDisplay.forEach(f => {
                             if (row[f.column_id]) {

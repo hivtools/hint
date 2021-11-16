@@ -4,13 +4,13 @@ import {Dict, Filter, NumericRange} from "../../types";
 import numeral from 'numeral';
 
 export const getColor = (value: number,
-                         metadata: ChoroplethIndicatorMetadata | undefined,
+                         metadata: ChoroplethIndicatorMetadata,
                          colourRange: NumericRange) => {
 
     const min = colourRange.min;
     const max = colourRange.max;
 
-    const colorFunction = colorFunctionFromName(metadata?.colour);
+    const colorFunction = colorFunctionFromName(metadata.colour);
 
     const rangeNum = ((max !== null) && (max != min)) ? //Avoid dividing by zero if only one value...
         max - (min || 0) :
@@ -24,7 +24,7 @@ export const getColor = (value: number,
         colorValue = 0;
     }
 
-    if (metadata && metadata.invert_scale) {
+    if (metadata.invert_scale) {
         colorValue = 1 - colorValue;
     }
 
@@ -35,8 +35,8 @@ export const scaleStepFromMetadata = function (meta: ChoroplethIndicatorMetadata
     return (meta.max - meta.min) / 10;
 };
 
-export const colorFunctionFromName = function (name: string | undefined) {
-    let result = name && (d3ScaleChromatic as any)[name];
+export const colorFunctionFromName = function (name: string) {
+    let result = (d3ScaleChromatic as any)[name];
     if (!result) {
         //This is trying to be defensive against typos in metadata...
         console.warn(`Unknown color function: ${name}`);
@@ -46,13 +46,13 @@ export const colorFunctionFromName = function (name: string | undefined) {
 };
 
 export const getIndicatorRange = function (data: any,
-                                           indicatorMeta: ChoroplethIndicatorMetadata | undefined,
+                                           indicatorMeta: ChoroplethIndicatorMetadata,
                                            filters: Filter[] | null = null,
                                            selectedFilterValues: Dict<FilterOption[]> | null = null,
                                            selectedAreaIds: string[] | null = null): NumericRange {
     let result = {} as NumericRange;
     iterateDataValues(data, [indicatorMeta], selectedAreaIds, filters, selectedFilterValues,
-        (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata | undefined, value: number) => {
+        (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number) => {
             if (!result.max) {
                 result = {min: value, max: value};
             } else {
@@ -81,12 +81,12 @@ export const roundRange = function (unrounded: NumericRange) {
 
 export const iterateDataValues = function (
     data: any,
-    indicatorsMeta: (ChoroplethIndicatorMetadata | undefined)[],
+    indicatorsMeta: ChoroplethIndicatorMetadata[],
     selectedAreaIds: string[] | null,
     filters: Filter[] | null,
     selectedFilterValues: Dict<FilterOption[]> | null,
     func: (areaId: string,
-           indicatorMeta: ChoroplethIndicatorMetadata | undefined, value: number, row: any) => void) {
+           indicatorMeta: ChoroplethIndicatorMetadata, value: number, row: any) => void) {
 
     const selectedFilterValueIds: Dict<string[]> = {};
     const validFilters = filters && selectedFilterValues
@@ -109,11 +109,6 @@ export const iterateDataValues = function (
         }
 
         for (const metadata of indicatorsMeta) {
-
-            if (!metadata) {
-                // before initialisation this may be undefined
-                continue;
-            }
 
             if (metadata.indicator_column && metadata.indicator_value != row[metadata.indicator_column]) {
                 //This data is in long format, and the indicator column's value does not match that for this indicator

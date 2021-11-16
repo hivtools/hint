@@ -52,11 +52,6 @@ describe("plot utils", () => {
         expect(result).toEqual("rgb(151, 151, 151)");
     });
 
-    it("getColor returns color if metadata is undefined", () => {
-        const result = getColor(0.5, undefined, {min: 0, max: 1});
-        expect(result).toEqual("rgb(255, 94, 99)");
-    });
-
     it("getColor avoids dividing by zero if min equals max", () => {
         const result = getColor(0.5, {
                 min: 0.5,
@@ -401,22 +396,6 @@ describe("plot utils", () => {
     it("roundRange can round where max equals min", () => {
         expect(roundRange({min: 0.314, max: 0.314})).toStrictEqual({min: 0.31, max: 0.31});
         expect(roundRange({min: 10, max: 10})).toStrictEqual({min: 10, max: 10});
-    });
-
-    it("iterating data values returns nothing if metadata is undefined", () => {
-        const data = [
-            {area_id: "MWI_1_1", indicator: "plhiv", value: 12, year: 2010},
-            {area_id: "MWI_1_1", indicator: "prev", value: 0.5, year: 2010},
-            {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2010},
-            {area_id: "MWI_1_2", indicator: "prev", value: 0.6, year: 2011},
-            {area_id: "MWI_1_2", indicator: "plhiv", value: 14, year: 2011}
-        ];
-
-        const result: any[] = [];
-        iterateDataValues(data, [undefined], null, null, null,
-            (areaId, meta, value) => result.push(value));
-
-        expect(result).toStrictEqual([])
     });
 
     it("can iterate data values and filter rows", () => {

@@ -22,7 +22,8 @@
                              :level-labels="featureLevels"
                              @detail-changed="onDetailChange"
                              @indicator-changed="onIndicatorChange"></map-control>
-                <map-legend v-show="!emptyFeature" :metadata="colorIndicator"
+                <map-legend v-show="!emptyFeature"
+                            :metadata="colorIndicator"
                             :colour-scale="indicatorColourScale"
                             :colour-range="colourRange"
                             @update="updateColourScale"></map-legend>
@@ -166,36 +167,37 @@
                 return nonEmptyFeature.length == 0
             },
             colourRange() {
-                const indicator = this.selections.indicatorId;
-                const type = this.colourScales[indicator] && this.colourScales[indicator].type;
-                switch (type) {
-                    case  ScaleType.DynamicFull:
-                        if (!this.fullIndicatorRanges.hasOwnProperty(indicator)) {
-                            // cache the result in the fullIndicatorRanges object for future lookups
-                            /* eslint vue/no-side-effects-in-computed-properties: "off" */
-                            this.fullIndicatorRanges[indicator] =
-                                getIndicatorRange(this.chartdata, this.colorIndicator)
-                        }
-                        return this.fullIndicatorRanges[indicator];
-                    case  ScaleType.DynamicFiltered:
-                        return getIndicatorRange(
-                            this.chartdata,
-                            this.colorIndicator,
-                            this.nonAreaFilters,
-                            this.selections.selectedFilterOptions,
-                            this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1)
-                        );
-                    case ScaleType.Custom:
-                        return {
-                            min: this.colourScales[indicator].customMin,
-                            max: this.colourScales[indicator].customMax
-                        };
-                    case ScaleType.Default:
-                    default:
-                        if (!this.colorIndicator) {
-                            return {max: 1, min: 0}
-                        }
-                        return {max: this.colorIndicator.max, min: this.colorIndicator.min}
+                if (!this.colorIndicator) {
+                    return {max: 1, min: 0}
+                } else {
+                    const indicator = this.selections.indicatorId;
+                    const type = this.colourScales[indicator] && this.colourScales[indicator].type;
+                    switch (type) {
+                        case  ScaleType.DynamicFull:
+                            if (!this.fullIndicatorRanges.hasOwnProperty(indicator)) {
+                                // cache the result in the fullIndicatorRanges object for future lookups
+                                /* eslint vue/no-side-effects-in-computed-properties: "off" */
+                                this.fullIndicatorRanges[indicator] =
+                                    getIndicatorRange(this.chartdata, this.colorIndicator)
+                            }
+                            return this.fullIndicatorRanges[indicator];
+                        case  ScaleType.DynamicFiltered:
+                            return getIndicatorRange(
+                                this.chartdata,
+                                this.colorIndicator,
+                                this.nonAreaFilters,
+                                this.selections.selectedFilterOptions,
+                                this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1)
+                            );
+                        case ScaleType.Custom:
+                            return {
+                                min: this.colourScales[indicator].customMin,
+                                max: this.colourScales[indicator].customMax
+                            };
+                        case ScaleType.Default:
+                        default:
+                            return {max: this.colorIndicator.max, min: this.colorIndicator.min}
+                    }
                 }
             },
             selectedAreaIds() {
@@ -210,14 +212,18 @@
                 return Array.from(selectedAreaIdSet);
             },
             featureIndicators() {
-                return getFeatureIndicator(
-                    this.chartdata,
-                    this.selectedAreaIds,
-                    this.colorIndicator,
-                    this.colourRange,
-                    this.nonAreaFilters,
-                    this.selections.selectedFilterOptions
-                );
+                if (!this.colorIndicator) {
+                    return {}
+                } else {
+                    return getFeatureIndicator(
+                        this.chartdata,
+                        this.selectedAreaIds,
+                        this.colorIndicator,
+                        this.colourRange,
+                        this.nonAreaFilters,
+                        this.selections.selectedFilterOptions
+                    );
+                }
             },
             featuresByLevel() {
                 const result = {} as any;
