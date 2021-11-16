@@ -5,7 +5,7 @@ import {
     PlottingMetadataResponse,
     Error,
     Metadata,
-    AdrMetadataResponse, FilterOption
+    AdrMetadataResponse, FilterOption, ChoroplethIndicatorMetadata
 } from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
@@ -39,7 +39,7 @@ export const metadataGetters = {
         }
 
         const sap = rootState.surveyAndProgram;
-        const selectedDataType = rootState.surveyAndProgram.selectedDataType;
+        const selectedDataType = sap.selectedDataType;
 
         let metadataForType: Metadata | null = null;
         let dataIndicators: FilterOption[];
@@ -59,7 +59,7 @@ export const metadataGetters = {
         }
 
         const unfiltered =  (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
-        return (unfiltered as any).filter(
+        return (unfiltered as ChoroplethIndicatorMetadata[]).filter(
             (metaIndicator: any) => dataIndicators!.some(
                 (dataIndicator: any) => metaIndicator.indicator === dataIndicator.id
             )
