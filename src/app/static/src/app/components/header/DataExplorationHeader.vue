@@ -10,6 +10,13 @@
                     <span v-translate="'loggedInAs'"></span> {{ user }}
                 </span>
                 <hintr-version-menu class="pr-2 mr-2 border-right"/>
+                <online-support-menu class="pr-2 mr-2 border-right"/>
+                <a :href="'public/resources/' + helpFilename"
+                   id="helpFile"
+                   target="_blank"
+                   class="pr-2 mr-2 border-right"
+                   v-translate="'dataExplorationHelp'">
+                </a>
                 <a v-if="!isGuest" href="/logout" class="pr-2 mr-2 border-right" v-translate="'logout'">
                 </a>
                 <a v-if="isGuest" href="/login" class="pr-2 mr-2 border-right" v-translate="'logIn'">

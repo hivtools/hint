@@ -8,6 +8,8 @@ import {mockRootState} from "../../mocks";
 import {expectTranslated} from "../../testHelpers";
 import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
 import HintrVersionMenu from "../../../app/components/header/HintrVersionMenu.vue";
+import OnlineSupportMenu from "../../../app/components/header/OnlineSupportMenu.vue";
+import {Language} from "../../../app/store/translations/locales";
 
 describe(`Data Exploration header`, () => {
 
@@ -23,16 +25,24 @@ describe(`Data Exploration header`, () => {
     const getWrapper = (user: string = "someone@email.com", store?: Store<RootState>) => {
         return shallowMount(DataExplorationHeader, {
             propsData: {user, title: "Naomi Data Exploration"},
-            store: store || createStore({currentUser: user}),
-            stubs: ["router-link"]
+            store: store || createStore({currentUser: user})
         })
     }
 
     it('can render header title', () => {
         const wrapper = getWrapper()
-        const d = wrapper.find(".navbar-header")
-        expect(d.text()).toBe("Naomi Data Exploration")
+        const title = wrapper.find(".navbar-header")
+        expect(title.text()).toBe("Naomi Data Exploration")
     });
+
+    it(`renders help file correctly`, () => {
+        const currentUser = "someone@email.com";
+        const store = createStore({currentUser});
+        const wrapper = getWrapper(currentUser, store);
+        const helpFile = wrapper.find("#helpFile")
+        expect(helpFile.attributes("href")).toBe("public/resources/Naomi-basic-instructions.pdf")
+        expectTranslated(helpFile, "Help", "Aider", "Ajuda", store)
+    })
 
     it("contains logout link if current user is not guest", () => {
         const currentUser = "someone@email.com";
@@ -61,6 +71,7 @@ describe(`Data Exploration header`, () => {
     it("renders hintr version and online support menu", () => {
         const wrapper = getWrapper()
         expect(wrapper.findAll(HintrVersionMenu).length).toBe(1);
+        expect(wrapper.findAll(OnlineSupportMenu).length).toBe(1);
     })
 
     it("renders Run model link as expected", () => {
