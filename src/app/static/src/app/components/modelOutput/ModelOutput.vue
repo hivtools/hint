@@ -35,7 +35,6 @@
                                 :countryAreaFilterOption="countryAreaFilterOption"
                                 :indicators="filteredChoroplethIndicators"
                                 :selections="choroplethSelections"
-
                                 :selectedFilterOptions="choroplethSelections.selectedFilterOptions"
                     ></area-indicators-table>
                 </div>

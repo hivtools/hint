@@ -398,7 +398,6 @@ describe("plot utils", () => {
         expect(roundRange({min: 10, max: 10})).toStrictEqual({min: 10, max: 10});
     });
 
-
     it("can iterate data values and filter rows", () => {
 
         const indicators = [
