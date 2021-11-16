@@ -1,3 +1,7 @@
+# hint 1.70.3
+
+* bug fix for input indicators being included when not relevant for dataset
+
 # hint 1.70.2
 
 * bug fix for undefined indicator in choropleth while new data is loading
