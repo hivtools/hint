@@ -1,3 +1,7 @@
+# hint 1.71.0
+
+* support redirecting to a requested url after a successful login
+
 # hint 1.70.1
 
 * correct Portuguese translation for "Steps to reproduce"
