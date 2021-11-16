@@ -1,6 +1,6 @@
 # hint 1.70.1
 
-* bug fix for undefined choropleth while new data is loading
+* bug fix for undefined indicator in choropleth while new data is loading
 
 # hint 1.70.0
 
