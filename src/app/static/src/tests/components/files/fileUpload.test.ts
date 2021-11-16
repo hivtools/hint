@@ -4,7 +4,7 @@ import {shallowMount, Slots} from '@vue/test-utils';
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import {mockDataExplorationState, mockFile} from "../../mocks";
 import Vuex, {Store} from "vuex";
-import {emptyState, RootState} from "../../../app/root";
+import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {BDropdown} from "bootstrap-vue";
 import {expectTranslatedWithStoreType} from "../../testHelpers";
@@ -12,9 +12,9 @@ import {DataExplorationState, initialDataExplorationState} from "../../../app/st
 
 describe("File upload component", () => {
 
-    const createStore = (customStore = initialDataExplorationState(), requireConfirmation = false) => {
+    const createStore = (state = initialDataExplorationState(), requireConfirmation = false) => {
         const store = new Vuex.Store({
-            state: customStore,
+            state: state,
             modules: {
                 stepper: {
                     namespaced: true,
