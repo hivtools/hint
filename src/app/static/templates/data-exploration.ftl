@@ -9,6 +9,7 @@
 </head>
 <body>
 <div id="app" :class="language">
+    <h1>This is data exploration mode</h1>
     <loading-spinner></loading-spinner>
     <errors title="${title}"></errors>
 </div>
