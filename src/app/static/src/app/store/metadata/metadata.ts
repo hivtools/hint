@@ -42,7 +42,7 @@ export const metadataGetters = {
         const selectedDataType = sap.selectedDataType;
 
         let metadataForType: Metadata | null = null;
-        let dataIndicators: FilterOption[];
+        let dataIndicators: FilterOption[] = [];
         switch (selectedDataType) {
             case (DataType.ANC):
                 metadataForType = plottingMetadata.anc;
@@ -58,10 +58,10 @@ export const metadataGetters = {
                 break;
         }
 
-        const unfiltered =  (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
+        const unfiltered = (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
         return (unfiltered as ChoroplethIndicatorMetadata[]).filter(
-            (metaIndicator: any) => dataIndicators!.some(
-                (dataIndicator: any) => metaIndicator.indicator === dataIndicator.id
+            (metaIndicator: ChoroplethIndicatorMetadata) => dataIndicators.some(
+                (dataIndicator: FilterOption) => metaIndicator.indicator === dataIndicator.id
             )
         )
     },
