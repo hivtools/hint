@@ -17,7 +17,6 @@ import {initialModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {initialADRUploadState} from "../adrUpload/adrUpload";
 import {initialDownloadResultsState} from "../downloadResults/downloadResults";
 import {initialGenericChartState} from "../genericChart/genericChart";
-import {Error} from "../../generated";
 
 export enum RootMutation {
     Reset = "Reset",
@@ -25,9 +24,7 @@ export enum RootMutation {
     ResetOptions = "ResetOptions",
     ResetOutputs = "ResetOutputs",
     SetProject = "SetProject",
-    ResetDownload = "ResetDownload",
-    ErrorReportError = "ErrorReportError",
-    ErrorReportSuccess = "ErrorReportSuccess"
+    ResetDownload = "ResetDownload"
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -40,8 +37,6 @@ export const mutations: MutationTree<RootState> = {
         const resetState: RootState = {
             version: state.version,
             hintrVersion: state.hintrVersion,
-            errorReportError: null,
-            errorReportSuccess: false,
             language: state.language,
             updatingLanguage: false,
             adr: state.adr,
@@ -156,17 +151,6 @@ export const mutations: MutationTree<RootState> = {
         Object.assign(state.adrUpload, initialADRUploadState());
         Object.assign(state.downloadResults, initialDownloadResultsState());
     },
-
-    [RootMutation.ErrorReportError](state: RootState, action: PayloadWithType<Error>) {
-        state.errorReportError = action.payload;
-        state.errorReportSuccess = false;
-    },
-
-    [RootMutation.ErrorReportSuccess](state: RootState) {
-        state.errorReportSuccess = true;
-        state.errorReportError = null
-    },
-
     ...languageMutations
 
 };

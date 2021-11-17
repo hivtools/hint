@@ -33,7 +33,6 @@ import {currentHintVersion} from "./hintVersion";
 import {ModelRunMutation, ModelRunUpdates} from "./store/modelRun/mutations";
 import {adr, ADRState, initialADRState} from "./store/adr/adr";
 import {adrUpload, ADRUploadState, initialADRUploadState} from "./store/adrUpload/adrUpload";
-import {Error} from "./generated";
 
 import {
     downloadResults,
@@ -64,9 +63,7 @@ export interface RootState extends DataExplorationState {
     errors: ErrorsState,
     projects: ProjectsState
     currentUser: string,
-    downloadResults: DownloadResultsState,
-    errorReportError: Error | null
-    errorReportSuccess: boolean
+    downloadResults: DownloadResultsState
 }
 
 export interface ReadyState {
@@ -135,8 +132,6 @@ export const emptyState = (): RootState => {
         language: Language.en,
         version: currentHintVersion,
         updatingLanguage: false,
-        errorReportError: null,
-        errorReportSuccess: false,
         hintrVersion: initialHintrVersionState(),
         adr: initialADRState(),
         genericChart: initialGenericChartState(),
