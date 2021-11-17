@@ -4,12 +4,16 @@ import {mutations} from "./mutations";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface ErrorsState {
-    errors: Error[]
+    errors: Error[],
+    errorReportError: Error | null
+    errorReportSuccess: boolean
 }
 
 export const initialErrorsState = (): ErrorsState => {
     return {
-        errors: []
+        errors: [],
+        errorReportError: null,
+        errorReportSuccess: false,
     }
 };
 
