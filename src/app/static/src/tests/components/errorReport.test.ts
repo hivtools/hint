@@ -513,6 +513,38 @@ describe("Error report component", () => {
         expect(wrapper.emitted().close).toBeUndefined();
     });
 
+    it("disables send button when sending error report",  () => {
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true,
+                email: "something"
+            },
+            store: createStore({}, {}, {}, false, {sendingErrorReport: true})
+        });
+
+        wrapper.find("#description").setValue("something");
+        wrapper.find("#reproduce").setValue("reproduce steps");
+        wrapper.find("#section").setValue("downloadResults");
+
+        expect(wrapper.find("#send").attributes("disabled")).toBe("disabled")
+    });
+
+    it("does not disable send button when sending error report is not in progress",  () => {
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true,
+                email: "something"
+            },
+            store: createStore()
+        });
+
+        wrapper.find("#description").setValue("something");
+        wrapper.find("#reproduce").setValue("reproduce steps");
+        wrapper.find("#section").setValue("downloadResults");
+
+        expect(wrapper.find("#send").attributes("disabled")).toBeUndefined()
+    });
+
     it("does not invoke generateErrorReport action on cancel", () => {
         const wrapper = mount(ErrorReport, {
             propsData: {

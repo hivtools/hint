@@ -76,6 +76,7 @@
                 </div>
                 <button v-else
                         type="button"
+                        id="send"
                         class="btn"
                         :class="sendingErrorReport? 'btn-secondary':'btn-red'"
                         :disabled="sendingErrorReport"

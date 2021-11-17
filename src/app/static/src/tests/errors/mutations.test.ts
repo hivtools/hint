@@ -8,7 +8,8 @@ describe("Errors mutations", () => {
         const testState = {
             errors: [firstError],
             errorReportError: null,
-            errorReportSuccess: false
+            errorReportSuccess: false,
+            sendingErrorReport: false
         };
         mutations.ErrorAdded(testState, {type: mutations.ErrorAdded, payload: secondError});
         expect(testState.errors).toStrictEqual([firstError, secondError]);
@@ -18,7 +19,8 @@ describe("Errors mutations", () => {
         const testState = {
             errors: [mockError("First Error")],
             errorReportError: null,
-            errorReportSuccess: false
+            errorReportSuccess: false,
+            sendingErrorReport: false
         };
         mutations.DismissAll(testState, null);
         expect(testState.errors).toStrictEqual([]);
@@ -37,5 +39,11 @@ describe("Errors mutations", () => {
         mutations.ErrorReportSuccess(state);
         expect(state.errorReportSuccess).toBe(true);
         expect(state.errorReportError).toBe(null);
+    });
+
+    it("can set SendingErrorReport", () => {
+        const state = mockErrorsState();
+        mutations.SendingErrorReport(state, {payload: true});
+        expect(state.sendingErrorReport).toBe(true);
     });
 });
