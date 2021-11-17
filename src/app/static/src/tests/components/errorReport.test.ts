@@ -68,8 +68,7 @@ describe("Error report component", () => {
     it("modal is closed when prop is false", () => {
         const wrapper = shallowMount(ErrorReport, {
             propsData: {
-                open: false,
-                showRootElements: true
+                open: false
             },
             store: createStore()
         });
@@ -81,8 +80,7 @@ describe("Error report component", () => {
         const store = createStore()
         const wrapper = shallowMount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store
         });
@@ -100,8 +98,7 @@ describe("Error report component", () => {
         const store = createStore({}, {currentProject: {name: "p1", id: 1, versions: []}}, {}, true)
         const wrapper = shallowMount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store
         });
@@ -165,8 +162,7 @@ describe("Error report component", () => {
 
         const wrapper = mount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store
         });
@@ -193,8 +189,7 @@ describe("Error report component", () => {
 
         const wrapper = shallowMount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store
         });
@@ -266,8 +261,7 @@ describe("Error report component", () => {
     it("selects current step by default", () => {
         const wrapper = shallowMount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore({activeStep: 2})
         });
@@ -279,8 +273,7 @@ describe("Error report component", () => {
     it("can update section", () => {
         const wrapper = shallowMount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore({activeStep: 2})
         });
@@ -299,8 +292,7 @@ describe("Error report component", () => {
     it("shows email field if user is guest", () => {
         const wrapper = shallowMount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore({}, {}, {}, true)
         });
@@ -311,8 +303,7 @@ describe("Error report component", () => {
     it("does not shows email field if user is logged in", () => {
         const wrapper = shallowMount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore({}, {}, {}, false)
         });
@@ -323,8 +314,7 @@ describe("Error report component", () => {
     it("email field is not required if user is logged in", () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore({}, {}, {}, false)
         });
@@ -339,8 +329,7 @@ describe("Error report component", () => {
     it("email field is required if user is not logged in", () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore({}, {}, {}, true)
         });
@@ -356,8 +345,7 @@ describe("Error report component", () => {
     it("description field is required", () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore({}, {}, {}, true)
         });
@@ -372,8 +360,7 @@ describe("Error report component", () => {
     it("reproduce steps field is required", () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore({}, {}, {}, true)
         });
@@ -390,8 +377,7 @@ describe("Error report component", () => {
         const mockTooltip = jest.fn();
         mount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store,
             directives: {"tooltip": mockTooltip}
@@ -411,8 +397,7 @@ describe("Error report component", () => {
     it("shows disabled, auto-populated project field if there is a current project", () => {
         const wrapper = shallowMount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore({}, {currentProject: {name: "p1", id: 1, versions: []}}, {}, false)
         });
@@ -426,8 +411,7 @@ describe("Error report component", () => {
     it("does not show project field if there is no current project", () => {
         const wrapper = shallowMount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore({}, {}, {}, true)
         });
@@ -438,8 +422,7 @@ describe("Error report component", () => {
     it("emits close event on cancel", () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore()
         });
@@ -453,8 +436,7 @@ describe("Error report component", () => {
     it("resets data on cancel", () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore({}, {}, {}, true)
         });
@@ -480,8 +462,7 @@ describe("Error report component", () => {
     it("resets data on send", async () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore({}, {}, {}, true)
         });
@@ -508,8 +489,7 @@ describe("Error report component", () => {
     it("invokes generateErrorReport action and sets showFeedback on send", async () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore()
         });
@@ -536,8 +516,7 @@ describe("Error report component", () => {
     it("does not invoke generateErrorReport action on cancel", () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore()
         });
@@ -565,9 +544,7 @@ describe("Error report component", () => {
             routes
         })
 
-        const wrapper = mount(ErrorReport, {
-            propsData: {showRootElements: true}, localVue, router, store: createStore()
-        })
+        const wrapper = mount(ErrorReport, { localVue, router, store: createStore() })
         expect(wrapper.vm.$route.path).toBe("/");
         wrapper.setProps({open: true});
         expect((wrapper.find("#section").element as HTMLSelectElement).value).toBe("uploadInputs");
@@ -638,8 +615,7 @@ describe("Error report component", () => {
     it("emits close event on click close button", () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
-                open: true,
-                showRootElements: true
+                open: true
             },
             store: createStore()
         });
@@ -655,10 +631,7 @@ describe("Error report component", () => {
         const localVue = createLocalVue()
         localVue.use(VueRouter);
         const router = new VueRouter({routes: []});
-        const wrapper = mount(ErrorReport, {
-            propsData: {showRootElements: true},
-            localVue, router, store: createStore()
-        });
+        const wrapper = mount(ErrorReport, { localVue, router, store: createStore() });
         wrapper.setData({showFeedback: true});
 
         wrapper.setProps({open: true});

@@ -73,7 +73,7 @@ describe("Online support menu", () => {
         const store = createStore();
         const wrapper = shallowMount(OnlineSupportMenu, {
             propsData: {
-                showFaq: true
+                show: true
             },
             store,
             localVue,
@@ -89,7 +89,7 @@ describe("Online support menu", () => {
         const store = createStore();
         const wrapper = shallowMount(OnlineSupportMenu, {
             propsData: {
-                showFaq: true
+                show: true
             },
             store,
             localVue,
@@ -105,7 +105,7 @@ describe("Online support menu", () => {
         store.state.language = Language.fr;
         const wrapper = shallowMount(OnlineSupportMenu, {
             propsData: {
-                showFaq: true
+                show: true
             },
             store,
             localVue,
@@ -121,7 +121,7 @@ describe("Online support menu", () => {
         store.state.language = Language.pt;
         const wrapper = shallowMount(OnlineSupportMenu, {
             propsData: {
-                showFaq: true
+                show: true
             },
             store,
             localVue,
@@ -138,7 +138,7 @@ describe("Online support menu", () => {
         const store = createStore();
         const wrapper = shallowMount(OnlineSupportMenu, {
             propsData: {
-                showFaq: true
+                show: true
             },
             store,
             localVue,

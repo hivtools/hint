@@ -2,7 +2,7 @@
     <modal :open="open">
         <h4 v-translate="'troubleshootingRequest'"></h4>
         <form class="form" id="report-form" v-if="!showFeedback">
-            <div class="form-group" v-if="showRootElements && projectName">
+            <div class="form-group" v-if="projectName">
                 <label for="project" v-translate="'project'"></label>
                 <input type="text"
                        disabled
@@ -10,14 +10,14 @@
                        :value="projectName"
                        class="form-control"/>
             </div>
-            <div class="form-group" v-if="showRootElements && isGuest">
+            <div class="form-group" v-if="isGuest">
                 <label for="email" v-translate="'email'"></label>
                 <input type="text"
                        id="email"
                        v-model="email"
                        class="form-control"/>
             </div>
-            <div v-if="showRootElements" class="form-group">
+            <div class="form-group">
                 <label for="section" v-translate="'section'"></label>
                 <select class="form-control"
                         v-model="currentSection"
@@ -65,7 +65,7 @@
         </template>
         <template v-slot:footer>
             <template v-if="!showFeedback">
-                <div v-if="showRootElements? disabled: disabledExplorationMode" class="tooltip-wrapper"
+                <div v-if="disabled" class="tooltip-wrapper"
                      style="cursor: not-allowed;"
                      v-tooltip="tooltipText">
                     <!-- tooltips can't be rendered on disabled elements -->
@@ -134,8 +134,7 @@
     }
 
     interface Props {
-        open: boolean,
-        showRootElements: boolean
+        open: boolean
     }
 
     interface Data extends ErrorReportManualDetails {
@@ -149,11 +148,7 @@
         },
         directives: {tooltip: VTooltip},
         props: {
-            open: Boolean,
-            showRootElements: {
-                required: false,
-                type: Boolean
-            }
+            open: Boolean
         },
         name: "ErrorReport",
         data: function () {
@@ -200,10 +195,10 @@
             },
             async sendErrorReport() {
                 await this.generateErrorReport({
-                    section: this.showRootElements? this.currentSection : "",
+                    section: this.currentSection,
                     description: this.description,
                     stepsToReproduce: this.stepsToReproduce,
-                    email: this.showRootElements? this.email : ""
+                    email: this.email
                 })
                 this.resetData();
                 this.showFeedback = true;
@@ -220,7 +215,7 @@
         },
         watch: {
             open(newVal) {
-                if (newVal === true && this.showRootElements) {
+                if (newVal === true) {
                     this.showFeedback = false;
                     if (this.$route.path.indexOf("projects") > -1) {
                         this.section = "projects"
