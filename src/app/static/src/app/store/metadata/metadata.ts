@@ -58,7 +58,7 @@ export const metadataGetters = {
                 break;
         }
 
-        const unfiltered = (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
+        const unfiltered = metadataForType?.choropleth ? metadataForType.choropleth.indicators : [];
         return (unfiltered as ChoroplethIndicatorMetadata[]).filter(
             (metaIndicator: ChoroplethIndicatorMetadata) => dataIndicators.some(
                 (dataIndicator: FilterOption) => metaIndicator.indicator === dataIndicator.id
