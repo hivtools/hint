@@ -1,3 +1,7 @@
+# hint 1.72.0
+
+* Add DataExploration app component
+
 # hint 1.71.1
 
 * bug fix for input indicators being included when not relevant for dataset

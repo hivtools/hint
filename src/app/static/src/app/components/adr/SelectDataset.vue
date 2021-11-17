@@ -83,7 +83,7 @@
             </template>
         </modal>
         <reset-confirmation
-            v-if="showConfirmation"
+            v-if="!dataExplorationMode && showConfirmation"
             :continue-editing="continueEditing"
             :cancel-editing="cancelEditing"
             :open="showConfirmation">
@@ -93,13 +93,11 @@
 <script lang="ts">
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
-    import Vue from "vue";
     import TreeSelect from "@riophae/vue-treeselect";
     import {
         mapActionByName,
         mapMutationByName,
         mapStateProp,
-        mapGetterByName,
     } from "../../utils";
     import {RootState} from "../../root";
     import Modal from "../Modal.vue";
@@ -115,9 +113,10 @@
     import {VTooltip} from "v-tooltip";
     import {ADRState} from "../../store/adr/adr";
     import {Error} from "../../generated";
-    import ResetConfirmation from "../ResetConfirmation.vue";
+    import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import SelectRelease from "./SelectRelease.vue";
     import {GetDatasetPayload} from "../../store/adr/actions";
+    import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
 
     interface Methods {
         getDatasets: () => void;
@@ -158,7 +157,6 @@
         hasShapeFile: boolean;
         currentLanguage: Language;
         select: string;
-        editsRequireConfirmation: boolean;
         disableImport: boolean;
     }
 
@@ -183,7 +181,7 @@
 
     const namespace = "adr";
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default ResetConfirmationMixin.extend<Data, Methods, Computed, unknown>({
         data() {
             return {
                 open: false,
@@ -205,10 +203,6 @@
         },
         directives: {tooltip: VTooltip},
         computed: {
-            editsRequireConfirmation: mapGetterByName(
-                "stepper",
-                "editsRequireConfirmation"
-            ),
             hasShapeFile: mapStateProp<BaselineState, boolean>(
                 "baseline",
                 (state: BaselineState) => !!state.shape

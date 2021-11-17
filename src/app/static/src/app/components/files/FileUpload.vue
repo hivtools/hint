@@ -14,16 +14,16 @@
                 <span v-translate="'selectNewFile'"></span>
             </label>
         </div>
-        <reset-confirmation :continue-editing="uploadSelectedFile"
+        <reset-confirmation v-if="!dataExplorationMode"
+                            :continue-editing="uploadSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showUploadConfirmation"></reset-confirmation>
     </div>
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import {mapGetterByName} from "../../utils";
-    import ResetConfirmation from "../ResetConfirmation.vue";
+    import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
+    import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin"
 
     interface Methods {
         handleFileSelect: () => void
@@ -35,10 +35,6 @@
         showUploadConfirmation: boolean
     }
 
-    interface Computed {
-        editsRequireConfirmation: boolean
-    }
-
     interface Props {
         upload: (formData: FormData) => void,
         accept: string,
@@ -46,7 +42,7 @@
         uploading: boolean
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default ResetConfirmationMixin.extend<Data, Methods, unknown, Props>({
         props: {
             "upload": Function,
             "accept": String,
@@ -60,9 +56,6 @@
         },
         components: {
             ResetConfirmation
-        },
-        computed: {
-            editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation")
         },
         methods: {
             handleFileSelect() {
