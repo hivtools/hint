@@ -278,6 +278,7 @@
                 }
             },
             updateSelectedFilterOptions(dataSourceId: string, options: Dict<FilterOption[]> | null) {
+                console.log("Updating selected filter options at " +  Date().toString())
                 this.dataSourceSelections[dataSourceId].selectedFilterOptions = options;
             }
         },

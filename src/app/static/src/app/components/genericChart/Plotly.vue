@@ -44,8 +44,10 @@
                 };
             },
             data() {
+                console.log("Evaluating jsonata at " +  Date().toString())
                 const j = jsonata(this.chartMetadata);
                 const results = j.evaluate(this.inputData);
+                console.log("Finished evaluating jsonata at " +  Date().toString())
                 return results
             }
         },
@@ -53,6 +55,7 @@
             drawChart() {
                 const el = this.$refs.chart;
                 Plotly.newPlot(el as HTMLElement, this.data.data as any, this.data.layout, this.data.config as any);
+                console.log("Finished drawing chart at " +  Date().toString())
             }
         },
         mounted() {

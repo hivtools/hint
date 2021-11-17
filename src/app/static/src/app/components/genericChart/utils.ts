@@ -5,12 +5,15 @@ export const filterData = (
     unfilteredData: Dict<unknown>[],
     filters: DisplayFilter[],
     selectedFilterOptions: Dict<FilterOption[]>) => {
+    console.log("Filtering data at " +  Date().toString())
     const includeRow = (row: any) => filters.every(filter =>
         selectedFilterOptions[filter.id] ?
             selectedFilterOptions[filter.id].some(option => option.id === row[filter.column_id]?.toString()) :
             true
     );
-    return unfilteredData.filter((row: any) => includeRow(row));
+    const result =  unfilteredData.filter((row: any) => includeRow(row));
+    console.log("Finished filtering data at " +  Date().toString())
+    return result
 };
 
 export function genericChartColumnsToFilters(columns: GenericChartColumn[], filterConfig?: DatasetFilterConfig[]): DisplayFilter[] {
