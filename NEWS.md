@@ -1,6 +1,14 @@
-# hint 1.70.3
+# hint 1.71.1
 
 * bug fix for input indicators being included when not relevant for dataset
+
+# hint 1.71.0
+
+* support redirecting to a requested url after a successful login
+
+# hint 1.70.3
+
+* Move error reporting related mutations out of root mutations
 
 # hint 1.70.2
 

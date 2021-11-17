@@ -81,6 +81,33 @@ class HintApplicationTests : SecureIntegrationTests()
                 .isEqualTo("/login?username=test.user%40example.com&error=BadCredentialsException")
     }
 
+    @Test
+    fun `redirects to requested url after login`()
+    {
+        // set requested url
+        val loginEntity = testRestTemplate.getForEntity<String>("/login?redirectTo=explore")
+
+        val map = LinkedMultiValueMap<String, String>()
+        map.add("username", "test.user@example.com")
+        map.add("password", "password")
+
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+
+        // make sure session is shared between requests
+        val cookies = loginEntity.headers["Set-Cookie"]!!.first().split(";")
+        val sessionCookie = cookies.first { it.startsWith("JSESSIONID") }.split("=")[1]
+        headers.add("Cookie", "JSESSIONID=$sessionCookie")
+
+        // login
+        val callbackEntity = testRestTemplate.postForEntity<String>("/callback/", HttpEntity(map, headers))
+
+        // get redirected back to explore page
+        assertThat(callbackEntity.statusCode).isEqualTo(HttpStatus.FOUND)
+        assertThat(callbackEntity.headers["Location"]!!.first())
+                .isEqualTo("explore")
+    }
+
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `authorized users and guest user can access REST endpoints`(isAuthorized: IsAuthorized)
