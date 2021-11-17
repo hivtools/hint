@@ -7,7 +7,7 @@ export const filterData = (
     selectedFilterOptions: Dict<FilterOption[]>) => {
     const includeRow = (row: any) => filters.every(filter =>
         selectedFilterOptions[filter.id] ?
-            selectedFilterOptions[filter.id].some(option => option.id === row[filter.column_id].toString()) :
+            selectedFilterOptions[filter.id].some(option => option.id === row[filter.column_id]?.toString()) :
             true
     );
     return unfilteredData.filter((row: any) => includeRow(row));
