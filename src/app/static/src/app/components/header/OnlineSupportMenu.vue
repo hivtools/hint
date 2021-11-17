@@ -17,7 +17,7 @@
                v-translate="'axe'">
             </a>
         </drop-down>
-        <error-report :open="errorReportOpen" @close="toggleErrorReportModal"></error-report>
+        <error-report :show-root-elements="showRootElements" :open="errorReportOpen" @close="toggleErrorReportModal"></error-report>
     </div>
 </template>
 <script lang="ts">
@@ -46,6 +46,7 @@
 
     interface Props {
         showFaq: boolean
+        showRootElements: boolean
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -56,6 +57,10 @@
         },
         props: {
             showFaq: {
+                type: Boolean,
+                required: false
+            },
+            showRootElements: {
                 type: Boolean,
                 required: false
             }

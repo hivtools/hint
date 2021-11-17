@@ -7,13 +7,10 @@ import {
     mockBaselineState,
     mockError,
     mockMetadataState,
-    mockPlottingSelections, mockRootState,
+    mockPlottingSelections,
     mockSurveyAndProgramState
 } from "../../mocks";
 import UploadInputs from "../../../app/components/uploadInputs/UploadInputs.vue";
-import {BaselineState} from "../../../app/store/baseline/baseline";
-import {BaselineActions} from "../../../app/store/baseline/actions";
-import {emptyState} from "../../../app/root";
 
 export function testUploadComponent(name: string, position: number) {
 

@@ -1,10 +1,26 @@
-# hint 1.72.0
+# hint 1.73.0
 
 * Add data exploration header
 
-# hint 1.71.0
+# hint 1.72.0
 
 * Add DataExploration app component
+
+# hint 1.71.0
+
+* support redirecting to a requested url after a successful login
+
+# hint 1.70.3
+
+* Move error reporting related mutations out of root mutations
+
+# hint 1.70.2
+
+* bug fix for undefined indicator in choropleth while new data is loading
+
+# hint 1.70.1
+
+* correct Portuguese translation for "Steps to reproduce"
 
 # hint 1.70.0
 

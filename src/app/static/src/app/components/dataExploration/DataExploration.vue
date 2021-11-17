@@ -1,19 +1,14 @@
 <template>
     <div class="content">
+        <stepper-navigation :back="back"
+                            :next="next"
+                            :back-disabled="isUploadStep"
+                            :next-disabled="isReviewStep">
+        </stepper-navigation>
         <div class="pt-4">
-            <adr-integration></adr-integration>
-            <upload-inputs v-if="step === 1"></upload-inputs>
-            <review-inputs v-if="step === 2"></review-inputs>
-            <button type="button"
-                    class="btn btn-white shadow-none"
-                    v-translate="'back'"
-                    @click="back">
-            </button>
-            <button type="button"
-                    class="btn btn-red shadow-none"
-                    v-translate="'next'"
-                    @click="next">
-            </button>
+            <adr-integration v-if="isUploadStep"></adr-integration>
+            <upload-inputs v-if="isUploadStep"></upload-inputs>
+            <review-inputs v-if="isReviewStep"></review-inputs>
         </div>
     </div>
 </template>
@@ -22,11 +17,34 @@
     import AdrIntegration from "../adr/ADRIntegration.vue";
     import UploadInputs from "../uploadInputs/UploadInputs.vue";
     import ReviewInputs from "../reviewInputs/ReviewInputs.vue";
+    import StepperNavigation from "../StepperNavigation.vue";
 
-    export default Vue.extend({
+    interface Computed {
+        isUploadStep: boolean
+        isReviewStep: boolean
+    }
+
+    interface Data {
+        step: number
+    }
+
+    interface Methods {
+        next: () => void
+        back: () => void
+    }
+
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         data() {
             return {
                 step: 1
+            }
+        },
+        computed: {
+            isUploadStep() {
+                return this.step === 1
+            },
+            isReviewStep() {
+                return this.step === 2
             }
         },
         methods: {
@@ -40,7 +58,8 @@
         components: {
             AdrIntegration,
             UploadInputs,
-            ReviewInputs
+            ReviewInputs,
+            StepperNavigation
         }
     })
 </script>

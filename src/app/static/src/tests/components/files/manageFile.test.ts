@@ -7,14 +7,13 @@ import ManageFile from "../../../app/components/files/ManageFile.vue";
 import {mockDataExplorationState, mockError, mockFile} from "../../mocks";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import Vuex, {Store} from "vuex";
-import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, expectTranslatedWithStoreType} from "../../testHelpers";
+import {DataExplorationState, initialDataExplorationState} from "../../../app/store/dataExploration/dataExploration";
 
 describe("Manage file component", () => {
 
-
-    const createStore = (customStore: any = emptyState(), requireConfirmation = false) => {
+    const createStore = (customStore = initialDataExplorationState(), requireConfirmation = false) => {
         const store = new Vuex.Store({
             state: customStore,
             modules: {
@@ -28,7 +27,7 @@ describe("Manage file component", () => {
         return store;
     };
 
-    const createSut = (props?: any, slots?: Slots, store?: Store<RootState>) => {
+    const createSut = (props?: any, slots?: Slots, store?: Store<DataExplorationState>) => {
         return shallowMount(ManageFile, {
             store: store || createStore(),
             propsData: {
@@ -83,7 +82,7 @@ describe("Manage file component", () => {
         const wrapper = createSut({
             existingFileName: "existing-name.csv"
         }, undefined, store);
-        expectTranslated(wrapper.find("label.file-name strong"), "File", "Fichier", "Ficheiro", store);
+        expectTranslatedWithStoreType(wrapper.find("label.file-name strong"), "File", "Fichier", "Ficheiro", store);
         expect(wrapper.find("label.file-name").text()).toContain("existing-name.csv");
     });
 

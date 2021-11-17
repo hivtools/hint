@@ -28,14 +28,13 @@
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
     import FileUpload from "./FileUpload.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
     import ErrorAlert from "../ErrorAlert.vue";
-    import ResetConfirmation from "../ResetConfirmation.vue";
-    import {mapStatePropByName} from "../../utils";
+    import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import {Error} from "../../generated";
+    import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
 
     interface Data {
         uploading: boolean
@@ -44,8 +43,6 @@
 
     interface Computed {
         hasError: boolean
-        editsRequireConfirmation: boolean
-        dataExplorationMode: boolean;
     }
 
     interface Methods {
@@ -67,7 +64,7 @@
         name: string
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default ResetConfirmationMixin.extend<Data, Methods, Computed, Props>({
         name: "FileSelect",
         props: {
             "upload": Function,
@@ -87,13 +84,6 @@
             }
         },
         computed: {
-            dataExplorationMode: mapStatePropByName(null, "dataExplorationMode"),
-            editsRequireConfirmation() {
-                if (this.dataExplorationMode) {
-                    return false
-                }
-                return this.$store.getters["stepper/editsRequireConfirmation"]
-            },
             hasError: function () {
                 return !!this.error
             }

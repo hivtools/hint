@@ -13,7 +13,7 @@
                     <span v-translate="'loggedInAs'"></span> {{ user }}
                 </span>
                 <hintr-version-menu class="pr-2 mr-2 border-right"/>
-                <online-support-menu class="pr-2 mr-2 border-right" :show-faq="true"/>
+                <online-support-menu :show-root-elements="true" class="pr-2 mr-2 border-right" :show-faq="true"/>
                 <a :href="'public/resources/' + helpFilename"
                    target="_blank"
                    class="pr-2 mr-2 border-right"

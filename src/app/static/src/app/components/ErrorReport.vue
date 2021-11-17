@@ -2,7 +2,7 @@
     <modal :open="open">
         <h4 v-translate="'troubleshootingRequest'"></h4>
         <form class="form" id="report-form" v-if="!showFeedback">
-            <div class="form-group" v-if="projectName">
+            <div class="form-group" v-if="showRootElements && projectName">
                 <label for="project" v-translate="'project'"></label>
                 <input type="text"
                        disabled
@@ -10,14 +10,14 @@
                        :value="projectName"
                        class="form-control"/>
             </div>
-            <div class="form-group" v-if="isGuest">
+            <div class="form-group" v-if="showRootElements && isGuest">
                 <label for="email" v-translate="'email'"></label>
                 <input type="text"
                        id="email"
                        v-model="email"
                        class="form-control"/>
             </div>
-            <div class="form-group">
+            <div v-if="showRootElements" class="form-group">
                 <label for="section" v-translate="'section'"></label>
                 <select class="form-control"
                         v-model="currentSection"
@@ -65,7 +65,7 @@
         </template>
         <template v-slot:footer>
             <template v-if="!showFeedback">
-                <div v-if="disabled" class="tooltip-wrapper"
+                <div v-if="showRootElements? disabled: disabledExplorationMode" class="tooltip-wrapper"
                      style="cursor: not-allowed;"
                      v-tooltip="tooltipText">
                     <!-- tooltips can't be rendered on disabled elements -->
@@ -102,13 +102,14 @@
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {ProjectsState} from "../store/projects/projects"
     import Modal from "./Modal.vue";
+    import {ErrorReportManualDetails} from "../types";
     import ErrorAlert from "./ErrorAlert.vue";
-    import {ErrorReportManualDetails} from "../store/root/actions";
     import {VTooltip} from 'v-tooltip';
     import i18next from "i18next";
     import {RootState} from "../root";
     import {Language} from "../store/translations/locales";
     import {Error} from "../generated";
+    import { ErrorsState } from "../store/errors/errors";
 
 
     interface Methods {
@@ -128,11 +129,13 @@
         projectName: string | undefined
         disabled: boolean,
         tooltipText: string,
-        errorReportError: Error | null
+        errorReportError: Error | null,
+        disabledExplorationMode: boolean
     }
 
     interface Props {
-        open: boolean
+        open: boolean,
+        showRootElements: boolean
     }
 
     interface Data extends ErrorReportManualDetails {
@@ -146,7 +149,11 @@
         },
         directives: {tooltip: VTooltip},
         props: {
-            open: Boolean
+            open: Boolean,
+            showRootElements: {
+                required: false,
+                type: Boolean
+            }
         },
         name: "ErrorReport",
         data: function () {
@@ -171,12 +178,15 @@
                     this.section = newVal
                 }
             },
-            errorReportError: mapStateProp<RootState, Error | null>(null, (state: RootState) => state.errorReportError),
+            errorReportError: mapStateProp<ErrorsState, Error | null>("errors", (state: ErrorsState) => state.errorReportError),
             isGuest: mapGetterByName(null, "isGuest"),
             projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
             steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps),
             disabled() {
                 return !this.description || !this.stepsToReproduce || (this.isGuest && !this.email)
+            },
+            disabledExplorationMode() {
+                return !this.description || !this.stepsToReproduce
             },
             tooltipText() {
                 return i18next.t("allFieldsRequired", {lng: this.currentLanguage});
@@ -190,10 +200,10 @@
             },
             async sendErrorReport() {
                 await this.generateErrorReport({
-                    section: this.currentSection,
+                    section: this.showRootElements? this.currentSection : "",
                     description: this.description,
                     stepsToReproduce: this.stepsToReproduce,
-                    email: this.email
+                    email: this.showRootElements? this.email : ""
                 })
                 this.resetData();
                 this.showFeedback = true;
@@ -210,7 +220,7 @@
         },
         watch: {
             open(newVal) {
-                if (newVal === true) {
+                if (newVal === true && this.showRootElements) {
                     this.showFeedback = false;
                     if (this.$route.path.indexOf("projects") > -1) {
                         this.section = "projects"

@@ -24,7 +24,7 @@ export const getFeatureIndicator = function (data: any[],
     return result;
 };
 
-export const initialiseScaleFromMetadata = function (meta: ChoroplethIndicatorMetadata) {
+export const initialiseScaleFromMetadata = function (meta: ChoroplethIndicatorMetadata | undefined) {
     const result = initialScaleSettings();
     if (meta) {
         result.customMin = meta.min;
