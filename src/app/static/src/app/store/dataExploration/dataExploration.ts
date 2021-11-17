@@ -38,8 +38,6 @@ export interface DataExplorationState extends TranslatableState {
     errors: ErrorsState,
     currentUser: string,
     updatingLanguage: boolean,
-    errorReportError: Error | null
-    errorReportSuccess: boolean,
     dataExplorationMode: boolean
 }
 
@@ -48,8 +46,6 @@ export const initialDataExplorationState = (): DataExplorationState => {
         language: Language.en,
         version: currentHintVersion,
         updatingLanguage: false,
-        errorReportError: null,
-        errorReportSuccess: false,
         hintrVersion: initialHintrVersionState(),
         adr: initialADRState(),
         genericChart: initialGenericChartState(),

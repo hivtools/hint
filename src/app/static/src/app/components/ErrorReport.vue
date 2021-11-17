@@ -102,13 +102,14 @@
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {ProjectsState} from "../store/projects/projects"
     import Modal from "./Modal.vue";
+    import {ErrorReportManualDetails} from "../types";
     import ErrorAlert from "./ErrorAlert.vue";
-    import {ErrorReportManualDetails} from "../store/root/actions";
     import {VTooltip} from 'v-tooltip';
     import i18next from "i18next";
     import {RootState} from "../root";
     import {Language} from "../store/translations/locales";
     import {Error} from "../generated";
+    import { ErrorsState } from "../store/errors/errors";
 
 
     interface Methods {
@@ -171,7 +172,7 @@
                     this.section = newVal
                 }
             },
-            errorReportError: mapStateProp<RootState, Error | null>(null, (state: RootState) => state.errorReportError),
+            errorReportError: mapStateProp<ErrorsState, Error | null>("errors", (state: ErrorsState) => state.errorReportError),
             isGuest: mapGetterByName(null, "isGuest"),
             projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
             steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps),
