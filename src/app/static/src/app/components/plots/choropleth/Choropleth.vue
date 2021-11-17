@@ -22,7 +22,8 @@
                              :level-labels="featureLevels"
                              @detail-changed="onDetailChange"
                              @indicator-changed="onIndicatorChange"></map-control>
-                <map-legend v-show="!emptyFeature" :metadata="colorIndicator"
+                <map-legend v-show="!emptyFeature"
+                            :metadata="colorIndicator"
                             :colour-scale="indicatorColourScale"
                             :colour-range="colourRange"
                             @update="updateColourScale"></map-legend>
@@ -100,7 +101,7 @@
         flattenedAreas: Dict<NestedFilterOption>,
         selectedAreaFeatures: Feature[],
         selectedAreaIds: string[],
-        colorIndicator: ChoroplethIndicatorMetadata,
+        colorIndicator: ChoroplethIndicatorMetadata | undefined,
         options: GeoJSONOptions,
         emptyFeature: boolean
     }
@@ -159,43 +160,44 @@
             initialised() {
                 const unsetFilters = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
-                    !!this.selections.indicatorId;
+                    !!this.selections.indicatorId && !!this.colorIndicator;
             },
             emptyFeature() {
                 const nonEmptyFeature = (this.currentFeatures.filter(filtered => !!this.featureIndicators[filtered.properties!.area_id]))
                 return nonEmptyFeature.length == 0
             },
             colourRange() {
-                const indicator = this.selections.indicatorId;
-                const type = this.colourScales[indicator] && this.colourScales[indicator].type;
-                switch (type) {
-                    case  ScaleType.DynamicFull:
-                        if (!this.fullIndicatorRanges.hasOwnProperty(indicator)) {
-                            // cache the result in the fullIndicatorRanges object for future lookups
-                            /* eslint vue/no-side-effects-in-computed-properties: "off" */
-                            this.fullIndicatorRanges[indicator] =
-                                getIndicatorRange(this.chartdata, this.colorIndicator)
-                        }
-                        return this.fullIndicatorRanges[indicator];
-                    case  ScaleType.DynamicFiltered:
-                        return getIndicatorRange(
-                            this.chartdata,
-                            this.colorIndicator,
-                            this.nonAreaFilters,
-                            this.selections.selectedFilterOptions,
-                            this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1)
-                        );
-                    case ScaleType.Custom:
-                        return {
-                            min: this.colourScales[indicator].customMin,
-                            max: this.colourScales[indicator].customMax
-                        };
-                    case ScaleType.Default:
-                    default:
-                        if (!this.initialised) {
-                            return {max: 1, min: 0}
-                        }
-                        return {max: this.colorIndicator.max, min: this.colorIndicator.min}
+                if (!this.colorIndicator) {
+                    return {max: 1, min: 0}
+                } else {
+                    const indicator = this.selections.indicatorId;
+                    const type = this.colourScales[indicator] && this.colourScales[indicator].type;
+                    switch (type) {
+                        case  ScaleType.DynamicFull:
+                            if (!this.fullIndicatorRanges.hasOwnProperty(indicator)) {
+                                // cache the result in the fullIndicatorRanges object for future lookups
+                                /* eslint vue/no-side-effects-in-computed-properties: "off" */
+                                this.fullIndicatorRanges[indicator] =
+                                    getIndicatorRange(this.chartdata, this.colorIndicator)
+                            }
+                            return this.fullIndicatorRanges[indicator];
+                        case  ScaleType.DynamicFiltered:
+                            return getIndicatorRange(
+                                this.chartdata,
+                                this.colorIndicator,
+                                this.nonAreaFilters,
+                                this.selections.selectedFilterOptions,
+                                this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1)
+                            );
+                        case ScaleType.Custom:
+                            return {
+                                min: this.colourScales[indicator].customMin,
+                                max: this.colourScales[indicator].customMax
+                            };
+                        case ScaleType.Default:
+                        default:
+                            return {max: this.colorIndicator.max, min: this.colorIndicator.min}
+                    }
                 }
             },
             selectedAreaIds() {
@@ -210,14 +212,18 @@
                 return Array.from(selectedAreaIdSet);
             },
             featureIndicators() {
-                return getFeatureIndicator(
-                    this.chartdata,
-                    this.selectedAreaIds,
-                    this.colorIndicator,
-                    this.colourRange,
-                    this.nonAreaFilters,
-                    this.selections.selectedFilterOptions
-                );
+                if (!this.colorIndicator) {
+                    return {}
+                } else {
+                    return getFeatureIndicator(
+                        this.chartdata,
+                        this.selectedAreaIds,
+                        this.colorIndicator,
+                        this.colourRange,
+                        this.nonAreaFilters,
+                        this.selections.selectedFilterOptions
+                    );
+                }
             },
             featuresByLevel() {
                 const result = {} as any;
@@ -272,8 +278,8 @@
                 }
                 return [];
             },
-            colorIndicator(): ChoroplethIndicatorMetadata {
-                return this.indicators.find(i => i.indicator == this.selections.indicatorId)!;
+            colorIndicator(): ChoroplethIndicatorMetadata | undefined {
+                return this.indicators.find(i => i.indicator == this.selections.indicatorId);
             },
             indicatorColourScale(): ScaleSettings | null {
                 const current = this.colourScales[this.selections.indicatorId];
@@ -287,7 +293,14 @@
             },
             options() {
                 const featureIndicators = this.featureIndicators;
-                const {format, scale, accuracy} = this.colorIndicator!;
+                let format = "";
+                let scale = 1;
+                let accuracy: number | null = null;
+                if (this.colorIndicator) {
+                    format = this.colorIndicator.format;
+                    scale = this.colorIndicator.scale;
+                    accuracy = this.colorIndicator.accuracy;
+                }
                 return {
                     onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
                         const area_id = feature.properties && feature.properties["area_id"];
@@ -306,10 +319,10 @@
                             layer.bindTooltip(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${formatOutput(stringVal, format, scale, accuracy)}
-                                <br/>(${formatOutput(stringLower, format, scale, accuracy)+" - "+
+                                <br/>(${formatOutput(stringLower, format, scale, accuracy) + " - " +
                             formatOutput(stringUpper, format, scale, accuracy)})
                             </div>`);
-                        }else {
+                        } else {
                             layer.bindTooltip(`<div>
                                 <strong>${area_name}</strong>
                                 <br/>${formatOutput(stringVal, format, scale, accuracy)}

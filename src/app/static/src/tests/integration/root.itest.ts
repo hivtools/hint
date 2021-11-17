@@ -1,9 +1,6 @@
 import {actions} from "../../app/store/root/actions";
-import {ErrorReportManualDetails} from "../../app/store/root/actions";
-import {initialProjectsState} from "../../app/store/projects/projects";
-import {RootState} from "../../app/root";
-import {Language} from "../../app/store/translations/locales";
-import {initialHintrVersionState} from "../../app/store/hintrVersion/hintrVersion";
+import {ErrorReportManualDetails} from "../../app/types";
+import {emptyState} from "../../app/root";
 
 describe(`root actions`, () => {
 
@@ -13,19 +10,15 @@ describe(`root actions`, () => {
         const dispatch = jest.fn();
 
         const state = {
-            language: Language.en,
-            errorReportError: null,
+            ...emptyState(),
             baseline: {
                 country: "Malawi"
             },
             modelRun: {
                 modelRunId: "1234"
             },
-            projects: initialProjectsState(),
-            hintrVersion: initialHintrVersionState()
-        } as RootState;
-
-        state.projects.currentProject = {name: "p1", id: 1, versions: []}
+            projects: {currentProject: {name: "p1", id: 1, versions: []}}
+        }
 
         const getters = {
             errors: []
@@ -45,7 +38,7 @@ describe(`root actions`, () => {
                     description: "OK",
                     statusCode: 200
                 },
-                type: "ErrorReportSuccess"
+                type: "errors/ErrorReportSuccess"
             });
 
         expect(dispatch.mock.calls.length).toBe(1)
