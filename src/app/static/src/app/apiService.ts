@@ -3,8 +3,8 @@ import {ErrorsMutation} from "./store/errors/mutations";
 import {ActionContext, Commit} from "vuex";
 import {freezer, isHINTResponse} from "./utils";
 import {Error, Response} from "./generated";
-import {TranslatableState} from "./root";
 import i18next from "i18next";
+import {TranslatableState} from "./types";
 
 declare let appUrl: string;
 

@@ -1,3 +1,59 @@
+# hint 1.71.0
+
+* support redirecting to a requested url after a successful login
+
+# hint 1.70.3
+
+* Move error reporting related mutations out of root mutations
+
+# hint 1.70.2
+
+* bug fix for undefined indicator in choropleth while new data is loading
+
+# hint 1.70.1
+
+* correct Portuguese translation for "Steps to reproduce"
+
+# hint 1.70.0
+
+* adds basic data exploration app with loading spinner 
+
+# hint 1.69.0
+
+* Add feedback to error reporting
+
+# hint 1.68.4
+
+* Fix Input Time Series for null values
+
+# hint 1.68.3
+
+* Rename baseline and surveyAndProgram components
+
+# hint 1.68.2
+
+* moves internal logic from plotting selections module to model calibrate module - no visible change
+
+# hint 1.68.1
+
+* Rename "Report issues" to "Troubleshooting request"
+
+# hint 1.68.0
+
+* Add /explore endpoint
+
+# hint 1.67.0
+
+* Component to display warnings from hintr
+
+# hint 1.66.0
+
+* Made Calibration plot visible
+
+# hint 1.65.0
+
+* Output Time Series plots
+
 # hint 1.64.3
 
 * Fix language bug on reload
@@ -58,15 +114,29 @@
 
 * Save warnings from option validation, model fit and model calibration to app state
 
-# hint 1.56.1
+# hint 1.59.1
 
 * Render filter labels verbatim in output tables, do not attempt to translate
 
-# hint 1.56.0
+# hint 1.59.0
 
 * Include Back/Continue links at bottom of model options page
 
+# hint 1.58.0
+
+* Refresh output metadata and options when language changes
+
+# hint 1.57.0
+
+* Add tooltips for indicators in Time series chart
+
+# hint 1.56.0
+
+* Remove genericChart dataset when corresponding input file changes
+
 # hint 1.55.0
+
+* Add input Time series chart
 
 * Refresh output metadata and options when language changes
 

@@ -1,20 +1,25 @@
-import {actions, ErrorReport, ErrorReportManualDetails} from "../../app/store/root/actions";
+import {actions} from "../../app/store/root/actions";
+import {ErrorReport, ErrorReportManualDetails} from "../../app/types";
 import {
     mockAxios,
     mockFailure,
     mockBaselineState,
+    mockError,
+    mockGenericChartState,
     mockHintrVersionState,
     mockModelCalibrateState,
     mockModelRunState,
     mockProjectsState,
     mockRootState,
-    mockStepperState, mockSuccess, mockError
+    mockStepperState,
+    mockSuccess
 } from "../mocks";
 import {Language} from "../../app/store/translations/locales";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
 import Mock = jest.Mock;
 import {currentHintVersion} from "../../app/hintVersion";
+import { ErrorsMutation } from "../../app/store/errors/mutations";
 
 
 describe("root actions", () => {
@@ -195,7 +200,7 @@ describe("root actions", () => {
 
     const expectChangeLanguageMutations = (commit: Mock) => {
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: RootMutation.SetUpdatingLanguage,
+            type: LanguageMutation.SetUpdatingLanguage,
             payload: true
         });
         expect(commit.mock.calls[1][0]).toStrictEqual({
@@ -204,7 +209,7 @@ describe("root actions", () => {
         });
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: RootMutation.SetUpdatingLanguage,
+            type: LanguageMutation.SetUpdatingLanguage,
             payload: false
         });
     };
@@ -253,7 +258,7 @@ describe("root actions", () => {
         await actions.generateErrorReport({commit, rootState, getters, dispatch} as any, payload);
 
         expect(commit.mock.calls.length).toEqual(1);
-        expect(commit.mock.calls[0][0]).toEqual({"payload": "ok", "type": "ErrorReportSuccess"});
+        expect(commit.mock.calls[0][0]).toEqual({"payload": "ok", "type": "errors/ErrorReportSuccess"});
         expect(dispatch.mock.calls.length).toEqual(1);
         expect(dispatch.mock.calls[0][0]).toEqual("projects/cloneProject");
         expect(mockAxios.history.post.length).toEqual(1)
@@ -330,7 +335,7 @@ describe("root actions", () => {
         await actions.generateErrorReport({commit, rootState, getters, dispatch} as any, payload);
 
         expect(commit.mock.calls.length).toEqual(1);
-        expect(commit.mock.calls[0][0]).toEqual({"payload": "ok", "type": "ErrorReportSuccess"});
+        expect(commit.mock.calls[0][0]).toEqual({"payload": "ok", "type": "errors/ErrorReportSuccess"});
         expect(dispatch.mock.calls.length).toEqual(0);
         expect(mockAxios.history.post.length).toEqual(1)
         expect(mockAxios.history.post[0].url).toEqual(url)
@@ -388,7 +393,7 @@ describe("root actions", () => {
         await actions.generateErrorReport({commit, rootState, getters, dispatch} as any, payload);
 
         const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
-        expect(commit.mock.calls[0][0]).toEqual({payload: expectedError, type: RootMutation.ErrorReportError});
+        expect(commit.mock.calls[0][0]).toEqual({payload: expectedError, type: "errors/ErrorReportError"});
         expect(dispatch.mock.calls.length).toBe(0)
     });
 
@@ -453,6 +458,23 @@ describe("root actions", () => {
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toStrictEqual("metadata/getPlottingMetadata");
         expect(dispatch.mock.calls[0][1]).toStrictEqual("MWI");
+    });
+
+    it("changeLanguage refreshes genericChart datasets, if any", async() => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const rootState = mockRootState(
+            {
+                baseline: mockBaselineState({iso3: "MWI"}),
+                genericChart: mockGenericChartState({datasets: {dataset1: "TEST"}} as any)
+        });
+        await actions.changeLanguage({commit, dispatch, rootState} as any, Language.fr);
+
+        expectChangeLanguageMutations(commit);
+
+        expect(dispatch.mock.calls.length).toBe(2);
+        expect(dispatch.mock.calls[0][0]).toStrictEqual("metadata/getPlottingMetadata");
+        expect(dispatch.mock.calls[1][0]).toStrictEqual("genericChart/refreshDatasets");
     });
 
     it("changeLanguage fetches nothing if no relevant metadata to fetch", async () => {

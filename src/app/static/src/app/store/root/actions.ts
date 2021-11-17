@@ -2,35 +2,21 @@ import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
 import {StepDescription} from "../stepper/stepper";
 import {RootMutation} from "./mutations";
+import {ErrorsMutation} from "../errors/mutations";
 import {LanguageActions} from "../language/language";
 import {changeLanguage} from "../language/actions";
 import i18next from "i18next";
 import {api} from "../../apiService";
+import {ErrorReportManualDetails} from "../../types";
 import {VersionInfo} from "../../generated";
 import {currentHintVersion} from "../../hintVersion";
+import {LanguageMutation} from "../language/mutations";
 
 
 export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
     generateErrorReport: (store: ActionContext<RootState, RootState>,
-                          payload: ErrorReportManualDetails) => void;
-}
-
-export interface ErrorReportManualDetails {
-    section: string,
-    description: string,
-    stepsToReproduce: string,
-    email: string
-}
-
-export interface ErrorReport extends ErrorReportManualDetails {
-    country: string,
-    projectName: string | undefined,
-    browserAgent: string,
-    timeStamp: string,
-    jobId: string,
-    versions: VersionInfo,
-    errors: Error[]
+        payload: ErrorReportManualDetails) => void;
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -80,7 +66,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             return;
         }
 
-        commit({type: RootMutation.SetUpdatingLanguage, payload: true});
+        commit({type: LanguageMutation.SetUpdatingLanguage, payload: true});
         await changeLanguage<RootState>(context, payload);
 
         const actions: Promise<unknown>[] = [];
@@ -93,8 +79,12 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             actions.push(dispatch("modelCalibrate/getResult"));
         }
 
+        if (Object.keys(rootState.genericChart.datasets).length > 0) {
+            actions.push(dispatch("genericChart/refreshDatasets"));
+        }
+
         await Promise.all(actions);
-        commit({type: RootMutation.SetUpdatingLanguage, payload: false});
+        commit({type: LanguageMutation.SetUpdatingLanguage, payload: false});
     },
 
     async generateErrorReport(context, payload) {
@@ -113,12 +103,12 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             errors: getters.errors
         }
 
-        await api<RootMutation, RootMutation>(context)
-            .withSuccess(RootMutation.ErrorReportSuccess)
-            .withError(RootMutation.ErrorReportError)
+        await api<ErrorsMutation, ErrorsMutation>(context)
+            .withSuccess(`errors/${ErrorsMutation.ErrorReportSuccess}` as ErrorsMutation, true)
+            .withError(`errors/${ErrorsMutation.ErrorReportError}` as ErrorsMutation, true)
             .postAndReturn("error-report", data)
             .then(() => {
-                if (rootState.projects.currentProject && !rootState.errorReportError) {
+                if (rootState.projects.currentProject && !rootState.errors.errorReportError) {
                     dispatch("projects/cloneProject",
                         {
                             emails: ["naomi-support@imperial.ac.uk"],

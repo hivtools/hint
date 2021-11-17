@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.security
 import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic.Companion.GUEST_USER
 import org.pac4j.core.client.Clients
 import org.pac4j.core.config.Config
+import org.pac4j.core.context.Pac4jConstants
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.context.session.J2ESessionStore
 import org.pac4j.core.profile.CommonProfile
@@ -46,6 +47,7 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
     companion object
     {
         private const val VERSION_ID = "version_id"
+        private const val MODE = "mode"
     }
 
     fun getUserProfile(): CommonProfile
@@ -60,6 +62,22 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
     fun userIsGuest(): Boolean
     {
         return getUserProfile().id == GUEST_USER
+    }
+
+    fun setMode(mode: String)
+    {
+        val savedMode = pac4jConfig.sessionStore.get(webContext, MODE) as String?
+        if (savedMode != mode)
+        {
+            // If mode has changed, clear the session version id too
+            pac4jConfig.sessionStore.set(webContext, MODE, mode)
+            setVersionId(null)
+        }
+    }
+
+    fun setRequestedUrl(url: String?)
+    {
+        pac4jConfig.sessionStore.set(webContext, Pac4jConstants.REQUESTED_URL, url)
     }
 
     fun getVersionId(): String

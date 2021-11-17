@@ -112,7 +112,11 @@ describe("LocalStorageManager", () => {
 
     it("returns nothing and saves current user if local storage does not match current user", () => {
         localStorage.setItem("user", currentUser);
-        localStorageManager.savePartialState({errors: {errors: [{error: "test", detail: "test"}]}});
+        localStorageManager.savePartialState({errors: {
+            errors: [{error: "test", detail: "test"}],
+            errorReportError: null,
+            errorReportSuccess: false
+        }});
         let result = localStorageManager.getState();
         expect(result).not.toBe(null);
         expect(localStorage.getItem("user")).toBe(currentUser);
@@ -144,7 +148,7 @@ describe("LocalStorageManager", () => {
 
     it("can initiate default language from store", () => {
         const store = new Vuex.Store({
-            state: {language: Language.fr}
+            state: {language: Language.fr, updatingLanguage: false}
         });
 
         registerTranslations(store);

@@ -1,5 +1,6 @@
 import {Payload} from "vuex";
-import {FilterOption, Error, DownloadStatusResponse, DownloadSubmitResponse, Warning} from "./generated";
+import {FilterOption, Error, DownloadStatusResponse, DownloadSubmitResponse, Warning, VersionInfo} from "./generated";
+import {Language} from "./store/translations/locales";
 
 export interface PayloadWithType<T> extends Payload {
     payload: T
@@ -182,22 +183,43 @@ export interface SelectedADRUploadFiles {
     coarseOutput?: any
 }
 
+export interface GenericChartTableConfig {
+    columns: GenericChartTableColumnConfig[]
+}
+
+export interface GenericChartTableColumnConfig {
+    data: {
+        columnId: string,
+        labelColumn?: string
+        hierarchyColumn?: string
+    },
+    header: {
+        type: "columnLabel" | "selectedFilterOption",
+        column: string
+    }
+}
+
 export interface DatasetConfig {
     id: string
-    type: "standard" | "custom"
     label: string
-    module?: string
-    prop?: string
-    filters?: Filter[]
+    url: string
+    filters?: DatasetFilterConfig[],
+    table?: GenericChartTableConfig
+}
+
+export interface DatasetFilterConfig {
+    id: string,
+    source: string,
+    allowMultiple: boolean
 }
 
 export interface DataSourceConfig {
     id: string
     type: "fixed" | "editable"
-    label: string
+    label?: string
     datasetId: string
-    showFilters: true
-    showIndicators: true
+    showFilters: boolean
+    showIndicators: boolean
 }
 
 export interface GenericChartMetadata {
@@ -221,8 +243,47 @@ export interface GenericChartMetadataResponse {
     [key: string]: GenericChartMetadata;
 }
 
+export interface GenericChartColumn {
+    id: string,
+    column_id: string,
+    label: string,
+    values: FilterOption[]
+}
+
+export interface GenericChartDataset {
+    data: Dict<unknown>[],
+    metadata: {
+        columns: GenericChartColumn[],
+        defaults: {
+            selected_filter_options: Dict<FilterOption[]>
+        }
+    }
+}
+
 export interface StepWarnings {
     modelOptions: Warning[],
     modelRun: Warning[],
     modelCalibrate: Warning[]
+}
+
+export interface ErrorReportManualDetails {
+    section: string,
+    description: string,
+    stepsToReproduce: string,
+    email: string
+}
+
+export interface ErrorReport extends ErrorReportManualDetails {
+    country: string,
+    projectName: string | undefined,
+    browserAgent: string,
+    timeStamp: string,
+    jobId: string,
+    versions: VersionInfo,
+    errors: Error[]
+}
+
+export interface TranslatableState {
+    language: Language
+    updatingLanguage: boolean
 }

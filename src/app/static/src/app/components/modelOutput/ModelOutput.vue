@@ -28,17 +28,15 @@
                     @update-colour-scales="updateOutputColourScales({payload: $event})"></choropleth>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
-                    <table-view class="col-md-9"
-                                :translate-labels="false"
-                                :tabledata="chartdata"
+                    <area-indicators-table class="col-md-9"
+                                :table-data="chartdata"
                                 :area-filter-id="areaFilterId"
                                 :filters="choroplethFilters"
                                 :countryAreaFilterOption="countryAreaFilterOption"
                                 :indicators="filteredChoroplethIndicators"
                                 :selections="choroplethSelections"
-
                                 :selectedFilterOptions="choroplethSelections.selectedFilterOptions"
-                    ></table-view>
+                    ></area-indicators-table>
                 </div>
             </div>
 
@@ -52,9 +50,8 @@
                     @update="updateBarchartSelections({payload: $event})"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
-                    <table-view class="col-md-9"
-                                :tabledata="chartdata"
-                                :translate-labels="false"
+                    <area-indicators-table class="col-md-9"
+                                :table-data="chartdata"
                                 :area-filter-id="areaFilterId"
                                 :filters="barchartFilters"
                                 :countryAreaFilterOption="countryAreaFilterOption"
@@ -62,7 +59,7 @@
                                 :selections="barchartSelections"
 
                                 :selectedFilterOptions="barchartSelections.selectedFilterOptions"
-                    ></table-view>
+                    ></area-indicators-table>
                 </div>
             </div>
 
@@ -78,9 +75,8 @@
                              @update-size-scales="updateOutputBubbleSizeScales({payload: $event})"></bubble-plot>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
-                    <table-view class="col-md-9"
-                                :translate-labels="false"
-                                :tabledata="chartdata"
+                    <area-indicators-table class="col-md-9"
+                                :table-data="chartdata"
                                 :area-filter-id="areaFilterId"
                                 :filters="bubblePlotFilters"
                                 :countryAreaFilterOption="countryAreaFilterOption"
@@ -88,7 +84,7 @@
                                 :selections="bubblePlotSelections"
 
                                 :selectedFilterOptions="bubblePlotSelections.selectedFilterOptions"
-                    ></table-view>
+                    ></area-indicators-table>
                 </div>
             </div>
         </div>
@@ -100,7 +96,7 @@
     import Vue from "vue";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import BubblePlot from "../plots/bubble/BubblePlot.vue";
-    import TableView from "../plots/table/Table.vue";
+    import AreaIndicatorsTable from "../plots/table/AreaIndicatorsTable.vue";
     import {BarchartIndicator, Filter, FilterConfig, FilterOption} from "@reside-ic/vue-charts/src/bar/types";
     import {BarChartWithFilters} from "@reside-ic/vue-charts";
 
@@ -243,7 +239,7 @@
             BarChartWithFilters,
             BubblePlot,
             Choropleth,
-            TableView
+            AreaIndicatorsTable
         }
     })
 </script>

@@ -44,6 +44,7 @@ import {ADRState, initialADRState} from "../app/store/adr/adr";
 import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrUpload";
 import {DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
 import {GenericChartState, initialGenericChartState} from "../app/store/genericChart/genericChart";
+import {DataExplorationState, initialDataExplorationState} from "../app/store/dataExploration/dataExploration";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -184,6 +185,13 @@ export const mockGenericChartState =  (props?: Partial<GenericChartState>): Gene
 export const mockRootState = (props?: Partial<RootState>): RootState => {
     return {
         ...emptyState(),
+        ...props
+    }
+};
+
+export const mockDataExplorationState = (props?: Partial<DataExplorationState>): DataExplorationState => {
+    return {
+        ...initialDataExplorationState(),
         ...props
     }
 };

@@ -16,7 +16,7 @@ import {router} from '../../router';
 import {initialModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {initialADRUploadState} from "../adrUpload/adrUpload";
 import {initialDownloadResultsState} from "../downloadResults/downloadResults";
-import {Error} from "../../generated";
+import {initialGenericChartState} from "../genericChart/genericChart";
 
 export enum RootMutation {
     Reset = "Reset",
@@ -24,10 +24,7 @@ export enum RootMutation {
     ResetOptions = "ResetOptions",
     ResetOutputs = "ResetOutputs",
     SetProject = "SetProject",
-    ResetDownload = "ResetDownload",
-    SetUpdatingLanguage = "SetUpdatingLanguage",
-    ErrorReportError = "ErrorReportError",
-    ErrorReportSuccess = "ErrorReportSuccess"
+    ResetDownload = "ResetDownload"
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -40,16 +37,17 @@ export const mutations: MutationTree<RootState> = {
         const resetState: RootState = {
             version: state.version,
             hintrVersion: state.hintrVersion,
-            errorReportError: null,
-            errorReportSuccess: false,
             language: state.language,
             updatingLanguage: false,
             adr: state.adr,
-            genericChart: state.genericChart,
             adrUpload: initialADRUploadState(),
             baseline: maxValidStep < 1 ? initialBaselineState() : state.baseline,
             metadata: maxValidStep < 1 ? initialMetadataState() : state.metadata,
             surveyAndProgram: maxValidStep < 2 ? initialSurveyAndProgramState() : state.surveyAndProgram,
+            genericChart: maxValidStep < 2 ? {
+                ...initialGenericChartState(),
+                genericChartMetadata: state.genericChart.genericChartMetadata
+            } : state.genericChart,
             modelOptions: maxValidStep < 3 ? initialModelOptionsState() : state.modelOptions,
             modelRun: maxValidStep < 4 ? initialModelRunState() : state.modelRun,
             modelCalibrate: initialModelCalibrateState(),
@@ -60,7 +58,8 @@ export const mutations: MutationTree<RootState> = {
             errors: initialErrorsState(),
             projects: initialProjectsState(),
             currentUser: state.currentUser,
-            downloadResults: initialDownloadResultsState()
+            downloadResults: initialDownloadResultsState(),
+            dataExplorationMode: false
         };
         Object.assign(state, resetState);
 
@@ -81,7 +80,10 @@ export const mutations: MutationTree<RootState> = {
             language: state.language,
             hintrVersion: state.hintrVersion,
             adr: state.adr,
-            genericChart: state.genericChart,
+            genericChart: {
+                ...initialGenericChartState(),
+                genericChartMetadata: state.genericChart.genericChartMetadata
+            },
             projects: {
                 ...initialProjectsState(),
                 currentProject: action.payload,
@@ -149,21 +151,6 @@ export const mutations: MutationTree<RootState> = {
         Object.assign(state.adrUpload, initialADRUploadState());
         Object.assign(state.downloadResults, initialDownloadResultsState());
     },
-
-    [RootMutation.SetUpdatingLanguage](state: RootState, action: PayloadWithType<boolean>) {
-        state.updatingLanguage = action.payload;
-    },
-
-    [RootMutation.ErrorReportError](state: RootState, action: PayloadWithType<Error>) {
-        state.errorReportError = action.payload;
-        state.errorReportSuccess = false;
-    },
-
-    [RootMutation.ErrorReportSuccess](state: RootState) {
-        state.errorReportSuccess = true;
-        state.errorReportError = null
-    },
-
     ...languageMutations
 
 };

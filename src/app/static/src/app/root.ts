@@ -33,7 +33,6 @@ import {currentHintVersion} from "./hintVersion";
 import {ModelRunMutation, ModelRunUpdates} from "./store/modelRun/mutations";
 import {adr, ADRState, initialADRState} from "./store/adr/adr";
 import {adrUpload, ADRUploadState, initialADRUploadState} from "./store/adrUpload/adrUpload";
-import {Error} from "./generated";
 
 import {
     downloadResults,
@@ -43,12 +42,9 @@ import {
 import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibrate/mutations";
 import {GenericChartState, initialGenericChartState, genericChart} from "./store/genericChart/genericChart";
 import {Warning} from "./generated";
+import {DataExplorationState} from "./store/dataExploration/dataExploration";
 
-export interface TranslatableState {
-    language: Language
-}
-
-export interface RootState extends TranslatableState {
+export interface RootState extends DataExplorationState {
     version: string,
     adr: ADRState,
     genericChart: GenericChartState,
@@ -67,10 +63,7 @@ export interface RootState extends TranslatableState {
     errors: ErrorsState,
     projects: ProjectsState
     currentUser: string,
-    downloadResults: DownloadResultsState,
-    updatingLanguage: boolean,
-    errorReportError: Error | null
-    errorReportSuccess: boolean
+    downloadResults: DownloadResultsState
 }
 
 export interface ReadyState {
@@ -139,8 +132,6 @@ export const emptyState = (): RootState => {
         language: Language.en,
         version: currentHintVersion,
         updatingLanguage: false,
-        errorReportError: null,
-        errorReportSuccess: false,
         hintrVersion: initialHintrVersionState(),
         adr: initialADRState(),
         genericChart: initialGenericChartState(),
@@ -158,7 +149,8 @@ export const emptyState = (): RootState => {
         errors: initialErrorsState(),
         projects: initialProjectsState(),
         currentUser: currentUser,
-        downloadResults: initialDownloadResultsState()
+        downloadResults: initialDownloadResultsState(),
+        dataExplorationMode: false
     }
 };
 const existingState = localStorageManager.getState();
