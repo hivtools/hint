@@ -9,8 +9,18 @@ import {
 
 const testIndicators = [
     {indicator: "art_coverage", name: "ART Coverage"},
-    {indicator: "prevalence", name: "Prevalence"}
+    {indicator: "prevalence", name: "Prevalence"},
+    {indicator: "not_included", name: "Should Not Be Included"}
 ];
+
+const testIndicatorsForDataset = {
+    filters: {
+        indicators: [
+            {id: "art_coverage", name: "ART Coverage"},
+            {id: "prevalence", name: "Prevalence"}
+        ]
+    }
+};
 
 const testChoroMetadata = {
     choropleth: {
@@ -20,26 +30,35 @@ const testChoroMetadata = {
 
 function testGetsSAPIndicatorsMetadataForDataType(dataType: DataType) {
     let metadataProps = null as any;
+    let sapState = null as any;
     switch (dataType) {
         case(DataType.ANC):
             metadataProps = {anc: testChoroMetadata};
+            sapState = {anc: testIndicatorsForDataset};
             break;
         case(DataType.Survey):
             metadataProps = {survey: testChoroMetadata};
+            sapState = {survey: testIndicatorsForDataset};
             break;
         case(DataType.Program):
             metadataProps = {programme: testChoroMetadata};
+            sapState = {program: testIndicatorsForDataset};
             break;
     }
 
     const metadataState = mockMetadataState(
         {plottingMetadata: mockPlottingMetadataResponse(metadataProps)});
 
-    const rootState = mockRootState({surveyAndProgram: mockSurveyAndProgramState({selectedDataType: dataType})});
+    const rootState = mockRootState({
+        surveyAndProgram: mockSurveyAndProgramState({
+            ...sapState,
+            selectedDataType: dataType
+        })
+    });
 
     const result = metadataGetters.sapIndicatorsMetadata(metadataState, null, rootState, null);
 
-    expect(result).toStrictEqual(testIndicators);
+    expect(result).toStrictEqual([testIndicators[0], testIndicators[1]]);
 }
 
 describe("Metadata ", () => {
@@ -67,7 +86,12 @@ describe("Metadata ", () => {
 
     it("gets SAP choropleth indicators", () => {
 
-        const rootState = mockRootState({surveyAndProgram: mockSurveyAndProgramState({selectedDataType: DataType.ANC})});
+        const rootState = mockRootState({
+            surveyAndProgram: mockSurveyAndProgramState({
+                selectedDataType: DataType.ANC,
+                anc: testIndicatorsForDataset as any
+            })
+        });
 
         const testMetadata = {
             anc: testChoroMetadata,
@@ -80,7 +104,7 @@ describe("Metadata ", () => {
             {plottingMetadata: testMetadata}
         ), null, rootState, null);
 
-        expect(result).toStrictEqual(testIndicators);
+        expect(result).toStrictEqual([testIndicators[0], testIndicators[1]]);
     });
 
     it("gets outputIndicators", () => {

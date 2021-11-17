@@ -6,6 +6,10 @@
 
 * Add DataExploration app component
 
+# hint 1.71.1
+
+* bug fix for input indicators being included when not relevant for dataset
+
 # hint 1.71.0
 
 * support redirecting to a requested url after a successful login
