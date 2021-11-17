@@ -1,6 +1,18 @@
-# hint 1.71.1
+# hint 1.73.0
+
+* Add DataExploration header component
+
+# hint 1.72.1
 
 * Move error reporting related mutations out of root mutations
+
+# hint 1.72.0
+
+* Add DataExploration app component
+
+# hint 1.71.1
+
+* bug fix for input indicators being included when not relevant for dataset
 
 # hint 1.71.0
 
