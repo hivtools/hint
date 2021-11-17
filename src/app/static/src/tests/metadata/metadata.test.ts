@@ -95,14 +95,16 @@ describe("Metadata ", () => {
 
         const testMetadata = {
             anc: testChoroMetadata,
-            survey: {},
-            programme: {},
-            output: {},
+            survey: {choropleth: {indicators: []}},
+            programme: {choropleth: {indicators: []}},
+            output: {choropleth: {indicators: []}},
         };
 
-        const result = metadataGetters.sapIndicatorsMetadata(mockMetadataState(
-            {plottingMetadata: testMetadata}
-        ), null, rootState, null);
+        const result = metadataGetters.sapIndicatorsMetadata(
+            mockMetadataState({plottingMetadata: testMetadata}),
+            null,
+            rootState,
+            null);
 
         expect(result).toStrictEqual([testIndicators[0], testIndicators[1]]);
     });
