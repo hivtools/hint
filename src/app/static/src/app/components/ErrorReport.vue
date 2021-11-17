@@ -97,6 +97,12 @@
                 </button>
             </template>
         </template>
+        <template>
+            <div v-if="sendingErrorReport" id="sending-error-report" class="mt-3">
+                <loading-spinner size="xs"/>
+                <span v-translate="'sending'"></span>
+            </div>
+        </template>
     </modal>
 </template>
 <script lang="ts">
@@ -113,6 +119,7 @@
     import {Language} from "../store/translations/locales";
     import {Error} from "../generated";
     import { ErrorsState } from "../store/errors/errors";
+    import LoadingSpinner from "./LoadingSpinner.vue";
 
 
     interface Methods {
@@ -147,7 +154,8 @@
     export default Vue.extend<Data, Methods, Computed, Props>({
         components: {
             ErrorAlert,
-            Modal
+            Modal,
+            LoadingSpinner
         },
         directives: {tooltip: VTooltip},
         props: {

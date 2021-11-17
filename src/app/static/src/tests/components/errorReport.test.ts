@@ -13,6 +13,7 @@ import {Language} from "../../app/store/translations/locales";
 import ErrorAlert from "../../app/components/ErrorAlert.vue";
 import {RootState} from "../../app/root";
 import { ErrorsState } from "../../app/store/errors/errors";
+import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 
 describe("Error report component", () => {
 
@@ -513,23 +514,27 @@ describe("Error report component", () => {
         expect(wrapper.emitted().close).toBeUndefined();
     });
 
-    it("disables send button when sending error report",  () => {
+    it("disables send button and render spinner when sending error report",  () => {
+        const store = createStore({}, {}, {}, false, {sendingErrorReport: true})
         const wrapper = mount(ErrorReport, {
             propsData: {
                 open: true,
                 email: "something"
             },
-            store: createStore({}, {}, {}, false, {sendingErrorReport: true})
+            store: store
         });
 
         wrapper.find("#description").setValue("something");
         wrapper.find("#reproduce").setValue("reproduce steps");
         wrapper.find("#section").setValue("downloadResults");
 
+        expect(wrapper.find(LoadingSpinner).exists()).toBe(true)
+        expectTranslated(wrapper.find("#sending-error-report"),
+            "Sending request...", "Envoyer une requete...", "Enviando pedido ...", store)
         expect(wrapper.find("#send").attributes("disabled")).toBe("disabled")
     });
 
-    it("does not disable send button when sending error report is not in progress",  () => {
+    it("does not disable send button or render spinner when sending error report is not in progress",  () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
                 open: true,
@@ -542,6 +547,7 @@ describe("Error report component", () => {
         wrapper.find("#reproduce").setValue("reproduce steps");
         wrapper.find("#section").setValue("downloadResults");
 
+        expect(wrapper.find(LoadingSpinner).exists()).toBe(false)
         expect(wrapper.find("#send").attributes("disabled")).toBeUndefined()
     });
 
