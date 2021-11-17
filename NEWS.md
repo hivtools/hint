@@ -1,6 +1,18 @@
-# hint 1.70.2
+# hint 1.71.1
 
 * Move error reporting related mutations out of root mutations
+
+# hint 1.71.0
+
+* support redirecting to a requested url after a successful login
+
+# hint 1.70.3
+
+* Move error reporting related mutations out of root mutations
+
+# hint 1.70.2
+
+* bug fix for undefined indicator in choropleth while new data is loading
 
 # hint 1.70.1
 
