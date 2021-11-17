@@ -1,23 +1,14 @@
 <template>
     <div class="content">
+        <stepper-navigation :back="back"
+                            :next="next"
+                            :back-disabled="isUploadStep"
+                            :next-disabled="isReviewStep">
+        </stepper-navigation>
         <div class="pt-4">
             <adr-integration v-if="isUploadStep"></adr-integration>
             <upload-inputs v-if="isUploadStep"></upload-inputs>
             <review-inputs v-if="isReviewStep"></review-inputs>
-            <button type="button"
-                    class="btn shadow-none"
-                    :class="isUploadStep? 'btn-secondary':'btn-red'"
-                    v-translate="'back'"
-                    :disabled="isUploadStep"
-                    @click="back">
-            </button>
-            <button type="button"
-                    class="btn shadow-none"
-                    :class="isReviewStep? 'btn-secondary':'btn-red'"
-                    v-translate="'next'"
-                    :disabled="isReviewStep"
-                    @click="next">
-            </button>
         </div>
     </div>
 </template>
@@ -26,6 +17,7 @@
     import AdrIntegration from "../adr/ADRIntegration.vue";
     import UploadInputs from "../uploadInputs/UploadInputs.vue";
     import ReviewInputs from "../reviewInputs/ReviewInputs.vue";
+    import StepperNavigation from "../StepperNavigation.vue";
 
     interface Computed {
         isUploadStep: boolean
@@ -66,7 +58,8 @@
         components: {
             AdrIntegration,
             UploadInputs,
-            ReviewInputs
+            ReviewInputs,
+            StepperNavigation
         }
     })
 </script>
