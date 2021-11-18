@@ -1124,4 +1124,29 @@ describe("select dataset", () => {
         expect(setInterval.mock.calls[0][1]).toBe(10000);
     });
 
+    it("import files from ADR remove previously imported files", async () => {
+        const store = getStore(
+            {
+                selectedDataset: {
+                    ...fakeDataset,
+                    resources: { } as any
+                }
+            }, {}
+        );
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
+        rendered.find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: "id1"})
+        rendered.find(Modal).find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect((baselineActions.deleteAll as Mock).mock.calls[0][0]).toHaveBeenCalled()
+        expect((surveyProgramActions.deleteAll as Mock).mock.calls[0][0]).toHaveBeenCalled()
+    });
+
 });

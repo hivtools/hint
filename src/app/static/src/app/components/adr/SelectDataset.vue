@@ -129,6 +129,8 @@
         importSurvey: (url: string) => Promise<void>;
         importProgram: (url: string) => Promise<void>;
         importANC: (url: string) => Promise<void>;
+        deleteUploadInputs: () => Promise<void>;
+        deleteReviewInputs: () => Promise<void>;
         refresh: () => void;
         refreshDatasetMetadata: () => void;
         markResourcesUpdated: () => void;
@@ -301,13 +303,21 @@
             importPJNZ: mapActionByName("baseline", "importPJNZ"),
             importShape: mapActionByName("baseline", "importShape"),
             importPopulation: mapActionByName("baseline", "importPopulation"),
+            deleteUploadInputs: mapActionByName("baseline", "deleteAll"),
             importSurvey: mapActionByName("surveyAndProgram", "importSurvey"),
             importProgram: mapActionByName("surveyAndProgram", "importProgram"),
             importANC: mapActionByName("surveyAndProgram", "importANC"),
+            deleteReviewInputs: mapActionByName("surveyAndProgram", "deleteAll"),
             async importDataset() {
                 this.stopPolling();
 
                 this.loading = true;
+
+                await Promise.all([
+                    this.deleteUploadInputs(),
+                    this.deleteReviewInputs()
+                ]);
+
                 await this.getDataset({id: this.newDatasetId!, release: this.newDatasetRelease});
 
                 const {
