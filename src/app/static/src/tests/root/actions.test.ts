@@ -257,8 +257,10 @@ describe("root actions", () => {
 
         await actions.generateErrorReport({commit, rootState, getters, dispatch} as any, payload);
 
-        expect(commit.mock.calls.length).toEqual(1);
-        expect(commit.mock.calls[0][0]).toEqual({"payload": "ok", "type": "errors/ErrorReportSuccess"});
+        expect(commit.mock.calls.length).toEqual(3);
+        expect(commit.mock.calls[0][0]).toEqual({payload: true, type: "errors/SendingErrorReport"});
+        expect(commit.mock.calls[1][0]).toEqual({payload: "ok", type: "errors/ErrorReportSuccess"});
+        expect(commit.mock.calls[2][0]).toEqual({payload: false, type: "errors/SendingErrorReport"});
         expect(dispatch.mock.calls.length).toEqual(1);
         expect(dispatch.mock.calls[0][0]).toEqual("projects/cloneProject");
         expect(mockAxios.history.post.length).toEqual(1)
@@ -334,12 +336,14 @@ describe("root actions", () => {
 
         await actions.generateErrorReport({commit, rootState, getters, dispatch} as any, payload);
 
-        expect(commit.mock.calls.length).toEqual(1);
-        expect(commit.mock.calls[0][0]).toEqual({"payload": "ok", "type": "errors/ErrorReportSuccess"});
+        expect(commit.mock.calls.length).toEqual(3);
+
+        expect(commit.mock.calls[0][0]).toEqual({payload: true, type: "errors/SendingErrorReport"});
+        expect(commit.mock.calls[1][0]).toEqual({"payload": "ok", "type": "errors/ErrorReportSuccess"});
+        expect(commit.mock.calls[2][0]).toEqual({payload: false, type: "errors/SendingErrorReport"});
         expect(dispatch.mock.calls.length).toEqual(0);
         expect(mockAxios.history.post.length).toEqual(1)
         expect(mockAxios.history.post[0].url).toEqual(url)
-
 
         const expected = {
             email: "test@example.com",
@@ -393,7 +397,11 @@ describe("root actions", () => {
         await actions.generateErrorReport({commit, rootState, getters, dispatch} as any, payload);
 
         const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
-        expect(commit.mock.calls[0][0]).toEqual({payload: expectedError, type: "errors/ErrorReportError"});
+
+        expect(commit.mock.calls.length).toEqual(3);
+        expect(commit.mock.calls[0][0]).toEqual({payload: true, type: "errors/SendingErrorReport"});
+        expect(commit.mock.calls[1][0]).toEqual({payload: expectedError, type: "errors/ErrorReportError"});
+        expect(commit.mock.calls[2][0]).toEqual({payload: false, type: "errors/SendingErrorReport"});
         expect(dispatch.mock.calls.length).toBe(0)
     });
 

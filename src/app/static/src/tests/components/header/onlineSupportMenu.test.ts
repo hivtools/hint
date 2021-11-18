@@ -10,7 +10,7 @@ import {expectTranslated} from "../../testHelpers";
 import DropDown from "../../../app/components/header/DropDown.vue";
 import VueRouter from 'vue-router'
 import ErrorReport from "../../../app/components/ErrorReport.vue";
-import {mockProjectsState, mockStepperState} from "../../mocks";
+import {mockErrorsState, mockProjectsState, mockStepperState} from "../../mocks";
 
 const localVue = createLocalVue()
 localVue.use(VueRouter)
@@ -31,6 +31,10 @@ describe("Online support menu", () => {
                 projects: {
                     namespaced: true,
                     state: mockProjectsState()
+                },
+                errors: {
+                    namespaced: true,
+                    state: mockErrorsState()
                 }
             },
             getters: {

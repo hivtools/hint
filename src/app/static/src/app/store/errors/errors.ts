@@ -7,6 +7,7 @@ export interface ErrorsState {
     errors: Error[],
     errorReportError: Error | null
     errorReportSuccess: boolean
+    sendingErrorReport: boolean
 }
 
 export const initialErrorsState = (): ErrorsState => {
@@ -14,6 +15,7 @@ export const initialErrorsState = (): ErrorsState => {
         errors: [],
         errorReportError: null,
         errorReportSuccess: false,
+        sendingErrorReport: false
     }
 };
 
