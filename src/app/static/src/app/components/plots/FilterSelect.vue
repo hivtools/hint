@@ -1,10 +1,16 @@
 <template>
     <div>
         <label :class="['font-weight-bold', { 'disabled-label': disabled }]" v-translate="label"></label>
-        <span v-if="labelTooltip" v-tooltip="{content: `<dl>${labelTooltip}</dl>`, classes: 'filter-select'}" class="icon-small">
+        <span v-if="labelTooltip"
+              v-tooltip="{
+                    content: `<dl>${labelTooltip}</dl>`,
+                    classes: 'filter-select',
+                    autoHide: false
+                }"
+              class="icon-small">
             <help-circle-icon></help-circle-icon>
         </span>
-        <treeselect id="survey-filters" :multiple=multiple
+        <treeselect :multiple=multiple
                     :clearable="false"
                     :options=options
                     :value=treeselectValue

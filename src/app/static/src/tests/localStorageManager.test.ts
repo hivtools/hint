@@ -115,7 +115,8 @@ describe("LocalStorageManager", () => {
         localStorageManager.savePartialState({errors: {
             errors: [{error: "test", detail: "test"}],
             errorReportError: null,
-            errorReportSuccess: false
+            errorReportSuccess: false,
+            sendingErrorReport: false
         }});
         let result = localStorageManager.getState();
         expect(result).not.toBe(null);

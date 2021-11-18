@@ -7,7 +7,8 @@ export enum ErrorsMutation {
     ErrorAdded = "ErrorAdded",
     DismissAll = "DismissAll",
     ErrorReportError = "ErrorReportError",
-    ErrorReportSuccess = "ErrorReportSuccess"
+    ErrorReportSuccess = "ErrorReportSuccess",
+    SendingErrorReport = "SendingErrorReport"
 }
 
 export const mutations: MutationTree<ErrorsState> = {
@@ -29,4 +30,8 @@ export const mutations: MutationTree<ErrorsState> = {
         state.errorReportSuccess = true;
         state.errorReportError = null;
     },
+
+    [ErrorsMutation.SendingErrorReport](state: ErrorsState, action: PayloadWithType<boolean>) {
+        state.sendingErrorReport = action.payload;
+    }
 };

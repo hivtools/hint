@@ -2,6 +2,14 @@
 
 * prompt login when using data exploration mode
 
+# hint 1.72.3
+
+* Make time series tooltip usable
+
+# hint 1.72.1
+
+* Troubleshooting request very slow to close the dialog and send multiple errors
+
 # hint 1.72.0
 
 * Add DataExploration app component
