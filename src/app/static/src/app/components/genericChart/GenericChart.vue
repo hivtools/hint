@@ -16,7 +16,7 @@
                     </filters>
                 </div>
             </div>
-            <div class="col-9">
+            <div class="col-9" style="position: relative;">
                 <div class="chart-container" :style="{height: chartHeight}">
                     <plotly class="chart"
                             v-if="!this.chartDataIsEmpty"
@@ -278,7 +278,6 @@
                 }
             },
             updateSelectedFilterOptions(dataSourceId: string, options: Dict<FilterOption[]> | null) {
-                console.log("Updating selected filter options at " +  Date().toString())
                 this.dataSourceSelections[dataSourceId].selectedFilterOptions = options;
             }
         },
