@@ -1,10 +1,6 @@
-# hint 1.73.0
-
-* Add DataExploration header component
-
 # hint 1.72.1
 
-* Move error reporting related mutations out of root mutations
+* Troubleshooting request very slow to close the dialog and send multiple errors
 
 # hint 1.72.0
 
