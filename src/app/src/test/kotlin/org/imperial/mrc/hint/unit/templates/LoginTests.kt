@@ -90,10 +90,11 @@ class LoginTests
         model["username"] = ""
         model["error"] = ""
         model["title"] = "test title"
-        model["url"] = "http://localhost:8080/login?redirectTo=explore"
+        model["RequestParameters"] = mapOf("redirectTo" to "explore")
         val doc = template.jsoupDocFor(model)
 
-        assertThat(doc.select("h1").count()).isEqualTo(0)
+        assertThat(doc.select("h1").count()).isEqualTo(1)
+        assertThat(doc.select("h1").text()).isEqualTo("Naomi Data Exploration")
     }
 
 }
