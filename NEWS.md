@@ -1,3 +1,7 @@
+# hint 1.74.0
+
+* Indicate Data Exploration mode in login screen
+
 # hint 1.73.0
 
 * prompt login when using data exploration mode
