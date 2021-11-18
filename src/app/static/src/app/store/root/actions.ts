@@ -16,7 +16,7 @@ import {LanguageMutation} from "../language/mutations";
 export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
     generateErrorReport: (store: ActionContext<RootState, RootState>,
-                          payload: ErrorReportManualDetails) => void;
+        payload: ErrorReportManualDetails) => void;
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -97,7 +97,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             timeStamp: new Date().toISOString(),
             jobId: rootState.modelRun.modelRunId || "no associated jobId",
             description: payload.description,
-            section: payload.section || "no associated section",
+            section: payload.section,
             stepsToReproduce: payload.stepsToReproduce,
             versions: {hint: currentHintVersion, ...rootState.hintrVersion.hintrVersion as VersionInfo},
             errors: getters.errors

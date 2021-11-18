@@ -13,7 +13,7 @@
                     <span v-translate="'loggedInAs'"></span> {{ user }}
                 </span>
                 <hintr-version-menu class="pr-2 mr-2 border-right"/>
-                <online-support-menu class="pr-2 mr-2 border-right" :show="true"/>
+                <online-support-menu class="pr-2 mr-2 border-right"/>
                 <a :href="'public/resources/' + helpFilename"
                    target="_blank"
                    class="pr-2 mr-2 border-right"
@@ -26,7 +26,6 @@
                 <language-menu></language-menu>
             </div>
         </nav>
-
     </header>
 </template>
 <script lang="ts">
@@ -49,7 +48,6 @@
     interface Computed {
         helpFilename: string
     }
-
     export default Vue.extend<unknown, unknown, Computed, Props>({
         computed: {
             helpFilename: mapStateProp<RootState, string>(null,

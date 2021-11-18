@@ -76,9 +76,6 @@ describe("Online support menu", () => {
     it("renders FAQ menu-item text", () => {
         const store = createStore();
         const wrapper = shallowMount(OnlineSupportMenu, {
-            propsData: {
-                show: true
-            },
             store,
             localVue,
             router
@@ -92,9 +89,6 @@ describe("Online support menu", () => {
     it("renders FAQ menu-item link href when language is English", () => {
         const store = createStore();
         const wrapper = shallowMount(OnlineSupportMenu, {
-            propsData: {
-                show: true
-            },
             store,
             localVue,
             router
@@ -108,9 +102,6 @@ describe("Online support menu", () => {
         const store = createStore();
         store.state.language = Language.fr;
         const wrapper = shallowMount(OnlineSupportMenu, {
-            propsData: {
-                show: true
-            },
             store,
             localVue,
             router
@@ -124,9 +115,6 @@ describe("Online support menu", () => {
         const store = createStore();
         store.state.language = Language.pt;
         const wrapper = shallowMount(OnlineSupportMenu, {
-            propsData: {
-                show: true
-            },
             store,
             localVue,
             router
@@ -141,9 +129,6 @@ describe("Online support menu", () => {
 
         const store = createStore();
         const wrapper = shallowMount(OnlineSupportMenu, {
-            propsData: {
-                show: true
-            },
             store,
             localVue,
             router
@@ -168,8 +153,8 @@ describe("Online support menu", () => {
             router
         });
 
-        const link = wrapper.find("#accessibility-link");
-        expect(link.attributes("href")).toBe("/accessibility");
+        const link = wrapper.find("router-link-stub");
+        expect(link.attributes("to")).toBe("/accessibility");
         expectTranslated(link, "Accessibility", "Accessibilité", "Acessibilidade", store as any);
     });
 

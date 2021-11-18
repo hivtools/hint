@@ -1,7 +1,7 @@
 <template>
     <div id="divclass">
         <drop-down text="support" :right="true" :delay="true" style="flex: none">
-            <a v-if="show" class="dropdown-item"
+            <a class="dropdown-item"
                :href="faqLocation"
                target="_blank"
                v-translate="'faq'">
@@ -10,14 +10,13 @@
                @click="toggleErrorReportModal"
                v-translate="'troubleshootingRequest'">
             </a>
-            <a class="dropdown-item"
-               id="accessibility-link"
-               :href="'/accessibility'"
-               target="_blank"
-               v-translate="'axe'">
-            </a>
+            <router-link id="accessibility-link"
+                         to="/accessibility"
+                         class="dropdown-item"
+                         v-translate="'axe'">
+            </router-link>
         </drop-down>
-        <error-report v-if="show" :open="errorReportOpen" @close="toggleErrorReportModal"></error-report>
+        <error-report :open="errorReportOpen" @close="toggleErrorReportModal"></error-report>
     </div>
 </template>
 <script lang="ts">
@@ -44,20 +43,10 @@
         toggleErrorReportModal: () => void
     }
 
-    interface Props {
-        show: boolean
-    }
-
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         data: function () {
             return {
                 errorReportOpen: false
-            }
-        },
-        props: {
-            show: {
-                type: Boolean,
-                required: false
             }
         },
         computed: {

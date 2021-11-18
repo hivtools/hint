@@ -5,7 +5,7 @@ import {shallowMount} from "@vue/test-utils";
 import DataExplorationHeader from "../../../app/components/header/DataExplorationHeader.vue"
 import {getters} from "../../../app/store/root/getters";
 import {mockRootState} from "../../mocks";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, expectTranslatedWithStoreType} from "../../testHelpers";
 import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
 import HintrVersionMenu from "../../../app/components/header/HintrVersionMenu.vue";
 import OnlineSupportMenu from "../../../app/components/header/OnlineSupportMenu.vue";
@@ -49,7 +49,7 @@ describe(`Data Exploration header`, () => {
         const store = createStore({currentUser});
         const wrapper = getWrapper(currentUser, store);
         const logoutLink = wrapper.find("a[href='/logout']");
-        const loginLink = wrapper.findAll("a[href='/login']");
+        const loginLink = wrapper.findAll("a[href='/login?redirectTo=explore']");
         expectTranslated(logoutLink, "Logout", "Fermer une session", "Sair", store);
         expect(loginLink.length).toBe(0);
     });
@@ -68,15 +68,18 @@ describe(`Data Exploration header`, () => {
         expect(wrapper.findAll(LanguageMenu).length).toBe(1);
     });
 
-    it("renders hintr version and online support menu", () => {
+    it("renders hintr version", () => {
         const wrapper = getWrapper()
         expect(wrapper.findAll(HintrVersionMenu).length).toBe(1);
-        expect(wrapper.findAll(OnlineSupportMenu).length).toBe(1);
     })
 
     it("renders Run model link as expected", () => {
         const store = createStore();
         const wrapper = getWrapper("someone@email.com", store);
+
         expect(wrapper.find("a").attributes("href")).toBe("/")
+        expectTranslatedWithStoreType(wrapper.find("a"),
+            "Run model", "Exécuter le modèle",
+            "Executar modelo", store)
     });
 })
