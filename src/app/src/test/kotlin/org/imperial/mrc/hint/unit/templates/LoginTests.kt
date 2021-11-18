@@ -79,6 +79,9 @@ class LoginTests
         assertThat(doc.select("a[href='https://www.washington.edu'] img").attr("src")).isEqualTo("public/images/uw_logo.png")
         assertThat(doc.select("a[href='https://www.fjelltopp.org'] img").attr("src")).isEqualTo("public/images/fjelltopp_logo.png")
         assertThat(doc.select("a[href='https://www.avenirhealth.org'] img").attr("src")).isEqualTo("public/images/avenir_logo.png")
+
+        // assertThat(doc.select("h1").exists()).isEqualTo(false)
+        // assertThat(doc.select("h1")).isEqualTo("")
     }
 
 }

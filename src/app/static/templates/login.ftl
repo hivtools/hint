@@ -25,12 +25,10 @@
         }
     </script>
 
-        <#--  const exploreMode = () => "redirectTo" in RequestParameters && RequestParameters.redirectTo === "explore"  -->
 </head>
 <body>
     <a href="https://www.unaids.org"><img src="public/images/unaids_logo.png" class="large-logo mx-auto mt-5 mb-4"/></a>
-    <#--  <#if (RequestParameters.redirectTo?has_content && RequestParameters.redirectTo?matches("explore"))>  -->
-    <#if RequestParameters.redirectTo?? && RequestParameters.redirectTo?matches("explore")>
+    <#if RequestParameters?? && RequestParameters.redirectTo?? && RequestParameters.redirectTo?matches("explore")>
         <h1 class="text-center"><strong>Naomi Data Exploration</strong></h1>
     <#else>
     </#if>
