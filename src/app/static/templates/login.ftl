@@ -24,7 +24,6 @@
             sessionStorage.setItem("asGuest", "continueAsGuest")
         }
     </script>
-
 </head>
 <body>
     <a href="https://www.unaids.org"><img src="public/images/unaids_logo.png" class="large-logo mx-auto mt-5 mb-4"/></a>

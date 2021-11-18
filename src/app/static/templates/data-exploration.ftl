@@ -9,8 +9,6 @@
 </head>
 <body>
 <div id="app" :class="language">
-    <#--  <h1>This is data exploration mode</h1>
-    <loading-spinner></loading-spinner>  -->
     <div class="container mb-5">
         <router-view></router-view>
     </div>
