@@ -2,7 +2,7 @@ import Vuex from "vuex";
 import {mount, Slots, Wrapper} from '@vue/test-utils';
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
-import ResetConfirmation from "../../../app/components/ResetConfirmation.vue";
+import ResetConfirmation from "../../../app/components/resetConfirmation/ResetConfirmation.vue";
 import {mockFile, mockRootState} from "../../mocks";
 import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";

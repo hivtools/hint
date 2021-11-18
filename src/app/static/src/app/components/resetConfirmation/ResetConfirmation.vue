@@ -46,12 +46,12 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import Modal from "./Modal.vue";
-    import {mapActionByName, mapGetterByName, mapStateProp} from "../utils";
-    import {StepDescription} from "../store/stepper/stepper";
-    import LoadingSpinner from "./LoadingSpinner.vue";
-    import {ProjectsState} from "../store/projects/projects";
-    import {ErrorsState} from "../store/errors/errors";
+    import Modal from "../Modal.vue";
+    import {mapActionByName, mapGetterByName, mapStateProp} from "../../utils";
+    import {StepDescription} from "../../store/stepper/stepper";
+    import LoadingSpinner from "../LoadingSpinner.vue";
+    import {ProjectsState} from "../../store/projects/projects";
+    import {ErrorsState} from "../../store/errors/errors";
 
     interface Computed {
         changesToRelevantSteps: StepDescription[]

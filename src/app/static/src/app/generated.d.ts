@@ -253,6 +253,10 @@ export interface CalibrateResultResponse {
       }[];
     };
   };
+  warnings: {
+    text: string;
+    locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+  }[];
   [k: string]: any;
 }
 export interface CalibrateStatusResponse {
@@ -518,6 +522,10 @@ export interface ModelCalibrateRequest {
 export type ModelCancelResponse = null;
 export interface ModelOptionsValidate {
   valid: true;
+  warnings: {
+    text: string;
+    locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+  }[];
 }
 export interface ModelOptionsValidateRequest {
   data: {
@@ -577,6 +585,10 @@ export type ModelResultData = {
 export interface ModelResultResponse {
   id: string;
   complete: true;
+  warnings: {
+    text: string;
+    locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+  }[];
   [k: string]: any;
 }
 export interface ModelResultRow {
@@ -1135,3 +1147,7 @@ export interface VersionInfo {
   rrq: string;
   [k: string]: any;
 }
+export type Warnings = {
+  text: string;
+  locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+}[];
