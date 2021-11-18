@@ -1,3 +1,7 @@
+# hint 1.72.1
+
+* Make time series tooltip usable
+
 # hint 1.72.0
 
 * Add DataExploration app component
