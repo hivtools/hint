@@ -1,3 +1,7 @@
+# hint 1.73.0
+
+* prompt login when using data exploration mode
+
 # hint 1.72.0
 
 * Add DataExploration app component

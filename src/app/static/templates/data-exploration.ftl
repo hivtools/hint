@@ -12,7 +12,7 @@
     <#--  <h1>This is data exploration mode</h1>
     <loading-spinner></loading-spinner>  -->
     <div class="container mb-5">
-        <data-exploration></data-exploration>
+        <router-view></router-view>
     </div>
     <errors title="${title}"></errors>
 </div>
