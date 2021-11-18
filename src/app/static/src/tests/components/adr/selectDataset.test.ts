@@ -1125,28 +1125,43 @@ describe("select dataset", () => {
     });
 
     it("import files from ADR remove previously imported files", async () => {
+
         const store = getStore(
             {
-                selectedDataset: {
-                    ...fakeDataset,
-                    resources: { } as any
-                }
+                shape: mockShapeResponse()
             }, {}
         );
-        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
-        rendered.find("button").trigger("click");
 
-        await Vue.nextTick();
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
+        await rendered.find("button").trigger("click");
 
         expect(rendered.findAll(TreeSelect).length).toBe(1);
         rendered.setData({newDatasetId: "id1"})
-        rendered.find(Modal).find("button").trigger("click");
-
-        await Vue.nextTick();
+        await rendered.find(Modal).find("button").trigger("click");
 
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
         expect((baselineActions.deleteAll as Mock).mock.calls[0][0]).toHaveBeenCalled()
         expect((surveyProgramActions.deleteAll as Mock).mock.calls[0][0]).toHaveBeenCalled()
+    });
+
+    it("import files from ADR does not remove previously imported files if it does not exist", async () => {
+
+        const store = getStore(
+            {
+                shape: null
+            }, {}
+        );
+
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
+        await rendered.find("button").trigger("click");
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: "id1"})
+        await rendered.find(Modal).find("button").trigger("click");
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect((baselineActions.deleteAll as Mock).mock.calls[0][0]).not.toHaveBeenCalled()
+        expect((surveyProgramActions.deleteAll as Mock).mock.calls[0][0]).not.toHaveBeenCalled()
     });
 
 });

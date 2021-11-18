@@ -313,10 +313,12 @@
 
                 this.loading = true;
 
-                await Promise.all([
-                    this.deleteUploadInputs(),
-                    this.deleteReviewInputs()
-                ]);
+                if (this.hasShapeFile) {
+                    await Promise.all([
+                        this.deleteUploadInputs(),
+                        this.deleteReviewInputs()
+                    ]);
+                }
 
                 await this.getDataset({id: this.newDatasetId!, release: this.newDatasetRelease});
 
