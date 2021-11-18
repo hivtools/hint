@@ -1,3 +1,7 @@
+# hint 1.70.3
+
+* fix issues with displaying Input Time Series for DRC data
+
 # hint 1.70.2
 
 * bug fix for undefined indicator in choropleth while new data is loading
