@@ -80,8 +80,20 @@ class LoginTests
         assertThat(doc.select("a[href='https://www.fjelltopp.org'] img").attr("src")).isEqualTo("public/images/fjelltopp_logo.png")
         assertThat(doc.select("a[href='https://www.avenirhealth.org'] img").attr("src")).isEqualTo("public/images/avenir_logo.png")
 
-        // assertThat(doc.select("h1").exists()).isEqualTo(false)
-        // assertThat(doc.select("h1")).isEqualTo("")
+        assertThat(doc.select("h1").count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `renders data exploration title if given explore param`()
+    {
+        val model = ConcurrentModel()
+        model["username"] = ""
+        model["error"] = ""
+        model["title"] = "test title"
+        model["url"] = "http://localhost:8080/login?redirectTo=explore"
+        val doc = template.jsoupDocFor(model)
+
+        assertThat(doc.select("h1").count()).isEqualTo(0)
     }
 
 }
