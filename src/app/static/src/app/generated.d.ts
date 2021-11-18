@@ -1147,6 +1147,10 @@ export interface VersionInfo {
   rrq: string;
   [k: string]: any;
 }
+export interface Warning {
+  text: string;
+  locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+}
 export type Warnings = {
   text: string;
   locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
