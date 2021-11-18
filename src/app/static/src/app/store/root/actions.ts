@@ -88,7 +88,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     },
 
     async generateErrorReport(context, payload) {
-        const {dispatch, rootState, getters} = context
+        const {dispatch, rootState, getters, commit} = context
         const data = {
             email: payload.email || rootState.currentUser,
             country: rootState.baseline.country || "no associated country",
@@ -102,6 +102,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             versions: {hint: currentHintVersion, ...rootState.hintrVersion.hintrVersion as VersionInfo},
             errors: getters.errors
         }
+        commit({type: `errors/${ErrorsMutation.SendingErrorReport}`, payload: true});
 
         await api<ErrorsMutation, ErrorsMutation>(context)
             .withSuccess(`errors/${ErrorsMutation.ErrorReportSuccess}` as ErrorsMutation, true)
@@ -116,5 +117,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
                         })
                 }
             })
+
+        commit({type: `errors/${ErrorsMutation.SendingErrorReport}`, payload: false});
     }
 };
