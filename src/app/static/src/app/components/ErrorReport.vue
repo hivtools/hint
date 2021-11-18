@@ -129,8 +129,7 @@
         projectName: string | undefined
         disabled: boolean,
         tooltipText: string,
-        errorReportError: Error | null,
-        disabledExplorationMode: boolean
+        errorReportError: Error | null
     }
 
     interface Props {
@@ -179,9 +178,6 @@
             steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps),
             disabled() {
                 return !this.description || !this.stepsToReproduce || (this.isGuest && !this.email)
-            },
-            disabledExplorationMode() {
-                return !this.description || !this.stepsToReproduce
             },
             tooltipText() {
                 return i18next.t("allFieldsRequired", {lng: this.currentLanguage});
