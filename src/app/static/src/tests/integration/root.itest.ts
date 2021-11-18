@@ -32,7 +32,9 @@ describe(`root actions`, () => {
         }
 
         await actions.generateErrorReport({commit, rootState: state, getters, dispatch} as any, payload);
-        expect(commit.mock.calls[0][0]).toStrictEqual(
+        expect(commit.mock.calls.length).toBe(3)
+        expect(commit.mock.calls[0][0]).toStrictEqual({payload: true, type: "errors/SendingErrorReport"})
+        expect(commit.mock.calls[1][0]).toStrictEqual(
             {
                 payload: {
                     description: "OK",
@@ -40,6 +42,7 @@ describe(`root actions`, () => {
                 },
                 type: "errors/ErrorReportSuccess"
             });
+        expect(commit.mock.calls[2][0]).toStrictEqual({payload: false, type: "errors/SendingErrorReport"})
 
         expect(dispatch.mock.calls.length).toBe(1)
         expect(dispatch.mock.calls[0][0]).toEqual("projects/cloneProject")
