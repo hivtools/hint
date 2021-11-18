@@ -30,7 +30,6 @@
 
     import Vue from "vue";
     import {mapGetters} from 'vuex';
-    import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";
     import {mapStateProp} from "../../utils";
@@ -64,7 +63,6 @@
             user: String
         },
         components: {
-            FileMenu,
             LanguageMenu,
             HintrVersionMenu,
             OnlineSupportMenu
