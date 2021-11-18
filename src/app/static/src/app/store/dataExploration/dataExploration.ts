@@ -22,6 +22,7 @@ import {StoreOptions} from "vuex";
 import {Error} from "../../generated";
 import {TranslatableState} from "../../types";
 import {mutations} from "./mutations";
+import {getters} from "./getters";
 
 declare const currentUser: string;
 
@@ -73,5 +74,6 @@ export const storeOptions: StoreOptions<DataExplorationState> = {
         errors,
         hintrVersion
     },
-    mutations
+    mutations,
+    getters
 };

@@ -9,12 +9,15 @@
 </head>
 <body>
 <div id="app" :class="language">
-    <h1>This is data exploration mode</h1>
-    <loading-spinner></loading-spinner>
+    <#--  <h1>This is data exploration mode</h1>
+    <loading-spinner></loading-spinner>  -->
+    <div class="container mb-5">
+        <data-exploration></data-exploration>
+    </div>
     <errors title="${title}"></errors>
 </div>
 <script>
-    var currentUser = "${user}";
+    var currentUser = "${user}"
 </script>
 </body>
 </html>

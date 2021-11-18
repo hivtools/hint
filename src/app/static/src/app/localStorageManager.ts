@@ -47,6 +47,7 @@ export class LocalStorageManager {
             localStorage.clear();
             localStorage.setItem("user", currentUser);
         }
+
         const item = window.localStorage.getItem(appStateKey);
         if (item) {
             return JSON.parse(item) as Partial<RootState>;
