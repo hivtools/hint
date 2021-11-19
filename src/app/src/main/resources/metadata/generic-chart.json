@@ -162,7 +162,8 @@
     "chartConfig": [
       {
         "id": "scatter",
-        "label": "Scatter"
+        "label": "Scatter",
+        "description": "inputTimeSeriesDescription"
       }
     ]
   }

@@ -62,6 +62,7 @@ describe("GenericChart component", () => {
             chartConfig: [{
                 id: "scatter",
                 label: "Scatter",
+                description: "inputTimeSeriesDescription",
                 config: "Test Chart Config"
             }]
         }
@@ -715,6 +716,42 @@ describe("GenericChart component", () => {
             expect(tables.at(1).props("columns")).toBe(datasets.dataset2.metadata.columns);
             expect(tables.at(1).props("selectedFilterOptions")).toStrictEqual(datasets.dataset2.metadata.defaults.selected_filter_options);
 
+            done();
+        });
+    });
+
+    it("displays chart description", (done) => {
+        const state = {datasets};
+        const wrapper = getWrapper(state);
+
+        setTimeout(() => {
+            const description = wrapper.find("#chart-description");
+            expectTranslated(description,
+                "Values are shown in red when they differ from the previous or subsequent value by more than 25%.",
+                "Les valeurs sont affichées en rouge lorsqu'elles diffèrent de plus de 25 % de la valeur précédente ou suivante.",
+                "Os valores são exibidos em vermelho quando diferem do valor anterior ou subsequente em mais de 25%.",
+                wrapper.vm.$store);
+            expect(description.classes()).toContain("text-muted");
+            done();
+        });
+    });
+
+    it("does not show chart description if none in config", (done) => {
+        const noDescMetadata = {
+            "test-chart": {
+                ...metadata["test-chart"],
+                chartConfig: [{
+                    ...metadata["test-chart"].chartConfig[0],
+                    description: undefined
+                }]
+            }
+        };
+
+        const state = {datasets};
+        const wrapper = getWrapper(state, noDescMetadata);
+
+        setTimeout(() => {
+            expect(wrapper.find("#chart-description").exists()).toBe(false);
             done();
         });
     });
