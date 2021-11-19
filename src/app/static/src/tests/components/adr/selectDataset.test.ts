@@ -193,13 +193,15 @@ describe("select dataset", () => {
         importShape: jest.fn(),
         importPopulation: jest.fn(),
         importPJNZ: jest.fn(),
-        refreshDatasetMetadata: jest.fn()
+        refreshDatasetMetadata: jest.fn(),
+        deleteAll: jest.fn()
     }
 
     const surveyProgramActions: Partial<SurveyAndProgramActions> & ActionTree<any, any> = {
         importSurvey: jest.fn(),
         importProgram: jest.fn(),
-        importANC: jest.fn()
+        importANC: jest.fn(),
+        deleteAll: jest.fn()
     }
 
     const mockGetters = {
@@ -1128,7 +1130,11 @@ describe("select dataset", () => {
 
         const store = getStore(
             {
-                shape: mockShapeResponse()
+                shape: mockShapeResponse(),
+                selectedDataset: {
+                    ...fakeDataset,
+                    resources: {} as any
+                }
             }, {}
         );
 
@@ -1140,15 +1146,19 @@ describe("select dataset", () => {
         await rendered.find(Modal).find("button").trigger("click");
 
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
-        expect((baselineActions.deleteAll as Mock).mock.calls[0][0]).toHaveBeenCalled()
-        expect((surveyProgramActions.deleteAll as Mock).mock.calls[0][0]).toHaveBeenCalled()
+        expect((baselineActions.deleteAll as Mock)).toHaveBeenCalled()
+        expect((surveyProgramActions.deleteAll as Mock)).toHaveBeenCalled()
     });
 
     it("import files from ADR does not remove previously imported files if it does not exist", async () => {
 
         const store = getStore(
             {
-                shape: null
+                shape: null,
+                selectedDataset: {
+                    ...fakeDataset,
+                    resources: {} as any
+                }
             }, {}
         );
 
@@ -1160,8 +1170,8 @@ describe("select dataset", () => {
         await rendered.find(Modal).find("button").trigger("click");
 
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
-        expect((baselineActions.deleteAll as Mock).mock.calls[0][0]).not.toHaveBeenCalled()
-        expect((surveyProgramActions.deleteAll as Mock).mock.calls[0][0]).not.toHaveBeenCalled()
+        expect((baselineActions.deleteAll as Mock)).not.toHaveBeenCalled()
+        expect((surveyProgramActions.deleteAll as Mock)).not.toHaveBeenCalled()
     });
 
 });
