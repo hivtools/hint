@@ -44,7 +44,7 @@
             <span v-translate="'genCalibResults'"></span>
         </div>
         <calibration-results
-            v-if="calibrationPlotGenerated"
+            v-if="calibrationPlotGenerated && complete"
         ></calibration-results>
     </div>
 </template>
@@ -113,18 +113,18 @@
         },
         computed: {
             ...mapStateProps<ModelCalibrateState, keyof Computed>(namespace, {
-                loading: (s) => s.fetching,
-                calibrating: (s) => s.calibrating,
-                generatingCalibrationPlot: (s) => s.generatingCalibrationPlot,
-                calibrationPlotGenerated: (s) => !!s.calibratePlotResult,
-                error: (s) => s.error,
-                progressMessage: (s) => {
+                loading: (state) => state.fetching,
+                calibrating: (state) => state.calibrating,
+                generatingCalibrationPlot: (state) => state.generatingCalibrationPlot,
+                calibrationPlotGenerated: (state) => !!state.calibratePlotResult,
+                error: (state) => state.error,
+                progressMessage: (state) => {
                     if (
-                        s.status &&
-                        s.status.progress &&
-                        s.status.progress.length > 0
+                        state.status &&
+                        state.status.progress &&
+                        state.status.progress.length > 0
                     ) {
-                        const p = s.status.progress[0]; //This may be either a string or ProgressPhase
+                        const p = state.status.progress[0]; //This may be either a string or ProgressPhase
                         return typeof p == "string"
                             ? p
                             : `${p.name}: ${p.helpText}`;
@@ -179,6 +179,6 @@
         },
         mounted() {
             this.fetchOptions();
-        },
+        }
     });
 </script>
