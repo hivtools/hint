@@ -76,7 +76,10 @@
                 </div>
                 <button v-else
                         type="button"
-                        class="btn btn-red"
+                        id="send"
+                        class="btn"
+                        :class="sendingErrorReport? 'btn-secondary':'btn-red'"
+                        :disabled="sendingErrorReport"
                         @click="sendErrorReport"
                         v-translate="'send'">
                 </button>
@@ -94,6 +97,12 @@
                 </button>
             </template>
         </template>
+        <template>
+            <div v-if="sendingErrorReport" id="sending-error-report" class="mt-3">
+                <loading-spinner size="xs"/>
+                <span v-translate="'sending'"></span>
+            </div>
+        </template>
     </modal>
 </template>
 <script lang="ts">
@@ -110,6 +119,7 @@
     import {Language} from "../store/translations/locales";
     import {Error} from "../generated";
     import { ErrorsState } from "../store/errors/errors";
+    import LoadingSpinner from "./LoadingSpinner.vue";
 
 
     interface Methods {
@@ -130,6 +140,7 @@
         disabled: boolean,
         tooltipText: string,
         errorReportError: Error | null
+        sendingErrorReport: boolean
     }
 
     interface Props {
@@ -143,7 +154,8 @@
     export default Vue.extend<Data, Methods, Computed, Props>({
         components: {
             ErrorAlert,
-            Modal
+            Modal,
+            LoadingSpinner
         },
         directives: {tooltip: VTooltip},
         props: {
@@ -172,7 +184,12 @@
                     this.section = newVal
                 }
             },
-            errorReportError: mapStateProp<ErrorsState, Error | null>("errors", (state: ErrorsState) => state.errorReportError),
+            errorReportError: mapStateProp<ErrorsState, Error | null>(
+                "errors",
+                (state: ErrorsState) => state.errorReportError),
+            sendingErrorReport: mapStateProp<ErrorsState, boolean>(
+                "errors",
+                (state: ErrorsState) => state.sendingErrorReport),
             isGuest: mapGetterByName(null, "isGuest"),
             projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
             steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps),

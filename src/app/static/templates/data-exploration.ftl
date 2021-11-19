@@ -10,7 +10,7 @@
 <body>
 <div id="app" :class="language">
     <div class="container mb-5">
-        <data-exploration></data-exploration>
+        <router-view></router-view>
     </div>
     <errors title="${title}"></errors>
 </div>

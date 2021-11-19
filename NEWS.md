@@ -1,6 +1,18 @@
-# hint 1.72.1
+# hint 1.73.1
 
 * When importing from ADR remove all datasets currently uploaded
+
+# hint 1.73.0
+
+* prompt login when using data exploration mode
+
+# hint 1.72.3
+
+* Make time series tooltip usable
+
+# hint 1.72.1
+
+* Troubleshooting request very slow to close the dialog and send multiple errors
 
 # hint 1.72.0
 
