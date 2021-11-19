@@ -1,3 +1,7 @@
+# hint 1.74.0
+
+* Show description for Generic Chart
+
 # hint 1.73.1
 
 * fix issues with displaying Input Time Series for DRC data
