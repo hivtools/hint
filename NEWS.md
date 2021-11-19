@@ -2,6 +2,10 @@
 
 * Add data exploration header
 
+# hint 1.73.1
+
+* fix issues with displaying Input Time Series for DRC data
+
 # hint 1.73.0
 
 * prompt login when using data exploration mode
