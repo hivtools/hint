@@ -1,8 +1,8 @@
-import Vuex, {ActionTree, MutationTree, Store} from "vuex";
+import Vuex, {Store} from "vuex";
 import {mockError, mockModelCalibrateState, mockRootState} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {RootState} from "../../../app/root";
-import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";;
+import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
 import {mount, shallowMount} from "@vue/test-utils";
 import ModelCalibrate from "../../../app/components/modelCalibrate/ModelCalibrate.vue";
 import CalibrationResults from "../../../app/components/modelCalibrate/CalibrationResults.vue";
@@ -74,7 +74,7 @@ describe("Model calibrate component", () => {
     it("invokes fetch options action on mount", () => {
         const mockFetch = jest.fn();
         const store = getStore({}, mockFetch);
-        const wrapper = getWrapper(store);
+        getWrapper(store);
         expect(mockFetch.mock.calls.length).toBe(1);
     });
 

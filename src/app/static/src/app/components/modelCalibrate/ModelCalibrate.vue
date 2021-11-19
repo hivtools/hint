@@ -62,13 +62,11 @@
 
     import {
         mapActionByName,
-        mapGetterByName,
         mapMutationByName,
         mapStateProp,
         mapStateProps,
     } from "../../utils";
     import { ModelCalibrateMutation } from "../../store/modelCalibrate/mutations";
-    import { StepDescription } from "../../store/stepper/stepper";
     import { RootState } from "../../root";
     import { Language } from "../../store/translations/locales";
     import { ModelCalibrateState } from "../../store/modelCalibrate/modelCalibrate";
