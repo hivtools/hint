@@ -1,6 +1,10 @@
-# hint 1.73.1
+# hint 1.73.2
 
 * When importing from ADR remove all datasets currently uploaded
+
+# hint 1.73.1
+
+* fix issues with displaying Input Time Series for DRC data
 
 # hint 1.73.0
 
