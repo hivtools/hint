@@ -1,10 +1,13 @@
-.navbar-header {
+@mixin navbar-header-mixin($color) {
   margin-top: -8px;
   margin-bottom: -8px;
   padding: 10px;
   margin-left: -30px;
-  background-color: darken($theme-red, 10%);
+  background-color: darken($color, 10%);
   color: white;
+}
+.navbar-header {
+  @include navbar-header-mixin($theme-red)
 }
 
 header {
@@ -50,17 +53,6 @@ header {
   }
 }
 
-.unaids {
-  .bg-secondary {
-    background-color: rgba($theme-orange, .5);
-  }
-
-  .navbar-header {
-    margin-top: -8px;
-    margin-bottom: -8px;
-    padding: 10px;
-    margin-left: -30px;
-    background-color: darken($theme-orange, 10%);
-    color: white;
-  }
+.navbar-header-secondary {
+ @include navbar-header-mixin($theme-green)
 }

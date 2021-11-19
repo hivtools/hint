@@ -1,8 +1,8 @@
 <template>
     <header class="mb-5">
-        <nav class="navbar navbar-dark unaids bg-secondary">
+        <nav class="navbar navbar-dark bg-secondary">
             <div class="container-fluid">
-                <div class="unaids navbar-header">
+                <div class="navbar-header-secondary">
                     {{ title }}
                 </div>
                 <div style="flex: 1 1 auto;" class="ml-2"><a href="/" v-translate="'runModel'"></a></div>
@@ -33,7 +33,6 @@
     import {Language} from "../../store/translations/locales";
     import {mapStateProp} from "../../utils";
     import HintrVersionMenu from "./HintrVersionMenu.vue";
-    import OnlineSupportMenu from "./OnlineSupportMenu.vue";
     import {DataExplorationState} from "../../store/dataExploration/dataExploration";
 
     interface Props {
@@ -63,8 +62,7 @@
         },
         components: {
             LanguageMenu,
-            HintrVersionMenu,
-            OnlineSupportMenu
+            HintrVersionMenu
         }
     })
 </script>

@@ -138,4 +138,11 @@ describe("user header", () => {
         expect(wrapper.find("#projects-link").exists()).toBe(false);
     });
 
+    it('can render header title', () => {
+        const wrapper = getWrapper()
+        const title = wrapper.find(".navbar-header")
+        expect(title.classes()).toEqual(["navbar-header"])
+        expect(title.text()).toBe("Naomi")
+    });
+
 });

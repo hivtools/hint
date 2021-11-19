@@ -8,8 +8,6 @@ import {mockRootState} from "../../mocks";
 import {expectTranslated, expectTranslatedWithStoreType} from "../../testHelpers";
 import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
 import HintrVersionMenu from "../../../app/components/header/HintrVersionMenu.vue";
-import OnlineSupportMenu from "../../../app/components/header/OnlineSupportMenu.vue";
-import {Language} from "../../../app/store/translations/locales";
 
 describe(`Data Exploration header`, () => {
 
@@ -31,7 +29,8 @@ describe(`Data Exploration header`, () => {
 
     it('can render header title', () => {
         const wrapper = getWrapper()
-        const title = wrapper.find(".navbar-header")
+        const title = wrapper.find(".navbar-header-secondary")
+        expect(title.classes()).toEqual(["navbar-header-secondary"])
         expect(title.text()).toBe("Naomi Data Exploration")
     });
 
