@@ -9,11 +9,13 @@
 </head>
 <body>
 <div id="app" :class="language">
-    <loading-spinner></loading-spinner>
+    <div class="container mb-5">
+        <router-view></router-view>
+    </div>
     <errors title="${title}"></errors>
 </div>
 <script>
-    var currentUser = "${user}";
+    var currentUser = "${user}"
 </script>
 </body>
 </html>

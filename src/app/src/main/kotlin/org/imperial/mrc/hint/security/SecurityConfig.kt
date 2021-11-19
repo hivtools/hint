@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.security
 import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic.Companion.GUEST_USER
 import org.pac4j.core.client.Clients
 import org.pac4j.core.config.Config
+import org.pac4j.core.context.Pac4jConstants
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.context.session.J2ESessionStore
 import org.pac4j.core.profile.CommonProfile
@@ -72,6 +73,11 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
             pac4jConfig.sessionStore.set(webContext, MODE, mode)
             setVersionId(null)
         }
+    }
+
+    fun setRequestedUrl(url: String?)
+    {
+        pac4jConfig.sessionStore.set(webContext, Pac4jConstants.REQUESTED_URL, url)
     }
 
     fun getVersionId(): String

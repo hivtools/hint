@@ -1,6 +1,38 @@
-# hint 1.70.3
+# hint 1.74.0
+
+* Paging in Input Time Series
+
+# hint 1.73.1
 
 * fix issues with displaying Input Time Series for DRC data
+
+# hint 1.73.0
+
+* prompt login when using data exploration mode
+
+# hint 1.72.3
+
+* Make time series tooltip usable
+
+# hint 1.72.1
+
+* Troubleshooting request very slow to close the dialog and send multiple errors
+
+# hint 1.72.0
+
+* Add DataExploration app component
+
+# hint 1.71.1
+
+* bug fix for input indicators being included when not relevant for dataset
+
+# hint 1.71.0
+
+* support redirecting to a requested url after a successful login
+
+# hint 1.70.3
+
+* Move error reporting related mutations out of root mutations
 
 # hint 1.70.2
 
