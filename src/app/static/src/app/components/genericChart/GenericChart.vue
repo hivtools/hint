@@ -32,12 +32,24 @@
                          </div>
                      </div>
                 </div>
-                <div v-if="totalPages > 1" class="text-center mt-2">
-                    <button class="btn btn-sm btn-red mr-2" :disabled="currentPage <= 1" @click="currentPage--">
+                <div v-if="totalPages > 1" id="page-controls" class="text-center mt-2">
+                    <button id="previous-page"
+                            class="btn btn-sm btn-red mr-2"
+                            v-translate:aria-label="'previousPage'"
+                            v-tooltip="translate('previousPage')"
+                            :disabled="currentPage <= 1"
+                            @click="currentPage--">
                         <chevron-left-icon size="20"></chevron-left-icon>
                     </button>
-                    Page {{currentPage}} of {{totalPages}}
-                    <button class="btn btn-sm btn-red ml-2" :disabled="currentPage >= totalPages" @click="currentPage++">
+                    <span id="page-number">
+                        {{pageNumberText}}
+                    </span>
+                    <button id="next-page"
+                            class="btn btn-sm btn-red ml-2"
+                            v-translate:aria-label="'nextPage'"
+                            v-tooltip="translate('nextPage')"
+                            :disabled="currentPage >= totalPages"
+                            @click="currentPage++">
                         <chevron-right-icon size="20"></chevron-right-icon>
                     </button>
                     <hr/>
@@ -65,8 +77,10 @@
 </template>
 
 <script lang="ts">
+    import i18next from "i18next";
     import Vue from "vue";
     import {ChevronLeftIcon, ChevronRightIcon} from "vue-feather-icons";
+    import {VTooltip} from 'v-tooltip';
     import {
         DataSourceConfig,
         Dict, DisplayFilter, GenericChartColumn,
@@ -85,6 +99,8 @@
     import Plotly from "./Plotly.vue";
     import {filterData, genericChartColumnsToFilters} from "./utils";
     import GenericChartTable from "./GenericChartTable.vue";
+    import {Language} from "../../store/translations/locales";
+    import {RootState} from "../../root";
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections
@@ -120,6 +136,7 @@
     }
 
     interface Computed {
+        currentLanguage: Language
         datasets: Record<string, GenericChartDataset>
         error: Error | null
         chartMetadata: GenericChartMetadata
@@ -130,13 +147,15 @@
         filters: Dict<DisplayFilter[]>
         allDistinctColumnValues: string[] | null
         pageDistinctColumnValues: string[] | null
-        totalPages: number
+        totalPages: number,
+        pageNumberText: string
     }
 
     interface Methods {
         ensureDataset: (datasetId: string) => void,
         getDataset: (payload: getDatasetPayload) => void,
         setDataSourceDefaultFilterSelections: (dataSourceId: string, datasetId: string) => void,
+        translate: (key: string) => void,
         updateDataSource: (dataSourceId: string, datasetId: string) => void,
         updateSelectedFilterOptions: (dataSourceId: string, options: Dict<FilterOption[]> | null) => void
     }
@@ -161,6 +180,9 @@
             ErrorAlert,
             LoadingSpinner
         },
+        directives: {
+            "tooltip": VTooltip
+        },
         data: function() {
             const chart = this.metadata[this.chartId];
             const dataSourceSelections = chart.dataSelectors.dataSources
@@ -178,6 +200,9 @@
             }
         },
         computed: {
+            currentLanguage: mapStateProp<RootState, Language>(null,
+                (state: RootState) => state.language
+            ),
             datasets:  mapStateProp<GenericChartState, Record<string, GenericChartDataset>>(namespace,
                 (state: GenericChartState) => state.datasets),
             error: mapStateProp<GenericChartState, Error | null>(namespace,
@@ -302,7 +327,14 @@
                 } else {
                     return this.chartData;
                 }
-            }
+            },
+            pageNumberText: function () {
+                return i18next.t("pageNumber", {
+                    currentPage: this.currentPage,
+                    totalPages: this.totalPages,
+                    lng: this.currentLanguage,
+                });
+            },
         },
         methods: {
             getDataset: mapActionByName(namespace, 'getDataset'),
@@ -329,6 +361,11 @@
             },
             updateSelectedFilterOptions(dataSourceId: string, options: Dict<FilterOption[]> | null) {
                 this.dataSourceSelections[dataSourceId].selectedFilterOptions = options;
+            },
+            translate(key: string) {
+                return i18next.t(key, {
+                    lng: this.currentLanguage,
+                });
             }
         },
         async mounted() {

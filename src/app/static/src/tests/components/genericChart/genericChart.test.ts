@@ -20,6 +20,7 @@ import {actions} from "../../../app/store/genericChart/actions";
 import {mutations} from "../../../app/store/genericChart/mutations";
 import {mockAxios} from "../../mocks";
 import GenericChartTable from "../../../app/components/genericChart/GenericChartTable.vue";
+import {Language} from "../../../app/store/translations/locales";
 
 describe("GenericChart component", () => {
 
@@ -160,8 +161,11 @@ describe("GenericChart component", () => {
         }
     } as any;
 
+    const mockTooltip = jest.fn();
+
     beforeEach(() => {
         mockAxios.reset();
+        jest.resetAllMocks();
     });
 
     const data = {
@@ -169,7 +173,8 @@ describe("GenericChart component", () => {
         availableDatasetIds: ["dataset1", "dataset2", "dataset3"]
     };
 
-    const getWrapper = (state: Partial<GenericChartState> = {}, metadataProp: GenericChartMetadataResponse = metadata, ChartPropsData = data) => {
+    const getWrapper = (
+        state: Partial<GenericChartState> = {}, metadataProp: GenericChartMetadataResponse = metadata, ChartPropsData = data) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -186,8 +191,11 @@ describe("GenericChart component", () => {
             ...ChartPropsData,
             metadata: metadataProp
         };
+
+        const directives = {tooltip: mockTooltip};
+
         registerTranslations(store);
-        return shallowMount(GenericChart,{store, propsData});
+        return shallowMount(GenericChart,{store, directives, propsData});
     };
 
     it("renders as expected without chart data", (done) => {
@@ -295,6 +303,9 @@ describe("GenericChart component", () => {
 
             expect(wrapper.find(ErrorAlert).exists()).toBe(false);
             expect(wrapper.find("#empty-generic-chart-data").exists()).toBe(false);
+
+            expect(wrapper.find("#page-controls").exists()).toBe(false);
+
             done();
         });
     });
@@ -479,7 +490,8 @@ describe("GenericChart component", () => {
                 subplots: {
                     columns: 2,
                     distinctColumn: "area",
-                    heightPerRow: 100
+                    heightPerRow: 100,
+                    subplotsPerPage: 99
                 },
                 chartConfig: [{
                     id: "scatter",
@@ -533,6 +545,7 @@ describe("GenericChart component", () => {
                     columns: 2,
                     distinctColumn: "area",
                     heightPerRow: 100,
+                    subplotsPerPage: 99,
                     rows: 3
                 }
             });
@@ -715,6 +728,218 @@ describe("GenericChart component", () => {
             expect(tables.at(1).props("columns")).toBe(datasets.dataset2.metadata.columns);
             expect(tables.at(1).props("selectedFilterOptions")).toStrictEqual(datasets.dataset2.metadata.defaults.selected_filter_options);
 
+            done();
+        });
+    });
+
+    const pagedMetadata: GenericChartMetadataResponse = {
+        "test-chart": {
+            datasets: [
+                {
+                    id: "dataset1",
+                    label:"Dataset 1",
+                    url: "/dataset1",
+                    filters: [
+                        {id: "type", source: "data", allowMultiple: false}
+                    ],
+                }
+            ],
+            dataSelectors: {
+                dataSources: [
+                    {id: "data", type: "editable", label: "First", datasetId: "dataset1", showFilters: true, showIndicators: false},
+                ]
+            },
+            subplots: {
+                columns: 2,
+                distinctColumn: "area",
+                heightPerRow: 100,
+                subplotsPerPage: 2
+            },
+            chartConfig: [{
+                id: "scatter",
+                config: "Test Chart Config"
+            }]
+        }
+    } as any;
+    const pagedDatasets = {
+        dataset1: {
+            data: [
+                {type: "test", area:"a", value: 1},
+                {type: "test", area:"b",value: 2},
+                {type: "test", area:"c",value: 3},
+                {type: "test", area:"d",value: 4},
+                {type: "test", area:"e",value: 5},
+                {type: "other", area:"f",value: 6}
+            ],
+            metadata: {
+                columns: [
+                    {
+                        id: "type",
+                        column_id: "type",
+                        label: "Type",
+                        options: [
+                            {id: "test", label: "test"},
+                            {id: "other", label: "other"}
+                        ]
+                    }
+                ],
+                defaults: {
+                    selected_filter_options: {
+                        type: [{id: "test", label: "test"}]
+                    }
+                }
+            }
+        }
+    } as any;
+
+    it("renders paging controls and first page of data when there are multiple pages", (done) => {
+        const state = {datasets: pagedDatasets};
+
+        const wrapper = getWrapper(state, pagedMetadata);
+        setTimeout(() => {
+            const store = wrapper.vm.$store;
+            const dataSources = wrapper.findAll(DataSource);
+            expect(dataSources.length).toBe(1);
+            const filters = wrapper.findAll(Filters);
+            expect(filters.length).toBe(1);
+
+            const pageControls = wrapper.find("#page-controls");
+            const previous = pageControls.find("button#previous-page");
+            expect(previous.find("chevron-left-icon-stub").attributes("size")).toBe("20");
+            expectTranslated(previous, "Previous page",
+                "Page précédente", "Página anterior", store, "aria-label");
+            expect(previous.attributes("disabled")).toBe("disabled");
+
+            const next = pageControls.find("button#next-page");
+            expect(next.find("chevron-right-icon-stub").attributes("size")).toBe("20");
+            expectTranslated(next, "Next page",
+                "Page suivante", "Próxima página", store, "aria-label");
+            expect(next.attributes("disabled")).toBeUndefined();
+
+            expectTranslated(pageControls.find("#page-number"), "Page 1 of 3",
+                "Page 1 sur 3", "Pagina 1 de 3", store);
+
+            const plotly = wrapper.find(Plotly);
+            expect(plotly.props("chartData")).toStrictEqual({
+                data: [
+                    {type: "test", area:"a", value: 1},
+                    {type: "test", area:"b",value: 2}
+                ]
+            });
+            expect(plotly.props("layoutData")).toStrictEqual({
+                subplots: {
+                    columns: 2,
+                    distinctColumn: "area",
+                    heightPerRow: 100,
+                    subplotsPerPage: 2,
+                    rows: 1
+                }
+            });
+
+            done();
+        });
+    });
+
+    it("next page button load next page", (done) => {
+        const state = {datasets: pagedDatasets};
+
+        const wrapper = getWrapper(state, pagedMetadata);
+        setTimeout(() => {
+            const next = wrapper.find("#next-page");
+
+            // Move to Page 2
+            next.trigger("click");
+            const store = wrapper.vm.$store;
+            expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
+                "Page 2 sur 3", "Pagina 2 de 3", store);
+
+            expect(wrapper.find("#next-page").attributes("disabled")).toBeUndefined();
+            expect(wrapper.find("#previous-page").attributes("disabled")).toBeUndefined();
+
+            const plotly = wrapper.find(Plotly);
+            expect(plotly.props("chartData")).toStrictEqual({
+                data: [
+                    {type: "test", area:"c", value: 3},
+                    {type: "test", area:"d",value: 4}
+                ]
+            });
+
+            // Move to Page 3
+            next.trigger("click");
+            expectTranslated(wrapper.find("#page-number"), "Page 3 of 3",
+                "Page 3 sur 3", "Pagina 3 de 3", store);
+
+            expect(wrapper.find("#next-page").attributes("disabled")).toBe("disabled");
+            expect(wrapper.find("#previous-page").attributes("disabled")).toBeUndefined();
+
+            expect(plotly.props("chartData")).toStrictEqual({
+                data: [
+                    {type: "test", area:"e", value: 5}
+                ]
+            });
+
+            done();
+        });
+    });
+
+    it("previous page button loads previous page", (done) => {
+        const state = {datasets: pagedDatasets};
+
+        const wrapper = getWrapper(state, pagedMetadata);
+        setTimeout(() => {
+            // Move to Page 2
+            wrapper.find("#next-page").trigger("click");
+            const store = wrapper.vm.$store;
+            expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
+                "Page 2 sur 3", "Pagina 2 de 3", store);
+
+            // Move back to Page 1
+            wrapper.find("#previous-page").trigger("click");
+            expectTranslated(wrapper.find("#page-number"), "Page 1 of 3",
+                "Page 1 sur 3", "Pagina 1 de 3", store);
+
+            expect(wrapper.find("#next-page").attributes("disabled")).toBeUndefined();
+            expect(wrapper.find("#previous-page").attributes("disabled")).toBe("disabled");
+
+            expect(wrapper.find(Plotly).props("chartData")).toStrictEqual({
+                data: [
+                    {type: "test", area:"a", value: 1},
+                    {type: "test", area:"b", value: 2}
+                ]
+            });
+
+            done();
+        });
+    });
+
+    it("renders tooltips in English", (done) => {
+        const state = {datasets: pagedDatasets};
+        getWrapper(state, pagedMetadata);
+        setTimeout(() => {
+            expect(mockTooltip.mock.calls[0][1].value).toBe("Previous page");
+            expect(mockTooltip.mock.calls[1][1].value).toBe("Next page");
+            done();
+        });
+    });
+
+    it("renders tooltips in French", (done) => {
+        const state = {datasets: pagedDatasets};
+        const wrapper = getWrapper(state, pagedMetadata);
+        wrapper.vm.$store.state.language = Language.fr;
+        setTimeout(() => {
+            expect(mockTooltip.mock.calls[0][1].value).toBe("Page précédente");
+            expect(mockTooltip.mock.calls[1][1].value).toBe("Page suivante");
+            done();
+        });
+    });
+
+    it("renders tooltips in Portuguese", (done) => {
+        const state = {datasets: pagedDatasets};
+        const wrapper = getWrapper(state, pagedMetadata);
+        wrapper.vm.$store.state.language = Language.pt;
+        setTimeout(() => {
+            expect(mockTooltip.mock.calls[0][1].value).toBe("Página anterior");
+            expect(mockTooltip.mock.calls[1][1].value).toBe("Próxima página");
             done();
         });
     });
