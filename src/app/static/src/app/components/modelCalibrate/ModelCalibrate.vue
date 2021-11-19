@@ -23,7 +23,7 @@
             >
                 {{ submitText }}
             </button>
-            <p v-if="calibrationPlotGenerated" id="reviewResults" class="mb-0" v-translate="'reviewResults'"></p>
+            <p v-if="showCalibrateResults" id="reviewResults" class="mb-0" v-translate="'reviewResults'"></p>
         </div>
         <div v-if="calibrating" id="calibrating" class="mt-3">
             <loading-spinner size="xs"></loading-spinner>
@@ -44,7 +44,7 @@
             <span v-translate="'genCalibResults'"></span>
         </div>
         <calibration-results
-            v-if="calibrationPlotGenerated && complete"
+            v-if="showCalibrateResults"
         ></calibration-results>
     </div>
 </template>
@@ -94,6 +94,7 @@
         hasError: boolean;
         error: Error;
         progressMessage: string;
+        showCalibrateResults: boolean
     }
 
     interface Data {
@@ -129,8 +130,11 @@
                     } else {
                         return null;
                     }
-                },
+                }
             }),
+            showCalibrateResults() {
+                return this.calibrationPlotGenerated && this.complete
+            },
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language

@@ -176,7 +176,7 @@ describe("Model calibrate component", () => {
         "Générer des résultats d'étalonnage", "Gerando resultados de calibração", store);
     });
 
-    it("renders calibration plot if calibration is complete", () => {
+    it("renders calibration plot and label if calibration is complete", () => {
         const store = getStore({complete: true, calibratePlotResult: {}});
         const wrapper = getWrapper(store);
         expect(wrapper.find(CalibrationResults).exists()).toBe(true);
@@ -184,9 +184,10 @@ describe("Model calibrate component", () => {
         "(Consultez les résultats ci-dessous)", "(Analise os resultados abaixo)", store);
     });
 
-    it("it does not render calibration plot if calibration is incomplete", () => {
+    it("it does not render calibration plot and label if calibration is incomplete", () => {
         const store = getStore({complete: false, calibratePlotResult: {}});
         const wrapper = getWrapper(store);
         expect(wrapper.find(CalibrationResults).exists()).toBe(false);
+        expect(wrapper.find("#reviewResults").exists()).toBe(false)
     });
 });
