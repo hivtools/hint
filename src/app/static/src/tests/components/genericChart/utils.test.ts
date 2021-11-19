@@ -36,6 +36,26 @@ describe("filterData", () => {
             {"age": 2, "year": 2020, "country": "FR", value: 6}
         ]);
     });
+
+    it("can filter data which includes nulls", () => {
+        const filters = [
+            {id: "age", label: "Age", column_id: "age", allowMultiple: false},
+            {id: "year", label: "Year", column_id: "year", allowMultiple: false}
+        ] as any;
+        const dataWithNulls = [
+            {"age": null, "year": 2020, "country": "GB", value: 1},
+            {"age": 2, "year": 2020, "country": "GB", value: 2},
+            {"age": 1, "year": null, "country": "GB", value: 3}
+        ];
+        const selectedFilterOptions = {
+            year: [{id: "2020", label: "2020"}],
+            age: [{id: "2", label: "2"}]
+        };
+        const result = filterData(dataWithNulls, filters, selectedFilterOptions);
+        expect(result).toStrictEqual([
+            {"age": 2, "year": 2020, "country": "GB", value: 2}
+        ]);
+    });
 });
 
 describe("genericChartColumnsToFilters", () => {
