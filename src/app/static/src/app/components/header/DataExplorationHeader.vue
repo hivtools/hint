@@ -1,8 +1,8 @@
 <template>
     <header class="mb-5">
-        <nav class="navbar navbar-dark bg-secondary">
+        <nav class="navbar navbar-dark unaids bg-secondary">
             <div class="container-fluid">
-                <div class="navbar-header">
+                <div class="unaids navbar-header">
                     {{ title }}
                 </div>
                 <div style="flex: 1 1 auto;" class="ml-2"><a href="/" v-translate="'runModel'"></a></div>

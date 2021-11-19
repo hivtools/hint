@@ -49,3 +49,18 @@ header {
     background-color: $gray-200;
   }
 }
+
+.unaids {
+  .bg-secondary {
+    background-color: rgba($theme-orange, .5);
+  }
+
+  .navbar-header {
+    margin-top: -8px;
+    margin-bottom: -8px;
+    padding: 10px;
+    margin-left: -30px;
+    background-color: darken($theme-orange, 10%);
+    color: white;
+  }
+}
