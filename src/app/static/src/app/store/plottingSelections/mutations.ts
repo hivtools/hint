@@ -5,8 +5,9 @@ import {
     BubblePlotSelections,
     ChoroplethSelections, ScaleSelections, ColourScalesState
 } from "./plottingSelections";
-import {PayloadWithType} from "../../types";
+import {PayloadWithType, Dict} from "../../types";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
+import {FilterOption} from "../../generated";
 
 type PlottingSelectionsMutation = Mutation<PlottingSelectionsState>
 
@@ -26,7 +27,28 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
         state.calibratePlot = {...state.calibratePlot, ...action.payload};
     },
     updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
-        state.barchart = {...state.barchart, ...action.payload};
+        // const payload = action?.payload?.selectedFilterOptions
+        const selectedFilterOptions: Dict<FilterOption[]> = {}
+        console.log("payload", action?.payload?.selectedFilterOptions)
+        if (action?.payload?.selectedFilterOptions && Object.keys(action.payload.selectedFilterOptions).length > 0){
+            Object.keys(action.payload.selectedFilterOptions).map(function(key, index) {
+                function compare( a: FilterOption, b: FilterOption ) {
+                    if ( a.id < b.id ){
+                      return -1;
+                    }
+                    if ( a.id > b.id ){
+                      return 1;
+                    }
+                    return 0;
+                }
+                console.log("property", action.payload.selectedFilterOptions, key, action.payload.selectedFilterOptions![key])
+                selectedFilterOptions[key] = action.payload.selectedFilterOptions![key].sort( compare );
+              })
+            state.barchart = {...state.barchart, ...action.payload, selectedFilterOptions};
+        } else {
+            state.barchart = {...state.barchart, ...action.payload};
+        }
+        console.log("barchart state", state.barchart)
     },
     updateBubblePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BubblePlotSelections>>) {
         state.bubble = {...state.bubble, ...action.payload};
