@@ -10,7 +10,7 @@ import {
     mockDataset,
     mockDatasetResource,
     mockError,
-    mockErrorsState,
+    mockErrorsState, mockPJNZResponse, mockPopulationResponse,
     mockProjectsState,
     mockRootState,
     mockShapeResponse
@@ -201,7 +201,6 @@ describe("select dataset", () => {
         importSurvey: jest.fn(),
         importProgram: jest.fn(),
         importANC: jest.fn(),
-        deleteAll: jest.fn()
     }
 
     const mockGetters = {
@@ -1126,11 +1125,13 @@ describe("select dataset", () => {
         expect(setInterval.mock.calls[0][1]).toBe(10000);
     });
 
-    it("import files from ADR remove previously imported files", async () => {
+    it("deletes previously imported files if population file exist", async () => {
 
         const store = getStore(
             {
-                shape: mockShapeResponse(),
+                shape: null,
+                pjnz: null,
+                population: mockPopulationResponse(),
                 selectedDataset: {
                     ...fakeDataset,
                     resources: {} as any
@@ -1147,14 +1148,65 @@ describe("select dataset", () => {
 
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
         expect((baselineActions.deleteAll as Mock)).toHaveBeenCalled()
-        expect((surveyProgramActions.deleteAll as Mock)).toHaveBeenCalled()
     });
 
-    it("import files from ADR does not remove previously imported files if it does not exist", async () => {
+    it("deletes previously imported files if shape file exist", async () => {
+
+        const store = getStore(
+            {
+                shape: mockShapeResponse(),
+                pjnz: null,
+                population: null,
+                selectedDataset: {
+                    ...fakeDataset,
+                    resources: {} as any
+                }
+            }, {}
+        );
+
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
+        await rendered.find("button").trigger("click");
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: "id1"})
+        await rendered.find(Modal).find("button").trigger("click");
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect((baselineActions.deleteAll as Mock)).toHaveBeenCalled()
+    });
+
+    it("deletes previously imported files if pjnz file exist", async () => {
 
         const store = getStore(
             {
                 shape: null,
+                pjnz: mockPJNZResponse(),
+                population: null,
+                selectedDataset: {
+                    ...fakeDataset,
+                    resources: {} as any
+                }
+            }, {}
+        );
+
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
+        await rendered.find("button").trigger("click");
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: "id1"})
+        await rendered.find(Modal).find("button").trigger("click");
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect((baselineActions.deleteAll as Mock)).toHaveBeenCalled()
+    });
+
+    it("does not delete previously imported files if it does not exist", async () => {
+
+        const store = getStore(
+            {
+                shape: null,
+                pjnz: null,
+                population: null,
                 selectedDataset: {
                     ...fakeDataset,
                     resources: {} as any
@@ -1171,7 +1223,6 @@ describe("select dataset", () => {
 
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
         expect((baselineActions.deleteAll as Mock)).not.toHaveBeenCalled()
-        expect((surveyProgramActions.deleteAll as Mock)).not.toHaveBeenCalled()
     });
 
 });
