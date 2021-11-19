@@ -22,6 +22,7 @@ import {StoreOptions} from "vuex";
 import {Error} from "../../generated";
 import {TranslatableState} from "../../types";
 import {mutations} from "./mutations";
+import {getters} from "./getters";
 
 declare const currentUser: string;
 
@@ -38,8 +39,6 @@ export interface DataExplorationState extends TranslatableState {
     errors: ErrorsState,
     currentUser: string,
     updatingLanguage: boolean,
-    errorReportError: Error | null
-    errorReportSuccess: boolean,
     dataExplorationMode: boolean
 }
 
@@ -48,8 +47,6 @@ export const initialDataExplorationState = (): DataExplorationState => {
         language: Language.en,
         version: currentHintVersion,
         updatingLanguage: false,
-        errorReportError: null,
-        errorReportSuccess: false,
         hintrVersion: initialHintrVersionState(),
         adr: initialADRState(),
         genericChart: initialGenericChartState(),
@@ -77,5 +74,6 @@ export const storeOptions: StoreOptions<DataExplorationState> = {
         errors,
         hintrVersion
     },
-    mutations
+    mutations,
+    getters
 };

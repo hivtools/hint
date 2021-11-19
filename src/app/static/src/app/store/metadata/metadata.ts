@@ -5,7 +5,7 @@ import {
     PlottingMetadataResponse,
     Error,
     Metadata,
-    AdrMetadataResponse
+    AdrMetadataResponse, FilterOption, ChoroplethIndicatorMetadata
 } from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
@@ -38,22 +38,32 @@ export const metadataGetters = {
             return [];
         }
 
-        const selectedDataType = rootState.surveyAndProgram.selectedDataType;
+        const sap = rootState.surveyAndProgram;
+        const selectedDataType = sap.selectedDataType;
 
         let metadataForType: Metadata | null = null;
+        let dataIndicators: FilterOption[] = [];
         switch (selectedDataType) {
             case (DataType.ANC):
                 metadataForType = plottingMetadata.anc;
+                dataIndicators = sap.anc?.filters.indicators || [];
                 break;
             case (DataType.Program):
                 metadataForType = plottingMetadata.programme;
+                dataIndicators = sap.program?.filters.indicators || [];
                 break;
             case (DataType.Survey):
                 metadataForType = plottingMetadata.survey;
+                dataIndicators = sap.survey?.filters.indicators ||[];
                 break;
         }
 
-        return (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
+        const unfiltered = metadataForType?.choropleth ? metadataForType.choropleth.indicators : [];
+        return (unfiltered as ChoroplethIndicatorMetadata[]).filter(
+            (metaIndicator: ChoroplethIndicatorMetadata) => dataIndicators.some(
+                (dataIndicator: FilterOption) => metaIndicator.indicator === dataIndicator.id
+            )
+        )
     },
     outputIndicatorsMetadata: (state: MetadataState, getters: any, rootState: DataExplorationState, rootGetters: any) => {
         return (state.plottingMetadata && state.plottingMetadata.output.choropleth &&

@@ -21,20 +21,20 @@
                      :uploading="uploading"
                      @uploading="handleUploading"></file-upload>
         <error-alert v-if="hasError" :error="error"></error-alert>
-        <reset-confirmation :continue-editing="deleteSelectedFile"
+        <reset-confirmation v-if="!dataExplorationMode"
+                            :continue-editing="deleteSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showDeleteConfirmation"></reset-confirmation>
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
     import FileUpload from "./FileUpload.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
     import ErrorAlert from "../ErrorAlert.vue";
-    import ResetConfirmation from "../ResetConfirmation.vue";
-    import {mapGetterByName} from "../../utils";
+    import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import {Error} from "../../generated";
+    import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
 
     interface Data {
         uploading: boolean
@@ -43,7 +43,6 @@
 
     interface Computed {
         hasError: boolean
-        editsRequireConfirmation: boolean
     }
 
     interface Methods {
@@ -65,7 +64,7 @@
         name: string
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default ResetConfirmationMixin.extend<Data, Methods, Computed, Props>({
         name: "FileSelect",
         props: {
             "upload": Function,
@@ -85,7 +84,6 @@
             }
         },
         computed: {
-            editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
             hasError: function () {
                 return !!this.error
             }

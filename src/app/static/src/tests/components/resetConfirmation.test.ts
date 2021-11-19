@@ -1,6 +1,6 @@
 import Vue from "vue";
 import {mount, Wrapper} from "@vue/test-utils";
-import ResetConfirmation from "../../app/components/ResetConfirmation.vue";
+import ResetConfirmation from "../../app/components/resetConfirmation/ResetConfirmation.vue";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 import Vuex from "vuex";
 import registerTranslations from "../../app/store/translations/registerTranslations";

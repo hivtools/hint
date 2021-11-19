@@ -45,7 +45,7 @@ class SessionTests
         val mockSessionStore = mock<SessionStore<WebContext>>()
         val mockConfig = mock<Config>
         {
-            on {sessionStore} doReturn mockSessionStore
+            on { sessionStore } doReturn mockSessionStore
         }
         val sut = Session(mockWebContext, mockConfig)
         val versionId = sut.getVersionId()
@@ -63,7 +63,7 @@ class SessionTests
         }
         val mockConfig = mock<Config>
         {
-            on {sessionStore} doReturn mockSessionStore
+            on { sessionStore } doReturn mockSessionStore
         }
 
         val sut = Session(mockWebContext, mockConfig)
@@ -82,7 +82,7 @@ class SessionTests
         }
         val mockConfig = mock<Config>
         {
-            on {sessionStore} doReturn mockSessionStore
+            on { sessionStore } doReturn mockSessionStore
         }
 
         val sut = Session(mockWebContext, mockConfig)
@@ -90,5 +90,36 @@ class SessionTests
 
         verify(mockSessionStore, never()).set(any(), any(), any())
     }
-}
 
+    @Test
+    fun `can set pac4j requested url to string value`()
+    {
+        val mockWebContext = mock<WebContext>()
+        val mockSessionStore = mock<SessionStore<WebContext>>()
+        val mockConfig = mock<Config>
+        {
+            on { sessionStore } doReturn mockSessionStore
+        }
+
+        val sut = Session(mockWebContext, mockConfig)
+        sut.setRequestedUrl("explore")
+
+        verify(mockSessionStore).set(mockWebContext, "pac4jRequestedUrl", "explore")
+    }
+
+    @Test
+    fun `can set pac4j requested url to null`()
+    {
+        val mockWebContext = mock<WebContext>()
+        val mockSessionStore = mock<SessionStore<WebContext>>()
+        val mockConfig = mock<Config>
+        {
+            on { sessionStore } doReturn mockSessionStore
+        }
+
+        val sut = Session(mockWebContext, mockConfig)
+        sut.setRequestedUrl(null)
+
+        verify(mockSessionStore).set(mockWebContext, "pac4jRequestedUrl", null)
+    }
+}
