@@ -751,13 +751,13 @@ describe("Stepper component", () => {
         expect((wrapper.vm as any).navigationProps.nextDisabled).toBe(true);
     });
 
-    it("displays Back/Continue twice only on Step 3", () => {
-        expect(getStepperOnStep(1).findAll(StepperNavigation).length).toBe(1);
-        expect(getStepperOnStep(2).findAll(StepperNavigation).length).toBe(1);
+    it("displays Back/Continue twice except model run step", () => {
+        expect(getStepperOnStep(1).findAll(StepperNavigation).length).toBe(2);
+        expect(getStepperOnStep(2).findAll(StepperNavigation).length).toBe(2);
         expect(getStepperOnStep(3).findAll(StepperNavigation).length).toBe(2);
         expect(getStepperOnStep(4).findAll(StepperNavigation).length).toBe(1);
-        expect(getStepperOnStep(5).findAll(StepperNavigation).length).toBe(1);
-        expect(getStepperOnStep(6).findAll(StepperNavigation).length).toBe(1);
+        expect(getStepperOnStep(5).findAll(StepperNavigation).length).toBe(2);
+        expect(getStepperOnStep(6).findAll(StepperNavigation).length).toBe(2);
     });
 
     it("renders warning alert with warnings for current step", () => {

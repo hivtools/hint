@@ -1,3 +1,7 @@
+# hint 1.74.0
+
+* Add navigation buttons to bottom of every page
+
 # hint 1.73.0
 
 * prompt login when using data exploration mode

@@ -37,7 +37,7 @@
                 <download-results v-if="isActive(7)"></download-results>
             </div>
         </div>
-        <template v-if="activeStep === 3">
+        <template v-if="activeStep !== 4">
             <warning-alert :warnings="activeStepWarnings"></warning-alert>
             <hr class="mt-3"/>
             <stepper-navigation v-bind="navigationProps"/>
