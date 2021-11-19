@@ -16,7 +16,7 @@
                     </filters>
                 </div>
             </div>
-            <div class="col-9">
+            <div class="col-9" style="position: relative;">
                 <div class="chart-container" :style="{height: chartHeight}">
                     <plotly class="chart"
                             v-if="!this.chartDataIsEmpty"
