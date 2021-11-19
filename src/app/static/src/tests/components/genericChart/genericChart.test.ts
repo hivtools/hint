@@ -943,4 +943,113 @@ describe("GenericChart component", () => {
             done();
         });
     });
+
+    it("pages reset when data source changes", (done) => {
+        const secondDataset = {
+            data: [
+                {type: "test", area:"aa", value: 10},
+                {type: "test", area:"bb",value: 20},
+                {type: "test", area:"cc",value: 30},
+                {type: "other", area:"ff",value: 60}
+            ],
+            metadata: {
+                columns: [
+                    {
+                        id: "type",
+                        column_id: "type",
+                        label: "Type",
+                        options: [
+                            {id: "test", label: "test"},
+                            {id: "other", label: "other"}
+                        ]
+                    }
+                ],
+                defaults: {
+                    selected_filter_options: {
+                        type: [{id: "test", label: "test"}]
+                    }
+                }
+            }
+        } as any;
+        const datasets = {...pagedDatasets, dataset2: secondDataset};
+        const state = {datasets};
+
+        const metadata = {
+            "test-chart": {
+                ...pagedMetadata["test-chart"],
+                datasets: [
+                    ...pagedMetadata["test-chart"].datasets,
+                    {
+                        id: "dataset2",
+                        label:"Dataset 2",
+                        url: "/dataset2",
+                        filters: [
+                            {id: "type", source: "data", allowMultiple: false}
+                        ],
+                    }
+                ]
+            }
+        };
+
+        mockAxios.onGet(`/dataset2`)
+            .reply(200, mockSuccess(secondDataset));
+
+        const wrapper = getWrapper(state, metadata);
+        setTimeout(() => {
+            // Move to Page 2
+            wrapper.find("#next-page").trigger("click");
+            const store = wrapper.vm.$store;
+            expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
+                "Page 2 sur 3", "Pagina 2 de 3", store);
+
+            wrapper.findAll(DataSource).at(0).vm.$emit("update", "dataset2");
+            setTimeout(() => {
+                expect(wrapper.vm.$data.dataSourceSelections.data.datasetId).toBe("dataset2");
+
+                expectTranslated(wrapper.find("#page-number"), "Page 1 of 2",
+                    "Page 1 sur 2", "Pagina 1 de 2", store);
+
+                expect(wrapper.find("#next-page").attributes("disabled")).toBeUndefined();
+                expect(wrapper.find("#previous-page").attributes("disabled")).toBe("disabled");
+
+                const plotly = wrapper.find(Plotly);
+                expect(plotly.props("chartData")).toStrictEqual({
+                    data: [
+                        {type: "test", area:"aa", value: 10},
+                        {type: "test", area:"bb", value: 20}
+                    ]
+                });
+                done();
+            });
+        });
+    });
+
+    it("pages reset when selected filter options change", (done) => {
+        const state = {datasets: pagedDatasets};
+        const wrapper = getWrapper(state, pagedMetadata);
+        setTimeout(() => {
+            // Move to Page 2
+            wrapper.find("#next-page").trigger("click");
+            const store = wrapper.vm.$store;
+            expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
+                "Page 2 sur 3", "Pagina 2 de 3", store);
+
+            const dataset1Filters = wrapper.findAll(Filters).at(0);
+            const newFilterSelections = {
+                type: [{id: "other"}]
+            };
+            dataset1Filters.vm.$emit("update", newFilterSelections);
+
+            expect(wrapper.find("#page-controls").exists()).toBe(false);
+            expect((wrapper.vm as any).currentPage).toBe(1);
+            expect((wrapper.vm as any).totalPages).toBe(1);
+            const plotly = wrapper.find(Plotly);
+            expect(plotly.props("chartData")).toStrictEqual({
+                data: [
+                    {type: "other", area:"f", value: 6}
+                ]
+            });
+            done();
+        });
+    });
 });

@@ -346,6 +346,7 @@
             },
             async updateDataSource(dataSourceId: string, datasetId: string) {
                 //clear current datasource filter selections while we fetch & show spinner
+                this.currentPage = 1;
                 this.updateSelectedFilterOptions(dataSourceId, null);
                 await this.ensureDataset(datasetId);
                 this.setDataSourceDefaultFilterSelections(dataSourceId, datasetId);
@@ -360,6 +361,7 @@
                 }
             },
             updateSelectedFilterOptions(dataSourceId: string, options: Dict<FilterOption[]> | null) {
+                this.currentPage = 1;
                 this.dataSourceSelections[dataSourceId].selectedFilterOptions = options;
             },
             translate(key: string) {
