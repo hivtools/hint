@@ -18,6 +18,7 @@ class LoginTests
         model["username"] = "test user"
         model["error"] = "test error"
         model["title"] = "test title"
+        model["appTitle"] = "Naomi"
         val doc = template.jsoupDocFor(model)
 
         assertThat(doc.select("form").attr("onsubmit")).isEqualTo("validate(event);")
@@ -52,6 +53,7 @@ class LoginTests
         model["username"] = ""
         model["error"] = ""
         model["title"] = "test title"
+        model["appTitle"] = "Naomi"
         val doc = template.jsoupDocFor(model)
 
         assertThat(doc.select("form label[for='user-id']").text()).isEqualTo("Username (email address)")
@@ -65,32 +67,33 @@ class LoginTests
     }
 
     @Test
-    fun `renders partner logos without error`()
+    fun `renders title and partner logos without error`()
     {
         val model = ConcurrentModel()
         model["username"] = ""
         model["error"] = ""
         model["title"] = "test title"
+        model["appTitle"] = "Naomi"
         val doc = template.jsoupDocFor(model)
 
+        assertThat(doc.select("h1").count()).isEqualTo(1)
+        assertThat(doc.select("h1").text()).isEqualTo("Naomi")
         assertThat(doc.select("a[href='https://www.unaids.org'] img").attr("src")).isEqualTo("public/images/unaids_logo.png")
         assertThat(doc.select("a[href='https://www.imperial.ac.uk'] img").attr("src")).isEqualTo("public/images/imperial_logo.png")
         assertThat(doc.select("a[href='https://github.com/reside-ic'] img").attr("src")).isEqualTo("public/images/reside_logo.png")
         assertThat(doc.select("a[href='https://www.washington.edu'] img").attr("src")).isEqualTo("public/images/uw_logo.png")
         assertThat(doc.select("a[href='https://www.fjelltopp.org'] img").attr("src")).isEqualTo("public/images/fjelltopp_logo.png")
         assertThat(doc.select("a[href='https://www.avenirhealth.org'] img").attr("src")).isEqualTo("public/images/avenir_logo.png")
-
-        assertThat(doc.select("h1").count()).isEqualTo(0)
     }
 
     @Test
-    fun `renders data exploration title if given explore param`()
+    fun `renders data exploration title`()
     {
         val model = ConcurrentModel()
         model["username"] = ""
         model["error"] = ""
         model["title"] = "test title"
-        model["RequestParameters"] = mapOf("redirectTo" to "explore")
+        model["appTitle"] = "Naomi Data Exploration"
         val doc = template.jsoupDocFor(model)
 
         assertThat(doc.select("h1").count()).isEqualTo(1)
