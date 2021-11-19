@@ -21,7 +21,7 @@
                     <plotly class="chart"
                             v-if="!this.chartDataIsEmpty"
                            :chart-metadata="chartConfigValues.chartConfig"
-                           :chart-data="chartData"
+                           :chart-data="chartDataPage"
                            :layout-data="chartConfigValues.layoutData"
                            :style="{height: chartConfigValues.scrollHeight}"></plotly>
                     <div v-else class="mt-5" id="empty-generic-chart-data">
@@ -31,6 +31,16 @@
                             </span>
                          </div>
                      </div>
+                </div>
+                <div v-if="totalPages > 1" class="text-center mt-2">
+                    <button class="btn btn-sm btn-red mr-2" :disabled="currentPage <= 1" @click="currentPage--">
+                        <chevron-left-icon size="20"></chevron-left-icon>
+                    </button>
+                    Page {{currentPage}} of {{totalPages}}
+                    <button class="btn btn-sm btn-red ml-2" :disabled="currentPage >= totalPages" @click="currentPage++">
+                        <chevron-right-icon size="20"></chevron-right-icon>
+                    </button>
+                    <hr/>
                 </div>
                 <div v-for="dataSource in chartConfigValues.dataSourceConfigValues.filter(ds => ds.tableConfig)"
                      :key="dataSource.config.id">
@@ -56,6 +66,7 @@
 
 <script lang="ts">
     import Vue from "vue";
+    import {ChevronLeftIcon, ChevronRightIcon} from "vue-feather-icons";
     import {
         DataSourceConfig,
         Dict, DisplayFilter, GenericChartColumn,
@@ -98,6 +109,7 @@
 
     interface Data {
         dataSourceSelections:  Dict<DataSourceSelections>
+        currentPage: number
     }
 
     interface Props {
@@ -113,8 +125,12 @@
         chartMetadata: GenericChartMetadata
         chartConfigValues: ChartConfigValues
         chartData: Dict<unknown[]> | null
+        chartDataPage: Dict<unknown[]> | null
         chartDataIsEmpty: boolean
         filters: Dict<DisplayFilter[]>
+        allDistinctColumnValues: string[] | null
+        pageDistinctColumnValues: string[] | null
+        totalPages: number
     }
 
     interface Methods {
@@ -136,6 +152,8 @@
             availableDatasetIds: Array
         },
         components: {
+            ChevronLeftIcon,
+            ChevronRightIcon,
             DataSource,
             Filters,
             Plotly,
@@ -155,7 +173,8 @@
                 }), {});
 
             return {
-                dataSourceSelections
+                dataSourceSelections,
+                currentPage: 1
             }
         },
         computed: {
@@ -205,9 +224,8 @@
                 const layoutData = {} as Dict<unknown>;
                 let scrollHeight = "100%";
                 const subplots = this.chartMetadata.subplots;
-                if (subplots && this.chartData) {
-                    const distinctAreas = new Set(this.chartData["data"].map((row: any) => row[subplots.distinctColumn]));
-                    const numberOfPlots = distinctAreas.size;
+                if (subplots && this.pageDistinctColumnValues) {
+                    const numberOfPlots = this.pageDistinctColumnValues.length;
                     const rows = Math.ceil(numberOfPlots / subplots.columns);
                     layoutData.subplots = {
                         ...subplots,
@@ -252,6 +270,38 @@
                 return !this.chartData ||
                     !Object.values(this.chartData).some(e => e.length);
 
+            },
+            allDistinctColumnValues() {
+                const subplots = this.chartMetadata.subplots;
+                if (subplots && this.chartData) {
+                    return this.chartData["data"].reduce((distinct: string[], row: any) => {
+                        const distinctVal = row[subplots.distinctColumn];
+                        return distinct.includes(distinctVal) ? distinct : [...distinct, distinctVal]
+                    }, []);
+                } else {
+                    return null;
+                }
+            },
+            pageDistinctColumnValues() {
+                if (this.chartData && this.chartMetadata.subplots && this.allDistinctColumnValues) {
+                    const subplotsPerPage = this.chartMetadata.subplots.subplotsPerPage;
+                    const start = (this.currentPage - 1) * subplotsPerPage;
+                    return this.allDistinctColumnValues.slice(start, start + subplotsPerPage);
+                } else {
+                    return null;
+                }
+            },
+            totalPages() {
+                return this.allDistinctColumnValues ? Math.ceil(this.allDistinctColumnValues.length / this.chartMetadata.subplots!.subplotsPerPage) : 1;
+            },
+            chartDataPage() {
+                if (this.pageDistinctColumnValues && this.chartData && this.chartMetadata.subplots) {
+                    const distinctColumn = this.chartMetadata.subplots.distinctColumn;
+                    const data = this.chartData["data"].filter((row: any) => this.pageDistinctColumnValues!.includes(row[distinctColumn]));
+                    return {...this.chartData, data}
+                } else {
+                    return this.chartData;
+                }
             }
         },
         methods: {
