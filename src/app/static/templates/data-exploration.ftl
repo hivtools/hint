@@ -11,7 +11,7 @@
 <div id="app" :class="language">
     <data-exploration-header title="${title}" user="${user}"></data-exploration-header>
     <div class="container mb-5">
-        <data-exploration></data-exploration>
+        <router-view></router-view>
     </div>
     <errors title="${title}"></errors>
 </div>

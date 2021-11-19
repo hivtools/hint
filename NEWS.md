@@ -1,6 +1,10 @@
-# hint 1.73.0
+# hint 1.74.0
 
 * Add data exploration header
+
+# hint 1.73.0
+
+* prompt login when using data exploration mode
 
 # hint 1.72.3
 
