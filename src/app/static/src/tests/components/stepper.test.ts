@@ -793,6 +793,7 @@ describe("Stepper component", () => {
             }
         );
 
+        expect(wrapper.findAll(WarningAlert).length).toBe(1)
         const warnings = wrapper.find(WarningAlert).props("warnings");
 
         expect(warnings).toStrictEqual({
@@ -838,7 +839,7 @@ describe("Stepper component", () => {
                 }]
             }
         );
-
+        expect(wrapper.findAll(WarningAlert).length).toBe(1)
         const warnings = wrapper.find(WarningAlert).props("warnings");
 
         expect(warnings).toStrictEqual({
