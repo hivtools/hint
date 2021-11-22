@@ -1,6 +1,14 @@
-# hint 1.74.0
+# hint 1.75.0
 
 * Show description for Generic Chart
+
+# hint 1.74.0
+
+* Add navigation buttons to bottom of every page
+
+# hint 1.73.2
+
+* When importing from ADR remove all datasets currently uploaded
 
 # hint 1.73.1
 

@@ -380,16 +380,16 @@ export const mockCalibrateResultResponse = (props: Partial<CalibrateResultRespon
 export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResponse> = {}): PlottingMetadataResponse => {
     return {
         anc: {
-            choropleth: {}
+            choropleth: {indicators: []}
         },
         output: {
-            choropleth: {}
+            choropleth: {indicators: []}
         },
         programme: {
-            choropleth: {}
+            choropleth: {indicators: []}
         },
         survey: {
-            choropleth: {}
+            choropleth: {indicators: []}
         },
         ...props
     }
