@@ -10,7 +10,7 @@ import {
     mockDataset,
     mockDatasetResource,
     mockError,
-    mockErrorsState,
+    mockErrorsState, mockPJNZResponse, mockPopulationResponse,
     mockProjectsState,
     mockRootState,
     mockShapeResponse
@@ -193,13 +193,14 @@ describe("select dataset", () => {
         importShape: jest.fn(),
         importPopulation: jest.fn(),
         importPJNZ: jest.fn(),
-        refreshDatasetMetadata: jest.fn()
+        refreshDatasetMetadata: jest.fn(),
+        deleteAll: jest.fn()
     }
 
     const surveyProgramActions: Partial<SurveyAndProgramActions> & ActionTree<any, any> = {
         importSurvey: jest.fn(),
         importProgram: jest.fn(),
-        importANC: jest.fn()
+        importANC: jest.fn(),
     }
 
     const mockGetters = {
@@ -1123,5 +1124,81 @@ describe("select dataset", () => {
         expect(setInterval.mock.calls[0][0]).toBe((rendered.vm as any).refreshDatasetMetadata);
         expect(setInterval.mock.calls[0][1]).toBe(10000);
     });
+
+    it("deletes previously imported files if population file exist", async () => {
+
+        const baselineProp = {
+            population: mockPopulationResponse()
+        }
+
+        await testDeleteImportedFiles(baselineProp);
+    });
+
+    it("deletes previously imported files if shape file exist", async () => {
+
+        const baselineProp = {
+            shape: mockShapeResponse()
+        }
+
+        await testDeleteImportedFiles(baselineProp);
+    });
+
+    it("deletes previously imported files if pjnz file exist", async () => {
+
+        const baselineProp = {
+            pjnz: mockPJNZResponse()
+        }
+
+        await testDeleteImportedFiles(baselineProp);
+    });
+
+    it("does not delete previously imported files if it does not exist", async () => {
+        const store = getStore(
+            {
+                shape: null,
+                pjnz: null,
+                population: null,
+                selectedDataset: {
+                    ...fakeDataset,
+                    resources: {} as any
+                }
+            }, {}
+        );
+
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
+        await rendered.find("button").trigger("click");
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: "id1"})
+        await rendered.find(Modal).find("button").trigger("click");
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect((baselineActions.deleteAll as Mock)).not.toHaveBeenCalled()
+    });
+
+    const testDeleteImportedFiles = async (baselineProps: Partial<BaselineState>) => {
+        const store = getStore(
+            {
+                shape: null,
+                pjnz: null,
+                population: null,
+                selectedDataset: {
+                    ...fakeDataset,
+                    resources: {} as any
+                },
+                ...baselineProps,
+            }
+        );
+
+        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
+        await rendered.find("button").trigger("click");
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({newDatasetId: "id1"})
+        await rendered.find(Modal).find("button").trigger("click");
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect((baselineActions.deleteAll as Mock)).toHaveBeenCalled()
+    }
 
 });
