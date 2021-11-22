@@ -727,9 +727,9 @@ describe("GenericChart component", () => {
         setTimeout(() => {
             const description = wrapper.find("#chart-description");
             expectTranslated(description,
-                "Values are shown in red when they differ from the previous or subsequent value by more than 25%.",
-                "Les valeurs sont affichées en rouge lorsqu'elles diffèrent de plus de 25 % de la valeur précédente ou suivante.",
-                "Os valores são exibidos em vermelho quando diferem do valor anterior ou subsequente em mais de 25%.",
+                "Values are shown in red when they differ from the previous or subsequent value by more than 25%, and in black otherwise.",
+                "Les valeurs sont affichées en rouge lorsqu'elles diffèrent de la valeur précédente ou suivante de plus de 25 %, et en noir dans le cas contraire.",
+                "Os valores são mostrados em vermelho quando diferem do valor anterior ou subsequente em mais de 25% e em preto, caso contrário.",
                 wrapper.vm.$store);
             expect(description.classes()).toContain("text-muted");
             done();
