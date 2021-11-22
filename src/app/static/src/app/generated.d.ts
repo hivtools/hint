@@ -104,7 +104,7 @@ export interface BarchartMetadata {
   };
 }
 export type CalibratePlotData = {
-  data_type: "spectrum" | "calibrated" | "unadjusted";
+  data_type: "spectrum" | "calibrated" | "raw";
   spectrum_region_code: string;
   spectrum_region_name: string;
   sex: string;
@@ -112,13 +112,11 @@ export type CalibratePlotData = {
   calendar_quarter: string;
   indicator: string;
   mean: number | null;
-  lower: number | null;
-  upper: number | null;
   [k: string]: any;
 }[];
 export interface CalibratePlotResponse {
   data: {
-    data_type: "spectrum" | "calibrated" | "unadjusted";
+    data_type: "spectrum" | "calibrated" | "raw";
     spectrum_region_code: string;
     spectrum_region_name: string;
     sex: string;
@@ -126,8 +124,6 @@ export interface CalibratePlotResponse {
     calendar_quarter: string;
     indicator: string;
     mean: number | null;
-    lower: number | null;
-    upper: number | null;
     [k: string]: any;
   }[];
   plottingMetadata: {
@@ -168,7 +164,7 @@ export interface CalibratePlotResponse {
   };
 }
 export interface CalibratePlotRow {
-  data_type: "spectrum" | "calibrated" | "unadjusted";
+  data_type: "spectrum" | "calibrated" | "raw";
   spectrum_region_code: string;
   spectrum_region_name: string;
   sex: string;
@@ -176,8 +172,6 @@ export interface CalibratePlotRow {
   calendar_quarter: string;
   indicator: string;
   mean: number | null;
-  lower: number | null;
-  upper: number | null;
   [k: string]: any;
 }
 export interface CalibrateResultResponse {
@@ -419,12 +413,12 @@ export interface HintrWorkerStatus {
 export type InputTimeSeriesData = {
   area_id: string;
   area_name: string;
-  time_step: string;
   plot: string | null;
   value: number | null;
   area_level?: number;
   age_group?: string;
   time_period: string;
+  quarter: string;
 }[];
 export interface InputTimeSeriesDefaults {
   selected_filter_options: {
@@ -465,12 +459,12 @@ export interface InputTimeSeriesResponse {
   data: {
     area_id: string;
     area_name: string;
-    time_step: string;
     plot: string | null;
     value: number | null;
     area_level?: number;
     age_group?: string;
     time_period: string;
+    quarter: string;
   }[];
   metadata: {
     columns: {
@@ -501,12 +495,12 @@ export interface InputTimeSeriesResponse {
 export interface InputTimeSeriesRow {
   area_id: string;
   area_name: string;
-  time_step: string;
   plot: string | null;
   value: number | null;
   area_level?: number;
   age_group?: string;
   time_period: string;
+  quarter: string;
 }
 export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
 export interface LevelLabels {
@@ -796,24 +790,6 @@ export interface PjnzResponseData {
   country: string;
   iso3: string;
 }
-export type ChoroplethMetadata = {
-  indicator: string;
-  value_column: string;
-  error_low_column?: string;
-  error_high_column?: string;
-  indicator_column?: string;
-  indicator_value?: string;
-  indicator_sort_order?: number;
-  name: string;
-  min: number;
-  max: number;
-  colour: string;
-  invert_scale: boolean;
-  scale: number;
-  accuracy: number | null;
-  format: string;
-}[];
-
 export interface PlottingMetadataResponse {
   survey: Metadata;
   anc: Metadata;
@@ -821,8 +797,24 @@ export interface PlottingMetadataResponse {
   output: Metadata;
 }
 export interface Metadata {
-  choropleth?: {
-    indicators?: ChoroplethMetadata;
+  choropleth: {
+    indicators: {
+      indicator: string;
+      value_column: string;
+      error_low_column?: string;
+      error_high_column?: string;
+      indicator_column?: string;
+      indicator_value?: string;
+      indicator_sort_order?: number;
+      name: string;
+      min: number;
+      max: number;
+      colour: string;
+      invert_scale: boolean;
+      scale: number;
+      accuracy: number | null;
+      format: string;
+    }[];
     [k: string]: any;
   };
   [k: string]: any;
@@ -1159,3 +1151,7 @@ export interface Warning {
   text: string;
   locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
 }
+export type Warnings = {
+  text: string;
+  locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+}[];
