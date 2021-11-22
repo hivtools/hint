@@ -2,6 +2,10 @@
 
 * Show description for Generic Chart
 
+# hint 1.74.1
+
+* Remove calibration plot when user changes calibration options
+
 # hint 1.74.0
 
 * Add navigation buttons to bottom of every page
