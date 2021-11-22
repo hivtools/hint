@@ -27,9 +27,8 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
         state.calibratePlot = {...state.calibratePlot, ...action.payload};
     },
     updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
-        // const payload = action?.payload?.selectedFilterOptions
         const selectedFilterOptions: Dict<FilterOption[]> = {}
-        console.log("payload", action?.payload?.selectedFilterOptions)
+        console.log("payload", action?.payload)
         if (action?.payload?.selectedFilterOptions && Object.keys(action.payload.selectedFilterOptions).length > 0){
             Object.keys(action.payload.selectedFilterOptions).map(function(key, index) {
                 function compare( a: FilterOption, b: FilterOption ) {
@@ -41,8 +40,10 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
                     }
                     return 0;
                 }
-                console.log("property", action.payload.selectedFilterOptions, key, action.payload.selectedFilterOptions![key])
-                selectedFilterOptions[key] = action.payload.selectedFilterOptions![key].sort( compare );
+                console.log("property", key, action.payload.selectedFilterOptions![key])
+                const options = [...action.payload.selectedFilterOptions![key]]
+                console.log("sorted options", options.sort( compare ))
+                selectedFilterOptions[key] = options.sort( compare );
               })
             state.barchart = {...state.barchart, ...action.payload, selectedFilterOptions};
         } else {
