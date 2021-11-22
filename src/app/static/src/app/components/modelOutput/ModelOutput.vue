@@ -240,6 +240,9 @@
             BubblePlot,
             Choropleth,
             AreaIndicatorsTable
-        }
+        },
+        // mounted(){
+        //     console.log("filters", this.filterConfig)
+        // }
     })
 </script>
