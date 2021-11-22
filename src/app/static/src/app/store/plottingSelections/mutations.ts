@@ -30,66 +30,34 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
         state.calibratePlot = {...state.calibratePlot, ...action.payload};
     },
     updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
-
-        // const selectedFilterOptions: Dict<FilterOption[]> = {}
-        // console.log("payload", action?.payload)
-        // if (action?.payload?.selectedFilterOptions && Object.keys(action.payload.selectedFilterOptions).length > 0){
-        //     Object.keys(action.payload.selectedFilterOptions).map(function(key, index) {
-        //         function compare( a: FilterOption, b: FilterOption ) {
-        //             if ( a.id < b.id ){
-        //               return -1;
-        //             }
-        //             if ( a.id > b.id ){
-        //               return 1;
-        //             }
-        //             return 0;
-        //         }
-        //         console.log("property", key, action.payload.selectedFilterOptions![key])
-        //         const options = [...action.payload.selectedFilterOptions![key]]
-        //         console.log("sorted options", options.sort( compare ))
-        //         selectedFilterOptions[key] = options.sort( compare );
-        //       })
-        //     state.barchart = {...state.barchart, ...action.payload, selectedFilterOptions};
-        // } else {
-            // state.barchart = {...state.barchart, ...action.payload};
-        // }
-        // console.log("barchart state", state.barchart)
-
-
-        console.log("getters", modelOutputGetters.barchartFilters({} as any, {}, storeOptions.state as RootState))
-        console.log("payload", action.payload)
         // Some concerns regarding computational efficiency and mutating state
         const { xAxisId, selectedFilterOptions } = action.payload
         // finds the filter options of the selected xAxis variable in the barchart filters getter
-        let originalFilterOptionsOrder: NestedFilterOption[] | undefined = modelOutputGetters.barchartFilters({} as any, {}, storeOptions.state as RootState).find(filter => filter.id === xAxisId)?.options
+        let originalFilterOptionsOrder: NestedFilterOption[] | undefined = modelOutputGetters
+            .barchartFilters({} as any, {}, storeOptions.state as RootState)
+            .find(filter => filter.id === xAxisId)?.options
         // if the above has nested children (ie, if xAxis is area), flatten the array
         if (originalFilterOptionsOrder && originalFilterOptionsOrder[0].children){
             const flattenedOptions = flattenOptions(originalFilterOptionsOrder)
-            console.log("flatten", flattenedOptions)
             originalFilterOptionsOrder = []
             Object.keys(flattenedOptions).map(function(key, index) {
                 originalFilterOptionsOrder?.push(flattenedOptions[key])
             })
-            console.log("flattened originalFilterOptionsOrder", originalFilterOptionsOrder)
         }
-        console.log({originalFilterOptionsOrder})
         // maps through the getter array to get the original order and returns only the selected filters
         const updatedFilterOption: FilterOption[] = []
         if (originalFilterOptionsOrder && xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]) {
             originalFilterOptionsOrder.map(option => {
-                selectedFilterOptions[xAxisId].some(option2 => option2.id === option.id) && updatedFilterOption.push(option)
+                selectedFilterOptions[xAxisId]
+                    .some(option2 => option2.id === option.id) && updatedFilterOption.push(option)
             })
             const update = {...state.barchart, ...action.payload}
             update.selectedFilterOptions[xAxisId] = updatedFilterOption
-            // state.barchart = {...state.barchart, ...action.payload}
-            // state.barchart.selectedFilterOptions[xAxisId] = updatedFilterOption
             state.barchart = update
-            console.log("updatedFilterOption", updatedFilterOption)
         // if unable to do the above, just updates the barchart as normal
         } else {
             state.barchart = {...state.barchart, ...action.payload};
         }
-        // updatedFilterOption.length ? state.barchart = {...state.barchart, ...action.payload, selectedFilterOptions[xAxisId]: updatedFilterOption} : state.barchart = {...state.barchart, ...action.payload};
     },
     updateBubblePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BubblePlotSelections>>) {
         state.bubble = {...state.bubble, ...action.payload};
