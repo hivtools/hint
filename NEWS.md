@@ -1,3 +1,7 @@
+# hint 1.74.0
+
+* Add navigation buttons to bottom of every page
+
 # hint 1.73.2
 
 * When importing from ADR remove all datasets currently uploaded
