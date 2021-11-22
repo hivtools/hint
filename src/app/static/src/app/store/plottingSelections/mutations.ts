@@ -7,9 +7,10 @@ import {
 } from "./plottingSelections";
 import {PayloadWithType, Dict} from "../../types";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
-import {FilterOption} from "../../generated";
+import {FilterOption, NestedFilterOption} from "../../generated";
 import { modelOutputGetters } from '../modelOutput/modelOutput';
 import { storeOptions, RootState } from "../../root"
+import { flattenOptions } from "../../utils"
 
 type PlottingSelectionsMutation = Mutation<PlottingSelectionsState>
 
@@ -57,17 +58,34 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
 
         console.log("getters", modelOutputGetters.barchartFilters({} as any, {}, storeOptions.state as RootState))
         console.log("payload", action.payload)
+        // Some concerns regarding computational efficiency and mutating state
         const { xAxisId, selectedFilterOptions } = action.payload
-        const originalFilterOptionsOrder = modelOutputGetters.barchartFilters({} as any, {}, storeOptions.state as RootState).find(filter => filter.id === xAxisId)?.options
+        // finds the filter options of the selected xAxis variable in the barchart filters getter
+        let originalFilterOptionsOrder: NestedFilterOption[] | undefined = modelOutputGetters.barchartFilters({} as any, {}, storeOptions.state as RootState).find(filter => filter.id === xAxisId)?.options
+        // if the above has nested children (ie, if xAxis is area), flatten the array
+        if (originalFilterOptionsOrder && originalFilterOptionsOrder[0].children){
+            const flattenedOptions = flattenOptions(originalFilterOptionsOrder)
+            console.log("flatten", flattenedOptions)
+            originalFilterOptionsOrder = []
+            Object.keys(flattenedOptions).map(function(key, index) {
+                originalFilterOptionsOrder?.push(flattenedOptions[key])
+            })
+            console.log("flattened originalFilterOptionsOrder", originalFilterOptionsOrder)
+        }
         console.log({originalFilterOptionsOrder})
+        // maps through the getter array to get the original order and returns only the selected filters
         const updatedFilterOption: FilterOption[] = []
         if (originalFilterOptionsOrder && xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]) {
             originalFilterOptionsOrder.map(option => {
                 selectedFilterOptions[xAxisId].some(option2 => option2.id === option.id) && updatedFilterOption.push(option)
             })
-            state.barchart = {...state.barchart, ...action.payload}
-            state.barchart.selectedFilterOptions[xAxisId] = updatedFilterOption
+            const update = {...state.barchart, ...action.payload}
+            update.selectedFilterOptions[xAxisId] = updatedFilterOption
+            // state.barchart = {...state.barchart, ...action.payload}
+            // state.barchart.selectedFilterOptions[xAxisId] = updatedFilterOption
+            state.barchart = update
             console.log("updatedFilterOption", updatedFilterOption)
+        // if unable to do the above, just updates the barchart as normal
         } else {
             state.barchart = {...state.barchart, ...action.payload};
         }
