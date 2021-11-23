@@ -126,6 +126,8 @@
     interface Data {
         dataSourceSelections:  Dict<DataSourceSelections>
         currentPage: number
+        totalPages: number
+        finalPagePlotCount: number
     }
 
     interface Props {
@@ -145,9 +147,6 @@
         chartDataPage: Dict<unknown[]> | null
         chartDataIsEmpty: boolean
         filters: Dict<DisplayFilter[]>
-        allDistinctColumnValues: string[] | null
-        pageDistinctColumnValues: string[] | null
-        totalPages: number,
         pageNumberText: string
     }
 
@@ -158,6 +157,7 @@
         translate: (key: string) => void,
         updateDataSource: (dataSourceId: string, datasetId: string) => void,
         updateSelectedFilterOptions: (dataSourceId: string, options: Dict<FilterOption[]> | null) => void
+        addPageNumbersToData: (data: unknown[]) => unknown[]
     }
 
     const namespace = "genericChart";
@@ -196,7 +196,9 @@
 
             return {
                 dataSourceSelections,
-                currentPage: 1
+                currentPage: 1,
+                totalPages: 1,
+                finalPagePlotCount: 0
             }
         },
         computed: {
@@ -249,8 +251,8 @@
                 const layoutData = {} as Dict<unknown>;
                 let scrollHeight = "100%";
                 const subplots = this.chartMetadata.subplots;
-                if (subplots && this.pageDistinctColumnValues) {
-                    const numberOfPlots = this.pageDistinctColumnValues.length;
+                if (subplots) {
+                    const numberOfPlots = (this.currentPage === this.totalPages) ? this.finalPagePlotCount : subplots!.subplotsPerPage;
                     const rows = Math.ceil(numberOfPlots / subplots.columns);
                     layoutData.subplots = {
                         ...subplots,
@@ -289,40 +291,47 @@
 
                     result[dataSourceId] = filterData(unfilteredData, filters, selectedFilterOptions);
                 }
-                return result;
+
+                //const subplots = this.chartMetadata.subplots;
+                if (result["data"]) {
+                   /* let pagePlotCount = 0;
+                    let pageNum = 1;
+                    const distinctValuePageNums : Dict<number> = {};
+                    const subplotsPerPage = this.chartMetadata.subplots!.subplotsPerPage;
+                    const dataWithPages =  result["data"].map((row: any) => {
+                        const distinctVal = row[subplots.distinctColumn].toString();
+                        if (!Object.keys(distinctValuePageNums).includes(distinctVal)) {
+                            pagePlotCount++;
+                            if (pagePlotCount === subplotsPerPage + 1) {
+                                pagePlotCount = 1;
+                                pageNum++;
+                            }
+                            distinctValuePageNums[distinctVal] = pageNum;
+                            return {...row, page: pageNum};
+                        } else {
+                            return {...row, page: distinctValuePageNums[distinctVal]};
+                        }
+                    });
+                    // TODO: will I get away with making include pages a method and setting side effect values in there?
+                    // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+                    this.finalPagePlotCount = pagePlotCount;
+                    // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+                    this.totalPages = pageNum;*/
+                    const dataWithPages = this.addPageNumbersToData(result["data"])
+
+                    return {...result, data: dataWithPages};
+                } else {
+                    return result;
+                }
             },
             chartDataIsEmpty() {
                 return !this.chartData ||
                     !Object.values(this.chartData).some(e => e.length);
 
             },
-            allDistinctColumnValues() {
-                const subplots = this.chartMetadata.subplots;
-                if (subplots && this.chartData) {
-                    return this.chartData["data"].reduce((distinct: string[], row: any) => {
-                        const distinctVal = row[subplots.distinctColumn];
-                        return distinct.includes(distinctVal) ? distinct : [...distinct, distinctVal]
-                    }, []);
-                } else {
-                    return null;
-                }
-            },
-            pageDistinctColumnValues() {
-                if (this.chartData && this.chartMetadata.subplots && this.allDistinctColumnValues) {
-                    const subplotsPerPage = this.chartMetadata.subplots.subplotsPerPage;
-                    const start = (this.currentPage - 1) * subplotsPerPage;
-                    return this.allDistinctColumnValues.slice(start, start + subplotsPerPage);
-                } else {
-                    return null;
-                }
-            },
-            totalPages() {
-                return this.allDistinctColumnValues ? Math.ceil(this.allDistinctColumnValues.length / this.chartMetadata.subplots!.subplotsPerPage) : 1;
-            },
             chartDataPage() {
-                if (this.pageDistinctColumnValues && this.chartData && this.chartMetadata.subplots) {
-                    const distinctColumn = this.chartMetadata.subplots.distinctColumn;
-                    const data = this.chartData["data"].filter((row: any) => this.pageDistinctColumnValues!.includes(row[distinctColumn]));
+                if (this.chartData && this.chartMetadata.subplots) {
+                    const data = this.chartData["data"].filter((row: any) => row["page"] == this.currentPage);
                     return {...this.chartData, data}
                 } else {
                     return this.chartData;
@@ -368,6 +377,34 @@
                 return i18next.t(key, {
                     lng: this.currentLanguage,
                 });
+            },
+            addPageNumbersToData(data: unknown[]): unknown[] {
+                const subplots = this.chartMetadata.subplots;
+                if (subplots) {
+                    let pagePlotCount = 0;
+                    let pageNum = 1;
+                    const distinctValuePageNums : Dict<number> = {};
+                    const subplotsPerPage = subplots.subplotsPerPage;
+                    const dataWithPages =  data.map((row: any) => {
+                        const distinctVal = row[subplots.distinctColumn].toString();
+                        if (!Object.keys(distinctValuePageNums).includes(distinctVal)) {
+                            pagePlotCount++;
+                            if (pagePlotCount === subplotsPerPage + 1) {
+                                pagePlotCount = 1;
+                                pageNum++;
+                            }
+                            distinctValuePageNums[distinctVal] = pageNum;
+                            return {...row, page: pageNum};
+                        } else {
+                            return {...row, page: distinctValuePageNums[distinctVal]};
+                        }
+                    });
+                    this.finalPagePlotCount = pagePlotCount;
+                    this.totalPages = pageNum;
+                    return dataWithPages;
+                } else {
+                    return data;
+                }
             }
         },
         async mounted() {
