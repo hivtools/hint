@@ -1,6 +1,18 @@
-# hint 1.74.0
+# hint 1.75.0
 
 * Paging in Input Time Series
+
+# hint 1.74.1
+
+* Remove calibration plot when user changes calibration options
+
+# hint 1.74.0
+
+* Add navigation buttons to bottom of every page
+
+# hint 1.73.2
+
+* When importing from ADR remove all datasets currently uploaded
 
 # hint 1.73.1
 
