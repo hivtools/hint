@@ -1,6 +1,10 @@
-# hint 1.74.2
+# hint 1.75.1
 
 * Update review output plots to use metadata from modelCalibrate
+
+# hint 1.75.0
+
+* Show description for Generic Chart
 
 # hint 1.74.1
 
