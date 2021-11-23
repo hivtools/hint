@@ -191,7 +191,7 @@ describe("GenericChart component", () => {
         };
 
         registerTranslations(store);
-        return shallowMount(GenericChart,{store, directives, propsData});
+        return shallowMount(GenericChart,{store, propsData});
     };
 
     it("renders as expected without chart data", (done) => {
