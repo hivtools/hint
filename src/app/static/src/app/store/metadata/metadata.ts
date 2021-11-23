@@ -55,10 +55,6 @@ export const metadataGetters = {
         }
 
         return (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
-    },
-    outputIndicatorsMetadata: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
-        return (state.plottingMetadata && state.plottingMetadata.output.choropleth &&
-            state.plottingMetadata.output.choropleth.indicators) || [];
     }
 };
 

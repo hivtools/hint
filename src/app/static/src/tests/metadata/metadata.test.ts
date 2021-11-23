@@ -83,19 +83,4 @@ describe("Metadata ", () => {
         expect(result).toStrictEqual(testIndicators);
     });
 
-    it("gets outputIndicators", () => {
-        const metadataState = mockMetadataState(
-            {
-                plottingMetadata: mockPlottingMetadataResponse({
-                    output: {
-                        choropleth: {
-                            indicators: ["TEST OUTPUT INDICATOR"] as any
-                        }
-                    }
-                })
-            });
-
-        const result = metadataGetters.outputIndicatorsMetadata(metadataState, null, {} as any, null);
-        expect(result).toStrictEqual(["TEST OUTPUT INDICATOR"]);
-    });
 });
