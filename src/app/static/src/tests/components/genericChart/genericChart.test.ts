@@ -761,12 +761,17 @@ describe("GenericChart component", () => {
     const pagedDatasets = {
         dataset1: {
             data: [
-                {type: "test", area:"a", value: 1},
-                {type: "test", area:"b",value: 2},
-                {type: "test", area:"c",value: 3},
-                {type: "test", area:"d",value: 4},
-                {type: "test", area:"e",value: 5},
-                {type: "other", area:"f",value: 6}
+                {type: "test", area:"a", year: "2020", value: 1},
+                {type: "test", area:"b", year: "2020", value: 2},
+                {type: "test", area:"c", year: "2020", value: 3},
+                {type: "test", area:"d", year: "2020", value: 4},
+                {type: "test", area:"e", year: "2020", value: 5},
+                {type: "test", area:"a", year: "2021", value: 1.1},
+                {type: "test", area:"b", year: "2021", value: 2.1},
+                {type: "test", area:"c", year: "2021", value: 3.1},
+                {type: "test", area:"d", year: "2021", value: 4.1},
+                {type: "test", area:"e", year: "2021", value: 5.1},
+                {type: "other", area:"f", year: "2020", value: 6}
             ],
             metadata: {
                 columns: [
@@ -819,8 +824,10 @@ describe("GenericChart component", () => {
             const plotly = wrapper.find(Plotly);
             expect(plotly.props("chartData")).toStrictEqual({
                 data: [
-                    {type: "test", area:"a", value: 1, page: 1},
-                    {type: "test", area:"b",value: 2 ,page: 1}
+                    {type: "test", area:"a", year: "2020", value: 1, page: 1},
+                    {type: "test", area:"b", year: "2020", value: 2, page: 1},
+                    {type: "test", area:"a", year: "2021", value: 1.1, page: 1},
+                    {type: "test", area:"b", year: "2021", value: 2.1 ,page: 1}
                 ]
             });
             expect(plotly.props("layoutData")).toStrictEqual({
@@ -859,8 +866,10 @@ describe("GenericChart component", () => {
             const plotly = wrapper.find(Plotly);
             expect(plotly.props("chartData")).toStrictEqual({
                 data: [
-                    {type: "test", area:"c", value: 3, page: 2},
-                    {type: "test", area:"d",value: 4, page: 2}
+                    {type: "test", area:"c", year: "2020", value: 3, page: 2},
+                    {type: "test", area:"d", year: "2020", value: 4, page: 2},
+                    {type: "test", area:"c", year: "2021", value: 3.1, page: 2},
+                    {type: "test", area:"d", year: "2021", value: 4.1, page: 2}
                 ]
             });
             expect(chartContainerEl.scrollTop).toBe(0);
@@ -875,7 +884,8 @@ describe("GenericChart component", () => {
 
             expect(plotly.props("chartData")).toStrictEqual({
                 data: [
-                    {type: "test", area:"e", value: 5, page: 3}
+                    {type: "test", area:"e", year: "2020", value: 5, page: 3},
+                    {type: "test", area:"e", year: "2021", value: 5.1, page: 3}
                 ]
             });
 
@@ -907,8 +917,10 @@ describe("GenericChart component", () => {
 
             expect(wrapper.find(Plotly).props("chartData")).toStrictEqual({
                 data: [
-                    {type: "test", area: "a", value: 1, page: 1},
-                    {type: "test", area: "b", value: 2, page: 1}
+                    {type: "test", area: "a", year: "2020", value: 1, page: 1},
+                    {type: "test", area: "b", year: "2020", value: 2, page: 1},
+                    {type: "test", area: "a", year: "2021", value: 1.1, page: 1},
+                    {type: "test", area: "b", year: "2021", value: 2.1, page: 1}
                 ]
             });
 
@@ -1019,9 +1031,49 @@ describe("GenericChart component", () => {
             const plotly = wrapper.find(Plotly);
             expect(plotly.props("chartData")).toStrictEqual({
                 data: [
-                    {type: "other", area: "f", value: 6, page: 1}
+                    {type: "other", area: "f", year: "2020", value: 6, page: 1}
                 ]
             });
+            done();
+        });
+    });
+
+
+    it("no paging is applied when subplots not defined", (done) => {
+        const state = {datasets: pagedDatasets};
+
+        const metadataWithoutSubplots = {
+            "test-chart": {
+                ...pagedMetadata["test-chart"],
+                subplots: undefined
+            }
+        };
+        const wrapper = getWrapper(state, metadataWithoutSubplots);
+        setTimeout(() => {
+            const store = wrapper.vm.$store;
+            const dataSources = wrapper.findAll(DataSource);
+            expect(dataSources.length).toBe(1);
+            const filters = wrapper.findAll(Filters);
+            expect(filters.length).toBe(1);
+
+            expect(wrapper.find("#page-controls").exists()).toBe(false);
+
+            const plotly = wrapper.find(Plotly);
+            expect(plotly.props("chartData")).toStrictEqual({
+                data:  [
+                    {type: "test", area:"a", year: "2020", value: 1},
+                    {type: "test", area:"b", year: "2020", value: 2},
+                    {type: "test", area:"c", year: "2020", value: 3},
+                    {type: "test", area:"d", year: "2020", value: 4},
+                    {type: "test", area:"e", year: "2020", value: 5},
+                    {type: "test", area:"a", year: "2021", value: 1.1},
+                    {type: "test", area:"b", year: "2021", value: 2.1},
+                    {type: "test", area:"c", year: "2021", value: 3.1},
+                    {type: "test", area:"d", year: "2021", value: 4.1},
+                    {type: "test", area:"e", year: "2021", value: 5.1}
+                ]
+            });
+
             done();
         });
     });
@@ -1061,4 +1113,5 @@ describe("GenericChart component", () => {
             done();
         });
     });
+
 });
