@@ -4,6 +4,7 @@ import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {PayloadWithType} from "../../types";
 import {updateForm} from "../../utils";
 import {
+    CalibrateResultResponse,
     CalibrateStatusResponse,
     CalibrateSubmitResponse,
     Error,
@@ -24,7 +25,8 @@ export enum ModelCalibrateMutation {
     Ready = "Ready",
     CalibrationPlotStarted = "CalibrationPlotStarted",
     SetPlotData = "SetPlotData",
-    WarningsFetched = "WarningsFetched"
+    WarningsFetched = "WarningsFetched",
+    CalibrateResultFetched = "CalibrateResultFetched"
 }
 
 export const ModelCalibrateUpdates = [
@@ -109,6 +111,10 @@ export const mutations: MutationTree<ModelCalibrateState> = {
 
     [ModelCalibrateMutation.WarningsFetched](state: ModelCalibrateState, action: PayloadWithType<Warning[]>) {
         state.warnings = action.payload
+    },
+
+    [ModelCalibrateMutation.CalibrateResultFetched](state: ModelCalibrateState, action: PayloadWithType<CalibrateResultResponse>) {
+        state.result = action.payload
     }
 };
 

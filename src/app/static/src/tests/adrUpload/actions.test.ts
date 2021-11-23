@@ -7,7 +7,7 @@ import {
     mockProjectsState,
     mockRootState,
     mockSuccess, mockSurveyAndProgramState,
-    mockModelCalibrateState, mockModelRunState, mockCalibrateResultResponse
+    mockModelCalibrateState, mockModelRunState, mockModelResultResponse
 } from "../mocks";
 import {actions} from "../../app/store/adrUpload/actions";
 import {mutations} from "../../app/store/adrUpload/mutations";
@@ -296,7 +296,7 @@ describe("ADR upload actions", () => {
             modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
             modelRun: mockModelRunState(
                 {
-                    result: mockCalibrateResultResponse({
+                    result: mockModelResultResponse({
                         uploadMetadata: {
                             outputSummary: {description: "summary"},
                             outputZip: {description: "zip"}
@@ -356,7 +356,7 @@ describe("ADR upload actions", () => {
             modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
             modelRun: mockModelRunState(
                 {
-                    result: mockCalibrateResultResponse({
+                    result: mockModelResultResponse({
                         uploadMetadata: {
                             outputSummary: {description: "summary"},
                             outputZip: {description: "zip"}

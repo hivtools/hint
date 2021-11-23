@@ -4,7 +4,6 @@ import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {api} from "../../apiService";
 import {RootState} from "../../root";
 import {ModelCalibrateMutation} from "./mutations";
-import {ModelRunMutation} from "../modelRun/mutations";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {freezer} from "../../utils";
 import {switches} from "../../featureSwitches";
@@ -71,7 +70,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
 
             if (response) {
                 const data = freezer.deepFreeze(response.data);
-                commit({type: `modelRun/${ModelRunMutation.RunResultFetched}`, payload: data}, {root: true});
+                commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: data});
                 commit({type: ModelCalibrateMutation.WarningsFetched, payload: data.warnings});
 
                 if (data && data.plottingMetadata && data.plottingMetadata.barchart.defaults) {

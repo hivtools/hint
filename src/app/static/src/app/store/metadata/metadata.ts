@@ -31,7 +31,7 @@ export const metadataGetters = {
     complete: (state: MetadataState) => {
         return !!state.plottingMetadata
     },
-    sapIndicatorsMetadata: (state: MetadataState, getters: any, rootState: DataExplorationState, rootGetters: any) => {
+    sapIndicatorsMetadata: (state: MetadataState, getters: any, rootState: DataExplorationState) => {
         const plottingMetadata = state.plottingMetadata;
 
         if (!plottingMetadata) {
@@ -64,10 +64,6 @@ export const metadataGetters = {
                 (dataIndicator: FilterOption) => metaIndicator.indicator === dataIndicator.id
             )
         )
-    },
-    outputIndicatorsMetadata: (state: MetadataState, getters: any, rootState: DataExplorationState, rootGetters: any) => {
-        return (state.plottingMetadata && state.plottingMetadata.output.choropleth &&
-            state.plottingMetadata.output.choropleth.indicators) || [];
     }
 };
 
