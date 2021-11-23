@@ -161,8 +161,6 @@ describe("GenericChart component", () => {
         }
     } as any;
 
-    const mockTooltip = jest.fn();
-
     beforeEach(() => {
         mockAxios.reset();
         jest.resetAllMocks();
@@ -191,8 +189,6 @@ describe("GenericChart component", () => {
             ...ChartPropsData,
             metadata: metadataProp
         };
-
-        const directives = {tooltip: mockTooltip};
 
         registerTranslations(store);
         return shallowMount(GenericChart,{store, directives, propsData});
@@ -917,38 +913,6 @@ describe("GenericChart component", () => {
 
             expect(chartContainerEl.scrollTop).toBe(0);
 
-            done();
-        });
-    });
-
-    it("renders tooltips in English", (done) => {
-        const state = {datasets: pagedDatasets};
-        getWrapper(state, pagedMetadata);
-        setTimeout(() => {
-            expect(mockTooltip.mock.calls[0][1].value).toBe("Previous page");
-            expect(mockTooltip.mock.calls[1][1].value).toBe("Next page");
-            done();
-        });
-    });
-
-    it("renders tooltips in French", (done) => {
-        const state = {datasets: pagedDatasets};
-        const wrapper = getWrapper(state, pagedMetadata);
-        wrapper.vm.$store.state.language = Language.fr;
-        setTimeout(() => {
-            expect(mockTooltip.mock.calls[0][1].value).toBe("Page précédente");
-            expect(mockTooltip.mock.calls[1][1].value).toBe("Page suivante");
-            done();
-        });
-    });
-
-    it("renders tooltips in Portuguese", (done) => {
-        const state = {datasets: pagedDatasets};
-        const wrapper = getWrapper(state, pagedMetadata);
-        wrapper.vm.$store.state.language = Language.pt;
-        setTimeout(() => {
-            expect(mockTooltip.mock.calls[0][1].value).toBe("Página anterior");
-            expect(mockTooltip.mock.calls[1][1].value).toBe("Próxima página");
             done();
         });
     });

@@ -34,10 +34,10 @@
                 </div>
                 <div v-if="totalPages > 1" id="page-controls" class="text-center mt-2">
                     <button id="previous-page"
-                            class="btn btn-sm btn-red mr-2"
+                            class="btn btn-sm mr-2"
+                            :class="prevPageEnabled ? 'btn-red' : 'btn-secondary'"
                             v-translate:aria-label="'previousPage'"
-                            v-tooltip="translate('previousPage')"
-                            :disabled="currentPage <= 1"
+                            :disabled="!prevPageEnabled"
                             @click="currentPage--">
                         <chevron-left-icon size="20"></chevron-left-icon>
                     </button>
@@ -45,10 +45,10 @@
                         {{pageNumberText}}
                     </span>
                     <button id="next-page"
-                            class="btn btn-sm btn-red ml-2"
+                            class="btn btn-sm ml-2"
+                            :class="nextPageEnabled ? 'btn-red' : 'btn-secondary'"
                             v-translate:aria-label="'nextPage'"
-                            v-tooltip="translate('nextPage')"
-                            :disabled="currentPage >= totalPages"
+                            :disabled="!nextPageEnabled"
                             @click="currentPage++">
                         <chevron-right-icon size="20"></chevron-right-icon>
                     </button>
@@ -80,7 +80,6 @@
     import i18next from "i18next";
     import Vue from "vue";
     import {ChevronLeftIcon, ChevronRightIcon} from "vue-feather-icons";
-    import {VTooltip} from 'v-tooltip';
     import {
         DataSourceConfig,
         Dict, DisplayFilter, GenericChartColumn,
@@ -93,7 +92,7 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {mapActionByName, mapStateProp} from "../../utils";
-    import {genericChart, GenericChartState} from "../../store/genericChart/genericChart";
+    import {GenericChartState} from "../../store/genericChart/genericChart";
     import {getDatasetPayload} from "../../store/genericChart/actions";
     import {FilterOption} from "../../generated";
     import Plotly from "./Plotly.vue";
@@ -148,13 +147,14 @@
         chartDataIsEmpty: boolean
         filters: Dict<DisplayFilter[]>
         pageNumberText: string
+        prevPageEnabled: boolean
+        nextPageEnabled: boolean
     }
 
     interface Methods {
         ensureDataset: (datasetId: string) => void,
         getDataset: (payload: getDatasetPayload) => void,
         setDataSourceDefaultFilterSelections: (dataSourceId: string, datasetId: string) => void,
-        translate: (key: string) => void,
         updateDataSource: (dataSourceId: string, datasetId: string) => void,
         updateSelectedFilterOptions: (dataSourceId: string, options: Dict<FilterOption[]> | null) => void
         addPageNumbersToData: (data: unknown[]) => unknown[]
@@ -179,9 +179,6 @@
             GenericChartTable,
             ErrorAlert,
             LoadingSpinner
-        },
-        directives: {
-            "tooltip": VTooltip
         },
         data: function() {
             const chart = this.metadata[this.chartId];
@@ -292,33 +289,8 @@
                     result[dataSourceId] = filterData(unfilteredData, filters, selectedFilterOptions);
                 }
 
-                //const subplots = this.chartMetadata.subplots;
                 if (result["data"]) {
-                   /* let pagePlotCount = 0;
-                    let pageNum = 1;
-                    const distinctValuePageNums : Dict<number> = {};
-                    const subplotsPerPage = this.chartMetadata.subplots!.subplotsPerPage;
-                    const dataWithPages =  result["data"].map((row: any) => {
-                        const distinctVal = row[subplots.distinctColumn].toString();
-                        if (!Object.keys(distinctValuePageNums).includes(distinctVal)) {
-                            pagePlotCount++;
-                            if (pagePlotCount === subplotsPerPage + 1) {
-                                pagePlotCount = 1;
-                                pageNum++;
-                            }
-                            distinctValuePageNums[distinctVal] = pageNum;
-                            return {...row, page: pageNum};
-                        } else {
-                            return {...row, page: distinctValuePageNums[distinctVal]};
-                        }
-                    });
-                    // TODO: will I get away with making include pages a method and setting side effect values in there?
-                    // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-                    this.finalPagePlotCount = pagePlotCount;
-                    // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-                    this.totalPages = pageNum;*/
                     const dataWithPages = this.addPageNumbersToData(result["data"])
-
                     return {...result, data: dataWithPages};
                 } else {
                     return result;
@@ -337,13 +309,19 @@
                     return this.chartData;
                 }
             },
-            pageNumberText: function () {
+            pageNumberText() {
                 return i18next.t("pageNumber", {
                     currentPage: this.currentPage,
                     totalPages: this.totalPages,
                     lng: this.currentLanguage,
                 });
             },
+            prevPageEnabled() {
+                return this.currentPage > 1;
+            },
+            nextPageEnabled() {
+                return this.totalPages > this.currentPage;
+            }
         },
         methods: {
             getDataset: mapActionByName(namespace, 'getDataset'),
@@ -372,11 +350,6 @@
             updateSelectedFilterOptions(dataSourceId: string, options: Dict<FilterOption[]> | null) {
                 this.currentPage = 1;
                 this.dataSourceSelections[dataSourceId].selectedFilterOptions = options;
-            },
-            translate(key: string) {
-                return i18next.t(key, {
-                    lng: this.currentLanguage,
-                });
             },
             addPageNumbersToData(data: unknown[]): unknown[] {
                 const subplots = this.chartMetadata.subplots;
