@@ -56,7 +56,7 @@ function testGetsSAPIndicatorsMetadataForDataType(dataType: DataType) {
         })
     });
 
-    const result = metadataGetters.sapIndicatorsMetadata(metadataState, null, rootState, null);
+    const result = metadataGetters.sapIndicatorsMetadata(metadataState, null, rootState);
 
     expect(result).toStrictEqual([testIndicators[0], testIndicators[1]]);
 }
@@ -79,7 +79,7 @@ describe("Metadata ", () => {
         const metadataState = mockMetadataState(
             {plottingMetadata: null});
 
-        const result = metadataGetters.sapIndicatorsMetadata(metadataState, null, mockRootState(), null);
+        const result = metadataGetters.sapIndicatorsMetadata(metadataState, null, mockRootState());
 
         expect(result).toEqual([]);
     });
@@ -103,8 +103,7 @@ describe("Metadata ", () => {
         const result = metadataGetters.sapIndicatorsMetadata(
             mockMetadataState({plottingMetadata: testMetadata}),
             null,
-            rootState,
-            null);
+            rootState);
 
         expect(result).toStrictEqual([testIndicators[0], testIndicators[1]]);
     });
