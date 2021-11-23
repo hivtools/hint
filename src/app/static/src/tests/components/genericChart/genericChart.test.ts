@@ -63,6 +63,7 @@ describe("GenericChart component", () => {
             chartConfig: [{
                 id: "scatter",
                 label: "Scatter",
+                description: "inputTimeSeriesDescription",
                 config: "Test Chart Config"
             }]
         }
@@ -906,13 +907,12 @@ describe("GenericChart component", () => {
 
             expect(wrapper.find(Plotly).props("chartData")).toStrictEqual({
                 data: [
-                    {type: "test", area:"a", value: 1, page: 1},
-                    {type: "test", area:"b", value: 2, page: 1}
+                    {type: "test", area: "a", value: 1, page: 1},
+                    {type: "test", area: "b", value: 2, page: 1}
                 ]
             });
 
             expect(chartContainerEl.scrollTop).toBe(0);
-
             done();
         });
     });
@@ -1019,9 +1019,45 @@ describe("GenericChart component", () => {
             const plotly = wrapper.find(Plotly);
             expect(plotly.props("chartData")).toStrictEqual({
                 data: [
-                    {type: "other", area:"f", value: 6, page: 1}
+                    {type: "other", area: "f", value: 6, page: 1}
                 ]
             });
+            done();
+        });
+    });
+
+    it("displays chart description", (done) => {
+        const state = {datasets};
+        const wrapper = getWrapper(state);
+
+        setTimeout(() => {
+            const description = wrapper.find("#chart-description");
+            expectTranslated(description,
+                "Values are shown in red when they differ from the previous or subsequent value by more than 25%, and in black otherwise.",
+                "Les valeurs sont affichées en rouge lorsqu'elles diffèrent de la valeur précédente ou suivante de plus de 25 %, et en noir dans le cas contraire.",
+                "Os valores são mostrados em vermelho quando diferem do valor anterior ou subsequente em mais de 25% e em preto, caso contrário.",
+                wrapper.vm.$store);
+            expect(description.classes()).toContain("text-muted");
+            done();
+        });
+    });
+
+    it("does not show chart description if none in config", (done) => {
+        const noDescMetadata = {
+            "test-chart": {
+                ...metadata["test-chart"],
+                chartConfig: [{
+                    ...metadata["test-chart"].chartConfig[0],
+                    description: undefined
+                }]
+            }
+        };
+
+        const state = {datasets};
+        const wrapper = getWrapper(state, noDescMetadata);
+
+        setTimeout(() => {
+            expect(wrapper.find("#chart-description").exists()).toBe(false);
             done();
         });
     });

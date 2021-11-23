@@ -15,6 +15,10 @@
                                 @update="updateSelectedFilterOptions(ds.config.id, $event)">
                     </filters>
                 </div>
+                <div id="chart-description"
+                     v-if="chartConfigValues.description"
+                     v-translate="chartConfigValues.description"
+                     class="text-muted mt-4"></div>
             </div>
             <div class="col-9" style="position: relative;">
                 <div class="chart-container" ref="chartContainer" :style="{height: chartHeight}">
@@ -115,6 +119,7 @@
         layoutData: Dict<unknown>
         scrollHeight: string
         chartConfig: string
+        description?: string
     }
 
     interface DataSourceSelections {
@@ -262,12 +267,14 @@
                 // The metadata supports multiple chart types per chart e.g Scatter and Bar, but for now we only need to
                 // support one chart type, so here we select the first config in the array
                 const chartConfig = this.chartMetadata.chartConfig[0].config;
+                const description = this.chartMetadata.chartConfig[0].description;
 
                 return {
                     dataSourceConfigValues,
                     layoutData,
                     scrollHeight,
-                    chartConfig
+                    chartConfig,
+                    description
                 };
             },
             chartData() {

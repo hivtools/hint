@@ -1,6 +1,10 @@
-# hint 1.75.0
+# hint 1.76.0
 
 * Paging in Input Time Series
+
+# hint 1.75.0
+
+* Show description for Generic Chart
 
 # hint 1.74.1
 

@@ -236,6 +236,7 @@ export interface GenericChartMetadata {
     chartConfig: {
         id: string
         label: string
+        description?: string
         config: string
     }[]
 }
