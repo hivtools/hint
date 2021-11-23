@@ -822,8 +822,8 @@ describe("GenericChart component", () => {
             const plotly = wrapper.find(Plotly);
             expect(plotly.props("chartData")).toStrictEqual({
                 data: [
-                    {type: "test", area:"a", value: 1},
-                    {type: "test", area:"b",value: 2}
+                    {type: "test", area:"a", value: 1, page: 1},
+                    {type: "test", area:"b",value: 2 ,page: 1}
                 ]
             });
             expect(plotly.props("layoutData")).toStrictEqual({
@@ -859,8 +859,8 @@ describe("GenericChart component", () => {
             const plotly = wrapper.find(Plotly);
             expect(plotly.props("chartData")).toStrictEqual({
                 data: [
-                    {type: "test", area:"c", value: 3},
-                    {type: "test", area:"d",value: 4}
+                    {type: "test", area:"c", value: 3, page: 2},
+                    {type: "test", area:"d",value: 4, page: 2}
                 ]
             });
 
@@ -874,7 +874,7 @@ describe("GenericChart component", () => {
 
             expect(plotly.props("chartData")).toStrictEqual({
                 data: [
-                    {type: "test", area:"e", value: 5}
+                    {type: "test", area:"e", value: 5, page: 3}
                 ]
             });
 
@@ -903,8 +903,8 @@ describe("GenericChart component", () => {
 
             expect(wrapper.find(Plotly).props("chartData")).toStrictEqual({
                 data: [
-                    {type: "test", area:"a", value: 1},
-                    {type: "test", area:"b", value: 2}
+                    {type: "test", area:"a", value: 1, page: 1},
+                    {type: "test", area:"b", value: 2, page: 1}
                 ]
             });
 
@@ -1015,8 +1015,8 @@ describe("GenericChart component", () => {
                 const plotly = wrapper.find(Plotly);
                 expect(plotly.props("chartData")).toStrictEqual({
                     data: [
-                        {type: "test", area:"aa", value: 10},
-                        {type: "test", area:"bb", value: 20}
+                        {type: "test", area:"aa", value: 10, page: 1},
+                        {type: "test", area:"bb", value: 20, page: 1}
                     ]
                 });
                 done();
@@ -1046,7 +1046,7 @@ describe("GenericChart component", () => {
             const plotly = wrapper.find(Plotly);
             expect(plotly.props("chartData")).toStrictEqual({
                 data: [
-                    {type: "other", area:"f", value: 6}
+                    {type: "other", area:"f", value: 6, page: 1}
                 ]
             });
             done();
