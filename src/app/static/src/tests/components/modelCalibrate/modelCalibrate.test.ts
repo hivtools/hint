@@ -2,7 +2,7 @@ import Vuex, {Store} from "vuex";
 import {mockError, mockModelCalibrateState, mockRootState} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {RootState} from "../../../app/root";
-import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";;
+import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
 import {mount, shallowMount} from "@vue/test-utils";
 import ModelCalibrate from "../../../app/components/modelCalibrate/ModelCalibrate.vue";
 import CalibrationResults from "../../../app/components/modelCalibrate/CalibrationResults.vue";
@@ -74,7 +74,7 @@ describe("Model calibrate component", () => {
     it("invokes fetch options action on mount", () => {
         const mockFetch = jest.fn();
         const store = getStore({}, mockFetch);
-        const wrapper = getWrapper(store);
+        getWrapper(store);
         expect(mockFetch.mock.calls.length).toBe(1);
     });
 
@@ -176,11 +176,18 @@ describe("Model calibrate component", () => {
         "Générer des résultats d'étalonnage", "Gerando resultados de calibração", store);
     });
 
-    it("renders calibration plot", () => {
+    it("renders calibration plot and label if calibration is complete", () => {
         const store = getStore({complete: true, calibratePlotResult: {}});
         const wrapper = getWrapper(store);
         expect(wrapper.find(CalibrationResults).exists()).toBe(true);
         expectTranslated(wrapper.find("#reviewResults"), "(Review results below)",
         "(Consultez les résultats ci-dessous)", "(Analise os resultados abaixo)", store);
+    });
+
+    it("it does not render calibration plot and label if calibration is incomplete", () => {
+        const store = getStore({complete: false, calibratePlotResult: {}});
+        const wrapper = getWrapper(store);
+        expect(wrapper.find(CalibrationResults).exists()).toBe(false);
+        expect(wrapper.find("#reviewResults").exists()).toBe(false)
     });
 });

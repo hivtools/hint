@@ -10,13 +10,12 @@
 <body>
 <div id="app" :class="language">
     <div class="container mb-5">
-        <div class="row h4 mt-4">
-            Data Exploration content will go here
-        </div>
+        <router-view></router-view>
     </div>
+    <errors title="${title}"></errors>
 </div>
 <script>
-    var currentUser = "${user}";
+    var currentUser = "${user}"
 </script>
 </body>
 </html>

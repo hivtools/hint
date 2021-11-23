@@ -83,7 +83,7 @@
             </template>
         </modal>
         <reset-confirmation
-            v-if="showConfirmation"
+            v-if="!dataExplorationMode && showConfirmation"
             :continue-editing="continueEditing"
             :cancel-editing="cancelEditing"
             :open="showConfirmation">
@@ -93,13 +93,11 @@
 <script lang="ts">
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
-    import Vue from "vue";
     import TreeSelect from "@riophae/vue-treeselect";
     import {
         mapActionByName,
         mapMutationByName,
         mapStateProp,
-        mapGetterByName,
     } from "../../utils";
     import {RootState} from "../../root";
     import Modal from "../Modal.vue";
@@ -115,9 +113,10 @@
     import {VTooltip} from "v-tooltip";
     import {ADRState} from "../../store/adr/adr";
     import {Error} from "../../generated";
-    import ResetConfirmation from "../ResetConfirmation.vue";
+    import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import SelectRelease from "./SelectRelease.vue";
     import {GetDatasetPayload} from "../../store/adr/actions";
+    import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
 
     interface Methods {
         getDatasets: () => void;
@@ -130,6 +129,7 @@
         importSurvey: (url: string) => Promise<void>;
         importProgram: (url: string) => Promise<void>;
         importANC: (url: string) => Promise<void>;
+        deleteBaselineFiles: () => Promise<void>;
         refresh: () => void;
         refreshDatasetMetadata: () => void;
         markResourcesUpdated: () => void;
@@ -158,8 +158,9 @@
         hasShapeFile: boolean;
         currentLanguage: Language;
         select: string;
-        editsRequireConfirmation: boolean;
         disableImport: boolean;
+        hasPjnzFile: boolean;
+        hasPopulationFile: boolean;
     }
 
     interface Data {
@@ -183,7 +184,7 @@
 
     const namespace = "adr";
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default ResetConfirmationMixin.extend<Data, Methods, Computed, unknown>({
         data() {
             return {
                 open: false,
@@ -205,13 +206,17 @@
         },
         directives: {tooltip: VTooltip},
         computed: {
-            editsRequireConfirmation: mapGetterByName(
-                "stepper",
-                "editsRequireConfirmation"
-            ),
             hasShapeFile: mapStateProp<BaselineState, boolean>(
                 "baseline",
                 (state: BaselineState) => !!state.shape
+            ),
+            hasPopulationFile: mapStateProp<BaselineState, boolean>(
+                "baseline",
+                (state: BaselineState) => !!state.population
+            ),
+            hasPjnzFile: mapStateProp<BaselineState, boolean>(
+                "baseline",
+                (state: BaselineState) => !!state.pjnz
             ),
             selectedDataset: mapStateProp<BaselineState, Dataset | null>(
                 "baseline",
@@ -307,6 +312,7 @@
             importPJNZ: mapActionByName("baseline", "importPJNZ"),
             importShape: mapActionByName("baseline", "importShape"),
             importPopulation: mapActionByName("baseline", "importPopulation"),
+            deleteBaselineFiles: mapActionByName("baseline", "deleteAll"),
             importSurvey: mapActionByName("surveyAndProgram", "importSurvey"),
             importProgram: mapActionByName("surveyAndProgram", "importProgram"),
             importANC: mapActionByName("surveyAndProgram", "importANC"),
@@ -314,6 +320,11 @@
                 this.stopPolling();
 
                 this.loading = true;
+
+                if (this.hasShapeFile || this.hasPopulationFile || this.hasPjnzFile) {
+                    await this.deleteBaselineFiles()
+                }
+
                 await this.getDataset({id: this.newDatasetId!, release: this.newDatasetRelease});
 
                 const {

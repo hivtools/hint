@@ -63,7 +63,8 @@ describe("File menu", () => {
     const createStore = (customModules = {}, isGuest = true) => {
         const store = new Vuex.Store({
             state: {
-                language: Language.en
+                language: Language.en,
+                updatingLanguage: false
             },
             getters: {
                 isGuest: () => isGuest

@@ -1,9 +1,6 @@
 import {actions} from "../../app/store/root/actions";
-import {ErrorReportManualDetails} from "../../app/store/root/actions";
-import {initialProjectsState} from "../../app/store/projects/projects";
-import {RootState} from "../../app/root";
-import {Language} from "../../app/store/translations/locales";
-import {initialHintrVersionState} from "../../app/store/hintrVersion/hintrVersion";
+import {ErrorReportManualDetails} from "../../app/types";
+import {emptyState} from "../../app/root";
 
 describe(`root actions`, () => {
 
@@ -13,19 +10,15 @@ describe(`root actions`, () => {
         const dispatch = jest.fn();
 
         const state = {
-            language: Language.en,
-            errorReportError: null,
+            ...emptyState(),
             baseline: {
                 country: "Malawi"
             },
             modelRun: {
                 modelRunId: "1234"
             },
-            projects: initialProjectsState(),
-            hintrVersion: initialHintrVersionState()
-        } as RootState;
-
-        state.projects.currentProject = {name: "p1", id: 1, versions: []}
+            projects: {currentProject: {name: "p1", id: 1, versions: []}}
+        }
 
         const getters = {
             errors: []
@@ -39,14 +32,17 @@ describe(`root actions`, () => {
         }
 
         await actions.generateErrorReport({commit, rootState: state, getters, dispatch} as any, payload);
-        expect(commit.mock.calls[0][0]).toStrictEqual(
+        expect(commit.mock.calls.length).toBe(3)
+        expect(commit.mock.calls[0][0]).toStrictEqual({payload: true, type: "errors/SendingErrorReport"})
+        expect(commit.mock.calls[1][0]).toStrictEqual(
             {
                 payload: {
                     description: "OK",
                     statusCode: 200
                 },
-                type: "ErrorReportSuccess"
+                type: "errors/ErrorReportSuccess"
             });
+        expect(commit.mock.calls[2][0]).toStrictEqual({payload: false, type: "errors/SendingErrorReport"})
 
         expect(dispatch.mock.calls.length).toBe(1)
         expect(dispatch.mock.calls[0][0]).toEqual("projects/cloneProject")

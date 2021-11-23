@@ -11,8 +11,6 @@ import {
     mockSurveyAndProgramState
 } from "../../mocks";
 import UploadInputs from "../../../app/components/uploadInputs/UploadInputs.vue";
-import {BaselineState} from "../../../app/store/baseline/baseline";
-import {BaselineActions} from "../../../app/store/baseline/actions";
 
 export function testUploadComponent(name: string, position: number) {
 

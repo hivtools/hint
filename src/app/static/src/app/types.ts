@@ -1,5 +1,6 @@
 import {Payload} from "vuex";
-import {FilterOption, Error, DownloadStatusResponse, DownloadSubmitResponse, Warning} from "./generated";
+import {FilterOption, Error, DownloadStatusResponse, DownloadSubmitResponse, Warning, VersionInfo} from "./generated";
+import {Language} from "./store/translations/locales";
 
 export interface PayloadWithType<T> extends Payload {
     payload: T
@@ -263,4 +264,26 @@ export interface StepWarnings {
     modelOptions: Warning[],
     modelRun: Warning[],
     modelCalibrate: Warning[]
+}
+
+export interface ErrorReportManualDetails {
+    section: string,
+    description: string,
+    stepsToReproduce: string,
+    email: string
+}
+
+export interface ErrorReport extends ErrorReportManualDetails {
+    country: string,
+    projectName: string | undefined,
+    browserAgent: string,
+    timeStamp: string,
+    jobId: string,
+    versions: VersionInfo,
+    errors: Error[]
+}
+
+export interface TranslatableState {
+    language: Language
+    updatingLanguage: boolean
 }

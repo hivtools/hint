@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.controllers
 
+import org.imperial.mrc.hint.security.Session
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
@@ -7,7 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import javax.servlet.http.HttpServletRequest
 
 @Controller
-class LoginController(private val request: HttpServletRequest)
+class LoginController(private val request: HttpServletRequest,
+                      private val session: Session)
 {
 
     @GetMapping("/login")
@@ -28,6 +30,9 @@ class LoginController(private val request: HttpServletRequest)
         {
             "Username or password is incorrect"
         }
+
+        val redirectTo = request.getParameter("redirectTo")
+        session.setRequestedUrl(redirectTo)
 
         return "login"
     }

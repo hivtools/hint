@@ -3,7 +3,7 @@ import {shallowMount, mount, createLocalVue} from '@vue/test-utils';
 import ErrorReport from "../../app/components/ErrorReport.vue";
 import Modal from "../../app/components/Modal.vue";
 import Vuex from "vuex";
-import {mockProjectsState, mockRootState, mockStepperState} from "../mocks";
+import {mockErrorsState, mockProjectsState, mockRootState, mockStepperState} from "../mocks";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {StepperState} from "../../app/store/stepper/stepper";
 import {ProjectsState} from "../../app/store/projects/projects";
@@ -12,6 +12,8 @@ import VueRouter from "vue-router";
 import {Language} from "../../app/store/translations/locales";
 import ErrorAlert from "../../app/components/ErrorAlert.vue";
 import {RootState} from "../../app/root";
+import { ErrorsState } from "../../app/store/errors/errors";
+import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 
 describe("Error report component", () => {
 
@@ -20,7 +22,8 @@ describe("Error report component", () => {
     const createStore = (stepperState: Partial<StepperState> = {},
                          projectsState: Partial<ProjectsState> = {},
                          rootState: Partial<RootState> = {},
-                         isGuest = false) => {
+                         isGuest = false,
+                         errorsState: Partial<ErrorsState> ={}) => {
         const store = new Vuex.Store({
             state: mockRootState(rootState),
             modules: {
@@ -31,7 +34,11 @@ describe("Error report component", () => {
                 projects: {
                     namespaced: true,
                     state: mockProjectsState(projectsState)
-                }
+                },
+                errors: {
+                    namespaced: true,
+                    state: mockErrorsState(errorsState)
+                },
             },
             actions: {
                 generateErrorReport
@@ -131,7 +138,7 @@ describe("Error report component", () => {
         expectTranslated(labels.at(4),
             "Steps to reproduce",
             "Étapes à reproduire",
-            "Reportar problemas",
+            "Passos para reproduzir",
             store)
 
         const mutedText = wrapper.findAll("div.small.text-muted")
@@ -507,6 +514,43 @@ describe("Error report component", () => {
         expect(wrapper.emitted().close).toBeUndefined();
     });
 
+    it("disables send button and render spinner when sending error report",  () => {
+        const store = createStore({}, {}, {}, false, {sendingErrorReport: true})
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true,
+                email: "something"
+            },
+            store: store
+        });
+
+        wrapper.find("#description").setValue("something");
+        wrapper.find("#reproduce").setValue("reproduce steps");
+        wrapper.find("#section").setValue("downloadResults");
+
+        expect(wrapper.find(LoadingSpinner).exists()).toBe(true)
+        expectTranslated(wrapper.find("#sending-error-report"),
+            "Sending request...", "Envoyer une requete...", "Enviando pedido ...", store)
+        expect(wrapper.find("#send").attributes("disabled")).toBe("disabled")
+    });
+
+    it("does not disable send button or render spinner when sending error report is not in progress",  () => {
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true,
+                email: "something"
+            },
+            store: createStore()
+        });
+
+        wrapper.find("#description").setValue("something");
+        wrapper.find("#reproduce").setValue("reproduce steps");
+        wrapper.find("#section").setValue("downloadResults");
+
+        expect(wrapper.find(LoadingSpinner).exists()).toBe(false)
+        expect(wrapper.find("#send").attributes("disabled")).toBeUndefined()
+    });
+
     it("does not invoke generateErrorReport action on cancel", () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
@@ -591,7 +635,7 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore({}, {}, {errorReportError})
+            store: createStore({}, {}, {}, false, {errorReportError})
         });
         wrapper.setData({showFeedback: true});
         expectTranslated(wrapper.find("#report-error"),
