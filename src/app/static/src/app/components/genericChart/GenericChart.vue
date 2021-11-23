@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="col-9" style="position: relative;">
-                <div class="chart-container" :style="{height: chartHeight}">
+                <div class="chart-container" ref="chartContainer" :style="{height: chartHeight}">
                     <plotly class="chart"
                             v-if="!this.chartDataIsEmpty"
                            :chart-metadata="chartConfigValues.chartConfig"
@@ -404,6 +404,13 @@
                     return dataWithPages;
                 } else {
                     return data;
+                }
+            }
+        },
+        watch: {
+            currentPage() {
+                if (this.$refs.chartContainer) {
+                    (this.$refs.chartContainer as HTMLElement).scrollTop = 0;
                 }
             }
         },

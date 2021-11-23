@@ -840,11 +840,14 @@ describe("GenericChart component", () => {
         });
     });
 
-    it("next page button load next page", (done) => {
+    it("next page button loads next page", (done) => {
         const state = {datasets: pagedDatasets};
 
         const wrapper = getWrapper(state, pagedMetadata);
         setTimeout(() => {
+            const chartContainerEl = wrapper.find(".chart-container").element as HTMLElement;
+            chartContainerEl.scrollTop = 100;
+
             const next = wrapper.find("#next-page");
 
             // Move to Page 2
@@ -863,6 +866,7 @@ describe("GenericChart component", () => {
                     {type: "test", area:"d",value: 4, page: 2}
                 ]
             });
+            expect(chartContainerEl.scrollTop).toBe(0);
 
             // Move to Page 3
             next.trigger("click");
@@ -894,6 +898,9 @@ describe("GenericChart component", () => {
                 "Page 2 sur 3", "Pagina 2 de 3", store);
 
             // Move back to Page 1
+            const chartContainerEl = wrapper.find(".chart-container").element as HTMLElement;
+            chartContainerEl.scrollTop = 100;
+
             wrapper.find("#previous-page").trigger("click");
             expectTranslated(wrapper.find("#page-number"), "Page 1 of 3",
                 "Page 1 sur 3", "Pagina 1 de 3", store);
@@ -907,6 +914,8 @@ describe("GenericChart component", () => {
                     {type: "test", area:"b", value: 2, page: 1}
                 ]
             });
+
+            expect(chartContainerEl.scrollTop).toBe(0);
 
             done();
         });
