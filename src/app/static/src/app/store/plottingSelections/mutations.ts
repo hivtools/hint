@@ -30,29 +30,30 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
         state.calibratePlot = {...state.calibratePlot, ...action.payload};
     },
     updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
-        // Some concerns regarding computational efficiency and mutating state
         const { xAxisId, selectedFilterOptions } = action.payload
+        
         // finds the filter options of the selected xAxis variable in the barchart filters getter
         let originalFilterOptionsOrder: NestedFilterOption[] | undefined = modelOutputGetters
             .barchartFilters({} as any, {}, storeOptions.state as RootState)
             .find(filter => filter.id === xAxisId)?.options
-        // if the above has nested children (ie, if xAxis is area), flatten the array
+
+        // Get the list of filter option ids in their configured order, whether nested or not
+        let originalFilterOptionsIds: string[];
         if (originalFilterOptionsOrder && originalFilterOptionsOrder[0].children){
             const flattenedOptions = flattenOptions(originalFilterOptionsOrder)
-            originalFilterOptionsOrder = []
-            Object.keys(flattenedOptions).map(function(key, index) {
-                originalFilterOptionsOrder?.push(flattenedOptions[key])
-            })
+            originalFilterOptionsIds = Object.keys(flattenedOptions)
+        } else if (originalFilterOptionsOrder) {
+          originalFilterOptionsIds = originalFilterOptionsOrder.map((option: FilterOption) => option.id);
         }
-        // maps through the getter array to get the original order and returns only the selected filters
-        const updatedFilterOption: FilterOption[] = []
+        
+        // Sort the selected filter values according to configured order
         if (originalFilterOptionsOrder && xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]) {
-            originalFilterOptionsOrder.map(option => {
-                selectedFilterOptions[xAxisId]
-                    .some(option2 => option2.id === option.id) && updatedFilterOption.push(option)
-            })
+           const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
+             return originalFilterOptionsIds.indexOf(a.id) - originalFilterOptionsIds.indexOf(b.id);
+           });
+            
             const update = {...state.barchart, ...action.payload}
-            update.selectedFilterOptions[xAxisId] = updatedFilterOption
+            update.selectedFilterOptions[xAxisId] = updatedFilterOptions
             state.barchart = update
         // if unable to do the above, just updates the barchart as normal
         } else {
