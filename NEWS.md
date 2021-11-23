@@ -1,3 +1,7 @@
+# hint 1.75.0
+
+* Show description for Generic Chart
+
 # hint 1.74.1
 
 * Remove calibration plot when user changes calibration options
