@@ -26,7 +26,8 @@
     </script>
 </head>
 <body>
-    <a href="https://www.unaids.org"><img src="public/images/unaids_logo.png" class="large-logo mx-auto mt-5"/></a>
+    <a href="https://www.unaids.org"><img src="public/images/unaids_logo.png" class="large-logo mx-auto mt-5 mb-4"/></a>
+    <h1 class="text-center"><strong>${appTitle}</strong></h1>
     <div id="app" class="card login-form mx-auto mt-3">
         <div class="card-body">
             <form id="login-form" method="post" action="/callback" class="needs-validation" novalidate onsubmit="validate(event);">
