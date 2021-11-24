@@ -3,9 +3,9 @@ import {
     PlottingSelectionsState,
     BarchartSelections,
     BubblePlotSelections,
-    ChoroplethSelections, ScaleSelections, ColourScalesState
+    ChoroplethSelections, ScaleSelections
 } from "./plottingSelections";
-import {PayloadWithType, Dict} from "../../types";
+import {PayloadWithType} from "../../types";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
 import {FilterOption, NestedFilterOption} from "../../generated";
 import { modelOutputGetters } from '../modelOutput/modelOutput';
@@ -31,34 +31,37 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
     },
     updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
         const { xAxisId, selectedFilterOptions } = action.payload
-        
-        // finds the filter options of the selected xAxis variable in the barchart filters getter
-        let originalFilterOptionsOrder: NestedFilterOption[] | undefined = modelOutputGetters
-            .barchartFilters({} as any, {}, storeOptions.state as RootState)
-            .find(filter => filter.id === xAxisId)?.options
-
-        // Get the list of filter option ids in their configured order, whether nested or not
-        let originalFilterOptionsIds: string[];
-        if (originalFilterOptionsOrder && originalFilterOptionsOrder[0].children){
-            const flattenedOptions = flattenOptions(originalFilterOptionsOrder)
-            originalFilterOptionsIds = Object.keys(flattenedOptions)
-        } else if (originalFilterOptionsOrder) {
-          originalFilterOptionsIds = originalFilterOptionsOrder.map((option: FilterOption) => option.id);
-        }
-        
-        // Sort the selected filter values according to configured order
-        if (originalFilterOptionsOrder && xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]) {
-           const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
-             return originalFilterOptionsIds.indexOf(a.id) - originalFilterOptionsIds.indexOf(b.id);
-           });
+        if (xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]){
             
-            const update = {...state.barchart, ...action.payload}
-            update.selectedFilterOptions[xAxisId] = updatedFilterOptions
-            state.barchart = update
-        // if unable to do the above, just updates the barchart as normal
-        } else {
-            state.barchart = {...state.barchart, ...action.payload};
+            // finds the filter options of the selected xAxis variable in the barchart filters getter
+            let originalFilterOptionsOrder: NestedFilterOption[] | undefined = modelOutputGetters
+                .barchartFilters({} as any, {}, storeOptions.state as RootState)
+                .find(filter => filter.id === xAxisId)?.options
+
+            // Get the list of filter option ids in their configured order, whether nested or not
+            let originalFilterOptionsIds: string[];
+            if (originalFilterOptionsOrder && originalFilterOptionsOrder[0].children){
+                const flattenedOptions = flattenOptions(originalFilterOptionsOrder)
+                originalFilterOptionsIds = Object.keys(flattenedOptions)
+            } else if (originalFilterOptionsOrder) {
+                originalFilterOptionsIds = originalFilterOptionsOrder.map((option: FilterOption) => option.id);
+            }
+
+            // Sort the selected filter values according to configured order
+            if (originalFilterOptionsOrder) {
+                const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
+                    return originalFilterOptionsIds.indexOf(a.id) - originalFilterOptionsIds.indexOf(b.id);
+                });
+
+                const update = {...state.barchart, ...action.payload}
+                update.selectedFilterOptions[xAxisId] = updatedFilterOptions
+                state.barchart = update
+                return;
+            }
         }
+        
+        // if unable to do the above, just updates the barchart as normal
+        state.barchart = {...state.barchart, ...action.payload};
     },
     updateBubblePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BubblePlotSelections>>) {
         state.bubble = {...state.bubble, ...action.payload};
