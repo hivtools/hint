@@ -101,7 +101,6 @@
     import {BarChartWithFilters} from "@reside-ic/vue-charts";
 
     import {mapGettersByNames, mapMutationByName, mapMutationsByNames, mapStateProp, mapStateProps,} from "../../utils";
-    import {ModelRunState} from "../../store/modelRun/modelRun";
     import {
         BarchartSelections,
         BubblePlotSelections,
@@ -116,9 +115,9 @@
     import {inactiveFeatures} from "../../main";
     import {RootState} from "../../root";
     import {LevelLabel} from "../../types";
-    import {mapState} from "vuex";
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {formatOutput} from "../plots/utils";
+    import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
 
     const namespace = 'filteredData';
 
@@ -208,7 +207,7 @@
                 ]
             },
             selectedTab: mapStateProp<ModelOutputState, string>("modelOutput", state => state.selectedTab),
-            chartdata: mapStateProp<ModelRunState, any>("modelRun", state => {
+            chartdata: mapStateProp<ModelCalibrateState, any>("modelCalibrate", state => {
                 return state.result ? state.result.data : [];
             }),
             barchartSelections() {

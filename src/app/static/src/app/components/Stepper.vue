@@ -39,6 +39,8 @@
         </div>
         <template v-if="activeStep === 3">
             <warning-alert :warnings="activeStepWarnings"></warning-alert>
+        </template>
+        <template v-if="activeStep !== 4">
             <hr class="mt-3"/>
             <stepper-navigation v-bind="navigationProps"/>
         </template>
