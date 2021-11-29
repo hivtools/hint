@@ -487,6 +487,51 @@ describe("Error report component", () => {
         expect(wrapper.vm.$data.email).toBe("");
     });
 
+
+    it("disables button and display email validation message when invalid email address", async () => {
+        const store = createStore({}, {}, {}, true)
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store
+        });
+
+        wrapper.find("#description").setValue("something");
+        wrapper.find("#reproduce").setValue("reproduce steps");
+        wrapper.find("#section").setValue("downloadResults");
+        wrapper.find("#email").setValue("test@email");
+
+        expect(wrapper.find(".btn-red").text()).toBe("Send");
+        expect(wrapper.find(".btn-red").attributes("disabled")).toBe("disabled")
+
+        const invalidFeedback = wrapper.find(".invalid-feedback");
+        expectTranslated(invalidFeedback,
+            "Please enter a valid email address",
+            "S'il vous plaît, mettez une adresse email valide",
+            "Por favor insira um endereço de e-mail válido", store)
+    });
+
+
+    it("validates email and enables send button ", async () => {
+        const store = createStore({}, {}, {}, true)
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store
+        });
+
+        wrapper.find("#description").setValue("something");
+        wrapper.find("#reproduce").setValue("reproduce steps");
+        wrapper.find("#section").setValue("downloadResults");
+        wrapper.find("#email").setValue("test@email.com");
+
+        expect(wrapper.find(".btn-red").text()).toBe("Send");
+        expect(wrapper.find(".btn-red").attributes("disabled")).toBeUndefined()
+        expect(wrapper.find(".invalid-feedback").exists()).toBe(false)
+    });
+
     it("invokes generateErrorReport action and sets showFeedback on send", async () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
