@@ -14,7 +14,7 @@
                 <label for="email" v-translate="'email'"></label>
                 <input type="email"
                        id="email"
-                       :pattern="pattern"
+                       :pattern="pattern.source"
                        @input="validateEmail"
                        v-model="email"
                        class="form-control is-invalid" required/>
@@ -149,7 +149,7 @@
         tooltipText: string,
         errorReportError: Error | null
         sendingErrorReport: boolean
-        pattern: any
+        pattern: RegExp
     }
 
     interface Props {
@@ -211,7 +211,7 @@
                 return i18next.t("allFieldsRequired", {lng: this.currentLanguage});
             },
             pattern() {
-                return "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$"
+                return RegExp("^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$")
             }
         },
         methods: {
@@ -240,8 +240,7 @@
                 this.$emit("close");
             },
             validateEmail() {
-                const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-                this.validEmail = re.test(this.email);
+                this.validEmail = this.pattern.test(this.email);
             }
         },
         watch: {

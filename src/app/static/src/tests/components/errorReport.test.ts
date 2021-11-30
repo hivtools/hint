@@ -19,6 +19,8 @@ describe("Error report component", () => {
 
     const generateErrorReport = jest.fn();
 
+    const pattern = RegExp("^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$")
+
     const createStore = (stepperState: Partial<StepperState> = {},
                          projectsState: Partial<ProjectsState> = {},
                          rootState: Partial<RootState> = {},
@@ -500,8 +502,9 @@ describe("Error report component", () => {
         wrapper.find("#description").setValue("something");
         wrapper.find("#reproduce").setValue("reproduce steps");
         wrapper.find("#section").setValue("downloadResults");
-        wrapper.find("#email").setValue("test@email");
+        wrapper.find("#email").setValue("test@email.c");
 
+        expect(wrapper.find("#email").attributes("pattern")).toBe(pattern.source)
         expect(wrapper.find(".btn-red").text()).toBe("Send");
         expect(wrapper.find(".btn-red").attributes("disabled")).toBe("disabled")
 
@@ -527,6 +530,7 @@ describe("Error report component", () => {
         wrapper.find("#section").setValue("downloadResults");
         wrapper.find("#email").setValue("test@email.com");
 
+        expect(wrapper.find("#email").attributes("pattern")).toBe(pattern.source)
         expect(wrapper.find(".btn-red").text()).toBe("Send");
         expect(wrapper.find(".btn-red").attributes("disabled")).toBeUndefined()
         expect(wrapper.find(".invalid-feedback").exists()).toBe(false)
