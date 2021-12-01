@@ -114,7 +114,7 @@
 </template>
 <script lang="ts">
     import Vue from "vue"
-    import {mapActionByName, mapGetterByName, mapStateProp} from "../utils";
+    import {mapActionByName, mapGetterByName, mapStateProp, validateEmail, emailRegex} from "../utils";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {ProjectsState} from "../store/projects/projects"
     import Modal from "./Modal.vue";
@@ -211,7 +211,7 @@
                 return i18next.t("allFieldsRequired", {lng: this.currentLanguage});
             },
             pattern() {
-                return RegExp("^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$")
+                return emailRegex
             }
         },
         methods: {
@@ -240,7 +240,7 @@
                 this.$emit("close");
             },
             validateEmail() {
-                this.validEmail = this.pattern.test(this.email);
+                this.validEmail = validateEmail(this.email)
             }
         },
         watch: {

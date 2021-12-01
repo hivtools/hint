@@ -243,7 +243,7 @@ function getUploadFileFromResource(resource: DatasetResource | null, resourceNam
     }
 }
 
-const emailRegex = RegExp("^([\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})(,[\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})*$")
+export const emailRegex = RegExp("^([\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})(,[\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})*$")
 
 export const validateEmail = (test: string): boolean => {
     return emailRegex.test(test.replace(/\s*/g, ""))
