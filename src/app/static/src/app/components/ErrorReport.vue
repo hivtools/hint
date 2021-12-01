@@ -15,7 +15,7 @@
                 <input type="email"
                        id="email"
                        :pattern="pattern.source"
-                       @input="validateEmail"
+                       @input="checkValidEmail"
                        v-model="email"
                        class="form-control is-invalid" required/>
                 <div v-if="email && !validEmail"
@@ -135,7 +135,7 @@
         cancelErrorReport: () => void
         resetData: () => void
         close: () => void
-        validateEmail: () => void
+        checkValidEmail: () => void
     }
 
     interface Computed {
@@ -239,7 +239,7 @@
             close() {
                 this.$emit("close");
             },
-            validateEmail() {
+            checkValidEmail() {
                 this.email = this.email.replace(/\s*/g, "")
                 this.validEmail = validateEmail(this.email)
             }
