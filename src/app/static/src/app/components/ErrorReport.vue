@@ -240,6 +240,7 @@
                 this.$emit("close");
             },
             validateEmail() {
+                this.email = this.email.replace(/\s*/g, "")
                 this.validEmail = validateEmail(this.email)
             }
         },

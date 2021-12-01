@@ -488,6 +488,20 @@ describe("Error report component", () => {
         expect(wrapper.vm.$data.email).toBe("");
     });
 
+    it("can validate email with whitespace", async () => {
+        const store = createStore({}, {}, {}, true)
+        const wrapper = mount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store
+        });
+
+        wrapper.find("#email").setValue("tes t@email.com ");
+        expect(wrapper.vm.$data.email).toBe("test@email.com");
+        expect(wrapper.find(".invalid-feedback").exists()).toBe(false)
+    });
+
     it("does not validate email with one letter postfix", async () => {
         const store = createStore({}, {}, {}, true)
         const wrapper = mount(ErrorReport, {
