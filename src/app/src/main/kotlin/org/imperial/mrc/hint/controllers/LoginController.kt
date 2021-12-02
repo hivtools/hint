@@ -6,10 +6,12 @@ import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.springframework.web.bind.annotation.GetMapping
 import javax.servlet.http.HttpServletRequest
+import org.imperial.mrc.hint.AppProperties
 
 @Controller
 class LoginController(private val request: HttpServletRequest,
-                      private val session: Session)
+                      private val session: Session,
+                      private val appProperties: AppProperties)
 {
 
     @GetMapping("/login")
@@ -32,6 +34,14 @@ class LoginController(private val request: HttpServletRequest,
         }
 
         val redirectTo = request.getParameter("redirectTo")
+        model["appTitle"] = if (redirectTo == "explore")
+        {
+            appProperties.exploreApplicationTitle
+        }
+        else
+        {
+            appProperties.applicationTitle
+        }
         session.setRequestedUrl(redirectTo)
 
         return "login"

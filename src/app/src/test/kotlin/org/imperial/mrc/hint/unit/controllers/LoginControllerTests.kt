@@ -9,6 +9,7 @@ import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
 import org.springframework.ui.ConcurrentModel
 import javax.servlet.http.HttpServletRequest
+import org.imperial.mrc.hint.ConfiguredAppProperties
 
 class LoginControllerTests
 {
@@ -17,7 +18,7 @@ class LoginControllerTests
     {
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest>()
-        val sut = LoginController(mockRequest, mock())
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -35,7 +36,7 @@ class LoginControllerTests
             on { this.getParameter("username") } doReturn "testUser"
             on { this.getParameter("error") } doReturn "CredentialsException"
         }
-        val sut = LoginController(mockRequest, mock())
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -53,7 +54,7 @@ class LoginControllerTests
             on { this.getParameter("message") } doReturn "Some user message"
             on { this.getParameter("error") } doReturn "SessionExpired"
         }
-        val sut = LoginController(mockRequest, mock())
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -70,7 +71,7 @@ class LoginControllerTests
         val mockRequest = mock<HttpServletRequest> {
             on { this.getParameter("error") } doReturn "SessionExpired"
         }
-        val sut = LoginController(mockRequest, mock())
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -81,32 +82,34 @@ class LoginControllerTests
     }
 
     @Test
-    fun `sets redirect url if present`()
+    fun `sets redirect url if present and sets appTitle to Naomi Data Exploration`()
     {
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest> {
             on { this.getParameter("redirectTo") } doReturn "explore"
         }
         val mockSession = mock<Session>()
-        val sut = LoginController(mockRequest, mockSession)
+        val sut = LoginController(mockRequest, mockSession, ConfiguredAppProperties())
 
         val result = sut.login(model)
 
         Assertions.assertThat(result).isEqualTo("login")
+        Assertions.assertThat(model["appTitle"]).isEqualTo("Naomi Data Exploration")
         verify(mockSession).setRequestedUrl("explore")
     }
 
     @Test
-    fun `sets redirect url to null if not present`()
+    fun `sets redirect url to null if not present and sets appTitle to Naomi`()
     {
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest>()
         val mockSession = mock<Session>()
-        val sut = LoginController(mockRequest, mockSession)
+        val sut = LoginController(mockRequest, mockSession, ConfiguredAppProperties())
 
         val result = sut.login(model)
 
         Assertions.assertThat(result).isEqualTo("login")
+        Assertions.assertThat(model["appTitle"]).isEqualTo("Naomi")
         verify(mockSession).setRequestedUrl(null)
     }
 }

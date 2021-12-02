@@ -1,6 +1,15 @@
-# hint 1.76.0
+# hint 1.77.0
 
 * Paging in Input Time Series
+
+# hint 1.76.0
+
+* Indicate Data Exploration mode in login screen
+
+# hint 1.75.1
+
+* Update review output plots to use metadata from modelCalibrate
+
 
 # hint 1.75.0
 

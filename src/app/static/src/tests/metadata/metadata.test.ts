@@ -56,7 +56,7 @@ function testGetsSAPIndicatorsMetadataForDataType(dataType: DataType) {
         })
     });
 
-    const result = metadataGetters.sapIndicatorsMetadata(metadataState, null, rootState, null);
+    const result = metadataGetters.sapIndicatorsMetadata(metadataState, null, rootState);
 
     expect(result).toStrictEqual([testIndicators[0], testIndicators[1]]);
 }
@@ -79,7 +79,7 @@ describe("Metadata ", () => {
         const metadataState = mockMetadataState(
             {plottingMetadata: null});
 
-        const result = metadataGetters.sapIndicatorsMetadata(metadataState, null, mockRootState(), null);
+        const result = metadataGetters.sapIndicatorsMetadata(metadataState, null, mockRootState());
 
         expect(result).toEqual([]);
     });
@@ -103,25 +103,9 @@ describe("Metadata ", () => {
         const result = metadataGetters.sapIndicatorsMetadata(
             mockMetadataState({plottingMetadata: testMetadata}),
             null,
-            rootState,
-            null);
+            rootState);
 
         expect(result).toStrictEqual([testIndicators[0], testIndicators[1]]);
     });
 
-    it("gets outputIndicators", () => {
-        const metadataState = mockMetadataState(
-            {
-                plottingMetadata: mockPlottingMetadataResponse({
-                    output: {
-                        choropleth: {
-                            indicators: ["TEST OUTPUT INDICATOR"] as any
-                        }
-                    }
-                })
-            });
-
-        const result = metadataGetters.outputIndicatorsMetadata(metadataState, null, {} as any, null);
-        expect(result).toStrictEqual(["TEST OUTPUT INDICATOR"]);
-    });
 });
