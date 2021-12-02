@@ -1,3 +1,7 @@
+# hint 1.77.0
+
+* validate send error report email field
+
 # hint 1.76.0
 
 * Indicate Data Exploration mode in login screen
