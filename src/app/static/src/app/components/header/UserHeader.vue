@@ -54,7 +54,7 @@
         computed: {
             helpFilename: mapStateProp<RootState, string>(null,
                 (state: RootState) => {
-                    let filename = "Naomi-basic-instructions.pdf";
+                    let filename = "Naomi-instructions-2021.pdf";
                     if (state.language == Language.fr) {
                         filename = "Naomi-instructions-de-base.pdf";
                     }
