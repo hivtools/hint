@@ -1,7 +1,7 @@
 <template>
     <modal :open="open">
         <h4 v-translate="'troubleshootingRequest'"></h4>
-        <form class="form" id="report-form" v-if="!showFeedback">
+        <form class="form was-validated" id="report-form" v-if="!showFeedback">
             <div class="form-group" v-if="projectName">
                 <label for="project" v-translate="'project'"></label>
                 <input type="text"
@@ -12,10 +12,17 @@
             </div>
             <div class="form-group" v-if="isGuest">
                 <label for="email" v-translate="'email'"></label>
-                <input type="text"
+                <input type="email"
                        id="email"
+                       :pattern="pattern.source"
+                       @input="checkValidEmail"
                        v-model="email"
-                       class="form-control"/>
+                       class="form-control is-invalid" required/>
+                <div v-if="email && !validEmail"
+                     class="invalid-feedback"
+                     id="enterValidEmail"
+                     v-translate="'enterValidEmail'">
+                </div>
             </div>
             <div class="form-group">
                 <label for="section" v-translate="'section'"></label>
@@ -44,7 +51,7 @@
                 <div class="small text-muted" v-translate="'errorDescriptionHelp'"></div>
                 <textarea id="description"
                           v-model="description"
-                          class="form-control"></textarea>
+                          class="form-control is-invalid" required></textarea>
             </div>
             <div class="form-group">
                 <label for="reproduce"
@@ -53,7 +60,7 @@
                 <div class="small text-muted" v-translate="'reproduceErrorHelp'"></div>
                 <textarea id="reproduce"
                           v-model="stepsToReproduce"
-                          class="form-control"></textarea>
+                          class="form-control is-invalid" required></textarea>
             </div>
         </form>
         <template v-else>
@@ -107,7 +114,7 @@
 </template>
 <script lang="ts">
     import Vue from "vue"
-    import {mapActionByName, mapGetterByName, mapStateProp} from "../utils";
+    import {mapActionByName, mapGetterByName, mapStateProp, validateEmail, emailRegex} from "../utils";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {ProjectsState} from "../store/projects/projects"
     import Modal from "./Modal.vue";
@@ -128,6 +135,7 @@
         cancelErrorReport: () => void
         resetData: () => void
         close: () => void
+        checkValidEmail: () => void
     }
 
     interface Computed {
@@ -141,6 +149,7 @@
         tooltipText: string,
         errorReportError: Error | null
         sendingErrorReport: boolean
+        pattern: RegExp
     }
 
     interface Props {
@@ -149,6 +158,7 @@
 
     interface Data extends ErrorReportManualDetails {
         showFeedback: boolean
+        validEmail: boolean
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -168,7 +178,8 @@
                 stepsToReproduce: "",
                 section: "",
                 email: "",
-                showFeedback: false
+                showFeedback: false,
+                validEmail: false
             }
         },
         computed: {
@@ -194,10 +205,13 @@
             projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
             steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps),
             disabled() {
-                return !this.description || !this.stepsToReproduce || (this.isGuest && !this.email)
+                return !this.description || !this.stepsToReproduce || (this.isGuest && !this.validEmail)
             },
             tooltipText() {
                 return i18next.t("allFieldsRequired", {lng: this.currentLanguage});
+            },
+            pattern() {
+                return emailRegex
             }
         },
         methods: {
@@ -224,6 +238,10 @@
             },
             close() {
                 this.$emit("close");
+            },
+            checkValidEmail() {
+                this.email = this.email.replace(/\s*/g, "")
+                this.validEmail = validateEmail(this.email)
             }
         },
         watch: {
