@@ -20,6 +20,7 @@ import {actions} from "../../../app/store/genericChart/actions";
 import {mutations} from "../../../app/store/genericChart/mutations";
 import {mockAxios} from "../../mocks";
 import GenericChartTable from "../../../app/components/genericChart/GenericChartTable.vue";
+import {Language} from "../../../app/store/translations/locales";
 
 describe("GenericChart component", () => {
 
@@ -163,6 +164,7 @@ describe("GenericChart component", () => {
 
     beforeEach(() => {
         mockAxios.reset();
+        jest.resetAllMocks();
     });
 
     const data = {
@@ -170,7 +172,8 @@ describe("GenericChart component", () => {
         availableDatasetIds: ["dataset1", "dataset2", "dataset3"]
     };
 
-    const getWrapper = (state: Partial<GenericChartState> = {}, metadataProp: GenericChartMetadataResponse = metadata, ChartPropsData = data) => {
+    const getWrapper = (
+        state: Partial<GenericChartState> = {}, metadataProp: GenericChartMetadataResponse = metadata, ChartPropsData = data) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -187,6 +190,7 @@ describe("GenericChart component", () => {
             ...ChartPropsData,
             metadata: metadataProp
         };
+
         registerTranslations(store);
         return shallowMount(GenericChart,{store, propsData});
     };
@@ -296,6 +300,9 @@ describe("GenericChart component", () => {
 
             expect(wrapper.find(ErrorAlert).exists()).toBe(false);
             expect(wrapper.find("#empty-generic-chart-data").exists()).toBe(false);
+
+            expect(wrapper.find("#page-controls").exists()).toBe(false);
+
             done();
         });
     });
@@ -480,7 +487,8 @@ describe("GenericChart component", () => {
                 subplots: {
                     columns: 2,
                     distinctColumn: "area",
-                    heightPerRow: 100
+                    heightPerRow: 100,
+                    subplotsPerPage: 99
                 },
                 chartConfig: [{
                     id: "scatter",
@@ -534,6 +542,7 @@ describe("GenericChart component", () => {
                     columns: 2,
                     distinctColumn: "area",
                     heightPerRow: 100,
+                    subplotsPerPage: 99,
                     rows: 3
                 }
             });
@@ -720,6 +729,355 @@ describe("GenericChart component", () => {
         });
     });
 
+    const pagedMetadata: GenericChartMetadataResponse = {
+        "test-chart": {
+            datasets: [
+                {
+                    id: "dataset1",
+                    label:"Dataset 1",
+                    url: "/dataset1",
+                    filters: [
+                        {id: "type", source: "data", allowMultiple: false}
+                    ],
+                }
+            ],
+            dataSelectors: {
+                dataSources: [
+                    {id: "data", type: "editable", label: "First", datasetId: "dataset1", showFilters: true, showIndicators: false},
+                ]
+            },
+            subplots: {
+                columns: 2,
+                distinctColumn: "area",
+                heightPerRow: 100,
+                subplotsPerPage: 2
+            },
+            chartConfig: [{
+                id: "scatter",
+                config: "Test Chart Config"
+            }]
+        }
+    } as any;
+    const pagedDatasets = {
+        dataset1: {
+            data: [
+                {type: "test", area:"a", year: "2020", value: 1},
+                {type: "test", area:"b", year: "2020", value: 2},
+                {type: "test", area:"c", year: "2020", value: 3},
+                {type: "test", area:"d", year: "2020", value: 4},
+                {type: "test", area:"e", year: "2020", value: 5},
+                {type: "test", area:"a", year: "2021", value: 1.1},
+                {type: "test", area:"b", year: "2021", value: 2.1},
+                {type: "test", area:"c", year: "2021", value: 3.1},
+                {type: "test", area:"d", year: "2021", value: 4.1},
+                {type: "test", area:"e", year: "2021", value: 5.1},
+                {type: "other", area:"f", year: "2020", value: 6}
+            ],
+            metadata: {
+                columns: [
+                    {
+                        id: "type",
+                        column_id: "type",
+                        label: "Type",
+                        options: [
+                            {id: "test", label: "test"},
+                            {id: "other", label: "other"}
+                        ]
+                    }
+                ],
+                defaults: {
+                    selected_filter_options: {
+                        type: [{id: "test", label: "test"}]
+                    }
+                }
+            }
+        }
+    } as any;
+
+    it("renders paging controls and first page of data when there are multiple pages", (done) => {
+        const state = {datasets: pagedDatasets};
+
+        const wrapper = getWrapper(state, pagedMetadata);
+        setTimeout(() => {
+            const store = wrapper.vm.$store;
+            const dataSources = wrapper.findAll(DataSource);
+            expect(dataSources.length).toBe(1);
+            const filters = wrapper.findAll(Filters);
+            expect(filters.length).toBe(1);
+
+            const pageControls = wrapper.find("#page-controls");
+            const previous = pageControls.find("button#previous-page");
+            expect(previous.find("chevron-left-icon-stub").attributes("size")).toBe("20");
+            expectTranslated(previous, "Previous page",
+                "Page précédente", "Página anterior", store, "aria-label");
+            expect(previous.attributes("disabled")).toBe("disabled");
+
+            const next = pageControls.find("button#next-page");
+            expect(next.find("chevron-right-icon-stub").attributes("size")).toBe("20");
+            expectTranslated(next, "Next page",
+                "Page suivante", "Próxima página", store, "aria-label");
+            expect(next.attributes("disabled")).toBeUndefined();
+
+            expectTranslated(pageControls.find("#page-number"), "Page 1 of 3",
+                "Page 1 sur 3", "Pagina 1 de 3", store);
+
+            const plotly = wrapper.find(Plotly);
+            expect(plotly.props("chartData")).toStrictEqual({
+                data: [
+                    {type: "test", area:"a", year: "2020", value: 1, page: 1},
+                    {type: "test", area:"b", year: "2020", value: 2, page: 1},
+                    {type: "test", area:"a", year: "2021", value: 1.1, page: 1},
+                    {type: "test", area:"b", year: "2021", value: 2.1 ,page: 1}
+                ]
+            });
+            expect(plotly.props("layoutData")).toStrictEqual({
+                subplots: {
+                    columns: 2,
+                    distinctColumn: "area",
+                    heightPerRow: 100,
+                    subplotsPerPage: 2,
+                    rows: 1
+                }
+            });
+
+            done();
+        });
+    });
+
+    it("next page button loads next page", (done) => {
+        const state = {datasets: pagedDatasets};
+
+        const wrapper = getWrapper(state, pagedMetadata);
+        setTimeout(() => {
+            const chartContainerEl = wrapper.find(".chart-container").element as HTMLElement;
+            chartContainerEl.scrollTop = 100;
+
+            const next = wrapper.find("#next-page");
+
+            // Move to Page 2
+            next.trigger("click");
+            const store = wrapper.vm.$store;
+            expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
+                "Page 2 sur 3", "Pagina 2 de 3", store);
+
+            expect(wrapper.find("#next-page").attributes("disabled")).toBeUndefined();
+            expect(wrapper.find("#previous-page").attributes("disabled")).toBeUndefined();
+
+            const plotly = wrapper.find(Plotly);
+            expect(plotly.props("chartData")).toStrictEqual({
+                data: [
+                    {type: "test", area:"c", year: "2020", value: 3, page: 2},
+                    {type: "test", area:"d", year: "2020", value: 4, page: 2},
+                    {type: "test", area:"c", year: "2021", value: 3.1, page: 2},
+                    {type: "test", area:"d", year: "2021", value: 4.1, page: 2}
+                ]
+            });
+            expect(chartContainerEl.scrollTop).toBe(0);
+
+            // Move to Page 3
+            next.trigger("click");
+            expectTranslated(wrapper.find("#page-number"), "Page 3 of 3",
+                "Page 3 sur 3", "Pagina 3 de 3", store);
+
+            expect(wrapper.find("#next-page").attributes("disabled")).toBe("disabled");
+            expect(wrapper.find("#previous-page").attributes("disabled")).toBeUndefined();
+
+            expect(plotly.props("chartData")).toStrictEqual({
+                data: [
+                    {type: "test", area:"e", year: "2020", value: 5, page: 3},
+                    {type: "test", area:"e", year: "2021", value: 5.1, page: 3}
+                ]
+            });
+
+            done();
+        });
+    });
+
+    it("previous page button loads previous page", (done) => {
+        const state = {datasets: pagedDatasets};
+
+        const wrapper = getWrapper(state, pagedMetadata);
+        setTimeout(() => {
+            // Move to Page 2
+            wrapper.find("#next-page").trigger("click");
+            const store = wrapper.vm.$store;
+            expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
+                "Page 2 sur 3", "Pagina 2 de 3", store);
+
+            // Move back to Page 1
+            const chartContainerEl = wrapper.find(".chart-container").element as HTMLElement;
+            chartContainerEl.scrollTop = 100;
+
+            wrapper.find("#previous-page").trigger("click");
+            expectTranslated(wrapper.find("#page-number"), "Page 1 of 3",
+                "Page 1 sur 3", "Pagina 1 de 3", store);
+
+            expect(wrapper.find("#next-page").attributes("disabled")).toBeUndefined();
+            expect(wrapper.find("#previous-page").attributes("disabled")).toBe("disabled");
+
+            expect(wrapper.find(Plotly).props("chartData")).toStrictEqual({
+                data: [
+                    {type: "test", area: "a", year: "2020", value: 1, page: 1},
+                    {type: "test", area: "b", year: "2020", value: 2, page: 1},
+                    {type: "test", area: "a", year: "2021", value: 1.1, page: 1},
+                    {type: "test", area: "b", year: "2021", value: 2.1, page: 1}
+                ]
+            });
+
+            expect(chartContainerEl.scrollTop).toBe(0);
+            done();
+        });
+    });
+
+    it("pages reset when data source changes", (done) => {
+        const secondDataset = {
+            data: [
+                {type: "test", area:"aa", value: 10},
+                {type: "test", area:"bb",value: 20},
+                {type: "test", area:"cc",value: 30},
+                {type: "other", area:"ff",value: 60}
+            ],
+            metadata: {
+                columns: [
+                    {
+                        id: "type",
+                        column_id: "type",
+                        label: "Type",
+                        options: [
+                            {id: "test", label: "test"},
+                            {id: "other", label: "other"}
+                        ]
+                    }
+                ],
+                defaults: {
+                    selected_filter_options: {
+                        type: [{id: "test", label: "test"}]
+                    }
+                }
+            }
+        } as any;
+        const datasets = {...pagedDatasets, dataset2: secondDataset};
+        const state = {datasets};
+
+        const metadata = {
+            "test-chart": {
+                ...pagedMetadata["test-chart"],
+                datasets: [
+                    ...pagedMetadata["test-chart"].datasets,
+                    {
+                        id: "dataset2",
+                        label:"Dataset 2",
+                        url: "/dataset2",
+                        filters: [
+                            {id: "type", source: "data", allowMultiple: false}
+                        ],
+                    }
+                ]
+            }
+        };
+
+        mockAxios.onGet(`/dataset2`)
+            .reply(200, mockSuccess(secondDataset));
+
+        const wrapper = getWrapper(state, metadata);
+        setTimeout(() => {
+            // Move to Page 2
+            wrapper.find("#next-page").trigger("click");
+            const store = wrapper.vm.$store;
+            expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
+                "Page 2 sur 3", "Pagina 2 de 3", store);
+
+            wrapper.findAll(DataSource).at(0).vm.$emit("update", "dataset2");
+            setTimeout(() => {
+                expect(wrapper.vm.$data.dataSourceSelections.data.datasetId).toBe("dataset2");
+
+                expectTranslated(wrapper.find("#page-number"), "Page 1 of 2",
+                    "Page 1 sur 2", "Pagina 1 de 2", store);
+
+                expect(wrapper.find("#next-page").attributes("disabled")).toBeUndefined();
+                expect(wrapper.find("#previous-page").attributes("disabled")).toBe("disabled");
+
+                const plotly = wrapper.find(Plotly);
+                expect(plotly.props("chartData")).toStrictEqual({
+                    data: [
+                        {type: "test", area:"aa", value: 10, page: 1},
+                        {type: "test", area:"bb", value: 20, page: 1}
+                    ]
+                });
+                done();
+            });
+        });
+    });
+
+    it("pages reset when selected filter options change", (done) => {
+        const state = {datasets: pagedDatasets};
+        const wrapper = getWrapper(state, pagedMetadata);
+        setTimeout(() => {
+            // Move to Page 2
+            wrapper.find("#next-page").trigger("click");
+            const store = wrapper.vm.$store;
+            expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
+                "Page 2 sur 3", "Pagina 2 de 3", store);
+
+            const dataset1Filters = wrapper.findAll(Filters).at(0);
+            const newFilterSelections = {
+                type: [{id: "other"}]
+            };
+            dataset1Filters.vm.$emit("update", newFilterSelections);
+
+            expect(wrapper.find("#page-controls").exists()).toBe(false);
+            expect((wrapper.vm as any).currentPage).toBe(1);
+            expect((wrapper.vm as any).totalPages).toBe(1);
+            const plotly = wrapper.find(Plotly);
+            expect(plotly.props("chartData")).toStrictEqual({
+                data: [
+                    {type: "other", area: "f", year: "2020", value: 6, page: 1}
+                ]
+            });
+            done();
+        });
+    });
+
+
+    it("no paging is applied when subplots not defined", (done) => {
+        const state = {datasets: pagedDatasets};
+
+        const metadataWithoutSubplots = {
+            "test-chart": {
+                ...pagedMetadata["test-chart"],
+                subplots: undefined
+            }
+        };
+        const wrapper = getWrapper(state, metadataWithoutSubplots);
+        setTimeout(() => {
+            const store = wrapper.vm.$store;
+            const dataSources = wrapper.findAll(DataSource);
+            expect(dataSources.length).toBe(1);
+            const filters = wrapper.findAll(Filters);
+            expect(filters.length).toBe(1);
+
+            expect(wrapper.find("#page-controls").exists()).toBe(false);
+
+            const plotly = wrapper.find(Plotly);
+            expect(plotly.props("chartData")).toStrictEqual({
+                data:  [
+                    {type: "test", area:"a", year: "2020", value: 1},
+                    {type: "test", area:"b", year: "2020", value: 2},
+                    {type: "test", area:"c", year: "2020", value: 3},
+                    {type: "test", area:"d", year: "2020", value: 4},
+                    {type: "test", area:"e", year: "2020", value: 5},
+                    {type: "test", area:"a", year: "2021", value: 1.1},
+                    {type: "test", area:"b", year: "2021", value: 2.1},
+                    {type: "test", area:"c", year: "2021", value: 3.1},
+                    {type: "test", area:"d", year: "2021", value: 4.1},
+                    {type: "test", area:"e", year: "2021", value: 5.1}
+                ]
+            });
+
+            done();
+        });
+    });
+
     it("displays chart description", (done) => {
         const state = {datasets};
         const wrapper = getWrapper(state);
@@ -755,4 +1113,5 @@ describe("GenericChart component", () => {
             done();
         });
     });
+
 });

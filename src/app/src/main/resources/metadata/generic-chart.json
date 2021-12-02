@@ -157,7 +157,8 @@
     "subplots": {
       "columns": 3,
       "distinctColumn": "area_name",
-      "heightPerRow": 140
+      "heightPerRow": 140,
+      "subplotsPerPage": 99
     },
     "chartConfig": [
       {

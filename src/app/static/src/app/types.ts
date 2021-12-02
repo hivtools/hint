@@ -231,6 +231,7 @@ export interface GenericChartMetadata {
         columns: number
         distinctColumn: string
         heightPerRow: number
+        subplotsPerPage: number
     },
     chartConfig: {
         id: string

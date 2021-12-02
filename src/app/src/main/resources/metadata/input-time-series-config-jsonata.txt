@@ -93,6 +93,7 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
                    ]
                },
                "xaxis"&$: {
+                   "zeroline": false,
                    "tickvals": [$firstXAxisVal, $lastXAxisVal],
                     "tickfont": {
                         "color": "grey"
