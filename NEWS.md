@@ -1,3 +1,7 @@
+# hint 1.79.0
+
+* Updating help documentation
+
 # hint 1.78.0
 
 * Paging in Input Time Series
