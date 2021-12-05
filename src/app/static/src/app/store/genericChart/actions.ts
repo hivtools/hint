@@ -4,6 +4,7 @@ import {GenericChartState} from "./genericChart";
 import {GenericChartMutation} from "./mutations";
 import {DatasetConfig, Dict, GenericChartMetadata} from "../../types";
 import {DataExplorationState} from "../dataExploration/dataExploration";
+import {freezer} from "../../utils";
 
 export interface MetadataActions {
     getGenericChartMetadata: (store: ActionContext<GenericChartState, DataExplorationState>) => void
@@ -21,6 +22,7 @@ export const actions: ActionTree<GenericChartState, DataExplorationState> & Meta
         await api<GenericChartMutation, "">(context)
             .withSuccess(GenericChartMutation.GenericChartMetadataFetched)
             .ignoreErrors()
+            .freezeResponse()
             .get(`/meta/generic-chart`);
     },
     async getDataset(context, payload) {
@@ -29,15 +31,15 @@ export const actions: ActionTree<GenericChartState, DataExplorationState> & Meta
         await api<GenericChartMutation, GenericChartMutation>(context)
             .ignoreSuccess()
             .withError(GenericChartMutation.SetError)
-            .freezeResponse()
             .get(payload.url)
             .then((response) => {
                 if (response) {
+                    const frozenData = freezer.deepFreeze(response.data);
                     commit({
                         type: GenericChartMutation.SetDataset,
                         payload: {
                             datasetId: payload.datasetId,
-                            dataset: response.data as unknown
+                            dataset: frozenData
                         }
                     });
                 }

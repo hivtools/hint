@@ -1,6 +1,7 @@
 import {mockAxios, mockFailure, mockGenericChartState, mockRootState, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/genericChart/actions";
 import {GenericChartMutation} from "../../app/store/genericChart/mutations";
+import {freezer} from "../../app/utils";
 
 describe("genericChart actions", () => {
     beforeEach(() => {
@@ -19,10 +20,13 @@ describe("genericChart actions", () => {
         mockAxios.onGet("/meta/generic-chart")
             .reply(200, mockSuccess("TEST METADATA"));
         const commit = jest.fn();
+        const deepFreeze = jest.spyOn(freezer, "deepFreeze");
         await actions.getGenericChartMetadata({commit, rootState} as any);
         expect(commit.mock.calls.length).toEqual(1);
         expect(commit.mock.calls[0][0]["type"]).toBe("GenericChartMetadataFetched");
         expect(commit.mock.calls[0][0]["payload"]).toBe("TEST METADATA");
+        expect(deepFreeze.mock.calls.length).toBe(1);
+        expect(deepFreeze.mock.calls[0][0]).toBe("TEST METADATA");
     });
 
     it("generic chart metadata action ignores errors",  async () => {
@@ -38,12 +42,15 @@ describe("genericChart actions", () => {
             .reply(200, mockSuccess("TEST DATASET"));
         const commit = jest.fn();
         const payload = {datasetId: "dataset1", url: "/dataset1"};
+        const deepFreeze = jest.spyOn(freezer, "deepFreeze");
         await actions.getDataset({commit, rootState} as any, payload);
         expect(commit.mock.calls.length).toEqual(2);
         expect(commit.mock.calls[0][0]["type"]).toBe(GenericChartMutation.SetError);
         expect(commit.mock.calls[0][0]["payload"]).toBeNull();
         expect(commit.mock.calls[1][0]["type"]).toBe(GenericChartMutation.SetDataset);
         expect(commit.mock.calls[1][0]["payload"]).toStrictEqual({dataset: "TEST DATASET", datasetId: "dataset1"});
+        expect(deepFreeze.mock.calls.length).toBe(1);
+        expect(deepFreeze.mock.calls[0][0]).toBe("TEST DATASET");
     });
 
     it("sets error on get dataset", async () => {
