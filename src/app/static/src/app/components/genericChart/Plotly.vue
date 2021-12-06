@@ -16,7 +16,8 @@
     import LoadingSpinner from "../LoadingSpinner.vue";
 
     interface Data {
-        rendering: boolean
+        rendering: boolean,
+        layoutRequired: boolean
     }
 
     interface Props {
@@ -50,7 +51,10 @@
             LoadingSpinner
         },
         data: function() {
-            return {rendering: false};
+            return {
+                rendering: false,
+                layoutRequired: false
+            };
         },
         computed: {
             inputData(){
@@ -73,12 +77,14 @@
             }
         },
         methods: {
-            drawChart() {
+            drawChart: function() {
                 this.rendering = true;
                 setTimeout(() => {
                     try {
                         const el = this.$refs.chart;
-                        Plotly.newPlot(el as HTMLElement, this.data.data as any, this.data.layout, this.data.config as any);
+                        const drawFunc = this.layoutRequired ? Plotly.newPlot : Plotly.react;
+                        this.layoutRequired = false;
+                        drawFunc(el as HTMLElement, this.data.data as any, this.data.layout, this.data.config as any);
                     }
                     finally {
                         this.rendering = false;
@@ -92,6 +98,11 @@
         watch: {
             data: function() {
                 this.drawChart();
+            },
+            layoutData: function(newVal, oldVal) {
+                if (oldVal.subplots && newVal.subplots && oldVal.subplots.rows != newVal.subplots.rows) {
+                    this.layoutRequired = true;
+                }
             }
         }
     });

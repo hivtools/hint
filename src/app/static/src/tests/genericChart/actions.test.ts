@@ -8,6 +8,7 @@ describe("genericChart actions", () => {
         // stop apiService logging to console
         console.log = jest.fn();
         mockAxios.reset();
+        jest.clearAllMocks();
     });
 
     afterEach(() => {

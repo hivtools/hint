@@ -104,9 +104,9 @@
     import GenericChartTable from "./GenericChartTable.vue";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
-    import VueWorker from "vue-worker";
+    //import VueWorker from "vue-worker";
 
-    Vue.use(VueWorker);
+    //Vue.use(VueWorker);
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections
@@ -358,12 +358,8 @@
                 }
             },
             updateSelectedFilterOptions(dataSourceId: string, options: Dict<FilterOption[]> | null) {
-                (this as any).$worker.run(() => 'this.$worker run 1: Function in other thread')
-                    .then(() => {
-                        this.currentPage = 1;
-                        this.dataSourceSelections[dataSourceId].selectedFilterOptions = options;
-                    })
-                    .catch(console.error)
+                this.currentPage = 1;
+                this.dataSourceSelections[dataSourceId].selectedFilterOptions = options;
             },
             addPageNumbersToData(data: unknown[]): unknown[] {
                 const subplots = this.chartMetadata.subplots;
