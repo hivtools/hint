@@ -30,6 +30,7 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
         state.calibratePlot = {...state.calibratePlot, ...action.payload};
     },
     updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
+        console.log("payload", action.payload)
         const { xAxisId, selectedFilterOptions } = action.payload
         if (xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]){
             
