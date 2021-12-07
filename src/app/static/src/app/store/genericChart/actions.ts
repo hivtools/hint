@@ -31,15 +31,15 @@ export const actions: ActionTree<GenericChartState, DataExplorationState> & Meta
         await api<GenericChartMutation, GenericChartMutation>(context)
             .ignoreSuccess()
             .withError(GenericChartMutation.SetError)
+            .freezeResponse()
             .get(payload.url)
             .then((response) => {
                 if (response) {
-                    const frozenData = freezer.deepFreeze(response.data);
                     commit({
                         type: GenericChartMutation.SetDataset,
                         payload: {
                             datasetId: payload.datasetId,
-                            dataset: frozenData
+                            dataset: response.data
                         }
                     });
                 }
