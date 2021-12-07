@@ -14,6 +14,7 @@ describe("Plotting selections mutations", () => {
                 testFilter: []
             }
         };
+        console.log("this is the barchart teststate", testState.barchart)
         mutations.updateBarchartSelections(testState, {payload: newBarchartSelections});
 
         expect(testState.barchart).toStrictEqual({
