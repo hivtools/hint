@@ -1,3 +1,7 @@
+# hint 1.80.0
+
+* Add data exploration header
+
 # hint 1.79.0
 
 * Updating help documentation
