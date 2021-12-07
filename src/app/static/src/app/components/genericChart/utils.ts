@@ -38,8 +38,8 @@ export function numeralJsToD3format(numeralJsFormat: string) {
         return "";
     }
 
-    const decPl = match[1] === null ? 0 : match[1].length - 1;
-    const percent = match[2] !== null;
+    const decPl = match[1] == undefined ? 0 : match[1].length - 1;
+    const percent = match[2] !== undefined;
     const suffix = percent ? "%" : "f";
     return `.${decPl}${suffix}`;
 }

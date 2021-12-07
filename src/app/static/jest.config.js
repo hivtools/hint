@@ -22,6 +22,9 @@ module.exports = {
         "^.+\\.ts?$": "ts-jest",
         "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
     },
+    "moduleNameMapper": {
+        'd3-format': '<rootDir>/node_modules/d3-format/dist/d3-format.min.js',
+    },
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
     "coveragePathIgnorePatterns": [
