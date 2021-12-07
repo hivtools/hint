@@ -103,12 +103,12 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     private _handleAxiosResponse(promise: Promise<AxiosResponse>) {
         return promise.then((axiosResponse: AxiosResponse) => {
             const success = axiosResponse && axiosResponse.data;
-
-            const data = this._freezeResponse ? freezer.deepFreeze(success.data) : success.data;
+            const finalResponse = this._freezeResponse ? freezer.deepFreeze(success) : success;
+            const data = finalResponse.data;
             if (this._onSuccess) {
                 this._onSuccess(data);
             }
-            return data;
+            return finalResponse;
         }).catch((e: AxiosError) => {
             return this._handleError(e)
         });

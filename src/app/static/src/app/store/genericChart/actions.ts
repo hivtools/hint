@@ -3,8 +3,7 @@ import {api} from "../../apiService";
 import {GenericChartState} from "./genericChart";
 import {GenericChartMutation} from "./mutations";
 import {DatasetConfig, Dict, GenericChartMetadata} from "../../types";
-import {DataExplorationState} from "../dataExploration/dataExploration";
-import {freezer} from "../../utils";
+import {DataExplorationState} from "../dataExploration/dataExploration";;
 
 export interface MetadataActions {
     getGenericChartMetadata: (store: ActionContext<GenericChartState, DataExplorationState>) => void
