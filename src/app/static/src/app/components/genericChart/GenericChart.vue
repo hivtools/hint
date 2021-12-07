@@ -104,9 +104,6 @@
     import GenericChartTable from "./GenericChartTable.vue";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
-    //import VueWorker from "vue-worker";
-
-    //Vue.use(VueWorker);
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections
