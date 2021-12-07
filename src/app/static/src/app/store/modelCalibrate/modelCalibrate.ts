@@ -4,7 +4,7 @@ import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {mutations} from "./mutations";
 import {localStorageManager} from "../../localStorageManager";
 import {actions} from "./actions";
-import {VersionInfo, Error, CalibrateStatusResponse} from "../../generated";
+import {VersionInfo, Error, CalibrateStatusResponse, CalibrateResultResponse} from "../../generated";
 import {BarchartIndicator, Filter} from "../../types";
 import {BarchartSelections, PlottingSelectionsState} from "../plottingSelections/plottingSelections";
 
@@ -19,6 +19,7 @@ export interface ModelCalibrateState extends ReadyState, WarningsState {
     complete: boolean
     generatingCalibrationPlot: boolean
     calibratePlotResult: any,
+    result: CalibrateResultResponse | null
     version: VersionInfo
     error: Error | null
 }
@@ -36,6 +37,7 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
         complete: false,
         generatingCalibrationPlot: false,
         calibratePlotResult: null,
+        result: null,
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
         error: null,
         warnings: []

@@ -2,8 +2,10 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import {
-    mockBaselineState, mockCalibrateResultResponse,
-    mockModelRunState, mockShapeResponse,
+    mockBaselineState,
+    mockCalibrateResultResponse,
+    mockModelCalibrateState,
+    mockShapeResponse,
 } from "../../mocks";
 import {mutations as modelOutputMutations} from "../../../app/store/modelOutput/mutations";
 import {mutations as plottingSelectionMutations} from "../../../app/store/plottingSelections/mutations";
@@ -37,11 +39,13 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                     })
                 })
             },
-            modelRun: {
+            modelCalibrate: {
                 namespaced: true,
-                state: mockModelRunState({
-                    result: mockCalibrateResultResponse({data: ["TEST DATA"] as any})
-                })
+                state: mockModelCalibrateState(
+                    {
+                        result: mockCalibrateResultResponse({data: ["TEST DATA"] as any})
+                    }
+                )
             },
             modelOutput: {
                 namespaced: true,
