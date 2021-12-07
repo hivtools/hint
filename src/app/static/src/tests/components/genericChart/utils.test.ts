@@ -1,4 +1,9 @@
-import {filterData, genericChartColumnsToFilters} from "../../../app/components/genericChart/utils";
+import {
+    filterData,
+    genericChartColumnsToFilters,
+    numeralJsToD3format
+} from "../../../app/components/genericChart/utils";
+//import {format} from "d3-format";
 
 describe("filterData", () => {
     const data = [
@@ -116,5 +121,13 @@ describe("genericChartColumnsToFilters", () => {
                 allowMultiple: true
             }
         ]);
+    });
+
+    describe("numeralJSToD3Format", () => {
+        it("converts numeric formats as expected", () => {
+            expect(numeralJsToD3format("0")).toBe(".0f");
+            expect(numeralJsToD3format("0.0")).toBe(".1f");
+            expect(numeralJsToD3format("0.00")).toBe(".2f");
+        });
     });
 });

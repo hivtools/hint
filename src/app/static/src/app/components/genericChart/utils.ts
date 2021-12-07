@@ -26,3 +26,20 @@ export function genericChartColumnsToFilters(columns: GenericChartColumn[], filt
         }
     });
 }
+
+export function numeralJsToD3format(numeralJsFormat: string) {
+    // Convert hintr metadata format (which are numeralJs style) to d3 format to be used by Plotly
+    // We currently support only numeric and percentage formats, and will return empty string for any other
+    // formats received, for default formatting in Plotly.
+    const regex = /^0(\.0+)?(%)?$/; //This will always return three matches
+
+    const match = numeralJsFormat.match(regex);
+    if (match === null) {
+        return "";
+    }
+
+    const decPl = match[1] === null ? 0 : match[1].length - 1;
+    const percent = match[2] !== null;
+    const suffix = percent ? "%" : "f";
+    return `.${decPl}${suffix}`;
+}
