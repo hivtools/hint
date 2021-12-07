@@ -1,3 +1,44 @@
+# hint 1.80.0
+
+* Add data exploration header
+
+# hint 1.79.0
+
+* Updating help documentation
+
+# hint 1.78.0
+
+* Paging in Input Time Series
+
+# hint 1.77.0
+
+* validate send error report email field
+
+# hint 1.76.0
+
+* Indicate Data Exploration mode in login screen
+
+# hint 1.75.1
+
+* Update review output plots to use metadata from modelCalibrate
+
+
+# hint 1.75.0
+
+* Show description for Generic Chart
+
+# hint 1.74.1
+
+* Remove calibration plot when user changes calibration options
+
+# hint 1.74.0
+
+* Add navigation buttons to bottom of every page
+
+# hint 1.73.2
+
+* When importing from ADR remove all datasets currently uploaded
+
 # hint 1.73.1
 
 * fix issues with displaying Input Time Series for DRC data

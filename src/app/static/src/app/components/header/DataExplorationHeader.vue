@@ -2,26 +2,23 @@
     <header class="mb-5">
         <nav class="navbar navbar-dark bg-secondary">
             <div class="container-fluid">
-                <div class="navbar-header">
+                <div class="navbar-header-secondary">
                     {{ title }}
                 </div>
-                <router-link id="projects-link" v-if="!isGuest" to="/projects" class="ml-2 pr-2 border-right"
-                             v-translate="'projects'"
-                             style="flex:none"></router-link>
-                <file-menu :title="title"></file-menu>
+                <div style="flex: 1 1 auto;" class="ml-2"><a href="/" v-translate="'runModel'"></a></div>
                 <span v-if="!isGuest" class="pr-2 mr-2 border-right text-white">
                     <span v-translate="'loggedInAs'"></span> {{ user }}
                 </span>
                 <hintr-version-menu class="pr-2 mr-2 border-right"/>
-                <online-support-menu class="pr-2 mr-2 border-right"/>
                 <a :href="'public/resources/' + helpFilename"
+                   id="helpFile"
                    target="_blank"
                    class="pr-2 mr-2 border-right"
-                   v-translate="'help'">
+                   v-translate="'dataExplorationHelp'">
                 </a>
-                <a v-if="!isGuest" href="/logout" class="pr-2 mr-2 border-right" v-translate="'logout'">
+                <a v-if="!isGuest" :href="'/logout'" class="pr-2 mr-2 border-right" v-translate="'logout'">
                 </a>
-                <a v-if="isGuest" href="/login" class="pr-2 mr-2 border-right" v-translate="'logIn'">
+                <a v-if="isGuest" :href="'/login?redirectTo=explore'" class="pr-2 mr-2 border-right" v-translate="'logIn'">
                 </a>
                 <language-menu></language-menu>
             </div>
@@ -32,13 +29,11 @@
 
     import Vue from "vue";
     import {mapGetters} from 'vuex';
-    import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";
     import {mapStateProp} from "../../utils";
-    import {RootState} from "../../root";
     import HintrVersionMenu from "./HintrVersionMenu.vue";
-    import OnlineSupportMenu from "./OnlineSupportMenu.vue";
+    import {DataExplorationState} from "../../store/dataExploration/dataExploration";
 
     interface Props {
         title: string,
@@ -48,11 +43,12 @@
     interface Computed {
         helpFilename: string
     }
+
     export default Vue.extend<unknown, unknown, Computed, Props>({
         computed: {
-            helpFilename: mapStateProp<RootState, string>(null,
-                (state: RootState) => {
-                    let filename = "Naomi-Help-Guide.pdf";
+            helpFilename: mapStateProp<DataExplorationState, string>(null,
+                (state: DataExplorationState) => {
+                    let filename = "Naomi-basic-instructions.pdf";
                     if (state.language == Language.fr) {
                         filename = "Naomi-instructions-de-base.pdf";
                     }
@@ -65,10 +61,8 @@
             user: String
         },
         components: {
-            FileMenu,
             LanguageMenu,
-            HintrVersionMenu,
-            OnlineSupportMenu
+            HintrVersionMenu
         }
     })
 </script>

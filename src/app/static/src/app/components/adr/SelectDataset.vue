@@ -129,6 +129,7 @@
         importSurvey: (url: string) => Promise<void>;
         importProgram: (url: string) => Promise<void>;
         importANC: (url: string) => Promise<void>;
+        deleteBaselineFiles: () => Promise<void>;
         refresh: () => void;
         refreshDatasetMetadata: () => void;
         markResourcesUpdated: () => void;
@@ -158,6 +159,8 @@
         currentLanguage: Language;
         select: string;
         disableImport: boolean;
+        hasPjnzFile: boolean;
+        hasPopulationFile: boolean;
     }
 
     interface Data {
@@ -206,6 +209,14 @@
             hasShapeFile: mapStateProp<BaselineState, boolean>(
                 "baseline",
                 (state: BaselineState) => !!state.shape
+            ),
+            hasPopulationFile: mapStateProp<BaselineState, boolean>(
+                "baseline",
+                (state: BaselineState) => !!state.population
+            ),
+            hasPjnzFile: mapStateProp<BaselineState, boolean>(
+                "baseline",
+                (state: BaselineState) => !!state.pjnz
             ),
             selectedDataset: mapStateProp<BaselineState, Dataset | null>(
                 "baseline",
@@ -301,6 +312,7 @@
             importPJNZ: mapActionByName("baseline", "importPJNZ"),
             importShape: mapActionByName("baseline", "importShape"),
             importPopulation: mapActionByName("baseline", "importPopulation"),
+            deleteBaselineFiles: mapActionByName("baseline", "deleteAll"),
             importSurvey: mapActionByName("surveyAndProgram", "importSurvey"),
             importProgram: mapActionByName("surveyAndProgram", "importProgram"),
             importANC: mapActionByName("surveyAndProgram", "importANC"),
@@ -308,6 +320,11 @@
                 this.stopPolling();
 
                 this.loading = true;
+
+                if (this.hasShapeFile || this.hasPopulationFile || this.hasPjnzFile) {
+                    await this.deleteBaselineFiles()
+                }
+
                 await this.getDataset({id: this.newDatasetId!, release: this.newDatasetRelease});
 
                 const {

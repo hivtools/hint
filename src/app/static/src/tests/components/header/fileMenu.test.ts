@@ -7,7 +7,7 @@ import {
     mockError,
     mockFile,
     mockLoadState,
-    mockMetadataState,
+    mockMetadataState, mockModelCalibrateState,
     mockModelRunState,
     mockPJNZResponse,
     mockPopulationResponse,
@@ -98,7 +98,6 @@ describe("File menu", () => {
                 propsData: {title: "naomi"},
                 store
             });
-
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
         let link = wrapper.findAll(".dropdown-item").at(0);
@@ -115,6 +114,7 @@ describe("File menu", () => {
             state: {
                 baseline: {selectedDataset: null, selectedRelease: null},
                 modelRun: mockModelRunState(),
+                modelCalibrate: {result: null},
                 metadata: mockMetadataState(),
                 surveyAndProgram: {selectedDataType: null},
                 language: Language.en
@@ -130,12 +130,11 @@ describe("File menu", () => {
         });
 
         const actualBlob = (mockCreateObjectUrl as jest.Mock).mock.calls[0][0];
-
         const reader = new FileReader();
         reader.addEventListener('loadend', function () {
             const text = reader.result as string;
             const result = JSON.parse(text)[1];
-            expect(result).toEqual(expectedJson);
+            expect(result).toStrictEqual(expectedJson);
             done();
         });
 

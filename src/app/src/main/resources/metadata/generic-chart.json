@@ -157,12 +157,14 @@
     "subplots": {
       "columns": 3,
       "distinctColumn": "area_name",
-      "heightPerRow": 140
+      "heightPerRow": 140,
+      "subplotsPerPage": 99
     },
     "chartConfig": [
       {
         "id": "scatter",
-        "label": "Scatter"
+        "label": "Scatter",
+        "description": "inputTimeSeriesDescription"
       }
     ]
   }

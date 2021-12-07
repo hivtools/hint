@@ -15,13 +15,17 @@
                                 @update="updateSelectedFilterOptions(ds.config.id, $event)">
                     </filters>
                 </div>
+                <div id="chart-description"
+                     v-if="chartConfigValues.description"
+                     v-translate="chartConfigValues.description"
+                     class="text-muted mt-4"></div>
             </div>
             <div class="col-9" style="position: relative;">
-                <div class="chart-container" :style="{height: chartHeight}">
+                <div class="chart-container" ref="chartContainer" :style="{height: chartHeight}">
                     <plotly class="chart"
                             v-if="!this.chartDataIsEmpty"
                            :chart-metadata="chartConfigValues.chartConfig"
-                           :chart-data="chartData"
+                           :chart-data="chartDataPage"
                            :layout-data="chartConfigValues.layoutData"
                            :style="{height: chartConfigValues.scrollHeight}"></plotly>
                     <div v-else class="mt-5" id="empty-generic-chart-data">
@@ -31,6 +35,28 @@
                             </span>
                          </div>
                      </div>
+                </div>
+                <div v-if="totalPages > 1" id="page-controls" class="text-center mt-2">
+                    <button id="previous-page"
+                            class="btn btn-sm mr-2"
+                            :class="prevPageEnabled ? 'btn-red' : 'btn-secondary'"
+                            v-translate:aria-label="'previousPage'"
+                            :disabled="!prevPageEnabled"
+                            @click="currentPage--">
+                        <chevron-left-icon size="20"></chevron-left-icon>
+                    </button>
+                    <span id="page-number">
+                        {{pageNumberText}}
+                    </span>
+                    <button id="next-page"
+                            class="btn btn-sm ml-2"
+                            :class="nextPageEnabled ? 'btn-red' : 'btn-secondary'"
+                            v-translate:aria-label="'nextPage'"
+                            :disabled="!nextPageEnabled"
+                            @click="currentPage++">
+                        <chevron-right-icon size="20"></chevron-right-icon>
+                    </button>
+                    <hr/>
                 </div>
                 <div v-for="dataSource in chartConfigValues.dataSourceConfigValues.filter(ds => ds.tableConfig)"
                      :key="dataSource.config.id">
@@ -55,7 +81,9 @@
 </template>
 
 <script lang="ts">
+    import i18next from "i18next";
     import Vue from "vue";
+    import {ChevronLeftIcon, ChevronRightIcon} from "vue-feather-icons";
     import {
         DataSourceConfig,
         Dict, DisplayFilter, GenericChartColumn,
@@ -68,12 +96,14 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {mapActionByName, mapStateProp} from "../../utils";
-    import {genericChart, GenericChartState} from "../../store/genericChart/genericChart";
+    import {GenericChartState} from "../../store/genericChart/genericChart";
     import {getDatasetPayload} from "../../store/genericChart/actions";
     import {FilterOption} from "../../generated";
     import Plotly from "./Plotly.vue";
     import {filterData, genericChartColumnsToFilters} from "./utils";
     import GenericChartTable from "./GenericChartTable.vue";
+    import {Language} from "../../store/translations/locales";
+    import {RootState} from "../../root";
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections
@@ -89,6 +119,7 @@
         layoutData: Dict<unknown>
         scrollHeight: string
         chartConfig: string
+        description?: string
     }
 
     interface DataSourceSelections {
@@ -98,6 +129,9 @@
 
     interface Data {
         dataSourceSelections:  Dict<DataSourceSelections>
+        currentPage: number
+        totalPages: number
+        finalPagePlotCount: number
     }
 
     interface Props {
@@ -108,13 +142,18 @@
     }
 
     interface Computed {
+        currentLanguage: Language
         datasets: Record<string, GenericChartDataset>
         error: Error | null
         chartMetadata: GenericChartMetadata
         chartConfigValues: ChartConfigValues
         chartData: Dict<unknown[]> | null
+        chartDataPage: Dict<unknown[]> | null
         chartDataIsEmpty: boolean
         filters: Dict<DisplayFilter[]>
+        pageNumberText: string
+        prevPageEnabled: boolean
+        nextPageEnabled: boolean
     }
 
     interface Methods {
@@ -123,6 +162,7 @@
         setDataSourceDefaultFilterSelections: (dataSourceId: string, datasetId: string) => void,
         updateDataSource: (dataSourceId: string, datasetId: string) => void,
         updateSelectedFilterOptions: (dataSourceId: string, options: Dict<FilterOption[]> | null) => void
+        addPageNumbersToData: (data: unknown[]) => unknown[]
     }
 
     const namespace = "genericChart";
@@ -136,6 +176,8 @@
             availableDatasetIds: Array
         },
         components: {
+            ChevronLeftIcon,
+            ChevronRightIcon,
             DataSource,
             Filters,
             Plotly,
@@ -155,10 +197,16 @@
                 }), {});
 
             return {
-                dataSourceSelections
+                dataSourceSelections,
+                currentPage: 1,
+                totalPages: 1,
+                finalPagePlotCount: 0
             }
         },
         computed: {
+            currentLanguage: mapStateProp<RootState, Language>(null,
+                (state: RootState) => state.language
+            ),
             datasets:  mapStateProp<GenericChartState, Record<string, GenericChartDataset>>(namespace,
                 (state: GenericChartState) => state.datasets),
             error: mapStateProp<GenericChartState, Error | null>(namespace,
@@ -205,9 +253,8 @@
                 const layoutData = {} as Dict<unknown>;
                 let scrollHeight = "100%";
                 const subplots = this.chartMetadata.subplots;
-                if (subplots && this.chartData) {
-                    const distinctAreas = new Set(this.chartData["data"].map((row: any) => row[subplots.distinctColumn]));
-                    const numberOfPlots = distinctAreas.size;
+                if (subplots) {
+                    const numberOfPlots = (this.currentPage === this.totalPages) ? this.finalPagePlotCount : subplots!.subplotsPerPage;
                     const rows = Math.ceil(numberOfPlots / subplots.columns);
                     layoutData.subplots = {
                         ...subplots,
@@ -220,12 +267,14 @@
                 // The metadata supports multiple chart types per chart e.g Scatter and Bar, but for now we only need to
                 // support one chart type, so here we select the first config in the array
                 const chartConfig = this.chartMetadata.chartConfig[0].config;
+                const description = this.chartMetadata.chartConfig[0].description;
 
                 return {
                     dataSourceConfigValues,
                     layoutData,
                     scrollHeight,
-                    chartConfig
+                    chartConfig,
+                    description
                 };
             },
             chartData() {
@@ -246,12 +295,39 @@
 
                     result[dataSourceId] = filterData(unfilteredData, filters, selectedFilterOptions);
                 }
-                return result;
+
+                if (result["data"]) {
+                    const dataWithPages = this.addPageNumbersToData(result["data"])
+                    return {...result, data: dataWithPages};
+                } else {
+                    return result;
+                }
             },
             chartDataIsEmpty() {
                 return !this.chartData ||
                     !Object.values(this.chartData).some(e => e.length);
 
+            },
+            chartDataPage() {
+                if (this.chartData && this.chartMetadata.subplots) {
+                    const data = this.chartData["data"].filter((row: any) => row["page"] == this.currentPage);
+                    return {...this.chartData, data}
+                } else {
+                    return this.chartData;
+                }
+            },
+            pageNumberText() {
+                return i18next.t("pageNumber", {
+                    currentPage: this.currentPage,
+                    totalPages: this.totalPages,
+                    lng: this.currentLanguage,
+                });
+            },
+            prevPageEnabled() {
+                return this.currentPage > 1;
+            },
+            nextPageEnabled() {
+                return this.totalPages > this.currentPage;
             }
         },
         methods: {
@@ -264,6 +340,7 @@
             },
             async updateDataSource(dataSourceId: string, datasetId: string) {
                 //clear current datasource filter selections while we fetch & show spinner
+                this.currentPage = 1;
                 this.updateSelectedFilterOptions(dataSourceId, null);
                 await this.ensureDataset(datasetId);
                 this.setDataSourceDefaultFilterSelections(dataSourceId, datasetId);
@@ -278,7 +355,43 @@
                 }
             },
             updateSelectedFilterOptions(dataSourceId: string, options: Dict<FilterOption[]> | null) {
+                this.currentPage = 1;
                 this.dataSourceSelections[dataSourceId].selectedFilterOptions = options;
+            },
+            addPageNumbersToData(data: unknown[]): unknown[] {
+                const subplots = this.chartMetadata.subplots;
+                if (subplots) {
+                    let pagePlotCount = 0;
+                    let pageNum = 1;
+                    const distinctValuePageNums : Dict<number> = {};
+                    const subplotsPerPage = subplots.subplotsPerPage;
+                    const dataWithPages =  data.map((row: any) => {
+                        const distinctVal = row[subplots.distinctColumn].toString();
+                        if (!Object.keys(distinctValuePageNums).includes(distinctVal)) {
+                            pagePlotCount++;
+                            if (pagePlotCount === subplotsPerPage + 1) {
+                                pagePlotCount = 1;
+                                pageNum++;
+                            }
+                            distinctValuePageNums[distinctVal] = pageNum;
+                            return {...row, page: pageNum};
+                        } else {
+                            return {...row, page: distinctValuePageNums[distinctVal]};
+                        }
+                    });
+                    this.finalPagePlotCount = pagePlotCount;
+                    this.totalPages = pageNum;
+                    return dataWithPages;
+                } else {
+                    return data;
+                }
+            }
+        },
+        watch: {
+            currentPage() {
+                if (this.$refs.chartContainer) {
+                    (this.$refs.chartContainer as HTMLElement).scrollTop = 0;
+                }
             }
         },
         async mounted() {
