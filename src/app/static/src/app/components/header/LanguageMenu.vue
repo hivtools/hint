@@ -1,15 +1,7 @@
 <template>
-    <drop-down :text="currentLanguage" :right="true" style="flex: none">
-        <a class="dropdown-item" href="#" v-on:mousedown="() => changeLanguage('en')">
-            EN
-        </a>
-        <a class="dropdown-item" href="#" v-on:mousedown="() => changeLanguage('fr')">
-            FR
-        </a>
-        <a class="dropdown-item" href="#" v-on:mousedown="() => changeLanguage('pt')">
-            PT
-        </a>
-    </drop-down>
+    <language-menu-view :change-language="changeLanguage"
+                        :current-language="currentLanguage">
+    </language-menu-view>
 </template>
 <script lang="ts">
 
@@ -17,6 +9,7 @@
     import {mapActionByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import DropDown from "./DropDown.vue";
+    import LanguageMenuView from "./LanguageMenuView.vue";
 
     interface Methods {
         changeLanguage: (lang: string) => void
@@ -35,7 +28,8 @@
             changeLanguage: mapActionByName<File>(null, "changeLanguage")
         },
         components: {
-            DropDown
+            DropDown,
+            LanguageMenuView
         }
     })
 </script>

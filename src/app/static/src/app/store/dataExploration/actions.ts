@@ -3,7 +3,6 @@ import {ActionTree} from "vuex";
 import {DataExplorationState} from "./dataExploration";
 import {LanguageMutation} from "../language/mutations";
 import {changeLanguage} from "../language/actions";
-import {RootState} from "../../root";
 
 export const actions: ActionTree<DataExplorationState, DataExplorationState> & LanguageActions<DataExplorationState> = {
 
@@ -22,10 +21,6 @@ export const actions: ActionTree<DataExplorationState, DataExplorationState> & L
 
         if (rootState.baseline?.iso3) {
             actions.push(dispatch("metadata/getPlottingMetadata", rootState.baseline.iso3));
-        }
-
-        if (rootState.modelCalibrate.status.done) {
-            actions.push(dispatch("modelCalibrate/getResult"));
         }
 
         if (Object.keys(rootState.genericChart.datasets).length > 0) {
