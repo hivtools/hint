@@ -88,7 +88,9 @@
                    const columnId = columnConfig.data.hierarchyColumn!;
                    const pathsDict = {};
                    const column = this.columns.find((column) => column.id == columnId)!;
-                   addPathsToDict(column.values as any, "", pathsDict);
+                   // Deal with both array or object as top-level values type
+                   const values = Array.isArray(column.values) ? column.values : [column.values];
+                   values.forEach((value) => addPathsToDict(value, "", pathsDict));
                    result[columnId] = pathsDict;
                });
                return result;
