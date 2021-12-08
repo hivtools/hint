@@ -48,11 +48,10 @@
         computed: {
             helpFilename: mapStateProp<DataExplorationState, string>(null,
                 (state: DataExplorationState) => {
-                    let filename = HelpFile.english;
                     if (state.language == Language.fr) {
-                        filename = HelpFile.french;
+                        return HelpFile.french;
                     }
-                    return filename;
+                    return HelpFile.english;
                 }),
             ...mapGetters(["isGuest"])
         },
