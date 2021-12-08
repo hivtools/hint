@@ -1,8 +1,6 @@
 import {api} from "../app/apiService";
 import {mockAxios, mockError, mockFailure, mockRootState, mockSuccess} from "./mocks";
 import {freezer} from '../app/utils';
-import {Language} from "../app/store/translations/locales";
-import registerTranslations from "../app/store/translations/registerTranslations";
 
 const rootState = mockRootState();
 
@@ -17,6 +15,7 @@ describe("ApiService", () => {
     afterEach(() => {
         (console.log as jest.Mock).mockClear();
         (console.warn as jest.Mock).mockClear();
+        jest.clearAllMocks();
     });
 
     it("console logs error", async () => {
@@ -230,8 +229,9 @@ describe("ApiService", () => {
     it("deep freezes the response object if requested", async () => {
 
         const fakeData = {name: "d1"};
+        const mockResponse = mockSuccess(fakeData);
         mockAxios.onGet(`/baseline/`)
-            .reply(200, mockSuccess(fakeData));
+            .reply(200, mockResponse);
 
         const spy = jest.spyOn(freezer, "deepFreeze");
 
@@ -249,7 +249,7 @@ describe("ApiService", () => {
 
         expect(committedType).toBe("TEST_TYPE");
         expect(Object.isFrozen(committedPayload)).toBe(true);
-        expect(spy.mock.calls[0][0]).toStrictEqual(fakeData);
+        expect(spy).toHaveBeenCalledWith(mockResponse);
     });
 
     it("does not deep freeze the response object if not requested", async () => {
@@ -273,7 +273,7 @@ describe("ApiService", () => {
 
         expect(committedType).toBe("TEST_TYPE");
         expect(Object.isFrozen(committedPayload)).toBe(false);
-        expect(spy.mock.calls[0][0]).toStrictEqual(fakeData);
+        expect(spy).not.toHaveBeenCalled();
     });
 
     it("throws error if API response is null", async () => {
