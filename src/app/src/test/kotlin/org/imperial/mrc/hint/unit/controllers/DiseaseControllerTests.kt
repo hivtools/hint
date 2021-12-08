@@ -12,14 +12,16 @@ import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
+import javax.servlet.http.HttpServletRequest
 
 class DiseaseControllerTests : HintrControllerTests()
 {
 
     override fun getSut(mockFileManager: FileManager, mockAPIClient: HintrAPIClient,
-                        mockSession: Session, mockVersionRepository: VersionRepository): HintrController
+                        mockSession: Session, mockVersionRepository: VersionRepository,
+                        mockRequest: HttpServletRequest): HintrController
     {
-        return DiseaseController(mockFileManager, mockAPIClient, mockSession, mockVersionRepository)
+        return DiseaseController(mockFileManager, mockAPIClient, mockSession, mockVersionRepository, mockRequest)
     }
 
     @Test
@@ -75,7 +77,7 @@ class DiseaseControllerTests : HintrControllerTests()
     {
 
         val mockApiClient = getMockAPIClient(FileType.Survey)
-        val sut = DiseaseController(mock(), mockApiClient, mock(), mock())
+        val sut = DiseaseController(mock(), mockApiClient, mock(), mock(), mock())
 
         TranslationAssert.assertThatThrownBy { sut.uploadSurvey(mockFile) }
                 .isInstanceOf(HintException::class.java)
