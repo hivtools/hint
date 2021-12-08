@@ -8,7 +8,6 @@
     import Vue from "vue";
     import {mapActionByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
-    import DropDown from "./DropDown.vue";
     import LanguageMenuView from "./LanguageMenuView.vue";
 
     interface Methods {
@@ -28,7 +27,6 @@
             changeLanguage: mapActionByName<File>(null, "changeLanguage")
         },
         components: {
-            DropDown,
             LanguageMenuView
         }
     })

@@ -16,12 +16,7 @@
     import DropDown from "./DropDown.vue";
     import Vue from "vue";
 
-    interface Props {
-        currentLanguage: string,
-        changeLanguage: Function
-    }
-
-    export default Vue.extend<unknown, unknown, unknown, Props>({
+    export default Vue.extend({
         name: "LanguageMenuView",
         props: {
             currentLanguage:  String,
