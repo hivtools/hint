@@ -15,8 +15,6 @@ import {
     mockSuccess
 } from "../mocks";
 import {Language} from "../../app/store/translations/locales";
-import {LanguageMutation} from "../../app/store/language/mutations";
-import Mock = jest.Mock;
 import {currentHintVersion} from "../../app/hintVersion";
 import {expectChangeLanguageMutations} from "../testHelpers";
 
