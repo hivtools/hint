@@ -1,18 +1,18 @@
 import {mount, shallowMount} from "@vue/test-utils";
 import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
 import Vuex from "vuex";
-import {emptyState} from "../../../app/root";
-import {actions} from "../../../app/store/root/actions";
-import {mutations} from "../../../app/store/root/mutations";
+import {actions} from "../../../app/store/dataExploration/actions";
+import {mutations} from "../../../app/store/dataExploration/mutations";
 import {Language} from "../../../app/store/translations/locales";
 import DropDown from "../../../app/components/header/DropDown.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {mockDataExplorationState} from "../../mocks";
 
 describe("Language menu", () => {
 
     const createStore = () => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: mockDataExplorationState(),
             actions: actions,
             mutations: mutations
         });
@@ -25,10 +25,7 @@ describe("Language menu", () => {
         const wrapper = shallowMount(LanguageMenu, {
             store
         });
-
-        expect(wrapper.find("language-menu-view-stub").exists()).toBe(true)
-        expect(wrapper.find("language-menu-view-stub").attributes("currentlanguage")).toBe("EN")
-        expect(wrapper.find("language-menu-view-stub").attributes("changelanguage")).toBeTruthy()
+        expect(wrapper.find(DropDown).props("text")).toBe("EN");
     });
 
     it("changes language to French", (done) => {

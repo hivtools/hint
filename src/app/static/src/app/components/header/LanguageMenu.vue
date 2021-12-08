@@ -1,14 +1,22 @@
 <template>
-    <language-menu-view :change-language="changeLanguage"
-                        :current-language="currentLanguage">
-    </language-menu-view>
+    <drop-down :text="currentLanguage" :right="true" style="flex: none">
+        <a class="dropdown-item" href="#" v-on:mousedown="() => changeLanguage('en')">
+            EN
+        </a>
+        <a class="dropdown-item" href="#" v-on:mousedown="() => changeLanguage('fr')">
+            FR
+        </a>
+        <a class="dropdown-item" href="#" v-on:mousedown="() => changeLanguage('pt')">
+            PT
+        </a>
+    </drop-down>
 </template>
 <script lang="ts">
 
     import Vue from "vue";
     import {mapActionByName, mapStateProp} from "../../utils";
-    import {RootState} from "../../root";
-    import LanguageMenuView from "./LanguageMenuView.vue";
+    import DropDown from "./DropDown.vue";
+    import {DataExplorationState} from "../../store/dataExploration/dataExploration";
 
     interface Methods {
         changeLanguage: (lang: string) => void
@@ -20,14 +28,14 @@
 
     export default Vue.extend<unknown, Methods, Computed, unknown>({
         computed: {
-            currentLanguage: mapStateProp<RootState, string>(null,
-                (state: RootState) => state.language.toUpperCase())
+            currentLanguage: mapStateProp<DataExplorationState, string>(null,
+                (state: DataExplorationState) => state.language.toUpperCase())
         },
         methods: {
             changeLanguage: mapActionByName<File>(null, "changeLanguage")
         },
         components: {
-            LanguageMenuView
+            DropDown
         }
     })
 </script>
