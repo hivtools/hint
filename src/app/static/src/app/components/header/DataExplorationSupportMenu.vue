@@ -2,7 +2,7 @@
     <div id="divclass">
         <drop-down text="support" :right="true" :delay="true" style="flex: none">
             <a class="dropdown-item"
-               v-translate="'reportIssues'">
+               v-translate="'troubleshootingRequest'">
             </a>
             <router-link id="accessibility-link"
                          to="/accessibility"

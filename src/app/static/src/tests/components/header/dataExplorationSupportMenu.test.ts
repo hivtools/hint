@@ -54,9 +54,9 @@ describe("Data exploration online support menu", () => {
             store as any);
 
         expectTranslated(link.at(1),
-            "Report issues",
-            "Signaler des problèmes",
-            "Reportar problemas",
+            "Troubleshooting request",
+            "Demande de dépannage",
+            "Solicitação de solução de problemas",
             store as any);
 
         expectTranslated(link.at(2),
