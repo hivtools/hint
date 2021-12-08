@@ -9,6 +9,9 @@ import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.junit.jupiter.api.Test
+import org.springframework.core.io.FileSystemResource
+import org.springframework.util.LinkedMultiValueMap
+import java.io.File
 
 class HintrApiClientTests
 {
