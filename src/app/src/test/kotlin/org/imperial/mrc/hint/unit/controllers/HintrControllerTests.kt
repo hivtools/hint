@@ -76,6 +76,7 @@ abstract class HintrControllerTests
 
         val mockFileManager = getMockFileManager(fileType)
         val mockApiClient = getMockAPIClient(fileType)
+
         val mockRequest = mock<HttpServletRequest>()
         val sut = getSut(mockFileManager, mockApiClient, mock(), mock(), mockRequest)
         val result = uploadAction(sut)
@@ -91,8 +92,7 @@ abstract class HintrControllerTests
             else -> verify(mockApiClient)
                     .validateSurveyAndProgramme(
                             VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                            "shape-path", fileType, true
-                    )
+                            "shape-path", fileType, true)
         }
     }
 
