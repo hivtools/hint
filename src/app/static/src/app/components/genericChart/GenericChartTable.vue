@@ -105,7 +105,7 @@
                 const configLabelColumns = this.tableConfig.columns.filter(column => column.data.labelColumn);
                 const columnValueLabels = configLabelColumns.reduce((dict, columnConfig) => {
                     const key = columnConfig.data.labelColumn!;
-                    // If key is not already in dictionary, and options are an array (not the case for hierarchies)
+                    // If key is not already in dictionary, and options are an array (not always the case for hierarchies)
                     if (!dict[key] && columnsDict[key].values.reduce) {
                         const filterOptions = columnsDict[key].values;
                         const labelDict = filterOptions.reduce((dict, option) => ({
