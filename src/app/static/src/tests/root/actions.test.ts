@@ -16,10 +16,9 @@ import {
 } from "../mocks";
 import {Language} from "../../app/store/translations/locales";
 import {LanguageMutation} from "../../app/store/language/mutations";
-import {RootMutation} from "../../app/store/root/mutations";
 import Mock = jest.Mock;
 import {currentHintVersion} from "../../app/hintVersion";
-import { ErrorsMutation } from "../../app/store/errors/mutations";
+import {expectChangeLanguageMutations} from "../testHelpers";
 
 
 describe("root actions", () => {
@@ -197,23 +196,6 @@ describe("root actions", () => {
         await actions.validate(mockContext as any);
         expect(mockContext.dispatch).not.toHaveBeenCalled();
     });
-
-    const expectChangeLanguageMutations = (commit: Mock) => {
-        expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: LanguageMutation.SetUpdatingLanguage,
-            payload: true
-        });
-        expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: LanguageMutation.ChangeLanguage,
-            payload: "fr"
-        });
-
-        expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: LanguageMutation.SetUpdatingLanguage,
-            payload: false
-        });
-    };
-
 
     it("posts error report to teams", async () => {
         const url = "error-report"
