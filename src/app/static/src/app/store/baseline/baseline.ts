@@ -56,6 +56,11 @@ export const baselineGetters = {
     complete: (state: BaselineState) => {
         return state.validatedConsistent &&
             !!state.country && !!state.iso3 && !!state.shape && !!state.population
+    },
+    validForDataExploration: (state: BaselineState) => {
+        const validOrMissingPJNZ = !state.pjnzError
+        const validOrMissingPop = !state.populationError
+        return validOrMissingPJNZ && validOrMissingPop && state.validatedConsistent && !!state.shape
     }
 };
 

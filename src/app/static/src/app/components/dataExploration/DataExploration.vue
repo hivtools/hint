@@ -3,7 +3,7 @@
         <stepper-navigation :back="back"
                             :next="next"
                             :back-disabled="isUploadStep"
-                            :next-disabled="isReviewStep">
+                            :next-disabled="!canProgress">
         </stepper-navigation>
         <hr/>
         <div class="pt-4">
@@ -19,9 +19,13 @@
     import UploadInputs from "../uploadInputs/UploadInputs.vue";
     import ReviewInputs from "../reviewInputs/ReviewInputs.vue";
     import StepperNavigation from "../StepperNavigation.vue";
+    import {mapGetterByName} from "../../utils";
 
     interface Computed {
-        isUploadStep: boolean
+        baselineValid: boolean,
+        surveyAndProgramValid: boolean,
+        canProgress: boolean,
+        isUploadStep: boolean,
         isReviewStep: boolean
     }
 
@@ -41,12 +45,17 @@
             }
         },
         computed: {
+            canProgress() {
+                return this.isUploadStep && this.baselineValid && this.surveyAndProgramValid
+            },
             isUploadStep() {
                 return this.step === 1
             },
             isReviewStep() {
                 return this.step === 2
-            }
+            },
+            baselineValid: mapGetterByName("baseline", "validForDataExploration"),
+            surveyAndProgramValid: mapGetterByName("surveyAndProgram", "complete")
         },
         methods: {
             next() {

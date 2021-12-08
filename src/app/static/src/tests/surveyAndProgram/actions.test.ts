@@ -14,7 +14,6 @@ import {expectEqualsFrozen} from "../testHelpers";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import Mock = jest.Mock;
 
-const FormData = require("form-data");
 const rootState = mockRootState();
 const mockFormData = {
     get: (key: string) => { return key == "file" ? {name: "file.txt"} : null; }
@@ -34,7 +33,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after surveys file upload", async () => {
 
-        mockAxios.onPost(`/disease/survey/`)
+        mockAxios.onPost(`/disease/survey/?strict=true`)
             .reply(200, mockSuccess({data: "SOME DATA"}));
 
         const commit = jest.fn();
@@ -45,7 +44,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after surveys file import", async () => {
 
-        mockAxios.onPost(`/adr/survey/`)
+        mockAxios.onPost(`/adr/survey/?strict=true`)
             .reply(200, mockSuccess({data: "SOME DATA"}));
 
         const commit = jest.fn();
@@ -72,7 +71,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed surveys upload", async () => {
 
-        mockAxios.onPost(`/disease/survey/`)
+        mockAxios.onPost(`/disease/survey/?strict=true`)
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
@@ -83,7 +82,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed surveys import", async () => {
 
-        mockAxios.onPost(`/adr/survey/`)
+        mockAxios.onPost(`/adr/survey/?strict=true`)
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
@@ -111,7 +110,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after programme file upload", async () => {
 
-        mockAxios.onPost(`/disease/programme/`)
+        mockAxios.onPost(`/disease/programme/?strict=true`)
             .reply(200, mockSuccess("TEST"));
 
         const commit = jest.fn();
@@ -122,7 +121,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after programme file import", async () => {
 
-        mockAxios.onPost(`/adr/programme/`)
+        mockAxios.onPost(`/adr/programme/?strict=true`)
             .reply(200, mockSuccess("TEST"));
 
         const commit = jest.fn();
@@ -154,7 +153,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed programme upload", async () => {
 
-        mockAxios.onPost(`/disease/programme/`)
+        mockAxios.onPost(`/disease/programme/?strict=true`)
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
@@ -165,7 +164,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed programme import", async () => {
 
-        mockAxios.onPost(`/adr/programme/`)
+        mockAxios.onPost(`/adr/programme/?strict=true`)
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
@@ -200,7 +199,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after anc file upload", async () => {
 
-        mockAxios.onPost(`/disease/anc/`)
+        mockAxios.onPost(`/disease/anc/?strict=true`)
             .reply(200, mockSuccess("TEST"));
 
         const commit = jest.fn();
@@ -211,7 +210,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after anc file import", async () => {
 
-        mockAxios.onPost(`/adr/anc/`)
+        mockAxios.onPost(`/adr/anc/?strict=true`)
             .reply(200, mockSuccess("TEST"));
 
         const commit = jest.fn();
@@ -243,7 +242,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed anc upload", async () => {
 
-        mockAxios.onPost(`/disease/anc/`)
+        mockAxios.onPost(`/disease/anc/?strict=true`)
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
@@ -254,7 +253,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed anc import", async () => {
 
-        mockAxios.onPost(`/adr/anc/`)
+        mockAxios.onPost(`/adr/anc/?strict=true`)
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
@@ -289,13 +288,13 @@ describe("Survey and programme actions", () => {
 
     it("gets data, commits it and marks state ready", async () => {
 
-        mockAxios.onGet(`/disease/survey/`)
+        mockAxios.onGet(`/disease/survey/?strict=true`)
             .reply(200, mockSuccess(mockSurveyResponse()));
 
-        mockAxios.onGet(`/disease/programme/`)
+        mockAxios.onGet(`/disease/programme/?strict=true`)
             .reply(200, mockSuccess(mockProgramResponse()));
 
-        mockAxios.onGet(`/disease/anc/`)
+        mockAxios.onGet(`/disease/anc/?strict=true`)
             .reply(200, mockSuccess(mockAncResponse()));
 
         const commit = jest.fn();
@@ -315,13 +314,13 @@ describe("Survey and programme actions", () => {
 
     it("it validates, commits and marks state ready", async () => {
 
-        mockAxios.onGet(`/disease/survey/`)
+        mockAxios.onGet(`/disease/survey/?strict=true`)
             .reply(200, mockSuccess(mockSurveyResponse()));
 
-        mockAxios.onGet(`/disease/programme/`)
+        mockAxios.onGet(`/disease/programme/?strict=true`)
             .reply(200, mockSuccess(mockProgramResponse()));
 
-        mockAxios.onGet(`/disease/anc/`)
+        mockAxios.onGet(`/disease/anc/?strict=true`)
             .reply(200, mockSuccess(mockAncResponse()));
 
         const commit = jest.fn();
@@ -342,13 +341,13 @@ describe("Survey and programme actions", () => {
 
     it("it runs validation, fails one and commits correctly", async () => {
 
-        mockAxios.onGet(`/disease/survey/`)
+        mockAxios.onGet(`/disease/survey/?strict=true`)
             .reply(500, mockFailure("Error message"));
 
-        mockAxios.onGet(`/disease/programme/`)
+        mockAxios.onGet(`/disease/programme/?strict=true`)
             .reply(200, mockSuccess(mockProgramResponse()));
 
-        mockAxios.onGet(`/disease/anc/`)
+        mockAxios.onGet(`/disease/anc/?strict=true`)
             .reply(200, mockSuccess(mockAncResponse()));
 
         const commit = jest.fn();
@@ -369,13 +368,13 @@ describe("Survey and programme actions", () => {
 
     it("it runs validation, fails all and commits correctly", async () => {
 
-        mockAxios.onGet(`/disease/survey/`)
+        mockAxios.onGet(`/disease/survey/?strict=true`)
             .reply(500, mockFailure("Failed"));
 
-        mockAxios.onGet(`/disease/programme/`)
+        mockAxios.onGet(`/disease/programme/?strict=true`)
             .reply(500, mockFailure("Failed"));
 
-        mockAxios.onGet(`/disease/anc/`)
+        mockAxios.onGet(`/disease/anc/?strict=true`)
             .reply(500, mockFailure("Failed"));
 
         const commit = jest.fn();
@@ -394,16 +393,15 @@ describe("Survey and programme actions", () => {
 
     });
 
-
     it("fails silently and marks state ready if getting data fails", async () => {
 
-        mockAxios.onGet(`/disease/survey/`)
+        mockAxios.onGet(`/disease/survey/?strict=true`)
             .reply(500);
 
-        mockAxios.onGet(`/disease/anc/`)
+        mockAxios.onGet(`/disease/anc/?strict=true`)
             .reply(500);
 
-        mockAxios.onGet(`/disease/programme/`)
+        mockAxios.onGet(`/disease/programme/?strict=true`)
             .reply(500);
 
         const commit = jest.fn();
