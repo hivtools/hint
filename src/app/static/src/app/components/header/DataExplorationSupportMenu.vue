@@ -2,7 +2,6 @@
     <div id="divclass">
         <drop-down text="support" :right="true" :delay="true" style="flex: none">
             <a class="dropdown-item"
-               @click="toggleErrorReportModal"
                v-translate="'reportIssues'">
             </a>
             <router-link id="accessibility-link"
@@ -26,31 +25,12 @@
         currentLanguage: Language
     }
 
-    interface Data {
-        errorReportOpen: boolean
-    }
-
-    interface Methods {
-        toggleErrorReportModal: () => void
-    }
-
-    export default Vue.extend<Data, Methods, Computed, unknown>({
-        data: function () {
-            return {
-                errorReportOpen: false
-            }
-        },
+    export default Vue.extend<unknown, unknown, Computed, unknown>({
         computed: {
             currentLanguage: mapStateProp<DataExplorationState, Language>(null,
                 (state: DataExplorationState) => state.language),
             support() {
                 return i18next.t("support", this.currentLanguage)
-            }
-        },
-        methods: {
-            toggleErrorReportModal() {
-                this.errorReportOpen = !this.errorReportOpen
-                console.log("Ignore, to be used by error report modal")
             }
         },
         components: {

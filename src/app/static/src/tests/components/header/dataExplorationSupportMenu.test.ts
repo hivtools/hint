@@ -66,6 +66,28 @@ describe("Data exploration online support menu", () => {
             store as any);
     });
 
+    it("renders drop down text correctly", () => {
+        const store = createStore();
+        const wrapper = mount(DataExplorationSupportMenu, {
+            store,
+            localVue,
+            router
+        });
+        wrapper.find(".dropdown-toggle").trigger("click");
+        expect(wrapper.find(".dropdown-menu").classes())
+            .toStrictEqual(["dropdown-menu", "show", "dropdown-menu-right"]);
+
+        const link = wrapper.find(".dropdown").findAll("a");
+
+        expect(link.length).toBe(3)
+
+        expectTranslated(link.at(0),
+            "Online support",
+            "Support en ligne",
+            "Apoio online",
+            store as any);
+    });
+
     it("renders accessibility menu-item text and link", () => {
         const store = createStore();
         const wrapper = shallowMount(DataExplorationSupportMenu, {
