@@ -1,18 +1,18 @@
 import {mount, shallowMount} from "@vue/test-utils";
-import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
 import Vuex from "vuex";
-import {emptyState} from "../../../app/root";
-import {actions} from "../../../app/store/root/actions";
-import {mutations} from "../../../app/store/root/mutations";
+import {actions} from "../../../app/store/dataExploration/actions";
+import {mutations} from "../../../app/store/dataExploration/mutations";
 import {Language} from "../../../app/store/translations/locales";
 import DropDown from "../../../app/components/header/DropDown.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import DataExplorationLanguageMenu from  "../../../app/components/header/DataExplorationLanguageMenu.vue"
+import {mockDataExplorationState} from "../../mocks";
 
-describe("Language menu", () => {
+describe("Data Exploration Language menu", () => {
 
     const createStore = () => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: mockDataExplorationState(),
             actions: actions,
             mutations: mutations
         });
@@ -22,7 +22,7 @@ describe("Language menu", () => {
 
     it("displays current language", () => {
         const store = createStore();
-        const wrapper = shallowMount(LanguageMenu, {
+        const wrapper = shallowMount(DataExplorationLanguageMenu, {
             store
         });
 
@@ -33,7 +33,7 @@ describe("Language menu", () => {
 
     it("changes language to French", (done) => {
         const store = createStore();
-        const wrapper = mount(LanguageMenu, {
+        const wrapper = mount(DataExplorationLanguageMenu, {
             store
         });
 
@@ -48,7 +48,7 @@ describe("Language menu", () => {
 
     it("changes language to Portuguese", (done) => {
         const store = createStore();
-        const wrapper = mount(LanguageMenu, {
+        const wrapper = mount(DataExplorationLanguageMenu, {
             store
         });
 

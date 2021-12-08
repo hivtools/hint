@@ -3,12 +3,7 @@ import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState,
 import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 import moment from 'moment';
-import {
-    DynamicControlGroup,
-    DynamicControlSection,
-    DynamicFormData,
-    DynamicFormMeta
-} from "@reside-ic/vue-dynamic-form";
+import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 
 export type ComputedWithType<T> = () => T;
 
@@ -281,4 +276,9 @@ export function getFilenameFromImportUrl(url: string) {
 export function getFilenameFromUploadFormData(formdata: FormData) {
     const file = formdata.get("file");
     return (file as File).name;
+}
+
+export enum HelpFile {
+    french = "public/resources/Naomi-instructions-de-base.pdf",
+    english = "public/resources/Naomi-Help-Guide.pdf"
 }
