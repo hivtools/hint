@@ -29,7 +29,7 @@
 
     import Vue from "vue";
     import {mapGetters} from 'vuex';
-    import LanguageMenu from "./DataExplorationLanguageMenu.vue";
+    import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";
     import {HelpFile, mapStateProp} from "../../utils";
     import HintrVersionMenu from "./HintrVersionMenu.vue";
