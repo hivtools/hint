@@ -22,7 +22,8 @@ describe(`data exploration component`, () => {
     let sapMutations = {};
 
     const createStore = (baselineState?: Partial<BaselineState>,
-                       surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey}) => {
+                         surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey},
+                         plottingMetadataMock = jest.fn()) => {
 
         actions = {
             refreshDatasetMetadata: jest.fn(),
@@ -56,6 +57,12 @@ describe(`data exploration component`, () => {
                     mutations: {...sapMutations},
                     actions: {...sapActions},
                     getters: getters
+                },
+                metadata: {
+                    namespaced: true,
+                    actions: {
+                        getPlottingMetadata: plottingMetadataMock
+                    }
                 }
             }
         });
@@ -85,7 +92,14 @@ describe(`data exploration component`, () => {
     })
 
     it(`enables forward navigation when inputs are valid`, () => {
-        const store = createStore({shape: mockShapeResponse()}, {survey: mockSurveyResponse()})
+        const store = createStore(
+            {
+                shape: mockShapeResponse(),
+                validatedConsistent: true
+            },
+            {
+                survey: mockSurveyResponse()
+            })
         const wrapper = shallowMount(DataExploration, {store});
         expect(wrapper.find("stepper-navigation-stub").props("nextDisabled")).toBe(false)
     })
@@ -125,6 +139,13 @@ describe(`data exploration component`, () => {
         const vm = wrapper.vm as any
         vm.back()
         expect(wrapper.find("upload-inputs-stub").exists()).toBe(true)
-    })
+    });
+
+    it("requests plotting metadata on mount", () => {
+        const metadataMock = jest.fn();
+        const store = createStore({}, {}, metadataMock)
+        const wrapper = shallowMount(DataExploration, {store})
+        expect(metadataMock.mock.calls.length).toBe(1);
+    });
 
 });

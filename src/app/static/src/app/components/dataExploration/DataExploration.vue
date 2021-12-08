@@ -19,7 +19,7 @@
     import UploadInputs from "../uploadInputs/UploadInputs.vue";
     import ReviewInputs from "../reviewInputs/ReviewInputs.vue";
     import StepperNavigation from "../StepperNavigation.vue";
-    import {mapGetterByName} from "../../utils";
+    import {mapActionByName, mapGetterByName} from "../../utils";
 
     interface Computed {
         baselineValid: boolean,
@@ -36,6 +36,7 @@
     interface Methods {
         next: () => void
         back: () => void
+        getPlottingMetadata: (country: string) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
@@ -63,13 +64,18 @@
             },
             back() {
                 this.step = 1;
-            }
+            },
+            getPlottingMetadata: mapActionByName("metadata", "getPlottingMetadata")
         },
         components: {
             AdrIntegration,
             UploadInputs,
             ReviewInputs,
             StepperNavigation
+        },
+        mounted() {
+            // hintr will return default metadata in the absence of a recognised country
+            this.getPlottingMetadata("default")
         }
     })
 </script>
