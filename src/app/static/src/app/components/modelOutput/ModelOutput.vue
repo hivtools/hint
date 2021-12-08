@@ -47,7 +47,7 @@
                     :indicators="barchartIndicators"
                     :selections="barchartSelections"
                     :formatFunction="formatBarchartValue"
-                    @update="updateBarchartSelections({payload: $event})"></bar-chart-with-filters>
+                    @update="updateBarchartSelectionsAndXAxisOrder({payload: $event})"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <area-indicators-table class="col-md-9"
@@ -100,7 +100,7 @@
     import {BarchartIndicator, Filter, FilterConfig, FilterOption} from "@reside-ic/vue-charts/src/bar/types";
     import {BarChartWithFilters} from "@reside-ic/vue-charts";
 
-    import {mapGettersByNames, mapMutationByName, mapMutationsByNames, mapStateProp, mapStateProps,} from "../../utils";
+    import {mapGetterByName, mapGettersByNames, mapMutationByName, mapMutationsByNames, mapStateProp, mapStateProps, flattenOptions} from "../../utils";
     import {
         BarchartSelections,
         BubblePlotSelections,
@@ -113,9 +113,9 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {Language, Translations} from "../../store/translations/locales";
     import {inactiveFeatures} from "../../main";
-    import {RootState} from "../../root";
+    import {RootState, storeOptions} from "../../root";
     import {LevelLabel} from "../../types";
-    import {ChoroplethIndicatorMetadata} from "../../generated";
+    import {ChoroplethIndicatorMetadata, NestedFilterOption} from "../../generated";
     import {formatOutput} from "../plots/utils";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
 
@@ -132,6 +132,7 @@
         updateOutputColourScales: (colourScales: ScaleSelections) => void
         updateOutputBubbleSizeScales: (colourScales: ScaleSelections) => void
         formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => string
+        updateBarchartSelectionsAndXAxisOrder: (data: BarchartSelections) => void
     }
 
     interface Computed {
@@ -232,6 +233,44 @@
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected),
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
+            },
+            updateBarchartSelectionsAndXAxisOrder(data){
+                console.log("reach 3", data)
+                // let payload = {...update}
+                // const { xAxisId, selectedFilterOptions } = update
+                // if (xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]){
+                //     console.log("reach 4")
+                    
+                //     // finds the filter options of the selected xAxis variable in the barchart filters getter
+                //     let originalFilterOptionsOrder: NestedFilterOption[] | undefined = this
+                //         .barchartFilters
+                //         .find(filter => filter.id === xAxisId)?.options
+                //     console.log("originalFilterOptionsOrder", originalFilterOptionsOrder)
+
+                //     // Get the list of filter option ids in their configured order, whether nested or not
+                //     let originalFilterOptionsIds: string[];
+                //     if (originalFilterOptionsOrder && originalFilterOptionsOrder[0].children){
+                //         const flattenedOptions = flattenOptions(originalFilterOptionsOrder)
+                //         originalFilterOptionsIds = Object.keys(flattenedOptions)
+                //     } else if (originalFilterOptionsOrder) {
+                //         originalFilterOptionsIds = originalFilterOptionsOrder.map((option: FilterOption) => option.id);
+                //     }
+
+                //     // Sort the selected filter values according to configured order
+                //     if (originalFilterOptionsOrder) {
+                //         const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
+                //             return originalFilterOptionsIds.indexOf(a.id) - originalFilterOptionsIds.indexOf(b.id);
+                //         });
+                //         console.log("reach 1")
+                //         // const changes = {...state.barchart, ...action.payload}
+                //         payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
+                //         // state.barchart = update
+                //         console.log("reach 2")
+                //         return;
+                //     }
+                // }
+                // this.updateBarchartSelections(payload)
+                this.updateBarchartSelections(data)
             }
         },
         components: {

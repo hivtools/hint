@@ -1,7 +1,9 @@
 import {mutations} from "../../app/store/plottingSelections/mutations";
-import {mockColourScales, mockPlottingSelections} from "../mocks";
+import {mockColourScales, mockPlottingSelections, mockModelOutputState} from "../mocks";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {ScaleType} from "../../app/store/plottingSelections/plottingSelections";
+// import { modelOutputGetters } from '../../app/store/modelOutput/modelOutput';
+// import { storeOptions, RootState } from "../../app/root"
 
 describe("Plotting selections mutations", () => {
 
@@ -14,7 +16,6 @@ describe("Plotting selections mutations", () => {
                 testFilter: []
             }
         };
-        console.log("this is the barchart teststate", testState.barchart)
         mutations.updateBarchartSelections(testState, {payload: newBarchartSelections});
 
         expect(testState.barchart).toStrictEqual({
@@ -149,4 +150,29 @@ describe("Plotting selections mutations", () => {
             }
         });
     });
+
+    // it("presererves barchart selections order on update", () => {
+    //     const testState = mockPlottingSelections();
+    //     const newBarchartSelections = {
+    //         indicatorId: "test-indicator",
+    //         disaggregateById: "test-disagg",
+    //         xAxisId: "testXAxis",
+    //         selectedFilterOptions: {
+    //             testXAxis1: []
+    //         }
+    //     };
+    //     console.log("this is the barchart teststate", testState)
+    //     console.log("state", mockModelOutputState())
+    //     // console.log("model output getters", modelOutputGetters.barchartFilters({} as any, {}, storeOptions.state as RootState))
+    //     mutations.updateBarchartSelections(testState, {payload: newBarchartSelections});
+
+    //     expect(testState.barchart).toStrictEqual({
+    //         indicatorId: "test-indicator",
+    //         disaggregateById: "test-disagg",
+    //         xAxisId: "",
+    //         selectedFilterOptions: {
+    //             testFilter: []
+    //         }
+    //     });
+    // });
 });

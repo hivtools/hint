@@ -31,35 +31,36 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
     },
     updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
         console.log("payload", action.payload)
-        const { xAxisId, selectedFilterOptions } = action.payload
-        if (xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]){
+        // const { xAxisId, selectedFilterOptions } = action.payload
+        // if (xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]){
             
-            // finds the filter options of the selected xAxis variable in the barchart filters getter
-            let originalFilterOptionsOrder: NestedFilterOption[] | undefined = modelOutputGetters
-                .barchartFilters({} as any, {}, storeOptions.state as RootState)
-                .find(filter => filter.id === xAxisId)?.options
+        //     // finds the filter options of the selected xAxis variable in the barchart filters getter
+        //     let originalFilterOptionsOrder: NestedFilterOption[] | undefined = modelOutputGetters
+        //         .barchartFilters({} as any, {}, storeOptions.state as RootState)
+        //         .find(filter => filter.id === xAxisId)?.options
+        //     console.log("originalFilterOptionsOrder", originalFilterOptionsOrder)
 
-            // Get the list of filter option ids in their configured order, whether nested or not
-            let originalFilterOptionsIds: string[];
-            if (originalFilterOptionsOrder && originalFilterOptionsOrder[0].children){
-                const flattenedOptions = flattenOptions(originalFilterOptionsOrder)
-                originalFilterOptionsIds = Object.keys(flattenedOptions)
-            } else if (originalFilterOptionsOrder) {
-                originalFilterOptionsIds = originalFilterOptionsOrder.map((option: FilterOption) => option.id);
-            }
+        //     // Get the list of filter option ids in their configured order, whether nested or not
+        //     let originalFilterOptionsIds: string[];
+        //     if (originalFilterOptionsOrder && originalFilterOptionsOrder[0].children){
+        //         const flattenedOptions = flattenOptions(originalFilterOptionsOrder)
+        //         originalFilterOptionsIds = Object.keys(flattenedOptions)
+        //     } else if (originalFilterOptionsOrder) {
+        //         originalFilterOptionsIds = originalFilterOptionsOrder.map((option: FilterOption) => option.id);
+        //     }
 
-            // Sort the selected filter values according to configured order
-            if (originalFilterOptionsOrder) {
-                const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
-                    return originalFilterOptionsIds.indexOf(a.id) - originalFilterOptionsIds.indexOf(b.id);
-                });
+        //     // Sort the selected filter values according to configured order
+        //     if (originalFilterOptionsOrder) {
+        //         const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
+        //             return originalFilterOptionsIds.indexOf(a.id) - originalFilterOptionsIds.indexOf(b.id);
+        //         });
 
-                const update = {...state.barchart, ...action.payload}
-                update.selectedFilterOptions[xAxisId] = updatedFilterOptions
-                state.barchart = update
-                return;
-            }
-        }
+        //         const update = {...state.barchart, ...action.payload}
+        //         update.selectedFilterOptions[xAxisId] = updatedFilterOptions
+        //         state.barchart = update
+        //         return;
+        //     }
+        // }
         
         // if unable to do the above, just updates the barchart as normal
         state.barchart = {...state.barchart, ...action.payload};
