@@ -11,6 +11,7 @@ import {actions} from "../../app/store/modelRun/actions";
 import {ModelStatusResponse} from "../../app/generated";
 import {expectEqualsFrozen} from "../testHelpers";
 import {ModelRunMutation} from "../../app/store/modelRun/mutations";
+import {freezer} from "../../app/utils";
 
 const rootState = mockRootState();
 
@@ -144,13 +145,15 @@ describe("Model run actions", () => {
     });
 
     it("getResult commits result and warnings when successfully fetched", async () => {
-        const mockResponse = mockModelResultResponse({
+        const mockResponse = mockSuccess(mockModelResultResponse({
             warnings: [mockWarning()]
-        });
+        }));
+
         mockAxios.onGet(`/model/result/1234`)
-            .reply(200, mockSuccess(mockResponse));
+            .reply(200, mockResponse);
 
         const commit = jest.fn();
+        const spy = jest.spyOn(freezer, "deepFreeze");
         const state = mockModelRunState({
             modelRunId: "1234",
             status: {done: true} as ModelStatusResponse
@@ -164,12 +167,13 @@ describe("Model run actions", () => {
         });
         expectEqualsFrozen(commit.mock.calls[1][0], {
             type: ModelRunMutation.RunResultFetched,
-            payload: mockResponse
+            payload: mockResponse.data
         });
         expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "Ready",
             payload: true
         });
+        expect(spy).toHaveBeenCalledWith(mockResponse);
     });
 
     it("getResult commits error when unsuccessful fetch", async () => {

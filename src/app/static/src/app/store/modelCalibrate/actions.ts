@@ -69,7 +69,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                 .get<ModelResultResponse>(`model/calibrate/result/${calibrateId}`);
 
             if (response) {
-                const data = freezer.deepFreeze(response.data);
+                const data = response.data;
                 commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: data});
                 commit({type: ModelCalibrateMutation.WarningsFetched, payload: data.warnings});
 
@@ -107,8 +107,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             .get<ModelResultResponse>(`model/calibrate/plot/${calibrateId}`);
 
         if (response) {
-            const data = freezer.deepFreeze(response.data);
-            commit(ModelCalibrateMutation.SetPlotData, data);
+            commit(ModelCalibrateMutation.SetPlotData, response.data);
         }
     }
 };
