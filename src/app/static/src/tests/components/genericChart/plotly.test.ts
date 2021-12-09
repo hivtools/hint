@@ -3,7 +3,8 @@
 import Vuex from "vuex";
 
 jest.mock("plotly.js-basic-dist", () => ({
-    newPlot: jest.fn()
+    newPlot: jest.fn(),
+    react: jest.fn()
 }));
 import * as plotly from "plotly.js-basic-dist";
 import Vue from "vue";
@@ -21,7 +22,10 @@ const chartData = {
 
 const layoutData = {
     topMargin: 0,
-    responsive: true
+    responsive: true,
+    subplots: {
+        rows: 2
+    }
 };
 
 const chartMetadata = `{
@@ -42,6 +46,7 @@ const chartMetadata = `{
 }`;
 
 describe("Plotly", () => {
+    const mockPlotlyReact = jest.spyOn(plotly, "react");
     const mockPlotlyNewPlot = jest.spyOn(plotly, "newPlot");
     const store = new Vuex.Store({state: emptyState()});
     registerTranslations(store);
@@ -49,6 +54,24 @@ describe("Plotly", () => {
     beforeEach(() => {
         jest.clearAllMocks();
     });
+
+    const expectPlotlyParams = (plotlyParams: any[]) => {
+        expect(plotlyParams[0].constructor.name).toBe("HTMLDivElement");
+        expect(plotlyParams[1]).toStrictEqual({
+            x: [1, 2, 3],
+            y: [4, 5, 6]
+        });
+        expect(plotlyParams[2]).toStrictEqual({
+            margin: {
+                t: 0,
+                l: 1
+            }
+        });
+        expect(plotlyParams[3]).toStrictEqual({
+            responsive: true,
+            height: 6
+        });
+    };
 
     it("invokes Plotly on render with expected parameters", (done) => {
         const propsData = { chartMetadata, chartData, layoutData };
@@ -58,27 +81,36 @@ describe("Plotly", () => {
         expect((wrapper.vm as any).rendering).toBe(true);
 
         setTimeout(() => {
-            expect(mockPlotlyNewPlot.mock.calls.length).toBe(1);
-            const plotlyParams = mockPlotlyNewPlot.mock.calls[0];
-            expect(plotlyParams[0].constructor.name).toBe("HTMLDivElement");
-            expect(plotlyParams[1]).toStrictEqual({
-                x: [1, 2, 3],
-                y: [4, 5, 6]
-            });
-            expect(plotlyParams[2]).toStrictEqual({
-                margin: {
-                    t: 0,
-                    l: 1
-                }
-            });
-            expect(plotlyParams[3]).toStrictEqual({
-                responsive: true,
-                height: 6
-            });
-
+            expect(mockPlotlyReact.mock.calls.length).toBe(1);
+            expectPlotlyParams(mockPlotlyReact.mock.calls[0]);
             expect((wrapper.vm as any).rendering).toBe(false);
 
             done();
+        });
+    });
+
+    it("invokes Plotly newPlot when layout subplot rows has changed", (done) => {
+        const propsData = { chartMetadata, chartData, layoutData };
+        const wrapper = shallowMount(Plotly, { propsData, store });
+        setTimeout(() => {
+            expect(mockPlotlyNewPlot.mock.calls.length).toBe(0);
+            wrapper.setProps({
+                chartMetadata,
+                chsrtData: {...chartData},
+                layoutData: {
+                    ...layoutData,
+                    subplots: {
+                        rows: 3
+                    }
+                }
+            });
+            setTimeout(() => {
+                expect(mockPlotlyNewPlot.mock.calls.length).toBe(1);
+                expectPlotlyParams(mockPlotlyNewPlot.mock.calls[0]);
+                expect((wrapper.vm as any).rendering).toBe(false);
+
+                done();
+            });
         });
     });
 
@@ -95,8 +127,8 @@ describe("Plotly", () => {
            });
 
            setTimeout(() => {
-               expect(mockPlotlyNewPlot.mock.calls.length).toBe(2);
-               const plotlyParams = mockPlotlyNewPlot.mock.calls[1];
+               expect(mockPlotlyReact.mock.calls.length).toBe(2);
+               const plotlyParams = mockPlotlyReact.mock.calls[1];
                expect(plotlyParams[0].constructor.name).toBe("HTMLDivElement");
                expect(plotlyParams[1]).toStrictEqual({
                    x: [10, 20, 30],
@@ -131,8 +163,8 @@ describe("Plotly", () => {
 
             setTimeout(() => {
 
-                expect(mockPlotlyNewPlot.mock.calls.length).toBe(2);
-                const plotlyParams = mockPlotlyNewPlot.mock.calls[1];
+                expect(mockPlotlyReact.mock.calls.length).toBe(2);
+                const plotlyParams = mockPlotlyReact.mock.calls[1];
                 expect(plotlyParams[0].constructor.name).toBe("HTMLDivElement");
                 expect(plotlyParams[1]).toStrictEqual({
                     x: [1, 2, 3],
