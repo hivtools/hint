@@ -1,3 +1,7 @@
+# hint 1.82.0
+
+* Move change Language action to DE state
+
 # hint 1.81.0
 
 * Add online-support-menu component to DE 
