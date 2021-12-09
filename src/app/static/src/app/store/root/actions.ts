@@ -59,7 +59,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     },
 
     async changeLanguage(context, payload) {
-        await ChangeLanguageAction(context, payload, true)
+        await ChangeLanguageAction(context, payload)
     },
 
     async generateErrorReport(context, payload) {
