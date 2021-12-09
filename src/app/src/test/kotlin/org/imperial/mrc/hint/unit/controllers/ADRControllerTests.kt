@@ -11,6 +11,7 @@ import org.imperial.mrc.hint.clients.ADRClient
 import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.controllers.ADRController
+import org.imperial.mrc.hint.controllers.DiseaseController
 import org.imperial.mrc.hint.controllers.HintrController
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
@@ -21,6 +22,7 @@ import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.mockito.internal.verification.Times
 import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -399,6 +401,52 @@ class ADRControllerTests : HintrControllerTests()
         assertSavesAndValidatesUrl(FileType.Survey) { sut ->
             (sut as ADRController).importSurvey(fakeUrl)
         }
+    }
+
+    @Test
+    fun `requests strict validation by default`()
+    {
+        val mockApiClient = getMockAPIClient(FileType.Survey)
+        val mockRequest = mock<HttpServletRequest>()
+        val mockFileManager = getMockFileManager(FileType.Survey)
+        val sut = getSut(mockFileManager, mockApiClient, mock(), mock(), mockRequest) as ADRController
+        sut.importSurvey(fakeUrl)
+        verify(mockApiClient)
+                .validateSurveyAndProgramme(
+                        VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
+                        "shape-path", FileType.Survey, true)
+    }
+
+    @Test
+    fun `requests lax validation when query param is false`()
+    {
+        val mockApiClient = getMockAPIClient(FileType.Survey)
+        val mockRequest = mock<HttpServletRequest> {
+            on { getParameter("strict") } doReturn "false"
+        }
+        val mockFileManager = getMockFileManager(FileType.Survey)
+        val sut = getSut(mockFileManager, mockApiClient, mock(), mock(), mockRequest) as ADRController
+        sut.importSurvey(fakeUrl)
+        verify(mockApiClient)
+                .validateSurveyAndProgramme(
+                        VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
+                        "shape-path", FileType.Survey, false)
+    }
+
+    @Test
+    fun `requests strict validation when query param is true`()
+    {
+        val mockApiClient = getMockAPIClient(FileType.Survey)
+        val mockRequest = mock<HttpServletRequest> {
+            on { getParameter("strict") } doReturn "true"
+        }
+        val mockFileManager = getMockFileManager(FileType.Survey)
+        val sut = getSut(mockFileManager, mockApiClient, mock(), mock(), mockRequest) as ADRController
+        sut.importSurvey(fakeUrl)
+        verify(mockApiClient)
+                .validateSurveyAndProgramme(
+                        VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
+                        "shape-path", FileType.Survey, true)
     }
 
     @Test
