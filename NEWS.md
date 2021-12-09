@@ -1,3 +1,7 @@
+# hint 1.81.0
+
+* Add online-support-menu component to DE 
+
 # hint 1.80.0
 
 * Add data exploration header

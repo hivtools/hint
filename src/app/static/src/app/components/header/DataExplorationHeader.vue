@@ -10,6 +10,7 @@
                     <span v-translate="'loggedInAs'"></span> {{ user }}
                 </span>
                 <hintr-version-menu class="pr-2 mr-2 border-right"/>
+                <data-exploration-support-menu class="pr-2 mr-2 border-right"/>
                 <a :href="'public/resources/' + helpFilename"
                    id="helpFile"
                    target="_blank"
@@ -34,6 +35,7 @@
     import {mapStateProp} from "../../utils";
     import HintrVersionMenu from "./HintrVersionMenu.vue";
     import {DataExplorationState} from "../../store/dataExploration/dataExploration";
+    import DataExplorationSupportMenu from "./DataExplorationSupportMenu.vue";
 
     interface Props {
         title: string,
@@ -62,7 +64,8 @@
         },
         components: {
             LanguageMenu,
-            HintrVersionMenu
+            HintrVersionMenu,
+            DataExplorationSupportMenu
         }
     })
 </script>
