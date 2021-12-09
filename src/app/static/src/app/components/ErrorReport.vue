@@ -2,13 +2,8 @@
     <modal :open="open">
         <h4 v-translate="'troubleshootingRequest'"></h4>
         <form class="form was-validated" id="report-form" v-if="!showFeedback">
-            <div class="form-group" v-if="projectName">
-                <label for="project" v-translate="'project'"></label>
-                <input type="text"
-                       disabled
-                       id="project"
-                       :value="projectName"
-                       class="form-control"/>
+            <div class="form-group">
+                <slot name="projectName"/>
             </div>
             <div class="form-group" v-if="isGuest">
                 <label for="email" v-translate="'email'"></label>
@@ -25,24 +20,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="section" v-translate="'section'"></label>
-                <select class="form-control"
-                        v-model="currentSection"
-                        id="section">
-                    <option v-for="step in steps"
-                            :key="step.number"
-                            :value="step.textKey"
-                            v-translate="step.textKey">
-                    </option>
-                    <option key="login"
-                            v-translate="'login'"
-                            value="login"></option>
-                    <option key="projects" v-translate="'projects'"
-                            value="projects"></option>
-                    <option key="other"
-                            value="other"
-                            v-translate="'other'"></option>
-                </select>
+                <slot name="section"></slot>
             </div>
             <div class="form-group">
                 <label for="description"
@@ -66,7 +44,7 @@
         <template v-else>
             <div id="report-success" v-if="!errorReportError" v-translate="'errorReportSuccess'"></div>
             <template v-else>
-               <div id="report-error" v-translate="'errorReportError'"></div>
+                <div id="report-error" v-translate="'errorReportError'"></div>
                 <error-alert :error="errorReportError"></error-alert>
             </template>
         </template>
@@ -112,21 +90,20 @@
         </template>
     </modal>
 </template>
+
 <script lang="ts">
     import Vue from "vue"
     import {mapActionByName, mapGetterByName, mapStateProp, validateEmail, emailRegex} from "../utils";
-    import {StepDescription, StepperState} from "../store/stepper/stepper";
-    import {ProjectsState} from "../store/projects/projects"
     import Modal from "./Modal.vue";
     import {ErrorReportManualDetails} from "../types";
     import ErrorAlert from "./ErrorAlert.vue";
     import {VTooltip} from 'v-tooltip';
     import i18next from "i18next";
-    import {RootState} from "../root";
     import {Language} from "../store/translations/locales";
     import {Error} from "../generated";
     import { ErrorsState } from "../store/errors/errors";
     import LoadingSpinner from "./LoadingSpinner.vue";
+    import {DataExplorationState} from "../store/dataExploration/dataExploration";
 
 
     interface Methods {
@@ -140,11 +117,7 @@
 
     interface Computed {
         currentLanguage: Language,
-        currentSectionKey: string
-        currentSection: string
         isGuest: boolean
-        steps: StepDescription[]
-        projectName: string | undefined
         disabled: boolean,
         tooltipText: string,
         errorReportError: Error | null
@@ -183,18 +156,8 @@
             }
         },
         computed: {
-            currentLanguage: mapStateProp<RootState, Language>(null, (state: RootState) => state.language),
-            currentSectionKey: mapStateProp<StepperState, string>("stepper", state => {
-                return state.steps[state.activeStep - 1].textKey;
-            }),
-            currentSection: {
-                get() {
-                    return this.section || this.currentSectionKey
-                },
-                set(newVal: string) {
-                    this.section = newVal
-                }
-            },
+            currentLanguage: mapStateProp<DataExplorationState, Language>(null,
+                (state: DataExplorationState) => state.language),
             errorReportError: mapStateProp<ErrorsState, Error | null>(
                 "errors",
                 (state: ErrorsState) => state.errorReportError),
@@ -202,55 +165,59 @@
                 "errors",
                 (state: ErrorsState) => state.sendingErrorReport),
             isGuest: mapGetterByName(null, "isGuest"),
-            projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
-            steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps),
             disabled() {
-                return !this.description || !this.stepsToReproduce || (this.isGuest && !this.validEmail)
+                return !this.description || !this.stepsToReproduce || (this.isGuest && !this.validEmail);
             },
             tooltipText() {
                 return i18next.t("allFieldsRequired", {lng: this.currentLanguage});
             },
             pattern() {
-                return emailRegex
+                return emailRegex;
             }
         },
         methods: {
             generateErrorReport: mapActionByName(null, "generateErrorReport"),
             cancelErrorReport() {
                 this.resetData();
-                this.$emit("close")
+                this.$emit("close");
             },
             async sendErrorReport() {
+                this.$emit("send", {
+                    description: this.description,
+                    stepsToReproduce: this.stepsToReproduce,
+                    email: this.email
+                });
+                // to be removed
+                /*
                 await this.generateErrorReport({
-                    section: this.currentSection,
+                    section: this.section,
                     description: this.description,
                     stepsToReproduce: this.stepsToReproduce,
                     email: this.email
                 })
+
+                 */
+                //
                 this.resetData();
                 this.showFeedback = true;
             },
             resetData() {
                 this.description = "";
                 this.stepsToReproduce = "";
-                this.section = "";
                 this.email = "";
             },
             close() {
                 this.$emit("close");
             },
             checkValidEmail() {
-                this.email = this.email.replace(/\s*/g, "")
-                this.validEmail = validateEmail(this.email)
+                this.email = this.email.replace(/\s*/g, "");
+                this.validEmail = validateEmail(this.email);
             }
         },
         watch: {
             open(newVal) {
                 if (newVal === true) {
                     this.showFeedback = false;
-                    if (this.$route.path.indexOf("projects") > -1) {
-                        this.section = "projects"
-                    }
                 }
             }
         }

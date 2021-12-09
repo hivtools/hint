@@ -5,7 +5,7 @@ import {expectTranslated} from "../../testHelpers";
 import DropDown from "../../../app/components/header/DropDown.vue";
 import VueRouter from 'vue-router'
 import DataExplorationSupportMenu from "../../../app/components/header/DataExplorationSupportMenu.vue"
-import {mockDataExplorationState} from "../../mocks";
+import {mockDataExplorationState, mockErrorsState} from "../../mocks";
 
 const localVue = createLocalVue()
 localVue.use(VueRouter)
@@ -15,6 +15,15 @@ describe("Data exploration online support menu", () => {
     const createStore = () => {
         const store = new Vuex.Store({
             state: mockDataExplorationState(),
+            modules: {
+                errors: {
+                    namespaced: true,
+                    state: mockErrorsState()
+                }
+            },
+            getters: {
+                isGuest: () => false
+            }
         });
         registerTranslations(store);
         return store;

@@ -269,7 +269,7 @@ export interface StepWarnings {
 }
 
 export interface ErrorReportManualDetails {
-    section: string,
+    section?: string,
     description: string,
     stepsToReproduce: string,
     email: string
