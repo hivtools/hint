@@ -84,6 +84,7 @@
                         const el = this.$refs.chart;
                         const drawFunc = this.layoutRequired ? Plotly.newPlot : Plotly.react;
                         this.layoutRequired = false;
+                        console.log(JSON.stringify(this.data))
                         drawFunc(el as HTMLElement, this.data.data as any, this.data.layout, this.data.config as any);
                     }
                     finally {

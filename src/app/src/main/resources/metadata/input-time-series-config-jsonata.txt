@@ -4,6 +4,7 @@ $areaNames := $keys($dataByArea);
 
 $lineColor := "rgb(51, 51, 51)";
 $highlightColor := "rgb(255, 51, 51)";
+$colorscale := [[0, $lineColor], [0, $highlightColor]];
 $subplotHeight := 1/subplots.rows * 0.6;
 $timePeriods := $sort(data.time_period);
 $firstXAxisVal := $timePeriods[0];
@@ -13,6 +14,31 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
     "data":
         $map($areaNames, function($v, $i) {(
             $areaData := $lookup($dataByArea, $v);
+
+            /* Check if each successive line should be highlighted - if the difference between a value and its preceding
+             value exceeds the threshold. Generate an array of 1s and 0s to indicate highlight or not*/
+            $highlightedLines := $map($areaData.value[-1], function($thv, $thi) {
+                 ($thv != null)
+                 and
+                 (
+                     ((($areaData.value)[$thi-1] != null) and ($thi > 0) and $thv > (1.25 * ($areaData.value)[$thi-1]))
+                     or
+                     ((($areaData.value)[$thi-1] != null) and ($thi > 0) and $thv < (0.75 * ($areaData.value)[$thi-1]))
+                 )
+                 ? 1 : 0
+            });
+
+             /* Generate another array for highlighted markers - check each pair of lines, and if either is
+              highlighted then the marker should be too */
+            $highlighedMarkers := $map( [0..$count($highlightedLines)], function($thi) {
+                 (($thi = 0 and $highlightedLines[0] = 1)
+                 or
+                 ($thi = $count($highlightedLines) and $highlightedLines[$thi-1] = 1)
+                 or
+                 ($thi > 0 and $thi < $count($highlightedLines) and $highlightedLines[$thi-1] = 1 or $highlightedLines[$thi] = 1))
+                 ? 1 : 0
+            });
+
             [
                 {
                     "name": $v,
@@ -23,32 +49,12 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
                     "yaxis": 'y' & ($i+1),
                     "type": "scatter",
                     "line": {
-                        "color": $lineColor
-                    }
-                },
-                {
-                    "name": $v,
-                    "showlegend": false,
-                    "x": $areaData.time_period,
-                    "y": $map($areaData.value, function($thv, $thi) {
-                         ($thv != null)
-                         and
-                         (
-                             ((($areaData.value)[$thi-1] != null) and ($thi > 0) and $thv > (1.25 * ($areaData.value)[$thi-1]))
-                             or
-                             ((($areaData.value)[$thi+1] != null) and ($thi < $count($areaData.value)-1) and (($areaData.value)[$thi+1] > (1.25 * $thv)))
-                             or
-                             ((($areaData.value)[$thi-1] != null) and ($thi > 0) and $thv < (0.75 * ($areaData.value)[$thi-1]))
-                             or
-                             ((($areaData.value)[$thi+1] != null) and ($thi < $count($areaData.value)-1) and ($areaData.value)[$thi+1] < (0.75 * $thv))
-                         )
-                         ? $thv : null
-                     }),
-                    "xaxis": 'x' & ($i+1),
-                    "yaxis": 'y' & ($i+1),
-                    "type": "scatter",
-                    "line": {
-                        "color": $highlightColor
+                        "color": $highlightedLines,
+                        "colorscale": $colorscale
+                    },
+                    "marker": {
+                        "color": $highlightedMarkers,
+                        "colorscale": $colorscale
                     }
                 }
             ]
