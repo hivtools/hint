@@ -1,24 +1,17 @@
 import * as CryptoJS from 'crypto-js';
 import {
-    ActionContext,
     ActionMethod,
     CustomVue,
     mapActions,
     mapGetters,
     mapMutations,
     mapState,
-    MutationMethod,
-    Payload
+    MutationMethod
 } from "vuex";
 import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 import moment from 'moment';
 import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
-import {LanguageMutation} from "./store/language/mutations";
-import {changeLanguage} from "./store/language/actions";
-import {DataExplorationState} from "./store/dataExploration/dataExploration";
-import Context = jest.Context;
-import {Language} from "./store/translations/locales";
 
 export type ComputedWithType<T> = () => T;
 
@@ -296,34 +289,4 @@ export function getFilenameFromUploadFormData(formdata: FormData) {
 export enum HelpFile {
     french = "public/resources/Naomi-instructions-de-base.pdf",
     english = "public/resources/Naomi-Help-Guide.pdf"
-}
-
-export const ChangeLanguageHelper = async (context: ActionContext<any, any>, payload: Language, root: boolean = false) => {
-
-    const {commit, dispatch, rootState} = context;
-
-    if (rootState.language === payload) {
-        return;
-    }
-
-    commit({type: LanguageMutation.SetUpdatingLanguage, payload: true});
-
-    await changeLanguage<DataExplorationState>(context, payload);
-
-    const actions: Promise<unknown>[] = [];
-
-    if (rootState.baseline?.iso3) {
-        actions.push(dispatch("metadata/getPlottingMetadata", rootState.baseline.iso3));
-    }
-
-    if (root && rootState.modelCalibrate.status.done) {
-        actions.push(dispatch("modelCalibrate/getResult"));
-    }
-
-    if (Object.keys(rootState.genericChart.datasets).length > 0) {
-        actions.push(dispatch("genericChart/refreshDatasets"));
-    }
-
-    await Promise.all(actions);
-    commit({type: LanguageMutation.SetUpdatingLanguage, payload: false});
 }

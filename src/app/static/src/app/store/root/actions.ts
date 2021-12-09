@@ -9,7 +9,7 @@ import {api} from "../../apiService";
 import {ErrorReportManualDetails} from "../../types";
 import {VersionInfo} from "../../generated";
 import {currentHintVersion} from "../../hintVersion";
-import {ChangeLanguageHelper} from "../../utils";
+import {ChangeLanguageAction} from "../language/actions";
 
 
 export interface RootActions extends LanguageActions<RootState> {
@@ -59,7 +59,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     },
 
     async changeLanguage(context, payload) {
-        await ChangeLanguageHelper(context, payload, true)
+        await ChangeLanguageAction(context, payload, true)
     },
 
     async generateErrorReport(context, payload) {
