@@ -164,7 +164,7 @@ describe("ModelCalibrate actions", () => {
                         indicator_id: "test indicator",
                         x_axis_id: "test_x",
                         disaggregate_by_id: "test_dis",
-                        selected_filter_options: {"test_name": "test_value"}
+                        selected_filter_options: {"test_name": ["test_value"]}
                     }
                 }
             },
@@ -206,7 +206,7 @@ describe("ModelCalibrate actions", () => {
                 indicatorId: "test indicator",
                 xAxisId: "test_x",
                 disaggregateById: "test_dis",
-                selectedFilterOptions: {"test_name": "test_value"}
+                selectedFilterOptions: {"test_name": ["test_value"]}
             }
         });
         expect(commit.mock.calls[3][0]).toBe("Calibrated");
