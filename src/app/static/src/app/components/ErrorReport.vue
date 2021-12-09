@@ -187,17 +187,7 @@
                     stepsToReproduce: this.stepsToReproduce,
                     email: this.email
                 });
-                // to be removed
-                /*
-                await this.generateErrorReport({
-                    section: this.section,
-                    description: this.description,
-                    stepsToReproduce: this.stepsToReproduce,
-                    email: this.email
-                })
 
-                 */
-                //
                 this.resetData();
                 this.showFeedback = true;
             },
