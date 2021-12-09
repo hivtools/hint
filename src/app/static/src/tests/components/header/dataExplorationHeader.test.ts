@@ -8,6 +8,7 @@ import {expectTranslatedWithStoreType} from "../../testHelpers";
 import HintrVersionMenu from "../../../app/components/header/HintrVersionMenu.vue";
 import {DataExplorationState} from "../../../app/store/dataExploration/dataExploration";
 import {Language} from "../../../app/store/translations/locales";
+import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
 
 describe(`Data Exploration header`, () => {
 
@@ -66,12 +67,12 @@ describe(`Data Exploration header`, () => {
 
     it("renders language menu", () => {
         const wrapper = getWrapper()
-        expect(wrapper.find("language-menu-stub").exists()).toBe(true)
+        expect(wrapper.find(LanguageMenu).exists()).toBe(true)
     });
 
     it("renders hintr version", () => {
         const wrapper = getWrapper()
-        expect(wrapper.findAll(HintrVersionMenu).length).toBe(1);
+        expect(wrapper.find(HintrVersionMenu).exists()).toBe(true);
     })
 
     it("renders Run model link as expected", () => {
