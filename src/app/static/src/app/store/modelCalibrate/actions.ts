@@ -78,7 +78,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                     const defaults = data.plottingMetadata.barchart.defaults;
                     const unfrozenDefaultOptions= Object.keys(defaults.selected_filter_options)
                         .reduce((dict, key) => {
-                            dict[key] = [...defaults[key]];
+                            dict[key] = [...defaults.selected_filter_options[key]];
                             return dict;
                         }, {} as Dict<FilterOption[]>);
 
