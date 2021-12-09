@@ -15,7 +15,7 @@ function isRoot(object: DataExplorationState): object is RootState {
     return !object.dataExplorationMode
 }
 
-export const ChangeLanguageAction = async (context: ActionContext<any, any>, payload: Language) => {
+export const ChangeLanguageAction = async (context: ActionContext<DataExplorationState, DataExplorationState>, payload: Language) => {
 
     const {commit, dispatch, rootState} = context;
 
