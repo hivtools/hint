@@ -6,7 +6,7 @@ import {
     mockFailure,
     mockProgramResponse,
     mockRootState,
-    mockSuccess,
+    mockSuccess, mockSurveyAndProgramState,
     mockSurveyResponse
 } from "../mocks";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
@@ -16,7 +16,9 @@ import Mock = jest.Mock;
 
 const rootState = mockRootState();
 const mockFormData = {
-    get: (key: string) => { return key == "file" ? {name: "file.txt"} : null; }
+    get: (key: string) => {
+        return key == "file" ? {name: "file.txt"} : null;
+    }
 };
 
 describe("Survey and programme actions", () => {
@@ -426,7 +428,7 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        await actions.deleteProgram({commit, rootState} as any);
+        await actions.deleteProgram({commit, rootState, state: mockSurveyAndProgramState()} as any);
         expect(commit).toBeCalledTimes(2);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
         expect(commit.mock.calls[1][0]).toEqual({
@@ -440,7 +442,7 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        await actions.deleteANC({commit, rootState} as any);
+        await actions.deleteANC({commit, rootState, state: mockSurveyAndProgramState()} as any);
         expect(commit).toBeCalledTimes(2);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
         expect(commit.mock.calls[1][0]).toEqual({
@@ -460,7 +462,7 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        await actions.deleteAll({commit, rootState} as any);
+        await actions.deleteAll({commit, rootState, state: mockSurveyAndProgramState()} as any);
         expect(mockAxios.history["delete"].length).toBe(3);
         expect(commit).toBeCalledTimes(5);
         expect(commit.mock.calls.map(c => c[0]["type"])).toEqual([

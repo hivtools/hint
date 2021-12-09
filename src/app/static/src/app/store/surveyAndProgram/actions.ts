@@ -149,21 +149,27 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
     },
 
     async deleteProgram(context) {
-        const {commit} = context;
+        const {commit, state} = context;
         await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
             .delete("/disease/programme/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
+                if (state.selectedDataType == DataType.Program) {
+                    commitSelectedDataTypeUpdated(commit, DataType.Survey)
+                }
                 commitClearGenericChartDataset(commit, DATASET_TYPE.ART)
             });
     },
 
     async deleteANC(context) {
-        const {commit} = context;
+        const {commit, state} = context;
         await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
             .delete("/disease/anc/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
+                if (state.selectedDataType == DataType.ANC) {
+                    commitSelectedDataTypeUpdated(commit, state.program ? DataType.Program : DataType.Survey)
+                }
                 commitClearGenericChartDataset(commit, DATASET_TYPE.ANC)
             });
     },

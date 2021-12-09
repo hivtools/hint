@@ -3,6 +3,7 @@ import {actions as baselineActions} from "../../app/store/baseline/actions"
 import {login, rootState} from "./integrationTest";
 import {getFormData} from "./helpers";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
+import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 
 describe("Survey and programme actions", () => {
 
@@ -107,7 +108,7 @@ describe("Survey and programme actions", () => {
         commit.mockReset();
 
         // delete
-        await actions.deleteProgram({commit, rootState} as any);
+        await actions.deleteProgram({commit, rootState, state: {selectedDataType: DataType.Survey}} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
         expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
 
@@ -129,7 +130,7 @@ describe("Survey and programme actions", () => {
         commit.mockReset();
 
         // delete
-        await actions.deleteANC({commit, rootState} as any);
+        await actions.deleteANC({commit, rootState, state: {selectedDataType: DataType.Survey}} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
         expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
 

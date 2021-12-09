@@ -24,11 +24,11 @@ export interface BaselineActions {
     validate: (store: ActionContext<BaselineState, DataExplorationState>) => void
 }
 
-const uploadCallback = (dispatch: Dispatch, response: any) => {
+const uploadCallback = async (dispatch: Dispatch, response: any) => {
     if (response) {
-        dispatch('validate');
+        await dispatch('validate');
     }
-    dispatch("surveyAndProgram/validateSurveyAndProgramData", {}, {root: true});
+    await dispatch("surveyAndProgram/validateSurveyAndProgramData", {}, {root: true});
 }
 
 interface UploadImportOptions {
@@ -159,7 +159,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
                     if (!context.rootState.dataExplorationMode) {
                         dispatch("surveyAndProgram/deleteAll", {}, {root: true});
                     } else {
-                        dispatch("validate");
+                        uploadCallback(dispatch, response)
                     }
                 }
             });
@@ -176,7 +176,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
                         dispatch("surveyAndProgram/deleteAll", {}, {root: true});
                     }
                     else {
-                        dispatch("validate");
+                        uploadCallback(dispatch, response)
                     }
                 }
             });
@@ -193,7 +193,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
                         dispatch("surveyAndProgram/deleteAll", {}, {root: true});
                     }
                     else {
-                        dispatch("validate");
+                        uploadCallback(dispatch, response);
                     }
                 }
             });
