@@ -10,7 +10,7 @@ export async function changeLanguage<T extends TranslatableState>({commit}: Acti
     commit({type: LanguageMutation.ChangeLanguage, payload: lang})
 }
 
-export const ChangeLanguageAction = async (context: ActionContext<any, any>, payload: Language, root: boolean = false) => {
+export const ChangeLanguageAction = async (context: ActionContext<any, any>, payload: Language, root = false) => {
 
     const {commit, dispatch, rootState} = context;
 
