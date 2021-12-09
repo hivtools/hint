@@ -85,7 +85,7 @@ class DiseaseTests : VersionFileTests()
     @Test
     fun `can upload and retrieve data without strict validation`()
     {
-        val postEntity = getTestEntity("anc-lax.csv")
+        val postEntity = getTestEntity("anc-pos-greater-than-total.csv")
         val strictValidationUploadResponse = testRestTemplate.postForEntity<String>("/disease/anc/", postEntity)
         assertError(strictValidationUploadResponse, HttpStatus.BAD_REQUEST, "INVALID_FILE")
 
