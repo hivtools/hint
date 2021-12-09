@@ -29,10 +29,11 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
     updateCalibratePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
         state.calibratePlot = {...state.calibratePlot, ...action.payload};
     },
-    updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
-        console.log("payload", action.payload)
+    updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<BarchartSelections>) {
+        console.log("action", action)
         // const { xAxisId, selectedFilterOptions } = action.payload
         // if (xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]){
+        //     console.log("here")
             
         //     // finds the filter options of the selected xAxis variable in the barchart filters getter
         //     let originalFilterOptionsOrder: NestedFilterOption[] | undefined = modelOutputGetters
@@ -63,7 +64,8 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
         // }
         
         // if unable to do the above, just updates the barchart as normal
-        state.barchart = {...state.barchart, ...action.payload};
+        // state.barchart = {...state.barchart, ...action.payload};
+        state.barchart = action.payload
     },
     updateBubblePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BubblePlotSelections>>) {
         state.bubble = {...state.bubble, ...action.payload};

@@ -47,7 +47,7 @@
                     :indicators="barchartIndicators"
                     :selections="barchartSelections"
                     :formatFunction="formatBarchartValue"
-                    @update="updateBarchartSelectionsAndXAxisOrder({payload: $event})"></bar-chart-with-filters>
+                    @update="updateBarchartSelectionsAndXAxisOrder($event)"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <area-indicators-table class="col-md-9"
@@ -236,8 +236,9 @@
             },
             updateBarchartSelectionsAndXAxisOrder(data){
                 console.log("reach 3", data)
-                let payload = {...data}
+                let payload = {...this.barchartSelections, ...data}
                 const { xAxisId, selectedFilterOptions } = data
+                console.log("reach 5", xAxisId, selectedFilterOptions, selectedFilterOptions[xAxisId], xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId])
                 if (xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]){
                     console.log("reach 4")
                     
@@ -262,10 +263,10 @@
                             return originalFilterOptionsIds.indexOf(a.id) - originalFilterOptionsIds.indexOf(b.id);
                         });
                         console.log("reach 1")
-                        // const changes = {...state.barchart, ...action.payload}
                         payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
                         // state.barchart = update
-                        console.log("reach 2")
+                        console.log("reach 2", payload)
+                        this.updateBarchartSelections(payload)
                         return;
                     }
                 }
