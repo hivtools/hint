@@ -1,3 +1,7 @@
+# hint 1.81.1
+
+* Fix bug which prevented selection change in barchart
+
 # hint 1.81.0
 
 * Add online-support-menu component to DE 
