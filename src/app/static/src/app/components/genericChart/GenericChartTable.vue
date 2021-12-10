@@ -96,17 +96,21 @@
                return result;
             },
             labelledData() {
-                console.log("started labelled data:" +  new Date().toISOString())
                 // Build a dictionary of the columns defined in the fetched dataset, which include all values and
                 // associated labels
                 const columnsDict = this.columns.reduce((dict, column) => ({...dict, [column.id]: column}), {} as Dict<GenericChartColumn>);
 
                 const result = this.filteredData.map(row => {
-                    const friendlyRow = {...row};
-                    this.tableConfig.columns.filter(column => column.data.labelColumn).forEach(columnConfig => {
-                        const column = columnsDict[columnConfig.data.labelColumn!];
-                        const friendlyValue = column.values.find(value => value.id == row[columnConfig.data.columnId])?.label;
-                        friendlyRow[columnConfig.data.columnId] = friendlyValue;
+                    const friendlyRow = {} as Dict<unknown>;
+                    this.tableConfig.columns.forEach(columnConfig => {
+                        const columnId = columnConfig.data.columnId;
+                        if (columnConfig.data.labelColumn) {
+                            const column = columnsDict[columnConfig.data.labelColumn!];
+                            const friendlyValue = column.values.find(value => value.id == row[columnConfig.data.columnId])?.label;
+                            friendlyRow[columnId] = friendlyValue;
+                        } else {
+                            friendlyRow[columnId] = row[columnId];
+                        }
                     });
 
                     // Include additional fields for any columns configured to include hierarchy values - use the
@@ -118,7 +122,6 @@
                     });
                     return friendlyRow;
                 });
-                console.log("finished labelled data:" +  new Date().toISOString())
                 return result;
             }
         },
