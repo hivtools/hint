@@ -96,6 +96,7 @@
                return result;
             },
             labelledData() {
+                console.log("started labelled data:" +  new Date().toISOString())
                 // Build a dictionary of the columns defined in the fetched dataset, which include all values and
                 // associated labels
                 const columnsDict = this.columns.reduce((dict, column) => ({...dict, [column.id]: column}), {} as Dict<GenericChartColumn>);
@@ -103,24 +104,20 @@
                 // Convert each label column's filter options to a dictionary of id to labels so we do not need to find values'
                 // labels in the options array per row
                 const configLabelColumns = this.tableConfig.columns.filter(column => column.data.labelColumn);
-                const columnValueLabels = configLabelColumns.reduce((dict, columnConfig) => {
+                const reduceConfigLabelColumnsOptionsToDict = (dict: Dict<Dict<string>>, columnConfig: GenericChartTableColumnConfig) => {
                     const key = columnConfig.data.labelColumn!;
                     // If key is not already in dictionary, and options are an array (not always the case for hierarchies)
                     if (!dict[key] && columnsDict[key].values.reduce) {
                         const filterOptions = columnsDict[key].values;
-                        const labelDict = filterOptions.reduce((dict, option) => ({
-                            ...dict,
-                            [option.id]: option.label
-                        }), {} as Dict<string>);
-
-                        return {
-                            ...dict,
-                            [key]: labelDict
-                        }
-                    } else {
-                        return dict;
+                        const labelDict = filterOptions.reduce((innerDict, option) => {
+                            innerDict[option.id] = option.label;
+                            return innerDict;
+                        }, {} as Dict<string>);
+                        dict[key] = labelDict;
                     }
-                }, {} as Dict<Dict<string>>);
+                    return dict;
+                };
+                const columnValueLabels = configLabelColumns.reduce(reduceConfigLabelColumnsOptionsToDict, {} as Dict<Dict<string>>);
 
                 const result = this.filteredData.map(row => {
                     const friendlyRow = {...row};
@@ -142,6 +139,7 @@
                     });
                     return friendlyRow;
                 });
+                console.log("finished labelled data:" +  new Date().toISOString())
                 return result;
             }
         },
