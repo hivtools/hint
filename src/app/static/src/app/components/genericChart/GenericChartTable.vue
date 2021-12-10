@@ -101,33 +101,12 @@
                 // associated labels
                 const columnsDict = this.columns.reduce((dict, column) => ({...dict, [column.id]: column}), {} as Dict<GenericChartColumn>);
 
-                // Convert each label column's filter options to a dictionary of id to labels so we do not need to find values'
-                // labels in the options array per row
-                const configLabelColumns = this.tableConfig.columns.filter(column => column.data.labelColumn);
-                const reduceConfigLabelColumnsOptionsToDict = (dict: Dict<Dict<string>>, columnConfig: GenericChartTableColumnConfig) => {
-                    const key = columnConfig.data.labelColumn!;
-                    // If key is not already in dictionary, and options are an array (not always the case for hierarchies)
-                    if (!dict[key] && columnsDict[key].values.reduce) {
-                        const filterOptions = columnsDict[key].values;
-                        const labelDict = filterOptions.reduce((innerDict, option) => {
-                            innerDict[option.id] = option.label;
-                            return innerDict;
-                        }, {} as Dict<string>);
-                        dict[key] = labelDict;
-                    }
-                    return dict;
-                };
-                const columnValueLabels = configLabelColumns.reduce(reduceConfigLabelColumnsOptionsToDict, {} as Dict<Dict<string>>);
-
                 const result = this.filteredData.map(row => {
                     const friendlyRow = {...row};
-                    // Check the table configuration for each configured column, and replace data values
-                    // with friendly values (labels) taken from columnValueLabels where configured to do so - i.e.
-                    // when there is a 'labelColumn' value
-                    configLabelColumns.forEach(columnConfig => {
-                        const columnId = columnConfig.data.columnId;
-                        const rowValue = row[columnId];
-                        friendlyRow[columnId] = columnValueLabels[columnConfig.data.labelColumn!][rowValue];
+                    this.tableConfig.columns.filter(column => column.data.labelColumn).forEach(columnConfig => {
+                        const column = columnsDict[columnConfig.data.labelColumn!];
+                        const friendlyValue = column.values.find(value => value.id == row[columnConfig.data.columnId])?.label;
+                        friendlyRow[columnConfig.data.columnId] = friendlyValue;
                     });
 
                     // Include additional fields for any columns configured to include hierarchy values - use the
