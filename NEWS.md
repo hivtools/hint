@@ -1,3 +1,15 @@
+# hint 1.82.0
+
+* Move change Language action to DE state
+
+# hint 1.81.0
+
+* Add online-support-menu component to DE 
+
+# hint 1.80.0
+
+* Add data exploration header
+
 # hint 1.79.0
 
 * Updating help documentation

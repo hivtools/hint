@@ -5,6 +5,7 @@ import {DataExplorationState, storeOptions} from "./store/dataExploration/dataEx
 import Errors from "./components/Errors.vue";
 import {Language} from "./store/translations/locales";
 import DataExploration from "./components/dataExploration/DataExploration.vue";
+import DataExplorationHeader from "./components/header/DataExplorationHeader.vue";
 import VueRouter, {NavigationGuardNext} from "vue-router";
 import {Route} from "vue-router/types/router";
 import {router} from "./router";
@@ -38,7 +39,9 @@ export const dataExplorationApp = new Vue({
     store,
     router,
     components: {
-        Errors
+        DataExplorationHeader,
+        Errors,
+        DataExploration
     },
     computed: mapState<DataExplorationState>({
         language: (state: DataExplorationState) => state.language

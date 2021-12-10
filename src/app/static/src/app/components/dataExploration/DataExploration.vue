@@ -5,6 +5,7 @@
                             :back-disabled="isUploadStep"
                             :next-disabled="isReviewStep">
         </stepper-navigation>
+        <hr/>
         <div class="pt-4">
             <adr-integration v-if="isUploadStep"></adr-integration>
             <upload-inputs v-if="isUploadStep"></upload-inputs>

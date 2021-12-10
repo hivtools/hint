@@ -48,12 +48,12 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
             const response = await api<ModelRunMutation, ModelRunMutation>(context)
                 .ignoreSuccess()
                 .withError(ModelRunMutation.RunResultError)
+                .freezeResponse()
                 .get<ModelResultResponse>(`/model/result/${state.modelRunId}`);
 
             if (response) {
                 commit({type: ModelRunMutation.WarningsFetched, payload: response.data.warnings});
-                const frozen = freezer.deepFreeze(response.data);
-                commit({type: ModelRunMutation.RunResultFetched, payload: frozen});
+                commit({type: ModelRunMutation.RunResultFetched, payload: response.data});
             }
         }
         commit({type: "Ready", payload: true});

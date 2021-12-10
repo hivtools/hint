@@ -21,6 +21,7 @@ export const actions: ActionTree<GenericChartState, DataExplorationState> & Meta
         await api<GenericChartMutation, "">(context)
             .withSuccess(GenericChartMutation.GenericChartMetadataFetched)
             .ignoreErrors()
+            .freezeResponse()
             .get(`/meta/generic-chart`);
     },
     async getDataset(context, payload) {
@@ -37,7 +38,7 @@ export const actions: ActionTree<GenericChartState, DataExplorationState> & Meta
                         type: GenericChartMutation.SetDataset,
                         payload: {
                             datasetId: payload.datasetId,
-                            dataset: response.data as unknown
+                            dataset: response.data
                         }
                     });
                 }
