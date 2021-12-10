@@ -98,9 +98,10 @@
     import {mapActionByName, mapStateProp} from "../../utils";
     import {GenericChartState} from "../../store/genericChart/genericChart";
     import {getDatasetPayload} from "../../store/genericChart/actions";
-    import {FilterOption} from "../../generated";
+    import {FilterOption, InputTimeSeriesData} from "../../generated";
     import Plotly from "./Plotly.vue";
     import {filterData, genericChartColumnsToFilters} from "./utils";
+    import {formatOutput} from "../plots/utils";
     import GenericChartTable from "./GenericChartTable.vue";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
@@ -125,6 +126,11 @@
     interface DataSourceSelections {
         datasetId: string,
         selectedFilterOptions: Dict<FilterOption[]> | null
+    }
+
+    interface FormattedInputTimeSeriesData {
+        value: number | string | null;
+        plot: string;
     }
 
     interface Data {
@@ -288,6 +294,8 @@
             chartData() {
                 const result = {} as Dict<unknown[]>;
 
+                console.log("inside data sources", this.chartMetadata.dataSelectors.dataSources)
+
                 for (const dataSource of this.chartMetadata.dataSelectors.dataSources) {
                     const dataSourceId = dataSource.id;
                     const dataSourceSelections = this.dataSourceSelections[dataSourceId];
@@ -302,7 +310,23 @@
                     }
 
                     result[dataSourceId] = filterData(unfilteredData, filters, selectedFilterOptions);
+
+                    // for (const datum of result[dataSourceId]){
+                    //     datum.value = formatOutput()
+                    // }
                 }
+
+                if (result["data"] && this.chartConfigValues.dataSourceConfigValues[0].columns[0].values.length) {
+                    (result["data"] as InputTimeSeriesData).forEach(datum => {
+                        const formatting = (this.chartConfigValues as ChartConfigValues).dataSourceConfigValues[0].columns[0].values.find(filterOption => filterOption.id === datum.plot)
+                        console.log("formatting", formatting)
+                        const { format, scale, accuracy } = formatting // I might need new generated types to add these keys
+                        if (accuracy){
+                            datum.value = formatOutput(datum.value, format, scale, accuracy) as any
+                        }
+                    })
+                }
+                console.log("inside result", result)
 
                 if (result["data"]) {
                     const dataWithPages = this.addPageNumbersToData(result["data"])
@@ -400,6 +424,9 @@
                 if (this.$refs.chartContainer) {
                     (this.$refs.chartContainer as HTMLElement).scrollTop = 0;
                 }
+            },
+            chartDataPage(){
+                console.log("chartDataPage", this.chartDataPage)
             }
         },
         async mounted() {
