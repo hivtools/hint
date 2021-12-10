@@ -19,7 +19,7 @@
         <error-report :open="errorReportOpen"
                       @send="sendErrorReport"
                       @close="toggleErrorReportModal">
-            <template v-slot:section>
+            <template v-slot:sectionView>
                 <div>
                     <label for="section" v-translate="'section'"></label>
                     <select class="form-control"
@@ -41,7 +41,7 @@
                     </select>
                 </div>
             </template>
-            <template v-slot:projectName>
+            <template v-slot:projectView>
                 <div v-if="projectName"><label for="project" v-translate="'project'"></label>
                     <input type="text" disabled id="project" :value="projectName" class="form-control"/>
                 </div>
@@ -125,10 +125,6 @@
         methods: {
             generateErrorReport: mapActionByName(null,
                 "generateErrorReport"),
-            toggleErrorReportModal() {
-                this.errorReportOpen = !this.errorReportOpen
-                this.errorReportOpen ? this.projectSection() : this.section = "";
-            },
             async sendErrorReport(errorReport) {
                 await this.generateErrorReport({
                     section: this.currentSection,
@@ -140,6 +136,10 @@
                 if (this.$route.path.indexOf("projects") > -1) {
                     this.section = "projects"
                 }
+            },
+            toggleErrorReportModal() {
+                this.errorReportOpen = !this.errorReportOpen
+                this.errorReportOpen ? this.projectSection() : this.section = "";
             }
         },
         components: {

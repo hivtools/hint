@@ -1,4 +1,4 @@
-import {extractErrors, getters} from "../../app/store/root/getters";
+import {getters} from "../../app/store/root/getters";
 import {
     mockADRState,
     mockADRUploadState,
@@ -16,6 +16,7 @@ import {
 import {RootState} from "../../app/root";
 import {initialDownloadResults} from "../../app/store/downloadResults/downloadResults";
 import {Warning} from "../../app/generated";
+import {extractErrors} from "../../app/utils";
 
 describe("root getters", () => {
 

@@ -2,7 +2,6 @@ import {LanguageActions} from "../language/language";
 import {ActionContext, ActionTree} from "vuex";
 import {DataExplorationState} from "./dataExploration";
 import {ChangeLanguageAction} from "../language/actions";
-import {RootState} from "../../root";
 import {ErrorReportManualDetails} from "../../types";
 import {currentHintVersion} from "../../hintVersion";
 import {VersionInfo} from "../../generated";
@@ -35,15 +34,12 @@ export const actions: ActionTree<DataExplorationState, DataExplorationState> & D
             versions: {hint: currentHintVersion, ...rootState.hintrVersion.hintrVersion as VersionInfo},
             errors: getters.errors
         }
-        console.log(data)
         commit({type: `errors/${ErrorsMutation.SendingErrorReport}`, payload: true});
-
         await api<ErrorsMutation, ErrorsMutation>(context)
-            .withSuccess(`errors/${ErrorsMutation.ErrorReportSuccess}` as ErrorsMutation, true)
-            .withError(`errors/${ErrorsMutation.ErrorReportError}` as ErrorsMutation, true)
+            .withSuccess(`errors/${ErrorsMutation.ErrorReportSuccess}` as ErrorsMutation)
+            .withError(`errors/${ErrorsMutation.ErrorReportError}` as ErrorsMutation)
             .postAndReturn("error-report", data)
 
         commit({type: `errors/${ErrorsMutation.SendingErrorReport}`, payload: false});
     }
-
 }

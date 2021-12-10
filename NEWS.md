@@ -1,3 +1,7 @@
+# hint 1.83.0
+
+* Data exploration mode error reporting
+
 # hint 1.82.0
 
 * Move change Language action to DE state

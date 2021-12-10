@@ -3,7 +3,7 @@
         <h4 v-translate="'troubleshootingRequest'"></h4>
         <form class="form was-validated" id="report-form" v-if="!showFeedback">
             <div class="form-group">
-                <slot name="projectName"/>
+                <slot name="projectView"/>
             </div>
             <div class="form-group" v-if="isGuest">
                 <label for="email" v-translate="'email'"></label>
@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <slot name="section"></slot>
+                <slot name="sectionView"></slot>
             </div>
             <div class="form-group">
                 <label for="description"
@@ -149,7 +149,6 @@
             return {
                 description: "",
                 stepsToReproduce: "",
-                section: "",
                 email: "",
                 showFeedback: false,
                 validEmail: false

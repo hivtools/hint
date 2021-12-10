@@ -14,7 +14,7 @@
         <error-report :open="errorReportOpen"
                       @send="sendErrorReport"
                       @close="toggleErrorReportModal">
-            <template v-slot:section>
+            <template v-slot:sectionView>
                 <div>
                     <label for="section" v-translate="'section'"></label>
                     <select class="form-control" v-model="section" id="section">
