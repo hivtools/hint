@@ -17,9 +17,9 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
 
             /* Check if each successive line should be highlighted - if the difference between a value and its preceding
                value exceeds the threshold, and return this as array of boolean */
-            $highlightedLineIndexes := $map([1..$count($values[-1])], function($thv, $thi) {(
-                 $thisVal := $values[$thi];
-                 $prevVal := $values[$thi-1];
+            $highlightedLineIndexes := $map([1..$count($values)-1], function($thv) {(
+                 $thisVal := $values[$thv];
+                 $prevVal := $values[$thv-1];
 
                  $thisVal != null and $prevVal != null and $thisVal > 0
                  and
@@ -30,11 +30,11 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
             $highlightXAndY := $noHighlightsRequired ? [[],[]] : (
                 /* Check if there are any single-value gaps between highlighted indexes - if so, we need to interpolate
                 nulls into the data to force a line break so the line between is not highlighted*/
-                $interpolateIndexes := $map([0..$count($highlightedLineIndexes)-2], function($v, $i){
-                    $i > 0 and
-                    $highlightedLineIndexes[$i-1] and $not($v) and $highlightedLineIndexes[$i+1]
+                $interpolateIndexes := $map([0..$count($highlightedLineIndexes)-2], function($v){
+                    $v > 0 and
+                    $highlightedLineIndexes[$v-1] and $not($highlightedLineIndexes[$v]) and $highlightedLineIndexes[$v+1]
                 });
-                $interpolationRequired := $count($filter($interpolationIndexes, function($v, $i) {$v})) > 0;
+                $interpolationRequired := $count($filter($interpolateIndexes, function($v, $i) {$v}) ) > 0;
 
                 $highlightY := $map([0..$count($values)-1], function($v){(
                    /* Calculate if this marker should be highlighted, if so add value to highlighted y markers, if not add null*/
@@ -42,22 +42,23 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
                          or
                         ($v = $count($highlightedLineIndexes) and $highlightedLineIndexes[$v-1])
                         or
-                        ($v > 0 and $v < $count($highlightedLineIndexes) and $highlightedLineIndexes[$v-1] or $highlightedLineInexes[$v])
+                        ($v > 0 and $v < $count($highlightedLineIndexes) and ($highlightedLineIndexes[$v-1] or $highlightedLineIndexes[$v]))
                         ? $values[$v] : null;
 
-                    $interpolateIndexes[$v] ? [$markerVal, null] : $markerVal
+                    $interpolateIndexes[$v] ? [$markerVal, null] : [$markerVal]
 
-                )});
-                $highlightX := $not($interpolationRequired) ? $areaData.time_period : [0..$count($values)-1].(
-                    $interpolateIndexes[$] ? [$area_time_period[$], null] : $area_time_period[$];
-                );
+                )}).*;
+
+                $timePeriods := $areaData.time_period;
+                $highlightX := $not($interpolationRequired) ? $timePeriods : $map([0..$count($values)-1], function($v){(
+                    $interpolateIndexes[$v] ? [$timePeriods[$v], null] : [$timePeriods[$v]];
+                )}).*;
 
                 [[$highlightX], [$highlightY]]
              );
 
             [
-                {"test": $highlightedLineIndexes},
-                {
+               {
                     "name": $v,
                     "showlegend": false,
                     "x": $areaData.time_period,

@@ -65,7 +65,6 @@
             },
             data() {
                 const j = jsonata(this.chartMetadata);
-                console.log(JSON.stringify(this.inputData))
                 const results = j.evaluate(this.inputData);
                 return results
             },
@@ -85,7 +84,6 @@
                         const el = this.$refs.chart;
                         const drawFunc = this.layoutRequired ? Plotly.newPlot : Plotly.react;
                         this.layoutRequired = false;
-                        //console.log(JSON.stringify(this.data))
                         drawFunc(el as HTMLElement, this.data.data as any, this.data.layout, this.data.config as any);
                     }
                     finally {
