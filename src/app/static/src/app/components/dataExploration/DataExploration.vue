@@ -56,7 +56,7 @@
                 return this.step === 2
             },
             baselineValid: mapGetterByName("baseline", "validForDataExploration"),
-            surveyAndProgramValid: mapGetterByName("surveyAndProgram", "complete")
+            surveyAndProgramValid: mapGetterByName("surveyAndProgram", "validForDataExploration")
         },
         methods: {
             next() {

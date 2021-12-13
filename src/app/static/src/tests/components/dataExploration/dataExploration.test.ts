@@ -3,7 +3,7 @@ import DataExploration from "../../../app/components/dataExploration/DataExplora
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import {
-    mockBaselineState, mockShapeResponse,
+    mockBaselineState, mockProgramResponse, mockShapeResponse,
     mockSurveyAndProgramState, mockSurveyResponse
 } from "../../mocks";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
@@ -98,7 +98,7 @@ describe(`data exploration component`, () => {
                 validatedConsistent: true
             },
             {
-                survey: mockSurveyResponse()
+                program: mockProgramResponse()
             })
         const wrapper = shallowMount(DataExploration, {store});
         expect(wrapper.find("stepper-navigation-stub").props("nextDisabled")).toBe(false)
