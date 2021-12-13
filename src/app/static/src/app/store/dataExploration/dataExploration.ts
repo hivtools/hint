@@ -23,6 +23,7 @@ import {Error} from "../../generated";
 import {TranslatableState} from "../../types";
 import {mutations} from "./mutations";
 import {getters} from "./getters";
+import {actions} from "./actions";
 
 declare const currentUser: string;
 
@@ -75,5 +76,6 @@ export const storeOptions: StoreOptions<DataExplorationState> = {
         hintrVersion
     },
     mutations,
-    getters
+    getters,
+    actions
 };

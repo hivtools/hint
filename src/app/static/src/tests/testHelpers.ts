@@ -5,6 +5,8 @@ import {Wrapper} from "@vue/test-utils";
 import {RootState} from "../app/root";
 import {Language} from "../app/store/translations/locales";
 import registerTranslations from "../app/store/translations/registerTranslations";
+import {LanguageMutation} from "../app/store/language/mutations";
+import Mock = jest.Mock;
 
 export function expectEqualsFrozen(args: PayloadWithType<any>, expected: PayloadWithType<any>) {
     expect(Object.isFrozen(args["payload"])).toBe(true);
@@ -91,3 +93,19 @@ export const expectTranslated = (element: Wrapper<any>,
                                  store: Store<RootState>,
                                  attribute?: string) =>
     expectTranslatedWithStoreType<RootState>(element, englishText, frenchText, portugueseText, store, attribute);
+
+export const expectChangeLanguageMutations = (commit: Mock) => {
+    expect(commit.mock.calls[0][0]).toStrictEqual({
+        type: LanguageMutation.SetUpdatingLanguage,
+        payload: true
+    });
+    expect(commit.mock.calls[1][0]).toStrictEqual({
+        type: LanguageMutation.ChangeLanguage,
+        payload: "fr"
+    });
+
+    expect(commit.mock.calls[2][0]).toStrictEqual({
+        type: LanguageMutation.SetUpdatingLanguage,
+        payload: false
+    });
+};

@@ -14,7 +14,7 @@
                 </span>
                 <hintr-version-menu class="pr-2 mr-2 border-right"/>
                 <online-support-menu class="pr-2 mr-2 border-right"/>
-                <a :href="'public/resources/' + helpFilename"
+                <a :href="helpFilename"
                    target="_blank"
                    class="pr-2 mr-2 border-right"
                    v-translate="'help'">
@@ -35,7 +35,7 @@
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";
-    import {mapStateProp} from "../../utils";
+    import {HelpFile, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import HintrVersionMenu from "./HintrVersionMenu.vue";
     import OnlineSupportMenu from "./OnlineSupportMenu.vue";
@@ -52,11 +52,10 @@
         computed: {
             helpFilename: mapStateProp<RootState, string>(null,
                 (state: RootState) => {
-                    let filename = "Naomi-Help-Guide.pdf";
                     if (state.language == Language.fr) {
-                        filename = "Naomi-instructions-de-base.pdf";
+                        return HelpFile.french;
                     }
-                    return filename;
+                    return HelpFile.english;
                 }),
             ...mapGetters(["isGuest"])
         },

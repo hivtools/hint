@@ -85,8 +85,9 @@
     import Vue from "vue";
     import {ChevronLeftIcon, ChevronRightIcon} from "vue-feather-icons";
     import {
+        DatasetConfig,
         DataSourceConfig,
-        Dict, DisplayFilter, GenericChartColumn,
+        Dict, DisplayFilter, GenericChartColumn, GenericChartColumnValue,
         GenericChartDataset,
         GenericChartMetadata,
         GenericChartMetadataResponse, GenericChartTableConfig
@@ -100,7 +101,7 @@
     import {getDatasetPayload} from "../../store/genericChart/actions";
     import {FilterOption, InputTimeSeriesData} from "../../generated";
     import Plotly from "./Plotly.vue";
-    import {filterData, genericChartColumnsToFilters} from "./utils";
+    import {filterData, genericChartColumnsToFilters, numeralJsToD3format} from "./utils";
     import {formatOutput} from "../plots/utils";
     import GenericChartTable from "./GenericChartTable.vue";
     import {Language} from "../../store/translations/locales";
@@ -270,6 +271,22 @@
                     scrollHeight = `${(subplots.heightPerRow * rows) + 70}px`;
                 }
 
+                let yAxisFormat = "";
+                const valueFormatColumn = this.chartMetadata.valueFormatColumn;
+                if (valueFormatColumn) {
+                    // We only support one value format at a time for now
+                    // TODO: should probably use 'data' to be consistent with subplots
+                    const selections = dataSourceConfigValues[0].selections.selectedFilterOptions;
+                    if (selections && selections[valueFormatColumn].length) {
+                        const format = (selections[valueFormatColumn][0] as GenericChartColumnValue).format;
+                        if (format) {
+                            const plotlyFormat = numeralJsToD3format(format);
+                            yAxisFormat = plotlyFormat;
+                        }
+                    }
+                }
+                layoutData.yAxisFormat = yAxisFormat;
+
                 // The metadata supports multiple chart types per chart e.g Scatter and Bar, but for now we only need to
                 // support one chart type, so here we select the first config in the array
                 const chartConfig = this.chartMetadata.chartConfig[0].config;
@@ -320,9 +337,10 @@
                     (result["data"] as InputTimeSeriesData).forEach(datum => {
                         const formatting = (this.chartConfigValues as ChartConfigValues).dataSourceConfigValues[0].columns[0].values.find(filterOption => filterOption.id === datum.plot)
                         console.log("formatting", formatting)
-                        const { format, scale, accuracy } = formatting // I might need new generated types to add these keys
+                        const { format, accuracy } = formatting
                         if (accuracy){
-                            datum.value = formatOutput(datum.value, format, scale, accuracy) as any
+                            datum.value = formatOutput(datum.value, format, null, parseFloat(accuracy))
+                            console.log("datum.value", datum.value)
                         }
                     })
                 }

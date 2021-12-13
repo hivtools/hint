@@ -97,17 +97,17 @@ describe("user header", () => {
         const store = createStore()
         const wrapper = shallowMount(UserHeader, {localVue, store, stubs: ["router-link"]});
         const vm = (wrapper as any).vm;
-        expect(vm.helpFilename).toStrictEqual("Naomi-Help-Guide.pdf");
+        expect(vm.helpFilename).toStrictEqual("public/resources/Naomi-Help-Guide.pdf");
 
         const frStore = createLanguageStore(Language.fr);
         const frWrapper = shallowMount(UserHeader, {localVue, store: frStore, stubs: ["router-link"]});
         const frVm = (frWrapper as any).vm;
-        expect(frVm.helpFilename).toStrictEqual("Naomi-instructions-de-base.pdf");
+        expect(frVm.helpFilename).toStrictEqual("public/resources/Naomi-instructions-de-base.pdf");
 
         const ptStore = createLanguageStore(Language.pt);
         const ptWrapper = shallowMount(UserHeader, {localVue, store: ptStore, stubs: ["router-link"]});
         const ptVm = (ptWrapper as any).vm;
-        expect(ptVm.helpFilename).toStrictEqual("Naomi-Help-Guide.pdf");
+        expect(ptVm.helpFilename).toStrictEqual("public/resources/Naomi-Help-Guide.pdf");
     });
 
     it("contains Basic steps document links", () => {
