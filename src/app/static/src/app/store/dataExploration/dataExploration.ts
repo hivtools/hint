@@ -18,12 +18,13 @@ import {
 } from "../plottingSelections/plottingSelections";
 import {errors, ErrorsState, initialErrorsState} from "../errors/errors";
 import {localStorageManager} from "../../localStorageManager";
-import {StoreOptions} from "vuex";
-import {Error} from "../../generated";
+import {MutationPayload, Store, StoreOptions} from "vuex";
 import {TranslatableState} from "../../types";
 import {mutations} from "./mutations";
 import {getters} from "./getters";
 import {actions} from "./actions";
+import {stripNamespace} from "../../utils";
+import {RootState} from "../../root";
 
 declare const currentUser: string;
 
@@ -63,6 +64,13 @@ export const initialDataExplorationState = (): DataExplorationState => {
 };
 const existingState = localStorageManager.getState(true);
 
+const persistState = (store: Store<DataExplorationState>): void => {
+    store.subscribe((mutation: MutationPayload, state: DataExplorationState) => {
+        console.log(mutation.type);
+        localStorageManager.saveState(state);
+    })
+};
+
 export const storeOptions: StoreOptions<DataExplorationState> = {
     state: {...initialDataExplorationState(), ...existingState},
     modules: {
@@ -77,5 +85,6 @@ export const storeOptions: StoreOptions<DataExplorationState> = {
     },
     mutations,
     getters,
-    actions
+    actions,
+    plugins: [persistState]
 };
