@@ -337,9 +337,11 @@
                     (result["data"] as InputTimeSeriesData).forEach(datum => {
                         const formatting = (this.chartConfigValues as ChartConfigValues).dataSourceConfigValues[0].columns[0].values.find(filterOption => filterOption.id === datum.plot)
                         console.log("formatting", formatting)
-                        const { format, accuracy } = formatting
+                        // const { format, accuracy } = formatting
+                        const accuracy = parseFloat(formatting.accuracy)
                         if (accuracy){
-                            datum.value = formatOutput(datum.value, format, null, parseFloat(accuracy))
+                            datum.value = Math.round(datum.value / accuracy) * accuracy
+                            // datum.value = formatOutput(datum.value, format, null, parseFloat(accuracy))
                             console.log("datum.value", datum.value)
                         }
                     })
