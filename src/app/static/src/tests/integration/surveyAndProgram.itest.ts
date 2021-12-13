@@ -64,7 +64,7 @@ describe("Survey and programme actions", () => {
     it("can upload data with lax validation", async () => {
 
         const commit = jest.fn();
-        const formData = getFormData("anc-lax.csv");
+        const formData = getFormData("anc-pos-greater-than-total.csv");
         const root = {...rootState, dataExplorationMode: true}
 
         await actions.uploadANC({commit, rootState: root} as any, formData);
@@ -73,7 +73,7 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[1][0]["payload"]).toBe("anc");
         expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
         expect(commit.mock.calls[2][0]["payload"]["filename"])
-            .toBe("anc-lax.csv");
+            .toBe("anc-pos-greater-than-total.csv");
     });
 
     it("can delete survey", async () => {
@@ -87,7 +87,7 @@ describe("Survey and programme actions", () => {
         commit.mockReset();
 
         // delete
-        await actions.deleteSurvey({commit, rootState} as any);
+        await actions.deleteSurvey({commit, rootState, state: {selectedDataType: DataType.Survey}} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
 
         commit.mockReset();
