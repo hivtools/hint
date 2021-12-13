@@ -5,7 +5,6 @@ import {api} from "../../apiService";
 import {RootState} from "../../root";
 import {ModelCalibrateMutation} from "./mutations";
 import {FilterOption, ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
-import {freezer} from "../../utils";
 import {switches} from "../../featureSwitches";
 import {Dict} from "../../types";
 
