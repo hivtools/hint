@@ -4,13 +4,12 @@ import {StepDescription} from "../stepper/stepper";
 import {RootMutation} from "./mutations";
 import {ErrorsMutation} from "../errors/mutations";
 import {LanguageActions} from "../language/language";
-import {changeLanguage} from "../language/actions";
 import i18next from "i18next";
 import {api} from "../../apiService";
 import {ErrorReportManualDetails} from "../../types";
 import {VersionInfo} from "../../generated";
 import {currentHintVersion} from "../../hintVersion";
-import {LanguageMutation} from "../language/mutations";
+import {ChangeLanguageAction} from "../language/actions";
 
 
 export interface RootActions extends LanguageActions<RootState> {
@@ -60,31 +59,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     },
 
     async changeLanguage(context, payload) {
-        const {commit, dispatch, rootState} = context;
-
-        if (rootState.language === payload) {
-            return;
-        }
-
-        commit({type: LanguageMutation.SetUpdatingLanguage, payload: true});
-        await changeLanguage<RootState>(context, payload);
-
-        const actions: Promise<unknown>[] = [];
-
-        if (rootState.baseline?.iso3) {
-            actions.push(dispatch("metadata/getPlottingMetadata", rootState.baseline.iso3));
-        }
-
-        if (rootState.modelCalibrate.status.done) {
-            actions.push(dispatch("modelCalibrate/getResult"));
-        }
-
-        if (Object.keys(rootState.genericChart.datasets).length > 0) {
-            actions.push(dispatch("genericChart/refreshDatasets"));
-        }
-
-        await Promise.all(actions);
-        commit({type: LanguageMutation.SetUpdatingLanguage, payload: false});
+        await ChangeLanguageAction(context, payload)
     },
 
     async generateErrorReport(context, payload) {

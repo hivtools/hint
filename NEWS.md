@@ -1,6 +1,10 @@
-# hint 1.81.1
+# hint 1.82.1
 
 * Fix bug which prevented selection change in barchart
+
+# hint 1.82.0
+
+* Move change Language action to DE stater
 
 # hint 1.81.0
 

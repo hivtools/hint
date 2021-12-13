@@ -24,6 +24,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.file.Files
+import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("/adr")
@@ -36,8 +37,9 @@ class ADRController(private val encryption: Encryption,
                     fileManager: FileManager,
                     apiClient: HintrAPIClient,
                     session: Session,
-                    versionRepository: VersionRepository) :
-        HintrController(fileManager, apiClient, session, versionRepository)
+                    versionRepository: VersionRepository,
+                    request: HttpServletRequest) :
+        HintrController(fileManager, apiClient, session, versionRepository, request)
 {
 
     companion object
