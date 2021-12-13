@@ -1,6 +1,14 @@
-# hint 1.80.1
+# hint 1.82.1
 
 * Fix Input Time Series bug where some lines were shown incorrectly in red
+
+# hint 1.82.0
+
+* Move change Language action to DE state
+
+# hint 1.81.0
+
+* Add online-support-menu component to DE 
 
 # hint 1.80.0
 
