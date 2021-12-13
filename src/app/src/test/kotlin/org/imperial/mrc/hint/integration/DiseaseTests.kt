@@ -8,6 +8,7 @@ import org.springframework.boot.test.web.client.exchange
 import org.springframework.boot.test.web.client.getForEntity
 import org.springframework.boot.test.web.client.postForEntity
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 
 class DiseaseTests : VersionFileTests()
 {
@@ -79,6 +80,23 @@ class DiseaseTests : VersionFileTests()
         testRestTemplate.postForEntity<String>("/disease/anc/", postEntity)
         val responseEntity = testRestTemplate.getForEntity<String>("/disease/anc/")
         assertSuccess(responseEntity, "ValidateInputResponse")
+    }
+
+    @Test
+    fun `can upload and retrieve data without strict validation`()
+    {
+        val postEntity = getTestEntity("anc-pos-greater-than-total.csv")
+        val strictValidationUploadResponse = testRestTemplate.postForEntity<String>("/disease/anc/", postEntity)
+        assertError(strictValidationUploadResponse, HttpStatus.BAD_REQUEST, "INVALID_FILE")
+
+        val laxValidationUploadResponse = testRestTemplate.postForEntity<String>("/disease/anc/?strict=false", postEntity)
+        assertSuccess(laxValidationUploadResponse, "ValidateInputResponse")
+
+        val strictValidationGetResponse = testRestTemplate.getForEntity<String>("/disease/anc/")
+        assertError(strictValidationGetResponse, HttpStatus.BAD_REQUEST, "INVALID_FILE")
+
+        val laxValidationGetResponse = testRestTemplate.getForEntity<String>("/disease/anc/?strict=false")
+        assertSuccess(laxValidationGetResponse, "ValidateInputResponse")
     }
 
     @Test
