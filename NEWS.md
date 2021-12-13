@@ -1,3 +1,7 @@
+# hint 1.80.1
+
+* Fix Input Time Series bug where some lines were shown incorrectly in red
+
 # hint 1.80.0
 
 * Add data exploration header
