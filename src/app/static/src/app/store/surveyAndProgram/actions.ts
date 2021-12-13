@@ -146,9 +146,9 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
             .then(() => {
                 commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
                 if (state.selectedDataType == DataType.Survey) {
-                    if (!!state.program) {
+                    if (state.program) {
                         commitSelectedDataTypeUpdated(commit, DataType.Program)
-                    } else if (!!state.anc) {
+                    } else if (state.anc) {
                         commitSelectedDataTypeUpdated(commit, DataType.ANC)
                     }
                 }
@@ -163,9 +163,9 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
                 if (state.selectedDataType == DataType.Program) {
-                    if (!!state.survey) {
+                    if (state.survey) {
                         commitSelectedDataTypeUpdated(commit, DataType.Survey)
-                    } else if (!!state.anc) {
+                    } else if (state.anc) {
                         commitSelectedDataTypeUpdated(commit, DataType.ANC)
                     }
                 }
@@ -180,9 +180,9 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
                 if (state.selectedDataType == DataType.ANC) {
-                    if (!!state.program) {
+                    if (state.program) {
                         commitSelectedDataTypeUpdated(commit, DataType.Program)
-                    } else if (!!state.survey) {
+                    } else if (state.survey) {
                         commitSelectedDataTypeUpdated(commit, DataType.Survey)
                     }
                 }
