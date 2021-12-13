@@ -61,19 +61,19 @@ export const initialDataExplorationState = (): DataExplorationState => {
         dataExplorationMode: true
     }
 };
-const existingState = localStorageManager.getState();
+const existingState = localStorageManager.getState(true);
 
 export const storeOptions: StoreOptions<DataExplorationState> = {
     state: {...initialDataExplorationState(), ...existingState},
     modules: {
         adr,
         genericChart,
-        baseline,
-        metadata,
-        surveyAndProgram,
-        plottingSelections,
+        baseline: baseline(existingState),
+        metadata: metadata(existingState),
+        surveyAndProgram: surveyAndProgram(existingState),
+        plottingSelections: plottingSelections(existingState),
         errors,
-        hintrVersion
+        hintrVersion: hintrVersion(existingState)
     },
     mutations,
     getters,

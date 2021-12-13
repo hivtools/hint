@@ -3,8 +3,7 @@ import {actions} from './actions';
 import {mutations} from './mutations';
 import {ReadyState} from "../../root";
 import {NestedFilterOption, PjnzResponse, PopulationResponse, ShapeResponse, Error} from "../../generated";
-import {Dataset, Release, Dict} from "../../types";
-import {localStorageManager} from "../../localStorageManager";
+import {Dataset, Release, Dict} from "../../types";;
 import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface BaselineState extends ReadyState {
@@ -63,12 +62,12 @@ const getters = baselineGetters;
 
 const namespaced = true;
 
-const existingState = localStorageManager.getState();
-
-export const baseline: Module<BaselineState, DataExplorationState> = {
-    namespaced,
-    state: {...initialBaselineState(), ...existingState && existingState.baseline},
-    getters,
-    actions,
-    mutations
+export const baseline = (existingState: Partial<DataExplorationState> | null): Module<BaselineState, DataExplorationState> => {
+    return {
+        namespaced,
+            state: {...initialBaselineState(), ...existingState && existingState.baseline},
+        getters,
+            actions,
+            mutations
+    };
 };

@@ -1,7 +1,6 @@
 import {RootState} from "./root";
 import {currentHintVersion} from "./hintVersion";
 import {DataExplorationState} from "./store/dataExploration/dataExploration";
-import {router} from "./router";
 
 const getAppStateKey = (dataExplorationMode: boolean) => {
     const appType = dataExplorationMode ? "hintAppState_explore" : "hintAppState";
@@ -60,23 +59,21 @@ export class LocalStorageManager {
 
     saveState = (state: DataExplorationState) => {
         const partialState = serialiseState(state);
-        this.savePartialState(partialState);
+        this.savePartialState(partialState, state.dataExplorationMode);
     };
 
-    savePartialState = (partialState: Partial<RootState>) => {
-        const appStateKey = getAppStateKey(false);
+    savePartialState = (partialState: Partial<RootState>, dataExplorationMode: boolean) => {
+        const appStateKey = getAppStateKey(dataExplorationMode);
         window.localStorage.setItem(appStateKey, JSON.stringify(partialState));
     };
 
-    getState = (): Partial<RootState> | null => {
+    getState = (dataExplorationMode: boolean): Partial<RootState> | null => {
         if (currentUser != window.localStorage.getItem("user")) {
             localStorage.clear();
             localStorage.setItem("user", currentUser);
         }
 
-        console.log("route:"  +router.currentRoute.name);
-
-        const appStateKey = getAppStateKey(false);
+        const appStateKey = getAppStateKey(dataExplorationMode);
         const item = window.localStorage.getItem(appStateKey);
         if (item) {
             return JSON.parse(item) as Partial<RootState>;

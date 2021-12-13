@@ -1,8 +1,7 @@
 import {Module} from "vuex";
 import {RootState, WarningsState} from "../../root";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
-import {mutations} from "./mutations";
-import {localStorageManager} from "../../localStorageManager";
+import {mutations} from "./mutations";;
 import {actions} from "./actions";
 import {VersionInfo, Error} from "../../generated";
 
@@ -43,12 +42,13 @@ export const modelOptionsGetters = {
 };
 
 const namespaced = true;
-const existingState = localStorageManager.getState();
 
-export const modelOptions: Module<ModelOptionsState, RootState> = {
-    namespaced,
-    state: {...initialModelOptionsState(), ...existingState && existingState.modelOptions},
-    mutations,
-    actions,
-    getters: modelOptionsGetters
+export const modelOptions = (existingState: Partial<RootState> | null): Module<ModelOptionsState, RootState> => {
+    return {
+        namespaced,
+        state: {...initialModelOptionsState(), ...existingState && existingState.modelOptions},
+        mutations,
+        actions,
+        getters: modelOptionsGetters
+    };
 };

@@ -153,7 +153,8 @@ export const emptyState = (): RootState => {
         dataExplorationMode: false
     }
 };
-const existingState = localStorageManager.getState();
+
+const existingState = localStorageManager.getState(false);
 
 export const storeOptions: StoreOptions<RootState> = {
     state: {...emptyState(), ...existingState},
@@ -161,19 +162,19 @@ export const storeOptions: StoreOptions<RootState> = {
         adr,
         genericChart,
         adrUpload,
-        baseline,
-        metadata,
-        surveyAndProgram,
-        modelCalibrate,
-        modelOptions,
-        modelRun,
-        modelOutput,
-        plottingSelections,
-        stepper,
+        baseline: baseline(existingState),
+        metadata: metadata(existingState),
+        surveyAndProgram: surveyAndProgram(existingState),
+        modelCalibrate: modelCalibrate(existingState),
+        modelOptions: modelOptions(existingState),
+        modelRun: modelRun(existingState),
+        modelOutput: modelOutput(existingState),
+        plottingSelections: plottingSelections(existingState),
+        stepper: stepper(existingState),
         load,
         errors,
         projects,
-        hintrVersion,
+        hintrVersion: hintrVersion(existingState),
         downloadResults
     },
     actions: actions,
