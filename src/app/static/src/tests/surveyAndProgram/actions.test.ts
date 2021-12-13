@@ -430,6 +430,16 @@ describe("Survey and programme actions", () => {
             type: "genericChart/ClearDataset",
             payload: "survey"
         });
+        commit.mockReset();
+        await actions.deleteSurvey({
+            commit, rootState,
+            state: mockSurveyAndProgramState({selectedDataType: DataType.Survey, anc: mockAncResponse()})
+        } as any);
+        expect(commit).toBeCalledTimes(3);
+        expect(commit.mock.calls[1][0]).toEqual({
+            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
+            payload: DataType.ANC
+        });
     });
 
     it("deletes program and resets selected data type", async () => {
@@ -451,10 +461,22 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[2][0]).toEqual({
             type: "genericChart/ClearDataset",
             payload: "art"
+        })
+
+        commit.mockReset();
+        await actions.deleteProgram({
+            commit,
+            rootState,
+            state: mockSurveyAndProgramState({selectedDataType: DataType.Program, anc: mockAncResponse()})
+        } as any);
+        expect(commit).toBeCalledTimes(3);
+        expect(commit.mock.calls[1][0]).toEqual({
+            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
+            payload: DataType.ANC
         });
     });
 
-    it("deletes ANC", async () => {
+    it("deletes ANC and resets selected data type", async () => {
         mockAxios.onDelete("/disease/anc/")
             .reply(200, mockSuccess(true));
 
@@ -473,6 +495,18 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[2][0]).toEqual({
             type: "genericChart/ClearDataset",
             payload: "anc"
+        });
+
+        commit.mockReset();
+        await actions.deleteANC({
+            commit,
+            rootState,
+            state: mockSurveyAndProgramState({selectedDataType: DataType.ANC, survey: mockSurveyResponse()})
+        } as any);
+        expect(commit).toBeCalledTimes(3);
+        expect(commit.mock.calls[1][0]).toEqual({
+            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
+            payload: DataType.Survey
         });
     });
 
