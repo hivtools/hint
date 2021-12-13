@@ -1,4 +1,4 @@
-import {actions} from "../../app/store/root/actions";
+import {actions} from "../../app/store/dataExploration/actions";
 import {ErrorReportManualDetails} from "../../app/types";
 import {initialDataExplorationState} from "../../app/store/dataExploration/dataExploration";
 
