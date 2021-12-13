@@ -10,7 +10,8 @@
                     <span v-translate="'loggedInAs'"></span> {{ user }}
                 </span>
                 <hintr-version-menu class="pr-2 mr-2 border-right"/>
-                <a :href="'public/resources/' + helpFilename"
+                <data-exploration-support-menu class="pr-2 mr-2 border-right"/>
+                <a :href="helpFilename"
                    id="helpFile"
                    target="_blank"
                    class="pr-2 mr-2 border-right"
@@ -31,9 +32,10 @@
     import {mapGetters} from 'vuex';
     import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";
-    import {mapStateProp} from "../../utils";
+    import {HelpFile, mapStateProp} from "../../utils";
     import HintrVersionMenu from "./HintrVersionMenu.vue";
     import {DataExplorationState} from "../../store/dataExploration/dataExploration";
+    import DataExplorationSupportMenu from "./DataExplorationSupportMenu.vue";
 
     interface Props {
         title: string,
@@ -48,11 +50,10 @@
         computed: {
             helpFilename: mapStateProp<DataExplorationState, string>(null,
                 (state: DataExplorationState) => {
-                    let filename = "Naomi-basic-instructions.pdf";
                     if (state.language == Language.fr) {
-                        filename = "Naomi-instructions-de-base.pdf";
+                        return HelpFile.french;
                     }
-                    return filename;
+                    return HelpFile.english;
                 }),
             ...mapGetters(["isGuest"])
         },
@@ -62,7 +63,8 @@
         },
         components: {
             LanguageMenu,
-            HintrVersionMenu
+            HintrVersionMenu,
+            DataExplorationSupportMenu
         }
     })
 </script>

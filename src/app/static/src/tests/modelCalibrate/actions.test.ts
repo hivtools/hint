@@ -174,11 +174,13 @@ describe("ModelCalibrate actions", () => {
             },
             warnings: [mockWarning()]
         };
+        const mockResponse = mockSuccess(testResult);
         mockAxios.onGet(`/model/calibrate/result/1234`)
-            .reply(200, mockSuccess(testResult));
+            .reply(200, mockResponse);
 
         const commit = jest.fn();
         const dispatch = jest.fn();
+        const spy = jest.spyOn(freezer, "deepFreeze");
         const state = mockModelCalibrateState({
             calibrateId: "1234",
             status: {
@@ -210,6 +212,8 @@ describe("ModelCalibrate actions", () => {
         expect(commit.mock.calls[3][0]).toBe("Calibrated");
         expect(commit.mock.calls[4][0]).toBe("Ready");
         expect(dispatch.mock.calls[0][0]).toBe("getCalibratePlot");
+
+        expect(spy).toHaveBeenCalledWith(mockResponse);
     });
 
     it("getResult does not dispatch getCalibratePlot when switches if off", async () => {
