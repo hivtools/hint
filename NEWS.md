@@ -1,3 +1,7 @@
+# hint 1.82.1
+
+* Fix Input Time Series bug where some lines were shown incorrectly in red
+
 # hint 1.82.0
 
 * Move change Language action to DE state
