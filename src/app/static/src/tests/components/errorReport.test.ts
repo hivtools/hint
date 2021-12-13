@@ -1,5 +1,5 @@
 import Vue from "vue";
-import {shallowMount, mount, createLocalVue, Wrapper} from '@vue/test-utils';
+import {shallowMount, mount, createLocalVue} from '@vue/test-utils';
 import ErrorReport from "../../app/components/ErrorReport.vue";
 import Modal from "../../app/components/Modal.vue";
 import Vuex from "vuex";
@@ -50,25 +50,6 @@ describe("Error report component", () => {
     afterEach(() => {
         jest.resetAllMocks();
     });
-
-    const dataExplorationSectionSlot = {
-        name: 'sectionView',
-        template: `
-            <div>
-            <label for="section-id" v-translate="'section'"></label>
-            <select class="form-control" v-model="section" id="section">
-                <option v-translate="'dataExploration'"
-                        value="dataExploration">
-                </option>
-            </select>
-            </div>
-        `,
-        data() {
-            return {
-                section: '',
-            }
-        }
-    }
 
     const rootSectionSlot = {
         name: 'sectionView',
@@ -182,7 +163,7 @@ describe("Error report component", () => {
             },
             store,
             slots: {
-                sectionView: dataExplorationSectionSlot,
+                sectionView: rootSectionSlot,
                 projectView: projectSlot
             }
         });

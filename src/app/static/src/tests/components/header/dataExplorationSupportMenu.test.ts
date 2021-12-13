@@ -1,7 +1,7 @@
-import {createLocalVue, mount, shallowMount, Wrapper} from "@vue/test-utils";
+import {createLocalVue, mount, shallowMount} from "@vue/test-utils";
 import Vuex from "vuex";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {expectErrorReportOpen, expectTranslated, expectTranslatedWithStoreType} from "../../testHelpers";
+import {expectErrorReportOpen, expectTranslated} from "../../testHelpers";
 import DropDown from "../../../app/components/header/DropDown.vue";
 import VueRouter from 'vue-router'
 import DataExplorationSupportMenu from "../../../app/components/header/DataExplorationSupportMenu.vue"
@@ -139,34 +139,6 @@ describe("Data exploration online support menu", () => {
         expectErrorReportOpen(wrapper)
     });
 
-    it("can render section on widget", () => {
-
-        const store = createStore();
-        const wrapper = mount(DataExplorationSupportMenu, {
-            store,
-            localVue,
-            router
-        });
-
-        expect(wrapper.findAll(ErrorReport).length).toBe(1);
-        expect(wrapper.find(ErrorReport).props("open")).toBe(false);
-
-        expectErrorReportOpen(wrapper)
-
-        expect(wrapper.vm.$data.section).toBe("dataExploration")
-
-        const options = wrapper.find(ErrorReport).findAll("option")
-        expect(options.length).toBe(1)
-
-        expect((options.at(0).element as HTMLOptionElement).value).toBe("dataExploration");
-
-        expectTranslatedWithStoreType(options.at(0),
-            "Data Exploration",
-            "Exploration des données",
-            "Exploração de Dados",
-            store)
-    });
-
     it("selects current step by default", () => {
         const store = createStore();
         const wrapper = mount(DataExplorationSupportMenu, {
@@ -176,9 +148,6 @@ describe("Data exploration online support menu", () => {
         });
 
         expectErrorReportOpen(wrapper)
-
-        expect((wrapper.find(ErrorReport).find("select#section").element as HTMLSelectElement).value)
-            .toBe("dataExploration")
     });
 
     it("invokes generateErrorReport with expected data", async () => {
@@ -191,8 +160,6 @@ describe("Data exploration online support menu", () => {
         });
 
         expectErrorReportOpen(wrapper)
-
-        expect(wrapper.vm.$data.section).toBe("dataExploration")
 
         await wrapper.find(ErrorReport).vm.$emit("send",
             {
@@ -211,7 +178,6 @@ describe("Data exploration online support menu", () => {
                 email: ""
             }
         )
-        expect(wrapper.vm.$data.section).toBe("")
     });
 
 });

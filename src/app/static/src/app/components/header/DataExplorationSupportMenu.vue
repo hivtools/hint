@@ -14,16 +14,6 @@
         <error-report :open="errorReportOpen"
                       @send="sendErrorReport"
                       @close="toggleErrorReportModal">
-            <template v-slot:sectionView>
-                <div>
-                    <label for="section" v-translate="'section'"></label>
-                    <select class="form-control" v-model="section" id="section">
-                        <option v-translate="'dataExploration'"
-                                value="dataExploration">
-                        </option>
-                    </select>
-                </div>
-            </template>
         </error-report>
     </div>
 </template>
@@ -44,7 +34,6 @@
 
     interface Data {
         errorReportOpen: boolean
-        section: string
     }
 
     interface Methods {
@@ -56,8 +45,7 @@
     export default Vue.extend<Data, Methods, Computed, unknown>({
         data: function () {
             return {
-                errorReportOpen: false,
-                section: ""
+                errorReportOpen: false
             }
         },
         computed: {
@@ -71,14 +59,12 @@
             generateErrorReport: mapActionByName(null, "generateErrorReport"),
             toggleErrorReportModal() {
                 this.errorReportOpen = !this.errorReportOpen
-                this.errorReportOpen ? this.section = "dataExploration" : this.section = "";
             },
             async sendErrorReport(errorReport) {
                 await this.generateErrorReport({
-                    section: this.section,
+                    section: "dataExploration",
                     ...errorReport
                 })
-                this.section = ""
             }
         },
         components: {

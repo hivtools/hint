@@ -107,7 +107,6 @@
 
 
     interface Methods {
-        generateErrorReport: (payload: ErrorReportManualDetails) => void
         sendErrorReport: () => void
         cancelErrorReport: () => void
         resetData: () => void
@@ -175,7 +174,6 @@
             }
         },
         methods: {
-            generateErrorReport: mapActionByName(null, "generateErrorReport"),
             cancelErrorReport() {
                 this.resetData();
                 this.$emit("close");
