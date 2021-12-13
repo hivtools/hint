@@ -117,3 +117,8 @@ export const expectErrorReportOpen = (wrapper: Wrapper<any>, row = 0) => {
 
     expect(wrapper.find(ErrorReport).props("open")).toBe(true);
 }
+
+export function expectArraysEqual(result: any[], expected: any[]) {
+    expect(result).toEqual(expect.arrayContaining(expected));
+    expect(expected).toEqual(expect.arrayContaining(result));
+}

@@ -17,6 +17,7 @@ import {RootState} from "../../app/root";
 import {initialDownloadResults} from "../../app/store/downloadResults/downloadResults";
 import {Warning} from "../../app/generated";
 import {extractErrors} from "../../app/utils";
+import {expectArraysEqual} from "../testHelpers";
 
 describe("root getters", () => {
 
@@ -25,11 +26,6 @@ describe("root getters", () => {
             null as any,
             null as any,
             null as any);
-    }
-
-    function expectArraysEqual(result: any[], expected: any[]) {
-        expect(result).toEqual(expect.arrayContaining(expected));
-        expect(expected).toEqual(expect.arrayContaining(result));
     }
 
     const modelOptionWarnings: Warning[] = [
