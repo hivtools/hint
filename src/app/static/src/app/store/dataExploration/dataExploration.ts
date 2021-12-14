@@ -62,6 +62,8 @@ export const initialDataExplorationState = (): DataExplorationState => {
         dataExplorationMode: true
     }
 };
+
+localStorageManager.deleteState(false); //Clear state in other mode if it exists
 const existingState = localStorageManager.getState(true);
 
 const persistState = (store: Store<DataExplorationState>): void => {

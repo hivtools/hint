@@ -81,6 +81,10 @@ export class LocalStorageManager {
             return null;
         }
     };
+
+    deleteState = (dataExplorationMode: boolean): void => {
+        window.localStorage.removeItem(getAppStateKey(dataExplorationMode));
+    };
 }
 
 export const localStorageManager = new LocalStorageManager();
