@@ -1,10 +1,14 @@
+# hint 1.82.2
+
+* Fix bug which prevented selection change in barchart
+
 # hint 1.82.1
 
 * Fix Input Time Series bug where some lines were shown incorrectly in red
 
 # hint 1.82.0
 
-* Move change Language action to DE state
+* Move change Language action to DE stater
 
 # hint 1.81.0
 
