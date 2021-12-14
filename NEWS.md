@@ -1,3 +1,23 @@
+# hint 1.83.0
+
+* Support y-axis formats in Input Time Series
+
+# hint 1.82.2
+
+* Fix bug which prevented selection change in barchart
+
+# hint 1.82.1
+
+* Fix Input Time Series bug where some lines were shown incorrectly in red
+
+# hint 1.82.0
+
+* Move change Language action to DE stater
+
+# hint 1.81.0
+
+* Add online-support-menu component to DE 
+
 # hint 1.80.0
 
 * Add data exploration header

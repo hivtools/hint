@@ -110,8 +110,44 @@ describe("GenericChartTable component", () => {
         const wrapper = getWrapper();
         const table = wrapper.find(Table);
         const expectedData = [
-            {area_name: "Malawi", area_level_id: "Country", age_group: "0-15", plot_type: "prevalence", value: 200},
-            {area_name: "Chitipa", area_level_id: "Region", age_group: "15-49", plot_type: "prevalence", value: 100}
+            {area_name: "Malawi", area_level_id: "Country", age_group: "0-15", value: 200},
+            {area_name: "Chitipa", area_level_id: "Region", age_group: "15-49", value: 100}
+        ];
+        expect(table.props("filteredData")).toStrictEqual(expectedData);
+    });
+
+    it("renders table component with expected labelled data when labelColumn is re-used", () => {
+        const tableConfigWithTwoAreaIdColumns = {
+            columns: [
+                ...tableConfig.columns,
+                {
+                    "data": {
+                        "columnId": "area_level_id_2",
+                        "labelColumn": "area_level"
+                    },
+                    "header": {
+                        "type": "columnLabel",
+                        "column": "area_level"
+                    }
+                }
+            ]
+        };
+        const filteredDataWithTwoAreaIdColumns = [
+            {...filteredData[0], area_level_id_2: 1},
+            {...filteredData[1], area_level_id_2: 0}
+        ];
+
+        const propsData = {
+            tableConfig: tableConfigWithTwoAreaIdColumns,
+            filteredData: filteredDataWithTwoAreaIdColumns,
+            columns,
+            selectedFilterOptions
+        };
+        const wrapper = shallowMount(GenericChartTable, {propsData});
+        const table = wrapper.find(Table);
+        const expectedData = [
+            {area_name: "Malawi", area_level_id: "Country", area_level_id_2: "Region", age_group: "0-15", value: 200},
+            {area_name: "Chitipa", area_level_id: "Region", area_level_id_2: "Country", age_group: "15-49", value: 100}
         ];
         expect(table.props("filteredData")).toStrictEqual(expectedData);
     });
@@ -126,6 +162,15 @@ describe("GenericChartTable component", () => {
                 "header": {
                     "type": "columnLabel",
                     "column": "area_name"
+                }
+            },
+            {
+                "data": {
+                    "columnId": "value"
+                },
+                "header": {
+                    "type": "columnLabel",
+                    "column": "value"
                 }
             }
         ]
@@ -156,6 +201,11 @@ describe("GenericChartTable component", () => {
                     ]
                 }
             ]
+        },
+        {
+            id: "value",
+            label: "value",
+            column_id: "value"
         }
     ];
 
@@ -178,14 +228,15 @@ describe("GenericChartTable component", () => {
 
         const table = wrapper.find(Table);
         const expectedData = [
-            {area_name: "Malawi", area_id: "MWI", value: 200, area_name_hierarchy: ""},
-            {area_name: "Chitipa", area_id: "MWI_1_2", value: 100, area_name_hierarchy: "Malawi/Northern"},
-            {area_name: "Southern", area_id: "MWI_2", value: 150, area_name_hierarchy: "Malawi"}
+            {area_name: "Malawi", value: 200, area_name_hierarchy: ""},
+            {area_name: "Chitipa", value: 100, area_name_hierarchy: "Malawi/Northern"},
+            {area_name: "Southern", value: 150, area_name_hierarchy: "Malawi"}
         ];
         expect(table.props("filteredData")).toStrictEqual(expectedData);
 
         const expectedFields = [
-            {key: "area_name", label: "area_name", sortable: true, sortByFormatted: true}
+            {key: "area_name", label: "area_name", sortable: true, sortByFormatted: true},
+            {key: "value", label: "value", sortable: true, sortByFormatted: true}
         ];
         expect(table.props("fields")).toStrictEqual(expectedFields);
     });

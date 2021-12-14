@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.web.multipart.MultipartFile
 import java.io.File
+import javax.servlet.http.HttpServletRequest
 
 abstract class HintrControllerTests
 {
@@ -60,13 +61,14 @@ abstract class HintrControllerTests
     {
         return mock {
             on { validateBaselineIndividual(argWhere { it.path == "test-path" }, eq(type)) } doReturn ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
-            on { validateSurveyAndProgramme(argWhere { it.path == "test-path" }, eq("shape-path"), eq(type)) } doReturn
+            on { validateSurveyAndProgramme(argWhere { it.path == "test-path" }, eq("shape-path"), eq(type), any()) } doReturn
                     ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
         }
     }
 
     abstract fun getSut(mockFileManager: FileManager, mockAPIClient: HintrAPIClient,
-                        mockSession: Session, mockVersionRepository: VersionRepository): HintrController
+                        mockSession: Session, mockVersionRepository: VersionRepository,
+                        mockRequest: HttpServletRequest): HintrController
 
     protected fun assertSavesAndValidates(fileType: FileType,
                                           uploadAction: (sut: HintrController) -> ResponseEntity<String>)
@@ -74,7 +76,9 @@ abstract class HintrControllerTests
 
         val mockFileManager = getMockFileManager(fileType)
         val mockApiClient = getMockAPIClient(fileType)
-        val sut = getSut(mockFileManager, mockApiClient, mock(), mock())
+
+        val mockRequest = mock<HttpServletRequest>()
+        val sut = getSut(mockFileManager, mockApiClient, mock(), mock(), mockRequest)
         val result = uploadAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
@@ -86,8 +90,9 @@ abstract class HintrControllerTests
                     .validateBaselineIndividual(
                             VersionFileWithPath("test-path", "hash", "some-file-name.csv", false), fileType)
             else -> verify(mockApiClient)
-                    .validateSurveyAndProgramme(VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                            "shape-path", fileType)
+                    .validateSurveyAndProgramme(
+                            VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
+                            "shape-path", fileType, true)
         }
     }
 
@@ -97,7 +102,8 @@ abstract class HintrControllerTests
 
         val mockFileManager = getMockFileManager(fileType)
         val mockApiClient = getMockAPIClient(fileType)
-        val sut = getSut(mockFileManager, mockApiClient, mock(), mock())
+        val mockRequest = mock<HttpServletRequest>()
+        val sut = getSut(mockFileManager, mockApiClient, mock(), mock(), mockRequest)
         val result = uploadAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
@@ -110,7 +116,7 @@ abstract class HintrControllerTests
                             VersionFileWithPath("test-path", "hash", "some-file-name.csv", false), fileType)
             else -> verify(mockApiClient)
                     .validateSurveyAndProgramme(VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                            "shape-path", fileType)
+                            "shape-path", fileType, true)
         }
     }
 
@@ -120,9 +126,10 @@ abstract class HintrControllerTests
 
         val mockFileManager = getMockFileManager(fileType)
         val mockApiClient = getMockAPIClient(fileType)
+        val mockRequest = mock<HttpServletRequest>()
 
         // should return the validation result when the file is returned from the file manager
-        var sut = getSut(mockFileManager, mockApiClient, mock(), mock())
+        var sut = getSut(mockFileManager, mockApiClient, mock(), mock(), mockRequest)
         var result = getAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
@@ -131,7 +138,7 @@ abstract class HintrControllerTests
                         fileType)
 
         // should return a null result when null is returned from the file manager
-        sut = getSut(mock(), mockApiClient, mock(), mock())
+        sut = getSut(mock(), mockApiClient, mock(), mock(), mockRequest)
         result = getAction(sut)
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
@@ -147,7 +154,7 @@ abstract class HintrControllerTests
             on { getVersionId() } doReturn "sid"
         }
         val mockSessionRepository = mock<VersionRepository>()
-        val sut = getSut(mock(), mock(), mockSession, mockSessionRepository)
+        val sut = getSut(mock(), mock(), mockSession, mockSessionRepository, mock())
         val result = getAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         verify(mockSessionRepository).removeVersionFile(sessionId, fileType)

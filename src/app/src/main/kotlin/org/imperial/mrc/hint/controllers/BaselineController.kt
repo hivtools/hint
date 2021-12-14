@@ -10,14 +10,16 @@ import org.imperial.mrc.hint.security.Session
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("/baseline")
 class BaselineController(fileManager: FileManager,
                          apiClient: HintrAPIClient,
                          session: Session,
-                         versionRepository: VersionRepository) :
-        HintrController(fileManager, apiClient, session, versionRepository)
+                         versionRepository: VersionRepository,
+                         request: HttpServletRequest) :
+        HintrController(fileManager, apiClient, session, versionRepository, request)
 {
 
     @PostMapping("/pjnz/")
