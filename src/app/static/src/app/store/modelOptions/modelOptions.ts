@@ -1,7 +1,7 @@
 import {Module} from "vuex";
 import {RootState, WarningsState} from "../../root";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
-import {mutations} from "./mutations";;
+import {mutations} from "./mutations";
 import {actions} from "./actions";
 import {VersionInfo, Error} from "../../generated";
 

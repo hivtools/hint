@@ -3,7 +3,7 @@ import {actions} from './actions';
 import {mutations} from './mutations';
 import {ReadyState} from "../../root";
 import {NestedFilterOption, PjnzResponse, PopulationResponse, ShapeResponse, Error} from "../../generated";
-import {Dataset, Release, Dict} from "../../types";;
+import {Dataset, Release, Dict} from "../../types";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface BaselineState extends ReadyState {
