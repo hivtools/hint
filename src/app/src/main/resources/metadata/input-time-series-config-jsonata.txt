@@ -115,6 +115,7 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
                "yaxis"&$: {
                    "rangemode": "tozero",
                    "zeroline": false,
+                   "tickformat": $$.yAxisFormat,
                    "tickfont": {
                        "color": "grey"
                    },

@@ -1,3 +1,7 @@
+# hint 1.83.0
+
+* Support y-axis formats in Input Time Series
+
 # hint 1.82.2
 
 * Fix bug which prevented selection change in barchart

@@ -1,4 +1,9 @@
-import {filterData, genericChartColumnsToFilters} from "../../../app/components/genericChart/utils";
+import {
+    filterData,
+    genericChartColumnsToFilters,
+    numeralJsToD3format
+} from "../../../app/components/genericChart/utils";
+import {format} from "d3-format";
 
 describe("filterData", () => {
     const data = [
@@ -116,5 +121,46 @@ describe("genericChartColumnsToFilters", () => {
                 allowMultiple: true
             }
         ]);
+    });
+
+    describe("numeralJSToD3Format", () => {
+        it("converts numeric formats as expected", () => {
+            const testValue = 123.789;
+
+            let result = numeralJsToD3format("0");
+            expect(result).toBe(".0f");
+            expect(format(result)(testValue)).toBe("124");
+
+            result = numeralJsToD3format("0.0");
+            expect(result).toBe(".1f");
+            expect(format(result)(testValue)).toBe("123.8");
+
+            result = numeralJsToD3format("0.00");
+            expect(result).toBe(".2f");
+            expect(format(result)(testValue)).toBe("123.79");
+        });
+
+        it("converts percentage formats as expected", () => {
+            const testValue = 0.98765;
+
+            let result = numeralJsToD3format("0%");
+            expect(result).toBe(".0%");
+            expect(format(result)(testValue)).toBe("99%");
+
+            result = numeralJsToD3format("0.0%");
+            expect(result).toBe(".1%");
+            expect(format(result)(testValue)).toBe("98.8%");
+
+            result = numeralJsToD3format("0.00%");
+            expect(result).toBe(".2%");
+            expect(format(result)(testValue)).toBe("98.77%");
+        });
+
+        it("returns empty string for unsupported formats", () => {
+            expect(numeralJsToD3format("0.")).toBe("");
+            expect(numeralJsToD3format("00")).toBe("");
+            expect(numeralJsToD3format(".%")).toBe("");
+            expect(numeralJsToD3format("0a")).toBe("");
+        });
     });
 });
