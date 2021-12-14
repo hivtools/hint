@@ -1,3 +1,7 @@
+# hint 1.84.0
+
+* Persist Data Exploration state
+
 # hint 1.83.0
 
 * Support y-axis formats in Input Time Series
