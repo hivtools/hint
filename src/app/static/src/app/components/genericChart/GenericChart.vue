@@ -341,6 +341,7 @@
                         const formatting = columnValues.find(filterOption => filterOption.id === datum.plot)
                         // console.log("formatting", formatting)
                         // const { format, accuracy } = formatting
+                        // datum.value = Math.round(datum.value / 100) * 100
                         const accuracy = formatting?.accuracy && parseFloat(formatting.accuracy)
                         if (accuracy && datum?.value){
                             datum.value = Math.round(datum.value / accuracy) * accuracy
