@@ -1,7 +1,12 @@
 import {
-    mockBaselineState, mockDataset,
-    mockRelease,
+    mockADRState,
+    mockADRUploadState,
+    mockBaselineState,
+    mockCalibrateResultResponse,
+    mockDataset,
     mockError,
+    mockErrorsState,
+    mockGenericChartState,
     mockHintrVersionState,
     mockMetadataState,
     mockModelCalibrateState,
@@ -10,8 +15,9 @@ import {
     mockModelRunState,
     mockPlottingSelections,
     mockProjectsState,
+    mockRelease,
     mockStepperState,
-    mockSurveyAndProgramState, mockCalibrateResultResponse
+    mockSurveyAndProgramState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
@@ -21,6 +27,7 @@ import {Language} from "../app/store/translations/locales";
 import registerTranslations from "../app/store/translations/registerTranslations";
 import Vuex from 'vuex';
 import i18next from "i18next";
+import {DataExplorationState} from "../app/store/dataExploration/dataExploration";
 
 declare const currentUser: string; // set in jest config, or on the index page when run for real
 
@@ -55,10 +62,21 @@ describe("LocalStorageManager", () => {
     }
 
 
-    it("serialiseState removes errors, saves selected data type", async () => {
+    it("serialises RootState as expected", async () => {
+        const dataset = mockDataset();
+        const release = mockRelease();
         const mockRoot = {
             version: "1.0.0",
-            baseline: mockBaselineState(),
+            dataExplorationMode: false,
+            currentUser: "some user",
+            updatingLanguage: false,
+            adr: mockADRState(),
+            genericChart: mockGenericChartState(),
+            adrUpload: mockADRUploadState(),
+            baseline: mockBaselineState({
+                selectedDataset: dataset,
+                selectedRelease: release
+            }),
             modelRun: mockModelRunState({
                 errors: [mockError("modelRunError1"), mockError("modelRunError2")]
             }),
@@ -71,13 +89,17 @@ describe("LocalStorageManager", () => {
             surveyAndProgram: mockSurveyAndProgramState({selectedDataType: DataType.Survey}),
             projects: mockProjectsState(),
             hintrVersion: mockHintrVersionState(),
+            errors: mockErrorsState(),
             language: Language.en
         } as RootState;
 
         const result = serialiseState(mockRoot);
         expect(result).toStrictEqual({
             version: "1.0.0",
-            baseline: {selectedDataset: null, selectedRelease: null},
+            baseline: {
+                selectedDataset: dataset,
+                selectedRelease: release
+            },
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
@@ -92,44 +114,38 @@ describe("LocalStorageManager", () => {
         });
     });
 
-    it("serialiseState saves selectedDataset and selectedRelease from baseline", async () => {
+    it("serialises DataExplorationState as expected", () => {
         const dataset = mockDataset();
         const release = mockRelease();
-        const mockRoot = {
+        const mockDataExploration = {
             version: "1.0.0",
+            dataExplorationMode: true,
+            currentUser: "some user",
+            language: Language.en,
+            updatingLanguage: false,
+            adr: mockADRState(),
+            genericChart: mockGenericChartState(),
+            adrUpload: mockADRUploadState(),
+            hintrVersion: mockHintrVersionState(),
             baseline: mockBaselineState({
                 selectedDataset: dataset,
                 selectedRelease: release
-            }),
-            modelRun: mockModelRunState(),
-            modelOptions: mockModelOptionsState(),
-            modelOutput: mockModelOutputState(),
-            modelCalibrate: mockModelCalibrateState(),
-            stepper: mockStepperState(),
+            }) ,
             metadata: mockMetadataState(),
+            surveyAndProgram: {selectedDataType: DataType.Survey},
             plottingSelections: mockPlottingSelections(),
-            surveyAndProgram: mockSurveyAndProgramState(),
-            projects: mockProjectsState(),
-            hintrVersion: mockHintrVersionState(),
-            language: Language.en
-        } as RootState;
-
-        const result = serialiseState(mockRoot);
+            errors: mockErrorsState(),
+        } as DataExplorationState;
+        const result = serialiseState(mockDataExploration);
         expect(result).toStrictEqual({
             version: "1.0.0",
             baseline: {
                 selectedDataset: dataset,
                 selectedRelease: release
             },
-            modelRun: mockModelRunState(),
-            modelOptions: mockModelOptionsState(),
-            modelOutput: mockModelOutputState(),
-            modelCalibrate: mockModelCalibrateState(),
-            stepper: mockStepperState(),
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
-            surveyAndProgram: {selectedDataType: null},
-            projects: mockProjectsState(),
+            surveyAndProgram: {selectedDataType: DataType.Survey},
             hintrVersion: mockHintrVersionState(),
             language: Language.en
         });
@@ -142,13 +158,13 @@ describe("LocalStorageManager", () => {
             errorReportError: null,
             errorReportSuccess: false,
             sendingErrorReport: false
-        }});
-        let result = localStorageManager.getState();
+        }}, false);
+        let result = localStorageManager.getState(false);
         expect(result).not.toBe(null);
         expect(localStorage.getItem("user")).toBe(currentUser);
 
         localStorage.setItem("user", "bad-user");
-        result = localStorageManager.getState();
+        result = localStorageManager.getState(false);
         expect(result).toBe(null);
         expect(localStorage.getItem("user")).toBe(currentUser);
     });
@@ -156,9 +172,18 @@ describe("LocalStorageManager", () => {
     it("saves to local storage", () => {
         const spy = jest.spyOn(Storage.prototype, "setItem");
         const testState = {baseline: mockBaselineState()};
-        localStorageManager.savePartialState(testState);
+        localStorageManager.savePartialState(testState, false);
 
         expect(spy.mock.calls[0][0]).toBe(`hintAppState_v${currentHintVersion}`);
+        expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState));
+    });
+
+    it("saves to local storage in Data Exploration mode", () => {
+        const spy = jest.spyOn(Storage.prototype, "setItem");
+        const testState = {baseline: mockBaselineState()};
+        localStorageManager.savePartialState(testState, true);
+
+        expect(spy.mock.calls[0][0]).toBe(`hintAppState_explore_v${currentHintVersion}`);
         expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState));
     });
 
@@ -166,9 +191,9 @@ describe("LocalStorageManager", () => {
         const spy = jest.spyOn(Storage.prototype, "setItem");
 
         const testState = {language: Language.pt};
-        localStorageManager.savePartialState(testState);
+        localStorageManager.savePartialState(testState, false);
 
-        expect(localStorageManager.getState()?.language).toBe(Language.pt)
+        expect(localStorageManager.getState(false)?.language).toBe(Language.pt)
         expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState))
     });
 
@@ -180,4 +205,46 @@ describe("LocalStorageManager", () => {
         registerTranslations(store);
         expect(i18next.language).toBe("fr");
     });
+
+    it("can get from local storage", () => {
+        const testState = {baseline: mockBaselineState()};
+        localStorageManager.savePartialState(testState, false);
+        const spy = jest.spyOn(Storage.prototype, "getItem");
+
+        const result = localStorageManager.getState(false);
+        expect(result).toStrictEqual(testState);
+        expect(spy.mock.calls[1][0]).toBe(`hintAppState_v${currentHintVersion}`);
+    });
+
+    it("can get from local storage in Data Exploration mode", () => {
+        const testState = {baseline: mockBaselineState()};
+        localStorageManager.savePartialState(testState, true);
+        const spy = jest.spyOn(Storage.prototype, "getItem");
+
+        const result = localStorageManager.getState(true);
+        expect(result).toStrictEqual(testState);
+        expect(spy.mock.calls[1][0]).toBe(`hintAppState_explore_v${currentHintVersion}`);
+    });
+
+    it("can delete state", () => {
+        const testState = {baseline: mockBaselineState()};
+        localStorageManager.savePartialState(testState, false);
+        const spy = jest.spyOn(Storage.prototype, "removeItem");
+
+        localStorageManager.deleteState(false);
+        expect(spy.mock.calls[0][0]).toBe(`hintAppState_v${currentHintVersion}`);
+        const saved = localStorageManager.getState(false);
+        expect(saved).toBeNull();
+    });
+
+    it("can delete state in data exploration mode", () => {
+        const testState = {baseline: mockBaselineState()};
+        localStorageManager.savePartialState(testState, true);
+        const spy = jest.spyOn(Storage.prototype, "removeItem");
+
+        localStorageManager.deleteState(true);
+        expect(spy.mock.calls[0][0]).toBe(`hintAppState_explore_v${currentHintVersion}`);
+        const saved = localStorageManager.getState(true);
+        expect(saved).toBeNull();
+    })
 });

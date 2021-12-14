@@ -8,16 +8,20 @@ const getAppStateKey = (dataExplorationMode: boolean) => {
 };
 
 export const serialiseState = (state: DataExplorationState): Partial<RootState> => {
+    const baseline = {
+        selectedDataset: state.baseline.selectedDataset,
+        selectedRelease: state.baseline.selectedRelease
+    } as any;
+    const surveyAndProgram = {selectedDataType: state.surveyAndProgram.selectedDataType} as any;
+    const metadata =  {...state.metadata, plottingMetadataError: null};
+    const plottingSelections = state.plottingSelections;
     if (state.dataExplorationMode) {
         return {
             version: state.version,
-            baseline: {
-                selectedDataset: state.baseline.selectedDataset,
-                selectedRelease: state.baseline.selectedRelease
-            } as any,
-            metadata: {...state.metadata, plottingMetadataError:null},
-            plottingSelections: state.plottingSelections,
-            surveyAndProgram: {selectedDataType: state.surveyAndProgram.selectedDataType} as any,
+            baseline,
+            metadata,
+            plottingSelections,
+            surveyAndProgram,
             hintrVersion: state.hintrVersion,
             language: state.language
         }
@@ -26,13 +30,10 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
         const rootState = state as RootState;
         return {
             version: state.version,
-            baseline: {
-                selectedDataset: state.baseline.selectedDataset,
-                selectedRelease: state.baseline.selectedRelease
-            } as any,
-            metadata: {...state.metadata, plottingMetadataError:null},
-            plottingSelections: state.plottingSelections,
-            surveyAndProgram: {selectedDataType: state.surveyAndProgram.selectedDataType} as any,
+            baseline,
+            metadata,
+            plottingSelections,
+            surveyAndProgram,
             modelRun: {
                 ...rootState.modelRun,
                 statusPollId: -1,

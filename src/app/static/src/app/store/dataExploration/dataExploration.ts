@@ -23,8 +23,6 @@ import {TranslatableState} from "../../types";
 import {mutations} from "./mutations";
 import {getters} from "./getters";
 import {actions} from "./actions";
-import {stripNamespace} from "../../utils";
-import {RootState} from "../../root";
 
 declare const currentUser: string;
 
@@ -40,7 +38,6 @@ export interface DataExplorationState extends TranslatableState {
     plottingSelections: PlottingSelectionsState,
     errors: ErrorsState,
     currentUser: string,
-    updatingLanguage: boolean,
     dataExplorationMode: boolean
 }
 
