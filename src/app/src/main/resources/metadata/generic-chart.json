@@ -160,6 +160,7 @@
       "heightPerRow": 140,
       "subplotsPerPage": 99
     },
+    "valueFormatColumn": "plot_type",
     "chartConfig": [
       {
         "id": "scatter",

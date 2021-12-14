@@ -20,7 +20,7 @@ interface HintrAPIClient
 {
     fun validateBaselineIndividual(file: VersionFileWithPath, type: FileType): ResponseEntity<String>
     fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
-    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType)
+    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType, strict: Boolean)
             : ResponseEntity<String>
 
     fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions): ResponseEntity<String>
@@ -79,7 +79,8 @@ class HintrFuelAPIClient(
 
     override fun validateSurveyAndProgramme(file: VersionFileWithPath,
                                             shapePath: String,
-                                            type: FileType): ResponseEntity<String>
+                                            type: FileType,
+                                            strict: Boolean): ResponseEntity<String>
     {
 
         val json = objectMapper.writeValueAsString(
@@ -87,7 +88,7 @@ class HintrFuelAPIClient(
                         "file" to file,
                         "shape" to shapePath))
 
-        return postJson("validate/survey-and-programme", json)
+        return postJson("validate/survey-and-programme?strict=$strict", json)
     }
 
     override fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions)
