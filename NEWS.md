@@ -1,6 +1,10 @@
-# hint 1.82.1
+# hint 1.82.2
 
 * Fix bug which prevented selection change in barchart
+
+# hint 1.82.1
+
+* Fix Input Time Series bug where some lines were shown incorrectly in red
 
 # hint 1.82.0
 
