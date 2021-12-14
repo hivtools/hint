@@ -58,7 +58,6 @@ declare const currentUser: string;
 export class LocalStorageManager {
 
     saveState = (state: DataExplorationState) => {
-        console.log("saving state, DEM is" + state.dataExplorationMode)
         const partialState = serialiseState(state);
         this.savePartialState(partialState, state.dataExplorationMode);
     };
