@@ -333,13 +333,16 @@
                     // }
                 }
 
-                if (result["data"] && this.chartConfigValues.dataSourceConfigValues[0].columns[0].values.length) {
+                // if ("data" in result && this.chartConfigValues?.dataSourceConfigValues[0].columns[0].values.length) {
+                const columnValues = this.chartConfigValues?.dataSourceConfigValues.find(value => value.config.id === "data")?.columns?.find(column => column.id === "plot_type")?.values
+                console.log("columnValues", columnValues)
+                if ("data" in result && columnValues?.length) {
                     (result["data"] as InputTimeSeriesData).forEach(datum => {
-                        const formatting = (this.chartConfigValues as ChartConfigValues).dataSourceConfigValues[0].columns[0].values.find(filterOption => filterOption.id === datum.plot)
-                        console.log("formatting", formatting)
+                        const formatting = columnValues.find(filterOption => filterOption.id === datum.plot)
+                        // console.log("formatting", formatting)
                         // const { format, accuracy } = formatting
-                        const accuracy = parseFloat(formatting.accuracy)
-                        if (accuracy){
+                        const accuracy = formatting?.accuracy && parseFloat(formatting.accuracy)
+                        if (accuracy && datum?.value){
                             datum.value = Math.round(datum.value / accuracy) * accuracy
                             // datum.value = formatOutput(datum.value, format, null, parseFloat(accuracy))
                             console.log("datum.value", datum.value)
