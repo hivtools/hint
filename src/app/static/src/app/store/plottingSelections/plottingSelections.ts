@@ -31,13 +31,6 @@ export interface UnadjustedBarchartSelections {
     selected_filter_options: Dict<FilterOption[]>
 }
 
-
-export interface BarchartPayload {
-    data: BarchartSelections,
-    xAxisId?: string,
-    updatedFilterOptions?: NestedFilterOption[]
-}
-
 export interface BubblePlotSelections {
     colorIndicatorId: string,
     sizeIndicatorId: string,

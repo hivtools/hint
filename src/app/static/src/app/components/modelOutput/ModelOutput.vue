@@ -103,7 +103,6 @@
     import {mapGetterByName, mapGettersByNames, mapMutationByName, mapMutationsByNames, mapStateProp, mapStateProps, flattenOptions} from "../../utils";
     import {
         BarchartSelections,
-        BarchartPayload,
         BubblePlotSelections,
         ChoroplethSelections, ScaleSelections,
         PlottingSelectionsState
@@ -236,20 +235,15 @@
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
             },
             updateBarchartSelectionsAndXAxisOrder(data){
-                console.log("reach 3", data)
                 const payload = {...this.barchartSelections, ...data}
-                // const payload: BarchartPayload = { ...this.barchartSelections, ...data }
                 if (data.xAxisId && data.selectedFilterOptions){
                     const { xAxisId, selectedFilterOptions } = data
-                    console.log("reach 5", xAxisId, selectedFilterOptions, selectedFilterOptions[xAxisId], xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId])
                     if (xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]){
-                        console.log("reach 4")
                         
                         // finds the filter options of the selected xAxis variable in the barchart filters getter
                         let originalFilterOptionsOrder: NestedFilterOption[] | undefined = this
                             .barchartFilters
                             .find(filter => filter.id === xAxisId)?.options
-                        console.log("originalFilterOptionsOrder", originalFilterOptionsOrder)
 
                         // Get the list of filter option ids in their configured order, whether nested or not
                         let originalFilterOptionsIds: string[];
@@ -265,18 +259,11 @@
                             const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
                                 return originalFilterOptionsIds.indexOf(a.id) - originalFilterOptionsIds.indexOf(b.id);
                             });
-                            console.log("reach 1")
                             payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
-                            // payload.xAxisId = xAxisId
-                            // payload.updatedFilterOptions = updatedFilterOptions
-                            // state.barchart = update
-                            console.log("reach 2", payload)
-                            // this.updateBarchartSelections(payload)
-                            // return;
                         }
                     }
                 }
-                // this.updateBarchartSelections(payload)
+                // if unable to do the above, just updates the barchart as normal
                 this.updateBarchartSelections({payload})
             }
         },
