@@ -7,6 +7,7 @@ import {Language} from "../app/store/translations/locales";
 import registerTranslations from "../app/store/translations/registerTranslations";
 import {LanguageMutation} from "../app/store/language/mutations";
 import Mock = jest.Mock;
+import ErrorReport from "../app/components/ErrorReport.vue";
 
 export function expectEqualsFrozen(args: PayloadWithType<any>, expected: PayloadWithType<any>) {
     expect(Object.isFrozen(args["payload"])).toBe(true);
@@ -109,3 +110,15 @@ export const expectChangeLanguageMutations = (commit: Mock) => {
         payload: false
     });
 };
+
+export const expectErrorReportOpen = (wrapper: Wrapper<any>, row = 0) => {
+    const link = wrapper.findAll(".dropdown-item").at(row);
+    link.trigger("click");
+
+    expect(wrapper.find(ErrorReport).props("open")).toBe(true);
+}
+
+export function expectArraysEqual(result: any[], expected: any[]) {
+    expect(result).toEqual(expect.arrayContaining(expected));
+    expect(expected).toEqual(expect.arrayContaining(result));
+}

@@ -1,16 +1,16 @@
-import {createLocalVue, mount, shallowMount} from "@vue/test-utils";
+import {createLocalVue, mount, shallowMount, Wrapper} from "@vue/test-utils";
 import Vuex from "vuex";
 import OnlineSupportMenu from "../../../app/components/header/OnlineSupportMenu.vue";
 import {emptyState} from "../../../app/root";
-import {actions} from "../../../app/store/root/actions";
 import {mutations} from "../../../app/store/root/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {Language} from "../../../app/store/translations/locales";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, expectErrorReportOpen} from "../../testHelpers";
 import DropDown from "../../../app/components/header/DropDown.vue";
 import VueRouter from 'vue-router'
 import ErrorReport from "../../../app/components/ErrorReport.vue";
 import {mockErrorsState, mockProjectsState, mockStepperState} from "../../mocks";
+import {StepperState} from "../../../app/store/stepper/stepper";
 
 const localVue = createLocalVue()
 localVue.use(VueRouter)
@@ -18,15 +18,24 @@ const router = new VueRouter()
 
 
 describe("Online support menu", () => {
-    const createStore = () => {
+
+    afterEach(() => {
+        jest.resetAllMocks();
+    });
+
+    const mockGenerateErrorReport = jest.fn()
+
+    const createStore = (stepperState: Partial<StepperState> = {}) => {
         const store = new Vuex.Store({
             state: emptyState(),
-            actions: actions,
+            actions: {
+                generateErrorReport: mockGenerateErrorReport
+            },
             mutations: mutations,
             modules: {
                 stepper: {
                     namespaced: true,
-                    state: mockStepperState()
+                    state: mockStepperState(stepperState)
                 },
                 projects: {
                     namespaced: true,
@@ -141,9 +150,184 @@ describe("Online support menu", () => {
 
         expectTranslated(link, "Troubleshooting request", "Demande de dépannage", "Solicitação de solução de problemas", store as any);
 
-        link.trigger("click");
+        expectErrorReportOpen(wrapper, 1)
+    });
 
+    it("can render section on error report widget", () => {
+        const store = createStore();
+        const wrapper = mount(OnlineSupportMenu, {
+            store,
+            localVue,
+            router
+        });
+
+        expect(wrapper.findAll(ErrorReport).length).toBe(1);
+
+        expect(wrapper.find(ErrorReport).props("open")).toBe(false);
+
+        expectErrorReportOpen(wrapper, 1)
+
+        const options = wrapper.find(ErrorReport).findAll("option")
+        expect(options.length).toBe(10)
+
+        expect((options.at(0).element as HTMLOptionElement).value).toBe("uploadInputs");
+
+        expectTranslated(options.at(0),
+            "Upload inputs",
+            "Télécharger les entrées",
+            "Carregar entradas",
+            store)
+
+        expectTranslated(options.at(1),
+            "Review inputs",
+            "Examiner les entrées",
+            "Analise as entradas",
+            store)
+
+        expectTranslated(options.at(2),
+            "Model options",
+            "Options des modèles",
+            "Opções de modelos",
+            store)
+
+        expectTranslated(options.at(3),
+            "Fit model",
+            "Ajuster le modèle",
+            "Ajustar modelo",
+            store)
+
+        expectTranslated(options.at(4),
+            "Calibrate model",
+            "Calibrer le modèle",
+            "Calibrar modelo",
+            store)
+
+        expectTranslated(options.at(5),
+            "Review output",
+            "Résultat de l'examen",
+            "Rever os resultados",
+            store)
+
+        expectTranslated(options.at(6),
+            "Save results",
+            "Enregistrer les résultats",
+            "Guardar resultados",
+            store)
+
+        expectTranslated(options.at(7),
+            "Login",
+            "Connexion",
+            "Conecte-se",
+            store)
+
+        expectTranslated(options.at(8),
+            "Projects",
+            "Projets",
+            "Projetos",
+            store)
+
+        expectTranslated(options.at(9),
+            "Other",
+            "Autre",
+            "De outros",
+            store)
+});
+
+    it("selects current step by default", () => {
+        const store = createStore();
+        const wrapper = mount(OnlineSupportMenu, {
+            store,
+            localVue,
+            router
+        });
+
+        expectErrorReportOpen(wrapper, 1)
+
+        expect((wrapper.find(ErrorReport).find("select#section").element as HTMLSelectElement).value)
+            .toBe("uploadInputs")
+    });
+
+    it("invokes generateErrorReport with expected data", async () => {
+        const store = createStore();
+        const wrapper = mount(OnlineSupportMenu, {
+            store,
+            localVue,
+            router
+        });
+
+        expectErrorReportOpen(wrapper, 1)
+
+        await wrapper.find(ErrorReport).vm.$emit("send",
+            {
+                description: "something",
+                stepsToReproduce: "reproduce steps",
+                email: ""
+            })
+
+        expect(mockGenerateErrorReport).toHaveBeenCalledTimes(1)
+
+        await expect(mockGenerateErrorReport.mock.calls[0][1]).toEqual(
+            {
+                description: "something",
+                section: "uploadInputs",
+                stepsToReproduce: "reproduce steps",
+                email: ""
+            }
+        )
+        expect(wrapper.vm.$data.section).toBe("")
+    });
+
+    it("can update section", () => {
+        const store = createStore({activeStep: 2});
+        const wrapper = mount(OnlineSupportMenu, {
+            store,
+            localVue,
+            router
+        });
+
+        expect((wrapper.find("select#section").element as HTMLSelectElement).value)
+            .toBe("reviewInputs");
+
+        wrapper.find("#section").setValue("downloadResults");
+
+        expect((wrapper.find("select#section").element as HTMLSelectElement).value)
+            .toBe("downloadResults");
+        expect(wrapper.vm.$data.section).toBe("downloadResults");
+        expect((wrapper.vm as any).currentSection).toBe("downloadResults");
+    });
+
+    it("sets section to 'projects' if opened on project page",  () => {
+        const localVue = createLocalVue()
+        localVue.use(VueRouter)
+        const routes = [
+            {
+                path: '/',
+                component: ErrorReport
+            },
+            {
+                path: '/projects',
+                component: ErrorReport
+            }
+        ]
+        const router = new VueRouter({
+            routes
+        })
+
+        const wrapper = mount(OnlineSupportMenu,
+            {
+                localVue,
+                router,
+                store: createStore()
+            })
+        expect(wrapper.vm.$route.path).toBe("/");
+        wrapper.setData({errorReportOpen: true});
+        expect((wrapper.find(ErrorReport).find("#section").element as HTMLSelectElement).value).toBe("uploadInputs");
+
+        wrapper.setData({errorReportOpen: false});
+        router.push("/projects");
+        expectErrorReportOpen(wrapper, 1)
         expect(wrapper.find(ErrorReport).props("open")).toBe(true);
+        expect((wrapper.find("#section").element as HTMLSelectElement).value).toBe("projects")
     });
 
     it("renders accessibility menu-item text and link", () => {

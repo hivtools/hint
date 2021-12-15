@@ -16,40 +16,95 @@
                          v-translate="'axe'">
             </router-link>
         </drop-down>
-        <error-report :open="errorReportOpen" @close="toggleErrorReportModal"></error-report>
+        <error-report :open="errorReportOpen"
+                      @send="sendErrorReport"
+                      @close="toggleErrorReportModal">
+            <template v-slot:sectionView>
+                <div>
+                    <label for="section" v-translate="'section'"></label>
+                    <select class="form-control"
+                            v-model="currentSection"
+                            id="section">
+                        <option v-for="step in steps"
+                                :key="step.number"
+                                :value="step.textKey"
+                                v-translate="step.textKey">
+                        </option>
+                        <option key="login"
+                                v-translate="'login'"
+                                value="login"></option>
+                        <option key="projects" v-translate="'projects'"
+                                value="projects"></option>
+                        <option key="other"
+                                value="other"
+                                v-translate="'other'"></option>
+                    </select>
+                </div>
+            </template>
+            <template v-slot:projectView>
+                <div v-if="projectName"><label for="project" v-translate="'project'"></label>
+                    <input type="text" disabled id="project" :value="projectName" class="form-control"/>
+                </div>
+            </template>
+        </error-report>
     </div>
 </template>
 <script lang="ts">
     import Vue from "vue";
     import DropDown from "./DropDown.vue";
     import i18next from "i18next";
-    import {mapStateProp} from "../../utils";
+    import {mapActionByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import ErrorReport from "../ErrorReport.vue";
+    import {ProjectsState} from "../../store/projects/projects";
+    import {StepDescription, StepperState} from "../../store/stepper/stepper";
+    import {ErrorReportManualDetails} from "../../types";
 
     interface Computed {
         support: string
         currentLanguage: Language
         troubleFilename: string
         faqLocation: string
+        projectName: string | undefined
+        currentSection: string
+        currentSectionKey: string
+        steps: StepDescription[]
     }
 
     interface Data {
         errorReportOpen: boolean
+        section: string,
     }
 
     interface Methods {
         toggleErrorReportModal: () => void
+        sendErrorReport: (errorReport: ErrorReportManualDetails) => void
+        generateErrorReport: (payload: ErrorReportManualDetails) => void
+        projectSection: () => void
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
         data: function () {
             return {
-                errorReportOpen: false
+                errorReportOpen: false,
+                section: ""
             }
         },
         computed: {
+            currentSectionKey: mapStateProp<StepperState, string>("stepper", state => {
+                return state.steps[state.activeStep - 1].textKey;
+            }),
+            currentSection: {
+                get() {
+                    return this.section || this.currentSectionKey
+                },
+                set(newVal: string) {
+                    this.section = newVal
+                }
+            },
+            steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps),
+            projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
             support() {
@@ -68,8 +123,23 @@
             }
         },
         methods: {
-           toggleErrorReportModal() {
+            generateErrorReport: mapActionByName(null,
+                "generateErrorReport"),
+            async sendErrorReport(errorReport) {
+                await this.generateErrorReport({
+                    section: this.currentSection,
+                    ...errorReport
+                })
+                this.section = ""
+            },
+            projectSection() {
+                if (this.$route.path.indexOf("projects") > -1) {
+                    this.section = "projects"
+                }
+            },
+            toggleErrorReportModal() {
                 this.errorReportOpen = !this.errorReportOpen
+                this.errorReportOpen ? this.projectSection() : this.section = "";
             }
         },
         components: {
