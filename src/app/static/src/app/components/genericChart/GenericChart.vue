@@ -64,6 +64,7 @@
                                          :filtered-data="chartData[dataSource.config.id]"
                                          :columns="dataSource.columns"
                                          :selected-filter-options="dataSource.selections.selectedFilterOptions"
+                                         :value-format="valueFormat"
                     ></generic-chart-table>
                 </div>
             </div>
@@ -147,6 +148,7 @@
         datasets: Record<string, GenericChartDataset>
         error: Error | null
         chartMetadata: GenericChartMetadata
+        valueFormat: string
         chartConfigValues: ChartConfigValues
         chartData: Dict<unknown[]> | null
         chartDataPage: Dict<unknown[]> | null
@@ -236,6 +238,18 @@
                 }
                 return result;
             },
+            valueFormat() {
+                const valueFormatColumn = this.chartMetadata.valueFormatColumn;
+                if (valueFormatColumn) {
+                    // We only support one value format at a time for now
+                    const dataSourceConfig = this.chartMetadata.dataSelectors.dataSources[0];
+                    const selections = this.dataSourceSelections[dataSourceConfig.id].selectedFilterOptions;
+                    if (selections && selections[valueFormatColumn].length) {
+                        return (selections[valueFormatColumn][0] as GenericChartColumnValue).format || "";
+                    }
+                }
+                return "";
+            },
             chartConfigValues() {
                 const dataSourceConfigValues = this.chartMetadata.dataSelectors.dataSources.map((dataSourceConfig) => {
                     const selections = this.dataSourceSelections[dataSourceConfig.id];
@@ -265,21 +279,8 @@
                     scrollHeight = `${(subplots.heightPerRow * rows) + 70}px`;
                 }
 
-                let yAxisFormat = "";
-                const valueFormatColumn = this.chartMetadata.valueFormatColumn;
-                if (valueFormatColumn) {
-                    // We only support one value format at a time for now
-                    // TODO: should probably use 'data' to be consistent with subplots
-                    const selections = dataSourceConfigValues[0].selections.selectedFilterOptions;
-                    if (selections && selections[valueFormatColumn].length) {
-                        const format = (selections[valueFormatColumn][0] as GenericChartColumnValue).format;
-                        if (format) {
-                            const plotlyFormat = numeralJsToD3format(format);
-                            yAxisFormat = plotlyFormat;
-                        }
-                    }
-                }
-                layoutData.yAxisFormat = yAxisFormat;
+                const plotlyFormat = this.valueFormat ? numeralJsToD3format(this.valueFormat) : "";
+                layoutData.yAxisFormat = plotlyFormat;
 
                 // The metadata supports multiple chart types per chart e.g Scatter and Bar, but for now we only need to
                 // support one chart type, so here we select the first config in the array

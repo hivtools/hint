@@ -14,12 +14,14 @@
     import {FilterOption, NestedFilterOption} from "../../generated";
     import {Dict, GenericChartColumn, GenericChartTableColumnConfig, GenericChartTableConfig} from "../../types";
     import TableView, {Field} from "../plots/table/Table.vue";
+    import {formatOutput} from "../plots/utils";
 
     interface Props {
         filteredData: any[],
         columns: GenericChartColumn[],
         selectedFilterOptions: Dict<FilterOption[]>,
-        tableConfig: GenericChartTableConfig
+        tableConfig: GenericChartTableConfig,
+        valueFormat: string
     }
 
     interface Computed {
@@ -41,6 +43,9 @@
         },
         tableConfig: {
             type: Object
+        },
+        valueFormat: {
+            type: String
         }
     };
 
@@ -108,6 +113,8 @@
                             const column = columnsDict[columnConfig.data.labelColumn!];
                             const friendlyValue = column.values.find(value => value.id == row[columnConfig.data.columnId])?.label;
                             friendlyRow[columnId] = friendlyValue;
+                        } else if (this.valueFormat && columnConfig.data.useValueFormat) {
+                            friendlyRow[columnId] = formatOutput(row[columnId], this.valueFormat, null, null);
                         } else {
                             friendlyRow[columnId] = row[columnId];
                         }
