@@ -22,7 +22,11 @@ class ErrorReportTests: SecureIntegrationTests()
             "section": "Fit model",
             "modelRunId": "job12",
             "calibrateId": "1234",
-            "downloadIds": mapOf("spectrum" to "spectrum123", "summary" to "summary123", "coarse_output" to "coarse123" ),
+            "downloadIds": {
+            "spectrum": "spectrum123",
+             "summary": "summary123",
+              "coarse_output": "coarse123"
+            },
             "errors": [
                 {
                     "detail": "Please contact support for troubleshooting1",

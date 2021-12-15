@@ -27,7 +27,7 @@ export const actions: ActionTree<DataExplorationState, DataExplorationState> & D
             projectName: "no associated project",
             browserAgent: navigator.userAgent,
             timeStamp: new Date().toISOString(),
-            jobId: "no associated jobId",
+            modelRunId: "no associated modelRunId",
             description: payload.description,
             section: payload.section,
             stepsToReproduce: payload.stepsToReproduce,

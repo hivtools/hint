@@ -1,3 +1,7 @@
+# hint 1.85.0
+
+* Return calibrate_id in error report if it is available
+
 # hint 1.84.0
 
 * Data exploration mode error reporting
