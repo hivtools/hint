@@ -28,6 +28,12 @@ export const actions: ActionTree<DataExplorationState, DataExplorationState> & D
             browserAgent: navigator.userAgent,
             timeStamp: new Date().toISOString(),
             modelRunId: "no associated modelRunId",
+            calibrateId: "no associated calibrateId",
+            downloadIds: {
+                spectrum: "none",
+                summary: "none",
+                coarse_output: "none"
+             },
             description: payload.description,
             section: payload.section,
             stepsToReproduce: payload.stepsToReproduce,

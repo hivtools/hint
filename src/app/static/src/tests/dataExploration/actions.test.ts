@@ -136,6 +136,12 @@ describe("data exploration actions", () => {
             projectName: "no associated project",
             timeStamp: new Date(),
             modelRunId: "no associated modelRunId",
+            calibrateId: "no associated calibrateId",
+            downloadIds: {
+                spectrum: "none",
+                summary: "none",
+                coarse_output: "none"
+            },
             description: "desc",
             section: "dataExploration",
             stepsToReproduce: "repro",
@@ -150,6 +156,8 @@ describe("data exploration actions", () => {
         expect(data.projectName).toStrictEqual(expected.projectName)
         expect(data.browserAgent).toContain("Mozilla")
         expect(data.modelRunId).toStrictEqual(expected.modelRunId)
+        expect(data.calibrateId).toStrictEqual(expected.calibrateId)
+        expect(data.downloadIds).toStrictEqual(expected.downloadIds)
         expect(new Date(data.timeStamp).getDate()).toBe(expected.timeStamp.getDate());
         expect(data.description).toStrictEqual(expected.description)
         expect(data.section).toStrictEqual(expected.section)
@@ -211,6 +219,12 @@ describe("data exploration actions", () => {
             projectName: "no associated project",
             timeStamp: new Date(),
             modelRunId: "no associated modelRunId",
+            calibrateId: "no associated calibrateId",
+            downloadIds: {
+                spectrum: "none",
+                summary: "none",
+                coarse_output: "none"
+            },
             description: "desc",
             section: "dataExploration",
             stepsToReproduce: "repro",
@@ -223,6 +237,8 @@ describe("data exploration actions", () => {
         expect(data.country).toStrictEqual(expected.country)
         expect(data.projectName).toBe(expected.projectName)
         expect(data.modelRunId).toStrictEqual(expected.modelRunId)
+        expect(data.calibrateId).toStrictEqual(expected.calibrateId)
+        expect(data.downloadIds).toStrictEqual(expected.downloadIds)
         expect(data.browserAgent).toContain("Mozilla")
         expect(new Date(data.timeStamp).getDate()).toBe(expected.timeStamp.getDate());
         expect(data.description).toStrictEqual(expected.description)
