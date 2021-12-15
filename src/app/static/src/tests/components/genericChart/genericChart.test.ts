@@ -552,11 +552,11 @@ describe("GenericChart component", () => {
         });
     });
 
-    it("sets plotly layout yAxisFormat based on configured valueFormatColumn selected option", (done) => {
+    it("sets plotly and table Format based on configured valueFormatColumn selected option", (done) => {
         const valueFormatMetadata: GenericChartMetadataResponse = {
             "test-chart": {
                 datasets: [
-                    {id: "dataset1", label:"Dataset 1", url: "/dataset1"}
+                    {id: "dataset1", label:"Dataset 1", url: "/dataset1", table: {}}
                 ],
                 dataSelectors: {
                     dataSources: [
@@ -615,6 +615,7 @@ describe("GenericChart component", () => {
             expect(plotly.props("layoutData")).toStrictEqual({
                 yAxisFormat: ".1%"
             });
+            expect(wrapper.find(GenericChartTable).props("valueFormat")).toBe("0.0%");
             done();
         });
     });
@@ -784,6 +785,7 @@ describe("GenericChart component", () => {
             expect(tables.at(0).props("filteredData")).toStrictEqual([{age: "1", year: "2021", value: 2}]);
             expect(tables.at(0).props("columns")).toBe(datasets.dataset1.metadata.columns);
             expect(tables.at(0).props("selectedFilterOptions")).toStrictEqual(datasets.dataset1.metadata.defaults.selected_filter_options);
+            expect(tables.at(0).props("valueFormat")).toBe("");
 
             expect(tables.at(1).props("tableConfig")).toBe(tableConfig2);
             expect(tables.at(1).props("filteredData")).toStrictEqual([
@@ -792,6 +794,7 @@ describe("GenericChart component", () => {
             ]);
             expect(tables.at(1).props("columns")).toBe(datasets.dataset2.metadata.columns);
             expect(tables.at(1).props("selectedFilterOptions")).toStrictEqual(datasets.dataset2.metadata.defaults.selected_filter_options);
+            expect(tables.at(0).props("valueFormat")).toBe("");
 
             done();
         });
