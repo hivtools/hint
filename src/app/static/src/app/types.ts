@@ -287,8 +287,8 @@ export interface ErrorReport extends ErrorReportManualDetails {
     browserAgent: string,
     timeStamp: string,
     modelRunId: string,
-    calibrateId: string,
-    downloadIds: DownloadIds
+    calibrateId?: string,
+    downloadIds?: DownloadIds
     versions: VersionInfo,
     errors: Error[]
 }

@@ -27,7 +27,7 @@ describe(`root actions`, () => {
                 summary: {
                     downloadId: "summary123"
                 },
-                coarse_output: {
+                coarseOutput: {
                     downloadId: "coarse123"
                 }
             },
