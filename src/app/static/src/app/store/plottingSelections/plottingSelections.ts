@@ -1,4 +1,4 @@
-import {FilterOption} from "../../generated";
+import {FilterOption, NestedFilterOption} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 import {Module} from "vuex";
 import {mutations} from "./mutations";
@@ -29,6 +29,13 @@ export interface UnadjustedBarchartSelections {
     x_axis_id: string,
     disaggregate_by_id: string,
     selected_filter_options: Dict<FilterOption[]>
+}
+
+
+export interface BarchartPayload {
+    data: BarchartSelections,
+    xAxisId?: string,
+    updatedFilterOptions?: NestedFilterOption[]
 }
 
 export interface BubblePlotSelections {

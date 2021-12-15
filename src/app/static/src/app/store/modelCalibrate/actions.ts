@@ -84,10 +84,12 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                     commit({
                             type: "plottingSelections/updateBarchartSelections",
                             payload: {
-                                indicatorId: defaults.indicator_id,
-                                xAxisId: defaults.x_axis_id,
-                                disaggregateById: defaults.disaggregate_by_id,
-                                selectedFilterOptions: unfrozenDefaultOptions
+                                data: {
+                                    indicatorId: defaults.indicator_id,
+                                    xAxisId: defaults.x_axis_id,
+                                    disaggregateById: defaults.disaggregate_by_id,
+                                    selectedFilterOptions: unfrozenDefaultOptions
+                                }
                             }
                         },
                         {root: true});

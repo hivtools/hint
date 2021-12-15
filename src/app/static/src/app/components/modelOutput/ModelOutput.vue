@@ -103,6 +103,7 @@
     import {mapGetterByName, mapGettersByNames, mapMutationByName, mapMutationsByNames, mapStateProp, mapStateProps, flattenOptions} from "../../utils";
     import {
         BarchartSelections,
+        BarchartPayload,
         BubblePlotSelections,
         ChoroplethSelections, ScaleSelections,
         PlottingSelectionsState
@@ -127,7 +128,7 @@
 
     interface Methods {
         tabSelected: (tab: string) => void
-        updateBarchartSelections: (data: BarchartSelections) => void
+        updateBarchartSelections: (data: BarchartPayload) => void
         updateBubblePlotSelections: (data: BubblePlotSelections) => void
         updateOutputColourScales: (colourScales: ScaleSelections) => void
         updateOutputBubbleSizeScales: (colourScales: ScaleSelections) => void
@@ -236,7 +237,8 @@
             },
             updateBarchartSelectionsAndXAxisOrder(data){
                 console.log("reach 3", data)
-                let payload = {...this.barchartSelections, ...data}
+                // let payload = {...this.barchartSelections, ...data}
+                const payload: BarchartPayload = { data }
                 const { xAxisId, selectedFilterOptions } = data
                 console.log("reach 5", xAxisId, selectedFilterOptions, selectedFilterOptions[xAxisId], xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId])
                 if (xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]){
@@ -263,11 +265,13 @@
                             return originalFilterOptionsIds.indexOf(a.id) - originalFilterOptionsIds.indexOf(b.id);
                         });
                         console.log("reach 1")
-                        payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
+                        // payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
+                        payload.xAxisId = xAxisId
+                        payload.updatedFilterOptions = updatedFilterOptions
                         // state.barchart = update
                         console.log("reach 2", payload)
-                        this.updateBarchartSelections(payload)
-                        return;
+                        // this.updateBarchartSelections(payload)
+                        // return;
                     }
                 }
                 // this.updateBarchartSelections(payload)

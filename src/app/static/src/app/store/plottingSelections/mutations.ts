@@ -2,6 +2,7 @@ import {Mutation, MutationTree} from 'vuex';
 import {
     PlottingSelectionsState,
     BarchartSelections,
+    BarchartPayload,
     BubblePlotSelections,
     ChoroplethSelections, ScaleSelections
 } from "./plottingSelections";
@@ -29,7 +30,7 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
     updateCalibratePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
         state.calibratePlot = {...state.calibratePlot, ...action.payload};
     },
-    updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<BarchartSelections>) {
+    updateBarchartSelections(state: PlottingSelectionsState, action: BarchartPayload) {
         console.log("action", action)
         // const { xAxisId, selectedFilterOptions } = action.payload
         // if (xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]){
@@ -62,10 +63,17 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
         //         return;
         //     }
         // }
+        if (action.updatedFilterOptions){
+            const update = {...state.barchart, ...action.data}
+            update.selectedFilterOptions[action.data.xAxisId] = action.updatedFilterOptions
+            console.log("update", update)
+            state.barchart = update
+            return;
+        }
         
         // if unable to do the above, just updates the barchart as normal
         // state.barchart = {...state.barchart, ...action.payload};
-        state.barchart = action.payload
+        state.barchart = {...state.barchart, ...action.data};
     },
     updateBubblePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BubblePlotSelections>>) {
         state.bubble = {...state.bubble, ...action.payload};
