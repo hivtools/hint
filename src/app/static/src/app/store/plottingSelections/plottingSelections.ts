@@ -1,4 +1,4 @@
-import {FilterOption, NestedFilterOption} from "../../generated";
+import {FilterOption} from "../../generated";
 import {localStorageManager} from "../../localStorageManager";
 import {Module} from "vuex";
 import {mutations} from "./mutations";

@@ -113,7 +113,7 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {Language, Translations} from "../../store/translations/locales";
     import {inactiveFeatures} from "../../main";
-    import {RootState, storeOptions} from "../../root";
+    import {RootState} from "../../root";
     import {LevelLabel} from "../../types";
     import {ChoroplethIndicatorMetadata, NestedFilterOption} from "../../generated";
     import {formatOutput} from "../plots/utils";
