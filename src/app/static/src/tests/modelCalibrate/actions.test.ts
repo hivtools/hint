@@ -164,7 +164,7 @@ describe("ModelCalibrate actions", () => {
                         indicator_id: "test indicator",
                         x_axis_id: "test_x",
                         disaggregate_by_id: "test_dis",
-                        selected_filter_options: {"test_name": "test_value"}
+                        selected_filter_options: {"test_name": ["test_value"]}
                     }
                 }
             },
@@ -206,9 +206,15 @@ describe("ModelCalibrate actions", () => {
                 indicatorId: "test indicator",
                 xAxisId: "test_x",
                 disaggregateById: "test_dis",
-                selectedFilterOptions: {"test_name": "test_value"}
+                selectedFilterOptions: {"test_name": ["test_value"]}
             }
         });
+
+        //Test that a selected filter options array can be modified ie is not frozen
+        const options = commit.mock.calls[2][0].payload.selectedFilterOptions["test_name"];
+        options.push("another value");
+        expect(options.length).toBe(2);
+
         expect(commit.mock.calls[3][0]).toBe("Calibrated");
         expect(commit.mock.calls[4][0]).toBe("Ready");
         expect(dispatch.mock.calls[0][0]).toBe("getCalibratePlot");
