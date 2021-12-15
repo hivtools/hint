@@ -152,7 +152,6 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                         commitSelectedDataTypeUpdated(commit, DataType.ANC)
                     }
                 }
-                commitClearGenericChartDataset(commit, DATASET_TYPE.SURVEY)
             });
     },
 

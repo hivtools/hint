@@ -420,22 +420,18 @@ describe("Survey and programme actions", () => {
             commit, rootState,
             state: mockSurveyAndProgramState({selectedDataType: DataType.Survey, program: mockProgramResponse()})
         } as any);
-        expect(commit).toBeCalledTimes(3);
+        expect(commit).toBeCalledTimes(2);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
         expect(commit.mock.calls[1][0]).toEqual({
             type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
             payload: DataType.Program
-        });
-        expect(commit.mock.calls[2][0]).toEqual({
-            type: "genericChart/ClearDataset",
-            payload: "survey"
         });
         commit.mockReset();
         await actions.deleteSurvey({
             commit, rootState,
             state: mockSurveyAndProgramState({selectedDataType: DataType.Survey, anc: mockAncResponse()})
         } as any);
-        expect(commit).toBeCalledTimes(3);
+        expect(commit).toBeCalledTimes(2);
         expect(commit.mock.calls[1][0]).toEqual({
             type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
             payload: DataType.ANC
@@ -523,10 +519,9 @@ describe("Survey and programme actions", () => {
         const commit = jest.fn();
         await actions.deleteAll({commit, rootState, state: mockSurveyAndProgramState()} as any);
         expect(mockAxios.history["delete"].length).toBe(3);
-        expect(commit).toBeCalledTimes(6);
+        expect(commit).toBeCalledTimes(5);
         expect(commit.mock.calls.map(c => c[0]["type"])).toEqual([
             SurveyAndProgramMutation.SurveyUpdated,
-            "genericChart/ClearDataset",
             SurveyAndProgramMutation.ProgramUpdated,
             "genericChart/ClearDataset",
             SurveyAndProgramMutation.ANCUpdated,

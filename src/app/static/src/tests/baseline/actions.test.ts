@@ -17,6 +17,7 @@ import {BaselineMutation} from "../../app/store/baseline/mutations";
 import {expectEqualsFrozen, testUploadErrorCommitted} from "../testHelpers";
 import {ADRSchemas} from "../../app/types";
 import Mock = jest.Mock;
+import {initialChorplethSelections} from "../../app/store/plottingSelections/plottingSelections";
 
 const FormData = require("form-data");
 const adrSchemas: ADRSchemas = {
@@ -201,7 +202,7 @@ describe("Baseline actions", () => {
         actions.uploadShape);
 
     const checkShapeImportUpload = (commit: Mock, dispatch: Mock, mockShape: any) => {
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: BaselineMutation.ShapeUpdated,
             payload: null
@@ -217,7 +218,13 @@ describe("Baseline actions", () => {
 
         expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
         expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
-    }
+
+        expect(commit.mock.calls[2][0]).toStrictEqual({
+            type: "plottingSelections/updateSAPChoroplethSelections",
+            payload: initialChorplethSelections()
+        });
+        expect(commit.mock.calls[2][1]).toStrictEqual({root: true});
+    };
 
 
     it("commits response and validates after population file upload", async () => {
