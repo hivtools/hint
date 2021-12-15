@@ -295,7 +295,7 @@ describe("GenericChart component", () => {
                 ],
                 hidden: [{type: "test", value: "test"}]
             });
-            expect(plotly.props("layoutData")).toStrictEqual({});
+            expect(plotly.props("layoutData")).toStrictEqual({yAxisFormat: ""});
             expect(plotly.element.style.height).toBe("100%");
 
             expect(wrapper.find(ErrorAlert).exists()).toBe(false);
@@ -544,9 +544,77 @@ describe("GenericChart component", () => {
                     heightPerRow: 100,
                     subplotsPerPage: 99,
                     rows: 3
-                }
+                },
+                yAxisFormat: ""
             });
             expect(plotly.element.style.height).toBe("370px");
+            done();
+        });
+    });
+
+    it("sets plotly layout yAxisFormat based on configured valueFormatColumn selected option", (done) => {
+        const valueFormatMetadata: GenericChartMetadataResponse = {
+            "test-chart": {
+                datasets: [
+                    {id: "dataset1", label:"Dataset 1", url: "/dataset1"}
+                ],
+                dataSelectors: {
+                    dataSources: [
+                        {id: "data", type: "editable", label: "First", datasetId: "dataset1", showFilters: true, showIndicators: false},
+                    ]
+                },
+                valueFormatColumn: "plot_type",
+                chartConfig: [{
+                    id: "scatter",
+                    config: "Test Chart Config"
+                }]
+            }
+        } as any;
+        const valueFormatDatasets = {
+            dataset1: {
+                data: [
+                    {type: "test", area:"a", plot_type: "p1"},
+                    {type: "test", area:"b", plot_type: "p2"}
+                ],
+                metadata: {
+                    columns: [
+                        {
+                            id: "type",
+                            column_id: "type",
+                            label: "Type",
+                            allowMultiple: false,
+                            options: [
+                                {id: "test", label: "test"},
+                                {id: "other", label: "other"}
+                            ]
+                        },
+                        {
+                            id: "plot_type",
+                            column_id: "plot_type",
+                            label: "Plot",
+                            options: [
+                                {id: "p1", label: "plot 1", format: "0.0%"},
+                                {id: "p2", label: "plot 2", format: "0"}
+                            ]
+                        }
+                    ],
+                    defaults: {
+                        selected_filter_options: {
+                            type: [{id: "test", label: "test"}],
+                            plot_type: [{id: "p1", label: "plot 1", format: "0.0%"}]
+                        }
+                    }
+                }
+            }
+        } as any;
+        const state = {datasets: valueFormatDatasets};
+
+        const wrapper = getWrapper(state, valueFormatMetadata);
+        setTimeout(() => {
+            const plotly = wrapper.find(Plotly);
+            expect(plotly.props("layoutData")).toStrictEqual({
+                yAxisFormat: ".1%"
+            });
             done();
         });
     });
@@ -837,7 +905,8 @@ describe("GenericChart component", () => {
                     heightPerRow: 100,
                     subplotsPerPage: 2,
                     rows: 1
-                }
+                },
+                yAxisFormat: ""
             });
 
             done();

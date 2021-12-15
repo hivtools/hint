@@ -5,7 +5,7 @@ import Modal from "../../app/components/Modal.vue";
 import Vuex from "vuex";
 import {mockErrorsState, mockProjectsState, mockRootState, mockStepperState} from "../mocks";
 import registerTranslations from "../../app/store/translations/registerTranslations";
-import {StepperState} from "../../app/store/stepper/stepper";
+import {StepDescription, StepperState} from "../../app/store/stepper/stepper";
 import {ProjectsState} from "../../app/store/projects/projects";
 import {expectTranslated} from "../testHelpers";
 import VueRouter from "vue-router";
@@ -14,11 +14,9 @@ import ErrorAlert from "../../app/components/ErrorAlert.vue";
 import {RootState} from "../../app/root";
 import { ErrorsState } from "../../app/store/errors/errors";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
-import {emailRegex} from "../../app/utils";
+import {emailRegex, mapStateProp} from "../../app/utils";
 
 describe("Error report component", () => {
-
-    const generateErrorReport = jest.fn();
 
     const createStore = (stepperState: Partial<StepperState> = {},
                          projectsState: Partial<ProjectsState> = {},
@@ -39,10 +37,7 @@ describe("Error report component", () => {
                 errors: {
                     namespaced: true,
                     state: mockErrorsState(errorsState)
-                },
-            },
-            actions: {
-                generateErrorReport
+                }
             },
             getters: {
                 isGuest: () => isGuest
@@ -55,6 +50,67 @@ describe("Error report component", () => {
     afterEach(() => {
         jest.resetAllMocks();
     });
+
+    const rootSectionSlot = {
+        name: 'sectionView',
+        template: `
+            <div>
+            <label for="section" v-translate="'section'"></label>
+            <select class="form-control"
+                    v-model="currentSection"
+                    id="section">
+                <option v-for="step in steps"
+                        :key="step.number"
+                        :value="step.textKey"
+                        v-translate="step.textKey">
+                </option>
+                <option key="login"
+                        v-translate="'login'"
+                        value="login"></option>
+                <option key="projects" v-translate="'projects'"
+                        value="projects"></option>
+                <option key="other"
+                        value="other"
+                        v-translate="'other'"></option>
+            </select>
+            </div>
+        `,
+        data() {
+            return {
+                section: '',
+            }
+        },
+        computed: {
+            currentSectionKey: {
+                get() {
+                    return mapStateProp<StepperState, string>("stepper",
+                        state => state.steps[state.activeStep - 1].textKey)
+                }
+            },
+            currentSection: {
+                get() {
+                    return rootSectionSlot.data().section || rootSectionSlot.computed.currentSectionKey
+                },
+                set (newVal: string) {
+                    rootSectionSlot.data().section = newVal
+                }
+            },
+            steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps)
+        }
+    }
+
+    const projectSlot = {
+        name: 'projectView',
+        template: `
+            <div v-if="projectName"><label for="project" v-translate="'project'"></label>
+            <input type="text" disabled id="project" :value="projectName" class="form-control"/>
+            </div>
+        `,
+        computed: {
+            projectName: mapStateProp<ProjectsState, string | undefined>("projects",
+                    state => state.currentProject?.name)
+        }
+    }
 
     it("modal is open when prop is true", () => {
         const wrapper = shallowMount(ErrorReport, {
@@ -84,7 +140,10 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store
+            store,
+            slots: {
+                sectionView: rootSectionSlot
+            }
         });
         const options = wrapper.findAll("option");
 
@@ -102,7 +161,11 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store
+            store,
+            slots: {
+                sectionView: rootSectionSlot,
+                projectView: projectSlot
+            }
         });
 
         expectTranslated(wrapper.find("h4"),
@@ -112,6 +175,8 @@ describe("Error report component", () => {
             store)
 
         const labels = wrapper.findAll("label")
+        expect(labels.length).toBe(5)
+
         expectTranslated(labels.at(0),
             "Project",
             "Projet",
@@ -193,103 +258,14 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store
+            store,
+            slots: {
+                sectionView: rootSectionSlot
+            }
         });
         const options = wrapper.findAll("option");
-
         expect(options.length).toBe(10);
-
-        expectTranslated(options.at(0),
-            "Upload inputs",
-            "Télécharger les entrées",
-            "Carregar entradas",
-            store)
-
-        expectTranslated(options.at(1),
-            "Review inputs",
-            "Examiner les entrées",
-            "Analise as entradas",
-            store)
-
-        expectTranslated(options.at(2),
-            "Model options",
-            "Options des modèles",
-            "Opções de modelos",
-            store)
-
-        expectTranslated(options.at(3),
-            "Fit model",
-            "Ajuster le modèle",
-            "Ajustar modelo",
-            store)
-
-        expectTranslated(options.at(4),
-            "Calibrate model",
-            "Calibrer le modèle",
-            "Calibrar modelo",
-            store)
-
-        expectTranslated(options.at(5),
-            "Review output",
-            "Résultat de l'examen",
-            "Rever os resultados",
-            store)
-
-        expectTranslated(options.at(6),
-            "Save results",
-            "Enregistrer les résultats",
-            "Guardar resultados",
-            store)
-
-        expectTranslated(options.at(7),
-            "Login",
-            "Connexion",
-            "Conecte-se",
-            store)
-
-        expectTranslated(options.at(8),
-            "Projects",
-            "Projets",
-            "Projetos",
-            store)
-
-        expectTranslated(options.at(9),
-            "Other",
-            "Autre",
-            "De outros",
-            store)
     })
-
-    it("selects current step by default", () => {
-        const wrapper = shallowMount(ErrorReport, {
-            propsData: {
-                open: true
-            },
-            store: createStore({activeStep: 2})
-        });
-
-        expect((wrapper.find("select#section").element as HTMLSelectElement).value)
-            .toBe("reviewInputs")
-    });
-
-    it("can update section", () => {
-        const wrapper = shallowMount(ErrorReport, {
-            propsData: {
-                open: true
-            },
-            store: createStore({activeStep: 2})
-        });
-
-        expect((wrapper.find("select#section").element as HTMLSelectElement).value)
-            .toBe("reviewInputs");
-
-        wrapper.find("#section").setValue("downloadResults");
-
-        expect((wrapper.find("select#section").element as HTMLSelectElement).value)
-            .toBe("downloadResults");
-        expect(wrapper.vm.$data.section).toBe("downloadResults");
-        expect((wrapper.vm as any).currentSection).toBe("downloadResults");
-    });
 
     it("shows email field if user is guest", () => {
         const wrapper = shallowMount(ErrorReport, {
@@ -401,7 +377,10 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore({}, {currentProject: {name: "p1", id: 1, versions: []}}, {}, false)
+            store: createStore({}, {currentProject: {name: "p1", id: 1, versions: []}}, {}, false),
+            slots: {
+                projectView: projectSlot
+            }
         });
 
         expect(wrapper.findAll("input#project").length).toBe(1);
@@ -415,10 +394,35 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore({}, {}, {}, true)
+            store: createStore({}, {}, {}, true),
+            slots: {
+                projectView: projectSlot
+            }
         });
 
         expect(wrapper.findAll("input#project").length).toBe(0);
+    });
+
+    it("does not show project field", () => {
+        const wrapper = shallowMount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore({}, {}, {}, true)
+        });
+
+        expect(wrapper.find("input#project").exists()).toBe(false);
+    });
+
+    it("does not show section field by default", () => {
+        const wrapper = shallowMount(ErrorReport, {
+            propsData: {
+                open: true
+            },
+            store: createStore({}, {}, {}, true)
+        });
+
+        expect(wrapper.find("#section").exists()).toBe(false);
     });
 
     it("emits close event on cancel", () => {
@@ -440,7 +444,10 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store: createStore({}, {}, {}, true)
+            store: createStore({}, {}, {}, true),
+            slots: {
+                sectionView: rootSectionSlot
+            }
         });
 
         wrapper.find("#description").setValue("something");
@@ -450,14 +457,12 @@ describe("Error report component", () => {
 
         expect(wrapper.vm.$data.description).toBe("something");
         expect(wrapper.vm.$data.stepsToReproduce).toBe("reproduce steps");
-        expect(wrapper.vm.$data.section).toBe("downloadResults");
         expect(wrapper.vm.$data.email).toBe("test@email.com");
 
         wrapper.find(".btn-white").trigger("click");
 
         expect(wrapper.vm.$data.description).toBe("");
         expect(wrapper.vm.$data.stepsToReproduce).toBe("");
-        expect(wrapper.vm.$data.section).toBe("");
         expect(wrapper.vm.$data.email).toBe("");
     });
 
@@ -471,12 +476,10 @@ describe("Error report component", () => {
 
         wrapper.find("#description").setValue("something");
         wrapper.find("#reproduce").setValue("reproduce steps");
-        wrapper.find("#section").setValue("downloadResults");
         wrapper.find("#email").setValue("test@email.com");
 
         expect(wrapper.vm.$data.description).toBe("something");
         expect(wrapper.vm.$data.stepsToReproduce).toBe("reproduce steps");
-        expect(wrapper.vm.$data.section).toBe("downloadResults");
         expect(wrapper.vm.$data.email).toBe("test@email.com");
 
         wrapper.find(".btn-red").trigger("click");
@@ -484,7 +487,6 @@ describe("Error report component", () => {
 
         expect(wrapper.vm.$data.description).toBe("");
         expect(wrapper.vm.$data.stepsToReproduce).toBe("");
-        expect(wrapper.vm.$data.section).toBe("");
         expect(wrapper.vm.$data.email).toBe("");
     });
 
@@ -508,7 +510,10 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store
+            store,
+            slots: {
+                sectionView: rootSectionSlot
+            }
         });
 
         wrapper.find("#description").setValue("something");
@@ -532,7 +537,10 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store
+            store,
+            slots: {
+                sectionView: rootSectionSlot
+            }
         });
 
         wrapper.find("#description").setValue("something");
@@ -556,7 +564,10 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store
+            store,
+            slots: {
+                sectionView: rootSectionSlot
+            }
         });
 
         wrapper.find("#description").setValue("something");
@@ -582,7 +593,10 @@ describe("Error report component", () => {
             propsData: {
                 open: true
             },
-            store
+            store,
+            slots: {
+                sectionView: rootSectionSlot
+            }
         });
 
         wrapper.find("#description").setValue("something");
@@ -596,12 +610,15 @@ describe("Error report component", () => {
         expect(wrapper.find(".invalid-feedback").exists()).toBe(false)
     });
 
-    it("invokes generateErrorReport action and sets showFeedback on send", async () => {
+    it("emits action and sets showFeedback on send", async () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
                 open: true
             },
-            store: createStore()
+            store: createStore(),
+            slots: {
+                sectionView: rootSectionSlot
+            }
         });
 
         wrapper.find("#description").setValue("something");
@@ -612,12 +629,14 @@ describe("Error report component", () => {
         wrapper.find(".btn-red").trigger("click");
         await Vue.nextTick();
 
-        expect(generateErrorReport.mock.calls[0][1]).toEqual({
-            description: "something",
-            stepsToReproduce: "reproduce steps",
-            section: "downloadResults",
-            email: ""
-        });
+        expect(wrapper.emitted("send").length).toBe(1)
+        expect(wrapper.emitted("send")[0][0]).toStrictEqual(
+            {
+                description: "something",
+                stepsToReproduce: "reproduce steps",
+                email: ""
+            }
+        )
 
         expect((wrapper.vm as any).showFeedback).toBe(true);
         expect(wrapper.emitted().close).toBeUndefined();
@@ -630,7 +649,10 @@ describe("Error report component", () => {
                 open: true,
                 email: "something"
             },
-            store: store
+            store: store,
+            slots: {
+                sectionView: rootSectionSlot
+            }
         });
 
         wrapper.find("#description").setValue("something");
@@ -649,7 +671,10 @@ describe("Error report component", () => {
                 open: true,
                 email: "something"
             },
-            store: createStore()
+            store: createStore(),
+            slots: {
+                sectionView: rootSectionSlot
+            }
         });
 
         wrapper.find("#description").setValue("something");
@@ -660,7 +685,7 @@ describe("Error report component", () => {
         expect(wrapper.find("#send").attributes("disabled")).toBeUndefined()
     });
 
-    it("does not invoke generateErrorReport action on cancel", () => {
+    it("does not emit action on cancel", () => {
         const wrapper = mount(ErrorReport, {
             propsData: {
                 open: true
@@ -671,35 +696,7 @@ describe("Error report component", () => {
         expect(wrapper.find(".btn-white").text()).toBe("Cancel");
         wrapper.find(".btn-white").trigger("click");
 
-        expect(generateErrorReport.mock.calls.length).toBe(0);
-    });
-
-    it("sets section to 'projects' if opened on project page", () => {
-        const localVue = createLocalVue()
-        localVue.use(VueRouter)
-        const routes = [
-            {
-                path: '/',
-                component: ErrorReport
-            },
-            {
-                path: '/projects',
-                component: ErrorReport
-            }
-        ]
-        const router = new VueRouter({
-            routes
-        })
-
-        const wrapper = mount(ErrorReport, { localVue, router, store: createStore() })
-        expect(wrapper.vm.$route.path).toBe("/");
-        wrapper.setProps({open: true});
-        expect((wrapper.find("#section").element as HTMLSelectElement).value).toBe("uploadInputs");
-
-        wrapper.setProps({open: false});
-        router.push("/projects");
-        wrapper.setProps({open: true});
-        expect((wrapper.find("#section").element as HTMLSelectElement).value).toBe("projects")
+        expect(wrapper.emitted("send")).toBeUndefined()
     });
 
     it("renders no feedback by default", () => {

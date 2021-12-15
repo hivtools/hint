@@ -233,6 +233,7 @@ export interface GenericChartMetadata {
         heightPerRow: number
         subplotsPerPage: number
     },
+    valueFormatColumn?: string
     chartConfig: {
         id: string
         label: string
@@ -245,11 +246,16 @@ export interface GenericChartMetadataResponse {
     [key: string]: GenericChartMetadata;
 }
 
+export interface GenericChartColumnValue extends FilterOption {
+    format?: string | null,
+    accuracy?: string | null
+}
+
 export interface GenericChartColumn {
     id: string,
     column_id: string,
     label: string,
-    values: FilterOption[]
+    values: GenericChartColumnValue[]
 }
 
 export interface GenericChartDataset {
@@ -269,7 +275,7 @@ export interface StepWarnings {
 }
 
 export interface ErrorReportManualDetails {
-    section: string,
+    section?: string,
     description: string,
     stepsToReproduce: string,
     email: string
