@@ -1,3 +1,7 @@
+# hint 1.84.0
+
+* Data exploration mode error reporting
+
 # hint 1.83.0
 
 * Support y-axis formats in Input Time Series
