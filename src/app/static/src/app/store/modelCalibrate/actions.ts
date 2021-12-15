@@ -80,16 +80,17 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                             dict[key] = [...defaults.selected_filter_options[key]];
                             return dict;
                         }, {} as Dict<FilterOption[]>);
+                        // console.log("this is the payoad", payload)
 
                     commit({
                             type: "plottingSelections/updateBarchartSelections",
                             payload: {
-                                data: {
+                                // data: {
                                     indicatorId: defaults.indicator_id,
                                     xAxisId: defaults.x_axis_id,
                                     disaggregateById: defaults.disaggregate_by_id,
                                     selectedFilterOptions: unfrozenDefaultOptions
-                                }
+                                // }
                             }
                         },
                         {root: true});
