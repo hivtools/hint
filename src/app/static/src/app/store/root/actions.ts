@@ -10,6 +10,7 @@ import {ErrorReportManualDetails} from "../../types";
 import {VersionInfo} from "../../generated";
 import {currentHintVersion} from "../../hintVersion";
 import {ChangeLanguageAction} from "../language/actions";
+import {downloadResults} from "../downloadResults/downloadResults";
 
 
 export interface RootActions extends LanguageActions<RootState> {
@@ -70,7 +71,9 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             projectName: rootState.projects.currentProject?.name || "no associated project",
             browserAgent: navigator.userAgent,
             timeStamp: new Date().toISOString(),
-            jobId: rootState.modelRun.modelRunId || "no associated jobId",
+            modelRunId: rootState.modelRun.modelRunId || "no associated modelRunId",
+            calibrateId: rootState.modelCalibrate.calibrateId || "no associated calibrateId",
+            downloadIds: getDownloadIds(rootState),
             description: payload.description,
             section: payload.section,
             stepsToReproduce: payload.stepsToReproduce,
@@ -95,3 +98,11 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         commit({type: `errors/${ErrorsMutation.SendingErrorReport}`, payload: false});
     }
 };
+
+const getDownloadIds = (rootState: RootState) => {
+    const spectrumId = rootState.downloadResults.spectrum.downloadId || "none";
+    const summaryId = rootState.downloadResults.summary.downloadId || "none";
+    const coarseOutputId = rootState.downloadResults.coarseOutput.downloadId || "none"
+
+    return {spectrum: spectrumId, summary: summaryId, coarse_output: coarseOutputId}
+}

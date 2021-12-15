@@ -17,6 +17,20 @@ describe(`root actions`, () => {
             modelRun: {
                 modelRunId: "1234"
             },
+            modelCalibrate: {
+                calibrateId: "2022"
+            },
+            downloadResults: {
+                spectrum: {
+                    downloadId: "spectrum123"
+                },
+                summary: {
+                    downloadId: "summary123"
+                },
+                coarse_output: {
+                    downloadId: "coarse123"
+                }
+            },
             projects: {currentProject: {name: "p1", id: 1, versions: []}}
         }
 
