@@ -1,6 +1,10 @@
-# hint 1.84.1
+# hint 1.85.1
 
 * Output barchart x-axis should be ordered
+
+# hint 1.85.0
+
+* Input file validation in Data Exploration
 
 # hint 1.84.0
 

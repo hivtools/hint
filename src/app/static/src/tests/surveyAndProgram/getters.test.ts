@@ -206,5 +206,48 @@ describe("survey and program getters", () => {
 
     it("gets expected filters when root language is Portuguese", () => {
         testExpectedFilters(DataType.Survey, true, Language.pt);
-    })
+    });
+
+    it("is valid for data exploration iff no errors and at least one file", () => {
+        let state = mockSurveyAndProgramState()
+        expect(getters.validForDataExploration(state)).toBe(false);
+
+        state = mockSurveyAndProgramState({survey: mockSurveyResponse()})
+        expect(getters.validForDataExploration(state)).toBe(true);
+
+        state = mockSurveyAndProgramState({program: mockProgramResponse()})
+        expect(getters.validForDataExploration(state)).toBe(true);
+
+        state = mockSurveyAndProgramState({anc: mockAncResponse()})
+        expect(getters.validForDataExploration(state)).toBe(true);
+
+        state = mockSurveyAndProgramState({survey: mockSurveyResponse(), ancError: mockError()})
+        expect(getters.validForDataExploration(state)).toBe(false);
+
+        state = mockSurveyAndProgramState({program: mockProgramResponse(), ancError: mockError()})
+        expect(getters.validForDataExploration(state)).toBe(false);
+
+        state = mockSurveyAndProgramState({anc: mockAncResponse(), ancError: mockError()})
+        expect(getters.validForDataExploration(state)).toBe(false);
+
+        state = mockSurveyAndProgramState({survey: mockSurveyResponse(), programError: mockError()})
+        expect(getters.validForDataExploration(state)).toBe(false);
+
+        state = mockSurveyAndProgramState({program: mockProgramResponse(), programError: mockError()})
+        expect(getters.validForDataExploration(state)).toBe(false);
+
+        state = mockSurveyAndProgramState({anc: mockAncResponse(), programError: mockError()})
+        expect(getters.validForDataExploration(state)).toBe(false);
+
+        state = mockSurveyAndProgramState({survey: mockSurveyResponse(), surveyError: mockError()})
+        expect(getters.validForDataExploration(state)).toBe(false);
+
+        state = mockSurveyAndProgramState({program: mockProgramResponse(), surveyError: mockError()})
+        expect(getters.validForDataExploration(state)).toBe(false);
+
+        state = mockSurveyAndProgramState({anc: mockAncResponse(), surveyError: mockError()})
+        expect(getters.validForDataExploration(state)).toBe(false);
+    });
+
+
 });

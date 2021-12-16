@@ -1,7 +1,7 @@
 import {
     mockADRState,
     mockAxios,
-    mockBaselineState,
+    mockBaselineState, mockDataExplorationState,
     mockDataset,
     mockDatasetResource,
     mockError,
@@ -17,6 +17,7 @@ import {BaselineMutation} from "../../app/store/baseline/mutations";
 import {expectEqualsFrozen, testUploadErrorCommitted} from "../testHelpers";
 import {ADRSchemas} from "../../app/types";
 import Mock = jest.Mock;
+import {initialChorplethSelections} from "../../app/store/plottingSelections/plottingSelections";
 
 const FormData = require("form-data");
 const adrSchemas: ADRSchemas = {
@@ -35,8 +36,14 @@ const rootState = mockRootState({
     adr: mockADRState({schemas: adrSchemas})
 });
 
+const dataExplorationState = mockDataExplorationState({
+    adr: mockADRState({schemas: adrSchemas})
+});
+
 const mockFormData = {
-  get: (key: string) => { return key == "file" ? {name: "file.txt"} : null; }
+    get: (key: string) => {
+        return key == "file" ? {name: "file.txt"} : null;
+    }
 };
 
 describe("Baseline actions", () => {
@@ -195,7 +202,7 @@ describe("Baseline actions", () => {
         actions.uploadShape);
 
     const checkShapeImportUpload = (commit: Mock, dispatch: Mock, mockShape: any) => {
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: BaselineMutation.ShapeUpdated,
             payload: null
@@ -211,7 +218,13 @@ describe("Baseline actions", () => {
 
         expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
         expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
-    }
+
+        expect(commit.mock.calls[2][0]).toStrictEqual({
+            type: "plottingSelections/updateSAPChoroplethSelections",
+            payload: initialChorplethSelections()
+        });
+        expect(commit.mock.calls[2][1]).toStrictEqual({root: true});
+    };
 
 
     it("commits response and validates after population file upload", async () => {
@@ -274,7 +287,10 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "PopulationUpdated", payload: null});
-        expect(commit.mock.calls[1][0]).toStrictEqual({type: "PopulationUploadError", payload: mockError("test error")});
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "PopulationUploadError",
+            payload: mockError("test error")
+        });
         expect(commit.mock.calls[2][0]).toStrictEqual({type: "PopulationErroredFile", payload: "some-file.txt"});
     });
 
@@ -376,7 +392,7 @@ describe("Baseline actions", () => {
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.Ready);
     });
 
-    it("deletes pjnz and dispatches survey and program delete action", async () => {
+    it("deletes pjnz and dispatches survey and program delete action if main app", async () => {
 
         mockAxios.onDelete("/baseline/pjnz/")
             .reply(200, mockSuccess(true));
@@ -389,7 +405,21 @@ describe("Baseline actions", () => {
         expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
     });
 
-    it("deletes shape and dispatches survey and program delete action", async () => {
+    it("deletes pjnz and validates if data exploration app", async () => {
+
+        mockAxios.onDelete("/baseline/pjnz/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        await actions.deletePJNZ({commit, dispatch, rootState: dataExplorationState} as any);
+        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
+        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
+        expect(dispatch.mock.calls[1][2]).toEqual({root: true});
+        expect(dispatch.mock.calls.length).toBe(2);
+    });
+
+    it("deletes shape and dispatches survey and program delete action if main app", async () => {
 
         mockAxios.onDelete("/baseline/shape/")
             .reply(200, mockSuccess(true));
@@ -402,7 +432,22 @@ describe("Baseline actions", () => {
         expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
     });
 
-    it("deletes population and dispatches survey and program delete action", async () => {
+    it("deletes shape and validates if data exploration app", async () => {
+
+        mockAxios.onDelete("/baseline/shape/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        await actions.deleteShape({commit, dispatch, rootState: dataExplorationState} as any);
+        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
+        expect(dispatch.mock.calls[0][0]).toBe("validate");
+        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
+        expect(dispatch.mock.calls[1][2]).toEqual({root: true});
+        expect(dispatch.mock.calls.length).toBe(2);
+    });
+
+    it("deletes population and dispatches survey and program delete action if main app", async () => {
 
         mockAxios.onDelete("/baseline/population/")
             .reply(200, mockSuccess(true));
@@ -413,6 +458,21 @@ describe("Baseline actions", () => {
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
         expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
         expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
+    });
+
+    it("deletes population and validates if data exploration app", async () => {
+
+        mockAxios.onDelete("/baseline/population/")
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        await actions.deletePopulation({commit, dispatch, rootState: dataExplorationState} as any);
+        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
+        expect(dispatch.mock.calls[0][0]).toBe("validate");
+        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
+        expect(dispatch.mock.calls[1][2]).toEqual({root: true});
+        expect(dispatch.mock.calls.length).toBe(2);
     });
 
     it("deletes all", async () => {
@@ -434,13 +494,62 @@ describe("Baseline actions", () => {
         mockAxios.onGet("/adr/datasets/1234")
             .reply(200, mockSuccess({
                 resources: [
-                    {id: "1", url: "something.com", last_modified: "2020-11-01", metadata_modified: "2020-11-02", resource_type: "pop", name: "Pop resource"},
-                    {id: "2", url: "something.com", last_modified: "2020-11-03", metadata_modified: "2020-11-04", resource_type: "pjnz", name: "PJNZ resource"},
-                    {id: "3", url: "something.com", last_modified: "2020-11-05", metadata_modified: "2020-11-06", resource_type: "shape", name: "Shape resource"},
-                    {id: "4", url: "something.com", last_modified: "2020-11-07", metadata_modified: "2020-11-08", resource_type: "survey", name: "Survey resource"},
-                    {id: "5", url: "something.com", last_modified: "2020-11-09", metadata_modified: "2020-11-10", resource_type: "program", name: "Program resource"},
-                    {id: "6", url: "something.com", last_modified: "2020-11-11", metadata_modified: "2020-11-12", resource_type: "anc", name: "ANC resource"},
-                    {id: "7", url: "something.com", last_modified: "2020-10-01", metadata_modified: "2020-10-02", resource_type: "random", name: "Random resource"},
+                    {
+                        id: "1",
+                        url: "something.com",
+                        last_modified: "2020-11-01",
+                        metadata_modified: "2020-11-02",
+                        resource_type: "pop",
+                        name: "Pop resource"
+                    },
+                    {
+                        id: "2",
+                        url: "something.com",
+                        last_modified: "2020-11-03",
+                        metadata_modified: "2020-11-04",
+                        resource_type: "pjnz",
+                        name: "PJNZ resource"
+                    },
+                    {
+                        id: "3",
+                        url: "something.com",
+                        last_modified: "2020-11-05",
+                        metadata_modified: "2020-11-06",
+                        resource_type: "shape",
+                        name: "Shape resource"
+                    },
+                    {
+                        id: "4",
+                        url: "something.com",
+                        last_modified: "2020-11-07",
+                        metadata_modified: "2020-11-08",
+                        resource_type: "survey",
+                        name: "Survey resource"
+                    },
+                    {
+                        id: "5",
+                        url: "something.com",
+                        last_modified: "2020-11-09",
+                        metadata_modified: "2020-11-10",
+                        resource_type: "program",
+                        name: "Program resource"
+                    },
+                    {
+                        id: "6",
+                        url: "something.com",
+                        last_modified: "2020-11-11",
+                        metadata_modified: "2020-11-12",
+                        resource_type: "anc",
+                        name: "ANC resource"
+                    },
+                    {
+                        id: "7",
+                        url: "something.com",
+                        last_modified: "2020-10-01",
+                        metadata_modified: "2020-10-02",
+                        resource_type: "random",
+                        name: "Random resource"
+                    },
 
                 ]
             }))
@@ -454,12 +563,48 @@ describe("Baseline actions", () => {
 
         expect(commit.mock.calls[0][0]).toBe(BaselineMutation.UpdateDatasetResources);
         expect(commit.mock.calls[0][1]).toEqual({
-            pjnz: mockDatasetResource({id: "2", url: "something.com", lastModified: "2020-11-03", metadataModified: "2020-11-04", name: "PJNZ resource"}),
-            shape: mockDatasetResource({id: "3", url: "something.com", lastModified: "2020-11-05", metadataModified: "2020-11-06", name: "Shape resource"}),
-            pop: mockDatasetResource({id: "1", url: "something.com", lastModified: "2020-11-01", metadataModified: "2020-11-02", name: "Pop resource"}),
-            survey: mockDatasetResource({id: "4", url: "something.com", lastModified: "2020-11-07", metadataModified: "2020-11-08", name: "Survey resource"}),
-            program: mockDatasetResource({id: "5", url: "something.com", lastModified: "2020-11-09", metadataModified: "2020-11-10", name: "Program resource"}),
-            anc: mockDatasetResource({id: "6", url: "something.com", lastModified: "2020-11-11", metadataModified: "2020-11-12", name: "ANC resource"})
+            pjnz: mockDatasetResource({
+                id: "2",
+                url: "something.com",
+                lastModified: "2020-11-03",
+                metadataModified: "2020-11-04",
+                name: "PJNZ resource"
+            }),
+            shape: mockDatasetResource({
+                id: "3",
+                url: "something.com",
+                lastModified: "2020-11-05",
+                metadataModified: "2020-11-06",
+                name: "Shape resource"
+            }),
+            pop: mockDatasetResource({
+                id: "1",
+                url: "something.com",
+                lastModified: "2020-11-01",
+                metadataModified: "2020-11-02",
+                name: "Pop resource"
+            }),
+            survey: mockDatasetResource({
+                id: "4",
+                url: "something.com",
+                lastModified: "2020-11-07",
+                metadataModified: "2020-11-08",
+                name: "Survey resource"
+            }),
+            program: mockDatasetResource({
+                id: "5",
+                url: "something.com",
+                lastModified: "2020-11-09",
+                metadataModified: "2020-11-10",
+                name: "Program resource"
+            }),
+            anc: mockDatasetResource({
+                id: "6",
+                url: "something.com",
+                lastModified: "2020-11-11",
+                metadataModified: "2020-11-12",
+                name: "ANC resource"
+            })
         });
     });
 
@@ -468,7 +613,12 @@ describe("Baseline actions", () => {
         mockAxios.onGet("/adr/datasets/1234")
             .reply(200, mockSuccess({
                 resources: [
-                    {url: "something.com", last_modified: "2020-11-01", metadata_modified: "2020-11-02", resource_type: "random"},
+                    {
+                        url: "something.com",
+                        last_modified: "2020-11-01",
+                        metadata_modified: "2020-11-02",
+                        resource_type: "random"
+                    },
 
                 ]
             }))
