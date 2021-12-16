@@ -379,6 +379,47 @@ describe("ModelOutput component", () => {
         expect(store.state.plottingSelections.barchart).toStrictEqual(updatedBarchartSelections);
     });
 
+    it("commits updated selections from barchart and orders them according to nested filter", () => {
+        const testBarchartFilters = [
+            {
+                id: "region",
+                options: [{
+                    children: [
+                    { id: "r0", children: [{ id: "r0.0"}]},
+                    { id: "r1", children: [{ id: "r1.0"}]},
+                    { id: "r2"}]}
+                ]
+            }
+        ]
+        const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const currentBarchartSelections = store.state.plottingSelections.barchart
+
+        const barchart = wrapper.find(BarChartWithFilters);
+        const barchartSelections = {
+            selectedFilterOptions: {
+                region: [
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"},
+                    {id: "r0.0", label: "region 0.0"},
+                    {id: "r1.0", label: "region 1.0"}
+                ],
+                age: [
+                    {id: "a1", label: "0-4"},
+                ]
+            },
+            xAxisId: "region"
+        };
+
+        const updatedBarchartSelections = {...currentBarchartSelections }
+        const newRegion = barchartSelections.selectedFilterOptions.region
+        updatedBarchartSelections.selectedFilterOptions.region = [newRegion[1], newRegion[3], newRegion[0], newRegion[4], newRegion[2]]
+
+        barchart.vm.$emit("update", barchartSelections);
+        expect(store.state.plottingSelections.barchart).toStrictEqual(updatedBarchartSelections);
+    });
+
     it("renders choropleth table", () => {
         const store = getStore({selectedTab: "map"});
         const wrapper = shallowMount(ModelOutput, {localVue, store});
