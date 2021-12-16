@@ -2,7 +2,6 @@ import { Module } from "vuex";
 import { actions } from "./actions";
 import { mutations } from "./mutations";
 import { HintrVersionResponse } from "../../generated";
-import { localStorageManager } from "../../localStorageManager";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface HintrVersionState {
@@ -16,11 +15,12 @@ export const initialHintrVersionState = (): HintrVersionState => {
 };
 
 const namespaced = true;
-const existingState = localStorageManager.getState();
 
-export const hintrVersion: Module<HintrVersionState, DataExplorationState> = {
-    namespaced,
-    state: { ...initialHintrVersionState(), ...existingState && existingState.hintrVersion },
-    actions,
-    mutations
+export const hintrVersion = (existingState: Partial<DataExplorationState> | null): Module<HintrVersionState, DataExplorationState> => {
+    return  {
+        namespaced,
+        state: { ...initialHintrVersionState(), ...existingState && existingState.hintrVersion },
+        actions,
+        mutations
+    };
 };
