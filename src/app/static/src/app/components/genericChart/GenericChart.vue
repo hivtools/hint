@@ -245,8 +245,10 @@
                     const dataSourceConfig = this.chartMetadata.dataSelectors.dataSources[0];
                     const selections = this.dataSourceSelections[dataSourceConfig.id].selectedFilterOptions;
                     if (selections && selections[valueFormatColumn].length) {
-                        const numeralJsFormat =  (selections[valueFormatColumn][0] as GenericChartColumnValue).format || "";
-                        return numeralJsFormat ? numeralJsToD3format(numeralJsFormat) : "";
+                        const numeralJsFormat =  (selections[valueFormatColumn][0] as GenericChartColumnValue)?.format;
+                        if (numeralJsFormat) {
+                            return numeralJsToD3format(numeralJsFormat)
+                        }
                     }
                 }
                 return "";
