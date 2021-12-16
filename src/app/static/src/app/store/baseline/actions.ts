@@ -7,6 +7,7 @@ import qs from "qs";
 import {findResource, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
 import {DatasetResourceSet} from "../../types";
 import {DataExplorationState} from "../dataExploration/dataExploration";
+import {initialChorplethSelections} from "../plottingSelections/plottingSelections";
 
 export interface BaselineActions {
     refreshDatasetMetadata: (store: ActionContext<BaselineState, DataExplorationState>) => void
@@ -24,11 +25,11 @@ export interface BaselineActions {
     validate: (store: ActionContext<BaselineState, DataExplorationState>) => void
 }
 
-const uploadCallback = (dispatch: Dispatch, response: any) => {
+const uploadCallback = async (dispatch: Dispatch, response: any) => {
     if (response) {
-        dispatch('validate');
+        await dispatch('validate');
     }
-    dispatch("surveyAndProgram/validateSurveyAndProgramData", {}, {root: true});
+    await dispatch("surveyAndProgram/validateSurveyAndProgramData", {}, {root: true});
 }
 
 interface UploadImportOptions {
@@ -84,6 +85,12 @@ async function uploadOrImportShape(context: ActionContext<BaselineState, DataExp
             uploadCallback(dispatch, response);
             if (!response) {
                 commit({type: BaselineMutation.ShapeErroredFile, payload: filename});
+            } else {
+                // Clear SAP Choropleth Selections as new shape file may have different area levels
+                commit({
+                    type: "plottingSelections/updateSAPChoroplethSelections",
+                    payload: initialChorplethSelections()
+                }, {root: true})
             }
         });
 }
@@ -156,7 +163,11 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
             .then((response) => {
                 if (response) {
                     commit({type: BaselineMutation.PJNZUpdated, payload: null});
-                    dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+                    if (!context.rootState.dataExplorationMode) {
+                        dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+                    } else {
+                        uploadCallback(dispatch, response)
+                    }
                 }
             });
     },
@@ -168,7 +179,12 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
             .then((response) => {
                 if (response) {
                     commit({type: BaselineMutation.ShapeUpdated, payload: null});
-                    dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+                    if (!context.rootState.dataExplorationMode) {
+                        dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+                    }
+                    else {
+                        uploadCallback(dispatch, response)
+                    }
                 }
             });
     },
@@ -180,7 +196,12 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
             .then((response) => {
                 if (response) {
                     commit({type: BaselineMutation.PopulationUpdated, payload: null});
-                    dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+                    if (!context.rootState.dataExplorationMode) {
+                        dispatch("surveyAndProgram/deleteAll", {}, {root: true});
+                    }
+                    else {
+                        uploadCallback(dispatch, response);
+                    }
                 }
             });
     },

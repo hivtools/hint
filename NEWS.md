@@ -1,3 +1,7 @@
+# hint 1.85.0
+
+* Input file validation in Data Exploration
+
 # hint 1.84.0
 
 * Data exploration mode error reporting
