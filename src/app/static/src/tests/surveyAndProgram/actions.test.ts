@@ -7,6 +7,7 @@ import {
     mockProgramResponse,
     mockRootState,
     mockSuccess,
+    mockSurveyAndProgramState,
     mockSurveyResponse
 } from "../mocks";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
@@ -14,10 +15,11 @@ import {expectEqualsFrozen} from "../testHelpers";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import Mock = jest.Mock;
 
-const FormData = require("form-data");
 const rootState = mockRootState();
 const mockFormData = {
-    get: (key: string) => { return key == "file" ? {name: "file.txt"} : null; }
+    get: (key: string) => {
+        return key == "file" ? {name: "file.txt"} : null;
+    }
 };
 
 describe("Survey and programme actions", () => {
@@ -34,7 +36,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after surveys file upload", async () => {
 
-        mockAxios.onPost(`/disease/survey/`)
+        mockAxios.onPost(`/disease/survey/?strict=true`)
             .reply(200, mockSuccess({data: "SOME DATA"}));
 
         const commit = jest.fn();
@@ -45,7 +47,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after surveys file import", async () => {
 
-        mockAxios.onPost(`/adr/survey/`)
+        mockAxios.onPost(`/adr/survey/?strict=true`)
             .reply(200, mockSuccess({data: "SOME DATA"}));
 
         const commit = jest.fn();
@@ -66,13 +68,12 @@ describe("Survey and programme actions", () => {
         });
 
         //Should also have set selectedDataType
-        expect(commit.mock.calls[2][0]).toStrictEqual("surveyAndProgram/SelectedDataTypeUpdated");
-        expect(commit.mock.calls[2][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
+        expect(commit.mock.calls[2][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
     }
 
     it("sets error message after failed surveys upload", async () => {
 
-        mockAxios.onPost(`/disease/survey/`)
+        mockAxios.onPost(`/disease/survey/?strict=true`)
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
@@ -83,7 +84,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed surveys import", async () => {
 
-        mockAxios.onPost(`/adr/survey/`)
+        mockAxios.onPost(`/adr/survey/?strict=true`)
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
@@ -111,7 +112,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after programme file upload", async () => {
 
-        mockAxios.onPost(`/disease/programme/`)
+        mockAxios.onPost(`/disease/programme/?strict=true`)
             .reply(200, mockSuccess("TEST"));
 
         const commit = jest.fn();
@@ -122,7 +123,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after programme file import", async () => {
 
-        mockAxios.onPost(`/adr/programme/`)
+        mockAxios.onPost(`/adr/programme/?strict=true`)
             .reply(200, mockSuccess("TEST"));
 
         const commit = jest.fn();
@@ -148,13 +149,12 @@ describe("Survey and programme actions", () => {
         });
 
         //Should also have set selectedDataType
-        expect(commit.mock.calls[3][0]).toStrictEqual("surveyAndProgram/SelectedDataTypeUpdated");
-        expect(commit.mock.calls[3][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Program});
+        expect(commit.mock.calls[3][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Program});
     }
 
     it("sets error message after failed programme upload", async () => {
 
-        mockAxios.onPost(`/disease/programme/`)
+        mockAxios.onPost(`/disease/programme/?strict=true`)
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
@@ -165,7 +165,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed programme import", async () => {
 
-        mockAxios.onPost(`/adr/programme/`)
+        mockAxios.onPost(`/adr/programme/?strict=true`)
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
@@ -200,7 +200,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after anc file upload", async () => {
 
-        mockAxios.onPost(`/disease/anc/`)
+        mockAxios.onPost(`/disease/anc/?strict=true`)
             .reply(200, mockSuccess("TEST"));
 
         const commit = jest.fn();
@@ -211,7 +211,7 @@ describe("Survey and programme actions", () => {
 
     it("sets data after anc file import", async () => {
 
-        mockAxios.onPost(`/adr/anc/`)
+        mockAxios.onPost(`/adr/anc/?strict=true`)
             .reply(200, mockSuccess("TEST"));
 
         const commit = jest.fn();
@@ -237,13 +237,12 @@ describe("Survey and programme actions", () => {
         });
 
         //Should also have set selectedDataType
-        expect(commit.mock.calls[3][0]).toStrictEqual("surveyAndProgram/SelectedDataTypeUpdated");
-        expect(commit.mock.calls[3][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.ANC});
+        expect(commit.mock.calls[3][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.ANC});
     }
 
     it("sets error message after failed anc upload", async () => {
 
-        mockAxios.onPost(`/disease/anc/`)
+        mockAxios.onPost(`/disease/anc/?strict=true`)
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
@@ -254,7 +253,7 @@ describe("Survey and programme actions", () => {
 
     it("sets error message after failed anc import", async () => {
 
-        mockAxios.onPost(`/adr/anc/`)
+        mockAxios.onPost(`/adr/anc/?strict=true`)
             .reply(500, mockFailure("error message"));
 
         const commit = jest.fn();
@@ -289,13 +288,13 @@ describe("Survey and programme actions", () => {
 
     it("gets data, commits it and marks state ready", async () => {
 
-        mockAxios.onGet(`/disease/survey/`)
+        mockAxios.onGet(`/disease/survey/?strict=true`)
             .reply(200, mockSuccess(mockSurveyResponse()));
 
-        mockAxios.onGet(`/disease/programme/`)
+        mockAxios.onGet(`/disease/programme/?strict=true`)
             .reply(200, mockSuccess(mockProgramResponse()));
 
-        mockAxios.onGet(`/disease/anc/`)
+        mockAxios.onGet(`/disease/anc/?strict=true`)
             .reply(200, mockSuccess(mockAncResponse()));
 
         const commit = jest.fn();
@@ -315,13 +314,13 @@ describe("Survey and programme actions", () => {
 
     it("it validates, commits and marks state ready", async () => {
 
-        mockAxios.onGet(`/disease/survey/`)
+        mockAxios.onGet(`/disease/survey/?strict=true`)
             .reply(200, mockSuccess(mockSurveyResponse()));
 
-        mockAxios.onGet(`/disease/programme/`)
+        mockAxios.onGet(`/disease/programme/?strict=true`)
             .reply(200, mockSuccess(mockProgramResponse()));
 
-        mockAxios.onGet(`/disease/anc/`)
+        mockAxios.onGet(`/disease/anc/?strict=true`)
             .reply(200, mockSuccess(mockAncResponse()));
 
         const commit = jest.fn();
@@ -332,7 +331,7 @@ describe("Survey and programme actions", () => {
         expect(calls).toContain(SurveyAndProgramMutation.ProgramUpdated);
         expect(calls).toContain(SurveyAndProgramMutation.ANCUpdated);
         expect(calls).toContain(SurveyAndProgramMutation.Ready);
-        expect(commit.mock.calls[3][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
+        expect(commit.mock.calls[3][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
 
         const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
         expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(5);
@@ -342,13 +341,13 @@ describe("Survey and programme actions", () => {
 
     it("it runs validation, fails one and commits correctly", async () => {
 
-        mockAxios.onGet(`/disease/survey/`)
+        mockAxios.onGet(`/disease/survey/?strict=true`)
             .reply(500, mockFailure("Error message"));
 
-        mockAxios.onGet(`/disease/programme/`)
+        mockAxios.onGet(`/disease/programme/?strict=true`)
             .reply(200, mockSuccess(mockProgramResponse()));
 
-        mockAxios.onGet(`/disease/anc/`)
+        mockAxios.onGet(`/disease/anc/?strict=true`)
             .reply(200, mockSuccess(mockAncResponse()));
 
         const commit = jest.fn();
@@ -359,7 +358,7 @@ describe("Survey and programme actions", () => {
         expect(calls).toContain(SurveyAndProgramMutation.ProgramUpdated);
         expect(calls).toContain(SurveyAndProgramMutation.ANCUpdated);
         expect(calls).toContain(SurveyAndProgramMutation.Ready);
-        expect(commit.mock.calls[3][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Program});
+        expect(commit.mock.calls[3][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Program});
 
         const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
         expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(4);
@@ -369,13 +368,13 @@ describe("Survey and programme actions", () => {
 
     it("it runs validation, fails all and commits correctly", async () => {
 
-        mockAxios.onGet(`/disease/survey/`)
+        mockAxios.onGet(`/disease/survey/?strict=true`)
             .reply(500, mockFailure("Failed"));
 
-        mockAxios.onGet(`/disease/programme/`)
+        mockAxios.onGet(`/disease/programme/?strict=true`)
             .reply(500, mockFailure("Failed"));
 
-        mockAxios.onGet(`/disease/anc/`)
+        mockAxios.onGet(`/disease/anc/?strict=true`)
             .reply(500, mockFailure("Failed"));
 
         const commit = jest.fn();
@@ -386,7 +385,7 @@ describe("Survey and programme actions", () => {
         expect(calls).toContain(SurveyAndProgramMutation.ProgramError);
         expect(calls).toContain(SurveyAndProgramMutation.ANCError);
         expect(calls).toContain(SurveyAndProgramMutation.Ready);
-        expect(commit.mock.calls[3][1]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: null});
+        expect(commit.mock.calls[3][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: null});
 
         const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
         expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(2);
@@ -394,16 +393,15 @@ describe("Survey and programme actions", () => {
 
     });
 
-
     it("fails silently and marks state ready if getting data fails", async () => {
 
-        mockAxios.onGet(`/disease/survey/`)
+        mockAxios.onGet(`/disease/survey/?strict=true`)
             .reply(500);
 
-        mockAxios.onGet(`/disease/anc/`)
+        mockAxios.onGet(`/disease/anc/?strict=true`)
             .reply(500);
 
-        mockAxios.onGet(`/disease/programme/`)
+        mockAxios.onGet(`/disease/programme/?strict=true`)
             .reply(500);
 
         const commit = jest.fn();
@@ -413,41 +411,98 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.Ready);
     });
 
-    it("deletes survey", async () => {
+    it("deletes survey and resets selected data type", async () => {
         mockAxios.onDelete("/disease/survey/")
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        await actions.deleteSurvey({commit, rootState} as any);
-        expect(commit).toBeCalledTimes(1);
+        await actions.deleteSurvey({
+            commit, rootState,
+            state: mockSurveyAndProgramState({selectedDataType: DataType.Survey, program: mockProgramResponse()})
+        } as any);
+        expect(commit).toBeCalledTimes(2);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
+        expect(commit.mock.calls[1][0]).toEqual({
+            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
+            payload: DataType.Program
+        });
+        commit.mockReset();
+        await actions.deleteSurvey({
+            commit, rootState,
+            state: mockSurveyAndProgramState({selectedDataType: DataType.Survey, anc: mockAncResponse()})
+        } as any);
+        expect(commit).toBeCalledTimes(2);
+        expect(commit.mock.calls[1][0]).toEqual({
+            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
+            payload: DataType.ANC
+        });
     });
 
-    it("deletes program", async () => {
+    it("deletes program and resets selected data type", async () => {
         mockAxios.onDelete("/disease/programme/")
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        await actions.deleteProgram({commit, rootState} as any);
-        expect(commit).toBeCalledTimes(2);
+        await actions.deleteProgram({
+            commit,
+            rootState,
+            state: mockSurveyAndProgramState({selectedDataType: DataType.Program, survey: mockSurveyResponse()})
+        } as any);
+        expect(commit).toBeCalledTimes(3);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
         expect(commit.mock.calls[1][0]).toEqual({
+            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
+            payload: DataType.Survey
+        });
+        expect(commit.mock.calls[2][0]).toEqual({
             type: "genericChart/ClearDataset",
             payload: "art"
+        })
+
+        commit.mockReset();
+        await actions.deleteProgram({
+            commit,
+            rootState,
+            state: mockSurveyAndProgramState({selectedDataType: DataType.Program, anc: mockAncResponse()})
+        } as any);
+        expect(commit).toBeCalledTimes(3);
+        expect(commit.mock.calls[1][0]).toEqual({
+            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
+            payload: DataType.ANC
         });
     });
 
-    it("deletes ANC", async () => {
+    it("deletes ANC and resets selected data type", async () => {
         mockAxios.onDelete("/disease/anc/")
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        await actions.deleteANC({commit, rootState} as any);
-        expect(commit).toBeCalledTimes(2);
+        await actions.deleteANC({
+            commit,
+            rootState,
+            state: mockSurveyAndProgramState({selectedDataType: DataType.ANC, program: mockProgramResponse()})
+        } as any);
+        expect(commit).toBeCalledTimes(3);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
         expect(commit.mock.calls[1][0]).toEqual({
+            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
+            payload: DataType.Program
+        });
+        expect(commit.mock.calls[2][0]).toEqual({
             type: "genericChart/ClearDataset",
             payload: "anc"
+        });
+
+        commit.mockReset();
+        await actions.deleteANC({
+            commit,
+            rootState,
+            state: mockSurveyAndProgramState({selectedDataType: DataType.ANC, survey: mockSurveyResponse()})
+        } as any);
+        expect(commit).toBeCalledTimes(3);
+        expect(commit.mock.calls[1][0]).toEqual({
+            type: SurveyAndProgramMutation.SelectedDataTypeUpdated,
+            payload: DataType.Survey
         });
     });
 
@@ -462,7 +517,7 @@ describe("Survey and programme actions", () => {
             .reply(200, mockSuccess(true));
 
         const commit = jest.fn();
-        await actions.deleteAll({commit, rootState} as any);
+        await actions.deleteAll({commit, rootState, state: mockSurveyAndProgramState()} as any);
         expect(mockAxios.history["delete"].length).toBe(3);
         expect(commit).toBeCalledTimes(5);
         expect(commit.mock.calls.map(c => c[0]["type"])).toEqual([
@@ -478,9 +533,8 @@ describe("Survey and programme actions", () => {
         const commit = jest.fn();
         actions.selectDataType({commit} as any, DataType.ANC);
         expect(commit).toBeCalledTimes(1);
-        expect(commit.mock.calls[0][0]).toEqual("surveyAndProgram/SelectedDataTypeUpdated");
-        expect(commit.mock.calls[0][1]["type"]).toBe(SurveyAndProgramMutation.SelectedDataTypeUpdated);
-        expect(commit.mock.calls[0][1]["payload"]).toBe(DataType.ANC);
+        expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.SelectedDataTypeUpdated);
+        expect(commit.mock.calls[0][0]["payload"]).toBe(DataType.ANC);
     });
 
 });

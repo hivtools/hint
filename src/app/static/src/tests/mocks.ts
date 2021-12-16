@@ -220,7 +220,7 @@ export const mockFailure = (errorMessage: string): Response => {
     }
 };
 
-export const mockError = (errorMessage: string): Error => {
+export const mockError = (errorMessage: string = "some message"): Error => {
     return {error: "OTHER_ERROR", detail: errorMessage};
 };
 

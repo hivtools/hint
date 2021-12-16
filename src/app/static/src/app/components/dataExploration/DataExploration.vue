@@ -3,7 +3,7 @@
         <stepper-navigation :back="back"
                             :next="next"
                             :back-disabled="isUploadStep"
-                            :next-disabled="isReviewStep">
+                            :next-disabled="!canProgress">
         </stepper-navigation>
         <hr/>
         <div class="pt-4">
@@ -19,13 +19,20 @@
     import UploadInputs from "../uploadInputs/UploadInputs.vue";
     import ReviewInputs from "../reviewInputs/ReviewInputs.vue";
     import StepperNavigation from "../StepperNavigation.vue";
-    import {mapMutationByName, mapStateProp} from "../../utils";
+    import {
+        mapMutationByName,
+        mapStateProp,
+        mapGetterByName,
+        mapActionByName} from "../../utils";
     import {StepperState} from "../../store/stepper/stepper";
     import {PayloadWithType} from "../../types";
 
     interface Computed {
         step: number,
-        isUploadStep: boolean
+        baselineValid: boolean,
+        surveyAndProgramValid: boolean,
+        canProgress: boolean,
+        isUploadStep: boolean,
         isReviewStep: boolean
     }
 
@@ -34,17 +41,23 @@
         jumpTo: (step: number) => void,
         next: () => void
         back: () => void
+        getPlottingMetadata: (country: string) => void
     }
 
     export default Vue.extend<{}, Methods, Computed, unknown>({
         computed: {
             step: mapStateProp<StepperState, number>("stepper", state => state.activeStep),
+            canProgress() {
+                return this.isUploadStep && this.baselineValid && this.surveyAndProgramValid
+            },
             isUploadStep() {
                 return this.step === 1
             },
             isReviewStep() {
                 return this.step === 2
-            }
+            },
+            baselineValid: mapGetterByName("baseline", "validForDataExploration"),
+            surveyAndProgramValid: mapGetterByName("surveyAndProgram", "validForDataExploration")
         },
         methods: {
             jump: mapMutationByName("stepper", "Jump"),
@@ -56,13 +69,18 @@
             },
             back() {
                 this.jumpTo(1);
-            }
+            },
+            getPlottingMetadata: mapActionByName("metadata", "getPlottingMetadata")
         },
         components: {
             AdrIntegration,
             UploadInputs,
             ReviewInputs,
             StepperNavigation
+        },
+        mounted() {
+            // hintr will return default metadata in the absence of a recognised country
+            this.getPlottingMetadata("default")
         }
     })
 </script>
