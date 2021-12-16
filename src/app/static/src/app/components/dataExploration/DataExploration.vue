@@ -21,7 +21,7 @@
     import StepperNavigation from "../StepperNavigation.vue";
     import {mapMutationByName, mapStateProp} from "../../utils";
     import {StepperState} from "../../store/stepper/stepper";
-    import {StepperMutations} from "../../store/stepper/mutations";
+    import {PayloadWithType} from "../../types";
 
     interface Computed {
         step: number,
@@ -30,7 +30,8 @@
     }
 
     interface Methods {
-        jump: (step: number) => void,
+        jump: (step: PayloadWithType<number>) => void,
+        jumpTo: (step: number) => void,
         next: () => void
         back: () => void
     }
@@ -47,11 +48,14 @@
         },
         methods: {
             jump: mapMutationByName("stepper", "Jump"),
+            jumpTo(step: number) {
+              this.jump({type: "Jump", payload: step});
+            },
             next() {
-                this.jump(2);
+                this.jumpTo(2);
             },
             back() {
-                this.jump(1);
+                this.jumpTo(1);
             }
         },
         components: {

@@ -23,7 +23,7 @@ import {TranslatableState} from "../../types";
 import {mutations} from "./mutations";
 import {getters} from "./getters";
 import {actions} from "./actions";
-import {stepper, StepperState} from "../stepper/stepper";
+import {dataExplorationStepper, initialDataExplorationStepperState, StepperState} from "../stepper/stepper";
 
 declare const currentUser: string;
 
@@ -54,7 +54,7 @@ export const initialDataExplorationState = (): DataExplorationState => {
         adrUpload: initialADRUploadState(),
         baseline: initialBaselineState(),
         metadata: initialMetadataState(),
-        stepper: {steps: [], activeStep: 1},
+        stepper: initialDataExplorationStepperState(),
         surveyAndProgram: initialSurveyAndProgramState(),
         plottingSelections: initialPlottingSelectionsState(),
         errors: initialErrorsState(),
@@ -82,7 +82,7 @@ export const storeOptions: StoreOptions<DataExplorationState> = {
         metadata: metadata(existingState),
         surveyAndProgram: surveyAndProgram(existingState),
         plottingSelections: plottingSelections(existingState),
-        stepper: stepper(existingState),
+        stepper: dataExplorationStepper(existingState),
         errors,
         hintrVersion: hintrVersion(existingState)
     },
