@@ -5,6 +5,7 @@ import {FilterOption} from "../../generated";
 import {rootOptionChildren} from "../../utils";
 import {Language} from "../translations/locales";
 import {DataExplorationState} from "../dataExploration/dataExploration";
+import {BaselineState} from "../baseline/baseline";
 
 function response(state: SurveyAndProgramState) {
     switch (state.selectedDataType) {
@@ -28,6 +29,11 @@ const sexFilterOptions = (lng: Language) => [
 export const getters = {
     complete: (state: SurveyAndProgramState) => {
         return !!state.survey && !state.programError && !state.ancError
+    },
+
+    validForDataExploration: (state: SurveyAndProgramState) => {
+        return (!!state.survey || !!state.program || !!state.anc) &&
+            !state.programError && !state.ancError && !state.surveyError
     },
 
     hasChanges: (state: SurveyAndProgramState) => {

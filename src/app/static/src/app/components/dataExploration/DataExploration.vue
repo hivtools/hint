@@ -3,7 +3,7 @@
         <stepper-navigation :back="back"
                             :next="next"
                             :back-disabled="isUploadStep"
-                            :next-disabled="isReviewStep">
+                            :next-disabled="!canProgress">
         </stepper-navigation>
         <hr/>
         <div class="pt-4">
@@ -19,9 +19,13 @@
     import UploadInputs from "../uploadInputs/UploadInputs.vue";
     import ReviewInputs from "../reviewInputs/ReviewInputs.vue";
     import StepperNavigation from "../StepperNavigation.vue";
+    import {mapActionByName, mapGetterByName} from "../../utils";
 
     interface Computed {
-        isUploadStep: boolean
+        baselineValid: boolean,
+        surveyAndProgramValid: boolean,
+        canProgress: boolean,
+        isUploadStep: boolean,
         isReviewStep: boolean
     }
 
@@ -32,6 +36,7 @@
     interface Methods {
         next: () => void
         back: () => void
+        getPlottingMetadata: (country: string) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
@@ -41,12 +46,17 @@
             }
         },
         computed: {
+            canProgress() {
+                return this.isUploadStep && this.baselineValid && this.surveyAndProgramValid
+            },
             isUploadStep() {
                 return this.step === 1
             },
             isReviewStep() {
                 return this.step === 2
-            }
+            },
+            baselineValid: mapGetterByName("baseline", "validForDataExploration"),
+            surveyAndProgramValid: mapGetterByName("surveyAndProgram", "validForDataExploration")
         },
         methods: {
             next() {
@@ -54,13 +64,18 @@
             },
             back() {
                 this.step = 1;
-            }
+            },
+            getPlottingMetadata: mapActionByName("metadata", "getPlottingMetadata")
         },
         components: {
             AdrIntegration,
             UploadInputs,
             ReviewInputs,
             StepperNavigation
+        },
+        mounted() {
+            // hintr will return default metadata in the absence of a recognised country
+            this.getPlottingMetadata("default")
         }
     })
 </script>
