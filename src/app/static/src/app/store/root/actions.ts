@@ -10,7 +10,7 @@ import {ErrorReportManualDetails} from "../../types";
 import {VersionInfo} from "../../generated";
 import {currentHintVersion} from "../../hintVersion";
 import {ChangeLanguageAction} from "../language/actions";
-import {downloadResults} from "../downloadResults/downloadResults";
+import {ErrorReportDefaultValue} from "../errors/errors";
 
 
 export interface RootActions extends LanguageActions<RootState> {
@@ -67,12 +67,12 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         const {dispatch, rootState, getters, commit} = context
         const data = {
             email: payload.email || rootState.currentUser,
-            country: rootState.baseline.country || "no associated country",
-            projectName: rootState.projects.currentProject?.name || "no associated project",
+            country: rootState.baseline.country || ErrorReportDefaultValue.country,
+            projectName: rootState.projects.currentProject?.name || ErrorReportDefaultValue.project,
             browserAgent: navigator.userAgent,
             timeStamp: new Date().toISOString(),
-            modelRunId: rootState.modelRun.modelRunId || "no associated modelRunId",
-            calibrateId: rootState.modelCalibrate.calibrateId || "no associated calibrateId",
+            modelRunId: rootState.modelRun.modelRunId || ErrorReportDefaultValue.model,
+            calibrateId: rootState.modelCalibrate.calibrateId || ErrorReportDefaultValue.calibrate,
             downloadIds: getDownloadIds(rootState),
             description: payload.description,
             section: payload.section,
@@ -100,9 +100,9 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
 };
 
 const getDownloadIds = (rootState: RootState) => {
-    const spectrumId = rootState.downloadResults.spectrum.downloadId || "none";
-    const summaryId = rootState.downloadResults.summary.downloadId || "none";
-    const coarseOutputId = rootState.downloadResults.coarseOutput.downloadId || "none"
+    const spectrumId = rootState.downloadResults.spectrum.downloadId || ErrorReportDefaultValue.download;
+    const summaryId = rootState.downloadResults.summary.downloadId || ErrorReportDefaultValue.download;
+    const coarseOutputId = rootState.downloadResults.coarseOutput.downloadId || ErrorReportDefaultValue.download
 
     return {spectrum: spectrumId, summary: summaryId, coarse_output: coarseOutputId}
 }
