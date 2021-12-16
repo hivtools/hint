@@ -1,3 +1,7 @@
+# hint 1.87.0
+
+* Persist Data Exploration step
+
 # hint 1.86.0
 
 * Persist Data Exploration state
