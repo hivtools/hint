@@ -19,11 +19,11 @@ import {
 import {errors, ErrorsState, initialErrorsState} from "../errors/errors";
 import {localStorageManager} from "../../localStorageManager";
 import {StoreOptions} from "vuex";
-import {Error} from "../../generated";
 import {TranslatableState} from "../../types";
 import {mutations} from "./mutations";
 import {getters} from "./getters";
 import {actions} from "./actions";
+import {StepperState} from "../stepper/stepper";
 
 declare const currentUser: string;
 
@@ -37,6 +37,7 @@ export interface DataExplorationState extends TranslatableState {
     metadata: MetadataState,
     surveyAndProgram: SurveyAndProgramState,
     plottingSelections: PlottingSelectionsState,
+    stepper: StepperState,
     errors: ErrorsState,
     currentUser: string,
     updatingLanguage: boolean,
@@ -54,6 +55,7 @@ export const initialDataExplorationState = (): DataExplorationState => {
         adrUpload: initialADRUploadState(),
         baseline: initialBaselineState(),
         metadata: initialMetadataState(),
+        stepper: {steps: [], activeStep: 1},
         surveyAndProgram: initialSurveyAndProgramState(),
         plottingSelections: initialPlottingSelectionsState(),
         errors: initialErrorsState(),
