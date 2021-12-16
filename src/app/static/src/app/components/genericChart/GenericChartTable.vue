@@ -14,7 +14,7 @@
     import {FilterOption, NestedFilterOption} from "../../generated";
     import {Dict, GenericChartColumn, GenericChartTableColumnConfig, GenericChartTableConfig} from "../../types";
     import TableView, {Field} from "../plots/table/Table.vue";
-    import {formatOutput} from "../plots/utils";
+    import {format} from "d3-format";
 
     interface Props {
         filteredData: any[],
@@ -104,6 +104,7 @@
                 // Build a dictionary of the columns defined in the fetched dataset, which include all values and
                 // associated labels
                 const columnsDict = this.columns.reduce((dict, column) => ({...dict, [column.id]: column}), {} as Dict<GenericChartColumn>);
+                const formatFunc = this.valueFormat ? format(this.valueFormat) : null;
 
                 const result = this.filteredData.map(row => {
                     const friendlyRow = {} as Dict<unknown>;
@@ -113,8 +114,8 @@
                             const column = columnsDict[columnConfig.data.labelColumn!];
                             const friendlyValue = column.values.find(value => value.id == row[columnConfig.data.columnId])?.label;
                             friendlyRow[columnId] = friendlyValue;
-                        } else if (this.valueFormat && columnConfig.data.useValueFormat) {
-                            friendlyRow[columnId] = formatOutput(row[columnId], this.valueFormat, null, null);
+                        } else if (formatFunc && columnConfig.data.useValueFormat) {
+                            friendlyRow[columnId] = formatFunc(row[columnId]);
                         } else {
                             friendlyRow[columnId] = row[columnId];
                         }

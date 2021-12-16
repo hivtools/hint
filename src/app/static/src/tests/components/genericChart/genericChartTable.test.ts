@@ -122,7 +122,7 @@ describe("GenericChartTable component", () => {
             {area_name: "Malawi", area_level_id: 0, age_group: "0:15", plot_type: "prevalence", value: 0.2},
             {area_name: "Chitipa", area_level_id: 1, age_group: "15:49", plot_type: "prevalence", value: 0.1}
         ];
-        const valueFormat = "0.0%";
+        const valueFormat = ".1%";
         const wrapper = getWrapper(data, valueFormat);
         const table = wrapper.find(Table);
         const expectedData = [

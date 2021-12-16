@@ -615,7 +615,7 @@ describe("GenericChart component", () => {
             expect(plotly.props("layoutData")).toStrictEqual({
                 yAxisFormat: ".1%"
             });
-            expect(wrapper.find(GenericChartTable).props("valueFormat")).toBe("0.0%");
+            expect(wrapper.find(GenericChartTable).props("valueFormat")).toBe(".1%");
             done();
         });
     });

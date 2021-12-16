@@ -245,7 +245,8 @@
                     const dataSourceConfig = this.chartMetadata.dataSelectors.dataSources[0];
                     const selections = this.dataSourceSelections[dataSourceConfig.id].selectedFilterOptions;
                     if (selections && selections[valueFormatColumn].length) {
-                        return (selections[valueFormatColumn][0] as GenericChartColumnValue).format || "";
+                        const numeralJsFormat =  (selections[valueFormatColumn][0] as GenericChartColumnValue).format || "";
+                        return numeralJsFormat ? numeralJsToD3format(numeralJsFormat) : "";
                     }
                 }
                 return "";
@@ -279,8 +280,7 @@
                     scrollHeight = `${(subplots.heightPerRow * rows) + 70}px`;
                 }
 
-                const plotlyFormat = this.valueFormat ? numeralJsToD3format(this.valueFormat) : "";
-                layoutData.yAxisFormat = plotlyFormat;
+                layoutData.yAxisFormat = this.valueFormat;
 
                 // The metadata supports multiple chart types per chart e.g Scatter and Bar, but for now we only need to
                 // support one chart type, so here we select the first config in the array
