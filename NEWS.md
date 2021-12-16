@@ -1,3 +1,7 @@
+# hint 1.84.1
+
+* Output barchart x-axis should be ordered
+
 # hint 1.84.0
 
 * Data exploration mode error reporting
