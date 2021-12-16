@@ -3,7 +3,6 @@ import {RootState} from "../../root";
 import {getters} from "./getters";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
-import {localStorageManager} from "../../localStorageManager";
 
 export interface StepDescription {
     number: number,
@@ -53,12 +52,13 @@ export const initialStepperState = (): StepperState => {
 
 
 const namespaced = true;
-const existingState = localStorageManager.getState();
 
-export const stepper: Module<StepperState, RootState> = {
-    namespaced,
-    state: {...initialStepperState(), ...existingState && existingState.stepper},
-    getters,
-    actions,
-    mutations
+export const stepper = (existingState: Partial<RootState> | null): Module<StepperState, RootState> => {
+    return {
+        namespaced,
+        state: {...initialStepperState(), ...existingState && existingState.stepper},
+        getters,
+        actions,
+        mutations
+    };
 };

@@ -1,8 +1,6 @@
-import {localStorageManager} from "../../app/localStorageManager";
-
 declare const currentUser: string; // set in jest config, or on the index page when run for real
 localStorage.setItem("user", currentUser);
-localStorageManager.saveState({
+const existingState = {
     modelRun: {
         modelRunId: "1234",
         status: {success: true},
@@ -12,12 +10,12 @@ localStorageManager.saveState({
     },
     surveyAndProgram: {},
     baseline: {}
-} as any);
+} as any;
 
 import {modelRun, ModelRunState} from "../../app/store/modelRun/modelRun";
 
-it("loads initial state from local storage, but resets ready to false", () => {
-    const state = modelRun.state as ModelRunState;
+it("loads initial state from existingState, but resets ready to false", () => {
+    const state = modelRun(existingState).state as ModelRunState;
     expect(state.modelRunId).toBe("1234");
     expect(state.status).toStrictEqual({success: true});
     expect(state.ready).toBe(false);

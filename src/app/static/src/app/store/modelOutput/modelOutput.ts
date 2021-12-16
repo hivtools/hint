@@ -3,7 +3,6 @@ import {RootState} from "../../root";
 import {BarchartIndicator, DisplayFilter, Filter} from "../../types";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {mutations} from "./mutations";
-import {localStorageManager} from "../../localStorageManager";
 import {rootOptionChildren} from "../../utils";
 
 const namespaced = true;
@@ -70,11 +69,11 @@ export const initialModelOutputState = (): ModelOutputState => {
     }
 };
 
-const existingState = localStorageManager.getState();
-
-export const modelOutput: Module<ModelOutputState, RootState> = {
-    namespaced,
-    state: {...initialModelOutputState(), ...existingState && existingState.modelOutput},
-    getters: modelOutputGetters,
-    mutations
+export const modelOutput = (existingState: Partial<RootState> | null): Module<ModelOutputState, RootState> => {
+    return {
+        namespaced,
+        state: {...initialModelOutputState(), ...existingState && existingState.modelOutput},
+        getters: modelOutputGetters,
+        mutations
+    };
 };

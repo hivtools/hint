@@ -19,28 +19,25 @@
     import UploadInputs from "../uploadInputs/UploadInputs.vue";
     import ReviewInputs from "../reviewInputs/ReviewInputs.vue";
     import StepperNavigation from "../StepperNavigation.vue";
+    import {mapMutationByName, mapStateProp} from "../../utils";
+    import {StepperState} from "../../store/stepper/stepper";
+    import {StepperMutations} from "../../store/stepper/mutations";
 
     interface Computed {
+        step: number,
         isUploadStep: boolean
         isReviewStep: boolean
     }
 
-    interface Data {
-        step: number
-    }
-
     interface Methods {
+        jump: (step: number) => void,
         next: () => void
         back: () => void
     }
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
-        data() {
-            return {
-                step: 1
-            }
-        },
+    export default Vue.extend<{}, Methods, Computed, unknown>({
         computed: {
+            step: mapStateProp<StepperState, number>("stepper", state => state.activeStep),
             isUploadStep() {
                 return this.step === 1
             },
@@ -49,11 +46,12 @@
             }
         },
         methods: {
+            jump: mapMutationByName("stepper", "Jump"),
             next() {
-                this.step = 2;
+                this.jump(2);
             },
             back() {
-                this.step = 1;
+                this.jump(1);
             }
         },
         components: {
