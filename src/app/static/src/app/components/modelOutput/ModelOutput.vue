@@ -224,6 +224,9 @@
                     disaggLabel: i18next.t("disaggBy", this.currentLanguage),
                     filters: this.barchartFilters
                 }
+            },
+            flattenedFilterOptionIds(){
+                
             }
         },
         methods: {
