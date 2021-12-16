@@ -78,7 +78,6 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             errors: getters.errors
         }
         commit({type: `errors/${ErrorsMutation.SendingErrorReport}`, payload: true});
-
         await api<ErrorsMutation, ErrorsMutation>(context)
             .withSuccess(`errors/${ErrorsMutation.ErrorReportSuccess}` as ErrorsMutation, true)
             .withError(`errors/${ErrorsMutation.ErrorReportError}` as ErrorsMutation, true)
