@@ -23,7 +23,7 @@ import {TranslatableState} from "../../types";
 import {mutations} from "./mutations";
 import {getters} from "./getters";
 import {actions} from "./actions";
-import {StepperState} from "../stepper/stepper";
+import {stepper, StepperState} from "../stepper/stepper";
 
 declare const currentUser: string;
 
@@ -82,6 +82,7 @@ export const storeOptions: StoreOptions<DataExplorationState> = {
         metadata: metadata(existingState),
         surveyAndProgram: surveyAndProgram(existingState),
         plottingSelections: plottingSelections(existingState),
+        stepper: stepper(existingState),
         errors,
         hintrVersion: hintrVersion(existingState)
     },

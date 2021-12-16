@@ -1,8 +1,8 @@
 import {Module} from "vuex";
-import {RootState} from "../../root";
 import {getters} from "./getters";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface StepDescription {
     number: number,
@@ -53,7 +53,7 @@ export const initialStepperState = (): StepperState => {
 
 const namespaced = true;
 
-export const stepper = (existingState: Partial<RootState> | null): Module<StepperState, RootState> => {
+export const stepper = (existingState: Partial<DataExplorationState> | null): Module<StepperState, DataExplorationState> => {
     return {
         namespaced,
         state: {...initialStepperState(), ...existingState && existingState.stepper},
