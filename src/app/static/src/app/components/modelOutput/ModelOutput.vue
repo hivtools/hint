@@ -238,7 +238,7 @@
                 const payload = {...this.barchartSelections, ...data}
                 if (data.xAxisId && data.selectedFilterOptions){
                     const { xAxisId, selectedFilterOptions } = data
-                    if (xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]){
+                    if (selectedFilterOptions[xAxisId]){
                         
                         // finds the filter options of the selected xAxis variable in the barchart filters getter
                         let originalFilterOptionsOrder: NestedFilterOption[] | undefined = this
