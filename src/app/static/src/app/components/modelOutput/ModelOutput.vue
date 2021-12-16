@@ -235,14 +235,12 @@
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
             },
             updateBarchartSelectionsAndXAxisOrder(data){
-                console.log("data", this.barchartSelections, data)
                 const payload = {...this.barchartSelections, ...data}
                 if (data.xAxisId && data.selectedFilterOptions){
                     const { xAxisId, selectedFilterOptions } = data
                     if (xAxisId && selectedFilterOptions && selectedFilterOptions[xAxisId]){
                         
                         // finds the filter options of the selected xAxis variable in the barchart filters getter
-                        console.log("barchart filters", this.barchartFilters)
                         let originalFilterOptionsOrder: NestedFilterOption[] | undefined = this
                             .barchartFilters
                             .find(filter => filter.id === xAxisId)?.options
