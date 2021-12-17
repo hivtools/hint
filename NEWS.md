@@ -1,6 +1,10 @@
-# hint 1.85.1
+# hint 1.86.1
 
 * Output barchart x-axis should be ordered
+
+# hint 1.86.0
+
+* Persist Data Exploration state
 
 # hint 1.85.0
 
@@ -9,6 +13,7 @@
 # hint 1.84.0
 
 * Data exploration mode error reporting
+
 
 # hint 1.83.0
 

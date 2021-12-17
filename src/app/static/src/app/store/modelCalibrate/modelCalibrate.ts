@@ -2,7 +2,6 @@ import {Module} from "vuex";
 import {ReadyState, RootState, WarningsState} from "../../root";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {mutations} from "./mutations";
-import {localStorageManager} from "../../localStorageManager";
 import {actions} from "./actions";
 import {VersionInfo, Error, CalibrateStatusResponse, CalibrateResultResponse} from "../../generated";
 import {BarchartIndicator, Filter} from "../../types";
@@ -58,12 +57,12 @@ export const modelCalibrateGetters = {
 
 const namespaced = true;
 
-const existingState = localStorageManager.getState();
-
-export const modelCalibrate: Module<ModelCalibrateState, RootState> = {
-    namespaced,
-    state: {...initialModelCalibrateState(), ...existingState && existingState.modelCalibrate, ready: false},
-    getters: modelCalibrateGetters,
-    mutations,
-    actions
+export const modelCalibrate = (existingState: Partial<RootState> | null): Module<ModelCalibrateState, RootState> => {
+    return {
+        namespaced,
+        state: {...initialModelCalibrateState(), ...existingState && existingState.modelCalibrate, ready: false},
+        getters: modelCalibrateGetters,
+        mutations,
+        actions
+    };
 };

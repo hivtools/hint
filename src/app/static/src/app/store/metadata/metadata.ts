@@ -7,7 +7,6 @@ import {
     Metadata,
     AdrMetadataResponse, FilterOption, ChoroplethIndicatorMetadata
 } from "../../generated";
-import {localStorageManager} from "../../localStorageManager";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 
@@ -68,12 +67,13 @@ export const metadataGetters = {
 };
 
 const namespaced = true;
-const existingState = localStorageManager.getState();
 
-export const metadata: Module<MetadataState, DataExplorationState> = {
-    namespaced,
-    state: {...initialMetadataState(), ...existingState && existingState.metadata},
-    actions,
-    mutations,
-    getters: metadataGetters
+export const metadata = (existingState: Partial<DataExplorationState> | null): Module<MetadataState, DataExplorationState> => {
+    return {
+        namespaced,
+        state: {...initialMetadataState(), ...existingState && existingState.metadata},
+        actions,
+        mutations,
+        getters: metadataGetters
+    };
 };
