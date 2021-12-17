@@ -24,14 +24,14 @@ export interface SurveyAndProgramActions {
     validateSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void;
 }
 
-const enum DATASET_TYPE  {
+const enum DATASET_TYPE {
     ANC = "anc",
-    ART = "art"
+    ART = "art",
+    SURVEY = "survey"
 }
 
 function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
-    commit("surveyAndProgram/SelectedDataTypeUpdated",
-        {type: "SelectedDataTypeUpdated", payload: dataType}, {root: true})
+    commit({type: SurveyAndProgramMutation.SelectedDataTypeUpdated, payload: dataType})
 }
 
 function commitClearGenericChartDataset(commit: Commit, dataType: string) {
@@ -53,7 +53,7 @@ async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, D
         .withError(SurveyAndProgramMutation.ANCError)
         .withSuccess(SurveyAndProgramMutation.ANCUpdated)
         .freezeResponse()
-        .postAndReturn<ProgrammeResponse>(options.url, options.payload)
+        .postAndReturn<ProgrammeResponse>(getUrlWithQuery(context, options.url), options.payload)
         .then((response) => {
             if (response) {
                 commitSelectedDataTypeUpdated(commit, DataType.ANC);
@@ -73,7 +73,7 @@ async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramStat
         .withError(SurveyAndProgramMutation.ProgramError)
         .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
         .freezeResponse()
-        .postAndReturn<ProgrammeResponse>(options.url, options.payload)
+        .postAndReturn<ProgrammeResponse>(getUrlWithQuery(context, options.url), options.payload)
         .then((response) => {
             if (response) {
                 commitSelectedDataTypeUpdated(commit, DataType.Program);
@@ -92,7 +92,7 @@ async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState
         .withError(SurveyAndProgramMutation.SurveyError)
         .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
         .freezeResponse()
-        .postAndReturn<SurveyResponse>(options.url, options.payload)
+        .postAndReturn<SurveyResponse>(getUrlWithQuery(context, options.url), options.payload)
         .then((response) => {
             if (response) {
                 commitSelectedDataTypeUpdated(commit, DataType.Survey);
@@ -140,30 +140,51 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
     },
 
     async deleteSurvey(context) {
-        const {commit} = context;
+        const {commit, state} = context;
         await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
             .delete("/disease/survey/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
+                if (state.selectedDataType == DataType.Survey) {
+                    if (state.program) {
+                        commitSelectedDataTypeUpdated(commit, DataType.Program)
+                    } else if (state.anc) {
+                        commitSelectedDataTypeUpdated(commit, DataType.ANC)
+                    }
+                }
             });
     },
 
     async deleteProgram(context) {
-        const {commit} = context;
+        const {commit, state} = context;
         await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
             .delete("/disease/programme/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
+                if (state.selectedDataType == DataType.Program) {
+                    if (state.survey) {
+                        commitSelectedDataTypeUpdated(commit, DataType.Survey)
+                    } else if (state.anc) {
+                        commitSelectedDataTypeUpdated(commit, DataType.ANC)
+                    }
+                }
                 commitClearGenericChartDataset(commit, DATASET_TYPE.ART)
             });
     },
 
     async deleteANC(context) {
-        const {commit} = context;
+        const {commit, state} = context;
         await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
             .delete("/disease/anc/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
+                if (state.selectedDataType == DataType.ANC) {
+                    if (state.program) {
+                        commitSelectedDataTypeUpdated(commit, DataType.Program)
+                    } else if (state.survey) {
+                        commitSelectedDataTypeUpdated(commit, DataType.Survey)
+                    }
+                }
                 commitClearGenericChartDataset(commit, DATASET_TYPE.ANC)
             });
     },
@@ -184,17 +205,17 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
                     .freezeResponse()
-                    .get<SurveyResponse>("/disease/survey/"),
+                    .get<SurveyResponse>(getUrlWithQuery(context, "/disease/survey/")),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
                     .freezeResponse()
-                    .get<ProgrammeResponse>("/disease/programme/"),
+                    .get<ProgrammeResponse>(getUrlWithQuery(context, "/disease/programme/")),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.ANCUpdated)
                     .freezeResponse()
-                    .get<AncResponse>("/disease/anc/")
+                    .get<AncResponse>(getUrlWithQuery(context, "/disease/anc/"))
             ]);
 
         commit({type: SurveyAndProgramMutation.Ready, payload: true});
@@ -203,7 +224,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
     async validateSurveyAndProgramData(context) {
         const {commit, rootState} = context;
         const successfulDataTypes: DataType[] = []
-        const initialSelectedDataType = rootState.surveyAndProgram.selectedDataType!
+        const initialSelectedDataType = rootState.surveyAndProgram.selectedDataType
 
         await Promise.all(
             [
@@ -211,9 +232,9 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     .withError(SurveyAndProgramMutation.SurveyError)
                     .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
                     .freezeResponse()
-                    .get<SurveyResponse>("/disease/survey/")
+                    .get<SurveyResponse>(getUrlWithQuery(context, "/disease/survey/"))
                     .then((response) => {
-                        if (response) {
+                        if (response && response.data) {
                             successfulDataTypes.push(DataType.Survey)
                         }
                     }),
@@ -221,9 +242,9 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     .withError(SurveyAndProgramMutation.ProgramError)
                     .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
                     .freezeResponse()
-                    .get<ProgrammeResponse>("/disease/programme/")
+                    .get<ProgrammeResponse>(getUrlWithQuery(context, "/disease/programme/"))
                     .then((response) => {
-                        if (response) {
+                        if (response && response.data) {
                             successfulDataTypes.push(DataType.Program)
                         }
                     }),
@@ -231,19 +252,23 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     .withError(SurveyAndProgramMutation.ANCError)
                     .withSuccess(SurveyAndProgramMutation.ANCUpdated)
                     .freezeResponse()
-                    .get<AncResponse>("/disease/anc/")
+                    .get<AncResponse>(getUrlWithQuery(context, "/disease/anc/"))
                     .then((response) => {
-                        if (response) {
+                        if (response && response.data) {
                             successfulDataTypes.push(DataType.ANC)
                         }
                     })
             ]);
         const selectedTypeSucceeded = successfulDataTypes.some(data => data === initialSelectedDataType)
         if (!selectedTypeSucceeded) {
-            const newSelectedDataType = successfulDataTypes.length? successfulDataTypes[0] : null
-
+            const newSelectedDataType = successfulDataTypes.length ? successfulDataTypes[0] : null
             commitSelectedDataTypeUpdated(commit, newSelectedDataType!)
         }
         commit({type: SurveyAndProgramMutation.Ready, payload: true});
     }
 };
+
+function getUrlWithQuery(context: ActionContext<SurveyAndProgramState, DataExplorationState>, url: string) {
+    const query = context.rootState.dataExplorationMode ? "?strict=false" : "?strict=true"
+    return `${url}${query}`
+}
