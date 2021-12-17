@@ -15,6 +15,7 @@ import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgr
 import {initialDataExplorationState} from "../../../app/store/dataExploration/dataExploration";
 import {initialDataExplorationStepperState, StepperState} from "../../../app/store/stepper/stepper";
 import {mutations as stepperMutations} from "../../../app/store/stepper/mutations";
+import {actions as stepperActions} from "../../../app/store/stepper/actions";
 
 describe(`data exploration component`, () => {
     let actions: jest.Mocked<BaselineActions>;
@@ -70,6 +71,7 @@ describe(`data exploration component`, () => {
                 stepper: {
                     namespaced: true,
                     state: {...initialDataExplorationStepperState(), ...stepperState},
+                    actions: stepperActions,
                     mutations: stepperMutations
                 }
             }

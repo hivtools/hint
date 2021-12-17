@@ -20,12 +20,10 @@
     import ReviewInputs from "../reviewInputs/ReviewInputs.vue";
     import StepperNavigation from "../StepperNavigation.vue";
     import {
-        mapMutationByName,
         mapStateProp,
         mapGetterByName,
         mapActionByName} from "../../utils";
     import {StepperState} from "../../store/stepper/stepper";
-    import {PayloadWithType} from "../../types";
 
     interface Computed {
         step: number,
@@ -37,8 +35,7 @@
     }
 
     interface Methods {
-        jump: (step: PayloadWithType<number>) => void,
-        jumpTo: (step: number) => void,
+        jump: (step: number) => void,
         next: () => void
         back: () => void
         getPlottingMetadata: (country: string) => void
@@ -60,16 +57,13 @@
             surveyAndProgramValid: mapGetterByName("surveyAndProgram", "validForDataExploration")
         },
         methods: {
-            jump: mapMutationByName("stepper", "Jump"),
-            jumpTo(step: number) {
-              this.jump({type: "Jump", payload: step});
-            },
             next() {
-                this.jumpTo(2);
+                this.jump(2);
             },
             back() {
-                this.jumpTo(1);
+                this.jump(1);
             },
+            jump: mapActionByName("stepper", "jump"),
             getPlottingMetadata: mapActionByName("metadata", "getPlottingMetadata")
         },
         components: {

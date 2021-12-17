@@ -74,6 +74,7 @@ export const dataExplorationStepper = (existingState: Partial<DataExplorationSta
     return {
         namespaced,
         state: {...initialDataExplorationStepperState(), ...existingState && existingState.stepper},
+        actions,
         mutations
     };
 };
