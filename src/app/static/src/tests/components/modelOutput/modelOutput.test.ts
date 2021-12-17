@@ -309,9 +309,9 @@ describe("ModelOutput component", () => {
             {
                 id: "region",
                 options: [
-                    { id: "r0"},
-                    { id: "r1"},
-                    { id: "r2"}
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"}
                 ]
             }
         ]
@@ -334,12 +334,11 @@ describe("ModelOutput component", () => {
             xAxisId: "region"
         };
 
-        const updatedBarchartSelections = {...currentBarchartSelections }
-        const newRegion = barchartSelections.selectedFilterOptions.region
-        updatedBarchartSelections.selectedFilterOptions.region = [newRegion[1], newRegion[0], newRegion[2]]
+        const expectedBarchartSelections = {...currentBarchartSelections }
+        expectedBarchartSelections.selectedFilterOptions.region = testBarchartFilters[0].options
 
         barchart.vm.$emit("update", barchartSelections);
-        expect(store.state.plottingSelections.barchart).toStrictEqual(updatedBarchartSelections);
+        expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
     });
 
     it("commits updated selections from barchart as normal if no matching xAxis key is provided", () => {
@@ -347,9 +346,9 @@ describe("ModelOutput component", () => {
             {
                 id: "region",
                 options: [
-                    { id: "r0"},
-                    { id: "r1"},
-                    { id: "r2"}
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"}
                 ]
             }
         ]
@@ -371,12 +370,11 @@ describe("ModelOutput component", () => {
             },
         };
 
-        const updatedBarchartSelections = {...currentBarchartSelections }
-        const newRegion = barchartSelections.selectedFilterOptions.region
-        updatedBarchartSelections.selectedFilterOptions.region = newRegion
+        const expectedBarchartSelections = {...currentBarchartSelections }
+        expectedBarchartSelections.selectedFilterOptions.region = barchartSelections.selectedFilterOptions.region
 
         barchart.vm.$emit("update", barchartSelections);
-        expect(store.state.plottingSelections.barchart).toStrictEqual(updatedBarchartSelections);
+        expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
     });
 
     it("commits updated selections from barchart and orders them according to nested filter", () => {
@@ -412,12 +410,17 @@ describe("ModelOutput component", () => {
             xAxisId: "region"
         };
 
-        const updatedBarchartSelections = {...currentBarchartSelections }
-        const newRegion = barchartSelections.selectedFilterOptions.region
-        updatedBarchartSelections.selectedFilterOptions.region = [newRegion[1], newRegion[3], newRegion[0], newRegion[4], newRegion[2]]
+        const expectedBarchartSelections = {...currentBarchartSelections }
+        expectedBarchartSelections.selectedFilterOptions.region = [
+            {id: "r0", label: "region 0"},
+            {id: "r0.0", label: "region 0.0"},
+            {id: "r1", label: "region 1"},
+            {id: "r1.0", label: "region 1.0"},
+            {id: "r2", label: "region 2"}
+        ]
 
         barchart.vm.$emit("update", barchartSelections);
-        expect(store.state.plottingSelections.barchart).toStrictEqual(updatedBarchartSelections);
+        expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
     });
 
     it("renders choropleth table", () => {
