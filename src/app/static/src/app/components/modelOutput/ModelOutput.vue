@@ -125,10 +125,6 @@
         tabs: string[]
     }
 
-    interface FlattenedFilterOptionIds {
-        [id: string]: FilterOption[] | Dict<NestedFilterOption>,
-    }
-
     interface Methods {
         tabSelected: (tab: string) => void
         updateBarchartSelections: (data: {payload: BarchartSelections}) => void
@@ -251,35 +247,15 @@
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
             },
             updateBarchartSelectionsAndXAxisOrder(data){
-                console.log("flattenedFilterOptionIds", this.flattenedFilterOptionIds)
                 const payload = {...this.barchartSelections, ...data}
                 if (data.xAxisId && data.selectedFilterOptions){
                     const { xAxisId, selectedFilterOptions } = data
                     if (selectedFilterOptions[xAxisId] && this.flattenedFilterOptionIds[xAxisId]){
-                        
-                        // // finds the filter options of the selected xAxis variable in the barchart filters getter
-                        // console.log("barchartFilters", this.barchartFilters)
-                        // let originalFilterOptionsOrder: NestedFilterOption[] | undefined = this
-                        //     .barchartFilters
-                        //     .find(filter => filter.id === xAxisId)?.options
-
-                        // // Get the list of filter option ids in their configured order, whether nested or not
-                        // let originalFilterOptionsIds: string[];
-                        // if (originalFilterOptionsOrder && originalFilterOptionsOrder[0].children){
-                        //     const flattenedOptions = flattenOptions(originalFilterOptionsOrder)
-                        //     console.log("flattenedOptions", flattenedOptions)
-                        //     originalFilterOptionsIds = Object.keys(flattenedOptions)
-                        // } else if (originalFilterOptionsOrder) {
-                        //     originalFilterOptionsIds = originalFilterOptionsOrder.map((option: FilterOption) => option.id);
-                        // }
-
-                        // Sort the selected filter values according to configured order
-                        // if (originalFilterOptionsOrder) {
-                            const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
-                                return this.flattenedFilterOptionIds[xAxisId].indexOf(a.id) - this.flattenedFilterOptionIds[xAxisId].indexOf(b.id);
-                            });
-                            payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
-                        // }
+                        // Sort the selected filter values according to the order given the barchart filters
+                        const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
+                            return this.flattenedFilterOptionIds[xAxisId].indexOf(a.id) - this.flattenedFilterOptionIds[xAxisId].indexOf(b.id);
+                        });
+                        payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
                     }
                 }
                 // if unable to do the above, just updates the barchart as normal
