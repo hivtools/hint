@@ -1,3 +1,7 @@
+# hint 1.86.1
+
+* Allow Continue as guest in Data Exploration
+
 # hint 1.86.0
 
 * Persist Data Exploration state
