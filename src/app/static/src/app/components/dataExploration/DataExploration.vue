@@ -44,7 +44,7 @@
         getPlottingMetadata: (country: string) => void
     }
 
-    export default Vue.extend<{}, Methods, Computed, unknown>({
+    export default Vue.extend<unknown, Methods, Computed, unknown>({
         computed: {
             step: mapStateProp<StepperState, number>("stepper", state => state.activeStep),
             canProgress() {
