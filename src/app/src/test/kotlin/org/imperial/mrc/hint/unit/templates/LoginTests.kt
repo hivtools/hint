@@ -76,6 +76,7 @@ class LoginTests
         model["error"] = ""
         model["title"] = "test title"
         model["appTitle"] = "Naomi"
+        model["continueTo"] = "/"
         val doc = template.jsoupDocFor(model)
 
         assertThat(doc.select("h1").count()).isEqualTo(1)
