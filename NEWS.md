@@ -1,3 +1,7 @@
+# hint 1.87.0
+
+* Formatting Input Time Series table values
+
 # hint 1.86.0
 
 * Persist Data Exploration state
@@ -9,7 +13,6 @@
 # hint 1.84.0
 
 * Data exploration mode error reporting
-
 
 # hint 1.83.0
 
