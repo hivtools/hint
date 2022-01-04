@@ -55,7 +55,8 @@
             },
             {
               "data": {
-                "columnId": "value"
+                "columnId": "value",
+                "useValueFormat": true
               },
               "header": {
                 "type": "selectedFilterOption",
@@ -131,7 +132,8 @@
             {
               "data": {
                 "columnId": "value",
-                "labelColumn": null
+                "labelColumn": null,
+                "useValueFormat": true
               },
               "header": {
                 "type": "selectedFilterOption",

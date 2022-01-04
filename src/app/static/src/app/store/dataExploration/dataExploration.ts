@@ -18,8 +18,7 @@ import {
 } from "../plottingSelections/plottingSelections";
 import {errors, ErrorsState, initialErrorsState} from "../errors/errors";
 import {localStorageManager} from "../../localStorageManager";
-import {StoreOptions} from "vuex";
-import {Error} from "../../generated";
+import {MutationPayload, Store, StoreOptions} from "vuex";
 import {TranslatableState} from "../../types";
 import {mutations} from "./mutations";
 import {getters} from "./getters";
@@ -39,7 +38,6 @@ export interface DataExplorationState extends TranslatableState {
     plottingSelections: PlottingSelectionsState,
     errors: ErrorsState,
     currentUser: string,
-    updatingLanguage: boolean,
     dataExplorationMode: boolean
 }
 
@@ -61,21 +59,31 @@ export const initialDataExplorationState = (): DataExplorationState => {
         dataExplorationMode: true
     }
 };
-const existingState = localStorageManager.getState();
+
+localStorageManager.deleteState(false); //Clear state in other mode if it exists
+const existingState = localStorageManager.getState(true);
+
+const persistState = (store: Store<DataExplorationState>): void => {
+    store.subscribe((mutation: MutationPayload, state: DataExplorationState) => {
+        console.log(mutation.type);
+        localStorageManager.saveState(state);
+    })
+};
 
 export const storeOptions: StoreOptions<DataExplorationState> = {
     state: {...initialDataExplorationState(), ...existingState},
     modules: {
         adr,
         genericChart,
-        baseline,
-        metadata,
-        surveyAndProgram,
-        plottingSelections,
+        baseline: baseline(existingState),
+        metadata: metadata(existingState),
+        surveyAndProgram: surveyAndProgram(existingState),
+        plottingSelections: plottingSelections(existingState),
         errors,
-        hintrVersion
+        hintrVersion: hintrVersion(existingState)
     },
     mutations,
     getters,
-    actions
+    actions,
+    plugins: [persistState]
 };

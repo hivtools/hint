@@ -3,6 +3,7 @@ import {actions as baselineActions} from "../../app/store/baseline/actions"
 import {login, rootState} from "./integrationTest";
 import {getFormData} from "./helpers";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
+import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 
 describe("Survey and programme actions", () => {
 
@@ -60,6 +61,21 @@ describe("Survey and programme actions", () => {
             .toBe("anc.csv");
     });
 
+    it("can upload data with lax validation", async () => {
+
+        const commit = jest.fn();
+        const formData = getFormData("anc-pos-greater-than-total.csv");
+        const root = {...rootState, dataExplorationMode: true}
+
+        await actions.uploadANC({commit, rootState: root} as any, formData);
+
+        expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
+        expect(commit.mock.calls[1][0]["payload"]).toBe("anc");
+        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
+        expect(commit.mock.calls[2][0]["payload"]["filename"])
+            .toBe("anc-pos-greater-than-total.csv");
+    });
+
     it("can delete survey", async () => {
         const commit = jest.fn();
 
@@ -71,7 +87,7 @@ describe("Survey and programme actions", () => {
         commit.mockReset();
 
         // delete
-        await actions.deleteSurvey({commit, rootState} as any);
+        await actions.deleteSurvey({commit, rootState, state: {selectedDataType: DataType.Survey}} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
 
         commit.mockReset();
@@ -92,7 +108,7 @@ describe("Survey and programme actions", () => {
         commit.mockReset();
 
         // delete
-        await actions.deleteProgram({commit, rootState} as any);
+        await actions.deleteProgram({commit, rootState, state: {selectedDataType: DataType.Survey}} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
         expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
 
@@ -114,7 +130,7 @@ describe("Survey and programme actions", () => {
         commit.mockReset();
 
         // delete
-        await actions.deleteANC({commit, rootState} as any);
+        await actions.deleteANC({commit, rootState, state: {selectedDataType: DataType.Survey}} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
         expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
 

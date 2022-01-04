@@ -192,6 +192,7 @@ export interface GenericChartTableColumnConfig {
         columnId: string,
         labelColumn?: string
         hierarchyColumn?: string
+        useValueFormat?: boolean
     },
     header: {
         type: "columnLabel" | "selectedFilterOption",

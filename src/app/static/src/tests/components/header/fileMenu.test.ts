@@ -110,7 +110,7 @@ describe("File menu", () => {
         const re = new RegExp("naomi-(.*)\.json");
         expect((hiddenLink.attributes("download") as string).match(re)).toBeDefined();
 
-        const expectedJson = JSON.stringify({
+        const expectedJson = {
             state: {
                 baseline: {selectedDataset: null, selectedRelease: null},
                 modelRun: mockModelRunState(),
@@ -127,14 +127,14 @@ describe("File menu", () => {
                 programme: {hash: "5csv", filename: "5.csv"},
                 anc: {hash: "6csv", filename: "6.csv"}
             }
-        });
+        };
 
         const actualBlob = (mockCreateObjectUrl as jest.Mock).mock.calls[0][0];
         const reader = new FileReader();
         reader.addEventListener('loadend', function () {
             const text = reader.result as string;
             const result = JSON.parse(text)[1];
-            expect(result).toStrictEqual(expectedJson);
+            expect(JSON.parse(result)).toStrictEqual(expectedJson);
             done();
         });
 
