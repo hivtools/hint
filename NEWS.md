@@ -2,9 +2,14 @@
 
 * Return calibrate_id in error report if it is available
 
+# hint 1.87.1
+
+* Allow Continue as guest in Data Exploration
+
 # hint 1.87.0
 
 * Formatting Input Time Series table values
+
 
 # hint 1.86.0
 
