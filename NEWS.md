@@ -1,3 +1,7 @@
+# hint 1.88.0
+
+* Show asterisks for required files in both modes
+
 # hint 1.87.1
 
 * Allow Continue as guest in Data Exploration

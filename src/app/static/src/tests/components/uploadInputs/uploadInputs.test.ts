@@ -1,11 +1,11 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
-import Vuex from 'vuex';
+import Vuex, {Store} from 'vuex';
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {
     mockBaselineState,
     mockError,
     mockMetadataState,
-    mockPopulationResponse,
+    mockPopulationResponse, mockRootState,
     mockShapeResponse,
     mockSurveyAndProgramState
 } from "../../mocks";
@@ -39,7 +39,8 @@ describe("UploadInputs upload component", () => {
 
     const createSut = (baselineState?: Partial<BaselineState>,
                        metadataState?: Partial<MetadataState>,
-                       surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey}) => {
+                       surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey},
+                       isDataExploration = true) => {
 
         actions = {
             refreshDatasetMetadata: jest.fn(),
@@ -58,7 +59,7 @@ describe("UploadInputs upload component", () => {
         };
 
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: mockRootState({dataExplorationMode: isDataExploration}),
             modules: {
                 baseline: {
                     namespaced: true,
@@ -88,6 +89,66 @@ describe("UploadInputs upload component", () => {
         const store = createSut();
         const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(0).props().accept).toBe("PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP");
+    });
+
+    it("pjnz upload does not show asterisk for required field when on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsNotRequired(store, 0)
+    });
+
+    it("pjnz upload shows asterisk for required field when not on data exploration mode", () => {
+        const store = createSut({}, {}, {}, false);
+        expectFileIsRequired(store, 0)
+    });
+
+    it("area file upload shows asterisk for required field when on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsRequired(store, 1)
+    });
+
+    it("area file upload shows asterisk for required field when not on data exploration mode", () => {
+        const store = createSut({}, {}, {}, false);
+        expectFileIsRequired(store, 1)
+    });
+
+    it("population upload does not show asterisk when on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsNotRequired(store, 2)
+    });
+
+    it("population upload shows asterisk for required field when not on data exploration mode", () => {
+        const store = createSut({}, {}, {}, false);
+        expectFileIsRequired(store, 2)
+    });
+
+    it("survey upload does not show asterisk when on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsNotRequired(store, 3)
+    });
+
+    it("survey upload shows asterisk for required field when not on data exploration mode", () => {
+        const store = createSut({}, {}, {}, false);
+        expectFileIsRequired(store, 3)
+    });
+
+    it("ART upload does not show asterisk when on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsNotRequired(store, 4)
+    });
+
+    it("ART upload does not show asterisk when not on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsNotRequired(store, 4)
+    });
+
+    it("ANC upload does not show asterisk when on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsNotRequired(store, 4)
+    });
+
+    it("ANC upload does not show asterisk when not on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsNotRequired(store, 4)
     });
 
     it("pjnz is not valid if country is not present", () => {
@@ -417,3 +478,13 @@ describe("UploadInputs upload component", () => {
         });
     }
 });
+
+const expectFileIsRequired = (store: Store<any>, index: number) => {
+    const wrapper = shallowMount(UploadInputs, {store, localVue});
+    expect(wrapper.findAll(ManageFile).at(index).props().required).toBe(true);
+}
+
+const expectFileIsNotRequired = (store: Store<any>, index: number) => {
+    const wrapper = shallowMount(UploadInputs, {store, localVue});
+    expect(wrapper.findAll(ManageFile).at(index).props().required).toBe(false);
+}
