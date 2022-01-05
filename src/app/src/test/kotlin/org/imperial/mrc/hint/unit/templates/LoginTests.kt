@@ -19,6 +19,7 @@ class LoginTests
         model["error"] = "test error"
         model["title"] = "test title"
         model["appTitle"] = "Naomi"
+        model["continueTo"] = "/"
         val doc = template.jsoupDocFor(model)
 
         assertThat(doc.select("form").attr("onsubmit")).isEqualTo("validate(event);")
@@ -54,6 +55,7 @@ class LoginTests
         model["error"] = ""
         model["title"] = "test title"
         model["appTitle"] = "Naomi"
+        model["continueTo"] = "/"
         val doc = template.jsoupDocFor(model)
 
         assertThat(doc.select("form label[for='user-id']").text()).isEqualTo("Username (email address)")
@@ -74,6 +76,7 @@ class LoginTests
         model["error"] = ""
         model["title"] = "test title"
         model["appTitle"] = "Naomi"
+        model["continueTo"] = "/"
         val doc = template.jsoupDocFor(model)
 
         assertThat(doc.select("h1").count()).isEqualTo(1)
@@ -87,17 +90,19 @@ class LoginTests
     }
 
     @Test
-    fun `renders data exploration title`()
+    fun `renders correctly for data exploration`()
     {
         val model = ConcurrentModel()
         model["username"] = ""
         model["error"] = ""
         model["title"] = "test title"
         model["appTitle"] = "Naomi Data Exploration"
+        model["continueTo"] = "explore"
         val doc = template.jsoupDocFor(model)
 
         assertThat(doc.select("h1").count()).isEqualTo(1)
         assertThat(doc.select("h1").text()).isEqualTo("Naomi Data Exploration")
+        assertThat(doc.select("#continue-as-guest a").attr("href")).isEqualTo("explore")
     }
 
 }
