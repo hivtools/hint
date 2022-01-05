@@ -1,3 +1,7 @@
+# hint 1.87.2
+
+* Bug: ADR access level incorrectly displayed as 'Read only' on reload
+
 # hint 1.87.1
 
 * Allow Continue as guest in Data Exploration

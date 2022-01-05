@@ -206,6 +206,13 @@ describe("adr integration", () => {
         expect(getUserCanUploadStub.mock.calls.length).toBe(1);
     });
 
+    it("call getUserCanUpload action when page is created or reloaded", async () => {
+        const store = createStore("123", null, {});
+        shallowMount(ADRIntegration, {store});
+        store.state.adr.key = "fakeDataset";
+        expect(getUserCanUploadStub.mock.calls.length).toBe(1);
+    });
+
     it("does not render permission displayText if dataset is not selected", async() => {
         const store = createStore("123", null, {})
         const renders = shallowMount(ADRIntegration, {store});

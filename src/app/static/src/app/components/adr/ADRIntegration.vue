@@ -101,6 +101,7 @@
         watch: {
             key() {
                 this.getDatasets();
+                this.getUserCanUpload();
             },
             selectedDataset() {
                 this.getUserCanUpload()
