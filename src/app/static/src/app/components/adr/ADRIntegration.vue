@@ -107,7 +107,9 @@
             }
         },
         mounted() {
-            this.getUserCanUpload();
+            if(this.key) {
+                this.getUserCanUpload();
+            }
         },
         directives: {
             "tooltip": VTooltip

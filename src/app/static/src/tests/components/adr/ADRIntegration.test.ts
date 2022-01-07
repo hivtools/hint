@@ -212,6 +212,12 @@ describe("adr integration", () => {
         expect(getUserCanUploadStub.mock.calls.length).toBe(1);
     });
 
+    it("does not call getUserCanUpload action when no adr key", async () => {
+        const store = createStore("", null, {});
+        shallowMount(ADRIntegration, {store});
+        expect(getUserCanUploadStub.mock.calls.length).toBe(0);
+    });
+
     it("does not render permission displayText if dataset is not selected", async() => {
         const store = createStore("123", null, {})
         const renders = shallowMount(ADRIntegration, {store});
