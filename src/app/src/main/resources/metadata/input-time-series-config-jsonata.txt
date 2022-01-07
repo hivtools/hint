@@ -110,10 +110,9 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
             })[]
         },
         [1..$count($areaNames)].(
-           $row := $floor($-1/$$.subplots.columns);
+           $row := $floor(($-1)/$$.subplots.columns);
            {
                "yaxis"&$: {
-                   "row": $row,
                    "rangemode": "tozero",
                    "zeroline": false,
                    "tickformat": $$.yAxisFormat,
