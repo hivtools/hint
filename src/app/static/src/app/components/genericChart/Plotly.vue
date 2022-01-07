@@ -65,6 +65,7 @@
             },
             data() {
                 const j = jsonata(this.chartMetadata);
+                console.log(JSON.stringify(this.inputData));
                 const results = j.evaluate(this.inputData);
                 return results
             },
