@@ -1,3 +1,7 @@
+# hint 1.88.0
+
+* Return calibrate_id in error report if it is available
+
 # hint 1.87.1
 
 * Allow Continue as guest in Data Exploration
