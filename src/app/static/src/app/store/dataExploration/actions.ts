@@ -7,6 +7,7 @@ import {currentHintVersion} from "../../hintVersion";
 import {VersionInfo} from "../../generated";
 import {ErrorsMutation} from "../errors/mutations";
 import {api} from "../../apiService";
+import {ErrorReportDefaultValue} from "../errors/errors";
 
 export interface DataExplorationActions extends LanguageActions<DataExplorationState> {
     generateErrorReport: (store: ActionContext<DataExplorationState, DataExplorationState>,
@@ -23,11 +24,17 @@ export const actions: ActionTree<DataExplorationState, DataExplorationState> & D
         const {rootState, getters, commit} = context
         const data = {
             email: payload.email || rootState.currentUser,
-            country: rootState.baseline.country || "no associated country",
-            projectName: "no associated project",
+            country: rootState.baseline.country || ErrorReportDefaultValue.country,
+            projectName: ErrorReportDefaultValue.project,
             browserAgent: navigator.userAgent,
             timeStamp: new Date().toISOString(),
-            jobId: "no associated jobId",
+            modelRunId: ErrorReportDefaultValue.model,
+            calibrateId: ErrorReportDefaultValue.calibrate,
+            downloadIds: {
+                spectrum: ErrorReportDefaultValue.download,
+                summary: ErrorReportDefaultValue.download,
+                coarse_output: ErrorReportDefaultValue.download
+             },
             description: payload.description,
             section: payload.section,
             stepsToReproduce: payload.stepsToReproduce,
