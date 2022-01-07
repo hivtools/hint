@@ -1,6 +1,10 @@
-# hint 1.88.0
+# hint 1.89.0
 
 * Show asterisks for required files in both modes
+
+# hint 1.88.0
+
+* Return calibrate_id in error report if it is available
 
 # hint 1.87.1
 
