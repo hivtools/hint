@@ -31,6 +31,7 @@ describe("Manage file component", () => {
         return shallowMount(ManageFile, {
             store: store || createStore(),
             propsData: {
+                required: false,
                 error: null,
                 label: "PJNZ",
                 valid: true,
@@ -44,7 +45,6 @@ describe("Manage file component", () => {
         });
     };
 
-    const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
 
     it("renders label", () => {
         const wrapper = createSut({
@@ -84,6 +84,31 @@ describe("Manage file component", () => {
         }, undefined, store);
         expectTranslatedWithStoreType(wrapper.find("label.file-name strong"), "File", "Fichier", "Ficheiro", store);
         expect(wrapper.find("label.file-name").text()).toContain("existing-name.csv");
+    });
+
+
+    it("renders red asterisk for empty field if required is true", () => {
+        const wrapper = createSut({
+            required: true
+        });
+        expect(wrapper.find("#required").exists()).toBe(true);
+        expect(wrapper.find("#required").text()).toBe("*");
+        expect(wrapper.find("#required").attributes("class")).toBe("text-danger");
+    });
+
+    it("renders asterisk for filled form if required is true", () => {
+        const wrapper = createSut({
+            required: true,
+            existingFileName: "file.csv"
+        });
+        expect(wrapper.find("#required").exists()).toBe(true);
+        expect(wrapper.find("#required").text()).toBe("*");
+        expect(wrapper.find("#required").attributes("class")).toBe("");
+    });
+
+    it("does not render asterisk if required is false", () => {
+        const wrapper = createSut();
+        expect(wrapper.find("#required").exists()).toBe(false);
     });
 
     it("does not render tick if valid is false", () => {

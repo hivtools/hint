@@ -1,7 +1,7 @@
 <template>
     <div class="form-group">
         <label class="font-weight-bold mb-0" v-translate="label"></label>
-        <strong v-if="required">*</strong>
+        <strong id="required" v-if="required" :class="existingFileName? '': 'text-danger'">*</strong>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
         <span class="color-red" v-if="fromADR">ADR</span>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
@@ -36,7 +36,6 @@
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import {Error} from "../../generated";
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
-    import {mapStatePropByName} from "../../utils";
 
     interface Data {
         uploading: boolean

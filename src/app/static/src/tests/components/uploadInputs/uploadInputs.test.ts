@@ -17,7 +17,6 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslatedWithStoreType} from "../../testHelpers";
-import {emptyState} from "../../../app/root";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
@@ -143,12 +142,12 @@ describe("UploadInputs upload component", () => {
 
     it("ANC upload does not show asterisk when on data exploration mode", () => {
         const store = createSut();
-        expectFileIsNotRequired(store, 4)
+        expectFileIsNotRequired(store, 5)
     });
 
-    it("ANC upload does not show asterisk when not on data exploration mode", () => {
+    it("ANC upload does not show asterisk when no t on data exploration mode", () => {
         const store = createSut();
-        expectFileIsNotRequired(store, 4)
+        expectFileIsNotRequired(store, 5)
     });
 
     it("pjnz is not valid if country is not present", () => {
