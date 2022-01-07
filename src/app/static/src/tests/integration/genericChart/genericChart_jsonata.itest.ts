@@ -92,8 +92,7 @@ describe("inputTimeSeries jsonata", () => {
     });
 
     it("evaluates data as expected", async () => {
-
-        // Some arrays output from jsonata have an additional 'sequence' property so jest's toEqual with array literal fails -
+        // Some arrays output from jsonata have an additional 'sequence' value so jest's toEqual with array literal fails -
         // but these serialize to the same string
         expect(JSON.stringify(inputTimeSeriesJsonataResult.data)).toBe(JSON.stringify([
             {
@@ -160,7 +159,6 @@ describe("inputTimeSeries jsonata", () => {
     });
 
     it("evaluates config as expected", () => {
-
         expect(inputTimeSeriesJsonataResult.config).toStrictEqual({
             "responsive": false,
             "scrollZoom": false,
