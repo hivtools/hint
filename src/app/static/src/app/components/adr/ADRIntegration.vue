@@ -101,11 +101,13 @@
         watch: {
             key() {
                 this.getDatasets();
-                this.getUserCanUpload();
             },
             selectedDataset() {
                 this.getUserCanUpload()
             }
+        },
+        mounted() {
+            this.getUserCanUpload();
         },
         directives: {
             "tooltip": VTooltip
