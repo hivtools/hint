@@ -11,8 +11,7 @@ export const getGenericChartMetadata = async () => {
     const commit = jest.fn();
     await actions.getGenericChartMetadata({commit, rootState} as any);
     expect(commit.mock.calls[0][0]["type"]).toBe("GenericChartMetadataFetched");
-    const response = commit.mock.calls[0][0]["payload"] as GenericChartMetadataResponse;
-    return response;
+    return commit.mock.calls[0][0]["payload"] as GenericChartMetadataResponse;
 };
 
 describe("genericChart actions", () => {

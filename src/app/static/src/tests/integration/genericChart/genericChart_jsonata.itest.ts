@@ -85,10 +85,10 @@ describe("inputTimeSeries jsonata", () => {
         await login();
 
         const response = await getGenericChartMetadata();
-        const inputTimeSeriesJsonata = response["input-time-series"].chartConfig[0].config;
+        const inputTimeSeriesJsonataText = response["input-time-series"].chartConfig[0].config;
 
-        const j = jsonata(inputTimeSeriesJsonata);
-        inputTimeSeriesJsonataResult = j.evaluate(testChartData);
+        const inputTimeSeriesJsonata = jsonata(inputTimeSeriesJsonataText);
+        inputTimeSeriesJsonataResult = inputTimeSeriesJsonata.evaluate(testChartData);
     });
 
     it("evaluates data as expected", async () => {
