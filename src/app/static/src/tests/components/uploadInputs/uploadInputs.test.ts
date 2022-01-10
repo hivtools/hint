@@ -90,62 +90,62 @@ describe("UploadInputs upload component", () => {
         expect(wrapper.findAll(ManageFile).at(0).props().accept).toBe("PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP");
     });
 
-    it("pjnz upload does not show asterisk for required field when on data exploration mode", () => {
+    it("does not show required text in front of pjnz upload label when on data exploration mode", () => {
         const store = createSut();
         expectFileIsNotRequired(store, 0)
     });
 
-    it("pjnz upload shows asterisk for required field when not on data exploration mode", () => {
+    it("shows required text in front of pjnz upload label when not on data exploration mode", () => {
         const store = createSut({}, {}, {}, false);
         expectFileIsRequired(store, 0)
     });
 
-    it("area file upload shows asterisk for required field when on data exploration mode", () => {
+    it("shows required text in front of area file upload label when on data exploration mode", () => {
         const store = createSut();
         expectFileIsRequired(store, 1)
     });
 
-    it("area file upload shows asterisk for required field when not on data exploration mode", () => {
+    it("shows required text in front of area file upload label when not on data exploration mode", () => {
         const store = createSut({}, {}, {}, false);
         expectFileIsRequired(store, 1)
     });
 
-    it("population upload does not show asterisk when on data exploration mode", () => {
+    it("does not show required text in front of population upload label when on data exploration mode", () => {
         const store = createSut();
         expectFileIsNotRequired(store, 2)
     });
 
-    it("population upload shows asterisk for required field when not on data exploration mode", () => {
+    it("shows required text in front of population upload label when not on data exploration mode", () => {
         const store = createSut({}, {}, {}, false);
         expectFileIsRequired(store, 2)
     });
 
-    it("survey upload does not show asterisk when on data exploration mode", () => {
+    it("does not show required text in front of survey upload label when on data exploration mode", () => {
         const store = createSut();
         expectFileIsNotRequired(store, 3)
     });
 
-    it("survey upload shows asterisk for required field when not on data exploration mode", () => {
+    it("shows required text in front of survey upload label when not on data exploration mode", () => {
         const store = createSut({}, {}, {}, false);
         expectFileIsRequired(store, 3)
     });
 
-    it("ART upload does not show asterisk when on data exploration mode", () => {
+    it("does not show required text in front of ART upload label when on data exploration mode", () => {
         const store = createSut();
         expectFileIsNotRequired(store, 4)
     });
 
-    it("ART upload does not show asterisk when not on data exploration mode", () => {
+    it("does not show required text in front of ART upload label when not on data exploration mode", () => {
         const store = createSut();
         expectFileIsNotRequired(store, 4)
     });
 
-    it("ANC upload does not show asterisk when on data exploration mode", () => {
+    it("does not show required text in front of ANC upload label when on data exploration mode", () => {
         const store = createSut();
         expectFileIsNotRequired(store, 5)
     });
 
-    it("ANC upload does not show asterisk when no t on data exploration mode", () => {
+    it("does not show required text in front of ANC upload label when not on data exploration mode", () => {
         const store = createSut();
         expectFileIsNotRequired(store, 5)
     });

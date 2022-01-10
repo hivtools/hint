@@ -1,7 +1,7 @@
 <template>
     <div class="form-group">
         <label class="font-weight-bold mb-0" v-translate="label"></label>
-        <strong id="required" v-if="required" :class="existingFileName? '': 'text-danger'">*</strong>
+        <span id="required" v-if="required" :class="existingFileName? '': 'text-danger'">(required)</span>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
         <span class="color-red" v-if="fromADR">ADR</span>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>

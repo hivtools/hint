@@ -87,26 +87,26 @@ describe("Manage file component", () => {
     });
 
 
-    it("renders red asterisk for empty field if required is true", () => {
+    it("renders red text for empty field if required is true", () => {
         const wrapper = createSut({
             required: true
         });
         expect(wrapper.find("#required").exists()).toBe(true);
-        expect(wrapper.find("#required").text()).toBe("*");
+        expect(wrapper.find("#required").text()).toBe("(required)");
         expect(wrapper.find("#required").attributes("class")).toBe("text-danger");
     });
 
-    it("renders asterisk for filled form if required is true", () => {
+    it("renders text for filled form if required is true", () => {
         const wrapper = createSut({
             required: true,
             existingFileName: "file.csv"
         });
         expect(wrapper.find("#required").exists()).toBe(true);
-        expect(wrapper.find("#required").text()).toBe("*");
+        expect(wrapper.find("#required").text()).toBe("(required)");
         expect(wrapper.find("#required").attributes("class")).toBe("");
     });
 
-    it("does not render asterisk if required is false", () => {
+    it("does not render text if required is false", () => {
         const wrapper = createSut();
         expect(wrapper.find("#required").exists()).toBe(false);
     });
