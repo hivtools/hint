@@ -102,10 +102,10 @@ describe("inputTimeSeries jsonata", () => {
         await login();
 
         const response = await getGenericChartMetadata();
-        inputTimeSeriesJsonata = response["input-time-series"].chartConfig[0].config;
+        const inputTimeSeriesJsonataText = response["input-time-series"].chartConfig[0].config;
 
-        const j = jsonata(inputTimeSeriesJsonata);
-        inputTimeSeriesJsonataResult = j.evaluate(testChartData);
+        inputTimeSeriesJsonata = jsonata(inputTimeSeriesJsonataText);
+        inputTimeSeriesJsonataResult = inputTimeSeriesJsonata.evaluate(testChartData);
     });
 
     it("evaluates data as expected", async () => {
@@ -295,10 +295,9 @@ describe("inputTimeSeries jsonata", () => {
             "yAxisFormat": ".0f"
         };
 
-        const j = jsonata(inputTimeSeriesJsonata);
-        inputTimeSeriesJsonataResult = j.evaluate(testChartData);
+        const result = inputTimeSeriesJsonata.evaluate(testData_DuplicateNames);
 
-        expect(JSON.stringify(inputTimeSeriesJsonataResult.data)).toBe(JSON.stringify([
+        expect(JSON.stringify(result.data)).toBe(JSON.stringify([
             {
                 "name": "Chitipa",
                 "showlegend": false,
@@ -340,7 +339,7 @@ describe("inputTimeSeries jsonata", () => {
                 "line": {"color": "rgb(255, 51, 51)"}
             },
             {
-                "name": "Chilipa",
+                "name": "Chitipa",
                 "showlegend": false,
                 "x": ["2011 Q4", "2012 Q4"],
                 "y": [4555, 4795],
@@ -361,7 +360,7 @@ describe("inputTimeSeries jsonata", () => {
             }
         ]));
 
-        const layout = inputTimeSeriesJsonataResult.layout;
+        const layout = result.layout;
         expect(JSON.stringify(layout.annotations)).toBe(JSON.stringify([
             {
                 "text": "Chitipa (MWI_4_1_demo)",
