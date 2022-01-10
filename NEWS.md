@@ -1,3 +1,7 @@
+# hint 1.87.2
+
+Use area_id to define uniq areas in Input Time SEries
+
 # hint 1.87.1
 
 * Allow Continue as guest in Data Exploration
