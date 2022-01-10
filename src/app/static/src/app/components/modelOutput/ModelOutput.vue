@@ -157,7 +157,7 @@
         filteredChoroplethIndicators: ChoroplethIndicatorMetadata[],
         filteredBarchartIndicators: BarchartIndicator[],
         filteredBubblePlotIndicators: ChoroplethIndicatorMetadata[],
-        flattenedFilterOptionIds: Dict<string[]>
+        flattenedXAxisFilterOptionIds: string[]
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
@@ -226,16 +226,21 @@
                     filters: this.barchartFilters
                 }
             },
-            flattenedFilterOptionIds(){
-                const ids: Dict<string[]> = {}
-                this.barchartFilters.forEach(filter => {
-                    if ((filter.options[0] as NestedFilterOption).children){
-                        ids[filter.id] = Object.keys(flattenOptions(filter.options))
-                    } else {
-                        ids[filter.id] = filter.options.map((option: FilterOption) => option.id)
+            flattenedXAxisFilterOptionIds(){
+                const xAxisId = this.barchartSelections?.xAxisId
+                if (xAxisId && this.barchartFilters?.length){
+                    for (let index = 0; index < this.barchartFilters.length; index++) {
+                        const filter = this.barchartFilters[index]
+                        if (filter.id === xAxisId){
+                            if ((filter.options[0] as NestedFilterOption).children){
+                                return Object.keys(flattenOptions(filter.options)) || []
+                            } else {
+                                return filter.options.map((option: FilterOption) => option.id) || []
+                            }
+                        }
                     }
-                })
-                return ids
+                }
+                return []
             }
         },
         methods: {
@@ -250,10 +255,10 @@
                 const payload = {...this.barchartSelections, ...data}
                 if (data.xAxisId && data.selectedFilterOptions){
                     const { xAxisId, selectedFilterOptions } = data
-                    if (selectedFilterOptions[xAxisId] && this.flattenedFilterOptionIds[xAxisId]){
+                    if (selectedFilterOptions[xAxisId] && this.flattenedXAxisFilterOptionIds){
                         // Sort the selected filter values according to the order given the barchart filters
                         const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
-                            return this.flattenedFilterOptionIds[xAxisId].indexOf(a.id) - this.flattenedFilterOptionIds[xAxisId].indexOf(b.id);
+                            return this.flattenedXAxisFilterOptionIds.indexOf(a.id) - this.flattenedXAxisFilterOptionIds.indexOf(b.id);
                         });
                         payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
                     }
