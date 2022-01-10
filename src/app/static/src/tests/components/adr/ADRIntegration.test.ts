@@ -20,6 +20,7 @@ import {prefixNamespace} from "../../../app/utils";
 import {Language} from "../../../app/store/translations/locales";
 import {expectTranslated} from "../../testHelpers";
 import {BaselineState} from "../../../app/store/baseline/baseline";
+import Vue from "vue";
 
 describe("adr integration", () => {
 
@@ -199,26 +200,30 @@ describe("adr integration", () => {
         expect(mockTooltip.mock.calls[0][1].value).toBe("Atualmente não tem permissões de escrita para este conjunto de dados e não poderá carregar ficheiros para o ADR");
     });
 
-    it("call getUserCanUpload action if key is provided", async() => {
+    it("call getUserCanUpload action if dataset is selected", () => {
         const store = createStore("123", null, {})
         shallowMount(ADRIntegration, {store});
         store.state.baseline.selectedDataset = fakeDataset
-        expect(getUserCanUploadStub.mock.calls.length).toBe(2);
+        expect(getUserCanUploadStub.mock.calls.length).toBe(1);
     });
 
-    it("call getUserCanUpload action when page is reloaded", async () => {
-        const store = createStore("123", null, {});
+    it("call getUserCanUpload action if dataset is selected when page is loaded",  () => {
+        const store = createStore("123",
+            null, {},
+            false,
+            {selectedDataset: fakeDataset});
+
         shallowMount(ADRIntegration, {store});
         expect(getUserCanUploadStub.mock.calls.length).toBe(1);
     });
 
-    it("does not call getUserCanUpload action when no adr key", async () => {
+    it("does not call getUserCanUpload action when dataset is not selected", () => {
         const store = createStore("", null, {});
         shallowMount(ADRIntegration, {store});
         expect(getUserCanUploadStub.mock.calls.length).toBe(0);
     });
 
-    it("does not render permission displayText if dataset is not selected", async() => {
+    it("does not render permission displayText if dataset is not selected", () => {
         const store = createStore("123", null, {})
         const renders = shallowMount(ADRIntegration, {store});
         expect(renders.find("#adr-capacity").exists()).toBeFalsy()

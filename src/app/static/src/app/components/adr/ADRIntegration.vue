@@ -107,7 +107,7 @@
             }
         },
         mounted() {
-            if(this.key) {
+            if(this.selectedDataset) {
                 this.getUserCanUpload();
             }
         },
