@@ -1,6 +1,19 @@
-# hint 1.86.1
+# hint 1.88.1
 
 * Output barchart x-axis should be ordered
+
+# hint 1.88.0
+
+* Return calibrate_id in error report if it is available
+
+# hint 1.87.1
+
+* Allow Continue as guest in Data Exploration
+
+# hint 1.87.0
+
+* Formatting Input Time Series table values
+
 
 # hint 1.86.0
 
@@ -13,7 +26,6 @@
 # hint 1.84.0
 
 * Data exploration mode error reporting
-
 
 # hint 1.83.0
 

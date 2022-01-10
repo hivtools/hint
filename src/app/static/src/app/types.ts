@@ -192,6 +192,7 @@ export interface GenericChartTableColumnConfig {
         columnId: string,
         labelColumn?: string
         hierarchyColumn?: string
+        useValueFormat?: boolean
     },
     header: {
         type: "columnLabel" | "selectedFilterOption",
@@ -286,7 +287,9 @@ export interface ErrorReport extends ErrorReportManualDetails {
     projectName: string | undefined,
     browserAgent: string,
     timeStamp: string,
-    jobId: string,
+    modelRunId: string,
+    calibrateId?: string,
+    downloadIds?: DownloadIds
     versions: VersionInfo,
     errors: Error[]
 }
@@ -294,4 +297,10 @@ export interface ErrorReport extends ErrorReportManualDetails {
 export interface TranslatableState {
     language: Language
     updatingLanguage: boolean
+}
+
+interface DownloadIds {
+    spectrum: string,
+    summary: string,
+    coarse_output: string
 }

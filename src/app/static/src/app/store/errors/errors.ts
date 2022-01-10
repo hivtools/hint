@@ -10,6 +10,14 @@ export interface ErrorsState {
     sendingErrorReport: boolean
 }
 
+export enum ErrorReportDefaultValue {
+    calibrate = "no associated calibrateId",
+    model = "no associated modelRunId",
+    download = "none",
+    country = "no associated country",
+    project = "no associated project"
+}
+
 export const initialErrorsState = (): ErrorsState => {
     return {
         errors: [],

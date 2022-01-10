@@ -177,7 +177,7 @@ export const findPath = function (id: string, obj: any): any {
     }
 };
 
-export const formatOutput = function (value: number | string, format: string, scale: number, accuracy: number | null) {
+export const formatOutput = function (value: number | string, format: string, scale: number | null, accuracy: number | null) {
     let ans: number
 
     if (typeof (value) === 'string') {
