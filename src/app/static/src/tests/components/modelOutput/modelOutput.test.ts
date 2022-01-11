@@ -395,6 +395,7 @@ describe("ModelOutput component", () => {
                     {id: "a1", label: "0-4"},
                 ]
             },
+            xAxisId: "region"
         };
 
         const expectedBarchartSelections = {...currentBarchartSelections }

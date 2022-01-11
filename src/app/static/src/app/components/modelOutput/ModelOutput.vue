@@ -228,19 +228,22 @@
             },
             flattenedXAxisFilterOptionIds(){
                 const xAxisId = this.barchartSelections?.xAxisId
+                let ids: string[] = []
                 if (xAxisId && this.barchartFilters?.length){
                     for (let index = 0; index < this.barchartFilters.length; index++) {
                         const filter = this.barchartFilters[index]
                         if (filter.id === xAxisId){
                             if ((filter.options[0] as NestedFilterOption).children){
-                                return Object.keys(flattenOptions(filter.options)) || []
+                                ids = Object.keys(flattenOptions(filter.options)) || []
+                                break
                             } else {
-                                return filter.options.map((option: FilterOption) => option.id) || []
+                                ids = filter.options.map((option: FilterOption) => option.id) || []
+                                break
                             }
                         }
                     }
                 }
-                return []
+                return ids
             }
         },
         methods: {
