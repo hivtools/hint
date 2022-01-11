@@ -255,7 +255,7 @@
                 const payload = {...this.barchartSelections, ...data}
                 if (data.xAxisId && data.selectedFilterOptions){
                     const { xAxisId, selectedFilterOptions } = data
-                    if (selectedFilterOptions[xAxisId] && this.flattenedXAxisFilterOptionIds){
+                    if (selectedFilterOptions[xAxisId] && this.flattenedXAxisFilterOptionIds.length){
                         // Sort the selected filter values according to the order given the barchart filters
                         const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
                             return this.flattenedXAxisFilterOptionIds.indexOf(a.id) - this.flattenedXAxisFilterOptionIds.indexOf(b.id);

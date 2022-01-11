@@ -17,7 +17,7 @@ import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
 import Choropleth from "../../../app/components/plots/choropleth/Choropleth.vue";
 import BubblePlot from "../../../app/components/plots/bubble/BubblePlot.vue";
 import {expectTranslated} from "../../testHelpers";
-import {BarchartIndicator} from "../../../app/types";
+import {BarchartIndicator, Filter} from "../../../app/types";
 import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
 
 const localVue = createLocalVue();
@@ -351,6 +351,42 @@ describe("ModelOutput component", () => {
                     {id: "r2", label: "region 2"}
                 ]
             }
+        ]
+        const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const currentBarchartSelections = store.state.plottingSelections.barchart
+
+        const barchart = wrapper.find(BarChartWithFilters);
+        const barchartSelections = {
+            selectedFilterOptions: {
+                region: [
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"}
+                ],
+                age: [
+                    {id: "a1", label: "0-4"},
+                ]
+            },
+        };
+
+        const expectedBarchartSelections = {...currentBarchartSelections }
+        expectedBarchartSelections.selectedFilterOptions.region = barchartSelections.selectedFilterOptions.region
+
+        barchart.vm.$emit("update", barchartSelections);
+        expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
+    });
+
+    it("commits updated selections from barchart as normal if no barchartfilters provided", () => {
+        const testBarchartFilters: Filter[] = [
+            // {
+            //     id: "region",
+            //     options: [
+            //         {id: "r1", label: "region 1"},
+            //         {id: "r0", label: "region 0"},
+            //         {id: "r2", label: "region 2"}
+            //     ]
+            // }
         ]
         const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
         const wrapper = shallowMount(ModelOutput, {store, localVue});
