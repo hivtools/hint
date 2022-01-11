@@ -377,17 +377,8 @@ describe("ModelOutput component", () => {
         expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
     });
 
-    it("commits updated selections from barchart as normal if no barchartfilters provided", () => {
-        const testBarchartFilters: Filter[] = [
-            // {
-            //     id: "region",
-            //     options: [
-            //         {id: "r1", label: "region 1"},
-            //         {id: "r0", label: "region 0"},
-            //         {id: "r2", label: "region 2"}
-            //     ]
-            // }
-        ]
+    it("commits updated selections from barchart as normal if no barchart filters are provided", () => {
+        const testBarchartFilters: Filter[] = []
         const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         const currentBarchartSelections = store.state.plottingSelections.barchart
