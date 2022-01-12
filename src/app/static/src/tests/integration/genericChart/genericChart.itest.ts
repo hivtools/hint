@@ -1,10 +1,18 @@
-import {actions} from "../../app/store/genericChart/actions";
-import {login, rootState} from "./integrationTest";
-import {Dict, GenericChartDataset, GenericChartMetadataResponse} from "../../app/types";
-import {GenericChartMutation} from "../../app/store/genericChart/mutations";
-import {getFormData} from "./helpers";
-import {actions as baselineActions} from "../../app/store/baseline/actions";
-import {actions as sapActions} from "../../app/store/surveyAndProgram/actions"
+import jsonata from "jsonata";
+import {actions} from "../../../app/store/genericChart/actions";
+import {login, rootState} from "../integrationTest";
+import {GenericChartDataset, GenericChartMetadataResponse} from "../../../app/types";
+import {GenericChartMutation} from "../../../app/store/genericChart/mutations";
+import {getFormData} from "../helpers";
+import {actions as baselineActions} from "../../../app/store/baseline/actions";
+import {actions as sapActions} from "../../../app/store/surveyAndProgram/actions"
+
+export const getGenericChartMetadata = async () => {
+    const commit = jest.fn();
+    await actions.getGenericChartMetadata({commit, rootState} as any);
+    expect(commit.mock.calls[0][0]["type"]).toBe("GenericChartMetadataFetched");
+    return commit.mock.calls[0][0]["payload"] as GenericChartMetadataResponse;
+};
 
 describe("genericChart actions", () => {
     beforeAll(async () => {
@@ -23,10 +31,7 @@ describe("genericChart actions", () => {
     };
 
     it("can fetch generic chart metadata", async () => {
-        const commit = jest.fn();
-        await actions.getGenericChartMetadata({commit, rootState} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe("GenericChartMetadataFetched");
-        const response = commit.mock.calls[0][0]["payload"] as GenericChartMetadataResponse;
+        const response = await getGenericChartMetadata();
         expect(response["input-time-series"].datasets.length).toBe(2);
         expect(response["input-time-series"].chartConfig[0].config.startsWith("(")).toBe(true);
     });
