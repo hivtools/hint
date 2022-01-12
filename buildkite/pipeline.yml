@@ -22,7 +22,7 @@ steps:
   - label: ":mag: Test front-end ADR Dataset integration"
     command: buildkite/test-adr-front-end-integration.sh
 
-      - wait
+  - wait
 
   # This makes sure that deploys are triggered in the same order as the
   # test builds, no matter which test builds finish first.
