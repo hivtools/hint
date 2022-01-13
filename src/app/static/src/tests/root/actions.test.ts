@@ -12,7 +12,7 @@ import {
     mockProjectsState,
     mockRootState,
     mockStepperState,
-    mockSuccess
+    mockSuccess, mockDownloadResultsState
 } from "../mocks";
 import {Language} from "../../app/store/translations/locales";
 import {currentHintVersion} from "../../app/hintVersion";
@@ -208,6 +208,17 @@ describe("root actions", () => {
             modelRun: mockModelRunState({
                 modelRunId: "1234"
             }),
+            modelCalibrate: mockModelCalibrateState({
+                calibrateId: "2022"
+            }),
+            downloadResults: mockDownloadResultsState({
+                summary: {
+                    downloadId: "summary123"
+                },
+                spectrum: {
+                    downloadId: "spectrum123"
+                }
+            } as any),
             projects: mockProjectsState({
                 currentProject: {name: "p1", id: 1, versions: []}
             }),
@@ -251,7 +262,9 @@ describe("root actions", () => {
             country: "Malawi",
             projectName: "p1",
             timeStamp: new Date(),
-            jobId: "1234",
+            modelRunId: "1234",
+            calibrateId: "2022",
+            downloadIds: {spectrum: "spectrum123", summary: "summary123", coarse_output: "none"},
             description: "desc",
             section: "reviewInputs",
             stepsToReproduce: "repro",
@@ -265,7 +278,9 @@ describe("root actions", () => {
         expect(data.country).toStrictEqual(expected.country)
         expect(data.projectName).toStrictEqual(expected.projectName)
         expect(data.browserAgent).toContain("Mozilla")
-        expect(data.jobId).toStrictEqual(expected.jobId)
+        expect(data.modelRunId).toStrictEqual(expected.modelRunId)
+        expect(data.calibrateId).toStrictEqual(expected.calibrateId)
+        expect(data.downloadIds).toStrictEqual(expected.downloadIds)
         expect(new Date(data.timeStamp).getDate()).toBe(expected.timeStamp.getDate());
         expect(data.description).toStrictEqual(expected.description)
         expect(data.section).toStrictEqual(expected.section)
@@ -289,6 +304,8 @@ describe("root actions", () => {
         const rootState = mockRootState({
             baseline: mockBaselineState(),
             modelRun: mockModelRunState(),
+            modelCalibrate: mockModelCalibrateState(),
+            downloadResults: mockDownloadResultsState(),
             projects: mockProjectsState(),
             hintrVersion: mockHintrVersionState({
                 hintrVersion: {
@@ -330,7 +347,9 @@ describe("root actions", () => {
             country: "no associated country",
             projectName: "no associated project",
             timeStamp: new Date(),
-            jobId: "no associated jobId",
+            modelRunId: "no associated modelRunId",
+            calibrateId: "no associated calibrateId",
+            downloadIds: {spectrum: "none", summary: "none", coarse_output: "none"},
             description: "desc",
             section: "reviewInputs",
             stepsToReproduce: "repro",
@@ -342,7 +361,9 @@ describe("root actions", () => {
         expect(data.email).toStrictEqual(expected.email)
         expect(data.country).toStrictEqual(expected.country)
         expect(data.projectName).toBe(expected.projectName)
-        expect(data.jobId).toStrictEqual(expected.jobId)
+        expect(data.modelRunId).toStrictEqual(expected.modelRunId)
+        expect(data.calibrateId).toStrictEqual(expected.calibrateId)
+        expect(data.downloadIds).toStrictEqual(expected.downloadIds)
         expect(data.browserAgent).toContain("Mozilla")
         expect(new Date(data.timeStamp).getDate()).toBe(expected.timeStamp.getDate());
         expect(data.description).toStrictEqual(expected.description)

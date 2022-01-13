@@ -1,6 +1,10 @@
-# hint 1.87.2
+# hint 1.88.1
 
 Use area_id to define uniq areas in Input Time SEries
+
+# hint 1.88.0
+
+* Return calibrate_id in error report if it is available
 
 # hint 1.87.1
 
