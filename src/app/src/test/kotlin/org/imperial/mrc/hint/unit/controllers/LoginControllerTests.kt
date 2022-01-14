@@ -26,6 +26,7 @@ class LoginControllerTests
         Assertions.assertThat(model["title"]).isEqualTo("Login")
         Assertions.assertThat(model["username"]).isEqualTo("")
         Assertions.assertThat(model["error"]).isEqualTo("")
+        Assertions.assertThat(model["continueTo"]).isEqualTo("/")
     }
 
     @Test
@@ -95,6 +96,7 @@ class LoginControllerTests
 
         Assertions.assertThat(result).isEqualTo("login")
         Assertions.assertThat(model["appTitle"]).isEqualTo("Naomi Data Exploration")
+        Assertions.assertThat(model["continueTo"]).isEqualTo("explore")
         verify(mockSession).setRequestedUrl("explore")
     }
 

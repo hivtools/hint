@@ -29,6 +29,8 @@ class ErrorReportControllerTests
             "Kenya2022",
             "Model",
             "123",
+            "1234",
+            mapOf("spectrum" to "spectrum123", "summary" to "summary123", "coarse_output" to "coarse123" ),
             listOf(
                     Errors("#65ae0d095ea", "test error msg", "fomot-hasah-livad"),
                     Errors("#25ae0d095e1", "test error msg2", "fomot-hasah-livid")
@@ -90,7 +92,11 @@ class ErrorReportControllerTests
             assertThat(response["country"].asText()).isEqualTo("Kenya")
             assertThat(response["projectName"].asText()).isEqualTo("Kenya2022")
             assertThat(response["section"].asText()).isEqualTo("Model")
-            assertThat(response["jobId"].asText()).isEqualTo("123")
+            assertThat(response["modelRunId"].asText()).isEqualTo("123")
+            assertThat(response["calibrateId"].asText()).isEqualTo("1234")
+            assertThat(response["downloadIds"]["spectrum"].asText()).isEqualTo("spectrum123")
+            assertThat(response["downloadIds"]["summary"].asText()).isEqualTo("summary123")
+            assertThat(response["downloadIds"]["coarse_output"].asText()).isEqualTo("coarse123")
             assertThat(response["errors"][0]["key"].asText()).isEqualTo("fomot-hasah-livad")
             assertThat(response["errors"][0]["error"].asText()).isEqualTo("test error msg")
             assertThat(response["errors"][0]["detail"].asText()).isEqualTo("#65ae0d095ea")

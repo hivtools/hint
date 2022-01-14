@@ -42,6 +42,7 @@ class LoginController(private val request: HttpServletRequest,
         {
             appProperties.applicationTitle
         }
+        model["continueTo"] = redirectTo ?: "/"
         session.setRequestedUrl(redirectTo)
 
         return "login"
