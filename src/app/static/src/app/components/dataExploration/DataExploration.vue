@@ -2,8 +2,8 @@
     <div class="content">
         <stepper-navigation :back="back"
                             :next="next"
-                            :back-disabled="isUploadStep"
-                            :next-disabled="!canProgress">
+                            :back-disabled="loading || isUploadStep"
+                            :next-disabled="loading || !canProgress">
         </stepper-navigation>
         <hr/>
         <div v-if="loading" class="text-center">

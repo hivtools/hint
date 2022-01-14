@@ -1,4 +1,4 @@
-import {shallowMount} from "@vue/test-utils";
+import {shallowMount, Wrapper} from "@vue/test-utils";
 import DataExploration from "../../../app/components/dataExploration/DataExploration.vue"
 import Vuex from "vuex";
 import {
@@ -12,10 +12,13 @@ import {BaselineActions} from "../../../app/store/baseline/actions";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
-import {initialDataExplorationState} from "../../../app/store/dataExploration/dataExploration";
+import {DataExplorationState, initialDataExplorationState} from "../../../app/store/dataExploration/dataExploration";
 import {initialDataExplorationStepperState, StepperState} from "../../../app/store/stepper/stepper";
 import {mutations as stepperMutations} from "../../../app/store/stepper/mutations";
 import {actions as stepperActions} from "../../../app/store/stepper/actions";
+import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
+import {expectTranslated} from "../../testHelpers";
+import StepperNavigation from "../../../app/components/StepperNavigation.vue";
 
 describe(`data exploration component`, () => {
     let actions: jest.Mocked<BaselineActions>;
@@ -24,10 +27,14 @@ describe(`data exploration component`, () => {
     let sapActions: jest.Mocked<SurveyAndProgramActions>;
     let sapMutations = {};
 
-    const createStore = (baselineState?: Partial<BaselineState>,
-                         surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey},
+    const defaultBaselineState = {ready: true};
+    const defaultSAPState = {ready: true, selectedDataType: DataType.Survey};
+
+    const createStore = (baselineState: Partial<BaselineState> = defaultBaselineState,
+                         surveyAndProgramState: Partial<SurveyAndProgramState> = defaultSAPState,
                          plottingMetadataMock = jest.fn(),
-                         stepperState: Partial<StepperState> = {}) => {
+                         stepperState: Partial<StepperState> = {},
+                         dataExplorationState: Partial<DataExplorationState> = {}) => {
 
         actions = {
             refreshDatasetMetadata: jest.fn(),
@@ -46,7 +53,7 @@ describe(`data exploration component`, () => {
         };
 
         const store = new Vuex.Store({
-            state: initialDataExplorationState(),
+            state: {...initialDataExplorationState(), ...dataExplorationState},
             modules: {
                 baseline: {
                     namespaced: true,
@@ -104,10 +111,12 @@ describe(`data exploration component`, () => {
     it(`enables forward navigation when inputs are valid`, () => {
         const store = createStore(
             {
+                ...defaultBaselineState,
                 shape: mockShapeResponse(),
                 validatedConsistent: true
             },
             {
+                ...defaultSAPState,
                 program: mockProgramResponse()
             })
         const wrapper = shallowMount(DataExploration, {store});
@@ -115,8 +124,12 @@ describe(`data exploration component`, () => {
     })
 
     it(`disables continue navigation when on review step`, () => {
-        const store = createStore({shape: mockShapeResponse()}, {survey: mockSurveyResponse()},
-            jest.fn(), {activeStep: 2});
+        const store = createStore(
+            {...defaultBaselineState, shape: mockShapeResponse()},
+            {...defaultBaselineState, survey: mockSurveyResponse()},
+            jest.fn(),
+            {activeStep: 2}
+        );
         const wrapper = shallowMount(DataExploration, {store});
 
         expect(wrapper.find("stepper-navigation-stub").props("backDisabled")).toBe(false)
@@ -133,7 +146,7 @@ describe(`data exploration component`, () => {
     })
 
     it(`can navigate to uploadInputs`, () => {
-        const store = createStore({}, {}, jest.fn(), {activeStep: 2});
+        const store = createStore(defaultBaselineState, defaultSAPState, jest.fn(), {activeStep: 2});
         const wrapper = shallowMount(DataExploration, {store});
 
         expect(wrapper.find("upload-inputs-stub").exists()).toBe(false)
@@ -149,4 +162,35 @@ describe(`data exploration component`, () => {
         expect(metadataMock.mock.calls.length).toBe(1);
     });
 
+    const expectLoadingView = (wrapper: Wrapper<any>) => {
+        expect(wrapper.find("adr-integration-stub").exists()).toBe(false);
+        expect(wrapper.find("upload-inputs-stub").exists()).toBe(false);
+        expect(wrapper.find("review-inputs-stub").exists()).toBe(false);
+        expect(wrapper.find(LoadingSpinner).props("size")).toBe("lg");
+        expectTranslated(wrapper.find("#loading-message"),
+            "Loading your data", "Chargement de vos données",
+            "A carregar os seus dados", wrapper.vm.$store);
+        expect(wrapper.find(StepperNavigation).props("backDisabled")).toBe(true);
+        expect(wrapper.find(StepperNavigation).props("nextDisabled")).toBe(true);
+    };
+
+    it("shows loading spinner and disabled navigation when baseline not ready", () => {
+        const store = createStore({ready: false});
+        const wrapper = shallowMount(DataExploration, {store});
+        expectLoadingView(wrapper);
+    });
+
+    it("shows loading spinner and disabled navigation when surveyAndProgram not ready", () => {
+        const store = createStore(defaultBaselineState, {ready: false});
+        const wrapper = shallowMount(DataExploration, {store});
+        expectLoadingView(wrapper);
+    });
+
+    it("shows loading spinner and disabled navigation when updating language", () => {
+        const dataExplorationState = {updatingLanguage: true};
+        const store = createStore(defaultBaselineState, defaultSAPState, jest.fn(), {},
+            dataExplorationState);
+        const wrapper = shallowMount(DataExploration, {store});
+        expectLoadingView(wrapper);
+    });
 });
