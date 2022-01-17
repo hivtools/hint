@@ -1,6 +1,6 @@
 # hint 1.88.1
 
-Use area_id to define uniq areas in Input Time SEries
+Use area_id to define unique areas in Input Time Series
 
 # hint 1.88.0
 
