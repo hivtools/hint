@@ -1,3 +1,7 @@
+# hint 1.88.1
+
+* Bug: ADR access level incorrectly displayed as 'Read only' on reload
+
 # hint 1.88.0
 
 * Return calibrate_id in error report if it is available
