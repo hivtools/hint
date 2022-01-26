@@ -1,6 +1,10 @@
-# hint 1.88.1
+# hint 1.88.2
 
 * Output barchart x-axis should be ordered
+
+# hint 1.88.1
+
+* Bug: ADR access level incorrectly displayed as 'Read only' on reload
 
 # hint 1.88.0
 
