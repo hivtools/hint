@@ -262,6 +262,12 @@
                 }
                 // if unable to do the above, just updates the barchart as normal
                 this.updateBarchartSelections({payload})
+                console.log("table data", this.chartdata)
+                // console.log("areaFilterId", this.areaFilterId)
+                console.log("table barchartFilters", this.barchartFilters)
+                console.log("table countryAreaFilterOption", this.countryAreaFilterOption)
+                console.log("table filteredBarchartIndicators", this.filteredBarchartIndicators)
+                console.log("table barchartSelections", this.barchartSelections)
             }
         },
         components: {
