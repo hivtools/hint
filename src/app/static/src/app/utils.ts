@@ -162,6 +162,22 @@ const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => 
     return result;
 };
 
+export const flattenOptionsIdsByHierarchy = (filterOptions: NestedFilterOption[]): string[] => {
+    let result: string[] = [];
+
+    function recursive(filterOptions: any[]){
+        result = [...result, ...filterOptions.map((option: NestedFilterOption) => option.id)]
+        filterOptions.forEach(filterOption => {
+            if (filterOption.children?.length){
+                recursive(filterOption.children)
+            }
+        });
+
+    }
+    recursive(filterOptions)
+    return result;
+};
+
 export const rootOptionChildren = (filterOptions: FilterOption[]) => {
     const rootOption = filterOptions[0];
     return (rootOption && (rootOption as any).children) || [];
