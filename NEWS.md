@@ -1,6 +1,6 @@
 # hint 1.88.2
 
-* Output barchart x-axis should be ordered
+* Output barchart x-axis should remain ordered after updates
 
 # hint 1.88.1
 
