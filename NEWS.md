@@ -1,3 +1,7 @@
+# hint 1.88.2
+
+* Make hintr warnings dismissable
+
 # hint 1.88.1
 
 * Bug: ADR access level incorrectly displayed as 'Read only' on reload
