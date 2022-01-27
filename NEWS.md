@@ -1,3 +1,7 @@
+# hint 1.88.3
+
+* Fix order of nested x-axis disaggregate options in barchart
+
 # hint 1.88.2
 
 * Output barchart x-axis should remain in correct order after updates
