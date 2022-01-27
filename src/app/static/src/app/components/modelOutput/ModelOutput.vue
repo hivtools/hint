@@ -231,10 +231,8 @@
                 let ids: string[] = []
                 if (xAxisId && this.barchartFilters?.length){
                     const filter = this.barchartFilters.find((f: Filter) => f.id === xAxisId)
-                    if (filter?.options.length && (filter.options[0] as NestedFilterOption).children){
+                    if (filter?.options.length){
                         ids = flattenOptionsIdsByHierarchy(filter.options)
-                    } else if (filter?.options) {
-                        ids = filter.options.map((option: FilterOption) => option.id)
                     }
                 }
                 return ids

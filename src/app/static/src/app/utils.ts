@@ -163,19 +163,32 @@ const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => 
 };
 
 export const flattenOptionsIdsByHierarchy = (filterOptions: NestedFilterOption[]): string[] => {
-    let result: string[] = [];
+    let result: any[] = [];
+    let layer = 0
 
     function recursive(filterOptions: any[]){
-        result = [...result, ...filterOptions.map((option: NestedFilterOption) => option.id)]
+        const filterOptionArray = filterOptions.map((option: NestedFilterOption) => option.id)
+        if (result.length > layer){
+            result[layer] = [...result[layer],  ...filterOptionArray]
+        } else {
+            result.push(filterOptionArray)
+        }
+        const parentLayer = layer
         filterOptions.forEach(filterOption => {
+            layer = parentLayer
             if (filterOption.children?.length){
+                layer += 1
                 recursive(filterOption.children)
             }
         });
-
     }
     recursive(filterOptions)
-    return result;
+    
+    let output: string[] = []
+    result.forEach(r => {
+        output = [...output, ...r]
+    })
+    return output;
 };
 
 export const rootOptionChildren = (filterOptions: FilterOption[]) => {

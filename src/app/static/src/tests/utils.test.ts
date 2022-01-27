@@ -98,7 +98,11 @@ describe("utils", () => {
             {
                 id: "1", label: "name1", children: [
                     { id: "1.1", label: "nested1.1", children: [] },
-                    { id: "1.2", label: "nested1.2", children: [] }
+                    { id: "1.2", label: "nested1.2", children: [
+                        { id: "1.2.1", label: "nested1.2.1", children: [
+                            { id: "1.2.1.1", label: "nested1.2.1.1", children: [] }
+                        ] }
+                    ] }
                 ],
             },
             {
@@ -114,7 +118,7 @@ describe("utils", () => {
         ];
 
         const result = flattenOptionsIdsByHierarchy(testData);
-        expect(result).toStrictEqual(["1", "2", "3", "1.1", "1.2", "2.1", "2.1.1"]);
+        expect(result).toStrictEqual(["1", "2", "3", "1.1", "1.2", "2.1", "1.2.1", "2.1.1", "1.2.1.1" ]);
     });
 
     it("flatten ids returns set of selected ids", () => {
