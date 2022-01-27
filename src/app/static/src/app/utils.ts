@@ -163,7 +163,7 @@ const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => 
 };
 
 export const flattenOptionsIdsByHierarchy = (filterOptions: NestedFilterOption[]): string[] => {
-    let result: any[] = [];
+    const result: any[] = [];
     let layer = 0
 
     function recursive(filterOptions: any[]){
