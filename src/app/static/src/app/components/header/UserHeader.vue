@@ -9,12 +9,12 @@
                              v-translate="'projects'"
                              style="flex:none"></router-link>
                 <file-menu :title="title"></file-menu>
-                <span v-if="!isGuest" class="pr-2 mr-2 border-right">
+                <span v-if="!isGuest" class="pr-2 mr-2 border-right text-white">
                     <span v-translate="'loggedInAs'"></span> {{ user }}
                 </span>
                 <hintr-version-menu class="pr-2 mr-2 border-right"/>
                 <online-support-menu class="pr-2 mr-2 border-right"/>
-                <a :href="'public/resources/' + helpFilename"
+                <a :href="helpFilename"
                    target="_blank"
                    class="pr-2 mr-2 border-right"
                    v-translate="'help'">
@@ -26,7 +26,6 @@
                 <language-menu></language-menu>
             </div>
         </nav>
-
     </header>
 </template>
 <script lang="ts">
@@ -36,7 +35,7 @@
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";
-    import {mapStateProp} from "../../utils";
+    import {HelpFile, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import HintrVersionMenu from "./HintrVersionMenu.vue";
     import OnlineSupportMenu from "./OnlineSupportMenu.vue";
@@ -49,16 +48,14 @@
     interface Computed {
         helpFilename: string
     }
-
     export default Vue.extend<unknown, unknown, Computed, Props>({
         computed: {
             helpFilename: mapStateProp<RootState, string>(null,
                 (state: RootState) => {
-                    let filename = "Naomi-basic-instructions.pdf";
                     if (state.language == Language.fr) {
-                        filename = "Naomi-instructions-de-base.pdf";
+                        return HelpFile.french;
                     }
-                    return filename;
+                    return HelpFile.english;
                 }),
             ...mapGetters(["isGuest"])
         },

@@ -1,5 +1,4 @@
 import {Module} from 'vuex';
-import {localStorageManager} from "../../localStorageManager";
 import {RootState} from "../../root";
 import {mutations} from "./mutations";
 import {actions} from "./actions";

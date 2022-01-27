@@ -22,6 +22,8 @@ class FuelFlowClientTests
                 "Kenya2022",
                 "Model",
                 "123",
+                "1234",
+                mapOf("spectrum" to "spectrum123", "summary" to "summary123", "coarse_output" to "coarse123" ),
                 listOf(
                         Errors("#65ae0d095ea", "test error msg", "fomot-hasah-livad"),
                         Errors("#25ae0d095e1", "test error msg2", "fomot-hasah-livid")
@@ -29,6 +31,13 @@ class FuelFlowClientTests
                 "test desc",
                 "test steps",
                 "test agent",
+                mapOf(
+                        "naomi" to "v1",
+                        "hintr" to "v2",
+                        "rrq" to "v3",
+                        "traduire" to "v4",
+                        "hint" to "v5"
+                ),
                 "2021-10-12T14:07:22.759Z"
         )
 
@@ -56,6 +65,8 @@ class FuelFlowClientTests
                 "Kenya2022",
                 "Model",
                 "123",
+                "1234",
+                mapOf("spectrum" to "spectrum123", "summary" to "summary123", "coarse_output" to "coarse123" ),
                 listOf(
                         Errors("#65ae0d095ea", "test error msg", "fomot-hasah-livad"),
                         Errors("#25ae0d095e1", "test error msg2", "fomot-hasah-livid")
@@ -63,6 +74,13 @@ class FuelFlowClientTests
                 "test desc",
                 "test steps",
                 "test agent",
+                mapOf(
+                        "naomi" to "v1",
+                        "hintr" to "v2",
+                        "rrq" to "v3",
+                        "traduire" to "v4",
+                        "hint" to "v5"
+                ),
                 "2021-10-12T14:07:22.759Z"
         )
 

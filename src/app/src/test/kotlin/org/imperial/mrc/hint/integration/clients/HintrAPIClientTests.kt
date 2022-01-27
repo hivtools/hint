@@ -9,6 +9,9 @@ import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.junit.jupiter.api.Test
+import org.springframework.core.io.FileSystemResource
+import org.springframework.util.LinkedMultiValueMap
+import java.io.File
 
 class HintrApiClientTests
 {
@@ -47,7 +50,7 @@ class HintrApiClientTests
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val file = VersionFileWithPath("fakepath", "hash", "filename", false)
-        val result = sut.validateSurveyAndProgramme(file, "fakepath", FileType.ANC)
+        val result = sut.validateSurveyAndProgramme(file, "fakepath", FileType.ANC, true)
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_FILE")
     }
@@ -119,8 +122,8 @@ class HintrApiClientTests
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.getCalibratePlot("1234")
-        assertThat(result.statusCodeValue).isEqualTo(200)
-        JSONValidator().validateSuccess(result.body!!, "CalibratePlotResponse")
+        assertThat(result.statusCodeValue).isEqualTo(400)
+        JSONValidator().validateError(result.body!!, "FAILED_TO_RETRIEVE_RESULT")
     }
 
     @Test
@@ -156,5 +159,14 @@ class HintrApiClientTests
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
         val result = sut.cancelModelRun("1234")
         assertThat(result.statusCodeValue).isEqualTo(400)
+    }
+
+    @Test
+    fun `can get input time series chart data`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val result = sut.getInputTimeSeriesChartData("anc", emptyMap())
+        assertThat(result.statusCodeValue).isEqualTo(400)
+        JSONValidator().validateError(result.body!!, "INVALID_INPUT")
     }
 }

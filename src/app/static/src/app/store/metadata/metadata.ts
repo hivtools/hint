@@ -1,16 +1,14 @@
 import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
-import {RootState} from "../../root";
 import {
-    ChoroplethIndicatorMetadata,
     PlottingMetadataResponse,
     Error,
     Metadata,
-    AdrMetadataResponse
+    AdrMetadataResponse, FilterOption, ChoroplethIndicatorMetadata
 } from "../../generated";
-import {localStorageManager} from "../../localStorageManager";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface MetadataState {
     plottingMetadataError: Error | null
@@ -32,43 +30,50 @@ export const metadataGetters = {
     complete: (state: MetadataState) => {
         return !!state.plottingMetadata
     },
-    sapIndicatorsMetadata: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
+    sapIndicatorsMetadata: (state: MetadataState, getters: any, rootState: DataExplorationState) => {
         const plottingMetadata = state.plottingMetadata;
 
         if (!plottingMetadata) {
             return [];
         }
 
-        const selectedDataType = rootState.surveyAndProgram.selectedDataType;
+        const sap = rootState.surveyAndProgram;
+        const selectedDataType = sap.selectedDataType;
 
         let metadataForType: Metadata | null = null;
+        let dataIndicators: FilterOption[] = [];
         switch (selectedDataType) {
             case (DataType.ANC):
                 metadataForType = plottingMetadata.anc;
+                dataIndicators = sap.anc?.filters.indicators || [];
                 break;
             case (DataType.Program):
                 metadataForType = plottingMetadata.programme;
+                dataIndicators = sap.program?.filters.indicators || [];
                 break;
             case (DataType.Survey):
                 metadataForType = plottingMetadata.survey;
+                dataIndicators = sap.survey?.filters.indicators ||[];
                 break;
         }
 
-        return (metadataForType && metadataForType.choropleth) ? metadataForType.choropleth.indicators : [];
-    },
-    outputIndicatorsMetadata: (state: MetadataState, getters: any, rootState: RootState, rootGetters: any) => {
-        return (state.plottingMetadata && state.plottingMetadata.output.choropleth &&
-            state.plottingMetadata.output.choropleth.indicators) || [];
+        const unfiltered: ChoroplethIndicatorMetadata[] =  metadataForType ? metadataForType.choropleth.indicators : [];
+        return unfiltered.filter(
+            (metaIndicator: ChoroplethIndicatorMetadata) => dataIndicators.some(
+                (dataIndicator: FilterOption) => metaIndicator.indicator === dataIndicator.id
+            )
+        )
     }
 };
 
 const namespaced = true;
-const existingState = localStorageManager.getState();
 
-export const metadata: Module<MetadataState, RootState> = {
-    namespaced,
-    state: {...initialMetadataState(), ...existingState && existingState.metadata},
-    actions,
-    mutations,
-    getters: metadataGetters
+export const metadata = (existingState: Partial<DataExplorationState> | null): Module<MetadataState, DataExplorationState> => {
+    return {
+        namespaced,
+        state: {...initialMetadataState(), ...existingState && existingState.metadata},
+        actions,
+        mutations,
+        getters: metadataGetters
+    };
 };

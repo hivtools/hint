@@ -1,10 +1,10 @@
 import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
-import {ReadyState, RootState} from "../../root";
+import {ReadyState} from "../../root";
 import {NestedFilterOption, PjnzResponse, PopulationResponse, ShapeResponse, Error} from "../../generated";
 import {Dataset, Release, Dict} from "../../types";
-import {localStorageManager} from "../../localStorageManager";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface BaselineState extends ReadyState {
     selectedDataset: Dataset | null
@@ -55,6 +55,11 @@ export const baselineGetters = {
     complete: (state: BaselineState) => {
         return state.validatedConsistent &&
             !!state.country && !!state.iso3 && !!state.shape && !!state.population
+    },
+    validForDataExploration: (state: BaselineState) => {
+        const validOrMissingPJNZ = !state.pjnzError
+        const validOrMissingPop = !state.populationError
+        return validOrMissingPJNZ && validOrMissingPop && state.validatedConsistent && !!state.shape
     }
 };
 
@@ -62,12 +67,12 @@ const getters = baselineGetters;
 
 const namespaced = true;
 
-const existingState = localStorageManager.getState();
-
-export const baseline: Module<BaselineState, RootState> = {
-    namespaced,
-    state: {...initialBaselineState(), ...existingState && existingState.baseline},
-    getters,
-    actions,
-    mutations
+export const baseline = (existingState: Partial<DataExplorationState> | null): Module<BaselineState, DataExplorationState> => {
+    return {
+        namespaced,
+            state: {...initialBaselineState(), ...existingState && existingState.baseline},
+        getters,
+            actions,
+            mutations
+    };
 };

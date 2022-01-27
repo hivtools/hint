@@ -3,8 +3,8 @@ import {ErrorsMutation} from "./store/errors/mutations";
 import {ActionContext, Commit} from "vuex";
 import {freezer, isHINTResponse} from "./utils";
 import {Error, Response} from "./generated";
-import {TranslatableState} from "./root";
 import i18next from "i18next";
+import {TranslatableState} from "./types";
 
 declare let appUrl: string;
 
@@ -89,8 +89,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
     withSuccess = (type: S, root = false) => {
         this._onSuccess = (data: any) => {
-            const finalData = this._freezeResponse ? freezer.deepFreeze(data) : data;
-            const toCommit = {type: type, payload: finalData};
+            const toCommit = {type: type, payload: data};
             if (root) {
                 this._commit(toCommit, {root: true});
             } else {
@@ -104,11 +103,12 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     private _handleAxiosResponse(promise: Promise<AxiosResponse>) {
         return promise.then((axiosResponse: AxiosResponse) => {
             const success = axiosResponse && axiosResponse.data;
-            const data = success.data;
+            const finalResponse = this._freezeResponse ? freezer.deepFreeze(success) : success;
+            const data = finalResponse.data;
             if (this._onSuccess) {
                 this._onSuccess(data);
             }
-            return axiosResponse.data;
+            return finalResponse;
         }).catch((e: AxiosError) => {
             return this._handleError(e)
         });

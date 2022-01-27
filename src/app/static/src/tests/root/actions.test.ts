@@ -1,13 +1,25 @@
-import Mock = jest.Mock;
 import {actions} from "../../app/store/root/actions";
-import {mockAxios, mockBaselineState, mockModelCalibrateState, mockRootState, mockStepperState} from "../mocks";
+import {ErrorReport, ErrorReportManualDetails} from "../../app/types";
+import {
+    mockAxios,
+    mockFailure,
+    mockBaselineState,
+    mockError,
+    mockGenericChartState,
+    mockHintrVersionState,
+    mockModelCalibrateState,
+    mockModelRunState,
+    mockProjectsState,
+    mockRootState,
+    mockStepperState,
+    mockSuccess, mockDownloadResultsState
+} from "../mocks";
 import {Language} from "../../app/store/translations/locales";
-import {LanguageMutation} from "../../app/store/language/mutations";
-import {RootMutation} from "../../app/store/root/mutations";
+import {currentHintVersion} from "../../app/hintVersion";
+import {expectChangeLanguageMutations} from "../testHelpers";
+
 
 describe("root actions", () => {
-
-    const rootState = mockRootState();
 
     beforeEach(() => {
         mockAxios.reset();
@@ -183,21 +195,216 @@ describe("root actions", () => {
         expect(mockContext.dispatch).not.toHaveBeenCalled();
     });
 
-    const expectChangeLanguageMutations = (commit: Mock) => {
-        expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: RootMutation.SetUpdatingLanguage,
-            payload: true
-        });
-        expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: LanguageMutation.ChangeLanguage,
-            payload: "fr"
+    it("posts error report to teams", async () => {
+        const url = "error-report"
+
+        mockAxios.onPost(url)
+            .reply(200, mockSuccess("ok"));
+
+        const rootState = mockRootState({
+            baseline: mockBaselineState({
+                country: "Malawi"
+            }),
+            modelRun: mockModelRunState({
+                modelRunId: "1234"
+            }),
+            modelCalibrate: mockModelCalibrateState({
+                calibrateId: "2022"
+            }),
+            downloadResults: mockDownloadResultsState({
+                summary: {
+                    downloadId: "summary123"
+                },
+                spectrum: {
+                    downloadId: "spectrum123"
+                }
+            } as any),
+            projects: mockProjectsState({
+                currentProject: {name: "p1", id: 1, versions: []}
+            }),
+            hintrVersion: mockHintrVersionState({
+                hintrVersion: {
+                    naomi: "v1",
+                    hintr: "v2",
+                    rrq: "v3",
+                    traduire: "v4"
+                }
+            })
         });
 
-        expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: RootMutation.SetUpdatingLanguage,
-            payload: false
+        const err = mockError("err")
+        const getters = {
+            errors: [err]
+        }
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const payload: ErrorReportManualDetails = {
+            email: "test@example.com",
+            stepsToReproduce: "repro",
+            section: "reviewInputs",
+            description: "desc"
+        }
+
+        await actions.generateErrorReport({commit, rootState, getters, dispatch} as any, payload);
+
+        expect(commit.mock.calls.length).toEqual(3);
+        expect(commit.mock.calls[0][0]).toEqual({payload: true, type: "errors/SendingErrorReport"});
+        expect(commit.mock.calls[1][0]).toEqual({payload: "ok", type: "errors/ErrorReportSuccess"});
+        expect(commit.mock.calls[2][0]).toEqual({payload: false, type: "errors/SendingErrorReport"});
+        expect(dispatch.mock.calls.length).toEqual(1);
+        expect(dispatch.mock.calls[0][0]).toEqual("projects/cloneProject");
+        expect(mockAxios.history.post.length).toEqual(1)
+        expect(mockAxios.history.post[0].url).toEqual(url)
+
+        const expected = {
+            email: "test@example.com",
+            country: "Malawi",
+            projectName: "p1",
+            timeStamp: new Date(),
+            modelRunId: "1234",
+            calibrateId: "2022",
+            downloadIds: {spectrum: "spectrum123", summary: "summary123", coarse_output: "none"},
+            description: "desc",
+            section: "reviewInputs",
+            stepsToReproduce: "repro",
+            errors: getters.errors
+
+        };
+
+        const data = JSON.parse(mockAxios.history.post[0].data) as ErrorReport
+
+        expect(data.email).toStrictEqual(expected.email)
+        expect(data.country).toStrictEqual(expected.country)
+        expect(data.projectName).toStrictEqual(expected.projectName)
+        expect(data.browserAgent).toContain("Mozilla")
+        expect(data.modelRunId).toStrictEqual(expected.modelRunId)
+        expect(data.calibrateId).toStrictEqual(expected.calibrateId)
+        expect(data.downloadIds).toStrictEqual(expected.downloadIds)
+        expect(new Date(data.timeStamp).getDate()).toBe(expected.timeStamp.getDate());
+        expect(data.description).toStrictEqual(expected.description)
+        expect(data.section).toStrictEqual(expected.section)
+        expect(data.stepsToReproduce).toStrictEqual(expected.stepsToReproduce)
+        expect(data.errors).toStrictEqual(expected.errors)
+        expect(data.versions).toStrictEqual({
+            naomi: "v1",
+            hintr: "v2",
+            rrq: "v3",
+            traduire: "v4",
+            hint: currentHintVersion
         });
-    };
+    });
+
+    it("sends default values when country, project or jobId are missing", async () => {
+        const url = "error-report"
+
+        mockAxios.onPost(url)
+            .reply(200, mockSuccess("ok"));
+
+        const rootState = mockRootState({
+            baseline: mockBaselineState(),
+            modelRun: mockModelRunState(),
+            modelCalibrate: mockModelCalibrateState(),
+            downloadResults: mockDownloadResultsState(),
+            projects: mockProjectsState(),
+            hintrVersion: mockHintrVersionState({
+                hintrVersion: {
+                    naomi: "v1",
+                    hintr: "v2",
+                    rrq: "v3",
+                    traduire: "v4"
+                }
+            })
+        });
+
+        const err = mockError("err")
+        const getters = {
+            errors: [err]
+        }
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const payload: ErrorReportManualDetails = {
+            email: "test@example.com",
+            stepsToReproduce: "repro",
+            section: "reviewInputs",
+            description: "desc"
+        }
+
+        await actions.generateErrorReport({commit, rootState, getters, dispatch} as any, payload);
+
+        expect(commit.mock.calls.length).toEqual(3);
+
+        expect(commit.mock.calls[0][0]).toEqual({payload: true, type: "errors/SendingErrorReport"});
+        expect(commit.mock.calls[1][0]).toEqual({"payload": "ok", "type": "errors/ErrorReportSuccess"});
+        expect(commit.mock.calls[2][0]).toEqual({payload: false, type: "errors/SendingErrorReport"});
+        expect(dispatch.mock.calls.length).toEqual(0);
+        expect(mockAxios.history.post.length).toEqual(1)
+        expect(mockAxios.history.post[0].url).toEqual(url)
+
+        const expected = {
+            email: "test@example.com",
+            country: "no associated country",
+            projectName: "no associated project",
+            timeStamp: new Date(),
+            modelRunId: "no associated modelRunId",
+            calibrateId: "no associated calibrateId",
+            downloadIds: {spectrum: "none", summary: "none", coarse_output: "none"},
+            description: "desc",
+            section: "reviewInputs",
+            stepsToReproduce: "repro",
+            errors: getters.errors
+        };
+
+        const data = JSON.parse(mockAxios.history.post[0].data) as ErrorReport
+
+        expect(data.email).toStrictEqual(expected.email)
+        expect(data.country).toStrictEqual(expected.country)
+        expect(data.projectName).toBe(expected.projectName)
+        expect(data.modelRunId).toStrictEqual(expected.modelRunId)
+        expect(data.calibrateId).toStrictEqual(expected.calibrateId)
+        expect(data.downloadIds).toStrictEqual(expected.downloadIds)
+        expect(data.browserAgent).toContain("Mozilla")
+        expect(new Date(data.timeStamp).getDate()).toBe(expected.timeStamp.getDate());
+        expect(data.description).toStrictEqual(expected.description)
+        expect(data.section).toStrictEqual(expected.section)
+        expect(data.stepsToReproduce).toStrictEqual(expected.stepsToReproduce)
+        expect(data.errors).toStrictEqual(expected.errors)
+    });
+
+    it("can return error when error report fails", async () => {
+        const url = "error-report"
+
+        mockAxios.onPost(url)
+            .reply(500, mockFailure("TestError"));
+
+        const rootState = mockRootState();
+
+        const commit = jest.fn();
+
+        const dispatch = jest.fn();
+
+        const getters = {
+            errors: []
+        }
+
+        const payload: ErrorReportManualDetails = {
+            email: "",
+            stepsToReproduce: "",
+            section: "",
+            description: ""
+        }
+
+        await actions.generateErrorReport({commit, rootState, getters, dispatch} as any, payload);
+
+        const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
+
+        expect(commit.mock.calls.length).toEqual(3);
+        expect(commit.mock.calls[0][0]).toEqual({payload: true, type: "errors/SendingErrorReport"});
+        expect(commit.mock.calls[1][0]).toEqual({payload: expectedError, type: "errors/ErrorReportError"});
+        expect(commit.mock.calls[2][0]).toEqual({payload: false, type: "errors/SendingErrorReport"});
+        expect(dispatch.mock.calls.length).toBe(0)
+    });
 
     it("changeLanguage fetches plotting metadata and calibrate result", async () => {
         const commit = jest.fn();
@@ -262,6 +469,23 @@ describe("root actions", () => {
         expect(dispatch.mock.calls[0][1]).toStrictEqual("MWI");
     });
 
+    it("changeLanguage refreshes genericChart datasets, if any", async() => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const rootState = mockRootState(
+            {
+                baseline: mockBaselineState({iso3: "MWI"}),
+                genericChart: mockGenericChartState({datasets: {dataset1: "TEST"}} as any)
+        });
+        await actions.changeLanguage({commit, dispatch, rootState} as any, Language.fr);
+
+        expectChangeLanguageMutations(commit);
+
+        expect(dispatch.mock.calls.length).toBe(2);
+        expect(dispatch.mock.calls[0][0]).toStrictEqual("metadata/getPlottingMetadata");
+        expect(dispatch.mock.calls[1][0]).toStrictEqual("genericChart/refreshDatasets");
+    });
+
     it("changeLanguage fetches nothing if no relevant metadata to fetch", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -291,4 +515,5 @@ describe("root actions", () => {
         expect(commit.mock.calls.length).toBe(0);
         expect(dispatch.mock.calls.length).toBe(0);
     });
+
 });

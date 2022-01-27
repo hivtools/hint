@@ -7,9 +7,8 @@
                v-translate="'faq'">
             </a>
             <a class="dropdown-item"
-               :href="bugReportLocation"
-               target="_blank"
-               v-translate="'contact'">
+               @click="toggleErrorReportModal"
+               v-translate="'troubleshootingRequest'">
             </a>
             <router-link id="accessibility-link"
                          to="/accessibility"
@@ -17,40 +16,99 @@
                          v-translate="'axe'">
             </router-link>
         </drop-down>
+        <error-report :open="errorReportOpen"
+                      @send="sendErrorReport"
+                      @close="toggleErrorReportModal">
+            <template v-slot:sectionView>
+                <div>
+                    <label for="section" v-translate="'section'"></label>
+                    <select class="form-control"
+                            v-model="currentSection"
+                            id="section">
+                        <option v-for="step in steps"
+                                :key="step.number"
+                                :value="step.textKey"
+                                v-translate="step.textKey">
+                        </option>
+                        <option key="login"
+                                v-translate="'login'"
+                                value="login"></option>
+                        <option key="projects" v-translate="'projects'"
+                                value="projects"></option>
+                        <option key="other"
+                                value="other"
+                                v-translate="'other'"></option>
+                    </select>
+                </div>
+            </template>
+            <template v-slot:projectView>
+                <div v-if="projectName"><label for="project" v-translate="'project'"></label>
+                    <input type="text" disabled id="project" :value="projectName" class="form-control"/>
+                </div>
+            </template>
+        </error-report>
     </div>
 </template>
 <script lang="ts">
     import Vue from "vue";
     import DropDown from "./DropDown.vue";
     import i18next from "i18next";
-    import {mapStateProp} from "../../utils";
+    import {mapActionByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
-    import {switches} from "../../featureSwitches";
-
+    import ErrorReport from "../ErrorReport.vue";
+    import {ProjectsState} from "../../store/projects/projects";
+    import {StepDescription, StepperState} from "../../store/stepper/stepper";
+    import {ErrorReportManualDetails} from "../../types";
 
     interface Computed {
         support: string
-        bugReportLocation: string
         currentLanguage: Language
         troubleFilename: string
         faqLocation: string
+        projectName: string | undefined
+        currentSection: string
+        currentSectionKey: string
+        steps: StepDescription[]
     }
 
-    export default Vue.extend<unknown, unknown, Computed, unknown>({
+    interface Data {
+        errorReportOpen: boolean
+        section: string,
+    }
+
+    interface Methods {
+        toggleErrorReportModal: () => void
+        sendErrorReport: (errorReport: ErrorReportManualDetails) => void
+        generateErrorReport: (payload: ErrorReportManualDetails) => void
+        projectSection: () => void
+    }
+
+    export default Vue.extend<Data, Methods, Computed, unknown>({
+        data: function () {
+            return {
+                errorReportOpen: false,
+                section: ""
+            }
+        },
         computed: {
+            currentSectionKey: mapStateProp<StepperState, string>("stepper", state => {
+                return state.steps[state.activeStep - 1].textKey;
+            }),
+            currentSection: {
+                get() {
+                    return this.section || this.currentSectionKey
+                },
+                set(newVal: string) {
+                    this.section = newVal
+                }
+            },
+            steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps),
+            projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
             support() {
                 return i18next.t("support", this.currentLanguage)
-            },
-            bugReportLocation() {
-                if (switches.modelBugReport) {
-                    return "https://forms.office.com/Pages/ResponsePage.aspx?" +
-                        "id=B3WJK4zudUWDC0-CZ8PTB1APqcgcYz5DmSeKo5rlcfxUN0dWR1VMUEtHU0xDRU9HWFRNOFA5VVc3WCQlQCN0PWcu"
-                } else {
-                    return "https://forms.gle/QxCT1b4ScLqKPg6a7"
-                }
             },
             troubleFilename: mapStateProp<RootState, string>(null,
                 (state: RootState) => {
@@ -61,11 +119,32 @@
                     return filename;
                 }),
             faqLocation() {
-                return  "https://mrc-ide.github.io/naomi-troubleshooting/" + this.troubleFilename;
+                return "https://mrc-ide.github.io/naomi-troubleshooting/" + this.troubleFilename;
+            }
+        },
+        methods: {
+            generateErrorReport: mapActionByName(null,
+                "generateErrorReport"),
+            async sendErrorReport(errorReport) {
+                await this.generateErrorReport({
+                    section: this.currentSection,
+                    ...errorReport
+                })
+                this.section = ""
+            },
+            projectSection() {
+                if (this.$route.path.indexOf("projects") > -1) {
+                    this.section = "projects"
+                }
+            },
+            toggleErrorReportModal() {
+                this.errorReportOpen = !this.errorReportOpen
+                this.errorReportOpen ? this.projectSection() : this.section = "";
             }
         },
         components: {
-            DropDown
+            DropDown,
+            ErrorReport
         }
     })
 </script>

@@ -1,14 +1,17 @@
 import * as CryptoJS from 'crypto-js';
-import {ActionMethod, CustomVue, mapActions, mapGetters, mapMutations, mapState, MutationMethod} from "vuex";
+import {
+    ActionMethod,
+    CustomVue,
+    mapActions,
+    mapGetters,
+    mapMutations,
+    mapState,
+    MutationMethod
+} from "vuex";
 import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
 import moment from 'moment';
-import {
-    DynamicControlGroup,
-    DynamicControlSection,
-    DynamicFormData,
-    DynamicFormMeta
-} from "@reside-ic/vue-dynamic-form";
+import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 
 export type ComputedWithType<T> = () => T;
 
@@ -218,10 +221,10 @@ export const constructUploadFile = (datasetWithResources: any, index: number, re
 };
 
 export const constructUploadFileWithResourceName = (datasetWithResources: any, index: number, resourceType: string,
-                             resourceFilename: string, displayName: string, resourceName: string): UploadFile => {
-    const resource = findResource(datasetWithResources, resourceType, resourceName);
-    return getUploadFileFromResource(resource, resourceName, index, resourceType, resourceFilename, displayName);
-
+    resourceFilename: string, displayName: string, resourceName: string): UploadFile => {
+    const resource = findResource(datasetWithResources, resourceType);
+    const name = resource?.name || resourceName;
+    return getUploadFileFromResource(resource, name, index, resourceType, resourceFilename, displayName);
 };
 
 function getUploadFileFromResource(resource: DatasetResource | null, resourceName: string, index: number,
@@ -243,7 +246,7 @@ function getUploadFileFromResource(resource: DatasetResource | null, resourceNam
     }
 }
 
-const emailRegex = RegExp("^([\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})(,[\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})*$")
+export const emailRegex = RegExp("^([\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})(,[\\w+-.%]+@[\\w.-]+\\.[A-Za-z]{2,4})*$")
 
 export const validateEmail = (test: string): boolean => {
     return emailRegex.test(test.replace(/\s*/g, ""))
@@ -282,3 +285,27 @@ export function getFilenameFromUploadFormData(formdata: FormData) {
     const file = formdata.get("file");
     return (file as File).name;
 }
+
+export enum HelpFile {
+    french = "public/resources/Naomi-instructions-de-base.pdf",
+    english = "public/resources/Naomi-Help-Guide.pdf"
+}
+
+export const extractErrors = (state: any) => {
+    const errors = [] as Error[];
+    extractErrorsRecursively(state, errors);
+    return errors;
+}
+
+const isComplexObject = (state: any) => {
+    return typeof state === 'object' && !Array.isArray(state) && state !== null
+}
+
+const extractErrorsRecursively = (state: any, errors: Error[]) => {
+    if (isComplexObject(state)) {
+        const keys = Object.keys(state);
+        const errorKeys = keys.filter(key => /error$/i.test(key));
+        errors.push(...errorKeys.map(key => state[key]).filter(err => !!err && !!err.error));
+        keys.forEach(key => extractErrorsRecursively(state[key], errors));
+    }
+};

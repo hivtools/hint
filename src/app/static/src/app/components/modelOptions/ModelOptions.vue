@@ -38,7 +38,7 @@
     import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProp, mapStateProps} from "../../utils";
     import {ModelOptionsMutation} from "../../store/modelOptions/mutations";
     import {ModelOptionsState} from "../../store/modelOptions/modelOptions";
-    import ResetConfirmation from "../ResetConfirmation.vue";
+    import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import {StepDescription} from "../../store/stepper/stepper";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";

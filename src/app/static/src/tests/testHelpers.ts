@@ -1,10 +1,13 @@
 import {mockAxios, mockBaselineState, mockError, mockFailure, mockRootState} from "./mocks";
 import {ActionContext, MutationTree, Store} from "vuex";
-import {PayloadWithType} from "../app/types";
+import {PayloadWithType, TranslatableState} from "../app/types";
 import {Wrapper} from "@vue/test-utils";
-import {RootState, TranslatableState} from "../app/root";
+import {RootState} from "../app/root";
 import {Language} from "../app/store/translations/locales";
 import registerTranslations from "../app/store/translations/registerTranslations";
+import {LanguageMutation} from "../app/store/language/mutations";
+import Mock = jest.Mock;
+import ErrorReport from "../app/components/ErrorReport.vue";
 
 export function expectEqualsFrozen(args: PayloadWithType<any>, expected: PayloadWithType<any>) {
     expect(Object.isFrozen(args["payload"])).toBe(true);
@@ -91,3 +94,31 @@ export const expectTranslated = (element: Wrapper<any>,
                                  store: Store<RootState>,
                                  attribute?: string) =>
     expectTranslatedWithStoreType<RootState>(element, englishText, frenchText, portugueseText, store, attribute);
+
+export const expectChangeLanguageMutations = (commit: Mock) => {
+    expect(commit.mock.calls[0][0]).toStrictEqual({
+        type: LanguageMutation.SetUpdatingLanguage,
+        payload: true
+    });
+    expect(commit.mock.calls[1][0]).toStrictEqual({
+        type: LanguageMutation.ChangeLanguage,
+        payload: "fr"
+    });
+
+    expect(commit.mock.calls[2][0]).toStrictEqual({
+        type: LanguageMutation.SetUpdatingLanguage,
+        payload: false
+    });
+};
+
+export const expectErrorReportOpen = (wrapper: Wrapper<any>, row = 0) => {
+    const link = wrapper.findAll(".dropdown-item").at(row);
+    link.trigger("click");
+
+    expect(wrapper.find(ErrorReport).props("open")).toBe(true);
+}
+
+export function expectArraysEqual(result: any[], expected: any[]) {
+    expect(result).toEqual(expect.arrayContaining(expected));
+    expect(expected).toEqual(expect.arrayContaining(result));
+}

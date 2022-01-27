@@ -42,12 +42,9 @@ import {
 import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibrate/mutations";
 import {GenericChartState, initialGenericChartState, genericChart} from "./store/genericChart/genericChart";
 import {Warning} from "./generated";
+import {DataExplorationState} from "./store/dataExploration/dataExploration";
 
-export interface TranslatableState {
-    language: Language
-}
-
-export interface RootState extends TranslatableState {
+export interface RootState extends DataExplorationState {
     version: string,
     adr: ADRState,
     genericChart: GenericChartState,
@@ -66,8 +63,7 @@ export interface RootState extends TranslatableState {
     errors: ErrorsState,
     projects: ProjectsState
     currentUser: string,
-    downloadResults: DownloadResultsState,
-    updatingLanguage: boolean
+    downloadResults: DownloadResultsState
 }
 
 export interface ReadyState {
@@ -153,30 +149,33 @@ export const emptyState = (): RootState => {
         errors: initialErrorsState(),
         projects: initialProjectsState(),
         currentUser: currentUser,
-        downloadResults: initialDownloadResultsState()
+        downloadResults: initialDownloadResultsState(),
+        dataExplorationMode: false
     }
 };
-const existingState = localStorageManager.getState();
+
+localStorageManager.deleteState(true); //Clear state in other mode if it exists
+const existingState = localStorageManager.getState(false);
 
 export const storeOptions: StoreOptions<RootState> = {
-    state: {...emptyState(), ...existingState && {language: existingState.language}},
+    state: {...emptyState(), ...existingState},
     modules: {
         adr,
         genericChart,
         adrUpload,
-        baseline,
-        metadata,
-        surveyAndProgram,
-        modelCalibrate,
-        modelOptions,
-        modelRun,
-        modelOutput,
-        plottingSelections,
-        stepper,
+        baseline: baseline(existingState),
+        metadata: metadata(existingState),
+        surveyAndProgram: surveyAndProgram(existingState),
+        modelCalibrate: modelCalibrate(existingState),
+        modelOptions: modelOptions(existingState),
+        modelRun: modelRun(existingState),
+        modelOutput: modelOutput(existingState),
+        plottingSelections: plottingSelections(existingState),
+        stepper: stepper(existingState),
         load,
         errors,
         projects,
-        hintrVersion,
+        hintrVersion: hintrVersion(existingState),
         downloadResults
     },
     actions: actions,
@@ -184,4 +183,3 @@ export const storeOptions: StoreOptions<RootState> = {
     getters: getters,
     plugins: [persistState, resetState]
 };
-

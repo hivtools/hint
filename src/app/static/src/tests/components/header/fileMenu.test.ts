@@ -7,7 +7,7 @@ import {
     mockError,
     mockFile,
     mockLoadState,
-    mockMetadataState,
+    mockMetadataState, mockModelCalibrateState,
     mockModelRunState,
     mockPJNZResponse,
     mockPopulationResponse,
@@ -63,7 +63,8 @@ describe("File menu", () => {
     const createStore = (customModules = {}, isGuest = true) => {
         const store = new Vuex.Store({
             state: {
-                language: Language.en
+                language: Language.en,
+                updatingLanguage: false
             },
             getters: {
                 isGuest: () => isGuest
@@ -97,7 +98,6 @@ describe("File menu", () => {
                 propsData: {title: "naomi"},
                 store
             });
-
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
         let link = wrapper.findAll(".dropdown-item").at(0);
@@ -110,10 +110,11 @@ describe("File menu", () => {
         const re = new RegExp("naomi-(.*)\.json");
         expect((hiddenLink.attributes("download") as string).match(re)).toBeDefined();
 
-        const expectedJson = JSON.stringify({
+        const expectedJson = {
             state: {
                 baseline: {selectedDataset: null, selectedRelease: null},
                 modelRun: mockModelRunState(),
+                modelCalibrate: {result: null},
                 metadata: mockMetadataState(),
                 surveyAndProgram: {selectedDataType: null},
                 language: Language.en
@@ -126,15 +127,14 @@ describe("File menu", () => {
                 programme: {hash: "5csv", filename: "5.csv"},
                 anc: {hash: "6csv", filename: "6.csv"}
             }
-        });
+        };
 
         const actualBlob = (mockCreateObjectUrl as jest.Mock).mock.calls[0][0];
-
         const reader = new FileReader();
         reader.addEventListener('loadend', function () {
             const text = reader.result as string;
             const result = JSON.parse(text)[1];
-            expect(result).toEqual(expectedJson);
+            expect(JSON.parse(result)).toStrictEqual(expectedJson);
             done();
         });
 

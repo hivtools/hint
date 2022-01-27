@@ -1,21 +1,35 @@
 import {Module} from "vuex";
-import {RootState} from "../../root";
 import {Error} from "../../generated";
 import {mutations} from "./mutations";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface ErrorsState {
-    errors: Error[]
+    errors: Error[],
+    errorReportError: Error | null
+    errorReportSuccess: boolean
+    sendingErrorReport: boolean
+}
+
+export enum ErrorReportDefaultValue {
+    calibrate = "no associated calibrateId",
+    model = "no associated modelRunId",
+    download = "none",
+    country = "no associated country",
+    project = "no associated project"
 }
 
 export const initialErrorsState = (): ErrorsState => {
     return {
-        errors: []
+        errors: [],
+        errorReportError: null,
+        errorReportSuccess: false,
+        sendingErrorReport: false
     }
 };
 
 const namespaced = true;
 
-export const errors: Module<ErrorsState, RootState> = {
+export const errors: Module<ErrorsState, DataExplorationState> = {
     namespaced,
     state: initialErrorsState(),
     mutations

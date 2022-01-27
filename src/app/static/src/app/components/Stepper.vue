@@ -19,6 +19,7 @@
         </div>
         <stepper-navigation v-bind="navigationProps"/>
         <hr/>
+        <warning-alert v-if="activeStep !== 3" :warnings="activeStepWarnings"></warning-alert>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingData'"></h2>
@@ -27,8 +28,8 @@
             <version-status></version-status>
             <div class="pt-4">
                 <adr-integration v-if="isActive(1)"></adr-integration>
-                <baseline v-if="isActive(1)"></baseline>
-                <survey-and-program v-if="isActive(2)"></survey-and-program>
+                <upload-inputs v-if="isActive(1)"></upload-inputs>
+                <review-inputs v-if="isActive(2)"></review-inputs>
                 <model-options v-if="isActive(3)"></model-options>
                 <model-run v-if="isActive(4)"></model-run>
                 <model-calibrate v-if="isActive(5)"></model-calibrate>
@@ -37,6 +38,9 @@
             </div>
         </div>
         <template v-if="activeStep === 3">
+            <warning-alert :warnings="activeStepWarnings"></warning-alert>
+        </template>
+        <template v-if="activeStep !== 4">
             <hr class="mt-3"/>
             <stepper-navigation v-bind="navigationProps"/>
         </template>
@@ -49,19 +53,20 @@
     import {mapActions, mapGetters} from "vuex";
     import AdrIntegration from "./adr/ADRIntegration.vue";
     import Step from "./Step.vue";
-    import Baseline from "./baseline/Baseline.vue";
-    import SurveyAndProgram from "./surveyAndProgram/SurveyAndProgram.vue";
+    import UploadInputs from "./uploadInputs/UploadInputs.vue";
+    import ReviewInputs from "./reviewInputs/ReviewInputs.vue";
     import LoadingSpinner from "./LoadingSpinner.vue";
     import ModelRun from "./modelRun/ModelRun.vue";
     import ModelCalibrate from "./modelCalibrate/ModelCalibrate.vue";
     import ModelOutput from "./modelOutput/ModelOutput.vue";
     import DownloadResults from "./downloadResults/DownloadResults.vue";
+    import WarningAlert from "./WarningAlert.vue";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {LoadingState, LoadState} from "../store/load/load";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
     import VersionStatus from "./projects/VersionStatus.vue";
     import {mapGettersByNames, mapStateProp, mapStateProps} from "../utils";
-    import {Project} from "../types";
+    import {Project, StepWarnings} from "../types";
     import {ProjectsState} from "../store/projects/projects";
     import {RootState} from "../root";
     import StepperNavigation, {Props as StepperNavigationProps} from "./StepperNavigation.vue";
@@ -72,14 +77,17 @@
         currentProject: Project | null
         projectLoading: boolean,
         updatingLanguage: boolean,
-        navigationProps: StepperNavigationProps
+        navigationProps: StepperNavigationProps,
+        activeStepTextKey: string,
+        activeStepWarnings: StepWarnings
     }
 
     interface ComputedGetters {
         ready: boolean,
         complete: boolean,
         loadingFromFile: boolean
-        loading: boolean
+        loading: boolean,
+        warnings: (stepName: string) => StepWarnings
     }
 
     const namespace = 'stepper';
@@ -104,7 +112,7 @@
             loading: function () {
                 return this.loadingFromFile || this.updatingLanguage || !this.ready;
             },
-            ...mapGetters(["isGuest"]),
+            ...mapGetters(["isGuest", "warnings"]),
             navigationProps: function() {
                 return {
                     back: this.back,
@@ -112,6 +120,12 @@
                     next: this.next,
                     nextDisabled: this.activeContinue(this.activeStep)
                 };
+            },
+            activeStepTextKey: function() {
+                return this.steps.find((step: StepDescription) => step.number === this.activeStep).textKey;
+            },
+            activeStepWarnings: function() {
+                return this.warnings(this.activeStepTextKey);
             }
         },
         methods: {
@@ -151,8 +165,8 @@
         components: {
             AdrIntegration,
             Step,
-            Baseline,
-            SurveyAndProgram,
+            UploadInputs,
+            ReviewInputs,
             LoadingSpinner,
             ModelRun,
             ModelCalibrate,
@@ -160,12 +174,15 @@
             ModelOptions,
             DownloadResults,
             VersionStatus,
-            StepperNavigation
+            StepperNavigation,
+            WarningAlert
         },
         watch: {
             complete: function (){
-                if (this.activeStep === 4 && this.isComplete(4) && this.isEnabled(5)){
-                    this.next()
+                // auto-progress from modelRun to modelCalibrate if there are no warnings to display
+                if (this.activeStep === 4 && this.isComplete(4) && this.isEnabled(5) &&
+                        this.activeStepWarnings.modelRun.length === 0){
+                    this.next();
                 }
             },
             ready: function (newVal) {

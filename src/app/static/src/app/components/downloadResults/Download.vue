@@ -1,17 +1,19 @@
 <template>
-  <div id="download">
-    <h4 v-translate="translateKey.header"></h4>
-    <button class="btn btn-red btn-lg my-3" @click="download">
-      <span v-translate="translateKey.button"></span>
-      <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
-    </button>
-    <div>
-      <download-progress v-if="!modalOpen" id="progress"
-                         :translate-key="'downloading'"
-                         :downloading="file.downloading"/>
+    <div id="download">
+        <h4 v-translate="translateKey.header"></h4>
+        <button class="btn btn-lg my-3" :class="disabled ? 'btn-secondary' : 'btn-red'"
+                :disabled="disabled"
+                @click="download">
+            <span v-translate="translateKey.button"></span>
+            <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
+        </button>
+        <div>
+            <download-progress v-if="!modalOpen" id="progress"
+                               :translate-key="'downloading'"
+                               :downloading="file.downloading"/>
+        </div>
+        <error-alert id="error" v-if="file.error" :error="file.error"></error-alert>
     </div>
-    <error-alert id="error" v-if="file.error" :error="file.error"></error-alert>
-  </div>
 </template>
 
 <script lang="ts">
@@ -30,6 +32,7 @@
         file: DownloadResultsDependency,
         translateKey: downloadTranslate,
         modalOpen: boolean
+        disabled: boolean
     }
 
     interface Methods {
@@ -39,23 +42,27 @@
     export default Vue.extend<unknown, Methods, unknown, Props>({
         name: "Download",
         components: {
-          DownloadIcon,
-          ErrorAlert,
-          DownloadProgress
+            DownloadIcon,
+            ErrorAlert,
+            DownloadProgress
         },
         props: {
-          file: {
-            required: true,
-            type: Object
-         },
-          translateKey: {
-            required: true,
-            type: Object
-          },
-          modalOpen: {
-            required: true,
-            type: Boolean
-          }
+            file: {
+                required: true,
+                type: Object
+            },
+            translateKey: {
+                required: true,
+                type: Object
+            },
+            modalOpen: {
+                required: true,
+                type: Boolean
+            },
+            disabled: {
+                required: true,
+                type: Boolean
+            }
         },
         methods: {
           download() {

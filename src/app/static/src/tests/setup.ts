@@ -24,7 +24,8 @@ i18next.init({
     lng: Language.en,
     resources: {
         en: {translation: locales.en},
-        fr: {translation: locales.fr}
+        fr: {translation: locales.fr},
+        pt: {translation: locales.pt}
     },
     fallbackLng: Language.en
 });
@@ -35,3 +36,7 @@ Vue.config.productionTip = false;
 global.console.error = (message: any) => {
     throw (message instanceof Error ? message : new Error(message))
 }
+
+process.on('unhandledRejection', (err) => {
+    fail(err);
+});

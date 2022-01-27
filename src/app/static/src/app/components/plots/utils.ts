@@ -3,7 +3,8 @@ import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {Dict, Filter, NumericRange} from "../../types";
 import numeral from 'numeral';
 
-export const getColor = (value: number, metadata: ChoroplethIndicatorMetadata,
+export const getColor = (value: number,
+                         metadata: ChoroplethIndicatorMetadata,
                          colourRange: NumericRange) => {
 
     const min = colourRange.min;
@@ -163,54 +164,54 @@ const roundToPlaces = function (value: number, decPl: number) {
 // Iteratively passes through the layers of a FilterOption object to find the regional hierarchy above the supplied id
 // Takes param any for obj and returns any because it will iterate through both objects (the NestedFilterOption) and arrays (the array of child options), treating array indices as keys
 export const findPath = function (id: string, obj: any): any {
-  for(const key in obj) {                                         
-      if(obj.hasOwnProperty(key)) {                         
-          if(id === obj[key]) return "";                      
-          else if(obj[key] && typeof obj[key] === "object") {   
-            const path = findPath(id, obj[key]);               
-              if (path != undefined) {
-                return ((obj.label ? obj.label + "/": "") + path).replace(/\/$/, '');   
-              }              
-          }
-      }
-  }
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            if (id === obj[key]) return "";
+            else if (obj[key] && typeof obj[key] === "object") {
+                const path = findPath(id, obj[key]);
+                if (path != undefined) {
+                    return ((obj.label ? obj.label + "/" : "") + path).replace(/\/$/, '');
+                }
+            }
+        }
+    }
 };
 
-export const formatOutput = function (value: number | string, format: string, scale: number, accuracy: number | null) {
+export const formatOutput = function (value: number | string, format: string, scale: number | null, accuracy: number | null) {
     let ans: number
 
-    if (typeof(value) === 'string'){
+    if (typeof (value) === 'string') {
         ans = parseFloat(value)
     } else ans = value
 
-    if (!format.includes('%') && scale){
+    if (!format.includes('%') && scale) {
         ans = ans * scale
     }
 
-    if (!format.includes('%') && accuracy){
+    if (!format.includes('%') && accuracy) {
         ans = Math.round(ans / accuracy) * accuracy
     }
 
-    if (format){
+    if (format) {
         return numeral(ans).format(format)
     } else return ans
 };
 
-export const formatLegend = function(text: string | number, format: string, scale: number): string {
+export const formatLegend = function (text: string | number, format: string, scale: number): string {
     text = formatOutput(text, format, scale, null)
 
-        if (typeof(text) === "string" && text.includes(',')) {
-            text = text.replace(/,/g, '');
-        }
-        if (typeof(text) === "string" && !text.includes('%')) {
-            text = parseFloat(text)
-        }
-        if (typeof text == "number") {
-            if (text >= 1000 && text < 10000 || text >= 1000000 && text < 10000000) {
-                text = numeral(text).format("0.0a")
-            } else if (text >= 1000) {
-                text = numeral(text).format("0a")
-            } else text = text.toString()
-        }
+    if (typeof (text) === "string" && text.includes(',')) {
+        text = text.replace(/,/g, '');
+    }
+    if (typeof (text) === "string" && !text.includes('%')) {
+        text = parseFloat(text)
+    }
+    if (typeof text == "number") {
+        if (text >= 1000 && text < 10000 || text >= 1000000 && text < 10000000) {
+            text = numeral(text).format("0.0a")
+        } else if (text >= 1000) {
+            text = numeral(text).format("0a")
+        } else text = text.toString()
+    }
     return text
 }

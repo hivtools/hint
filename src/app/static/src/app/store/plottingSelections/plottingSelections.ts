@@ -1,10 +1,9 @@
 import {FilterOption} from "../../generated";
-import {localStorageManager} from "../../localStorageManager";
 import {Module} from "vuex";
-import {RootState} from "../../root";
 import {mutations} from "./mutations";
 import {getters} from "./getters";
 import {Dict} from "../../types";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface PlottingSelectionsState {
     calibratePlot: BarchartSelections,
@@ -138,13 +137,14 @@ export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
 };
 
 const namespaced = true;
-const existingState = localStorageManager.getState();
 
-export const plottingSelections: Module<PlottingSelectionsState, RootState> = {
-    namespaced,
-    state: {...initialPlottingSelectionsState(), ...existingState && existingState.plottingSelections},
-    mutations,
-    getters
+export const plottingSelections = (existingState: Partial<DataExplorationState> | null): Module<PlottingSelectionsState, DataExplorationState> => {
+    return {
+        namespaced,
+        state: {...initialPlottingSelectionsState(), ...existingState && existingState.plottingSelections},
+        mutations,
+        getters
+    }
 };
 
 

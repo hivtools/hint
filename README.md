@@ -22,6 +22,8 @@ and [hintr](https://github.com/mrc-ide/hintr) and add a test user with username 
 
 For more information about developing the front-end see [src/app/static/README](https://github.com/mrc-ide/hint/blob/master/src/app/static/README.md)
 
+For more information on Generic Chart, see [/docs/GenericChart.md](https://github.com/mrc-ide/hint/blob/mrc-2537/docs/GenericChart.md)
+
 ### Testing
 
 Ensure dependencies are running and then execute tests on the command line or through IntelliJ

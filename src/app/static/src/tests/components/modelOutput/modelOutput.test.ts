@@ -2,8 +2,10 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import {
-    mockBaselineState, mockCalibrateResultResponse,
-    mockModelRunState, mockShapeResponse,
+    mockBaselineState,
+    mockCalibrateResultResponse,
+    mockModelCalibrateState,
+    mockShapeResponse,
 } from "../../mocks";
 import {mutations as modelOutputMutations} from "../../../app/store/modelOutput/mutations";
 import {mutations as plottingSelectionMutations} from "../../../app/store/plottingSelections/mutations";
@@ -16,6 +18,7 @@ import Choropleth from "../../../app/components/plots/choropleth/Choropleth.vue"
 import BubblePlot from "../../../app/components/plots/bubble/BubblePlot.vue";
 import {expectTranslated} from "../../testHelpers";
 import {BarchartIndicator} from "../../../app/types";
+import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
 
 const localVue = createLocalVue();
 
@@ -36,11 +39,13 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                     })
                 })
             },
-            modelRun: {
+            modelCalibrate: {
                 namespaced: true,
-                state: mockModelRunState({
-                    result: mockCalibrateResultResponse({data: ["TEST DATA"] as any})
-                })
+                state: mockModelCalibrateState(
+                    {
+                        result: mockCalibrateResultResponse({data: ["TEST DATA"] as any})
+                    }
+                )
             },
             modelOutput: {
                 namespaced: true,
@@ -303,14 +308,14 @@ describe("ModelOutput component", () => {
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.find("table-view-stub");
+        const table = wrapper.find(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
         expect(table.props().filters).toStrictEqual(["TEST CHORO FILTERS"]);
         expect(table.props().selections).toStrictEqual({test: "TEST CHORO SELECTIONS"});
         expect(table.props().indicators).toStrictEqual(["TEST CHORO INDICATORS"]);
-        expect(table.props().tabledata).toStrictEqual(["TEST DATA"]);
+        expect(table.props().tableData).toStrictEqual(["TEST DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
-        expect(table.props().translateLabels).toBe(false);
+        expect(table.props().translateLabels).toBe(undefined);
     });
 
     it("renders choropleth table with correct indicator props", () => {
@@ -327,7 +332,7 @@ describe("ModelOutput component", () => {
             });
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.find("table-view-stub");
+        const table = wrapper.find(AreaIndicatorsTable);
         expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
         expect(table.props().indicators).toStrictEqual([{"indicator": "art_coverage", "indicator_value": "4"}]);
     });
@@ -336,14 +341,14 @@ describe("ModelOutput component", () => {
         const store = getStore({selectedTab: "bubble"});
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.findAll("table-view-stub").at(1);
+        const table = wrapper.findAll(AreaIndicatorsTable).at(1);
         expect(table.props().areaFilterId).toBe("area");
         expect(table.props().filters).toStrictEqual(["TEST BUBBLE FILTERS"]);
         expect(table.props().selections).toStrictEqual({test: "TEST BUBBLE SELECTIONS"});
         expect(table.props().indicators).toStrictEqual(["TEST BUBBLE INDICATORS", "TEST BUBBLE INDICATORS"]);
-        expect(table.props().tabledata).toStrictEqual(["TEST DATA"]);
+        expect(table.props().tableData).toStrictEqual(["TEST DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
-        expect(table.props().translateLabels).toBe(false);
+        expect(table.props().translateLabels).toBe(undefined);
     });
 
     it("renders bubble plot table with correct indicator props", () => {
@@ -365,7 +370,7 @@ describe("ModelOutput component", () => {
             });
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.findAll("table-view-stub").at(1);
+        const table = wrapper.findAll(AreaIndicatorsTable).at(1);
         expect(table.props().selections).toStrictEqual({
             colorIndicatorId: "art_coverage",
             sizeIndicatorId: "current_art"
@@ -388,7 +393,7 @@ describe("ModelOutput component", () => {
         const store = getStore({selectedTab: "bar"});
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.find("table-view-stub");
+        const table = wrapper.find(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
         expect(table.props().filters).toStrictEqual(["TEST BAR FILTERS"]);
         expect(table.props().selections).toStrictEqual({
@@ -400,9 +405,9 @@ describe("ModelOutput component", () => {
                 age: {id: "a1", label: "0-4"}
             }
         });
-        expect(table.props().tabledata).toStrictEqual(["TEST DATA"]);
+        expect(table.props().tableData).toStrictEqual(["TEST DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
-        expect(table.props().translateLabels).toBe(false);
+        expect(table.props().translateLabels).toBe(undefined);
     });
 
     it("renders barchart table with correct indicator props", () => {
@@ -419,7 +424,7 @@ describe("ModelOutput component", () => {
             });
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.find("table-view-stub");
+        const table = wrapper.find(AreaIndicatorsTable);
         expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
         expect(table.props().indicators).toStrictEqual(
             [

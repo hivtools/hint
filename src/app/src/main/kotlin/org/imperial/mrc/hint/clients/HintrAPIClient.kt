@@ -20,7 +20,7 @@ interface HintrAPIClient
 {
     fun validateBaselineIndividual(file: VersionFileWithPath, type: FileType): ResponseEntity<String>
     fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
-    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType)
+    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType, strict: Boolean)
             : ResponseEntity<String>
 
     fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions): ResponseEntity<String>
@@ -37,6 +37,7 @@ interface HintrAPIClient
     fun getVersion(): ResponseEntity<String>
     fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions):
             ResponseEntity<String>
+    fun getInputTimeSeriesChartData(type: String, files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
     fun downloadOutputSubmit(type: String, id: String): ResponseEntity<String>
     fun downloadOutputStatus(id: String): ResponseEntity<String>
@@ -78,7 +79,8 @@ class HintrFuelAPIClient(
 
     override fun validateSurveyAndProgramme(file: VersionFileWithPath,
                                             shapePath: String,
-                                            type: FileType): ResponseEntity<String>
+                                            type: FileType,
+                                            strict: Boolean): ResponseEntity<String>
     {
 
         val json = objectMapper.writeValueAsString(
@@ -86,7 +88,7 @@ class HintrFuelAPIClient(
                         "file" to file,
                         "shape" to shapePath))
 
-        return postJson("validate/survey-and-programme", json)
+        return postJson("validate/survey-and-programme?strict=$strict", json)
     }
 
     override fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions)
@@ -203,4 +205,12 @@ class HintrFuelAPIClient(
         return get("meta/adr/${id}")
     }
 
+    override fun getInputTimeSeriesChartData(type: String, files: Map<String, VersionFileWithPath>)
+            : ResponseEntity<String>
+    {
+        val json = objectMapper.writeValueAsString(
+                mapOf("data" to files))
+
+        return postJson("chart-data/input-time-series/$type", json)
+    }
 }

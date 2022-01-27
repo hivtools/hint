@@ -2,12 +2,21 @@ import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
 import {StepDescription} from "../stepper/stepper";
 import {RootMutation} from "./mutations";
+import {ErrorsMutation} from "../errors/mutations";
 import {LanguageActions} from "../language/language";
-import {changeLanguage} from "../language/actions";
 import i18next from "i18next";
+import {api} from "../../apiService";
+import {ErrorReportManualDetails} from "../../types";
+import {VersionInfo} from "../../generated";
+import {currentHintVersion} from "../../hintVersion";
+import {ChangeLanguageAction} from "../language/actions";
+import {ErrorReportDefaultValue} from "../errors/errors";
 
-export interface RootActions extends LanguageActions<RootState>{
+
+export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
+    generateErrorReport: (store: ActionContext<RootState, RootState>,
+        payload: ErrorReportManualDetails) => void;
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -51,26 +60,49 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     },
 
     async changeLanguage(context, payload) {
-        const {commit, dispatch, rootState} = context;
+        await ChangeLanguageAction(context, payload)
+    },
 
-        if (rootState.language === payload) {
-            return;
+    async generateErrorReport(context, payload) {
+        const {dispatch, rootState, getters, commit} = context
+        const data = {
+            email: payload.email || rootState.currentUser,
+            country: rootState.baseline.country || ErrorReportDefaultValue.country,
+            projectName: rootState.projects.currentProject?.name || ErrorReportDefaultValue.project,
+            browserAgent: navigator.userAgent,
+            timeStamp: new Date().toISOString(),
+            modelRunId: rootState.modelRun.modelRunId || ErrorReportDefaultValue.model,
+            calibrateId: rootState.modelCalibrate.calibrateId || ErrorReportDefaultValue.calibrate,
+            downloadIds: getDownloadIds(rootState),
+            description: payload.description,
+            section: payload.section,
+            stepsToReproduce: payload.stepsToReproduce,
+            versions: {hint: currentHintVersion, ...rootState.hintrVersion.hintrVersion as VersionInfo},
+            errors: getters.errors
         }
+        commit({type: `errors/${ErrorsMutation.SendingErrorReport}`, payload: true});
+        await api<ErrorsMutation, ErrorsMutation>(context)
+            .withSuccess(`errors/${ErrorsMutation.ErrorReportSuccess}` as ErrorsMutation, true)
+            .withError(`errors/${ErrorsMutation.ErrorReportError}` as ErrorsMutation, true)
+            .postAndReturn("error-report", data)
+            .then(() => {
+                if (rootState.projects.currentProject && !rootState.errors.errorReportError) {
+                    dispatch("projects/cloneProject",
+                        {
+                            emails: ["naomi-support@imperial.ac.uk"],
+                            projectId: rootState.projects.currentProject!.id
+                        })
+                }
+            })
 
-        commit({type: RootMutation.SetUpdatingLanguage, payload: true});
-        await changeLanguage<RootState>(context, payload);
-
-        const actions: Promise<unknown>[] = [];
-
-        if (rootState.baseline?.iso3) {
-            actions.push(dispatch("metadata/getPlottingMetadata", rootState.baseline.iso3));
-        }
-
-        if (rootState.modelCalibrate.status.done) {
-            actions.push(dispatch("modelCalibrate/getResult"));
-        }
-
-        await Promise.all(actions);
-        commit({type: RootMutation.SetUpdatingLanguage, payload: false});
+        commit({type: `errors/${ErrorsMutation.SendingErrorReport}`, payload: false});
     }
 };
+
+const getDownloadIds = (rootState: RootState) => {
+    const spectrumId = rootState.downloadResults.spectrum.downloadId || ErrorReportDefaultValue.download;
+    const summaryId = rootState.downloadResults.summary.downloadId || ErrorReportDefaultValue.download;
+    const coarseOutputId = rootState.downloadResults.coarseOutput.downloadId || ErrorReportDefaultValue.download
+
+    return {spectrum: spectrumId, summary: summaryId, coarse_output: coarseOutputId}
+}

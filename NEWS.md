@@ -1,3 +1,213 @@
+# hint 1.88.1
+
+* Bug: ADR access level incorrectly displayed as 'Read only' on reload
+
+# hint 1.88.0
+
+* Return calibrate_id in error report if it is available
+
+# hint 1.87.1
+
+* Allow Continue as guest in Data Exploration
+
+# hint 1.87.0
+
+* Formatting Input Time Series table values
+
+
+# hint 1.86.0
+
+* Persist Data Exploration state
+
+# hint 1.85.0
+
+* Input file validation in Data Exploration
+
+# hint 1.84.0
+
+* Data exploration mode error reporting
+
+# hint 1.83.0
+
+* Support y-axis formats in Input Time Series
+
+# hint 1.82.2
+
+* Fix bug which prevented selection change in barchart
+
+# hint 1.82.1
+
+* Fix Input Time Series bug where some lines were shown incorrectly in red
+
+# hint 1.82.0
+
+* Move change Language action to DE stater
+
+# hint 1.81.0
+
+* Add online-support-menu component to DE 
+
+# hint 1.80.0
+
+* Add data exploration header
+
+# hint 1.79.0
+
+* Updating help documentation
+
+# hint 1.78.0
+
+* Paging in Input Time Series
+
+# hint 1.77.0
+
+* validate send error report email field
+
+# hint 1.76.0
+
+* Indicate Data Exploration mode in login screen
+
+# hint 1.75.1
+
+* Update review output plots to use metadata from modelCalibrate
+
+
+# hint 1.75.0
+
+* Show description for Generic Chart
+
+# hint 1.74.1
+
+* Remove calibration plot when user changes calibration options
+
+# hint 1.74.0
+
+* Add navigation buttons to bottom of every page
+
+# hint 1.73.2
+
+* When importing from ADR remove all datasets currently uploaded
+
+# hint 1.73.1
+
+* fix issues with displaying Input Time Series for DRC data
+
+# hint 1.73.0
+
+* prompt login when using data exploration mode
+
+# hint 1.72.3
+
+* Make time series tooltip usable
+
+# hint 1.72.1
+
+* Troubleshooting request very slow to close the dialog and send multiple errors
+
+# hint 1.72.0
+
+* Add DataExploration app component
+
+# hint 1.71.1
+
+* bug fix for input indicators being included when not relevant for dataset
+
+# hint 1.71.0
+
+* support redirecting to a requested url after a successful login
+
+# hint 1.70.3
+
+* Move error reporting related mutations out of root mutations
+
+# hint 1.70.2
+
+* bug fix for undefined indicator in choropleth while new data is loading
+
+# hint 1.70.1
+
+* correct Portuguese translation for "Steps to reproduce"
+
+# hint 1.70.0
+
+* adds basic data exploration app with loading spinner 
+
+# hint 1.69.0
+
+* Add feedback to error reporting
+
+# hint 1.68.4
+
+* Fix Input Time Series for null values
+
+# hint 1.68.3
+
+* Rename baseline and surveyAndProgram components
+
+# hint 1.68.2
+
+* moves internal logic from plotting selections module to model calibrate module - no visible change
+
+# hint 1.68.1
+
+* Rename "Report issues" to "Troubleshooting request"
+
+# hint 1.68.0
+
+* Add /explore endpoint
+
+# hint 1.67.0
+
+* Component to display warnings from hintr
+
+# hint 1.66.0
+
+* Made Calibration plot visible
+
+# hint 1.65.0
+
+* Output Time Series plots
+
+# hint 1.64.3
+
+* Fix language bug on reload
+
+# hint 1.64.2
+
+* add default placeholder to some error report data
+
+# hint 1.64.1
+
+* Update error report object in backend include version info 
+
+# hint 1.64.0
+
+* Improve error reporting process
+
+# hint 1.63.0
+
+* Display warning alert at bottom of Model Options step
+
+# hint 1.62.1
+
+* ADR upload fails if download attempted while in progress
+
+# hint 1.62.0
+
+* Upload release to ADR epic
+
+# hint 1.61.0
+
+* Include WarningAlert in Stepper
+
+# hint 1.60.0
+
+* Do not poll for ADR dataset updates when using a releaser
+
+# hint 1.59.0
+
+* Do not auto-progress to calibrate step if there are model fit warnings
+
 # hint 1.58.0
 
 * Endpoint for posting error report to Teams
@@ -18,15 +228,29 @@
 
 * Save warnings from option validation, model fit and model calibration to app state
 
-# hint 1.56.1
+# hint 1.59.1
 
 * Render filter labels verbatim in output tables, do not attempt to translate
 
-# hint 1.56.0
+# hint 1.59.0
 
 * Include Back/Continue links at bottom of model options page
 
+# hint 1.58.0
+
+* Refresh output metadata and options when language changes
+
+# hint 1.57.0
+
+* Add tooltips for indicators in Time series chart
+
+# hint 1.56.0
+
+* Remove genericChart dataset when corresponding input file changes
+
 # hint 1.55.0
+
+* Add input Time series chart
 
 * Refresh output metadata and options when language changes
 

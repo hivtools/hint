@@ -1,31 +1,41 @@
 import {ActionContext, ActionTree, Commit} from 'vuex';
-import {RootState} from "../../root";
 import {DataType, SurveyAndProgramState} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
 import qs from 'qs';
 import {getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
+import {GenericChartMutation} from "../genericChart/mutations";
+import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface SurveyAndProgramActions {
-    importSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
-    importProgram: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
-    importANC: (store: ActionContext<SurveyAndProgramState, RootState>, url: string) => void,
-    uploadSurvey: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void,
-    uploadProgram: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void,
-    uploadANC: (store: ActionContext<SurveyAndProgramState, RootState>, formData: FormData) => void
-    getSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, RootState>) => void;
-    deleteSurvey: (store: ActionContext<SurveyAndProgramState, RootState>) => void
-    deleteProgram: (store: ActionContext<SurveyAndProgramState, RootState>) => void
-    deleteANC: (store: ActionContext<SurveyAndProgramState, RootState>) => void
-    deleteAll: (store: ActionContext<SurveyAndProgramState, RootState>) => void
-    selectDataType: (store: ActionContext<SurveyAndProgramState, RootState>, payload: DataType) => void
-    validateSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, RootState>) => void;
+    importSurvey: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, url: string) => void,
+    importProgram: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, url: string) => void,
+    importANC: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, url: string) => void,
+    uploadSurvey: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, formData: FormData) => void,
+    uploadProgram: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, formData: FormData) => void,
+    uploadANC: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, formData: FormData) => void
+    getSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void;
+    deleteSurvey: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
+    deleteProgram: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
+    deleteANC: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
+    deleteAll: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void
+    selectDataType: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, payload: DataType) => void
+    validateSurveyAndProgramData: (store: ActionContext<SurveyAndProgramState, DataExplorationState>) => void;
+}
+
+const enum DATASET_TYPE {
+    ANC = "anc",
+    ART = "art",
+    SURVEY = "survey"
 }
 
 function commitSelectedDataTypeUpdated(commit: Commit, dataType: DataType) {
-    commit("surveyAndProgram/SelectedDataTypeUpdated",
-        {type: "SelectedDataTypeUpdated", payload: dataType}, {root: true})
+    commit({type: SurveyAndProgramMutation.SelectedDataTypeUpdated, payload: dataType})
+}
+
+function commitClearGenericChartDataset(commit: Commit, dataType: string) {
+    commit({type: `genericChart/${GenericChartMutation.ClearDataset}`, payload: dataType}, {root: true});
 }
 
 interface UploadImportOptions {
@@ -33,16 +43,17 @@ interface UploadImportOptions {
     payload: FormData | string
 }
 
-async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions,
+async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, DataExplorationState>, options: UploadImportOptions,
                                  filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
+    commitClearGenericChartDataset(commit, DATASET_TYPE.ANC);
 
     await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
         .withError(SurveyAndProgramMutation.ANCError)
         .withSuccess(SurveyAndProgramMutation.ANCUpdated)
         .freezeResponse()
-        .postAndReturn<ProgrammeResponse>(options.url, options.payload)
+        .postAndReturn<ProgrammeResponse>(getUrlWithQuery(context, options.url), options.payload)
         .then((response) => {
             if (response) {
                 commitSelectedDataTypeUpdated(commit, DataType.ANC);
@@ -52,16 +63,17 @@ async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, R
         });
 }
 
-async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions,
+async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramState, DataExplorationState>, options: UploadImportOptions,
                                      filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
+    commitClearGenericChartDataset(commit, DATASET_TYPE.ART);
 
     await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
         .withError(SurveyAndProgramMutation.ProgramError)
         .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
         .freezeResponse()
-        .postAndReturn<ProgrammeResponse>(options.url, options.payload)
+        .postAndReturn<ProgrammeResponse>(getUrlWithQuery(context, options.url), options.payload)
         .then((response) => {
             if (response) {
                 commitSelectedDataTypeUpdated(commit, DataType.Program);
@@ -71,7 +83,7 @@ async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramStat
         });
 }
 
-async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState, RootState>, options: UploadImportOptions,
+async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState, DataExplorationState>, options: UploadImportOptions,
                                     filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
@@ -80,7 +92,7 @@ async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState
         .withError(SurveyAndProgramMutation.SurveyError)
         .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
         .freezeResponse()
-        .postAndReturn<SurveyResponse>(options.url, options.payload)
+        .postAndReturn<SurveyResponse>(getUrlWithQuery(context, options.url), options.payload)
         .then((response) => {
             if (response) {
                 commitSelectedDataTypeUpdated(commit, DataType.Survey);
@@ -90,7 +102,7 @@ async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState
         });
 }
 
-export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndProgramActions = {
+export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & SurveyAndProgramActions = {
 
     selectDataType(context, payload) {
         const {commit} = context;
@@ -128,29 +140,52 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     },
 
     async deleteSurvey(context) {
-        const {commit} = context;
+        const {commit, state} = context;
         await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
             .delete("/disease/survey/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
+                if (state.selectedDataType == DataType.Survey) {
+                    if (state.program) {
+                        commitSelectedDataTypeUpdated(commit, DataType.Program)
+                    } else if (state.anc) {
+                        commitSelectedDataTypeUpdated(commit, DataType.ANC)
+                    }
+                }
             });
     },
 
     async deleteProgram(context) {
-        const {commit} = context;
+        const {commit, state} = context;
         await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
             .delete("/disease/programme/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
+                if (state.selectedDataType == DataType.Program) {
+                    if (state.survey) {
+                        commitSelectedDataTypeUpdated(commit, DataType.Survey)
+                    } else if (state.anc) {
+                        commitSelectedDataTypeUpdated(commit, DataType.ANC)
+                    }
+                }
+                commitClearGenericChartDataset(commit, DATASET_TYPE.ART)
             });
     },
 
     async deleteANC(context) {
-        const {commit} = context;
+        const {commit, state} = context;
         await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
             .delete("/disease/anc/")
             .then(() => {
                 commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
+                if (state.selectedDataType == DataType.ANC) {
+                    if (state.program) {
+                        commitSelectedDataTypeUpdated(commit, DataType.Program)
+                    } else if (state.survey) {
+                        commitSelectedDataTypeUpdated(commit, DataType.Survey)
+                    }
+                }
+                commitClearGenericChartDataset(commit, DATASET_TYPE.ANC)
             });
     },
 
@@ -170,17 +205,17 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
                     .freezeResponse()
-                    .get<SurveyResponse>("/disease/survey/"),
+                    .get<SurveyResponse>(getUrlWithQuery(context, "/disease/survey/")),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
                     .freezeResponse()
-                    .get<ProgrammeResponse>("/disease/programme/"),
+                    .get<ProgrammeResponse>(getUrlWithQuery(context, "/disease/programme/")),
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
                     .ignoreErrors()
                     .withSuccess(SurveyAndProgramMutation.ANCUpdated)
                     .freezeResponse()
-                    .get<AncResponse>("/disease/anc/")
+                    .get<AncResponse>(getUrlWithQuery(context, "/disease/anc/"))
             ]);
 
         commit({type: SurveyAndProgramMutation.Ready, payload: true});
@@ -189,7 +224,7 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
     async validateSurveyAndProgramData(context) {
         const {commit, rootState} = context;
         const successfulDataTypes: DataType[] = []
-        const initialSelectedDataType = rootState.surveyAndProgram.selectedDataType!
+        const initialSelectedDataType = rootState.surveyAndProgram.selectedDataType
 
         await Promise.all(
             [
@@ -197,9 +232,9 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                     .withError(SurveyAndProgramMutation.SurveyError)
                     .withSuccess(SurveyAndProgramMutation.SurveyUpdated)
                     .freezeResponse()
-                    .get<SurveyResponse>("/disease/survey/")
+                    .get<SurveyResponse>(getUrlWithQuery(context, "/disease/survey/"))
                     .then((response) => {
-                        if (response) {
+                        if (response && response.data) {
                             successfulDataTypes.push(DataType.Survey)
                         }
                     }),
@@ -207,9 +242,9 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                     .withError(SurveyAndProgramMutation.ProgramError)
                     .withSuccess(SurveyAndProgramMutation.ProgramUpdated)
                     .freezeResponse()
-                    .get<ProgrammeResponse>("/disease/programme/")
+                    .get<ProgrammeResponse>(getUrlWithQuery(context, "/disease/programme/"))
                     .then((response) => {
-                        if (response) {
+                        if (response && response.data) {
                             successfulDataTypes.push(DataType.Program)
                         }
                     }),
@@ -217,19 +252,23 @@ export const actions: ActionTree<SurveyAndProgramState, RootState> & SurveyAndPr
                     .withError(SurveyAndProgramMutation.ANCError)
                     .withSuccess(SurveyAndProgramMutation.ANCUpdated)
                     .freezeResponse()
-                    .get<AncResponse>("/disease/anc/")
+                    .get<AncResponse>(getUrlWithQuery(context, "/disease/anc/"))
                     .then((response) => {
-                        if (response) {
+                        if (response && response.data) {
                             successfulDataTypes.push(DataType.ANC)
                         }
                     })
             ]);
         const selectedTypeSucceeded = successfulDataTypes.some(data => data === initialSelectedDataType)
         if (!selectedTypeSucceeded) {
-            const newSelectedDataType = successfulDataTypes.length? successfulDataTypes[0] : null
-
+            const newSelectedDataType = successfulDataTypes.length ? successfulDataTypes[0] : null
             commitSelectedDataTypeUpdated(commit, newSelectedDataType!)
         }
         commit({type: SurveyAndProgramMutation.Ready, payload: true});
     }
 };
+
+function getUrlWithQuery(context: ActionContext<SurveyAndProgramState, DataExplorationState>, url: string) {
+    const query = context.rootState.dataExplorationMode ? "?strict=false" : "?strict=true"
+    return `${url}${query}`
+}

@@ -7,12 +7,13 @@ import registerTranslations from "../../../../app/store/translations/registerTra
 import Vuex from "vuex";
 import {emptyState} from "../../../../app/root";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
-import {prev, testData} from "../testHelpers";
+import {plhiv, prev, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
-import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
+import {ChoroplethSelections, ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 import Vue from "vue";
 import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
 import ResetMap from "../../../../app/components/plots/ResetMap.vue";
+import {ChoroplethIndicatorMetadata} from "../../../../app/generated";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({
@@ -304,6 +305,24 @@ describe("Choropleth component", () => {
                 selectedFilterOptions: {}
             },
             filters: []
+        });
+
+        expect((uninitialisableWrapper.vm as any).initialised).toBe(false);
+    });
+
+    it("computes initialised to false if selected indicator is not found in the provided metadata", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+        expect(vm.initialised).toBe(true);
+
+        const indicators: ChoroplethIndicatorMetadata[] = [{...plhiv}];
+        const selections: ChoroplethSelections = {
+            ...propsData.selections,
+            indicatorId: "badid"
+        }
+        const uninitialisableWrapper = getWrapper({
+            indicators,
+            selections
         });
 
         expect((uninitialisableWrapper.vm as any).initialised).toBe(false);

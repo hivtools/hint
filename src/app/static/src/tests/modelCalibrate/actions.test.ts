@@ -155,7 +155,7 @@ describe("ModelCalibrate actions", () => {
     });
 
     it("getResult commits result and warnings when successfully fetched, sets default plotting selections, and dispatches getCalibratePlot", async () => {
-        switches.modelCalibratePlot = "true";
+        switches.modelCalibratePlot = true;
         const testResult = {
             data: "TEST DATA",
             plottingMetadata: {
@@ -164,7 +164,7 @@ describe("ModelCalibrate actions", () => {
                         indicator_id: "test indicator",
                         x_axis_id: "test_x",
                         disaggregate_by_id: "test_dis",
-                        selected_filter_options: {"test_name": "test_value"}
+                        selected_filter_options: {"test_name": ["test_value"]}
                     }
                 }
             },
@@ -174,11 +174,13 @@ describe("ModelCalibrate actions", () => {
             },
             warnings: [mockWarning()]
         };
+        const mockResponse = mockSuccess(testResult);
         mockAxios.onGet(`/model/calibrate/result/1234`)
-            .reply(200, mockSuccess(testResult));
+            .reply(200, mockResponse);
 
         const commit = jest.fn();
         const dispatch = jest.fn();
+        const spy = jest.spyOn(freezer, "deepFreeze");
         const state = mockModelCalibrateState({
             calibrateId: "1234",
             status: {
@@ -191,7 +193,7 @@ describe("ModelCalibrate actions", () => {
 
         expect(commit.mock.calls.length).toBe(5);
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type:"modelRun/RunResultFetched",
+            type:"CalibrateResultFetched",
             payload: testResult
         });
         expect(commit.mock.calls[1][0]).toStrictEqual({
@@ -204,16 +206,24 @@ describe("ModelCalibrate actions", () => {
                 indicatorId: "test indicator",
                 xAxisId: "test_x",
                 disaggregateById: "test_dis",
-                selectedFilterOptions: {"test_name": "test_value"}
+                selectedFilterOptions: {"test_name": ["test_value"]}
             }
         });
+
+        //Test that a selected filter options array can be modified ie is not frozen
+        const options = commit.mock.calls[2][0].payload.selectedFilterOptions["test_name"];
+        options.push("another value");
+        expect(options.length).toBe(2);
+
         expect(commit.mock.calls[3][0]).toBe("Calibrated");
         expect(commit.mock.calls[4][0]).toBe("Ready");
         expect(dispatch.mock.calls[0][0]).toBe("getCalibratePlot");
+
+        expect(spy).toHaveBeenCalledWith(mockResponse);
     });
 
     it("getResult does not dispatch getCalibratePlot when switches if off", async () => {
-        switches.modelCalibratePlot = "";
+        switches.modelCalibratePlot = false;
         const testResult = {
             data: "TEST DATA",
             plottingMetadata: {

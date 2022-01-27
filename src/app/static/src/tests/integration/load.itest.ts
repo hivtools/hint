@@ -18,6 +18,8 @@ const FormData = require("form-data");
 describe("load actions", () => {
 
     let shape: any = {};
+    const realLocation = window.location;
+
     beforeAll(async () => {
         await login();
         const commit = jest.fn();
@@ -25,9 +27,17 @@ describe("load actions", () => {
 
         await baselineActions.uploadShape({commit, dispatch: jest.fn(), rootState} as any, formData);
         shape = (commit.mock.calls[1][0]["payload"] as ShapeResponse);
+
+        const mockLocationReload = jest.fn();
+        delete window.location;
+        window.location = {reload: mockLocationReload} as any;
     });
 
-    it("can set files as guest user", async () => {
+    afterAll(() => {
+        window.location = realLocation;
+    });
+
+    it("can set files as guest user", async (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const fakeState = JSON.stringify({
@@ -42,53 +52,56 @@ describe("load actions", () => {
         await actions.setFiles({commit, dispatch, state: {}, rootState, rootGetters} as any,
             {savedFileContents: fakeFileContents, projectName: "new project"});
 
-        expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
-        expect(commit.mock.calls[1][0].type).toBe("UpdatingState");
-        expect(commit.mock.calls[1][0].payload).toEqual({
-            shape: {
-                hash: shape.hash,
-                filename: shape.filename,
-                fromADR: false
-            }
-        });
-        expect(dispatch.mock.calls[0][1]).toStrictEqual({
-            stepper: {
-                steps: [
-                    {
-                        "number": 1,
-                        "textKey": "uploadInputs"
-                    },
-                    {
-                        "number": 2,
-                        "textKey": "reviewInputs"
-                    },
-                    {
-                        "number": 3,
-                        "textKey": "modelOptions"
-                    },
-                    {
-                        "number": 4,
-                        "textKey": "fitModel"
-                    },
-                    {
-                        "number": 5,
-                        "textKey": "calibrateModel"
-                    },
-                    {
-                        "number": 6,
-                        "textKey": "reviewOutput"
-                    },
-                    {
-                        "number": 7,
-                        "textKey": "downloadResults"
-                    }
-                ]
-            },
-            "version": currentHintVersion
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
+            expect(commit.mock.calls[1][0].type).toBe("UpdatingState");
+            expect(commit.mock.calls[1][0].payload).toEqual({
+                shape: {
+                    hash: shape.hash,
+                    filename: shape.filename,
+                    fromADR: false
+                }
+            });
+            expect(dispatch.mock.calls[0][1]).toStrictEqual({
+                stepper: {
+                    steps: [
+                        {
+                            "number": 1,
+                            "textKey": "uploadInputs"
+                        },
+                        {
+                            "number": 2,
+                            "textKey": "reviewInputs"
+                        },
+                        {
+                            "number": 3,
+                            "textKey": "modelOptions"
+                        },
+                        {
+                            "number": 4,
+                            "textKey": "fitModel"
+                        },
+                        {
+                            "number": 5,
+                            "textKey": "calibrateModel"
+                        },
+                        {
+                            "number": 6,
+                            "textKey": "reviewOutput"
+                        },
+                        {
+                            "number": 7,
+                            "textKey": "downloadResults"
+                        }
+                    ]
+                },
+                "version": currentHintVersion
+            });
+            done();
         });
     });
 
-    it("can create project and set files as logged in user", async () => {
+    it("can create project and set files as logged in user", async (done) => {
         const commit = jest.fn();
         const fakeState = JSON.stringify({
             files: {"shape": shape},
@@ -126,20 +139,23 @@ describe("load actions", () => {
         await actions.setFiles({commit, dispatch, state: {}, rootState: store.state, rootGetters} as any,
             {savedFileContents: fakeFileContents, projectName: "new project"});
 
-        //we expect the non-mocked dispatch to have created a project, and to have invoked the local store manager to
-        //save state
-        expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
-        expect(commit.mock.calls[1][0].type).toBe("UpdatingState");
-        expect(commit.mock.calls[1][0].payload)
-            .toEqual({
-                shape:
-                    {
-                        hash: shape.hash,
-                        filename: shape.filename,
-                        fromADR: false
-                    }
-            });
-        expect(mockSaveToLocalStorage.mock.calls[0][0].baseline).toBe("TEST BASELINE");
+        setTimeout(() => {
+            //we expect the non-mocked dispatch to have created a project, and to have invoked the local store manager to
+            //save state
+            expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
+            expect(commit.mock.calls[1][0].type).toBe("UpdatingState");
+            expect(commit.mock.calls[1][0].payload)
+                .toEqual({
+                    shape:
+                        {
+                            hash: shape.hash,
+                            filename: shape.filename,
+                            fromADR: false
+                        }
+                });
+            expect(mockSaveToLocalStorage.mock.calls[0][0].baseline).toBe("TEST BASELINE");
+            done();
+        })
     });
 
 });

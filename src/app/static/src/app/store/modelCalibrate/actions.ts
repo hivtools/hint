@@ -4,10 +4,9 @@ import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {api} from "../../apiService";
 import {RootState} from "../../root";
 import {ModelCalibrateMutation} from "./mutations";
-import {ModelRunMutation} from "../modelRun/mutations";
-import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
-import {freezer} from "../../utils";
+import {FilterOption, ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {switches} from "../../featureSwitches";
+import {Dict} from "../../types";
 
 export interface ModelCalibrateActions {
     fetchModelCalibrateOptions: (store: ActionContext<ModelCalibrateState, RootState>) => void
@@ -70,19 +69,25 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                 .get<ModelResultResponse>(`model/calibrate/result/${calibrateId}`);
 
             if (response) {
-                const data = freezer.deepFreeze(response.data);
-                commit({type: `modelRun/${ModelRunMutation.RunResultFetched}`, payload: data}, {root: true});
+                const data = response.data;
+                commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: data});
                 commit({type: ModelCalibrateMutation.WarningsFetched, payload: data.warnings});
 
                 if (data && data.plottingMetadata && data.plottingMetadata.barchart.defaults) {
                     const defaults = data.plottingMetadata.barchart.defaults;
+                    const unfrozenDefaultOptions= Object.keys(defaults.selected_filter_options)
+                        .reduce((dict, key) => {
+                            dict[key] = [...defaults.selected_filter_options[key]];
+                            return dict;
+                        }, {} as Dict<FilterOption[]>);
+
                     commit({
                             type: "plottingSelections/updateBarchartSelections",
                             payload: {
                                 indicatorId: defaults.indicator_id,
                                 xAxisId: defaults.x_axis_id,
                                 disaggregateById: defaults.disaggregate_by_id,
-                                selectedFilterOptions: {...defaults.selected_filter_options}
+                                selectedFilterOptions: unfrozenDefaultOptions
                             }
                         },
                         {root: true});
@@ -108,8 +113,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             .get<ModelResultResponse>(`model/calibrate/plot/${calibrateId}`);
 
         if (response) {
-            const data = freezer.deepFreeze(response.data);
-            commit(ModelCalibrateMutation.SetPlotData, data);
+            commit(ModelCalibrateMutation.SetPlotData, response.data);
         }
     }
 };

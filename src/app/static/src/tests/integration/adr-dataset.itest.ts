@@ -216,8 +216,12 @@ describe("ADR dataset-related actions", () => {
         await surveyAndProgramActions.importProgram({commit, dispatch, rootState} as any,
             "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/programme.csv");
 
-        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
-        expect(commit.mock.calls[1][0]["payload"]["filename"])
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "genericChart/ClearDataset",
+            payload: "art"
+        });
+        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
+        expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("programme.csv")
     }, 7000);
 
@@ -228,8 +232,12 @@ describe("ADR dataset-related actions", () => {
         await surveyAndProgramActions.importANC({commit, rootState} as any,
             "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/anc.csv");
 
-        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
-        expect(commit.mock.calls[1][0]["payload"]["filename"])
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "genericChart/ClearDataset",
+            payload: "anc"
+        });
+        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
+        expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("anc.csv");
     }, 7000);
 
@@ -251,16 +259,19 @@ describe("ADR dataset-related actions", () => {
                     outputSummary: {description: "summary"},
                     outputZip: {description: "zip"}
                 }
+            },
+            adrUpload: {
+                uploadComplete: false
             }
         };
 
-        const uploadFilesPayload = [
+        const uploadFilesPayload = {createRelease: false, uploadFiles: [
             {
                 resourceType: "type1",
                 resourceFilename: "file1",
                 resourceId: "id1"
             }
-        ] as UploadFile[]
+        ] as UploadFile[]}
 
         await adrUploadActions.uploadFilesToADR({commit, dispatch, rootState: root} as any, uploadFilesPayload);
 
@@ -274,5 +285,37 @@ describe("ADR dataset-related actions", () => {
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("getUploadFiles");
     }, 7000);
+
+    it("attempts to create release and gets appropriate error", async () => {
+        const commit = jest.fn();
+
+        const root = {
+            ...rootState,
+            baseline: {
+                selectedDataset: {
+                    id: "datasetId"
+                }
+            } as any,
+            projects: {
+                currentProject: {
+                    name: "projectName",
+                    id: 1,
+                    versions: []
+                },
+                currentVersion: {
+                    versionNumber: 1,
+                    id: "1",
+                    created: "then",
+                    updated: "now"
+                }
+            }
+        };
+
+        await adrUploadActions.createRelease({commit, rootState: root} as any);
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ReleaseFailed");
+        expect(commit.mock.calls[0][0]["payload"]).toStrictEqual({"detail": "Not found: Dataset not found", "error": "ADR_ERROR"});
+    });
 
 });
