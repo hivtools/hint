@@ -1,3 +1,7 @@
+# hint 1.88.2
+
+* Output barchart x-axis should remain in correct order after updates
+
 # hint 1.88.1
 
 * Bug: ADR access level incorrectly displayed as 'Read only' on reload

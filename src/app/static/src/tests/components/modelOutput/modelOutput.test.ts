@@ -17,12 +17,12 @@ import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
 import Choropleth from "../../../app/components/plots/choropleth/Choropleth.vue";
 import BubblePlot from "../../../app/components/plots/bubble/BubblePlot.vue";
 import {expectTranslated} from "../../testHelpers";
-import {BarchartIndicator} from "../../../app/types";
+import {BarchartIndicator, Filter} from "../../../app/types";
 import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
 
 const localVue = createLocalVue();
 
-function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}) {
+function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"]) {
     const store = new Vuex.Store({
         state: emptyState(),
         modules: {
@@ -55,7 +55,7 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                 },
                 getters: {
                     barchartIndicators: jest.fn().mockReturnValue(["TEST BARCHART INDICATORS"]),
-                    barchartFilters: jest.fn().mockReturnValue(["TEST BAR FILTERS"]),
+                    barchartFilters: jest.fn().mockReturnValue(barchartFilters),
                     bubblePlotIndicators: jest.fn().mockReturnValue(["TEST BUBBLE INDICATORS"]),
                     bubblePlotFilters: jest.fn().mockReturnValue(["TEST BUBBLE FILTERS"]),
                     choroplethFilters: jest.fn().mockReturnValue(["TEST CHORO FILTERS"]),
@@ -73,8 +73,8 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                         xAxisId: "region",
                         disaggregateById: "age",
                         selectedFilterOptions: {
-                            region: {id: "r1", label: "region 1"},
-                            age: {id: "a1", label: "0-4"}
+                            region: [{id: "r1", label: "region 1"}],
+                            age: [{id: "a1", label: "0-4"}]
                         }
                     },
                     bubble: {test: "TEST BUBBLE SELECTIONS"} as any,
@@ -214,8 +214,8 @@ describe("ModelOutput component", () => {
             xAxisId: "region",
             disaggregateById: "age",
             selectedFilterOptions: {
-                region: {id: "r1", label: "region 1"},
-                age: {id: "a1", label: "0-4"}
+                region: [{id: "r1", label: "region 1"}],
+                age: [{id: "a1", label: "0-4"}]
             }
         });
     });
@@ -304,8 +304,155 @@ describe("ModelOutput component", () => {
         expect(store.state.plottingSelections.colourScales.output).toBe(bubbleSizeScales);
     });
 
+    it("commits updated selections from barchart and orders them according to filter", () => {
+        const testBarchartFilters = [
+            {
+                id: "region",
+                options: [
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"}
+                ]
+            }
+        ]
+        const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const currentBarchartSelections = store.state.plottingSelections.barchart
+
+        const barchart = wrapper.find(BarChartWithFilters);
+        const barchartSelections = {
+            selectedFilterOptions: {
+                region: [
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"}
+                ],
+                age: [
+                    {id: "a1", label: "0-4"},
+                ]
+            },
+            xAxisId: "region"
+        };
+
+        const expectedBarchartSelections = {...currentBarchartSelections }
+        expectedBarchartSelections.selectedFilterOptions.region = testBarchartFilters[0].options
+
+        barchart.vm.$emit("update", barchartSelections);
+        expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
+    });
+
+    it("commits updated selections from barchart as normal if no matching xAxis key is provided", () => {
+        const testBarchartFilters = [
+            {
+                id: "region",
+                options: [
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"}
+                ]
+            }
+        ]
+        const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const currentBarchartSelections = store.state.plottingSelections.barchart
+
+        const barchart = wrapper.find(BarChartWithFilters);
+        const barchartSelections = {
+            selectedFilterOptions: {
+                region: [
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"}
+                ],
+                age: [
+                    {id: "a1", label: "0-4"},
+                ]
+            },
+        };
+
+        const expectedBarchartSelections = {...currentBarchartSelections }
+        expectedBarchartSelections.selectedFilterOptions.region = barchartSelections.selectedFilterOptions.region
+
+        barchart.vm.$emit("update", barchartSelections);
+        expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
+    });
+
+    it("commits updated selections from barchart as normal if no barchart filters are provided", () => {
+        const testBarchartFilters: Filter[] = []
+        const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const currentBarchartSelections = store.state.plottingSelections.barchart
+
+        const barchart = wrapper.find(BarChartWithFilters);
+        const barchartSelections = {
+            selectedFilterOptions: {
+                region: [
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"}
+                ],
+                age: [
+                    {id: "a1", label: "0-4"},
+                ]
+            },
+            xAxisId: "region"
+        };
+
+        const expectedBarchartSelections = {...currentBarchartSelections }
+        expectedBarchartSelections.selectedFilterOptions.region = barchartSelections.selectedFilterOptions.region
+
+        barchart.vm.$emit("update", barchartSelections);
+        expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
+    });
+
+    it("commits updated selections from barchart and orders them according to nested filter", () => {
+        const testBarchartFilters = [
+            {
+                id: "region",
+                options: [{
+                    children: [
+                    { id: "r0", children: [{ id: "r0.0"}]},
+                    { id: "r1", children: [{ id: "r1.0"}]},
+                    { id: "r2"}]}
+                ]
+            }
+        ]
+        const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const currentBarchartSelections = store.state.plottingSelections.barchart
+
+        const barchart = wrapper.find(BarChartWithFilters);
+        const barchartSelections = {
+            selectedFilterOptions: {
+                region: [
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"},
+                    {id: "r0.0", label: "region 0.0"},
+                    {id: "r1.0", label: "region 1.0"}
+                ],
+                age: [
+                    {id: "a1", label: "0-4"},
+                ]
+            },
+            xAxisId: "region"
+        };
+
+        const expectedBarchartSelections = {...currentBarchartSelections }
+        expectedBarchartSelections.selectedFilterOptions.region = [
+            {id: "r0", label: "region 0"},
+            {id: "r0.0", label: "region 0.0"},
+            {id: "r1", label: "region 1"},
+            {id: "r1.0", label: "region 1.0"},
+            {id: "r2", label: "region 2"}
+        ]
+
+        barchart.vm.$emit("update", barchartSelections);
+        expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
+    });
+
     it("renders choropleth table", () => {
-        const store = getStore();
+        const store = getStore({selectedTab: "map"});
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
         const table = wrapper.find(AreaIndicatorsTable);
@@ -401,8 +548,8 @@ describe("ModelOutput component", () => {
             xAxisId: "region",
             disaggregateById: "age",
             selectedFilterOptions: {
-                region: {id: "r1", label: "region 1"},
-                age: {id: "a1", label: "0-4"}
+                region: [{id: "r1", label: "region 1"}],
+                age: [{id: "a1", label: "0-4"}]
             }
         });
         expect(table.props().tableData).toStrictEqual(["TEST DATA"]);

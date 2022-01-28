@@ -47,7 +47,7 @@
                     :indicators="barchartIndicators"
                     :selections="barchartSelections"
                     :formatFunction="formatBarchartValue"
-                    @update="updateBarchartSelections({payload: $event})"></bar-chart-with-filters>
+                    @update="updateBarchartSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <area-indicators-table class="col-md-9"
@@ -100,7 +100,7 @@
     import {BarchartIndicator, Filter, FilterConfig, FilterOption} from "@reside-ic/vue-charts/src/bar/types";
     import {BarChartWithFilters} from "@reside-ic/vue-charts";
 
-    import {mapGettersByNames, mapMutationByName, mapMutationsByNames, mapStateProp, mapStateProps,} from "../../utils";
+    import {mapGetterByName, mapGettersByNames, mapMutationByName, mapMutationsByNames, mapStateProp, mapStateProps, flattenOptions} from "../../utils";
     import {
         BarchartSelections,
         BubblePlotSelections,
@@ -114,8 +114,8 @@
     import {Language, Translations} from "../../store/translations/locales";
     import {inactiveFeatures} from "../../main";
     import {RootState} from "../../root";
-    import {LevelLabel} from "../../types";
-    import {ChoroplethIndicatorMetadata} from "../../generated";
+    import {LevelLabel, Dict} from "../../types";
+    import {ChoroplethIndicatorMetadata, NestedFilterOption} from "../../generated";
     import {formatOutput} from "../plots/utils";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
 
@@ -127,11 +127,12 @@
 
     interface Methods {
         tabSelected: (tab: string) => void
-        updateBarchartSelections: (data: BarchartSelections) => void
+        updateBarchartSelections: (data: {payload: BarchartSelections}) => void
         updateBubblePlotSelections: (data: BubblePlotSelections) => void
         updateOutputColourScales: (colourScales: ScaleSelections) => void
         updateOutputBubbleSizeScales: (colourScales: ScaleSelections) => void
         formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => string
+        updateBarchartSelectionsAndXAxisOrder: (data: BarchartSelections) => void
     }
 
     interface Computed {
@@ -156,6 +157,7 @@
         filteredChoroplethIndicators: ChoroplethIndicatorMetadata[],
         filteredBarchartIndicators: BarchartIndicator[],
         filteredBubblePlotIndicators: ChoroplethIndicatorMetadata[],
+        flattenedXAxisFilterOptionIds: string[]
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
@@ -223,6 +225,19 @@
                     disaggLabel: i18next.t("disaggBy", this.currentLanguage),
                     filters: this.barchartFilters
                 }
+            },
+            flattenedXAxisFilterOptionIds(){
+                const xAxisId = this.barchartSelections?.xAxisId
+                let ids: string[] = []
+                if (xAxisId && this.barchartFilters?.length){
+                    const filter = this.barchartFilters.find((f: Filter) => f.id === xAxisId)
+                    if (filter?.options.length && (filter.options[0] as NestedFilterOption).children){
+                        ids = Object.keys(flattenOptions(filter.options))
+                    } else if (filter?.options) {
+                        ids = filter.options.map((option: FilterOption) => option.id)
+                    }
+                }
+                return ids
             }
         },
         methods: {
@@ -232,6 +247,21 @@
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected),
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
+            },
+            updateBarchartSelectionsAndXAxisOrder(data){
+                const payload = {...this.barchartSelections, ...data}
+                if (data.xAxisId && data.selectedFilterOptions){
+                    const { xAxisId, selectedFilterOptions } = data
+                    if (selectedFilterOptions[xAxisId] && this.flattenedXAxisFilterOptionIds.length){
+                        // Sort the selected filter values according to the order given the barchart filters
+                        const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
+                            return this.flattenedXAxisFilterOptionIds.indexOf(a.id) - this.flattenedXAxisFilterOptionIds.indexOf(b.id);
+                        });
+                        payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
+                    }
+                }
+                // if unable to do the above, just updates the barchart as normal
+                this.updateBarchartSelections({payload})
             }
         },
         components: {
