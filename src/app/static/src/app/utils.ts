@@ -163,32 +163,23 @@ const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => 
 };
 
 export const flattenOptionsIdsByHierarchy = (filterOptions: NestedFilterOption[]): string[] => {
-    const result: any[] = [];
-    let layer = 0
-
-    function recursive(filterOptions: any[]){
-        const filterOptionArray = filterOptions.map((option: NestedFilterOption) => option.id)
-        if (result.length > layer){
-            result[layer] = [...result[layer],  ...filterOptionArray]
-        } else {
-            result.push(filterOptionArray)
-        }
-        const parentLayer = layer
-        filterOptions.forEach(filterOption => {
-            layer = parentLayer
-            if (filterOption.children?.length){
-                layer += 1
-                recursive(filterOption.children)
+    const result: string[] = [];
+    const recursive = (filterOptions: NestedFilterOption[]) => {
+        // 1. Push ids for the top level of options
+        filterOptions.forEach((option: NestedFilterOption) => result.push(option.id));
+        let nextLayer: NestedFilterOption[] = [];
+        // 2. Get all options at next layer and recurse
+        filterOptions.forEach((option: NestedFilterOption) => {
+            if (option.children) {
+                nextLayer = nextLayer.concat(option.children as NestedFilterOption[]);
             }
         });
-    }
-    recursive(filterOptions)
-    
-    let output: string[] = []
-    result.forEach(r => {
-        output = [...output, ...r]
-    })
-    return output;
+        if (nextLayer.length > 0) {
+            recursive(nextLayer);
+        }
+    };
+    recursive(filterOptions);
+    return result;
 };
 
 export const rootOptionChildren = (filterOptions: FilterOption[]) => {
