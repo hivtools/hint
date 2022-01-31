@@ -158,7 +158,7 @@
     },
     "subplots": {
       "columns": 3,
-      "distinctColumn": "area_name",
+      "distinctColumn": "area_id",
       "heightPerRow": 140,
       "subplotsPerPage": 99
     },

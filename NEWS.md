@@ -1,3 +1,6 @@
+# hint 1.88.3
+Use area_id to define unique areas in Input Time Series
+
 # hint 1.88.2
 
 * Output barchart x-axis should remain in correct order after updates
