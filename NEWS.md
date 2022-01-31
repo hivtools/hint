@@ -1,3 +1,7 @@
+# hint 1.88.4
+
+* Remove Projects state from localStorage
+
 # hint 1.88.3
 Use area_id to define unique areas in Input Time Series
 
