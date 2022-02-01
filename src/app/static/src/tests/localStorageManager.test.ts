@@ -108,7 +108,6 @@ describe("LocalStorageManager", () => {
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: {selectedDataType: DataType.Survey},
-            projects: mockProjectsState(),
             hintrVersion: mockHintrVersionState(),
             language: Language.en
         });
