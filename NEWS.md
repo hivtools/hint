@@ -1,6 +1,10 @@
+# hint 1.88.5
+
+* Bug fix for 'Failed to fetch result' error when reload ModelRun after failed run
+
 # hint 1.88.4
 
-* Bug fix for 'Failed to fetch result' error when reload ModelRun after failed run.
+* Remove Projects state from localStorage
 
 # hint 1.88.3
 Use area_id to define unique areas in Input Time Series
