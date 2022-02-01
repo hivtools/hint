@@ -10,7 +10,7 @@
         <div>
             <download-progress v-if="!modalOpen" id="progress"
                                :translate-key="'downloading'"
-                               :downloading="file.downloading"/>
+                               :downloading="file.preparing"/>
         </div>
         <error-alert id="error" v-if="file.error" :error="file.error"></error-alert>
     </div>

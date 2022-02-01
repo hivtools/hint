@@ -20,7 +20,7 @@
                             <help-circle-icon></help-circle-icon>
                         </span>
                     </span>
-                    <br />
+                    <br/>
                 </div>
                 <div class="form-check form-check-inline">
                     <input
@@ -36,13 +36,14 @@
                             <help-circle-icon></help-circle-icon>
                         </span>
                     </span>
-                    <br />
+                    <br/>
                 </div>
                 <div v-for="(uploadFileSection, sectionIndex) in uploadFileSections" :key="sectionIndex" class="pl-4">
                     <h5 v-if="Object.keys(uploadFileSections[1]).length > 0"
                         v-translate="sectionIndex === 0 ? 'outputFiles' : 'inputFiles'"
                         class="mt-3"></h5>
-                    <div id="output-file-id" class="mt-3" v-for="(uploadFile, key, index) in uploadFileSection" :key="uploadFile.index">
+                    <div id="output-file-id" class="mt-3" v-for="(uploadFile, key, index) in uploadFileSection"
+                         :key="uploadFile.index">
                         <div class="mt-3 form-check">
                             <input class="form-check-input"
                                    type="checkbox"
@@ -93,21 +94,24 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
-    import { HelpCircleIcon } from "vue-feather-icons";
-    import { VTooltip } from "v-tooltip";
+    import {HelpCircleIcon} from "vue-feather-icons";
+    import {VTooltip} from "v-tooltip";
     import i18next from "i18next";
-    import { Language } from "../../store/translations/locales";
-    import { RootState } from "../../root";
+    import {Language} from "../../store/translations/locales";
+    import {RootState} from "../../root";
     import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
     import {ADRState} from "../../store/adr/adr";
     import DownloadProgress from "./DownloadProgress.vue";
+    import DownloadResults from "./DownloadResults.vue";
 
     interface Methods {
-        uploadFilesToADRAction: (selectedUploadFiles: {uploadFiles: UploadFile[], createRelease: boolean}) => void;
+        uploadFilesToADRAction: (selectedUploadFiles: { uploadFiles: UploadFile[], createRelease: boolean }) => void;
         confirmUpload: () => void;
         handleCancel: () => void
         setDefaultCheckedItems: () => void
+
         translate(text: string): string;
+
         downloadSpectrum: () => void
         downloadSummary: () => void
         prepareFilesForUpload: () => boolean
@@ -118,19 +122,19 @@
         sendUploadFilesToADR: () => void
         getUploadMetadata: (id: string) => Promise<void>
         handleDownloadResult: (downloadResults: DownloadResultsDependency) => void,
-        stopPolling:(id: number) => void
+        stopPolling: (id: number) => void
     }
 
     interface Computed {
-        dataset: string
+        dataset: string | undefined,
         uploadableFiles: Dict<UploadFile>,
         uploadFileSections: Array<Dict<UploadFile>>
         currentLanguage: Language;
         uploadDisabled: boolean;
-        spectrum: Partial<DownloadResultsDependency>,
-        summary: Partial<DownloadResultsDependency>,
-        outputSummary: string,
-        outputSpectrum: string,
+        spectrum: DownloadResultsDependency,
+        summary: DownloadResultsDependency,
+        outputSummary: string | undefined,
+        outputSpectrum: string | undefined,
         downloadingFiles: boolean
         createRelease: boolean
     }
@@ -191,15 +195,15 @@
             },
             downloadIsReady() {
                 const {summary, spectrum} = this.findSelectedUploadFiles();
-                return (summary || spectrum) && (!summary || !!this.summary.complete) && (!spectrum || !!this.spectrum.complete);
+                return (summary || spectrum) && (!summary || this.summary.complete) && (!spectrum || this.spectrum.complete);
             },
             getSummaryDownload() {
-                if (!this.summary.downloading && !this.summary.complete) {
+                if (!this.summary.preparing && !this.summary.complete) {
                     this.downloadSummary();
                 }
             },
             getSpectrumDownload() {
-                if (!this.spectrum.downloading && !this.spectrum.complete) {
+                if (!this.spectrum.preparing && !this.spectrum.complete) {
                     this.downloadSpectrum();
                 }
             },
@@ -207,7 +211,7 @@
                 this.$emit("close")
             },
             translate(text) {
-                return i18next.t(text, { lng: this.currentLanguage });
+                return i18next.t(text, {lng: this.currentLanguage});
             },
             setDefaultCheckedItems: function () {
                 this.uploadFilesToAdr = [...outputFileTypes, ...inputFileTypes]
@@ -222,7 +226,7 @@
                     this.sendUploadFilesToADR();
                 }
 
-                if(downloadResults.complete) {
+                if (downloadResults.complete) {
                     this.stopPolling(downloadResults.statusPollId)
                 }
 
@@ -235,30 +239,15 @@
             getUploadMetadata: mapActionByName("metadata", "getAdrUploadMetadata")
         },
         computed: {
-            ...mapStateProps<DownloadResultsState, keyof Computed>("downloadResults", {
-                spectrum: state => ({
-                    downloading: state.spectrum.downloading,
-                    complete: state.spectrum.complete,
-                    downloadId: state.spectrum.downloadId,
-                    statusPollId: state.spectrum.statusPollId,
-                    error: state.spectrum.error
-                }),
-                summary: state => ({
-                    downloading: state.summary.downloading,
-                    complete: state.summary.complete,
-                    downloadId: state.summary.downloadId,
-                    statusPollId: state.summary.statusPollId,
-                    error: state.summary.error
-                })
-            }),
-            ...mapStateProps<ADRState, keyof Computed>("adr", {
-                outputSpectrum: state => state.schemas?.outputZip,
-                outputSummary: state => state.schemas?.outputSummary
-            }),
-            ...mapStateProps<BaselineState, keyof Computed>("baseline", {
-                dataset: state => state.selectedDataset?.title
-            }),
-            createRelease(){
+            spectrum: mapStateProp<DownloadResultsState, DownloadResultsDependency>("downloadResults",
+                (state: DownloadResultsState) => state.spectrum),
+            summary: mapStateProp<DownloadResultsState, DownloadResultsDependency>("downloadResults",
+                (state: DownloadResultsState) => state.summary),
+            outputSpectrum: mapStateProp<ADRState, string | undefined>("adr", state => state.schemas?.outputZip),
+            outputSummary: mapStateProp<ADRState, string | undefined>("adr", state => state.schemas?.outputSummary),
+            dataset: mapStateProp<BaselineState, string | undefined>("baseline",
+                (state: BaselineState) => state.selectedDataset?.title),
+            createRelease() {
                 return this.choiceUpload === 'createRelease';
             },
             currentLanguage: mapStateProp<RootState, Language>(
@@ -282,11 +271,11 @@
                     return [];
                 }
             },
-            uploadDisabled(){
+            uploadDisabled() {
                 return !this.uploadFilesToAdr.length || this.downloadingFiles;
             },
             downloadingFiles() {
-                return !!this.spectrum.downloading || !!this.summary.downloading;
+                return this.spectrum.preparing || this.summary.preparing;
             }
         },
         components: {
@@ -295,8 +284,8 @@
             DownloadProgress
         },
         watch: {
-            choiceUpload(){
-                if (this.createRelease){
+            choiceUpload() {
+                if (this.createRelease) {
                     this.setDefaultCheckedItems()
                 }
             },
@@ -316,7 +305,7 @@
         directives: {
             tooltip: VTooltip,
         },
-        mounted(){
+        mounted() {
             this.setDefaultCheckedItems()
         }
     });

@@ -36,7 +36,7 @@ import {
 } from "../app/store/plottingSelections/plottingSelections";
 import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
 import {ColourScalesState, initialColourScalesState} from "../app/store/plottingSelections/plottingSelections";
-import {Dataset, DatasetResource, Release} from "../app/types";
+import {Dataset, DatasetResource, DownloadResultsDependency, Release} from "../app/types";
 import {initialProjectsState, ProjectsState} from "../app/store/projects/projects";
 import {initialModelCalibrateState, ModelCalibrateState} from "../app/store/modelCalibrate/modelCalibrate";
 import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrVersion/hintrVersion";
@@ -444,3 +444,14 @@ export const mockWarning = (props: Partial<Warning> = {}): Warning => {
         ...props
     };
 };
+
+export const mockDownloadResultsDependency = (props: Partial<DownloadResultsDependency> = {}): DownloadResultsDependency => {
+    return {
+        downloadId: "",
+        preparing: false,
+        statusPollId: -1,
+        complete: false,
+        error: null,
+        ...props
+    }
+}

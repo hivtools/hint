@@ -6,7 +6,7 @@ import {
     mockADRState,
     mockADRUploadState,
     mockBaselineState,
-    mockDatasetResource,
+    mockDatasetResource, mockDownloadResultsDependency,
     mockDownloadResultsState, mockError, mockMetadataState
 } from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
@@ -80,25 +80,25 @@ describe(`uploadModal `, () => {
     }
 
     const mockDownloadResults = {
-        summary: {complete: false, downloading: false } as any,
-        spectrum: {complete: false, downloading: false} as any
+        summary: mockDownloadResultsDependency({complete: false, preparing: false }),
+        spectrum: mockDownloadResultsDependency({complete: false, preparing: false})
     } as any
 
     const failedDownloadResults = {
-        summary: {
-            downloading: false,
+        summary: mockDownloadResultsDependency({
+            preparing: false,
             complete: false,
             error: null,
-            downloadId: null,
+            downloadId: "",
             statusPollId: 123
-        },
-        spectrum: {
-            downloading: false,
+        }),
+        spectrum: mockDownloadResultsDependency({
+            preparing: false,
             complete: false,
             error: mockError("TEST FAILED"),
-            downloadId: null,
+            downloadId: "",
             statusPollId: 123
-        }
+        })
     }
 
     const mockSpectrumDownload = jest.fn();
@@ -309,9 +309,9 @@ describe(`uploadModal `, () => {
 
     it(`can send upload files to ADR when download status is complete`, async () => {
         const downloadResults = {
-            summary: {complete: true, downloading: false} as any,
-            spectrum: {complete: true, downloading: false} as any,
-            coarseOutput: {} as any
+            summary: mockDownloadResultsDependency({complete: true, preparing: false}),
+            spectrum: mockDownloadResultsDependency({complete: true, preparing: false}),
+            coarseOutput: mockDownloadResultsDependency()
         }
         const store = createStore()
         const wrapper = mount(UploadModal, {store})
@@ -336,9 +336,9 @@ describe(`uploadModal `, () => {
 
     it(`can set createRelease and upload files in uploadFilesToAdrAction`, async () => {
         const downloadResults = {
-            summary: {complete: true, downloading: false} as any,
-            spectrum: {complete: true, downloading: false} as any,
-            coarseOutput: {} as any
+            summary: mockDownloadResultsDependency({complete: true, preparing: false}),
+            spectrum: mockDownloadResultsDependency({complete: true, preparing: false}),
+            coarseOutput: mockDownloadResultsDependency()
         }
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
@@ -358,9 +358,9 @@ describe(`uploadModal `, () => {
 
     it(`can set upload files in uploadFilesToAdrAction and not set createRelease`, async () => {
         const downloadResults = {
-            summary: {complete: true, downloading: false} as any,
-            spectrum: {complete: true, downloading: false} as any,
-            coarseOutput: {} as any
+            summary: mockDownloadResultsDependency({complete: true, preparing: false}),
+            spectrum: mockDownloadResultsDependency({complete: true, preparing: false}),
+            coarseOutput: mockDownloadResultsDependency()
         }
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
@@ -382,9 +382,9 @@ describe(`uploadModal `, () => {
 
     it(`can remove some upload files from uploadFilesToAdrAction`, async () => {
         const downloadResults = {
-            summary: {complete: true, downloading: false} as any,
-            spectrum: {complete: true, downloading: false} as any,
-            coarseOutput: {} as any
+            summary: mockDownloadResultsDependency({complete: true, preparing: false}),
+            spectrum: mockDownloadResultsDependency({complete: true, preparing: false}),
+            coarseOutput: mockDownloadResultsDependency()
         }
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
@@ -410,8 +410,8 @@ describe(`uploadModal `, () => {
 
     it(`ok button is enabled when inputs are set and triggers close modal`, async () => {
         const downloadResults = {
-            summary: {complete: true} as any,
-            spectrum: {complete: true} as any
+            summary: mockDownloadResultsDependency({complete: true}),
+            spectrum: mockDownloadResultsDependency({complete: true})
         }
         const wrapper = mount(UploadModal, {store: createStore(fakeMetadata, downloadResults)})
 
@@ -429,10 +429,10 @@ describe(`uploadModal `, () => {
         expect(wrapper.emitted("close").length).toBe(1)
     });
 
-    it(`ok button is enabled when inputs are set and does not triggers close modal when downloading files`, async () => {
+    it(`ok button is enabled when inputs are set and does not trigger close modal when downloading files`, async () => {
         const downloadResults = {
-            summary: {downloading: true} as any,
-            spectrum: {downloading: true} as any
+            summary: mockDownloadResultsDependency({preparing: true}),
+            spectrum: mockDownloadResultsDependency({preparing: true})
         }
         const store = createStore(fakeMetadata, downloadResults)
         const wrapper = mount(UploadModal, {store})
@@ -477,8 +477,8 @@ describe(`uploadModal `, () => {
 
     it("can clear timer when download action is complete", async () => {
         const store = createStore({outputZip: fakeMetadata.outputZip}, {
-            summary: {complete: false, downloading: false } as any,
-            spectrum: {complete: false, downloading: false } as any
+            summary: mockDownloadResultsDependency({complete: false}),
+            spectrum: mockDownloadResultsDependency({complete: false})
         });
         const wrapper = mount(UploadModal, {store})
 
@@ -585,8 +585,8 @@ describe(`uploadModal `, () => {
 
     it(`ok and cancel buttons are disabled when upload to ADR is in progress`, async () => {
         const downloadResults = {
-            summary: {downloading: false} as any,
-            spectrum: {downloading: true} as any
+            summary: mockDownloadResultsDependency({preparing: false}),
+            spectrum: mockDownloadResultsDependency({preparing: true})
         }
         const wrapper = mount(UploadModal,
             {
