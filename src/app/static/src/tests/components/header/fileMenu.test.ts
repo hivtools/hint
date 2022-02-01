@@ -114,7 +114,7 @@ describe("File menu", () => {
             state: {
                 baseline: {selectedDataset: null, selectedRelease: null},
                 modelRun: mockModelRunState(),
-                modelCalibrate: {result: null},
+                modelCalibrate: {result: null, calibratePlotResult: null},
                 metadata: mockMetadataState(),
                 surveyAndProgram: {selectedDataType: null},
                 language: Language.en
