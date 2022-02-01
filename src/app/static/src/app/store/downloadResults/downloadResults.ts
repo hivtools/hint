@@ -1,5 +1,4 @@
 import {RootState} from "../../root";
-import {DownloadStatusResponse} from "../../generated";
 import {Module} from "vuex";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
@@ -13,9 +12,8 @@ export interface DownloadResultsState {
 
 export const initialDownloadResults = {
     downloadId: "",
-    downloading: false,
+    preparing: false,
     statusPollId: -1,
-    status: {} as DownloadStatusResponse,
     complete: false,
     error: null
 }
