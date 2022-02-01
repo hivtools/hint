@@ -11,7 +11,8 @@ export interface ProjectsState {
     previousProjects: Project[],
     loading: boolean,
     error: Error | null,
-    versionUploadPending: boolean,
+    versionUploadInProgress: boolean,
+    queuedVersionUploadIntervalId: number;
     versionTime: Date | null,
     cloneProjectError: Error | null,
     cloningProject: boolean
@@ -24,7 +25,8 @@ export const initialProjectsState = (): ProjectsState => {
         previousProjects: [],
         loading: false,
         error: null,
-        versionUploadPending: false,
+        versionUploadInProgress: false,
+        queuedVersionUploadIntervalId: -1,
         versionTime: null,
         cloneProjectError: null,
         cloningProject: false

@@ -25,7 +25,7 @@ export interface ProjectsActions {
     createProject: (store: ActionContext<ProjectsState, RootState>, name: string) => void,
     getProjects: (store: ActionContext<ProjectsState, RootState>) => void
     getCurrentProject: (store: ActionContext<ProjectsState, RootState>) => void
-    uploadVersionState: (store: ActionContext<ProjectsState, RootState>) => void,
+    queueVersionStateUpload: (store: ActionContext<ProjectsState, RootState>) => void,
     newVersion: (store: ActionContext<ProjectsState, RootState>, note: string) => void,
     loadVersion: (store: ActionContext<ProjectsState, RootState>, version: VersionIds) => void
     deleteProject: (store: ActionContext<ProjectsState, RootState>, projectId: number) => void
@@ -113,18 +113,25 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         }
     },
 
-    async uploadVersionState(context) {
+    async queueVersionStateUpload(context) {
         const {state, commit} = context;
         if (state.currentVersion) {
-            if (!state.versionUploadPending) {
-                commit({type: ProjectsMutations.SetVersionUploadPending, payload: true});
-                setTimeout(() => {
+            // remove any existing queued upload, as this request should supersede it
+            commit({type: ProjectsMutations.ClearQueuedVersionUpload});
+
+            const queuedId: number = window.setInterval(() => {
+                // wait for any ongoing uploads to finish before starting a new one
+                if (!state.versionUploadInProgress) {
+                    commit({type: ProjectsMutations.ClearQueuedVersionUpload});
                     immediateUploadVersionState(context);
-                }, 2000);
-            }
+                }
+            }, 2000);
+
+            // record the newly queued upload
+            commit({type: ProjectsMutations.SetQueuedVersionUpload, payload: queuedId});
         }
     },
-    
+
     async updateVersionNote(context, versionPayload: versionPayload) {
         const {dispatch} = context
         const {projectId, versionId} = versionPayload.version
@@ -145,7 +152,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 
         const projectId = state.currentProject && state.currentProject.id;
         const versionId = state.currentVersion && state.currentVersion.id;
-        api<ProjectsMutations, ErrorsMutation>(context)
+        await api<ProjectsMutations, ErrorsMutation>(context)
             .withSuccess(ProjectsMutations.VersionCreated)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`project/${projectId}/version/?parent=${versionId}&note=${note}`)
@@ -243,14 +250,15 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 };
 
 async function immediateUploadVersionState(context: ActionContext<ProjectsState, RootState>) {
-    const {state, commit, rootState} = context;
+    const {commit, state, rootState} = context;
     const projectId = state.currentProject && state.currentProject.id;
     const versionId = state.currentVersion && state.currentVersion.id;
     if (projectId && versionId) {
+        commit({type: ProjectsMutations.SetVersionUploadInProgress, payload: true});
         await api<ProjectsMutations, ErrorsMutation>(context)
             .withSuccess(ProjectsMutations.VersionUploadSuccess)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`/project/${projectId}/version/${versionId}/state/`, serialiseState(rootState));
-        commit({type: ProjectsMutations.SetVersionUploadPending, payload: false});
+        commit({type: ProjectsMutations.SetVersionUploadInProgress, payload: false});
     }
 }

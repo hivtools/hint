@@ -70,16 +70,31 @@ describe("Projects mutations", () => {
         expect(state.loading).toBe(false);
     });
 
-    it("sets version upload pending", () => {
+    it("sets version upload in progress", () => {
         const state = mockProjectsState();
-        mutations[ProjectsMutations.SetVersionUploadPending](state, {payload: true});
-        expect(state.versionUploadPending).toBe(true);
+        mutations[ProjectsMutations.SetVersionUploadInProgress](state, {payload: true});
+        expect(state.versionUploadInProgress).toBe(true);
+    });
+
+    it("sets interval id of queued upload", () => {
+        const state = mockProjectsState();
+        mutations[ProjectsMutations.SetQueuedVersionUpload](state, {payload: 123});
+        expect(state.queuedVersionUploadIntervalId).toBe(123);
+    });
+
+    it("clears interval of queued upload", () => {
+        jest.useFakeTimers();
+        jest.spyOn(window, "clearInterval")
+        const state = mockProjectsState({queuedVersionUploadIntervalId: 123});
+        mutations[ProjectsMutations.ClearQueuedVersionUpload](state);
+        expect(state.queuedVersionUploadIntervalId).toBe(-1);
+        expect(clearInterval).toHaveBeenCalledTimes(1);
+        expect(clearInterval).toHaveBeenLastCalledWith(123);
     });
 
     it("VersionUploadSuccess sets versionTime", () => {
         const state = mockProjectsState();
         mutations[ProjectsMutations.VersionUploadSuccess](state);
-
         expect(state.versionTime!.valueOf()).toEqual(testNow);
     });
 
