@@ -106,6 +106,11 @@
                 this.getUserCanUpload()
             }
         },
+        mounted() {
+            if(this.selectedDataset) {
+                this.getUserCanUpload();
+            }
+        },
         directives: {
             "tooltip": VTooltip
         }

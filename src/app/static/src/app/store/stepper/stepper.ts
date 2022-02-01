@@ -53,7 +53,7 @@ export const initialStepperState = (): StepperState => {
 
 export const initialDataExplorationStepperState = (): StepperState => {
     return {
-        steps: [],
+        steps: [], // data exploration only requires activeStep, not full steps array, hence this is left empty
         activeStep: 1
     }
 };
@@ -76,5 +76,6 @@ export const dataExplorationStepper = (existingState: Partial<DataExplorationSta
         state: {...initialDataExplorationStepperState(), ...existingState && existingState.stepper},
         actions,
         mutations
+        // getters cannot be included for data exploration as they reference modules not in DataExplorationState
     };
 };

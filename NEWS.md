@@ -2,6 +2,17 @@
 
 * Persist Data Exploration step
 
+# hint 1.88.3
+Use area_id to define unique areas in Input Time Series
+
+# hint 1.88.2
+
+* Output barchart x-axis should remain in correct order after updates
+
+# hint 1.88.1
+
+* Bug: ADR access level incorrectly displayed as 'Read only' on reload
+
 # hint 1.88.0
 
 * Return calibrate_id in error report if it is available
