@@ -48,7 +48,6 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
                 result: null
             },
             stepper: rootState.stepper,
-            projects: rootState.projects,
             hintrVersion: state.hintrVersion,
             language: state.language
         };
