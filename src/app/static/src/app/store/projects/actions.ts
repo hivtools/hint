@@ -244,7 +244,6 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 
 async function immediateUploadVersionState(context: ActionContext<ProjectsState, RootState>) {
     const {state, commit, rootState} = context;
-    commit({type: ProjectsMutations.SetVersionUploadPending, payload: false});
     const projectId = state.currentProject && state.currentProject.id;
     const versionId = state.currentVersion && state.currentVersion.id;
     if (projectId && versionId) {
@@ -252,5 +251,6 @@ async function immediateUploadVersionState(context: ActionContext<ProjectsState,
             .withSuccess(ProjectsMutations.VersionUploadSuccess)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
             .postAndReturn(`/project/${projectId}/version/${versionId}/state/`, serialiseState(rootState));
+        commit({type: ProjectsMutations.SetVersionUploadPending, payload: false});
     }
 }

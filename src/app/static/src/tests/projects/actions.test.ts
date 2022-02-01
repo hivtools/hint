@@ -268,9 +268,9 @@ describe("Projects actions", () => {
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(3);
-            expect(commit.mock.calls[1][0]).toStrictEqual(
+            expect(commit.mock.calls[1][0].type).toStrictEqual(ProjectsMutations.VersionUploadSuccess);
+            expect(commit.mock.calls[2][0]).toStrictEqual(
                 {type: ProjectsMutations.SetVersionUploadPending, payload: false});
-            expect(commit.mock.calls[2][0].type).toStrictEqual(ProjectsMutations.VersionUploadSuccess);
 
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].url).toBe(url);
@@ -280,7 +280,7 @@ describe("Projects actions", () => {
         }, 2500);
     });
 
-    it("uploadVersionState commits ErrorAdded on error response", async (done) => {
+    it("uploadVersionState commits ErrorAdded on error response and unsets version pending", async (done) => {
         const commit = jest.fn();
         const state = mockProjectsState({
             currentProject: mockProject,
@@ -296,9 +296,10 @@ describe("Projects actions", () => {
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(3);
-            expect(commit.mock.calls[2][0].type).toStrictEqual(`errors/${ErrorsMutation.ErrorAdded}`);
-            expect(commit.mock.calls[2][0].payload.detail).toStrictEqual("TEST ERROR");
-
+            expect(commit.mock.calls[1][0].type).toStrictEqual(`errors/${ErrorsMutation.ErrorAdded}`);
+            expect(commit.mock.calls[1][0].payload.detail).toStrictEqual("TEST ERROR");
+            expect(commit.mock.calls[2][0]).toStrictEqual(
+                {type: ProjectsMutations.SetVersionUploadPending, payload: false});
             done();
         }, 2500);
     });
@@ -330,12 +331,11 @@ describe("Projects actions", () => {
             expect(mockAxios.history.post[1].url).toBe(url);
 
             expect(commit.mock.calls.length).toBe(3);
-            expect(commit.mock.calls[0][0].type).toBe(ProjectsMutations.SetVersionUploadPending);
-            expect(commit.mock.calls[0][0].payload).toBe(false);
-            expect(commit.mock.calls[1][0].type).toBe(ProjectsMutations.VersionUploadSuccess);
+            expect(commit.mock.calls[0][0].type).toBe(ProjectsMutations.VersionUploadSuccess);
+            expect(commit.mock.calls[1][0].type).toBe(ProjectsMutations.SetVersionUploadPending);
+            expect(commit.mock.calls[1][0].payload).toBe(false);
             expect(commit.mock.calls[2][0].type).toBe(ProjectsMutations.VersionCreated);
             expect(commit.mock.calls[2][0].payload).toStrictEqual(newVersion);
-
             done();
         });
     });
