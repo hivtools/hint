@@ -4,6 +4,7 @@ import {login, rootState} from "./integrationTest";
 import {getFormData} from "./helpers";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
+import {mockSurveyAndProgramState} from "../mocks";
 
 describe("Survey and programme actions", () => {
 
@@ -93,7 +94,7 @@ describe("Survey and programme actions", () => {
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
-        await actions.getSurveyAndProgramData({commit, rootState} as any);
+        await actions.getSurveyAndProgramData({commit, rootState, state: mockSurveyAndProgramState} as any);
         expect(commit.mock.calls.find(c => c[0]["type"] == SurveyAndProgramMutation.SurveyUpdated)[0]["payload"]).toBe(null);
     });
 
@@ -115,7 +116,7 @@ describe("Survey and programme actions", () => {
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
-        await actions.getSurveyAndProgramData({commit, rootState} as any);
+        await actions.getSurveyAndProgramData({commit, rootState, state: mockSurveyAndProgramState()} as any);
         expect(commit.mock.calls.find(c => c[0]["type"] == SurveyAndProgramMutation.ProgramUpdated)[0]["payload"]).toBe(null);
     });
 
@@ -137,7 +138,7 @@ describe("Survey and programme actions", () => {
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
-        await actions.getSurveyAndProgramData({commit, rootState} as any);
+        await actions.getSurveyAndProgramData({commit, rootState, state: mockSurveyAndProgramState()} as any);
         expect(commit.mock.calls.find(c => c[0]["type"] == SurveyAndProgramMutation.ANCUpdated)[0]["payload"]).toBe(null);
     });
 
