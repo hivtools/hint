@@ -303,11 +303,10 @@ describe("Baseline actions", () => {
         "file.txt",
         mockFormData,
         actions.uploadPopulation);
+    const mockShape = mockShapeResponse();
+    const mockPopulation = mockPopulationResponse();
 
-    it("gets baseline data, commits it and marks state as ready", async () => {
-
-        const mockShape = mockShapeResponse();
-        const mockPopulation = mockPopulationResponse();
+    const prepareAxiosForGetBaselineData = () => {
         mockAxios.onGet(`/baseline/pjnz/`)
             .reply(200, mockSuccess({data: {country: "Malawi"}, filename: "test.pjnz"}));
 
@@ -316,11 +315,9 @@ describe("Baseline actions", () => {
 
         mockAxios.onGet(`/baseline/population/`)
             .reply(200, mockSuccess(mockPopulation));
+    };
 
-        const commit = jest.fn();
-        const dispatch = jest.fn();
-        await actions.getBaselineData({commit, dispatch, rootState} as any);
-
+    const expectGetBaselineDataCommits = (commit: Mock) => {
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
         expect(calls).toContain(BaselineMutation.PJNZUpdated);
         expect(calls).toContain(BaselineMutation.ShapeUpdated);
@@ -330,6 +327,58 @@ describe("Baseline actions", () => {
         const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
         expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(4);
         //ready payload is true, which is frozen by definition
+    };
+
+    it("gets baseline data, commits it and marks state as ready", async () => {
+        prepareAxiosForGetBaselineData();
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = mockBaselineState();
+        await actions.getBaselineData({commit, dispatch, state, rootState} as any);
+
+        expectGetBaselineDataCommits(commit);
+        expect(dispatch.mock.calls[0][0]).toBe("validate");
+    });
+
+    it("getBaselineData dispatches plotting metadata fetch if iso3 is set and no plotting metadata", async () => {
+        prepareAxiosForGetBaselineData();
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = mockBaselineState({iso3: "MWI"});
+        await actions.getBaselineData({commit, dispatch, state, rootState} as any);
+
+        expectGetBaselineDataCommits(commit);
+
+        expect(dispatch.mock.calls.length).toBe(2);
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getPlottingMetadata");
+        expect(dispatch.mock.calls[0][1]).toBe("MWI");
+        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
+
+        expect(dispatch.mock.calls[1][0]).toBe("validate");
+    });
+
+    it("getBaselineData does not dispatch plotting metadata fetch if iso3 is set and plotting metadata exists", async () => {
+        prepareAxiosForGetBaselineData();
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = mockBaselineState({iso3: "MWI"});
+        const rootStateWithMetadata = {
+            ...rootState,
+            metadata: {
+                plottingMetadata: {
+                    data: "test data"
+                } as any
+            }
+        };
+
+        await actions.getBaselineData({commit, dispatch, state, rootState: rootStateWithMetadata} as any);
+
+        expectGetBaselineDataCommits(commit);
+
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("validate");
     });
 
     it("commits response on validate", async () => {
@@ -386,7 +435,8 @@ describe("Baseline actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.getBaselineData({commit, dispatch, rootState} as any);
+        const state = mockBaselineState();
+        await actions.getBaselineData({commit, dispatch, state, rootState} as any);
 
         expect(commit).toBeCalledTimes(1);
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.Ready);
