@@ -215,7 +215,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
     },
 
     async getBaselineData(context) {
-        const {commit, dispatch} = context;
+        const {commit, dispatch, state, rootState} = context;
         await Promise.all([
             api<BaselineMutation, BaselineMutation>(context)
                 .ignoreErrors()
@@ -233,6 +233,11 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
                 .freezeResponse()
                 .get<PjnzResponse>("/baseline/shape/")
         ]);
+
+        // Fetch plotting metadata if not present
+        if (state.iso3 && !rootState.metadata.plottingMetadata) {
+            await dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
+        }
 
         await dispatch('validate');
 

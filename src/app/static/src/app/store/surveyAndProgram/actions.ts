@@ -198,7 +198,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
     },
 
     async getSurveyAndProgramData(context) {
-        const {commit} = context;
+        const {commit, state} = context;
         await Promise.all(
             [
                 api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
@@ -217,6 +217,12 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     .freezeResponse()
                     .get<AncResponse>(getUrlWithQuery(context, "/disease/anc/"))
             ]);
+
+        // Set selectedDataType if necessary
+        if (state.selectedDataType === null && (state.survey || state.program || state.anc)) {
+            const payload = state.survey ? DataType.Survey : state.program ? DataType.Program : DataType.ANC;
+            commit({type: SurveyAndProgramMutation.SelectedDataTypeUpdated, payload});
+        }
 
         commit({type: SurveyAndProgramMutation.Ready, payload: true});
     },
