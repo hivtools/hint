@@ -338,6 +338,7 @@ describe("Baseline actions", () => {
         await actions.getBaselineData({commit, dispatch, state, rootState} as any);
 
         expectGetBaselineDataCommits(commit);
+        expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("validate");
     });
 

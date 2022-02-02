@@ -286,8 +286,7 @@ describe("Survey and programme actions", () => {
         });
     }
 
-    it("gets data, commits it and marks state ready", async () => {
-
+    const prepareAxiosForGetSurveyAndProgramData = () => {
         mockAxios.onGet(`/disease/survey/?strict=true`)
             .reply(200, mockSuccess(mockSurveyResponse()));
 
@@ -296,10 +295,9 @@ describe("Survey and programme actions", () => {
 
         mockAxios.onGet(`/disease/anc/?strict=true`)
             .reply(200, mockSuccess(mockAncResponse()));
+    };
 
-        const commit = jest.fn();
-        await actions.getSurveyAndProgramData({commit, rootState} as any);
-
+    const expectGetSurveyAndProgramDataCommits = (commit: Mock) => {
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
         expect(calls).toContain(SurveyAndProgramMutation.SurveyUpdated);
         expect(calls).toContain(SurveyAndProgramMutation.ProgramUpdated);
@@ -307,9 +305,89 @@ describe("Survey and programme actions", () => {
         expect(calls).toContain(SurveyAndProgramMutation.Ready);
 
         const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
-        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(4);
+        expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(commit.mock.calls.length);
         //ready payload is true, which is frozen by definition
+    };
 
+    it("gets data, commits it and marks state ready", async () => {
+        prepareAxiosForGetSurveyAndProgramData();
+
+        const commit = jest.fn();
+        const state = mockSurveyAndProgramState();
+        await actions.getSurveyAndProgramData({commit, state, rootState} as any);
+
+        expectGetSurveyAndProgramDataCommits(commit);
+        expect(commit.mock.calls.length).toBe(4);
+    });
+
+    it("sets selectedDataType to survey if not set, and survey available", async () => {
+       prepareAxiosForGetSurveyAndProgramData();
+
+        const commit = jest.fn();
+        const state = mockSurveyAndProgramState({
+            survey: {data: "testSurveyData"},
+            program: {data: "testProgData"},
+            anc: {data: "testANCData"}
+        } as any);
+
+        await actions.getSurveyAndProgramData({commit, state, rootState} as any);
+
+        expectGetSurveyAndProgramDataCommits(commit);
+        expect(commit.mock.calls.length).toBe(5);
+        expect(commit.mock.calls[3][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
+    });
+
+    it("sets selectedDataType to program if not set, and program available", async () => {
+        prepareAxiosForGetSurveyAndProgramData();
+
+        const commit = jest.fn();
+        const state = mockSurveyAndProgramState({
+            survey: null,
+            program: {data: "testProgData"},
+            anc: {data: "testANCData"}
+        } as any);
+
+        await actions.getSurveyAndProgramData({commit, state, rootState} as any);
+
+        expectGetSurveyAndProgramDataCommits(commit);
+        expect(commit.mock.calls.length).toBe(5);
+        expect(commit.mock.calls[3][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Program});
+    });
+
+    it("sets selectedDataType to anc if not set, and anc available", async () => {
+        prepareAxiosForGetSurveyAndProgramData();
+
+        const commit = jest.fn();
+        const state = mockSurveyAndProgramState({
+            survey: null,
+            program: null,
+            anc: {data: "testANCData"}
+        } as any);
+
+        await actions.getSurveyAndProgramData({commit, state, rootState} as any);
+
+        expectGetSurveyAndProgramDataCommits(commit);
+        expect(commit.mock.calls.length).toBe(5);
+        expect(commit.mock.calls[3][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.ANC});
+    });
+
+    it("does not set selectedDataType if already set and data available", async () => {
+        prepareAxiosForGetSurveyAndProgramData();
+
+        const commit = jest.fn();
+        const state = mockSurveyAndProgramState({
+            selectedDataType: DataType.ANC,
+            survey: {data: "testSurveyData"},
+            program: {data: "testProgData"},
+            anc: {data: "testANCData"}
+        } as any);
+
+        await actions.getSurveyAndProgramData({commit, state, rootState} as any);
+
+        expectGetSurveyAndProgramDataCommits(commit);
+        expect(commit.mock.calls.length).toBe(4);
+        const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
+        expect(calls).not.toContain(SurveyAndProgramMutation.SelectedDataTypeUpdated);
     });
 
     it("it validates, commits and marks state ready", async () => {
@@ -405,7 +483,8 @@ describe("Survey and programme actions", () => {
             .reply(500);
 
         const commit = jest.fn();
-        await actions.getSurveyAndProgramData({commit, rootState} as any);
+        const state = mockSurveyAndProgramState();
+        await actions.getSurveyAndProgramData({commit, state, rootState} as any);
 
         expect(commit).toBeCalledTimes(1);
         expect(commit.mock.calls[0][0]["type"]).toBe(SurveyAndProgramMutation.Ready);
