@@ -19,7 +19,7 @@
         </div>
         <stepper-navigation v-bind="navigationProps"/>
         <hr/>
-        <warning-alert v-if="activeStep !== 3" :warnings="activeStepWarnings"></warning-alert>
+        <warning-alert v-if="activeStep !== 3" :warnings="activeStepWarnings" :activeStep="activeStep"></warning-alert>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingData'"></h2>
@@ -38,7 +38,7 @@
             </div>
         </div>
         <template v-if="activeStep === 3">
-            <warning-alert :warnings="activeStepWarnings"></warning-alert>
+            <warning-alert :warnings="activeStepWarnings" :activeStep="activeStep"></warning-alert>
         </template>
         <template v-if="activeStep !== 4">
             <hr class="mt-3"/>
