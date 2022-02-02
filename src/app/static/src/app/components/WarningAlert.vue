@@ -1,8 +1,10 @@
 <template>
     <div v-if="showAlert">
         <div class="content alert alert-warning pt-0">
+            <button @click="dismissWarnings" type="button" class="close pt-2 pull-right" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
             <warning v-for="(value, key) in filteredWarnings" :key="key" :origin="key" :warnings="value" :max-lines="maxLines"></warning>
-            <button @click="dismissWarnings">Dismiss</button>
         </div>
     </div>
 </template>
@@ -54,7 +56,6 @@
                         anObject[k] = this.warnings[k]
                     }
                 });
-                console.log(this.warnings, anObject)
                 return anObject
             },
             showAlert(){
