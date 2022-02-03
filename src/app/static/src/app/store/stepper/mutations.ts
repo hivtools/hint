@@ -1,7 +1,6 @@
 import {StepperState} from "./stepper";
 import {Mutation, MutationTree} from "vuex";
 import {PayloadWithType} from "../../types";
-import {localStorageManager} from "../../localStorageManager";
 
 type StepperMutation = Mutation<StepperState>
 

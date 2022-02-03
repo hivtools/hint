@@ -1,6 +1,10 @@
-# hint 1.88.6
+# hint 1.89.1
 
 * Increase async timeouts on server
+
+# hint 1.89.0
+
+* Persist Data Exploration step
 
 # hint 1.88.5
 
