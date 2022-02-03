@@ -1,3 +1,7 @@
+# hint 1.88.6
+
+* Re-fetch plotting metadata and set selectedDataType if necessary on load
+
 # hint 1.88.5
 
 * Remove Calibrate Plot Result from localStorage

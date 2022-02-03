@@ -4,7 +4,6 @@ import {login, rootState} from "./integrationTest";
 import {getFormData} from "./helpers";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
-import {mockSurveyAndProgramState} from "../mocks";
 
 describe("Survey and programme actions", () => {
 

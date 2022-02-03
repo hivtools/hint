@@ -2,7 +2,6 @@ import {actions} from "../../app/store/baseline/actions";
 import {login, rootState} from "./integrationTest";
 import {getFormData} from "./helpers";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
-import {mockBaselineState, mockRootState} from "../mocks";
 
 describe("Baseline actions", () => {
 
