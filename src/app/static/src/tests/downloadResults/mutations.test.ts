@@ -22,7 +22,7 @@ describe(`download results mutations`, () => {
 
     it("sets summary download started on SummaryDownloadStarted", () => {
         const state = mockDownloadResultsState();
-        mutations[DownloadResultsMutation.SummaryBundlingStarted](state, {payload: downloadStartedPayload});
+        mutations[DownloadResultsMutation.PreparingSummaryReport](state, {payload: downloadStartedPayload});
         expect(state.summary.preparing).toBe(true);
         expect(state.summary.downloadId).toBe("P123");
         expect(state.summary.complete).toBe(false);
@@ -47,7 +47,7 @@ describe(`download results mutations`, () => {
 
     it("set summary download status update to complete on SummaryDownloadStatusUpdated", () => {
         const state = mockDownloadResultsState();
-        mutations[DownloadResultsMutation.SummaryStatusUpdated](state, {payload: CompleteStatusResponse});
+        mutations[DownloadResultsMutation.SummaryReportStatusUpdated](state, {payload: CompleteStatusResponse});
         expect(state.summary.preparing).toBe(false);
         expect(state.summary.complete).toBe(true);
         expect(state.summary.error).toBe(null);
@@ -55,7 +55,7 @@ describe(`download results mutations`, () => {
 
     it("sets spectrum download started on SpectrumDownloadStarted", () => {
         const state = mockDownloadResultsState();
-        mutations[DownloadResultsMutation.SpectrumBundlingStarted](state, {payload: downloadStartedPayload});
+        mutations[DownloadResultsMutation.PreparingSpectrumOutput](state, {payload: downloadStartedPayload});
         expect(state.spectrum.preparing).toBe(true);
         expect(state.spectrum.downloadId).toBe("P123");
         expect(state.spectrum.complete).toBe(false);
@@ -88,7 +88,7 @@ describe(`download results mutations`, () => {
 
     it("sets coarseOutput download started on CoarseOutputDownloadStarted", () => {
         const state = mockDownloadResultsState();
-        mutations[DownloadResultsMutation.CoarseOutputBundlingStarted](state, {payload: downloadStartedPayload});
+        mutations[DownloadResultsMutation.PreparingCoarseOutput](state, {payload: downloadStartedPayload});
         expect(state.coarseOutput.preparing).toBe(true);
         expect(state.coarseOutput.downloadId).toBe("P123");
         expect(state.coarseOutput.complete).toBe(false);

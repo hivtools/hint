@@ -20,7 +20,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         const calibrateId = rootState.modelCalibrate.calibrateId
 
         const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
-            .withSuccess(DownloadResultsMutation.CoarseOutputBundlingStarted)
+            .withSuccess(DownloadResultsMutation.PreparingCoarseOutput)
             .withError(DownloadResultsMutation.CoarseOutputError)
             .get(`download/submit/coarse-output/${calibrateId}`)
 
@@ -35,7 +35,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         const calibrateId = rootState.modelCalibrate.calibrateId
 
         const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
-            .withSuccess(DownloadResultsMutation.SummaryBundlingStarted)
+            .withSuccess(DownloadResultsMutation.PreparingSummaryReport)
             .withError(DownloadResultsMutation.SummaryError)
             .get(`download/submit/summary/${calibrateId}`)
 
@@ -50,7 +50,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         const calibrateId = rootState.modelCalibrate.calibrateId
 
         const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
-            .withSuccess(DownloadResultsMutation.SpectrumBundlingStarted)
+            .withSuccess(DownloadResultsMutation.PreparingSpectrumOutput)
             .withError(DownloadResultsMutation.SpectrumError)
             .get(`download/submit/spectrum/${calibrateId}`)
 
@@ -80,7 +80,7 @@ export const getSummaryReportStatus = async function (context: ActionContext<Dow
     const {state} = context;
     const downloadId = state.summary.downloadId;
     return api<DownloadResultsMutation, DownloadResultsMutation>(context)
-        .withSuccess(DownloadResultsMutation.SummaryStatusUpdated)
+        .withSuccess(DownloadResultsMutation.SummaryReportStatusUpdated)
         .withError(DownloadResultsMutation.SummaryError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
 };
