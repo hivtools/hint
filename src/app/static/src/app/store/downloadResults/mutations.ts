@@ -4,14 +4,14 @@ import {PayloadWithType, PollingStarted} from "../../types";
 import {DownloadStatusResponse, DownloadSubmitResponse, Error} from "../../generated";
 
 export enum DownloadResultsMutation {
-    SpectrumBundlingStarted = "SpectrumBundlingStarted",
+    PreparingSpectrumOutput = "PreparingSpectrumOutput",
     SpectrumOutputStatusUpdated = "SpectrumOutputStatusUpdated",
     SpectrumError = "SpectrumError",
-    CoarseOutputBundlingStarted = "CoarseOutputBundlingStarted",
+    PreparingCoarseOutput = "PreparingCoarseOutput",
     CoarseOutputStatusUpdated = "CoarseOutputStatusUpdated",
     CoarseOutputError = "CoarseOutputError",
-    SummaryBundlingStarted = "SummaryBundlingStarted",
-    SummaryStatusUpdated = "SummaryStatusUpdated",
+    PreparingSummaryReport = "PreparingSummaryReport",
+    SummaryReportStatusUpdated = "SummaryReportStatusUpdated",
     SummaryError = "SummaryError",
     PollingStatusStarted = "PollingStatusStarted",
     ResetIds = "ResetIds"
@@ -19,7 +19,7 @@ export enum DownloadResultsMutation {
 
 export const mutations: MutationTree<DownloadResultsState> = {
 
-    [DownloadResultsMutation.SpectrumBundlingStarted](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
+    [DownloadResultsMutation.PreparingSpectrumOutput](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
         const downloadId = action.payload.id
         state.spectrum = {...state.spectrum, downloadId, preparing: true, complete: false, error: null}
     },
@@ -37,7 +37,7 @@ export const mutations: MutationTree<DownloadResultsState> = {
         state.spectrum.preparing = false
     },
 
-    [DownloadResultsMutation.CoarseOutputBundlingStarted](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
+    [DownloadResultsMutation.PreparingCoarseOutput](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
         const downloadId = action.payload.id
         state.coarseOutput = {...state.coarseOutput, downloadId, preparing: true, complete: false, error: null}
     },
@@ -55,12 +55,12 @@ export const mutations: MutationTree<DownloadResultsState> = {
         state.coarseOutput.preparing = false
     },
 
-    [DownloadResultsMutation.SummaryBundlingStarted](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
+    [DownloadResultsMutation.PreparingSummaryReport](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
         const downloadId = action.payload.id
         state.summary = {...state.summary, downloadId, preparing: true, complete: false, error: null}
     },
 
-    [DownloadResultsMutation.SummaryStatusUpdated](state: DownloadResultsState, action: PayloadWithType<DownloadStatusResponse>) {
+    [DownloadResultsMutation.SummaryReportStatusUpdated](state: DownloadResultsState, action: PayloadWithType<DownloadStatusResponse>) {
         if (action.payload.done) {
             state.summary.complete = true;
             state.summary.preparing = false;
