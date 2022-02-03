@@ -1,31 +1,43 @@
 import {ActionContext, ActionTree} from "vuex";
 import {RootState} from "../../root";
-import {DownloadResultsState, DOWNLOAD_TYPE} from "./downloadResults";
+import {DownloadResultsState} from "./downloadResults";
 import {api} from "../../apiService";
 import {DownloadResultsMutation} from "./mutations";
 import {ModelStatusResponse} from "../../generated";
+import {DOWNLOAD_TYPE} from "../../types";
 
 export interface DownloadResultsActions {
     prepareSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareSpectrumOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareCoarseOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
+    prepareOutputs: (store: ActionContext<DownloadResultsState, RootState>) => void
     poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: string) => void
 }
 
 export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResultsActions = {
 
+    async prepareOutputs(context) {
+        const {dispatch} = context
+        await Promise.all([
+            dispatch("prepareCoarseOutput"),
+            dispatch("prepareSummaryReport"),
+            dispatch("prepareSpectrumOutput")
+        ]);
+    },
+
     async prepareCoarseOutput(context) {
         const {state, dispatch, rootState} = context
 
-        const calibrateId = rootState.modelCalibrate.calibrateId
+        if (!state.coarseOutput.downloadId && !state.coarseOutput.preparing) {
+            const calibrateId = rootState.modelCalibrate.calibrateId
+            const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
+                .withSuccess(DownloadResultsMutation.PreparingCoarseOutput)
+                .withError(DownloadResultsMutation.CoarseOutputError)
+                .get(`download/submit/coarse-output/${calibrateId}`)
 
-        const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
-            .withSuccess(DownloadResultsMutation.PreparingCoarseOutput)
-            .withError(DownloadResultsMutation.CoarseOutputError)
-            .get(`download/submit/coarse-output/${calibrateId}`)
-
-        if (response) {
-            await dispatch("poll", DOWNLOAD_TYPE.COARSE)
+            if (response) {
+                await dispatch("poll", DOWNLOAD_TYPE.COARSE)
+            }
         }
     },
 
@@ -33,29 +45,32 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
         const {state, dispatch, rootState} = context
         const calibrateId = rootState.modelCalibrate.calibrateId
+        if (!state.summary.downloadId && !state.summary.preparing) {
+            const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
+                .withSuccess(DownloadResultsMutation.PreparingSummaryReport)
+                .withError(DownloadResultsMutation.SummaryError)
+                .get(`download/submit/summary/${calibrateId}`)
 
-        const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
-            .withSuccess(DownloadResultsMutation.PreparingSummaryReport)
-            .withError(DownloadResultsMutation.SummaryError)
-            .get(`download/submit/summary/${calibrateId}`)
-
-        if (response) {
-            await dispatch("poll", DOWNLOAD_TYPE.SUMMARY)
+            if (response) {
+                await dispatch("poll", DOWNLOAD_TYPE.SUMMARY)
+            }
         }
     },
 
     async prepareSpectrumOutput(context) {
         const {dispatch, rootState, state} = context
 
-        const calibrateId = rootState.modelCalibrate.calibrateId
+        if (!state.spectrum.downloadId && !state.spectrum.preparing) {
+            const calibrateId = rootState.modelCalibrate.calibrateId
 
-        const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
-            .withSuccess(DownloadResultsMutation.PreparingSpectrumOutput)
-            .withError(DownloadResultsMutation.SpectrumError)
-            .get(`download/submit/spectrum/${calibrateId}`)
+            const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
+                .withSuccess(DownloadResultsMutation.PreparingSpectrumOutput)
+                .withError(DownloadResultsMutation.SpectrumError)
+                .get(`download/submit/spectrum/${calibrateId}`)
 
-        if (response) {
-            await dispatch("poll", DOWNLOAD_TYPE.SPECTRUM)
+            if (response) {
+                await dispatch("poll", DOWNLOAD_TYPE.SPECTRUM)
+            }
         }
     },
 

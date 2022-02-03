@@ -7,13 +7,11 @@
                     <span v-translate="'uploadFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
                 <div class="pt-3 form-check form-check-inline">
-                    <input
-                        type="radio"
-                        id="createRelease"
-                        value="createRelease"
-                        v-model="choiceUpload"
-                        class="form-check-input"
-                    />
+                    <input type="radio"
+                           id="createRelease"
+                           value="createRelease"
+                           v-model="choiceUpload"
+                           class="form-check-input"/>
                     <span class="form-check-label pl-2">
                         <label for="createRelease" v-translate="'createRelease'" class="d-inline"></label>
                         <span class="icon-small d-inline" v-tooltip="translate('createReleaseTooltip')">
@@ -23,13 +21,11 @@
                     <br/>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input
-                        type="radio"
-                        id="uploadFiles"
-                        value="uploadFiles"
-                        v-model="choiceUpload"
-                        class="form-check-input"
-                    />
+                    <input type="radio"
+                           id="uploadFiles"
+                           value="uploadFiles"
+                           v-model="choiceUpload"
+                           class="form-check-input"/>
                     <span class="form-check-label pl-2">
                         <label for="uploadFiles" v-translate="'uploadFiles'" class="d-inline"></label>
                         <span class="icon-small d-inline" v-tooltip="translate('uploadFilesTooltip')">
@@ -60,9 +56,9 @@
                 </div>
             </div>
             <div class="pt-3">
-                <download-progress id="upload-download-progress"
-                                   :translate-key="'downloadProgressForADR'"
-                                   :downloading="downloadingFiles"/>
+                <download-status id="upload-download-progress"
+                                 :translate-key="'downloadProgressForADR'"
+                                 :preparing="preparingFiles"/>
             </div>
             <template v-slot:footer>
                 <button
@@ -74,7 +70,6 @@
                 <button
                     type="button"
                     class="btn btn-white"
-                    :disabled="downloadingFiles"
                     @click.prevent="handleCancel"
                     v-translate="'cancel'"></button>
             </template>
@@ -88,11 +83,10 @@
     import {
         Dict,
         DownloadResultsDependency,
-        SelectedADRUploadFiles,
         UploadFile
     } from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+    import {mapActionByName, mapStateProp} from "../../utils";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
     import {HelpCircleIcon} from "vue-feather-icons";
     import {VTooltip} from "v-tooltip";
@@ -101,8 +95,7 @@
     import {RootState} from "../../root";
     import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
     import {ADRState} from "../../store/adr/adr";
-    import DownloadProgress from "./DownloadProgress.vue";
-    import DownloadResults from "./DownloadResults.vue";
+    import DownloadStatus from "./DownloadStatus.vue";
 
     interface Methods {
         uploadFilesToADRAction: (selectedUploadFiles: { uploadFiles: UploadFile[], createRelease: boolean }) => void;
@@ -112,17 +105,8 @@
 
         translate(text: string): string;
 
-        downloadSpectrum: () => void
-        downloadSummary: () => void
-        prepareFilesForUpload: () => boolean
-        findSelectedUploadFiles: () => SelectedADRUploadFiles
-        downloadIsReady: () => boolean
-        getSummaryDownload: () => void
-        getSpectrumDownload: () => void
         sendUploadFilesToADR: () => void
         getUploadMetadata: (id: string) => Promise<void>
-        handleDownloadResult: (downloadResults: DownloadResultsDependency) => void,
-        stopPolling: (id: number) => void
     }
 
     interface Computed {
@@ -135,7 +119,7 @@
         summary: DownloadResultsDependency,
         outputSummary: string | undefined,
         outputSpectrum: string | undefined,
-        downloadingFiles: boolean
+        preparingFiles: boolean,
         createRelease: boolean
     }
 
@@ -164,48 +148,13 @@
             ),
             confirmUpload() {
                 this.selectedUploadFiles = this.uploadFilesToAdr.map(value => this.uploadableFiles[value]);
-                const readyForUpload = this.prepareFilesForUpload();
-
-                if (readyForUpload) {
-                    this.sendUploadFilesToADR();
-                }
+                this.sendUploadFilesToADR();
             },
             sendUploadFilesToADR() {
                 this.uploadFilesToADRAction({uploadFiles: this.selectedUploadFiles, createRelease: this.createRelease});
                 this.selectedUploadFiles = [];
 
                 this.$emit("close");
-            },
-            prepareFilesForUpload() {
-                const {summary, spectrum} = this.findSelectedUploadFiles();
-                if (summary) {
-                    this.getSummaryDownload();
-                }
-                if (spectrum) {
-                    this.getSpectrumDownload();
-                }
-
-                return this.downloadIsReady();
-            },
-            findSelectedUploadFiles() {
-                const summary = this.selectedUploadFiles.find(upload => upload.resourceType === this.outputSummary);
-                const spectrum = this.selectedUploadFiles.find(upload => upload.resourceType === this.outputSpectrum);
-
-                return {summary, spectrum}
-            },
-            downloadIsReady() {
-                const {summary, spectrum} = this.findSelectedUploadFiles();
-                return (summary || spectrum) && (!summary || this.summary.complete) && (!spectrum || this.spectrum.complete);
-            },
-            getSummaryDownload() {
-                if (!this.summary.preparing && !this.summary.complete) {
-                    this.downloadSummary();
-                }
-            },
-            getSpectrumDownload() {
-                if (!this.spectrum.preparing && !this.spectrum.complete) {
-                    this.downloadSpectrum();
-                }
             },
             handleCancel() {
                 this.$emit("close")
@@ -217,25 +166,6 @@
                 this.uploadFilesToAdr = [...outputFileTypes, ...inputFileTypes]
                     .filter(key => this.uploadableFiles.hasOwnProperty(key))
             },
-            stopPolling(id) {
-                clearInterval(id)
-            },
-            async handleDownloadResult(downloadResults) {
-                if (this.downloadIsReady()) {
-                    await this.getUploadMetadata(downloadResults.downloadId)
-                    this.sendUploadFilesToADR();
-                }
-
-                if (downloadResults.complete) {
-                    this.stopPolling(downloadResults.statusPollId)
-                }
-
-                if (downloadResults.error) {
-                    this.stopPolling(downloadResults.statusPollId)
-                }
-            },
-            downloadSpectrum: mapActionByName("downloadResults", "downloadSpectrum"),
-            downloadSummary: mapActionByName("downloadResults", "downloadSummary"),
             getUploadMetadata: mapActionByName("metadata", "getAdrUploadMetadata")
         },
         computed: {
@@ -272,34 +202,22 @@
                 }
             },
             uploadDisabled() {
-                return !this.uploadFilesToAdr.length || this.downloadingFiles;
+                return !this.uploadFilesToAdr.length || this.preparingFiles;
             },
-            downloadingFiles() {
+            preparingFiles() {
                 return this.spectrum.preparing || this.summary.preparing;
             }
         },
         components: {
             Modal,
             HelpCircleIcon,
-            DownloadProgress
+            DownloadStatus
         },
         watch: {
             choiceUpload() {
                 if (this.createRelease) {
                     this.setDefaultCheckedItems()
                 }
-            },
-            summary: {
-                handler(summary) {
-                    this.handleDownloadResult(summary)
-                },
-                deep: true
-            },
-            spectrum: {
-                handler(spectrum) {
-                    this.handleDownloadResult(spectrum)
-                },
-                deep: true
             }
         },
         directives: {
