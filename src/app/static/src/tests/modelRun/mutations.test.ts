@@ -56,11 +56,13 @@ describe("Model run mutations", () => {
         expect(testState.result).toBe(testResponse);
     });
 
-    it("sets warnings", () => {
+    it("sets and clears warnings", () => {
         const testState = mockModelRunState();
         const warnings = [mockWarning()]
         mutations.WarningsFetched(testState, {payload: warnings});
         expect(testState.warnings).toEqual([mockWarning()]);
+        mutations.ClearWarnings(testState);
+        expect(testState.warnings).toEqual([]);
     });
 
     it("sets result error", () => {
