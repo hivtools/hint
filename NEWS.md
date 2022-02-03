@@ -1,3 +1,7 @@
+# hint 1.88.6
+
+* Increase async timeouts on server
+
 # hint 1.88.5
 
 * Remove Calibrate Plot Result from localStorage
