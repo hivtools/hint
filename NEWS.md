@@ -1,3 +1,7 @@
+# hint 1.89.0
+
+* Persist Data Exploration step
+
 # hint 1.88.5
 
 * Remove Calibrate Plot Result from localStorage

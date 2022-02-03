@@ -58,7 +58,6 @@ export interface RootState extends DataExplorationState {
     modelCalibrate: ModelCalibrateState,
     modelOutput: ModelOutputState,
     plottingSelections: PlottingSelectionsState,
-    stepper: StepperState,
     load: LoadState,
     errors: ErrorsState,
     projects: ProjectsState
