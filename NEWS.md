@@ -1,6 +1,10 @@
-# hint 1.88.5
+# hint 1.88.6
 
 * Make hintr warnings dismissable
+
+# hint 1.88.5
+
+* Remove Calibrate Plot Result from localStorage
 
 # hint 1.88.4
 
