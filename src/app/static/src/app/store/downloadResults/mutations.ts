@@ -88,11 +88,5 @@ export const mutations: MutationTree<DownloadResultsState> = {
                 break
             }
         }
-    },
-
-    [DownloadResultsMutation.ResetIds](state: DownloadResultsState) {
-        state.summary.downloadId = "";
-        state.spectrum.downloadId = "";
-        state.coarseOutput.downloadId = "";
     }
 };
