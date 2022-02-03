@@ -1,3 +1,7 @@
+# hint 1.89.1
+
+Fix throttling of version state uploads
+
 # hint 1.89.0
 
 * Persist Data Exploration step
