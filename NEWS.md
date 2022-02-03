@@ -1,6 +1,10 @@
+# hint 1.89.2
+
+* Fix throttling of version state uploads
+
 # hint 1.89.1
 
-Fix throttling of version state uploads
+* Increase async timeouts on server
 
 # hint 1.89.0
 
