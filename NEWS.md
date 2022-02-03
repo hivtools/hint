@@ -1,3 +1,7 @@
+# hint 1.88.5
+
+* Remove Calibrate Plot Result from localStorage
+
 # hint 1.88.4
 
 * Remove Projects state from localStorage
