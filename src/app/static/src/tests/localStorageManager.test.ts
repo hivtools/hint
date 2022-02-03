@@ -82,7 +82,10 @@ describe("LocalStorageManager", () => {
             }),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
-            modelCalibrate: mockModelCalibrateState({result: mockCalibrateResultResponse()}),
+            modelCalibrate: mockModelCalibrateState({
+                result: mockCalibrateResultResponse(),
+                calibratePlotResult: {data: "test calibrate plot result"}
+            }),
             stepper: mockStepperState(),
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
             plottingSelections: mockPlottingSelections(),
