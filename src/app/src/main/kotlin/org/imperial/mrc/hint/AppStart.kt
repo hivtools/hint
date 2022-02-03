@@ -50,6 +50,8 @@ class MvcConfig(val config: Config) : WebMvcConfigurer
         t.keepAliveSeconds = 120
         t.initialize()
         configurer.setTaskExecutor(t)
-        configurer.setDefaultTimeout(1000000)
+
+        val timeoutMs = 10 * 60 * 1000L
+        configurer.setDefaultTimeout(timeoutMs)
     }
 }
