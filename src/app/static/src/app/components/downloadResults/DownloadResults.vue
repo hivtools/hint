@@ -236,7 +236,6 @@
             getUploadMetadata: mapActionByName("metadata", "getAdrUploadMetadata"),
         },
         mounted() {
-            console.log((this.$store as any)._modulesNamespaceMap["downloadResults/"]._rawModule);
             this.getUserCanUpload();
             this.getUploadFiles()
         },
