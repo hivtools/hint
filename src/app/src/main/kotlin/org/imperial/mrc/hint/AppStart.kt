@@ -43,15 +43,23 @@ class MvcConfig(val config: Config) : WebMvcConfigurer
     override fun configureAsyncSupport(configurer: AsyncSupportConfigurer)
     {
         val t = ThreadPoolTaskExecutor()
-        t.corePoolSize = 10
-        t.maxPoolSize = 100
-        t.setQueueCapacity(50)
+        t.corePoolSize = CORE_POOL_SIZE
+        t.maxPoolSize = MAX_POOL_SIZE
+        t.setQueueCapacity(QUEUE_CAPACITY)
         t.setAllowCoreThreadTimeOut(true)
-        t.keepAliveSeconds = 120
+        t.keepAliveSeconds = KEEP_ALIVE_SEC
         t.initialize()
         configurer.setTaskExecutor(t)
 
-        val timeoutMs = 10 * 60 * 1000L
-        configurer.setDefaultTimeout(timeoutMs)
+        configurer.setDefaultTimeout(ASYNC_TIMEOUT_MS)
+    }
+
+    companion object
+    {
+        private const val CORE_POOL_SIZE = 10
+        private const val MAX_POOL_SIZE = 100
+        private const val QUEUE_CAPACITY = 50
+        private const val KEEP_ALIVE_SEC = 120
+        private const val ASYNC_TIMEOUT_MS = 10 * 60 * 1000L
     }
 }
