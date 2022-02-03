@@ -267,7 +267,7 @@ describe("Projects actions", () => {
         const state = mockProjectsState({
             currentProject: mockProject,
             currentVersion: mockProject.versions[0],
-            versionUploadInProgress: false
+            versionUploadInProgress: true
         });
 
         const url = "/project/1/version/version-id/state/";
@@ -285,8 +285,14 @@ describe("Projects actions", () => {
         expect(commit.mock.calls[0][0]["type"]).toBe(ProjectsMutations.ClearQueuedVersionUpload);
         expect(commit.mock.calls[1][0]["type"]).toBe(ProjectsMutations.SetQueuedVersionUpload);
 
+        // will not yet have run because versionUploadInProgress is true
+        jest.advanceTimersByTime(2001);
+        expect(commit.mock.calls.length).toBe(2);
+
+        state.versionUploadInProgress = false;
         jest.advanceTimersByTime(2001);
 
+        // now should have run
         expect(commit.mock.calls.length).toBe(4);
         expect(mockAxios.history.post.length).toBe(1);
         expect(commit.mock.calls[2][0]["type"]).toBe(ProjectsMutations.ClearQueuedVersionUpload);
