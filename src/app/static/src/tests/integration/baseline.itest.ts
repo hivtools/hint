@@ -2,7 +2,7 @@ import {actions} from "../../app/store/baseline/actions";
 import {login, rootState} from "./integrationTest";
 import {getFormData} from "./helpers";
 import {BaselineMutation} from "../../app/store/baseline/mutations";
-import {mockBaselineState} from "../mocks";
+import {mockBaselineState, mockRootState} from "../mocks";
 
 describe("Baseline actions", () => {
 
@@ -26,8 +26,8 @@ describe("Baseline actions", () => {
     it("can get baseline data", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.getBaselineData({commit, dispatch, rootState, state: mockBaselineState()} as any);
 
+        await actions.getBaselineData({commit, dispatch, rootState, state: {}} as any);
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
         expect(calls).toContain(BaselineMutation.PJNZUpdated);
         expect(calls).toContain(BaselineMutation.ShapeUpdated);
@@ -66,7 +66,7 @@ describe("Baseline actions", () => {
         expect(commit.mock.calls[1][0]["payload"].detail).toContain("Countries aren't consistent");
     });
 
-    it("can delete PJNZ", async () => {
+   it("can delete PJNZ", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const formData = getFormData("Botswana2018.PJNZ");
@@ -83,7 +83,7 @@ describe("Baseline actions", () => {
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
-        await actions.getBaselineData({commit, dispatch, rootState, state: mockBaselineState()} as any);
+        await actions.getBaselineData({commit, dispatch, rootState, state: {}} as any);
         expect(commit.mock.calls.find(c => c[0]["type"] == BaselineMutation.PJNZUpdated)[0]["payload"]).toBe(null);
     });
 
@@ -104,7 +104,7 @@ describe("Baseline actions", () => {
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
-        await actions.getBaselineData({commit, dispatch, rootState, state: mockBaselineState()} as any);
+        await actions.getBaselineData({commit, dispatch, rootState, state: {}} as any);
         expect(commit.mock.calls.find(c => c[0]["type"] == BaselineMutation.ShapeUpdated)[0]["payload"]).toBe(null);
     });
 
@@ -125,8 +125,7 @@ describe("Baseline actions", () => {
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
-        await actions.getBaselineData({commit, dispatch, rootState, state: mockBaselineState()} as any);
+        await actions.getBaselineData({commit, dispatch, rootState, state: {}} as any);
         expect(commit.mock.calls.find(c => c[0]["type"] == BaselineMutation.PopulationUpdated)[0]["payload"]).toBe(null);
     });
-
 });
