@@ -2,11 +2,7 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import WarningAlert from "../../app/components/WarningAlert.vue";
 import Warning from "../../app/components/Warning.vue";
 import Vuex from "vuex";
-import {emptyState} from "../../app/root";
-import registerTranslations from "../../app/store/translations/registerTranslations";
-import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
-import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
-import {ModelRunMutation} from "../../app/store/modelRun/mutations";
+import {Language} from "../../app/store/translations/locales";
 
 const localVue = createLocalVue();
 
@@ -18,42 +14,21 @@ describe("Warning alert component", () => {
         modelCalibrate: [{ text: 'calibrate warning', locations: []}]
     }
 
-    const clearOptionsWarnings = jest.fn(); 
-    const clearCalibrateWarnings = jest.fn(); 
-    const clearRunWarnings = jest.fn(); 
+    type Lang = Language.en | Language.fr | Language.pt
 
-    const store = new Vuex.Store({
-        state: emptyState(),
-        modules: {
-            modelOptions: {
-                namespaced: true,
-                mutations: {
-                    [ModelOptionsMutation.ClearWarnings]: clearOptionsWarnings
-                }
-            },
-            modelCalibrate: {
-                namespaced: true,
-                mutations: {
-                    [ModelCalibrateMutation.ClearWarnings]: clearCalibrateWarnings
-                }
-            },
-            modelRun: {
-                namespaced: true,
-                mutations: {
-                    [ModelRunMutation.ClearWarnings]: clearRunWarnings
-                }
-            },
-        }
-    });
-    registerTranslations(store);
+    const createStore = (language: Lang) => {
+        return new Vuex.Store({
+            state: {language}
+        });
+    };
 
-    const createWrapper = (warnings = warningsMock, activeStep = 3) => {
+    const createWrapper = (warnings = warningsMock, activeStep = 3, language: Lang = Language.en) => {
         const wrapper = shallowMount(WarningAlert, {
             propsData: {
                 warnings: warnings,
                 activeStep
             },
-            store,
+            store: createStore(language),
             localVue
         });
         return wrapper
@@ -79,28 +54,25 @@ describe("Warning alert component", () => {
         expect(warnings.at(2).props()).toStrictEqual({maxLines: 2, origin: "modelCalibrate", warnings: warningsMock["modelCalibrate"]});
     });
 
-    it("clicking close when in modelOptions triggers clear warnings mutation in modelOptions store", async () => {
+    it("clicking close triggers clear warnings emit", async () => {
         const wrapper = createWrapper()
         await wrapper.find("button").trigger("click")
-        expect(clearOptionsWarnings.mock.calls.length).toBe(1);
+        expect(wrapper.emitted("clear-warnings").length).toBe(1);
     });
 
-    it("clicking close when in modelRun triggers clear warnings mutation in modelRun store", async () => {
-        const wrapper = createWrapper(warningsMock, 4)
-        await wrapper.find("button").trigger("click")
-        expect(clearRunWarnings.mock.calls.length).toBe(1);
+    it("correct close aria-label in English", () => {
+        const wrapper = createWrapper()
+        expect(wrapper.find("button").attributes("aria-label")).toBe("Close");
     });
 
-    it("clicking close when in modelCalibrate triggers clear warnings mutation in modelCalibrate store", async () => {
-        const wrapper = createWrapper(warningsMock, 5)
-        await wrapper.find("button").trigger("click")
-        expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
+    it("correct close aria-label in French", () => {
+        const wrapper = createWrapper(warningsMock, 3, Language.fr)
+        expect(wrapper.find("button").attributes("aria-label")).toBe("Fermer");
     });
 
-    it("clicking close when in reviewOutput triggers clear warnings mutation in modelCalibrate store", async () => {
-        const wrapper = createWrapper(warningsMock, 6)
-        await wrapper.find("button").trigger("click")
-        expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
+    it("correct close aria-label in Portuguese", () => {
+        const wrapper = createWrapper(warningsMock, 3, Language.pt)
+        expect(wrapper.find("button").attributes("aria-label")).toBe("Fechar");
     });
 
     it("only renders warning messages that have warnings and sets maxLines prop", () => {
