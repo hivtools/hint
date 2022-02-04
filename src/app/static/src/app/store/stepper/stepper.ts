@@ -1,8 +1,9 @@
 import {Module} from "vuex";
-import {RootState} from "../../root";
 import {getters} from "./getters";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
+import {DataExplorationState} from "../dataExploration/dataExploration";
+import {RootState} from "../../root";
 
 export interface StepDescription {
     number: number,
@@ -50,15 +51,31 @@ export const initialStepperState = (): StepperState => {
     }
 };
 
+export const initialDataExplorationStepperState = (): StepperState => {
+    return {
+        steps: [], // data exploration only requires activeStep, not full steps array, hence this is left empty
+        activeStep: 1
+    }
+};
 
 const namespaced = true;
 
-export const stepper = (existingState: Partial<RootState> | null): Module<StepperState, RootState> => {
+export const stepper = (existingState: Partial<DataExplorationState> | null): Module<StepperState, RootState> => {
     return {
         namespaced,
         state: {...initialStepperState(), ...existingState && existingState.stepper},
         getters,
         actions,
         mutations
+    };
+};
+
+export const dataExplorationStepper = (existingState: Partial<DataExplorationState> | null): Module<StepperState, DataExplorationState> => {
+    return {
+        namespaced,
+        state: {...initialDataExplorationStepperState(), ...existingState && existingState.stepper},
+        actions,
+        mutations
+        // getters cannot be included for data exploration as they reference modules not in DataExplorationState
     };
 };
