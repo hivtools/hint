@@ -1,3 +1,7 @@
+# hint 1.89.3
+
+* Link to help documents hosted by UNAIDS
+
 # hint 1.89.2
 
 * Fix throttling of version state uploads

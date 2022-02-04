@@ -40,9 +40,11 @@ describe(`Data Exploration header`, () => {
         const store = createStore({currentUser});
         const wrapper = getWrapper(currentUser, store);
         const helpFile = wrapper.find("#helpFile")
-        expect(helpFile.attributes("href")).toBe("public/resources/Naomi-Help-Guide.pdf")
+        expect(helpFile.attributes("href")).toBe(
+            "https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf")
         wrapper.vm.$store.state.language = Language.fr
-        expect(helpFile.attributes("href")).toBe("public/resources/Naomi-instructions-de-base.pdf")
+        expect(helpFile.attributes("href")).toBe(
+            "https://hivtools.unaids.org/wp-content/uploads/75D-Instructions-pour-Naomi.pdf")
         expectTranslatedWithStoreType(helpFile, "Help", "Aider", "Ajuda", store)
     })
 
