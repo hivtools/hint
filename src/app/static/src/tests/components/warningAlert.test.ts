@@ -68,7 +68,7 @@ describe("Warning alert component", () => {
         expect(wrapper.find(".alert-warning").exists()).toBe(false);
     });
 
-    it("renders warning messages", async () => {
+    it("renders warning messages", () => {
         const wrapper = createWrapper()
 
         expect(wrapper.find(".alert-warning").exists()).toBe(true);

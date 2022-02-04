@@ -1,7 +1,7 @@
 <template>
     <div v-if="showAlert">
         <div class="content alert alert-warning pt-0">
-            <button @click="dismissWarnings" type="button" class="close pt-2 pull-right" aria-label="Close">
+            <button @click="$emit('clear-warnings')" type="button" class="close pt-2 pull-right" :aria-label="translate('close')">
                 <span aria-hidden="true">&times;</span>
             </button>
             <warning v-for="(value, key) in filteredWarnings" :key="key" :origin="key" :warnings="value" :max-lines="maxLines"></warning>
@@ -14,27 +14,24 @@
     import { Warning as WarningType } from "../generated";
     import { Dict } from "../types";
     import Warning from "./Warning.vue"
-    import { mapMutationByName} from "../utils";
-    import {ModelRunMutation} from "../store/modelRun/mutations";
-    import {ModelOptionsMutation} from "../store/modelOptions/mutations";
-    import {ModelCalibrateMutation} from "../store/modelCalibrate/mutations";
+    import i18next from "i18next";
+    import { Language } from "../store/translations/locales";
+    import { mapStateProp } from "../utils";
+    import { RootState } from "../root";
 
     interface Props {
         warnings: Dict<WarningType[]>;
         maxLines: number;
-        activeStep: number;
     }
 
     interface Computed  {
         filteredWarnings: Dict<WarningType[]>;
         showAlert: boolean;
+        currentLanguage: Language;
     }
 
     interface Methods {
-        dismissWarnings: () => void;
-        clearModelRun: () => void;
-        clearModelCalibrate: () => void;
-        clearModelOptions: () => void;
+        translate(text: string): string;
     }
 
     export default Vue.extend<unknown, Methods, Computed, Props>({
@@ -46,7 +43,6 @@
                 required: false,
                 type: Number
             },
-            activeStep: Number
         },
         computed: {
             filteredWarnings(){
@@ -60,23 +56,16 @@
             },
             showAlert(){
                 return Object.keys(this.warnings).some(key => this.warnings[key].length > 0)
-            }
+            },
+            currentLanguage: mapStateProp<RootState, Language>(
+                null,
+                (state: RootState) => state.language
+            ),
         },
         methods: {
-            dismissWarnings(){
-                const mutationMethods: { [key: number]: () => void; } = {
-                    3: this.clearModelOptions,
-                    4: this.clearModelRun,
-                    5: this.clearModelCalibrate,
-                    6: this.clearModelCalibrate,
-                }
-                if (this.activeStep in mutationMethods){
-                    mutationMethods[this.activeStep]()
-                }
+            translate(text) {
+                return i18next.t(text, { lng: this.currentLanguage });
             },
-            clearModelRun: mapMutationByName("modelRun", ModelRunMutation.ClearWarnings),
-            clearModelCalibrate: mapMutationByName("modelCalibrate", ModelCalibrateMutation.ClearWarnings),
-            clearModelOptions: mapMutationByName("modelOptions", ModelOptionsMutation.ClearWarnings)
         },
         components: {
             Warning
