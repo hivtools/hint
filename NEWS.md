@@ -1,3 +1,7 @@
+# hint 1.89.3
+
+* Fix warnings being truncated without 'Show more' visible
+
 # hint 1.89.2
 
 * Fix throttling of version state uploads
