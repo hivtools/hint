@@ -131,7 +131,6 @@
                 }
             },
             async updateDimensions(){
-                this.lineHeight = 0;
                 this.fullBoxHeight = 0;
                 await Vue.nextTick();
                 if (this.$refs.warningBox) {
