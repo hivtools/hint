@@ -50,7 +50,7 @@ describe(`download Results actions`, () => {
         await actions.prepareSummaryReport({commit, state, dispatch, rootState: root} as any);
 
         expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("SummaryBundlingStarted")
+        expect(commit.mock.calls[0][0]["type"]).toBe("PreparingSummaryReport")
         expect(commit.mock.calls[0][0]["payload"]).toEqual(partialDownloadResultsState)
         expect(mockAxios.history.get.length).toBe(1);
         expect(mockAxios.history.get[0]["url"]).toBe("download/submit/summary/calibrate1");
@@ -79,7 +79,7 @@ describe(`download Results actions`, () => {
             expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
             expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.SUMMARY)
 
-            expect(commit.mock.calls[1][0]["type"]).toBe("SummaryStatusUpdated")
+            expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
             expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
             done()
         }, 2100)
@@ -152,7 +152,7 @@ describe(`download Results actions`, () => {
         await actions.prepareSpectrumOutput({commit, state, dispatch, rootState: root} as any);
 
         expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("SpectrumBundlingStarted")
+        expect(commit.mock.calls[0][0]["type"]).toBe("PreparingSpectrumOutput")
         expect(commit.mock.calls[0][0]["payload"]).toEqual(downloadId)
         expect(mockAxios.history.get.length).toBe(1);
         expect(mockAxios.history.get[0]["url"]).toBe("download/submit/spectrum/calibrate1");
@@ -282,7 +282,7 @@ describe(`download Results actions`, () => {
         await actions.prepareCoarseOutput({commit, state, dispatch, rootState: root} as any);
 
         expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("CoarseOutputBundlingStarted")
+        expect(commit.mock.calls[0][0]["type"]).toBe("PreparingCoarseOutput")
         expect(commit.mock.calls[0][0]["payload"]).toEqual(downloadId)
         expect(mockAxios.history.get.length).toBe(1);
         expect(mockAxios.history.get[0]["url"]).toBe("download/submit/coarse-output/calibrate1");
