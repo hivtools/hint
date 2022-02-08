@@ -27,7 +27,6 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async prepareCoarseOutput(context) {
         const {state, dispatch, rootState} = context
-
         if (!state.coarseOutput.downloadId && !state.coarseOutput.preparing) {
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
@@ -42,10 +41,9 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
     },
 
     async prepareSummaryReport(context) {
-
         const {state, dispatch, rootState} = context
-        const calibrateId = rootState.modelCalibrate.calibrateId
         if (!state.summary.downloadId && !state.summary.preparing) {
+            const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingSummaryReport)
                 .withError(DownloadResultsMutation.SummaryError)
@@ -59,10 +57,8 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async prepareSpectrumOutput(context) {
         const {dispatch, rootState, state} = context
-
         if (!state.spectrum.downloadId && !state.spectrum.preparing) {
             const calibrateId = rootState.modelCalibrate.calibrateId
-
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingSpectrumOutput)
                 .withError(DownloadResultsMutation.SpectrumError)
@@ -92,28 +88,37 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 };
 
 export const getSummaryReportStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
-    const {state} = context;
+    const {state, dispatch} = context;
     const downloadId = state.summary.downloadId;
-    return api<DownloadResultsMutation, DownloadResultsMutation>(context)
+    const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.SummaryReportStatusUpdated)
         .withError(DownloadResultsMutation.SummaryError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
+    if (response && response.data?.done) {
+        await dispatch("metadata/getUploadMetadata", response.data.id, {root: true});
+    }
 };
 
 export const getSpectrumOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
-    const {state} = context;
+    const {state, dispatch} = context;
     const downloadId = state.spectrum.downloadId;
-    return api<DownloadResultsMutation, DownloadResultsMutation>(context)
+    const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.SpectrumOutputStatusUpdated)
         .withError(DownloadResultsMutation.SpectrumError)
-        .get<ModelStatusResponse>(`download/status/${downloadId}`)
+        .get<ModelStatusResponse>(`download/status/${downloadId}`);
+    if (response && response.data?.done) {
+        await dispatch("metadata/getUploadMetadata", response.data.id, {root: true});
+    }
 };
 
 export const getCoarseOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
-    const {state} = context;
+    const {state, dispatch} = context;
     const downloadId = state.coarseOutput.downloadId;
-    return api<DownloadResultsMutation, DownloadResultsMutation>(context)
+    const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.CoarseOutputStatusUpdated)
         .withError(DownloadResultsMutation.CoarseOutputError)
-        .get<ModelStatusResponse>(`download/status/${downloadId}`)
+        .get<ModelStatusResponse>(`download/status/${downloadId}`);
+    if (response && response.data?.done) {
+        await dispatch("metadata/getUploadMetadata", response.data.id, {root: true});
+    }
 };

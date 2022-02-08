@@ -102,11 +102,8 @@
         confirmUpload: () => void;
         handleCancel: () => void
         setDefaultCheckedItems: () => void
-
         translate(text: string): string;
-
         sendUploadFilesToADR: () => void
-        getUploadMetadata: (id: string) => Promise<void>
     }
 
     interface Computed {
@@ -165,8 +162,7 @@
             setDefaultCheckedItems: function () {
                 this.uploadFilesToAdr = [...outputFileTypes, ...inputFileTypes]
                     .filter(key => this.uploadableFiles.hasOwnProperty(key))
-            },
-            getUploadMetadata: mapActionByName("metadata", "getAdrUploadMetadata")
+            }
         },
         computed: {
             spectrum: mapStateProp<DownloadResultsState, DownloadResultsDependency>("downloadResults",
@@ -202,7 +198,7 @@
                 }
             },
             uploadDisabled() {
-                return !this.uploadFilesToAdr.length || this.preparingFiles;
+                return this.uploadFilesToAdr.length == 0 || this.preparingFiles;
             },
             preparingFiles() {
                 return this.spectrum.preparing || this.summary.preparing;
@@ -228,4 +224,3 @@
         }
     });
 </script>
-

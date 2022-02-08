@@ -3,7 +3,7 @@ import {
 } from "../mocks";
 import {mutations} from "../../app/store/downloadResults/mutations";
 import {DownloadResultsMutation} from "../../app/store/downloadResults/mutations";
-import {DOWNLOAD_TYPE} from "../../app/store/downloadResults/downloadResults";
+import {DOWNLOAD_TYPE} from "../../app/types";
 import {DownloadStatusResponse} from "../../app/generated";
 
 describe(`download results mutations`, () => {
@@ -119,4 +119,4 @@ describe(`download results mutations`, () => {
         expect(state.coarseOutput.error).toBe(null);
     });
 
-})
+});

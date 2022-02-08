@@ -106,7 +106,6 @@
         downloadSummary: () => void
         downloadSpectrum: () => void
         downloadCoarseOutput: () => void
-        getUploadMetadata: (id: string) => void
         downloadUrl: (downloadId: string) => string
         handleDownloadResult: (downloadResults: DownloadResultsDependency) => void
     }
@@ -170,7 +169,6 @@
             },
             handleDownloadResult(downloadResults) {
                 window.location.assign(this.downloadUrl(downloadResults.downloadId));
-                this.getUploadMetadata(downloadResults.downloadId);
             },
             downloadSpectrum() {
                 this.handleDownloadResult(this.spectrum)
@@ -184,8 +182,7 @@
             clearStatus: mapMutationByName("adrUpload", "ClearStatus"),
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
             getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
-            prepareOutputs: mapActionByName("downloadResults", "prepareOutputs"),
-            getUploadMetadata: mapActionByName("metadata", "getAdrUploadMetadata"),
+            prepareOutputs: mapActionByName("downloadResults", "prepareOutputs")
         },
         mounted() {
             this.getUserCanUpload();
