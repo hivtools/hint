@@ -4,7 +4,7 @@
             <div class="col-sm">
                 <div id="spectrum-download">
                     <download :translate-key="translation.spectrum"
-                              @click="downloadSpectrum"
+                              @click="downloadSpectrumOutput"
                               :disabled="uploading"
                               :modal-open="uploadModalOpen"
                               :file="spectrum"/>
@@ -18,7 +18,7 @@
                 </div>
                 <div id="summary-download">
                     <download :translate-key="translation.summary"
-                              @click="downloadSummary"
+                              @click="downloadSummaryReport"
                               :disabled="uploading"
                               :modal-open="uploadModalOpen"
                               :file="summary"/>
@@ -112,8 +112,8 @@
         prepareCoarseOutput: () => void
         prepareSpectrumOutput: () => void
         prepareSummaryReport: () => void
-        downloadSummary: () => void
-        downloadSpectrum: () => void
+        downloadSummaryReport: () => void
+        downloadSpectrumOutput: () => void
         downloadCoarseOutput: () => void
         getUploadMetadata: (id: string) => void
         downloadUrl: (downloadId: string) => string
@@ -197,12 +197,12 @@
             handleUploadModal() {
                 this.uploadModalOpen = true;
             },
-            downloadSpectrum() {
+            downloadSpectrumOutput() {
                 if (!this.spectrum.preparing) {
                     this.prepareSpectrumOutput();
                 }
             },
-            downloadSummary() {
+            downloadSummaryReport() {
                 if (!this.summary.preparing) {
                     this.prepareSummaryReport();
                 }
