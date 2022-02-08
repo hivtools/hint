@@ -45,12 +45,22 @@ describe(`download results mutations`, () => {
         expect(state.summary.statusPollId).toBeGreaterThan(-1);
     });
 
-    it("set summary download status update to complete on SummaryDownloadStatusUpdated", () => {
-        const state = mockDownloadResultsState();
+    it("set summary status to complete, clears interval on SummaryDownloadStatusUpdated", () => {
+        const state = mockDownloadResultsState({
+            summary: {
+                preparing: true,
+                complete: false,
+                error: mockError(),
+                statusPollId: 123,
+                downloadId: "111"
+            }
+        });
         mutations[DownloadResultsMutation.SummaryReportStatusUpdated](state, {payload: CompleteStatusResponse});
         expect(state.summary.preparing).toBe(false);
         expect(state.summary.complete).toBe(true);
         expect(state.summary.error).toBe(null);
+        expect(state.summary.statusPollId).toBe(-1);
+        expect(state.summary.downloadId).toBe("111");
     });
 
     it("sets spectrum download started on SpectrumDownloadStarted", () => {
@@ -78,12 +88,22 @@ describe(`download results mutations`, () => {
         expect(state.spectrum.statusPollId).toBeGreaterThan(-1);
     });
 
-    it("set spectrum download status update to complete on SpectrumDownloadStatusUpdated", () => {
-        const state = mockDownloadResultsState();
+    it("set spectrum status to complete, clears interval on SpectrumDownloadStatusUpdated", () => {
+        const state = mockDownloadResultsState({
+            spectrum: {
+                preparing: true,
+                complete: false,
+                error: mockError(),
+                statusPollId: 123,
+                downloadId: "111"
+            }
+        });
         mutations[DownloadResultsMutation.SpectrumOutputStatusUpdated](state, {payload: CompleteStatusResponse});
         expect(state.spectrum.complete).toBe(true);
         expect(state.spectrum.preparing).toBe(false);
         expect(state.spectrum.error).toBe(null);
+        expect(state.spectrum.statusPollId).toBe(-1);
+        expect(state.spectrum.downloadId).toBe("111");
     });
 
     it("sets coarseOutput download started on CoarseOutputDownloadStarted", () => {
@@ -111,12 +131,22 @@ describe(`download results mutations`, () => {
         expect(state.coarseOutput.statusPollId).toBeGreaterThan(-1);
     });
 
-    it("set coarseOutput download status update to complete on CoarseOutputDownloadStatusUpdated", () => {
-        const state = mockDownloadResultsState();
+    it("set coarseOutput status to complete, clears interval on CoarseOutputDownloadStatusUpdated", () => {
+        const state = mockDownloadResultsState({
+            coarseOutput: {
+                preparing: true,
+                complete: false,
+                error: mockError(),
+                statusPollId: 123,
+                downloadId: "111"
+            }
+        });
         mutations[DownloadResultsMutation.CoarseOutputStatusUpdated](state, {payload: CompleteStatusResponse});
         expect(state.coarseOutput.complete).toBe(true);
         expect(state.coarseOutput.preparing).toBe(false);
         expect(state.coarseOutput.error).toBe(null);
+        expect(state.coarseOutput.statusPollId).toBe(-1);
+        expect(state.coarseOutput.downloadId).toBe("111");
     });
 
 });

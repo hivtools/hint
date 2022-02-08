@@ -59,6 +59,17 @@ describe(`download Results actions`, () => {
         expect(dispatch.mock.calls[0]).toEqual(["poll", DOWNLOAD_TYPE.SUMMARY])
     });
 
+    it("prepare summary does not do anything if downloadId is already present", async () => {
+        const commit = jest.fn();
+        const state = mockDownloadResultsState({
+            summary: mockDownloadResultsDependency({downloadId: "1"})
+        });
+
+        await actions.prepareSummaryReport({commit, state} as any);
+        expect(mockAxios.history.get.length).toBe(0);
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
     it("can poll for summary status, get pollId and commit result", async (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn()
@@ -104,6 +115,29 @@ describe(`download Results actions`, () => {
             type: "SummaryError",
             payload: mockError("TEST FAILED")
         });
+    });
+
+    it("gets adr upload metadata if summary status is done", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            summary: mockDownloadResultsDependency({downloadId: "1"})
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(200, mockSuccess(CompleteStatusResponse));
+
+        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SUMMARY);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
+            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
+            done()
+        }, 2100)
     });
 
     it("does not continue to poll summary status when unsuccessful", async (done) => {
@@ -161,6 +195,17 @@ describe(`download Results actions`, () => {
         expect(dispatch.mock.calls[0]).toEqual(["poll", DOWNLOAD_TYPE.SPECTRUM])
     });
 
+    it("prepare spectrum does not do anything if downloadId is already present", async () => {
+        const commit = jest.fn();
+        const state = mockDownloadResultsState({
+            spectrum: mockDownloadResultsDependency({downloadId: "1"})
+        });
+
+        await actions.prepareSpectrumOutput({commit, state} as any);
+        expect(mockAxios.history.get.length).toBe(0);
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
     it("can invoke spectrum poll action, gets pollId, commits PollingStatusStarted", async (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -216,7 +261,7 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("gets adr upload metadata if status is done", async (done) => {
+    it("gets adr upload metadata if spectrum status is done", async (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -232,7 +277,7 @@ describe(`download Results actions`, () => {
         setTimeout(() => {
             expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
             expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
-            expect(dispatch.mock.calls[0][0]).toBe("metadata/getUploadMetadata")
+            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
             expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
             expect(dispatch.mock.calls[0][2]).toEqual({root: true})
             done()
@@ -313,6 +358,40 @@ describe(`download Results actions`, () => {
 
         expect(dispatch.mock.calls.length).toBe(1)
         expect(dispatch.mock.calls[0]).toEqual(["poll", DOWNLOAD_TYPE.COARSE])
+    });
+
+    it("prepare coarse output does not do anything if downloadId is already present", async () => {
+        const commit = jest.fn();
+        const state = mockDownloadResultsState({
+            coarseOutput: mockDownloadResultsDependency({downloadId: "1"})
+        });
+
+        await actions.prepareCoarseOutput({commit, state} as any);
+        expect(mockAxios.history.get.length).toBe(0);
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
+    it("gets adr upload metadata if coarse output status is done", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            coarseOutput: mockDownloadResultsDependency({downloadId: "1"})
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(200, mockSuccess(CompleteStatusResponse));
+
+        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
+            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
+            done()
+        }, 2100)
     });
 
     it("can invoke coarse output poll action, get pollId and commit PollingStatusStarted", async (done) => {

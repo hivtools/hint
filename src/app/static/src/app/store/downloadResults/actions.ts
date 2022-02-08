@@ -27,7 +27,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async prepareCoarseOutput(context) {
         const {state, dispatch, rootState} = context
-        if (!state.coarseOutput.downloadId && !state.coarseOutput.preparing) {
+        if (!state.coarseOutput.downloadId) {
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingCoarseOutput)
@@ -42,7 +42,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async prepareSummaryReport(context) {
         const {state, dispatch, rootState} = context
-        if (!state.summary.downloadId && !state.summary.preparing) {
+        if (!state.summary.downloadId) {
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingSummaryReport)
@@ -57,7 +57,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async prepareSpectrumOutput(context) {
         const {dispatch, rootState, state} = context
-        if (!state.spectrum.downloadId && !state.spectrum.preparing) {
+        if (!state.spectrum.downloadId) {
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingSpectrumOutput)
@@ -95,7 +95,7 @@ export const getSummaryReportStatus = async function (context: ActionContext<Dow
         .withError(DownloadResultsMutation.SummaryError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
     if (response && response.data?.done) {
-        await dispatch("metadata/getUploadMetadata", response.data.id, {root: true});
+        await dispatch("metadata/getAdrUploadMetadata", response.data.id, {root: true});
     }
 };
 
@@ -107,7 +107,7 @@ export const getSpectrumOutputStatus = async function (context: ActionContext<Do
         .withError(DownloadResultsMutation.SpectrumError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`);
     if (response && response.data?.done) {
-        await dispatch("metadata/getUploadMetadata", response.data.id, {root: true});
+        await dispatch("metadata/getAdrUploadMetadata", response.data.id, {root: true});
     }
 };
 
@@ -119,6 +119,6 @@ export const getCoarseOutputStatus = async function (context: ActionContext<Down
         .withError(DownloadResultsMutation.CoarseOutputError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`);
     if (response && response.data?.done) {
-        await dispatch("metadata/getUploadMetadata", response.data.id, {root: true});
+        await dispatch("metadata/getAdrUploadMetadata", response.data.id, {root: true});
     }
 };

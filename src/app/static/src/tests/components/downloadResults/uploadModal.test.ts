@@ -389,7 +389,7 @@ describe(`uploadModal `, () => {
         expect(wrapper.emitted("close").length).toBe(1)
     });
 
-    it(`download progress is seen while prearing files`, async () => {
+    it(`download progress is seen while preparing files`, async () => {
         const downloadResults = {
             summary: mockDownloadResultsDependency({preparing: true}),
             spectrum: mockDownloadResultsDependency({preparing: true})
