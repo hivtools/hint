@@ -4,7 +4,7 @@
             <div class="col-sm">
                 <div id="spectrum-download">
                     <download :translate-key="translation.spectrum"
-                              @click="downloadSpectrum"
+                              @click="downloadSpectrumOutput"
                               :disabled="!spectrum.downloadId || spectrum.preparing"
                               :file="spectrum"/>
                 </div>
@@ -16,7 +16,7 @@
                 </div>
                 <div id="summary-download">
                     <download :translate-key="translation.summary"
-                              @click="downloadSummary"
+                              @click="downloadSummaryReport"
                               :disabled="!summary.downloadId || summary.preparing"
                               :file="summary"/>
                 </div>
@@ -103,8 +103,8 @@
         getUploadFiles: () => void
         clearStatus: () => void;
         prepareOutputs: () => void
-        downloadSummary: () => void
-        downloadSpectrum: () => void
+        downloadSummaryReport: () => void
+        downloadSpectrumOutput: () => void
         downloadCoarseOutput: () => void
         downloadUrl: (downloadId: string) => string
         handleDownloadResult: (downloadResults: DownloadResultsDependency) => void
@@ -170,12 +170,12 @@
             handleDownloadResult(downloadResults) {
                 window.location.assign(this.downloadUrl(downloadResults.downloadId));
             },
-            downloadSpectrum() {
+            downloadSpectrumOutput() {
                 this.handleDownloadResult(this.spectrum)
             },
-            downloadSummary() {
-                this.handleDownloadResult(this.summary)
-            },
+            downloadSummaryReport()    {
+        this.handleDownloadResult(this.summary)
+    },
             downloadCoarseOutput() {
                 this.handleDownloadResult(this.coarseOutput)
             },
