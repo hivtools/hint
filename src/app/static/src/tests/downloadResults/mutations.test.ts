@@ -1,4 +1,5 @@
 import {
+    mockDownloadResultsDependency,
     mockDownloadResultsState, mockError
 } from "../mocks";
 import {mutations} from "../../app/store/downloadResults/mutations";
@@ -148,5 +149,17 @@ describe(`download results mutations`, () => {
         expect(state.coarseOutput.statusPollId).toBe(-1);
         expect(state.coarseOutput.downloadId).toBe("111");
     });
+
+    it("resets download ids", () => {
+        const state = mockDownloadResultsState({
+            spectrum: mockDownloadResultsDependency({downloadId: "1"}),
+            summary: mockDownloadResultsDependency({downloadId: "2"}),
+            coarseOutput: mockDownloadResultsDependency({downloadId: "3"})
+        })
+        mutations[DownloadResultsMutation.ResetIds](state);
+        expect(state.spectrum.downloadId).toBe("");
+        expect(state.summary.downloadId).toBe("");
+        expect(state.coarseOutput.downloadId).toBe("");
+    })
 
 });

@@ -494,4 +494,15 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-})
+    it("can prepare all outputs", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        await actions.prepareOutputs({commit, dispatch} as any);
+
+        expect(dispatch.mock.calls.length).toBe(3);
+        expect(dispatch.mock.calls[0][0]).toBe("prepareCoarseOutput");
+        expect(dispatch.mock.calls[1][0]).toBe("prepareSummaryReport");
+        expect(dispatch.mock.calls[2][0]).toBe("prepareSpectrumOutput");
+    });
+});
