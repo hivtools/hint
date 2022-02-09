@@ -1,7 +1,7 @@
-import {ActionContext, ActionTree} from "vuex";
+import {ActionContext, ActionTree, Dispatch} from "vuex";
 import {RootState} from "../../root";
 import {DownloadResultsState} from "./downloadResults";
-import {api} from "../../apiService";
+import {api, ResponseWithType} from "../../apiService";
 import {DownloadResultsMutation} from "./mutations";
 import {ModelStatusResponse} from "../../generated";
 import {DOWNLOAD_TYPE} from "../../types";
@@ -94,9 +94,7 @@ export const getSummaryReportStatus = async function (context: ActionContext<Dow
         .withSuccess(DownloadResultsMutation.SummaryReportStatusUpdated)
         .withError(DownloadResultsMutation.SummaryError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
-    if (response && response.data?.done) {
-        await dispatch("metadata/getAdrUploadMetadata", response.data.id, {root: true});
-    }
+    await getADRUploadMetadata(response, dispatch);
 };
 
 export const getSpectrumOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
@@ -106,9 +104,7 @@ export const getSpectrumOutputStatus = async function (context: ActionContext<Do
         .withSuccess(DownloadResultsMutation.SpectrumOutputStatusUpdated)
         .withError(DownloadResultsMutation.SpectrumError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`);
-    if (response && response.data?.done) {
-        await dispatch("metadata/getAdrUploadMetadata", response.data.id, {root: true});
-    }
+    await getADRUploadMetadata(response, dispatch);
 };
 
 export const getCoarseOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
@@ -118,7 +114,11 @@ export const getCoarseOutputStatus = async function (context: ActionContext<Down
         .withSuccess(DownloadResultsMutation.CoarseOutputStatusUpdated)
         .withError(DownloadResultsMutation.CoarseOutputError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`);
+    await getADRUploadMetadata(response, dispatch);
+};
+
+const getADRUploadMetadata = async function(response: void | ResponseWithType<ModelStatusResponse>, dispatch: Dispatch) {
     if (response && response.data?.done) {
         await dispatch("metadata/getAdrUploadMetadata", response.data.id, {root: true});
     }
-};
+}
