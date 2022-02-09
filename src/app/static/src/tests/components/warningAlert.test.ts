@@ -2,7 +2,9 @@ import {createLocalVue, shallowMount} from '@vue/test-utils';
 import WarningAlert from "../../app/components/WarningAlert.vue";
 import Warning from "../../app/components/Warning.vue";
 import Vuex from "vuex";
-import {Language} from "../../app/store/translations/locales";
+import {emptyState} from "../../app/root";
+import registerTranslations from "../../app/store/translations/registerTranslations";
+import {expectTranslated} from "../testHelpers";
 
 const localVue = createLocalVue();
 
@@ -14,21 +16,16 @@ describe("Warning alert component", () => {
         modelCalibrate: [{ text: 'calibrate warning', locations: []}]
     }
 
-    type Lang = Language.en | Language.fr | Language.pt
+    const store = new Vuex.Store({state: emptyState()});
+    registerTranslations(store);
 
-    const createStore = (language: Lang) => {
-        return new Vuex.Store({
-            state: {language}
-        });
-    };
-
-    const createWrapper = (warnings = warningsMock, activeStep = 3, language: Lang = Language.en) => {
+    const createWrapper = (warnings = warningsMock, activeStep = 3) => {
         const wrapper = shallowMount(WarningAlert, {
             propsData: {
                 warnings: warnings,
                 activeStep
             },
-            store: createStore(language),
+            store,
             localVue
         });
         return wrapper
@@ -60,19 +57,15 @@ describe("Warning alert component", () => {
         expect(wrapper.emitted("clear-warnings").length).toBe(1);
     });
 
-    it("correct close aria-label in English", () => {
+    it("close button has correct aria-label translations", () => {
         const wrapper = createWrapper()
-        expect(wrapper.find("button").attributes("aria-label")).toBe("Close");
-    });
-
-    it("correct close aria-label in French", () => {
-        const wrapper = createWrapper(warningsMock, 3, Language.fr)
-        expect(wrapper.find("button").attributes("aria-label")).toBe("Fermer");
-    });
-
-    it("correct close aria-label in Portuguese", () => {
-        const wrapper = createWrapper(warningsMock, 3, Language.pt)
-        expect(wrapper.find("button").attributes("aria-label")).toBe("Fechar");
+        const button = wrapper.find("button")
+        expectTranslated(button,
+            "Close",
+            "Fermer",
+            "Fechar",
+            store as any,
+            "aria-label");
     });
 
     it("only renders warning messages that have warnings and sets maxLines prop", () => {
