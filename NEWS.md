@@ -1,4 +1,4 @@
-# hint 1.90.31
+# hint 1.90.1
 
 * Make hintr warnings dismissable
 
