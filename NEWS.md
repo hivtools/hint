@@ -1,6 +1,10 @@
-# hint 1.89.3
+# hint 1.90.31
 
 * Make hintr warnings dismissable
+
+# hint 1.90.0
+
+* Link to help documents hosted by UNAIDS
 
 # hint 1.89.2
 
