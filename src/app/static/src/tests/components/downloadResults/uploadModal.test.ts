@@ -389,33 +389,6 @@ describe(`uploadModal `, () => {
         expect(wrapper.emitted("close").length).toBe(1)
     });
 
-    it(`download progress is seen while preparing files`, async () => {
-        const downloadResults = {
-            summary: mockDownloadResultsDependency({preparing: true}),
-            spectrum: mockDownloadResultsDependency({preparing: true})
-        }
-        const store = createStore(fakeMetadata, downloadResults)
-        const wrapper = mount(UploadModal, {store})
-
-        const radialInput = wrapper.find("#uploadFiles")
-        await radialInput.trigger("click")
-
-        const okBtn = wrapper.find("button");
-        expect(okBtn.attributes("disabled")).toBe("disabled");
-
-        const inputs = wrapper.findAll("input[type='checkbox']")
-        expect(inputs.length).toBe(2)
-        expect(okBtn.text()).toBe("OK")
-
-        expect(wrapper.find(DownloadStatus).props())
-            .toEqual({"preparing": true, "translateKey": "downloadProgressForADR"})
-        expectTranslated(wrapper.find(DownloadStatus),
-            "Preparing file(s) for upload...",
-            "Préparer le(s) fichier(s) pour le téléchargement...",
-            "Preparando arquivo(s) para upload...", store)
-        expect(wrapper.emitted("close")).toBeUndefined()
-    });
-
     it("does not render file section header when no input files", () => {
         const wrapper = mount(UploadModal, {store: createStore()});
         expect(wrapper.find("h5").exists()).toBe(false);
@@ -450,42 +423,14 @@ describe(`uploadModal `, () => {
         expect(labels.at(2).attributes("for")).toBe("id-1-0");
     });
 
-    it(`ok button is disabled if there are no files selected`, async () => {
+    it(`ok button is disabled if there are no uploadable files`, async () => {
         const wrapper = mount(UploadModal, {store: createStore({})})
 
         const btn = wrapper.findAll("button");
         expect(btn.at(0).attributes("disabled")).toBe("disabled");
     });
 
-    it(`ok button is disabled while spectrum output is being prepared`, async () => {
-        const downloadResults = {
-            summary: mockDownloadResultsDependency({preparing: false}),
-            spectrum: mockDownloadResultsDependency({preparing: true})
-        }
-        const wrapper = mount(UploadModal,
-            {
-                store: createStore(fakeMetadata, downloadResults)
-            })
-
-        const btn = wrapper.findAll("button");
-        expect(btn.at(0).attributes("disabled")).toBe("disabled");
-    });
-
-    it(`ok button is disabled while summary output is being prepared`, async () => {
-        const downloadResults = {
-            summary: mockDownloadResultsDependency({preparing: true}),
-            spectrum: mockDownloadResultsDependency({preparing: false})
-        }
-        const wrapper = mount(UploadModal,
-            {
-                store: createStore(fakeMetadata, downloadResults)
-            })
-
-        const btn = wrapper.findAll("button");
-        expect(btn.at(0).attributes("disabled")).toBe("disabled");
-    });
-
-    it(`ok button is enabled when downloads are not being prepared and there are uploadable files`, async () => {
+    it(`ok button is enabled when there are uploadable files`, async () => {
         const wrapper = mount(UploadModal,
             {
                 store: createStore(fakeMetadata)

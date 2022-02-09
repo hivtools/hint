@@ -55,17 +55,12 @@
                     </div>
                 </div>
             </div>
-            <div class="pt-3">
-                <download-status id="upload-download-progress"
-                                 :translate-key="'downloadProgressForADR'"
-                                 :preparing="preparingFiles"/>
-            </div>
             <template v-slot:footer>
                 <button
                     type="button"
                     class="btn btn-red"
-                    :disabled="uploadDisabled"
                     @click.prevent="confirmUpload"
+                    :disabled="uploadFilesToAdr.length === 0"
                     v-translate="'ok'"></button>
                 <button
                     type="button"
@@ -82,7 +77,6 @@
     import Modal from "../Modal.vue";
     import {
         Dict,
-        DownloadResultsDependency,
         UploadFile
     } from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
@@ -93,9 +87,6 @@
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
-    import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
-    import {ADRState} from "../../store/adr/adr";
-    import DownloadStatus from "./DownloadStatus.vue";
 
     interface Methods {
         uploadFilesToADRAction: (selectedUploadFiles: { uploadFiles: UploadFile[], createRelease: boolean }) => void;
@@ -111,12 +102,6 @@
         uploadableFiles: Dict<UploadFile>,
         uploadFileSections: Array<Dict<UploadFile>>
         currentLanguage: Language;
-        uploadDisabled: boolean;
-        spectrum: DownloadResultsDependency,
-        summary: DownloadResultsDependency,
-        outputSummary: string | undefined,
-        outputSpectrum: string | undefined,
-        preparingFiles: boolean,
         createRelease: boolean
     }
 
@@ -165,12 +150,6 @@
             }
         },
         computed: {
-            spectrum: mapStateProp<DownloadResultsState, DownloadResultsDependency>("downloadResults",
-                (state: DownloadResultsState) => state.spectrum),
-            summary: mapStateProp<DownloadResultsState, DownloadResultsDependency>("downloadResults",
-                (state: DownloadResultsState) => state.summary),
-            outputSpectrum: mapStateProp<ADRState, string | undefined>("adr", state => state.schemas?.outputZip),
-            outputSummary: mapStateProp<ADRState, string | undefined>("adr", state => state.schemas?.outputSummary),
             dataset: mapStateProp<BaselineState, string | undefined>("baseline",
                 (state: BaselineState) => state.selectedDataset?.title),
             createRelease() {
@@ -196,18 +175,11 @@
                 } else {
                     return [];
                 }
-            },
-            uploadDisabled() {
-                return this.uploadFilesToAdr.length == 0 || this.preparingFiles;
-            },
-            preparingFiles() {
-                return this.spectrum.preparing || this.summary.preparing;
             }
         },
         components: {
             Modal,
-            HelpCircleIcon,
-            DownloadStatus
+            HelpCircleIcon
         },
         watch: {
             choiceUpload() {

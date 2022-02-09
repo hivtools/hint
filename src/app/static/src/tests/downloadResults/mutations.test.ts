@@ -21,6 +21,10 @@ describe(`download results mutations`, () => {
         queue: 0
     }
 
+    afterEach(() => {
+        jest.useRealTimers();
+    })
+
     it("sets summary download started on SummaryDownloadStarted", () => {
         const state = mockDownloadResultsState();
         mutations[DownloadResultsMutation.PreparingSummaryReport](state, {payload: downloadStartedPayload});
@@ -30,13 +34,19 @@ describe(`download results mutations`, () => {
         expect(state.summary.error).toBe(null);
     });
 
-    it("sets summary download error on SummaryError", () => {
-        const state = mockDownloadResultsState();
+    it("sets summary download error, clears interval on SummaryError", () => {
+        jest.useFakeTimers();
+        const clearInterval = jest.spyOn(window, "clearInterval");
+        const state = mockDownloadResultsState({
+            summary: mockDownloadResultsDependency({statusPollId: 1})
+        });
         mutations[DownloadResultsMutation.SummaryError](state, {payload: error});
         expect(state.summary.preparing).toBe(false);
         expect(state.summary.error).toEqual(errorMsg);
         expect(state.spectrum.error).toBe(null);
         expect(state.coarseOutput.error).toBe(null);
+        expect(state.summary.statusPollId).toBe(-1);
+        expect(clearInterval.mock.calls[0][0]).toBe(1);
     });
 
     it("sets poll started for summary download on PollingStatusStarted", () => {
@@ -47,6 +57,8 @@ describe(`download results mutations`, () => {
     });
 
     it("set summary status to complete, clears interval on SummaryDownloadStatusUpdated", () => {
+        jest.useFakeTimers();
+        const clearInterval = jest.spyOn(window, "clearInterval");
         const state = mockDownloadResultsState({
             summary: {
                 preparing: true,
@@ -62,6 +74,7 @@ describe(`download results mutations`, () => {
         expect(state.summary.error).toBe(null);
         expect(state.summary.statusPollId).toBe(-1);
         expect(state.summary.downloadId).toBe("111");
+        expect(clearInterval.mock.calls[0][0]).toBe(123);
     });
 
     it("sets spectrum download started on SpectrumDownloadStarted", () => {
@@ -74,12 +87,17 @@ describe(`download results mutations`, () => {
     });
 
     it("sets spectrum download error on SpectrumError", () => {
-        const state = mockDownloadResultsState();
+        jest.useFakeTimers();
+        const clearInterval = jest.spyOn(window, "clearInterval");
+        const state = mockDownloadResultsState({
+            spectrum: mockDownloadResultsDependency({statusPollId: 123})
+        });
         mutations[DownloadResultsMutation.SpectrumError](state, {payload: error});
         expect(state.spectrum.preparing).toBe(false);
         expect(state.spectrum.error).toEqual(errorMsg);
         expect(state.coarseOutput.error).toBe(null);
         expect(state.summary.error).toBe(null);
+        expect(clearInterval.mock.calls[0][0]).toBe(123);
     });
 
     it("sets poll started for spectrum download on PollingStatusStarted", () => {
@@ -90,6 +108,8 @@ describe(`download results mutations`, () => {
     });
 
     it("set spectrum status to complete, clears interval on SpectrumDownloadStatusUpdated", () => {
+        jest.useFakeTimers();
+        const clearInterval = jest.spyOn(window, "clearInterval");
         const state = mockDownloadResultsState({
             spectrum: {
                 preparing: true,
@@ -105,6 +125,7 @@ describe(`download results mutations`, () => {
         expect(state.spectrum.error).toBe(null);
         expect(state.spectrum.statusPollId).toBe(-1);
         expect(state.spectrum.downloadId).toBe("111");
+        expect(clearInterval.mock.calls[0][0]).toBe(123);
     });
 
     it("sets coarseOutput download started on CoarseOutputDownloadStarted", () => {
@@ -117,12 +138,19 @@ describe(`download results mutations`, () => {
     });
 
     it("sets coarseOutput download error on CoarseOutputError", () => {
-        const state = mockDownloadResultsState();
+        jest.useFakeTimers();
+        const clearInterval = jest.spyOn(window, "clearInterval");
+        const state = mockDownloadResultsState({
+            coarseOutput: mockDownloadResultsDependency({
+                statusPollId: 123
+            })
+        });
         mutations[DownloadResultsMutation.CoarseOutputError](state, {payload: error});
         expect(state.coarseOutput.preparing).toBe(false);
         expect(state.coarseOutput.error).toEqual(errorMsg);
         expect(state.spectrum.error).toBe(null);
         expect(state.summary.error).toBe(null);
+        expect(clearInterval.mock.calls[0][0]).toBe(123);
     });
 
     it("sets poll started for coarseOutput download on PollingStatusStarted", () => {
@@ -133,6 +161,8 @@ describe(`download results mutations`, () => {
     });
 
     it("set coarseOutput status to complete, clears interval on CoarseOutputDownloadStatusUpdated", () => {
+        jest.useFakeTimers();
+        const clearInterval = jest.spyOn(window, "clearInterval");
         const state = mockDownloadResultsState({
             coarseOutput: {
                 preparing: true,
@@ -148,18 +178,30 @@ describe(`download results mutations`, () => {
         expect(state.coarseOutput.error).toBe(null);
         expect(state.coarseOutput.statusPollId).toBe(-1);
         expect(state.coarseOutput.downloadId).toBe("111");
+        expect(clearInterval.mock.calls[0][0]).toBe(123);
     });
 
     it("resets download ids", () => {
+        jest.useFakeTimers();
+        const clearInterval = jest.spyOn(window, "clearInterval");
+
         const state = mockDownloadResultsState({
-            spectrum: mockDownloadResultsDependency({downloadId: "1"}),
-            summary: mockDownloadResultsDependency({downloadId: "2"}),
-            coarseOutput: mockDownloadResultsDependency({downloadId: "3"})
+            spectrum: mockDownloadResultsDependency({downloadId: "1", statusPollId: 1}),
+            summary: mockDownloadResultsDependency({downloadId: "2", statusPollId: 2}),
+            coarseOutput: mockDownloadResultsDependency({downloadId: "3", statusPollId: 3})
         })
         mutations[DownloadResultsMutation.ResetIds](state);
         expect(state.spectrum.downloadId).toBe("");
         expect(state.summary.downloadId).toBe("");
         expect(state.coarseOutput.downloadId).toBe("");
+
+        expect(state.spectrum.statusPollId).toBe(-1);
+        expect(state.summary.statusPollId).toBe(-1);
+        expect(state.coarseOutput.statusPollId).toBe(-1);
+
+        expect(clearInterval.mock.calls[0][0]).toBe(1);
+        expect(clearInterval.mock.calls[1][0]).toBe(2);
+        expect(clearInterval.mock.calls[2][0]).toBe(3);
     })
 
 });
