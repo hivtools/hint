@@ -1,3 +1,7 @@
+# hint 1.90.3
+
+* Make hintr warnings dismissable
+
 # hint 1.90.2
 
 * Fix warnings being truncated without 'Show more' visible
@@ -31,7 +35,8 @@
 * Remove Projects state from localStorage
 
 # hint 1.88.3
-Use area_id to define unique areas in Input Time Series
+
+* Use area_id to define unique areas in Input Time Series
 
 # hint 1.88.2
 
@@ -52,7 +57,6 @@ Use area_id to define unique areas in Input Time Series
 # hint 1.87.0
 
 * Formatting Input Time Series table values
-
 
 # hint 1.86.0
 
@@ -109,7 +113,6 @@ Use area_id to define unique areas in Input Time Series
 # hint 1.75.1
 
 * Update review output plots to use metadata from modelCalibrate
-
 
 # hint 1.75.0
 
