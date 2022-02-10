@@ -164,6 +164,7 @@
                     4: this.clearModelRunWarnings,
                     5: this.clearModelCalibrateWarnings,
                     6: this.clearModelCalibrateWarnings,
+                    7: this.clearModelCalibrateWarnings
                 }
                 if (this.activeStep in mutationMethods){
                     mutationMethods[this.activeStep]()
