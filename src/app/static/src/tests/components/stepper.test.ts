@@ -900,4 +900,10 @@ describe("Stepper component", () => {
         await wrapper.find(WarningAlert).vm.$emit("clear-warnings")
         expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
     });
+
+    it("clear-warnings emit when in downloadResults triggers clear warnings mutation in modelCalibrate store", async () => {
+        const wrapper = createWarningAlertWrapper(7)
+        await wrapper.find(WarningAlert).vm.$emit("clear-warnings")
+        expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
+    });
 });
