@@ -1,3 +1,7 @@
+# hint 1.90.2
+
+* Fix warnings being truncated without 'Show more' visible
+
 # hint 1.90.1
 
 * Bug fix for 'Failed to fetch result' error when reload ModelRun after failed run
