@@ -1,6 +1,14 @@
-# hint 1.89.3
+# hint 1.90.2
 
 * Fix warnings being truncated without 'Show more' visible
+
+# hint 1.90.1
+
+* Bug fix for 'Failed to fetch result' error when reload ModelRun after failed run
+
+# hint 1.90.0
+
+* Link to help documents hosted by UNAIDS
 
 # hint 1.89.2
 
