@@ -1,3 +1,7 @@
+# hint 1.91.0
+
+* add register link to login page
+
 # hint 1.90.3
 
 * Make hintr warnings dismissable
