@@ -4,7 +4,7 @@
             <div class="col-sm">
                 <div id="spectrum-download">
                     <download :translate-key="translation.spectrum"
-                              @click="downloadSpectrum"
+                              @click="downloadSpectrumOutput"
                               :disabled="uploading"
                               :modal-open="uploadModalOpen"
                               :file="spectrum"/>
@@ -18,7 +18,7 @@
                 </div>
                 <div id="summary-download">
                     <download :translate-key="translation.summary"
-                              @click="downloadSummary"
+                              @click="downloadSummaryReport"
                               :disabled="uploading"
                               :modal-open="uploadModalOpen"
                               :file="summary"/>
@@ -109,12 +109,12 @@
         getUserCanUpload: () => void
         getUploadFiles: () => void
         clearStatus: () => void;
+        prepareCoarseOutput: () => void
+        prepareSpectrumOutput: () => void
+        prepareSummaryReport: () => void
+        downloadSummaryReport: () => void
+        downloadSpectrumOutput: () => void
         downloadCoarseOutput: () => void
-        downloadSpectrum: () => void
-        downloadSummary: () => void
-        getSummaryDownload: () => void
-        getSpectrumDownload: () => void
-        getCoarseOutputDownload: () => void
         getUploadMetadata: (id: string) => void
         downloadUrl: (downloadId: string) => string
         stopPolling: (pollingId: number) => void
@@ -135,21 +135,21 @@
         computed: {
             ...mapStateProps<DownloadResultsState, keyof Computed>("downloadResults", {
                 spectrum: state => ({
-                    downloading: state.spectrum.downloading,
+                    preparing: state.spectrum.preparing,
                     complete: state.spectrum.complete,
                     downloadId: state.spectrum.downloadId,
                     statusPollId: state.spectrum.statusPollId,
                     error: state.spectrum.error
                 }),
                 summary: state => ({
-                    downloading: state.summary.downloading,
+                    preparing: state.summary.preparing,
                     complete: state.summary.complete,
                     downloadId: state.summary.downloadId,
                     statusPollId: state.summary.statusPollId,
                     error: state.summary.error
                 }),
                 coarseOutput: state => ({
-                    downloading: state.coarseOutput.downloading,
+                    preparing: state.coarseOutput.preparing,
                     complete: state.coarseOutput.complete,
                     downloadId: state.coarseOutput.downloadId,
                     statusPollId: state.coarseOutput.statusPollId,
@@ -187,7 +187,7 @@
                 }
             },
             isDownloading() {
-                return !!this.summary.downloading || !!this.spectrum.downloading || !!this.coarseOutput.downloading
+                return !!this.summary.preparing || !!this.spectrum.preparing || !!this.coarseOutput.preparing
             }
         },
         methods: {
@@ -197,19 +197,19 @@
             handleUploadModal() {
                 this.uploadModalOpen = true;
             },
-            downloadSpectrum() {
-                if (!this.spectrum.downloading) {
-                    this.getSpectrumDownload();
+            downloadSpectrumOutput() {
+                if (!this.spectrum.preparing) {
+                    this.prepareSpectrumOutput();
                 }
             },
-            downloadSummary() {
-                if (!this.summary.downloading) {
-                    this.getSummaryDownload();
+            downloadSummaryReport() {
+                if (!this.summary.preparing) {
+                    this.prepareSummaryReport();
                 }
             },
             downloadCoarseOutput() {
-                if (!this.coarseOutput.downloading) {
-                    this.getCoarseOutputDownload();
+                if (!this.coarseOutput.preparing) {
+                    this.prepareCoarseOutput();
                 }
             },
             stopPolling(id) {
@@ -230,9 +230,9 @@
             clearStatus: mapMutationByName("adrUpload", "ClearStatus"),
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
             getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
-            getSpectrumDownload: mapActionByName("downloadResults", "downloadSpectrum"),
-            getSummaryDownload: mapActionByName("downloadResults", "downloadSummary"),
-            getCoarseOutputDownload: mapActionByName("downloadResults", "downloadCoarseOutput"),
+            prepareSpectrumOutput: mapActionByName("downloadResults", "prepareSpectrumOutput"),
+            prepareSummaryReport: mapActionByName("downloadResults", "prepareSummaryReport"),
+            prepareCoarseOutput: mapActionByName("downloadResults", "prepareCoarseOutput"),
             getUploadMetadata: mapActionByName("metadata", "getAdrUploadMetadata"),
         },
         mounted() {

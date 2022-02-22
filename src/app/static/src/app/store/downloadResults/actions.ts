@@ -6,20 +6,21 @@ import {DownloadResultsMutation} from "./mutations";
 import {ModelStatusResponse} from "../../generated";
 
 export interface DownloadResultsActions {
-    downloadSummary: (store : ActionContext<DownloadResultsState, RootState>) => void
-    downloadSpectrum: (store : ActionContext<DownloadResultsState, RootState>) => void
-    downloadCoarseOutput: (store : ActionContext<DownloadResultsState, RootState>) => void
+    prepareSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => void
+    prepareSpectrumOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
+    prepareCoarseOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
     poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: string) => void
 }
 
 export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResultsActions = {
 
-    async downloadCoarseOutput(context) {
-        const {dispatch, rootState} = context
+    async prepareCoarseOutput(context) {
+        const {state, dispatch, rootState} = context
+
         const calibrateId = rootState.modelCalibrate.calibrateId
 
         const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
-            .withSuccess(DownloadResultsMutation.CoarseOutputDownloadStarted)
+            .withSuccess(DownloadResultsMutation.PreparingCoarseOutput)
             .withError(DownloadResultsMutation.CoarseOutputError)
             .get(`download/submit/coarse-output/${calibrateId}`)
 
@@ -28,12 +29,13 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         }
     },
 
-    async downloadSummary(context) {
-        const {dispatch, rootState} = context
+    async prepareSummaryReport(context) {
+
+        const {state, dispatch, rootState} = context
         const calibrateId = rootState.modelCalibrate.calibrateId
 
         const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
-            .withSuccess(DownloadResultsMutation.SummaryDownloadStarted)
+            .withSuccess(DownloadResultsMutation.PreparingSummaryReport)
             .withError(DownloadResultsMutation.SummaryError)
             .get(`download/submit/summary/${calibrateId}`)
 
@@ -42,12 +44,13 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         }
     },
 
-    async downloadSpectrum(context) {
-        const {dispatch, rootState} = context
+    async prepareSpectrumOutput(context) {
+        const {dispatch, rootState, state} = context
+
         const calibrateId = rootState.modelCalibrate.calibrateId
 
         const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
-            .withSuccess(DownloadResultsMutation.SpectrumDownloadStarted)
+            .withSuccess(DownloadResultsMutation.PreparingSpectrumOutput)
             .withError(DownloadResultsMutation.SpectrumError)
             .get(`download/submit/spectrum/${calibrateId}`)
 
@@ -60,14 +63,12 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         const {commit} = context;
         const id = setInterval(() => {
 
-            if(downloadType === DOWNLOAD_TYPE.SPECTRUM) {
-                getSpectrumDownloadStatus(context)
-            }
-            else if(downloadType === DOWNLOAD_TYPE.COARSE) {
-                getCoarseOutputDownloadStatus(context)
-            }
-            else if (downloadType === DOWNLOAD_TYPE.SUMMARY) {
-                getSummaryDownloadStatus(context)
+            if (downloadType === DOWNLOAD_TYPE.SPECTRUM) {
+                getSpectrumOutputStatus(context)
+            } else if (downloadType === DOWNLOAD_TYPE.COARSE) {
+                getCoarseOutputStatus(context)
+            } else if (downloadType === DOWNLOAD_TYPE.SUMMARY) {
+                getSummaryReportStatus(context)
             }
         }, 2000);
 
@@ -75,29 +76,29 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
     },
 };
 
-export const getSummaryDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
+export const getSummaryReportStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
     const {state} = context;
     const downloadId = state.summary.downloadId;
     return api<DownloadResultsMutation, DownloadResultsMutation>(context)
-        .withSuccess(DownloadResultsMutation.SummaryDownloadStatusUpdated)
+        .withSuccess(DownloadResultsMutation.SummaryReportStatusUpdated)
         .withError(DownloadResultsMutation.SummaryError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
 };
 
-export const getSpectrumDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
+export const getSpectrumOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
     const {state} = context;
     const downloadId = state.spectrum.downloadId;
     return api<DownloadResultsMutation, DownloadResultsMutation>(context)
-        .withSuccess(DownloadResultsMutation.SpectrumDownloadStatusUpdated)
+        .withSuccess(DownloadResultsMutation.SpectrumOutputStatusUpdated)
         .withError(DownloadResultsMutation.SpectrumError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
 };
 
-export const getCoarseOutputDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
+export const getCoarseOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
     const {state} = context;
     const downloadId = state.coarseOutput.downloadId;
     return api<DownloadResultsMutation, DownloadResultsMutation>(context)
-        .withSuccess(DownloadResultsMutation.CoarseOutputDownloadStatusUpdated)
+        .withSuccess(DownloadResultsMutation.CoarseOutputStatusUpdated)
         .withError(DownloadResultsMutation.CoarseOutputError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
 };
