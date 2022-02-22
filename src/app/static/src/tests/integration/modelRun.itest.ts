@@ -21,20 +21,23 @@ describe("Model run actions", () => {
             }
         } as RootState;
 
-        await actions.run({commit, rootState: mockState} as any);
+        await actions.run({commit, rootState: mockState, state: {statusPollId: -1}} as any);
         runId = (commit.mock.calls[0][0]["payload"] as ModelSubmitResponse).id;
     });
 
     it("can trigger model run", async () => {
         const commit = jest.fn();
-        const mockState = {
+        const mockRootState = {
             language: Language.en,
             modelOptions: {
                 options: {},
                 version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"}
             }
         } as RootState;
-        await actions.run({commit, rootState: mockState} as any);
+        const mockState = {
+            statusPollId: -1
+        } as ModelRunState;
+        await actions.run({commit, rootState: mockRootState, state: mockState} as any);
 
         expect(commit.mock.calls[0][0]["type"]).toBe("ModelRunError");
         expect(commit.mock.calls[0][0]["payload"]["error"]).toBe("INVALID_INPUT");

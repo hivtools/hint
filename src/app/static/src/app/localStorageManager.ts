@@ -22,6 +22,7 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
             metadata,
             plottingSelections,
             surveyAndProgram,
+            stepper: state.stepper,
             hintrVersion: state.hintrVersion,
             language: state.language
         }
@@ -44,10 +45,10 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
             modelOutput: rootState.modelOutput,
             modelCalibrate: {
                 ...rootState.modelCalibrate,
-                result: null
+                result: null,
+                calibratePlotResult: null
             },
             stepper: rootState.stepper,
-            projects: rootState.projects,
             hintrVersion: state.hintrVersion,
             language: state.language
         };

@@ -1,5 +1,5 @@
 import {mutations} from "../../app/store/plottingSelections/mutations";
-import {mockColourScales, mockPlottingSelections} from "../mocks";
+import {mockPlottingSelections} from "../mocks";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {ScaleType} from "../../app/store/plottingSelections/plottingSelections";
 

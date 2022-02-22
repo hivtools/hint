@@ -127,7 +127,7 @@
             }
         },
         created() {
-            if (this.runId && this.pollId == -1 && !this.complete) {
+            if (this.runId && this.pollId == -1 && this.running) {
                 this.poll(this.runId);
             }
         },
