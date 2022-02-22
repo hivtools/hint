@@ -1,6 +1,11 @@
+
 # hint 1.91.0
 
 * add register link to login page
+
+# hint 1.90.4
+
+* Replace 'ART' with 'TARV' in French strings
 
 # hint 1.90.3
 
