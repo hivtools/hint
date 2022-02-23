@@ -1,3 +1,7 @@
+# hint 1.91.0
+
+* Handle resource with missing download gracefully
+
 # hint 1.90.4
 
 * Replace 'ART' with 'TARV' in French strings
