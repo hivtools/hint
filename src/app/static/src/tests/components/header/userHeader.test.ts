@@ -97,31 +97,40 @@ describe("user header", () => {
         const store = createStore()
         const wrapper = shallowMount(UserHeader, {localVue, store, stubs: ["router-link"]});
         const vm = (wrapper as any).vm;
-        expect(vm.helpFilename).toStrictEqual("public/resources/Naomi-Help-Guide.pdf");
+        expect(vm.helpFilename).toStrictEqual(
+            "https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf");
 
         const frStore = createLanguageStore(Language.fr);
         const frWrapper = shallowMount(UserHeader, {localVue, store: frStore, stubs: ["router-link"]});
         const frVm = (frWrapper as any).vm;
-        expect(frVm.helpFilename).toStrictEqual("public/resources/Naomi-instructions-de-base.pdf");
+        expect(frVm.helpFilename).toStrictEqual(
+            "https://hivtools.unaids.org/wp-content/uploads/75D-Instructions-pour-Naomi.pdf");
 
         const ptStore = createLanguageStore(Language.pt);
         const ptWrapper = shallowMount(UserHeader, {localVue, store: ptStore, stubs: ["router-link"]});
         const ptVm = (ptWrapper as any).vm;
-        expect(ptVm.helpFilename).toStrictEqual("public/resources/Naomi-Help-Guide.pdf");
+        expect(ptVm.helpFilename).toStrictEqual(
+            "https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf");
     });
 
     it("contains Basic steps document links", () => {
         const store = createStore();
         const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
-        expect(wrapper.find("a[href='public/resources/Naomi-Help-Guide.pdf']").text()).toBe("Basic steps");
+        expect(wrapper.find(
+            "a[href='https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf']"
+            ).text()).toBe("Basic steps");
 
         const frStore = createLanguageStore(Language.fr);
         const frWrapper = shallowMount(UserHeader, {store: frStore, stubs: ["router-link"]});
-        expect(frWrapper.find("a[href='public/resources/Naomi-instructions-de-base.pdf']").text()).toBe("Etapes de base");
+        expect(frWrapper.find(
+            "a[href='https://hivtools.unaids.org/wp-content/uploads/75D-Instructions-pour-Naomi.pdf']"
+            ).text()).toBe("Etapes de base");
 
         const ptStore = createLanguageStore(Language.pt);
         const ptWrapper = shallowMount(UserHeader, {store: ptStore, stubs: ["router-link"]});
-        expect(ptWrapper.find("a[href='public/resources/Naomi-Help-Guide.pdf']").text()).toBe("Passos básicos");
+        expect(ptWrapper.find(
+            "a[href='https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf']"
+            ).text()).toBe("Passos básicos");
     });
 
     it("renders Projects link as expected if user is not guest", () => {

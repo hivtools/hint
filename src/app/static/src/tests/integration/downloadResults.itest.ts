@@ -124,6 +124,6 @@ describe(`download results actions integration`, () => {
             expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
             done()
 
-        }, 2100)
+        }, 3100)
     })
 })

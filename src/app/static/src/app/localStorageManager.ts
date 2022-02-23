@@ -22,6 +22,7 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
             metadata,
             plottingSelections,
             surveyAndProgram,
+            stepper: state.stepper,
             hintrVersion: state.hintrVersion,
             language: state.language
         }

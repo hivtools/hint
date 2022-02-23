@@ -611,7 +611,7 @@ const fr: Partial<Translations> = {
     apiCouldNotParseError: "Impossible d'analyser la réponse de l'API. Veuillez contacter le support.",
     apiMissingError: "La réponse de l'API a échoué mais ne contenait aucune information d'erreur. Veuillez contacter le support.",
     area: "Zone",
-    ART: "ART",
+    ART: "TARV",
     axe: "Accessibilité",
     axeOnNaomiHeading: "Accessibilité sur Naomi",
     axeOnNaomiParagraph1: "Cette déclaration s’applique au contenu publié sur <a href=\"https://naomi.unaids.org/\" target='_blank' rel='noopener noreferrer'> naomi.unaids.org </a>",
