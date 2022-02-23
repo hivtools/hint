@@ -1,14 +1,12 @@
 import {shallowMount} from "@vue/test-utils";
 import Download from "../../../app/components/downloadResults/Download.vue"
+import {mockDownloadResultsDependency} from "../../mocks";
 
 describe(`download`, () => {
 
-    const downloadSummary = {
-        downloading: true,
-        complete: false,
-        downloadId: null,
-        error: null
-    }
+    const downloadSummary = mockDownloadResultsDependency({
+        preparing: true
+    })
 
     const downloadTranslate = {
         header: "downloadSummaryReport",
@@ -69,12 +67,8 @@ describe(`download`, () => {
 
     it(`can emit download`, async () => {
         const wrapper = getWrapper()
-        const downloadSummary = {
-            downloading: false,
-            complete: false,
-            downloadId: null,
-            error: null
-        }
+        const downloadSummary = mockDownloadResultsDependency();
+
         const button = wrapper.find("button")
         await wrapper.setProps({file: downloadSummary})
         button.trigger("click")

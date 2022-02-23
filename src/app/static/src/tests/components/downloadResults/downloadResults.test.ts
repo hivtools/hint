@@ -2,7 +2,7 @@ import {createLocalVue, shallowMount, mount} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
 import {
     mockADRState,
-    mockADRUploadState,
+    mockADRUploadState, mockDownloadResultsDependency,
     mockDownloadResultsState, mockError, mockMetadataState,
     mockModelCalibrateState
 } from "../../mocks";
@@ -25,12 +25,12 @@ describe("Download Results component", () => {
     const mockCoarseOutputDownloadAction = jest.fn();
     const mockUploadMetadataAction = jest.fn();
 
-    const mockDownloading = {
-        downloading: true,
+    const mockDownloading = mockDownloadResultsDependency({
+        preparing: true,
         complete: false,
         error: null,
-        downloadId: null
-    }
+        downloadId: ""
+    })
 
     afterEach(() => {
         jest.useRealTimers()
@@ -73,9 +73,9 @@ describe("Download Results component", () => {
                     namespaced: true,
                     state: mockDownloadResultsState(downloadResults),
                     actions: {
-                        downloadSpectrum: mockSpectrumDownloadAction,
-                        downloadSummary: mockSummaryDownloadAction,
-                        downloadCoarseOutput: mockCoarseOutputDownloadAction
+                        prepareSpectrumOutput: mockSpectrumDownloadAction,
+                        prepareSummaryReport: mockSummaryDownloadAction,
+                        prepareCoarseOutput: mockCoarseOutputDownloadAction
                     }
                 },
                 metadata: {
@@ -246,24 +246,24 @@ describe("Download Results component", () => {
     it("can download spectrum file when download is complete", () => {
         const store = createStore();
         const downloadResults = {
-            summary: {
-                downloading: true,
+            summary: mockDownloadResultsDependency({
+                preparing: true,
                 complete: false,
                 error: null,
-                downloadId: null
-            },
-            coarseOutput: {
-                downloading: true,
+                downloadId: ""
+            }),
+            coarseOutput: mockDownloadResultsDependency({
+                preparing: true,
                 complete: false,
                 error: null,
-                downloadId: null
-            },
-            spectrum: {
-                downloading: false,
+                downloadId: ""
+            }),
+            spectrum: mockDownloadResultsDependency({
+                preparing: false,
                 complete: true,
                 error: null,
                 downloadId: "123"
-            }
+            })
         }
         downloadFile(store, downloadResults)
     });
@@ -298,12 +298,13 @@ describe("Download Results component", () => {
     });
 
     it("can render error when spectrum download action is unsuccessful", () => {
-        const testError = {
-            downloading: false,
+        const testError = mockDownloadResultsDependency({
+            preparing: false,
             complete: false,
             error: mockError("TEST FAILED"),
-            downloadId: null
-        }
+            downloadId: ""
+        });
+
         const store = createStore(
             false,
             jest.fn(),
@@ -322,34 +323,34 @@ describe("Download Results component", () => {
     });
 
     it("can stop polling spectrum download when error response", () => {
-        const spectrumDownloadStatus = {
-            downloading: true,
+        const spectrumDownloadStatus = mockDownloadResultsDependency({
+            preparing: true,
             complete: false,
             error: null,
-            downloadId: 1,
+            downloadId: "1",
             statusPollId: 123
-        }
+        });
 
         const spectrumTestError = {
-            summary: {
-                downloading: false,
+            summary: mockDownloadResultsDependency({
+                preparing: false,
                 complete: false,
                 error: null,
-                downloadId: null
-            },
-            coarseOutput: {
-                downloading: false,
+                downloadId: ""
+            }),
+            coarseOutput: mockDownloadResultsDependency({
+                preparing: false,
                 complete: false,
                 error: null,
-                downloadId: null
-            },
-            spectrum: {
-                downloading: false,
+                downloadId: ""
+            }),
+            spectrum: mockDownloadResultsDependency({
+                preparing: false,
                 complete: false,
                 error: mockError("TEST FAILED"),
-                downloadId: null,
+                downloadId: "",
                 statusPollId: 123
-            }
+            })
         }
 
         const store = createStore(
@@ -374,12 +375,13 @@ describe("Download Results component", () => {
     });
 
     it("can fetch upload metadata when spectrum download action is complete", () => {
-        const testComplete = {
-            downloading: false,
+        const testComplete = mockDownloadResultsDependency({
+            preparing: false,
             complete: true,
             error: null,
             downloadId: "123"
-        }
+        });
+
         const store = createStore(
             false,
             jest.fn(),
@@ -424,35 +426,36 @@ describe("Download Results component", () => {
     it("can download coarseOutput file when download is complete", () => {
         const store = createStore();
         const downloadResults = {
-            summary: {
-                downloading: false,
+            summary: mockDownloadResultsDependency({
+                preparing: false,
                 complete: true,
                 error: null,
                 downloadId: "123"
-            },
-            coarseOutput: {
-                downloading: true,
+            }),
+            coarseOutput: mockDownloadResultsDependency({
+                preparing: true,
                 complete: false,
                 error: null,
-                downloadId: null
-            },
-            spectrum: {
-                downloading: true,
+                downloadId: ""
+            }),
+            spectrum: mockDownloadResultsDependency({
+                preparing: true,
                 complete: false,
                 error: null,
-                downloadId: null
-            }
+                downloadId: ""
+            })
         }
         downloadFile(store, downloadResults)
     });
 
     it("can render error when summary download action is unsuccessful", () => {
-        const testError = {
-            downloading: false,
+        const testError = mockDownloadResultsDependency({
+            preparing: false,
             complete: false,
             error: mockError("TEST FAILED"),
-            downloadId: null
-        }
+            downloadId: ""
+        });
+
         const store = createStore(
             false,
             jest.fn(),
@@ -471,12 +474,13 @@ describe("Download Results component", () => {
     });
 
     it("can fetch upload metadata when summary download action is complete", () => {
-        const testComplete = {
-            downloading: false,
+        const testComplete = mockDownloadResultsDependency({
+            preparing: false,
             complete: true,
             error: null,
             downloadId: "123"
-        }
+        });
+
         const store = createStore(
             false,
             jest.fn(),
@@ -496,34 +500,34 @@ describe("Download Results component", () => {
     });
 
     it("can stop polling summary download when error response", () => {
-        const summaryDownloadStatus = {
-            downloading: true,
+        const summaryDownloadStatus = mockDownloadResultsDependency({
+            preparing: true,
             complete: false,
             error: null,
-            downloadId: 1,
+            downloadId: "1",
             statusPollId: 123
-        }
+        });
 
         const summaryTestError = {
-            summary: {
-                downloading: false,
+            summary: mockDownloadResultsDependency({
+                preparing: false,
                 complete: false,
                 error: mockError("TEST FAILED"),
-                downloadId: null,
+                downloadId: "",
                 statusPollId: 123
-            },
-            coarseOutput: {
-                downloading: false,
+            }),
+            coarseOutput: mockDownloadResultsDependency({
+                preparing: false,
                 complete: false,
                 error: null,
-                downloadId: null
-            },
-            spectrum: {
-                downloading: false,
+                downloadId: ""
+            }),
+            spectrum: mockDownloadResultsDependency({
+                preparing: false,
                 complete: false,
                 error: null,
-                downloadId: null
-            }
+                downloadId: ""
+            })
         }
 
         const store = createStore(
@@ -548,24 +552,24 @@ describe("Download Results component", () => {
     it("can download coarseOutput file when download is complete", () => {
         const store = createStore();
         const downloadResults = {
-            summary: {
-                downloading: true,
+            summary: mockDownloadResultsDependency({
+                preparing: true,
                 complete: false,
                 error: null,
-                downloadId: null
-            },
-            coarseOutput: {
-                downloading: false,
+                downloadId: ""
+            }),
+            coarseOutput: mockDownloadResultsDependency({
+                preparing: false,
                 complete: true,
                 error: null,
                 downloadId: "123"
-            },
-            spectrum: {
-                downloading: true,
+            }),
+            spectrum: mockDownloadResultsDependency({
+                preparing: true,
                 complete: false,
                 error: null,
-                downloadId: null
-            }
+                downloadId: ""
+            })
         }
         downloadFile(store, downloadResults)
     });
@@ -597,12 +601,13 @@ describe("Download Results component", () => {
     });
 
     it("can render error when coarseOutput download action is unsuccessful", () => {
-        const testError = {
-            downloading: false,
+        const testError = mockDownloadResultsDependency({
+            preparing: false,
             complete: false,
             error: mockError("TEST FAILED"),
-            downloadId: null
-        }
+            downloadId: ""
+        });
+
         const store = createStore(
             false,
             jest.fn(),
@@ -619,34 +624,34 @@ describe("Download Results component", () => {
     });
 
     it("can stop polling coarseOutput download when error response", () => {
-        const coarseDownloadStatus = {
-            downloading: true,
+        const coarseDownloadStatus = mockDownloadResultsDependency({
+            preparing: true,
             complete: false,
             error: null,
-            downloadId: 1,
+            downloadId: "1",
             statusPollId: 123
-        }
+        });
 
         const coarseTestError = {
-            summary: {
-                downloading: false,
+            summary: mockDownloadResultsDependency({
+                preparing: false,
                 complete: false,
                 error: null,
-                downloadId: null
-            },
-            coarseOutput: {
-                downloading: false,
+                downloadId: ""
+            }),
+            coarseOutput: mockDownloadResultsDependency({
+                preparing: false,
                 complete: false,
                 error: mockError("TEST FAILED"),
-                downloadId: null,
+                downloadId: "",
                 statusPollId: 123
-            },
-            spectrum: {
-                downloading: false,
+            }),
+            spectrum: mockDownloadResultsDependency({
+                preparing: false,
                 complete: false,
                 error: null,
-                downloadId: null
-            }
+                downloadId: ""
+            })
         }
 
         const store = createStore(
