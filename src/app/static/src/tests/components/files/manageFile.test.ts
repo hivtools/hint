@@ -4,7 +4,7 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import Tick from "../../../app/components/Tick.vue";
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
-import {mockDataExplorationState, mockError, mockFile} from "../../mocks";
+import {mockDataExplorationState, mockError} from "../../mocks";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import Vuex, {Store} from "vuex";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
@@ -86,6 +86,17 @@ describe("Manage file component", () => {
         expect(wrapper.find("label.file-name").text()).toContain("existing-name.csv");
     });
 
+    it("can translate required text", () => {
+        const wrapper = createSut({
+            required: true
+        });
+
+        expectTranslated(wrapper.find("#required"),
+            "(required)",
+            "(obligatoire)",
+            "(necessário)",
+            wrapper.vm.$store)
+    });
 
     it("renders red text for empty field if required is true", () => {
         const wrapper = createSut({
@@ -93,7 +104,7 @@ describe("Manage file component", () => {
         });
         expect(wrapper.find("#required").exists()).toBe(true);
         expect(wrapper.find("#required").text()).toBe("(required)");
-        expect(wrapper.find("#required").attributes("class")).toBe("text-danger");
+        expect(wrapper.find("#required").attributes("class")).toBe("small text-danger");
     });
 
     it("renders text for filled form if required is true", () => {
@@ -103,7 +114,7 @@ describe("Manage file component", () => {
         });
         expect(wrapper.find("#required").exists()).toBe(true);
         expect(wrapper.find("#required").text()).toBe("(required)");
-        expect(wrapper.find("#required").attributes("class")).toBe("");
+        expect(wrapper.find("#required").attributes("class")).toBe("small");
     });
 
     it("does not render text if required is false", () => {

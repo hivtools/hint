@@ -1,7 +1,9 @@
 <template>
     <div class="form-group">
         <label class="font-weight-bold mb-0" v-translate="label"></label>
-        <span id="required" v-if="required" :class="existingFileName? '': 'text-danger'">(required)</span>
+        <span id="required" v-if="required"
+              class="small"
+              :class="existingFileName? '': 'text-danger'">({{requiredText}})</span>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
         <span class="color-red" v-if="fromADR">ADR</span>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
@@ -36,6 +38,10 @@
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import {Error} from "../../generated";
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
+    import i18next from "i18next";
+    import {Language} from "../../store/translations/locales";
+    import {mapStateProp} from "../../utils";
+    import {RootState} from "../../root";
 
     interface Data {
         uploading: boolean
@@ -44,6 +50,8 @@
 
     interface Computed {
         hasError: boolean
+        requiredText: string
+        currentLanguage: Language
     }
 
     interface Methods {
@@ -89,6 +97,11 @@
         computed: {
             hasError: function () {
                 return !!this.error
+            },
+            currentLanguage: mapStateProp<RootState, Language>(null,
+                (state: RootState) => state.language),
+            requiredText() {
+                return i18next.t("required", {lng: this.currentLanguage})
             }
         },
         components: {
