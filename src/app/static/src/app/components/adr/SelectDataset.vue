@@ -105,7 +105,7 @@
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {BaselineState} from "../../store/baseline/baseline";
     import {
-        Dataset,
+        Dataset, DatasetResource,
         DatasetResourceSet,
         Release
     } from "../../types";
@@ -141,6 +141,12 @@
         updateDatasetRelease: (release: Release) => void;
         updateValid: (valid: boolean) => void;
         preSelectDataset: () => void;
+        handleImportPJNZ: (resource: DatasetResource | null) => Promise<void>;
+        handleImportShape: (resource: DatasetResource | null) => Promise<void>;
+        handleImportPopulation: (resource: DatasetResource | null) => Promise<void>;
+        handleImportSurvey: (resource: DatasetResource | null) => Promise<void>;
+        handleImportProgram: (resource: DatasetResource | null) => Promise<void>;
+        handleImportANC: (resource: DatasetResource | null) => Promise<void>;
     }
 
     interface Computed {
@@ -316,6 +322,36 @@
             importSurvey: mapActionByName("surveyAndProgram", "importSurvey"),
             importProgram: mapActionByName("surveyAndProgram", "importProgram"),
             importANC: mapActionByName("surveyAndProgram", "importANC"),
+            async handleImportPJNZ(pjnz) {
+                if (pjnz && pjnz.url) {
+                    await this.importPJNZ(pjnz.url)
+                }
+            },
+            async handleImportShape(shape) {
+                if (shape && shape.url) {
+                    await this.importShape(shape.url)
+                }
+            },
+            async handleImportPopulation(population) {
+                if (population && population.url) {
+                    await this.importPopulation(population.url)
+                }
+            },
+            async handleImportSurvey(survey) {
+                if (survey && survey.url) {
+                    await this.importSurvey(survey.url)
+                }
+            },
+            async handleImportANC(anc) {
+                if (anc && anc.url) {
+                    await this.importANC(anc.url)
+                }
+            },
+            async handleImportProgram(program) {
+                if (program && program.url) {
+                    await this.importProgram(program.url)
+                }
+            },
             async importDataset() {
                 this.stopPolling();
 
@@ -337,16 +373,16 @@
                 } = this.selectedDataset!.resources;
 
                 await Promise.all([
-                    pjnz && this.importPJNZ(pjnz.url),
-                    pop && this.importPopulation(pop.url),
-                    shape && this.importShape(shape.url),
+                    this.handleImportPJNZ(pjnz),
+                    this.handleImportPopulation(pop),
+                    this.handleImportShape(shape),
                 ]);
 
                 (shape || this.hasShapeFile) &&
                 (await Promise.all([
-                    survey && this.importSurvey(survey.url),
-                    program && this.importProgram(program.url),
-                    anc && this.importANC(anc.url),
+                    this.handleImportSurvey(survey),
+                    this.handleImportProgram(program),
+                    this.handleImportANC(anc),
                 ]));
 
                 this.loading = false;
@@ -369,14 +405,11 @@
                 } = this.selectedDataset!.resources;
                 await Promise.all([
                     this.outOfDateResources["pjnz"] &&
-                    pjnz &&
-                    this.importPJNZ(pjnz.url),
+                    this.handleImportPJNZ(pjnz),
                     this.outOfDateResources["pop"] &&
-                    pop &&
-                    this.importPopulation(pop.url),
+                    this.handleImportPopulation(pop),
                     this.outOfDateResources["shape"] &&
-                    shape &&
-                    this.importShape(shape.url),
+                    this.handleImportShape(shape),
                 ]);
 
                 const baselineUpdated =
@@ -390,14 +423,11 @@
                 (shape || this.hasShapeFile) &&
                 (await Promise.all([
                     (baselineUpdated || this.outOfDateResources["survey"]) &&
-                    survey &&
-                    this.importSurvey(survey.url),
+                    this.handleImportSurvey(survey),
                     (baselineUpdated || this.outOfDateResources["program"]) &&
-                    program &&
-                    this.importProgram(program.url),
+                    this.handleImportProgram(program),
                     (baselineUpdated || this.outOfDateResources["anc"]) &&
-                    anc &&
-                    this.importANC(anc.url),
+                    this.handleImportANC(anc),
                 ]));
 
                 this.markResourcesUpdated();

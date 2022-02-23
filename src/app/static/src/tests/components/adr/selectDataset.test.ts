@@ -379,6 +379,7 @@ describe("select dataset", () => {
 
         await Vue.nextTick();
         await Vue.nextTick();
+        await Vue.nextTick();
 
         expect(markResourcesUpdatedMock.mock.calls.length).toBe(1);
     });
@@ -395,6 +396,7 @@ describe("select dataset", () => {
 
         rendered.findAll("button").at(0).trigger("click");
 
+        await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
 
@@ -913,6 +915,7 @@ describe("select dataset", () => {
         await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
+        await Vue.nextTick();
 
         expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
         expect((surveyProgramActions.importProgram as Mock).mock.calls[0][1]).toBe("program.csv");
@@ -945,6 +948,7 @@ describe("select dataset", () => {
 
         expect(rendered.findAll(LoadingSpinner).length).toBe(1);
 
+        await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
@@ -1025,6 +1029,7 @@ describe("select dataset", () => {
 
         await Vue.nextTick();
         await Vue.nextTick();
+        await Vue.nextTick();
 
         expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
         expect((surveyProgramActions.importProgram as Mock).mock.calls[0][1]).toBe("program.csv");
@@ -1084,6 +1089,7 @@ describe("select dataset", () => {
         await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
+        await Vue.nextTick();
 
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
@@ -1114,6 +1120,7 @@ describe("select dataset", () => {
 
         await rendered.find(Modal).find("button").trigger("click");
 
+        await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
