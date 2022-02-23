@@ -1,4 +1,4 @@
-# hint 1.91.0
+# hint 1.90.5
 
 * Handle resource with missing download gracefully
 
