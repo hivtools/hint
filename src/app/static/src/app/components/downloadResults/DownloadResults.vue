@@ -62,7 +62,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActionByName, mapStateProp, mapMutationByName} from "../../utils";
+    import {mapActionByName, mapStateProp, mapMutationByName, mapStateProps} from "../../utils";
     import {UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
@@ -79,20 +79,26 @@
     import Download from "./Download.vue";
     import {Error} from "../../generated"
 
-    interface Computed {
-        uploadingStatus: string,
-        currentLanguage: Language,
-        currentFileUploading: number | null,
-        totalFilesUploading: number | null,
+    interface ComputedFromADRUpload {
         uploading: boolean,
         uploadComplete: boolean,
         releaseCreated: boolean,
         releaseFailed: boolean,
         uploadError: Error | null,
-        hasUploadPermission: boolean,
+        currentFileUploading: number | null,
+        totalFilesUploading: number | null
+    }
+
+    interface ComputedFromDownloadResults {
         spectrum: DownloadResultsDependency,
         coarseOutput: DownloadResultsDependency,
         summary: DownloadResultsDependency
+    }
+
+    interface Computed extends ComputedFromADRUpload, ComputedFromDownloadResults {
+        uploadingStatus: string,
+        currentLanguage: Language,
+        hasUploadPermission: boolean,
         translation: Record<string, any>,
         isPreparing: boolean
     }
@@ -122,22 +128,21 @@
             }
         },
         computed: {
-            spectrum: mapStateProp<DownloadResultsState, DownloadResultsDependency>("downloadResults",
-                (state) => state.spectrum),
-            summary: mapStateProp<DownloadResultsState, DownloadResultsDependency>("downloadResults",
-                (state) => state.summary),
-            coarseOutput: mapStateProp<DownloadResultsState, DownloadResultsDependency>("downloadResults",
-                (state) => state.coarseOutput),
-            currentFileUploading: mapStateProp<ADRUploadState, number | null>("adrUpload",
-                state => state.currentFileUploading),
-            totalFilesUploading: mapStateProp<ADRUploadState, number | null>("adrUpload",
-                state => state.totalFilesUploading),
-            uploading: mapStateProp<ADRUploadState, boolean>("adrUpload", state => state.uploading),
-            uploadComplete: mapStateProp<ADRUploadState, boolean>("adrUpload", state => state.uploadComplete),
-            releaseCreated: mapStateProp<ADRUploadState, boolean>("adrUpload", state => state.releaseCreated),
-            releaseFailed: mapStateProp<ADRUploadState, boolean>("adrUpload", state => state.releaseFailed),
-            uploadError: mapStateProp<ADRUploadState, Error | null>("adrUpload", state => state.uploadError),
             hasUploadPermission: mapStateProp<ADRState, boolean>("adr", (state: ADRState) => state.userCanUpload),
+            ...mapStateProps<DownloadResultsState, keyof ComputedFromDownloadResults>("downloadResults", {
+                spectrum: (state => state.spectrum),
+                summary: (state => state.summary),
+                coarseOutput: (state => state.coarseOutput)
+            }),
+            ...mapStateProps<ADRUploadState, keyof ComputedFromADRUpload>("adrUpload", {
+                uploading: (state => state.uploading),
+                uploadComplete: (state => state.uploadComplete),
+                releaseCreated: (state => state.releaseCreated),
+                releaseFailed: (state => state.releaseFailed),
+                uploadError: (state => state.uploadError),
+                currentFileUploading: (state => state.currentFileUploading),
+                totalFilesUploading: (state => state.totalFilesUploading)
+            }),
             uploadingStatus() {
                 return i18next.t("uploadingStatus", {
                     fileNumber: this.currentFileUploading,
@@ -173,9 +178,9 @@
             downloadSpectrumOutput() {
                 this.handleDownloadResult(this.spectrum)
             },
-            downloadSummaryReport()    {
-        this.handleDownloadResult(this.summary)
-    },
+            downloadSummaryReport() {
+                this.handleDownloadResult(this.summary)
+            },
             downloadCoarseOutput() {
                 this.handleDownloadResult(this.coarseOutput)
             },
