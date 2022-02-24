@@ -56,15 +56,17 @@ describe("Projects actions", () => {
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
-        await actions.uploadVersionState({commit, rootState: emptyState(), state} as any);
+        await actions.queueVersionStateUpload({commit, rootState: emptyState(), state} as any);
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(5);
-            expect(commit.mock.calls[2][0]["type"]).toBe(ProjectsMutations.SetVersionUploadPending);
-            expect(commit.mock.calls[2][0]["payload"]).toBe(true);
-            expect(commit.mock.calls[3][0]["type"]).toBe(ProjectsMutations.SetVersionUploadPending);
-            expect(commit.mock.calls[3][0]["payload"]).toBe(false);
-            expect(commit.mock.calls[4][0]["type"]).toBe(ProjectsMutations.VersionUploadSuccess);
-
+            expect(commit.mock.calls.length).toBe(8);
+            expect(commit.mock.calls[2][0]["type"]).toBe(ProjectsMutations.ClearQueuedVersionUpload);
+            expect(commit.mock.calls[3][0]["type"]).toBe(ProjectsMutations.SetQueuedVersionUpload);
+            expect(commit.mock.calls[4][0]["type"]).toBe(ProjectsMutations.ClearQueuedVersionUpload);
+            expect(commit.mock.calls[5][0]["type"]).toBe(ProjectsMutations.SetVersionUploadInProgress);
+            expect(commit.mock.calls[5][0]["payload"]).toBe(true);
+            expect(commit.mock.calls[6][0]["type"]).toBe(ProjectsMutations.VersionUploadSuccess);
+            expect(commit.mock.calls[7][0]["type"]).toBe(ProjectsMutations.SetVersionUploadInProgress);
+            expect(commit.mock.calls[7][0]["payload"]).toBe(false);
             done();
         }, 2500);
     });
@@ -80,13 +82,15 @@ describe("Projects actions", () => {
 
         await actions.newVersion({commit, rootState: emptyState(), state} as any, "version note");
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(5);
-            expect(commit.mock.calls[2][0]["type"]).toBe(ProjectsMutations.SetVersionUploadPending);
-            expect(commit.mock.calls[2][0]["payload"]).toBe(false);
+            expect(commit.mock.calls.length).toBe(6);
+            expect(commit.mock.calls[2][0]["type"]).toBe(ProjectsMutations.SetVersionUploadInProgress);
+            expect(commit.mock.calls[2][0]["payload"]).toBe(true);
             expect(commit.mock.calls[3][0]["type"]).toBe(ProjectsMutations.VersionUploadSuccess);
-            expect(commit.mock.calls[4][0]["type"]).toBe(ProjectsMutations.VersionCreated);
+            expect(commit.mock.calls[4][0]["type"]).toBe(ProjectsMutations.SetVersionUploadInProgress);
+            expect(commit.mock.calls[4][0]["payload"]).toBe(false);
+            expect(commit.mock.calls[5][0]["type"]).toBe(ProjectsMutations.VersionCreated);
 
-            const newVersion = commit.mock.calls[4][0]["payload"];
+            const newVersion = commit.mock.calls[5][0]["payload"];
             expect(newVersion.id).toBeTruthy();
             expect(newVersion.id).not.toEqual(createdProject.versions[0].id);
 
@@ -103,7 +107,7 @@ describe("Projects actions", () => {
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
-        await actions.uploadVersionState({commit, rootState: emptyState(), state} as any);
+        await actions.queueVersionStateUpload({commit, rootState: emptyState(), state} as any);
 
         const dispatch = jest.fn();
         const projectId = createdProject.id;

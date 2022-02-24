@@ -5,22 +5,19 @@
                 <div id="spectrum-download">
                     <download :translate-key="translation.spectrum"
                               @click="downloadSpectrumOutput"
-                              :disabled="uploading"
-                              :modal-open="uploadModalOpen"
+                              :disabled="!spectrum.downloadId || spectrum.preparing"
                               :file="spectrum"/>
                 </div>
                 <div id="coarse-output-download">
                     <download :translate-key="translation.coarse"
                               @click="downloadCoarseOutput"
-                              :disabled="uploading"
-                              :modal-open="uploadModalOpen"
+                              :disabled="!coarseOutput.downloadId || coarseOutput.preparing"
                               :file="coarseOutput"/>
                 </div>
                 <div id="summary-download">
                     <download :translate-key="translation.summary"
                               @click="downloadSummaryReport"
-                              :disabled="uploading"
-                              :modal-open="uploadModalOpen"
+                              :disabled="!summary.downloadId || summary.preparing"
                               :file="summary"/>
                 </div>
             </div>
@@ -28,8 +25,8 @@
                 <h4 v-translate="'uploadFileToAdr'"></h4>
                 <button @click.prevent="handleUploadModal"
                         class="btn btn-lg my-3"
-                        :class="uploading || isDownloading ? 'btn-secondary' : 'btn-red'"
-                        :disabled="uploading || isDownloading">
+                        :class="uploading || isPreparing ? 'btn-secondary' : 'btn-red'"
+                        :disabled="uploading || isPreparing">
                     <span v-translate="'upload'"></span>
                     <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
                 </button>
@@ -49,7 +46,8 @@
                 </div>
                 <div id="releaseCreated" v-if="releaseCreated || releaseFailed" class="d-flex align-items-end">
                     <div class="d-flex align-items-center height-40 mr-1">
-                        <span class="font-weight-bold" v-translate="releaseCreated ? 'releaseCreated' : 'releaseFailed'"></span>
+                        <span class="font-weight-bold"
+                              v-translate="releaseCreated ? 'releaseCreated' : 'releaseFailed'"></span>
                     </div>
                     <div class="d-flex align-items-center height-40">
                         <component :is="releaseCreated ? 'tick' : 'cross'" color="#e31837"></component>
@@ -64,7 +62,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActionByName, mapStateProp, mapStateProps, mapMutationByName} from "../../utils";
+    import {mapActionByName, mapStateProp, mapMutationByName, mapStateProps} from "../../utils";
     import {UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
@@ -79,29 +77,30 @@
     import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
     import {DownloadResultsDependency} from "../../types";
     import Download from "./Download.vue";
+    import {Error} from "../../generated"
 
-    interface Computed {
-        uploadingStatus: string,
-        currentLanguage: Language,
-        currentFileUploading: number | null,
-        totalFilesUploading: number | null,
+    interface ComputedFromADRUpload {
         uploading: boolean,
         uploadComplete: boolean,
         releaseCreated: boolean,
         releaseFailed: boolean,
-        uploadError: null | UploadError,
-        hasUploadPermission: boolean,
-        downloadingSpectrum: boolean,
-        spectrum: Partial<DownloadResultsDependency>,
-        coarseOutput: Partial<DownloadResultsDependency>,
-        summary: Partial<DownloadResultsDependency>,
-        translation: Record<string, any>,
-        isDownloading : boolean
+        uploadError: Error | null,
+        currentFileUploading: number | null,
+        totalFilesUploading: number | null
     }
 
-    interface UploadError {
-        detail: string,
-        error: string
+    interface ComputedFromDownloadResults {
+        spectrum: DownloadResultsDependency,
+        coarseOutput: DownloadResultsDependency,
+        summary: DownloadResultsDependency
+    }
+
+    interface Computed extends ComputedFromADRUpload, ComputedFromDownloadResults {
+        uploadingStatus: string,
+        currentLanguage: Language,
+        hasUploadPermission: boolean,
+        translation: Record<string, any>,
+        isPreparing: boolean
     }
 
     interface Methods {
@@ -109,15 +108,11 @@
         getUserCanUpload: () => void
         getUploadFiles: () => void
         clearStatus: () => void;
-        prepareCoarseOutput: () => void
-        prepareSpectrumOutput: () => void
-        prepareSummaryReport: () => void
+        prepareOutputs: () => void
         downloadSummaryReport: () => void
         downloadSpectrumOutput: () => void
         downloadCoarseOutput: () => void
-        getUploadMetadata: (id: string) => void
         downloadUrl: (downloadId: string) => string
-        stopPolling: (pollingId: number) => void
         handleDownloadResult: (downloadResults: DownloadResultsDependency) => void
     }
 
@@ -133,42 +128,22 @@
             }
         },
         computed: {
-            ...mapStateProps<DownloadResultsState, keyof Computed>("downloadResults", {
-                spectrum: state => ({
-                    preparing: state.spectrum.preparing,
-                    complete: state.spectrum.complete,
-                    downloadId: state.spectrum.downloadId,
-                    statusPollId: state.spectrum.statusPollId,
-                    error: state.spectrum.error
-                }),
-                summary: state => ({
-                    preparing: state.summary.preparing,
-                    complete: state.summary.complete,
-                    downloadId: state.summary.downloadId,
-                    statusPollId: state.summary.statusPollId,
-                    error: state.summary.error
-                }),
-                coarseOutput: state => ({
-                    preparing: state.coarseOutput.preparing,
-                    complete: state.coarseOutput.complete,
-                    downloadId: state.coarseOutput.downloadId,
-                    statusPollId: state.coarseOutput.statusPollId,
-                    error: state.coarseOutput.error
-                })
+            hasUploadPermission: mapStateProp<ADRState, boolean>("adr", (state: ADRState) => state.userCanUpload),
+            ...mapStateProps<DownloadResultsState, keyof ComputedFromDownloadResults>("downloadResults", {
+                spectrum: (state => state.spectrum),
+                summary: (state => state.summary),
+                coarseOutput: (state => state.coarseOutput)
             }),
-            ...mapStateProps<ADRUploadState, keyof Computed>("adrUpload", {
-                currentFileUploading: state => state.currentFileUploading,
-                totalFilesUploading: state => state.totalFilesUploading,
-                uploading: state => state.uploading,
-                uploadComplete: state => state.uploadComplete,
-                releaseCreated: state => state.releaseCreated,
-                releaseFailed: state => state.releaseFailed,
-                uploadError: state => state.uploadError
+            ...mapStateProps<ADRUploadState, keyof ComputedFromADRUpload>("adrUpload", {
+                uploading: (state => state.uploading),
+                uploadComplete: (state => state.uploadComplete),
+                releaseCreated: (state => state.releaseCreated),
+                releaseFailed: (state => state.releaseFailed),
+                uploadError: (state => state.uploadError),
+                currentFileUploading: (state => state.currentFileUploading),
+                totalFilesUploading: (state => state.totalFilesUploading)
             }),
-            hasUploadPermission: mapStateProp<ADRState, boolean>("adr",
-                (state: ADRState) => state.userCanUpload
-            ),
-            uploadingStatus: function () {
+            uploadingStatus() {
                 return i18next.t("uploadingStatus", {
                     fileNumber: this.currentFileUploading,
                     totalFiles: this.totalFilesUploading,
@@ -186,8 +161,8 @@
                     summary: {header: 'downloadSummaryReport', button: 'download'}
                 }
             },
-            isDownloading() {
-                return !!this.summary.preparing || !!this.spectrum.preparing || !!this.coarseOutput.preparing
+            isPreparing() {
+                return this.summary.preparing || this.spectrum.preparing || this.coarseOutput.preparing
             }
         },
         methods: {
@@ -197,49 +172,29 @@
             handleUploadModal() {
                 this.uploadModalOpen = true;
             },
+            handleDownloadResult(downloadResults) {
+                window.location.assign(this.downloadUrl(downloadResults.downloadId));
+            },
             downloadSpectrumOutput() {
-                if (!this.spectrum.preparing) {
-                    this.prepareSpectrumOutput();
-                }
+                this.handleDownloadResult(this.spectrum)
             },
             downloadSummaryReport() {
-                if (!this.summary.preparing) {
-                    this.prepareSummaryReport();
-                }
+                this.handleDownloadResult(this.summary)
             },
             downloadCoarseOutput() {
-                if (!this.coarseOutput.preparing) {
-                    this.prepareCoarseOutput();
-                }
-            },
-            stopPolling(id) {
-              clearInterval(id)
-            },
-            handleDownloadResult(downloadResults) {
-              if(!this.uploadModalOpen) {
-                if (downloadResults.complete) {
-                  window.location.assign(this.downloadUrl(downloadResults.downloadId));
-                  this.getUploadMetadata(downloadResults.downloadId);
-                  this.stopPolling(downloadResults.statusPollId)
-                }
-                if (downloadResults.error) {
-                  this.stopPolling(downloadResults.statusPollId);
-                }
-              }
+                this.handleDownloadResult(this.coarseOutput)
             },
             clearStatus: mapMutationByName("adrUpload", "ClearStatus"),
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
             getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
-            prepareSpectrumOutput: mapActionByName("downloadResults", "prepareSpectrumOutput"),
-            prepareSummaryReport: mapActionByName("downloadResults", "prepareSummaryReport"),
-            prepareCoarseOutput: mapActionByName("downloadResults", "prepareCoarseOutput"),
-            getUploadMetadata: mapActionByName("metadata", "getAdrUploadMetadata"),
+            prepareOutputs: mapActionByName("downloadResults", "prepareOutputs")
         },
         mounted() {
             this.getUserCanUpload();
-            this.getUploadFiles()
+            this.getUploadFiles();
+            this.prepareOutputs();
         },
-        beforeMount(){
+        beforeMount() {
             this.clearStatus();
         },
         components: {
@@ -250,26 +205,6 @@
             ErrorAlert,
             UploadModal,
             Download
-        },
-        watch: {
-            summary: {
-                handler(summary) {
-                  this.handleDownloadResult(summary)
-                },
-                deep: true
-            },
-            spectrum: {
-                handler(spectrum) {
-                  this.handleDownloadResult(spectrum)
-                },
-                deep: true
-            },
-            coarseOutput: {
-                handler(coarseOutput) {
-                  this.handleDownloadResult(coarseOutput)
-                },
-                deep: true
-            }
         }
     });
 </script>
