@@ -6,7 +6,7 @@ import {
 
 describe(`download results actions integration`, () => {
 
-    it(`can send summary download request`, async () => {
+    it(`can prepare summary report for download`, async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const root = {
@@ -14,7 +14,7 @@ describe(`download results actions integration`, () => {
             modelCalibrate: {calibrateId: "calibrate123"}
         };
 
-        await actions.downloadSummary({commit, dispatch, rootState: root} as any);
+        await actions.prepareSummaryReport({commit, dispatch, rootState: root} as any);
 
         // passing an invalid calibrateId so this will return an error
         // but the expected error message confirms
@@ -24,7 +24,7 @@ describe(`download results actions integration`, () => {
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
     })
 
-    it(`can poll summary download for status update`, async (done) => {
+    it(`can poll summary report for status update`, async (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const root = {
@@ -42,14 +42,14 @@ describe(`download results actions integration`, () => {
             expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.SUMMARY);
             expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
 
-            expect(commit.mock.calls[1][0]["type"]).toBe("SummaryDownloadStatusUpdated");
+            expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated");
             expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
             done()
 
         }, 3100)
     })
 
-    it(`can send spectrum download request`, async () => {
+    it(`can prepare spectrum output for download`, async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const root = {
@@ -57,14 +57,14 @@ describe(`download results actions integration`, () => {
             modelCalibrate: {calibrateId: "calibrate123"}
         };
 
-        await actions.downloadSpectrum({commit, dispatch, rootState: root} as any);
+        await actions.prepareSpectrumOutput({commit, dispatch, rootState: root} as any);
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]["type"]).toBe("SpectrumError");
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
     })
 
-    it(`can poll spectrum download for status update`, async (done) => {
+    it(`can poll spectrum output for status update`, async (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const root = {
@@ -82,14 +82,14 @@ describe(`download results actions integration`, () => {
             expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.SPECTRUM);
             expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
 
-            expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumDownloadStatusUpdated");
+            expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated");
             expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
             done()
 
         }, 3100)
     })
 
-    it(`can send coarseOutput download request`, async () => {
+    it(`can prepare coarse output for download`, async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const root = {
@@ -97,14 +97,14 @@ describe(`download results actions integration`, () => {
             modelCalibrate: {calibrateId: "calibrate123"}
         };
 
-        await actions.downloadCoarseOutput({commit, dispatch, rootState: root} as any);
+        await actions.prepareCoarseOutput({commit, dispatch, rootState: root} as any);
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]["type"]).toBe("CoarseOutputError");
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
     })
 
-    it(`can poll coarseOutput download for status update`, async (done) => {
+    it(`can poll coarseOutput for status update`, async (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const root = {
@@ -122,10 +122,10 @@ describe(`download results actions integration`, () => {
             expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.COARSE);
             expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
 
-            expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputDownloadStatusUpdated");
+            expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated");
             expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
             done()
 
-        }, 2100)
+        }, 3100)
     })
 })

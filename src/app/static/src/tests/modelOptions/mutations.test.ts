@@ -27,11 +27,13 @@ describe("Model run options mutations", () => {
         expect(state.fetching).toBe(false)
     });
 
-    it("can validate options and populate warnings", () => {
+    it("can validate options and populate and clear warnings", () => {
         const state = mockModelOptionsState();
         mutations[ModelOptionsMutation.Validate](state, {payload: {warnings: [mockWarning()]}});
         expect(state.valid).toBe(true);
         expect(state.warnings).toEqual([mockWarning()]);
+        mutations[ModelOptionsMutation.ClearWarnings](state);
+        expect(state.warnings).toEqual([]);
     });
 
     it("un-validates", () => {

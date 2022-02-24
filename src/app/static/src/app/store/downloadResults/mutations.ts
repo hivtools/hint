@@ -4,72 +4,73 @@ import {PayloadWithType, PollingStarted} from "../../types";
 import {DownloadStatusResponse, DownloadSubmitResponse, Error} from "../../generated";
 
 export enum DownloadResultsMutation {
-    SpectrumDownloadStarted = "SpectrumDownloadStarted",
-    SpectrumDownloadStatusUpdated = "SpectrumDownloadStatusUpdated",
+    PreparingSpectrumOutput = "PreparingSpectrumOutput",
+    SpectrumOutputStatusUpdated = "SpectrumOutputStatusUpdated",
     SpectrumError = "SpectrumError",
-    CoarseOutputDownloadStarted = "CoarseOutputDownloadStarted",
-    CoarseOutputDownloadStatusUpdated = "CoarseOutputDownloadStatusUpdated",
+    PreparingCoarseOutput = "PreparingCoarseOutput",
+    CoarseOutputStatusUpdated = "CoarseOutputStatusUpdated",
     CoarseOutputError = "CoarseOutputError",
-    SummaryDownloadStarted = "SummaryDownloadStarted",
-    SummaryDownloadStatusUpdated = "SummaryDownloadStatusUpdated",
+    PreparingSummaryReport = "PreparingSummaryReport",
+    SummaryReportStatusUpdated = "SummaryReportStatusUpdated",
     SummaryError = "SummaryError",
-    PollingStatusStarted = "PollingStatusStarted"
+    PollingStatusStarted = "PollingStatusStarted",
+    ResetIds = "ResetIds"
 }
 
 export const mutations: MutationTree<DownloadResultsState> = {
 
-    [DownloadResultsMutation.SpectrumDownloadStarted](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
+    [DownloadResultsMutation.PreparingSpectrumOutput](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
         const downloadId = action.payload.id
-        state.spectrum = {...state.spectrum, downloadId, downloading: true, complete: false, error: null}
+        state.spectrum = {...state.spectrum, downloadId, preparing: true, complete: false, error: null}
     },
 
-    [DownloadResultsMutation.SpectrumDownloadStatusUpdated](state: DownloadResultsState, action: PayloadWithType<DownloadStatusResponse>) {
+    [DownloadResultsMutation.SpectrumOutputStatusUpdated](state: DownloadResultsState, action: PayloadWithType<DownloadStatusResponse>) {
         if (action.payload.done) {
             state.spectrum.complete = true;
-            state.spectrum.downloading = false;
+            state.spectrum.preparing = false;
         }
         state.spectrum.error = null;
     },
 
     [DownloadResultsMutation.SpectrumError](state: DownloadResultsState, action: PayloadWithType<Error>) {
         state.spectrum.error = action.payload
-        state.spectrum.downloading = false
+        state.spectrum.preparing = false
     },
 
-    [DownloadResultsMutation.CoarseOutputDownloadStarted](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
+    [DownloadResultsMutation.PreparingCoarseOutput](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
         const downloadId = action.payload.id
-        state.coarseOutput = {...state.coarseOutput, downloadId, downloading: true, complete: false, error: null}
+        state.coarseOutput = {...state.coarseOutput, downloadId, preparing: true, complete: false, error: null}
     },
 
-    [DownloadResultsMutation.CoarseOutputDownloadStatusUpdated](state: DownloadResultsState, action: PayloadWithType<DownloadStatusResponse>) {
+    [DownloadResultsMutation.CoarseOutputStatusUpdated](state: DownloadResultsState, action: PayloadWithType<DownloadStatusResponse>) {
         if (action.payload.done) {
             state.coarseOutput.complete = true;
-            state.coarseOutput.downloading = false;
+            state.coarseOutput.preparing = false;
         }
         state.coarseOutput.error = null;
     },
 
     [DownloadResultsMutation.CoarseOutputError](state: DownloadResultsState, action: PayloadWithType<Error>) {
         state.coarseOutput.error = action.payload
-        state.coarseOutput.downloading = false
+        state.coarseOutput.preparing = false
     },
 
-    [DownloadResultsMutation.SummaryDownloadStarted](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
+    [DownloadResultsMutation.PreparingSummaryReport](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
         const downloadId = action.payload.id
-        state.summary = {...state.summary, downloadId, downloading: true, complete: false, error: null}
+        state.summary = {...state.summary, downloadId, preparing: true, complete: false, error: null}
     },
 
-    [DownloadResultsMutation.SummaryDownloadStatusUpdated](state: DownloadResultsState, action: PayloadWithType<DownloadStatusResponse>) {
+    [DownloadResultsMutation.SummaryReportStatusUpdated](state: DownloadResultsState, action: PayloadWithType<DownloadStatusResponse>) {
         if (action.payload.done) {
             state.summary.complete = true;
-            state.summary.downloading = false;
+            state.summary.preparing = false;
         }
         state.summary.error = null;
     },
 
     [DownloadResultsMutation.SummaryError](state: DownloadResultsState, action: PayloadWithType<Error>) {
         state.summary.error = action.payload
-        state.summary.downloading = false
+        state.summary.preparing = false
     },
 
     [DownloadResultsMutation.PollingStatusStarted](state: DownloadResultsState, action: PayloadWithType<PollingStarted>) {

@@ -48,10 +48,18 @@ import {getters as rootGetters} from "../../app/store/root/getters";
 import {expectTranslated} from "../testHelpers";
 import StepperNavigation from "../../app/components/StepperNavigation.vue";
 import WarningAlert from "../../app/components/WarningAlert.vue";
+import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
+import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
+import {ModelRunMutation} from "../../app/store/modelRun/mutations";
 
 const localVue = createLocalVue();
 
 describe("Stepper component", () => {
+
+    const clearOptionsWarnings = jest.fn(); 
+    const clearCalibrateWarnings = jest.fn(); 
+    const clearRunWarnings = jest.fn(); 
+
     const createSut = (baselineState?: Partial<BaselineState>,
                        surveyAndProgramState?: Partial<SurveyAndProgramState>,
                        metadataState?: Partial<MetadataState>,
@@ -95,18 +103,27 @@ describe("Stepper component", () => {
                 modelRun: {
                     namespaced: true,
                     state: mockModelRunState(modelRunState),
-                    mutations: modelRunMutations,
+                    mutations: {
+                        ...modelRunMutations,
+                        [ModelRunMutation.ClearWarnings]: clearRunWarnings
+                    },
                     getters: modelRunGetters
                 },
                 modelOptions: {
                     namespaced: true,
                     state: mockModelOptionsState(modelOptionsState),
-                    getters: modelOptionsGetters
+                    getters: modelOptionsGetters,
+                    mutations: {
+                        [ModelOptionsMutation.ClearWarnings]: clearOptionsWarnings
+                    }
                 },
                 modelCalibrate: {
                     namespaced: true,
                     state: mockModelCalibrateState(modelCalibrateState),
-                    mutations: modelCalibrateMutations
+                    mutations: {
+                        ...modelCalibrateMutations,
+                        [ModelCalibrateMutation.ClearWarnings]: clearCalibrateWarnings
+                    }
                 },
                 stepper: {
                     namespaced: true,
@@ -180,6 +197,7 @@ describe("Stepper component", () => {
 
     afterEach(() => {
         localStorage.clear();
+        jest.resetAllMocks();
     });
 
     it("renders loading spinner while states are not ready", () => {
@@ -760,8 +778,8 @@ describe("Stepper component", () => {
         expect(getStepperOnStep(6).findAll(StepperNavigation).length).toBe(2);
     });
 
-    it("renders warning alert with warnings for current step", () => {
-        const wrapper = createReadySut(
+    const createWarningAlertWrapper = (activeStep = 4) => {
+        return createReadySut(
             {
                 validatedConsistent: true,
                 country: "TEST",
@@ -779,7 +797,7 @@ describe("Stepper component", () => {
                     locations: ["model_fit"]
                 }]
             },
-            {activeStep: 4},
+            {activeStep},
             {},
             {},
             jest.fn(),
@@ -792,6 +810,10 @@ describe("Stepper component", () => {
                 }]
             }
         );
+    }
+
+    it("renders warning alert with warnings for current step", () => {
+        const wrapper = createWarningAlertWrapper()
 
         expect(wrapper.findAll(WarningAlert).length).toBe(1)
         const warnings = wrapper.find(WarningAlert).props("warnings");
@@ -853,5 +875,35 @@ describe("Stepper component", () => {
         //Expect warnings component to be at bottom, immediately after content div, not at top immediately before content
         expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(false);
         expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(true);
+    });
+
+    it("clear-warnings emit when in modelOptions triggers clear warnings mutation in modelOptions store", async () => {
+        const wrapper = createWarningAlertWrapper(3)
+        await wrapper.find(WarningAlert).vm.$emit("clear-warnings")
+        expect(clearOptionsWarnings.mock.calls.length).toBe(1);
+    });
+
+    it("clear-warnings emit when in modelRun triggers clear warnings mutation in modelRun store", async () => {
+        const wrapper = createWarningAlertWrapper(4)
+        await wrapper.find(WarningAlert).vm.$emit("clear-warnings")
+        expect(clearRunWarnings.mock.calls.length).toBe(1);
+    });
+
+    it("clear-warnings emit when in modelCalibrate triggers clear warnings mutation in modelCalibrate store", async () => {
+        const wrapper = createWarningAlertWrapper(5)
+        await wrapper.find(WarningAlert).vm.$emit("clear-warnings")
+        expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
+    });
+
+    it("clear-warnings emit when in reviewOutput triggers clear warnings mutation in modelCalibrate store", async () => {
+        const wrapper = createWarningAlertWrapper(6)
+        await wrapper.find(WarningAlert).vm.$emit("clear-warnings")
+        expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
+    });
+
+    it("clear-warnings emit when in downloadResults triggers clear warnings mutation in modelCalibrate store", async () => {
+        const wrapper = createWarningAlertWrapper(7)
+        await wrapper.find(WarningAlert).vm.$emit("clear-warnings")
+        expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
     });
 });
