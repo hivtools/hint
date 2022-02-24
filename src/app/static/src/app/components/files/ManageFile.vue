@@ -39,10 +39,6 @@
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import {Error} from "../../generated";
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
-    import i18next from "i18next";
-    import {Language} from "../../store/translations/locales";
-    import {mapStateProp} from "../../utils";
-    import {RootState} from "../../root";
 
     interface Data {
         uploading: boolean
