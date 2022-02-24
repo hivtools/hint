@@ -166,9 +166,8 @@ export interface UploadFile {
 
 export interface DownloadResultsDependency {
     downloadId: string
-    downloading: boolean
+    preparing: boolean
     statusPollId: number
-    status: DownloadStatusResponse
     complete: boolean
     error: Error | null
 }

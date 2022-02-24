@@ -1,6 +1,10 @@
-# hint 1.91.0
+# hint 1.92.0
 
 * Show asterisks for required files in both modes
+
+# hint 1.91.0
+
+* add register link to login page
 
 # hint 1.90.4
 
