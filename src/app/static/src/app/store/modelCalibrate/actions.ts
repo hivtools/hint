@@ -7,7 +7,6 @@ import {ModelCalibrateMutation} from "./mutations";
 import {FilterOption, ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {switches} from "../../featureSwitches";
 import {Dict} from "../../types";
-import {DownloadResultsMutation} from "../downloadResults/mutations";
 
 export interface ModelCalibrateActions {
     fetchModelCalibrateOptions: (store: ActionContext<ModelCalibrateState, RootState>) => void
@@ -45,7 +44,6 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             .postAndReturn<ModelSubmitResponse>(`model/calibrate/submit/${modelRunId}`, {options, version});
 
         if (response) {
-            commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
             await dispatch("poll");
         }
     },
@@ -77,7 +75,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
 
                 if (data && data.plottingMetadata && data.plottingMetadata.barchart.defaults) {
                     const defaults = data.plottingMetadata.barchart.defaults;
-                    const unfrozenDefaultOptions = Object.keys(defaults.selected_filter_options)
+                    const unfrozenDefaultOptions= Object.keys(defaults.selected_filter_options)
                         .reduce((dict, key) => {
                             dict[key] = [...defaults.selected_filter_options[key]];
                             return dict;

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="preparing" id="preparing" class="d-flex align-items-end">
+        <div v-if="downloading" id="downloading" class="d-flex align-items-end">
             <loading-spinner size="xs"></loading-spinner>
             <div class="d-flex align-items-center height-40 ml-2'">
                 <span v-translate="translateKey"></span>
@@ -14,16 +14,16 @@
     import LoadingSpinner from "../LoadingSpinner.vue";
 
     interface Props {
-        preparing: boolean,
+        downloading: boolean,
         translateKey: string
     }
     export default Vue.extend<unknown, unknown, unknown, Props>({
-        name: "DownloadStatus",
+        name: "DownloadProgress",
         components: {
             LoadingSpinner
         },
         props: {
-            preparing: {
+            downloading: {
               required: true,
               type: Boolean
           },

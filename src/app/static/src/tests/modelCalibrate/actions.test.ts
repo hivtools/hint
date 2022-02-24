@@ -11,7 +11,6 @@ import {actions} from "../../app/store/modelCalibrate/actions";
 import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {freezer} from "../../app/utils";
 import {switches} from "../../app/featureSwitches";
-import {DownloadResultsMutation} from "../../app/store/downloadResults/mutations";
 
 const rootState = mockRootState();
 describe("ModelCalibrate actions", () => {
@@ -58,12 +57,11 @@ describe("ModelCalibrate actions", () => {
         expect(mockAxios.history.post[0].url).toBe(url);
         expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({version: mockVersion, options: mockOptions});
 
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toBe(ModelCalibrateMutation.SetOptionsData);
         expect(commit.mock.calls[0][1]).toBe(mockOptions);
         expect(commit.mock.calls[1][0].type).toBe(ModelCalibrateMutation.CalibrateStarted);
-        expect(commit.mock.calls[2][0].type).toBe(`downloadResults/${DownloadResultsMutation.ResetIds}`);
-        expect(commit.mock.calls[2][1]).toEqual({root: true});
+
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("poll");
     });
@@ -77,7 +75,7 @@ describe("ModelCalibrate actions", () => {
             modelRun: mockModelRunState({modelRunId: "123A"})
         });
 
-        const testError = mockError("TEST ERROR");
+        const testError =  mockError("TEST ERROR");
         mockAxios.onPost(`/model/calibrate/submit/123A`).reply(400, mockFailure("TEST ERROR"));
         await actions.submit({commit, dispatch, state, rootState: root} as any, {});
 
@@ -195,7 +193,7 @@ describe("ModelCalibrate actions", () => {
 
         expect(commit.mock.calls.length).toBe(5);
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "CalibrateResultFetched",
+            type:"CalibrateResultFetched",
             payload: testResult
         });
         expect(commit.mock.calls[1][0]).toStrictEqual({
@@ -306,7 +304,7 @@ describe("ModelCalibrate actions", () => {
     });
 
     it("getCalibratePlot fetches the calibrate plot data and sets it when successful", async () => {
-        const testResult = {data: "TEST DATA"};
+        const testResult = { data: "TEST DATA" };
         mockAxios.onGet(`/model/calibrate/plot/1234`)
             .reply(200, mockSuccess(testResult));
 
@@ -324,12 +322,12 @@ describe("ModelCalibrate actions", () => {
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toStrictEqual("CalibrationPlotStarted");
         expect(commit.mock.calls[1][0]).toBe("SetPlotData");
-        expect(commit.mock.calls[1][1]).toStrictEqual({data: "TEST DATA"});
+        expect(commit.mock.calls[1][1]).toStrictEqual({ data: "TEST DATA" });
         expect(mockAxios.history.get.length).toBe(1);
     });
 
     it("getCalibratePlot commits error with unsuccessful fetch", async () => {
-        const testResult = {data: "TEST DATA"};
+        const testResult = { data: "TEST DATA" };
         mockAxios.onGet(`/model/calibrate/plot/1234`)
             .reply(500, mockFailure("Test Error"));
 

@@ -41,12 +41,7 @@ describe("Model run actions", () => {
                 version: "v1" as any
             })
         });
-
-        const state = {
-            statusPollId: -1
-        };
-
-        await actions.run({commit, rootState, state} as any);
+        await actions.run({commit, rootState} as any);
         expect(JSON.parse(mockAxios.history.post[0].data))
             .toStrictEqual({options: {1: "TEST"}, version: "v1"})
     });
@@ -56,33 +51,13 @@ describe("Model run actions", () => {
         mockAxios.onPost(`/model/run/`)
             .reply(200, mockSuccess({id: "12345"}));
 
-        const state = {
-            statusPollId: -1
-        };
-
         const commit = jest.fn();
-        await actions.run({commit, rootState, state} as any);
+        await actions.run({commit, rootState} as any);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ModelRunStarted",
             payload: {id: "12345"}
         });
-    });
 
-    it("if already polling, stops before triggering a new model run", async () => {
-        mockAxios.onPost(`/model/run/`)
-            .reply(200, mockSuccess({id: "12345"}));
-
-        const state = {
-            statusPollId: 9876
-        };
-
-        const commit = jest.fn();
-        await actions.run({commit, rootState, state} as any);
-        expect(commit.mock.calls[0][0]).toBe("RunCancelled");
-        expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: "ModelRunStarted",
-            payload: {id: "12345"}
-        });
     });
 
     it("fetches model run result after polling when status is done", (done) => {

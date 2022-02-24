@@ -150,13 +150,11 @@ describe("ModelCalibrate mutations", () => {
         expect(state.generatingCalibrationPlot).toBe(false);
     });
 
-    it("sets and clears warnings", () => {
+    it("sets warnings", () => {
         const testState = mockModelCalibrateState();
         const warnings = [mockWarning()]
         mutations.WarningsFetched(testState, {payload: warnings});
         expect(testState.warnings).toEqual([mockWarning()]);
-        mutations.ClearWarnings(testState);
-        expect(testState.warnings).toEqual([]);
     });
 
     it("sets model calibrate result", () => {

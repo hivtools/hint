@@ -17,8 +17,7 @@ export enum ModelOptionsMutation {
     ModelOptionsError = "ModelOptionsError",
     SetModelOptionsVersion = "SetModelOptionsVersion",
     HasValidationError = "HasValidationError",
-    LoadUpdatedOptions = "LoadUpdatedOptions",
-    ClearWarnings = "ClearWarnings"
+    LoadUpdatedOptions = "LoadUpdatedOptions"
 }
 
 export const ModelOptionsUpdates = [ModelOptionsMutation.Update, ModelOptionsMutation.UnValidate];
@@ -31,10 +30,6 @@ export const mutations: MutationTree<ModelOptionsState> = {
     [ModelOptionsMutation.Validate](state: ModelOptionsState, action: PayloadWithType<ModelOptionsValidate>) {
         state.valid = true;
         state.warnings = action.payload.warnings
-    },
-
-    [ModelOptionsMutation.ClearWarnings](state: ModelOptionsState) {
-        state.warnings = [];
     },
 
     [ModelOptionsMutation.Validating](state: ModelOptionsState) {

@@ -287,8 +287,8 @@ export function getFilenameFromUploadFormData(formdata: FormData) {
 }
 
 export enum HelpFile {
-    french = "https://hivtools.unaids.org/wp-content/uploads/75D-Instructions-pour-Naomi.pdf",
-    english = "https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf"
+    french = "public/resources/Naomi-instructions-de-base.pdf",
+    english = "public/resources/Naomi-Help-Guide.pdf"
 }
 
 export const extractErrors = (state: any) => {

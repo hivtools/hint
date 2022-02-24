@@ -17,7 +17,6 @@ describe("Projects actions", () => {
     afterEach(() => {
         (console.log as jest.Mock).mockClear();
         (console.info as jest.Mock).mockClear();
-        jest.useRealTimers();
     });
 
     const rootState = mockRootState();
@@ -137,7 +136,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("gets current project and commits mutation on successful response", async (done) => {
+    it("gets current project and commits mutation on successful response", async(done) => {
         const testProjects = [{id: 1, name: "v1", versions: []}];
         mockAxios.onGet("/project/current")
             .reply(200, mockSuccess(testProjects));
@@ -150,10 +149,7 @@ describe("Projects actions", () => {
 
         setTimeout(() => {
             expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
-            expect(commit.mock.calls[1][0]).toStrictEqual({
-                type: ProjectsMutations.SetCurrentProject,
-                payload: testProjects
-            });
+            expect(commit.mock.calls[1][0]).toStrictEqual({type: ProjectsMutations.SetCurrentProject, payload: testProjects});
             expect(commit.mock.calls[2][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: false});
             done();
         });
@@ -169,7 +165,7 @@ describe("Projects actions", () => {
         const state = mockProjectsState({
             currentProject: mockProject,
             currentVersion: mockProject.versions[0],
-            versionUploadInProgress: true
+            versionUploadPending: true
         });
 
         actions.createProject({commit, state, rootState} as any, "newProject");
@@ -202,7 +198,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("gets current project and sets error on unsuccessful response", async (done) => {
+    it("gets current project and sets error on unsuccessful response", async(done) => {
         mockAxios.onGet("/project/current")
             .reply(500, mockFailure("TestError"));
 
@@ -224,11 +220,11 @@ describe("Projects actions", () => {
         });
     });
 
-    it("queueVersionStateUpload does nothing if no current version", async (done) => {
+    it("uploadVersionState does nothing if no current version", async (done) => {
         const commit = jest.fn();
         const state = mockProjectsState();
 
-        actions.queueVersionStateUpload({commit, state, rootState} as any);
+        actions.uploadVersionState({commit, state, rootState} as any);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(0);
@@ -237,121 +233,77 @@ describe("Projects actions", () => {
         }, 2500);
     });
 
-    it("queued upload will not run while version upload is already in progress", async () => {
+    it("uploadVersionState does nothing if no version upload is pending", async (done) => {
         const commit = jest.fn();
         const state = mockProjectsState({
             currentProject: mockProject,
             currentVersion: mockProject.versions[0],
-            versionUploadInProgress: true
+            versionUploadPending: true
         });
 
-        jest.useFakeTimers();
-        jest.spyOn(window, "setInterval");
+        actions.uploadVersionState({commit, state, rootState} as any);
 
-        actions.queueVersionStateUpload({commit, state, rootState} as any);
-
-        expect(setInterval).toHaveBeenCalledTimes(1);
-
-        jest.advanceTimersByTime(2001);
-
-        expect(commit.mock.calls.length).toBe(2);
-        expect(commit.mock.calls[0][0]).toStrictEqual(
-            {type: ProjectsMutations.ClearQueuedVersionUpload});
-        expect(commit.mock.calls[1][0]["type"]).toBe(ProjectsMutations.SetQueuedVersionUpload);
-        expect(commit.mock.calls.length).toBe(2);
-        expect(mockAxios.history.post.length).toBe(0);
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(0);
+            expect(mockAxios.history.post.length).toBe(0);
+            done();
+        }, 2500);
     });
 
-    it("queued upload will run if no version upload is in progress", (done) => {
+    it("uploadVersionState sets pending then unsets and uploads state, and commits VersionUploadSuccess", async (done) => {
         const commit = jest.fn();
         const state = mockProjectsState({
             currentProject: mockProject,
             currentVersion: mockProject.versions[0],
-            versionUploadInProgress: true
+            versionUploadPending: false
         });
 
         const url = "/project/1/version/version-id/state/";
         mockAxios.onPost(url)
-            .reply(200, mockSuccess("OK"));
+            .reply(200, mockSuccess("ok"));
 
-        jest.useFakeTimers();
-        jest.spyOn(window, "setInterval");
-
-        actions.queueVersionStateUpload({commit, state, rootState} as any);
-
-        expect(setInterval).toHaveBeenCalledTimes(1);
-
-        expect(commit.mock.calls.length).toBe(2);
-        expect(commit.mock.calls[0][0]["type"]).toBe(ProjectsMutations.ClearQueuedVersionUpload);
-        expect(commit.mock.calls[1][0]["type"]).toBe(ProjectsMutations.SetQueuedVersionUpload);
-
-        // will not yet have run because versionUploadInProgress is true
-        jest.advanceTimersByTime(2001);
-        expect(commit.mock.calls.length).toBe(2);
-
-        state.versionUploadInProgress = false;
-        jest.advanceTimersByTime(2001);
-
-        // now should have run
-        expect(commit.mock.calls.length).toBe(4);
-        expect(mockAxios.history.post.length).toBe(1);
-        expect(commit.mock.calls[2][0]["type"]).toBe(ProjectsMutations.ClearQueuedVersionUpload);
-        expect(commit.mock.calls[3][0]).toStrictEqual({
-            type: ProjectsMutations.SetVersionUploadInProgress,
-            payload: true
-        });
-
-        jest.useRealTimers();
+        actions.uploadVersionState({commit, state, rootState} as any);
+        expect(commit.mock.calls[0][0]).toStrictEqual(
+            {type: ProjectsMutations.SetVersionUploadPending, payload: true});
 
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(6);
-            expect(commit.mock.calls[4][0]).toStrictEqual({
-                type: ProjectsMutations.VersionUploadSuccess,
-                payload: "OK"
-            });
-            expect(commit.mock.calls[5][0]).toStrictEqual({
-                type: ProjectsMutations.SetVersionUploadInProgress,
-                payload: false
-            });
+            expect(commit.mock.calls.length).toBe(3);
+            expect(commit.mock.calls[1][0]).toStrictEqual(
+                {type: ProjectsMutations.SetVersionUploadPending, payload: false});
+            expect(commit.mock.calls[2][0].type).toStrictEqual(ProjectsMutations.VersionUploadSuccess);
+
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].url).toBe(url);
             const posted = mockAxios.history.post[0].data;
             expect(JSON.parse(posted)).toStrictEqual(serialiseState(rootState));
             done();
-        })
+        }, 2500);
     });
 
-    it("uploadVersionState commits ErrorAdded on error response and unsets in progress upload", async (done) => {
+    it("uploadVersionState commits ErrorAdded on error response", async (done) => {
         const commit = jest.fn();
         const state = mockProjectsState({
             currentProject: mockProject,
             currentVersion: mockProject.versions[0],
-            versionUploadInProgress: false
+            versionUploadPending: false
         });
 
         const url = "/project/1/version/version-id/state/";
         mockAxios.onPost(url)
-            .reply(500, mockFailure("ERR"));
+            .reply(500, mockFailure("TEST ERROR"));
 
-        jest.useFakeTimers();
-
-        actions.queueVersionStateUpload({commit, state, rootState} as any);
-
-        jest.advanceTimersByTime(2001);
-        jest.useRealTimers();
+        actions.uploadVersionState({commit, state, rootState} as any);
 
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(6);
-            expect(commit.mock.calls[4][0]["type"]).toBe("errors/ErrorAdded");
-            expect(commit.mock.calls[5][0]).toStrictEqual({
-                type: ProjectsMutations.SetVersionUploadInProgress,
-                payload: false
-            });
+            expect(commit.mock.calls.length).toBe(3);
+            expect(commit.mock.calls[2][0].type).toStrictEqual(`errors/${ErrorsMutation.ErrorAdded}`);
+            expect(commit.mock.calls[2][0].payload.detail).toStrictEqual("TEST ERROR");
+
             done();
-        })
+        }, 2500);
     });
 
-    it("newVersion uploads current version state then requests new version, commits VersionCreated", async () => {
+    it("newVersion uploads current version state then requests new version, commits VersionCreated", async (done) => {
         const commit = jest.fn();
         const state = mockProjectsState({
             currentProject: mockProject,
@@ -367,34 +319,28 @@ describe("Projects actions", () => {
         mockAxios.onPost(url)
             .reply(200, mockSuccess(newVersion));
 
-        await actions.newVersion({commit, state, rootState} as any, "newVersionNote");
+        actions.newVersion({commit, state, rootState} as any, "newVersionNote");
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(2);
 
-        expect(mockAxios.history.post.length).toBe(2);
+            expect(mockAxios.history.post[0].url).toBe(stateUrl);
+            const postedState = mockAxios.history.post[0].data;
+            expect(JSON.parse(postedState)).toStrictEqual(serialiseState(rootState));
 
-        expect(mockAxios.history.post[0].url).toBe(stateUrl);
-        const postedState = mockAxios.history.post[0].data;
-        expect(JSON.parse(postedState)).toStrictEqual(serialiseState(rootState));
+            expect(mockAxios.history.post[1].url).toBe(url);
 
-        expect(mockAxios.history.post[1].url).toBe(url);
+            expect(commit.mock.calls.length).toBe(3);
+            expect(commit.mock.calls[0][0].type).toBe(ProjectsMutations.SetVersionUploadPending);
+            expect(commit.mock.calls[0][0].payload).toBe(false);
+            expect(commit.mock.calls[1][0].type).toBe(ProjectsMutations.VersionUploadSuccess);
+            expect(commit.mock.calls[2][0].type).toBe(ProjectsMutations.VersionCreated);
+            expect(commit.mock.calls[2][0].payload).toStrictEqual(newVersion);
 
-        expect(commit.mock.calls.length).toBe(4);
-        expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: ProjectsMutations.SetVersionUploadInProgress,
-            payload: true
+            done();
         });
-        expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: ProjectsMutations.VersionUploadSuccess,
-            payload: "OK"
-        });
-        expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: ProjectsMutations.SetVersionUploadInProgress,
-            payload: false
-        });
-        expect(commit.mock.calls[3][0].type).toBe(ProjectsMutations.VersionCreated);
-        expect(commit.mock.calls[3][0].payload).toStrictEqual(newVersion);
     });
 
-    it("newVersion adds error on error response", async () => {
+    it("newVersion adds error on error response", async (done) => {
         const commit = jest.fn();
         const state = mockProjectsState({
             currentProject: mockProject,
@@ -409,26 +355,17 @@ describe("Projects actions", () => {
         mockAxios.onPost(url)
             .reply(500, mockFailure("TEST ERROR"));
 
-        await actions.newVersion({commit, state, rootState} as any, "versionNote");
+        actions.newVersion({commit, state, rootState} as any, "versionNote");
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(2);
 
-        expect(mockAxios.history.post.length).toBe(2);
+            expect(commit.mock.calls.length).toBe(3);
+            expect(commit.mock.calls[2][0].type).toBe("errors/ErrorAdded");
+            expect(commit.mock.calls[2][0].payload.detail).toStrictEqual("TEST ERROR");
+            expect(commit.mock.calls[2][1]).toStrictEqual({root: true});
 
-        expect(commit.mock.calls.length).toBe(4);
-        expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: ProjectsMutations.SetVersionUploadInProgress,
-            payload: true
+            done();
         });
-        expect(commit.mock.calls[1][0]).toStrictEqual({
-            type: ProjectsMutations.VersionUploadSuccess,
-            payload: "OK"
-        });
-        expect(commit.mock.calls[2][0]).toStrictEqual({
-            type: ProjectsMutations.SetVersionUploadInProgress,
-            payload: false
-        });
-        expect(commit.mock.calls[3][0].type).toBe("errors/ErrorAdded");
-        expect(commit.mock.calls[3][0].payload.detail).toStrictEqual("TEST ERROR");
-        expect(commit.mock.calls[3][1]).toStrictEqual({root: true});
     });
 
     it("loadVersion fetches version details and invokes load state action", async (done) => {

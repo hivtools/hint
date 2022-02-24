@@ -7,9 +7,7 @@ import {router} from "../../router";
 export enum ProjectsMutations {
     SetLoading = "SetLoading",
     SetPreviousProjects = "SetPreviousProjects",
-    SetQueuedVersionUpload = "SetQueuedVersionUpload",
-    ClearQueuedVersionUpload = "ClearQueuedVersionUpload",
-    SetVersionUploadInProgress = "SetVersionUploadInProgress",
+    SetVersionUploadPending = "SetVersionUploadPending",
     ProjectError = "ProjectError",
     VersionCreated = "VersionCreated",
     VersionUploadSuccess = "VersionUploadSuccess",
@@ -28,7 +26,7 @@ export const mutations: MutationTree<ProjectsState> = {
 
     [ProjectsMutations.CloningProject](state: ProjectsState, action: PayloadWithType<boolean | null>) {
         state.cloningProject = !!action.payload;
-        if (state.cloningProject) {
+        if (state.cloningProject){
             state.cloneProjectError = null;
         }
     },
@@ -41,15 +39,8 @@ export const mutations: MutationTree<ProjectsState> = {
         state.previousProjects = action.payload;
         state.loading = false;
     },
-    [ProjectsMutations.SetQueuedVersionUpload](state: ProjectsState, action: PayloadWithType<number>) {
-        state.queuedVersionUploadIntervalId = action.payload;
-    },
-    [ProjectsMutations.ClearQueuedVersionUpload](state: ProjectsState) {
-        window.clearInterval(state.queuedVersionUploadIntervalId);
-        state.queuedVersionUploadIntervalId = -1;
-    },
-    [ProjectsMutations.SetVersionUploadInProgress](state: ProjectsState, action: PayloadWithType<boolean>) {
-        state.versionUploadInProgress = action.payload;
+    [ProjectsMutations.SetVersionUploadPending](state: ProjectsState, action: PayloadWithType<boolean>) {
+        state.versionUploadPending = action.payload;
     },
     [ProjectsMutations.ProjectError](state: ProjectsState, action: PayloadWithType<Error>) {
         state.error = action.payload;
@@ -72,7 +63,8 @@ export const mutations: MutationTree<ProjectsState> = {
         state.currentVersion = action.payload.version;
         // The action which invokes this mutation, fetching current project, is only invoked for logged in users
         // so it is safe to redirect to /projects here if no current project
-        if ((state.currentProject == null) && (router.currentRoute.path == "/")) {
+        if ((state.currentProject == null) && (router.currentRoute.path == "/"))
+        {
             router.push('/projects');
         }
     }

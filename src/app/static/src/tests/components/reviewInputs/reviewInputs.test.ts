@@ -292,7 +292,7 @@ describe("Survey and programme component", () => {
 
     it("programme (ART) is included in data sources when programme data is present", () => {
         expectDataSource({program: mockProgramResponse(), selectedDataType: DataType.Program},
-            "ART", "TARV", "TARV", "1");
+            "ART", "ART", "TARV", "1");
     });
 
     it("ANC is included in data sources when ANC data is present", () => {

@@ -20,7 +20,6 @@ jacocoTestReport {
 
 group = 'org.imperial.mrc'
 sourceCompatibility = '1.8'
-def tomcatVersion = '9.0.30'
 
 dependencies {
 
@@ -29,11 +28,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-freemarker'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-    implementation "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
-    implementation "org.apache.tomcat.embed:tomcat-embed-el:${tomcatVersion}"
-    implementation "org.apache.tomcat.embed:tomcat-embed-websocket:${tomcatVersion}"
-    implementation "org.apache.tomcat:tomcat-annotations-api:${tomcatVersion}"
-
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'

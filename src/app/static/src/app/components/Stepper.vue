@@ -19,7 +19,7 @@
         </div>
         <stepper-navigation v-bind="navigationProps"/>
         <hr/>
-        <warning-alert v-if="activeStep !== 3" :warnings="activeStepWarnings" @clear-warnings="clearWarnings"></warning-alert>
+        <warning-alert v-if="activeStep !== 3" :warnings="activeStepWarnings"></warning-alert>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingData'"></h2>
@@ -38,7 +38,7 @@
             </div>
         </div>
         <template v-if="activeStep === 3">
-            <warning-alert :warnings="activeStepWarnings" @clear-warnings="clearWarnings"></warning-alert>
+            <warning-alert :warnings="activeStepWarnings"></warning-alert>
         </template>
         <template v-if="activeStep !== 4">
             <hr class="mt-3"/>
@@ -65,14 +65,11 @@
     import {LoadingState, LoadState} from "../store/load/load";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
     import VersionStatus from "./projects/VersionStatus.vue";
-    import {mapGettersByNames, mapStateProp, mapStateProps, mapMutationByName} from "../utils";
+    import {mapGettersByNames, mapStateProp, mapStateProps} from "../utils";
     import {Project, StepWarnings} from "../types";
     import {ProjectsState} from "../store/projects/projects";
     import {RootState} from "../root";
     import StepperNavigation, {Props as StepperNavigationProps} from "./StepperNavigation.vue";
-    import {ModelRunMutation} from "../store/modelRun/mutations";
-    import {ModelOptionsMutation} from "../store/modelOptions/mutations";
-    import {ModelCalibrateMutation} from "../store/modelCalibrate/mutations";
 
     interface ComputedState {
         activeStep: number,
@@ -157,22 +154,7 @@
                     return true
                 }
                 return !this.isComplete(activeStep)
-            },
-            clearWarnings(){
-                const mutationMethods: { [key: number]: () => void; } = {
-                    3: this.clearModelOptionsWarnings,
-                    4: this.clearModelRunWarnings,
-                    5: this.clearModelCalibrateWarnings,
-                    6: this.clearModelCalibrateWarnings,
-                    7: this.clearModelCalibrateWarnings
-                }
-                if (this.activeStep in mutationMethods){
-                    mutationMethods[this.activeStep]()
-                }
-            },
-            clearModelRunWarnings: mapMutationByName("modelRun", ModelRunMutation.ClearWarnings),
-            clearModelCalibrateWarnings: mapMutationByName("modelCalibrate", ModelCalibrateMutation.ClearWarnings),
-            clearModelOptionsWarnings: mapMutationByName("modelOptions", ModelOptionsMutation.ClearWarnings)
+            }
         },
         created() {
             //redirect to Projects if logged in with no currentProject

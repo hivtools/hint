@@ -58,6 +58,7 @@ export interface RootState extends DataExplorationState {
     modelCalibrate: ModelCalibrateState,
     modelOutput: ModelOutputState,
     plottingSelections: PlottingSelectionsState,
+    stepper: StepperState,
     load: LoadState,
     errors: ErrorsState,
     projects: ProjectsState
@@ -81,7 +82,7 @@ const persistState = (store: Store<RootState>): void => {
         const {dispatch} = store;
         const type = stripNamespace(mutation.type);
         if (type[0] !== "projects" && type[0] !== "errors") {
-            dispatch("projects/queueVersionStateUpload", {root: true});
+            dispatch("projects/uploadVersionState", {root: true});
         }
     })
 };

@@ -1,7 +1,6 @@
-import {mount, shallowMount} from "@vue/test-utils";
+import {shallowMount} from "@vue/test-utils";
 import Download from "../../../app/components/downloadResults/Download.vue"
 import {mockDownloadResultsDependency} from "../../mocks";
-import DownloadStatus from "../../../app/components/downloadResults/DownloadStatus.vue";
 
 describe(`download`, () => {
 
@@ -36,12 +35,13 @@ describe(`download`, () => {
         expect(mockDirective.mock.calls[0][1].value).toBe("downloadSummaryReport")
         expect(mockDirective.mock.calls[1][1].value).toBe("download")
         expect(wrapper.find("download-icon-stub").exists()).toBe(true)
-        expect(wrapper.find("download-status-stub").props()).toEqual({
-            "preparing": true,
-            "translateKey": "preparing"
+        expect(wrapper.find("download-progress-stub").props()).toEqual({
+            "downloading": true,
+            "translateKey": "downloading"
         })
         expect(wrapper.props()).toEqual({
             file: downloadSummary,
+            modalOpen: false,
             translateKey: downloadTranslate,
             disabled: false
         })
@@ -73,21 +73,5 @@ describe(`download`, () => {
         await wrapper.setProps({file: downloadSummary})
         button.trigger("click")
         expect(wrapper.emitted().click.length).toBe(1)
-    })
-
-    it("shows download status iff preparing file", async () => {
-        const wrapper = shallowMount(DownloadStatus, {
-            propsData: {
-                preparing: true,
-                translateKey: "preparing"
-            },
-            directives: {"translate": mockDirective}
-        });
-        expect(wrapper.find("#preparing").exists()).toBe(true);
-
-        await wrapper.setProps({
-           preparing: false
-        })
-        expect(wrapper.find("#preparing").exists()).toBe(false);
     })
 })

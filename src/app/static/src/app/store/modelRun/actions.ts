@@ -4,6 +4,7 @@ import {RootState} from "../../root";
 import {api, APIService} from "../../apiService";
 import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
 import {ModelRunMutation} from "./mutations";
+import {freezer} from "../../utils";
 
 export interface ModelRunActions {
     run: (store: ActionContext<ModelRunState, RootState>) => void
@@ -15,14 +16,9 @@ export interface ModelRunActions {
 export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
 
     async run(context) {
-        const {commit, rootState, state} = context;
+        const {commit, rootState} = context;
         const options = rootState.modelOptions.options;
         const version = rootState.modelOptions.version;
-
-        if (state.statusPollId !== -1) {
-            commit(ModelRunMutation.RunCancelled);
-        }
-
         await api<ModelRunMutation, ModelRunMutation>(context)
             .withSuccess(ModelRunMutation.ModelRunStarted)
             .withError(ModelRunMutation.ModelRunError)

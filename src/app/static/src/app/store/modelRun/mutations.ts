@@ -14,8 +14,7 @@ export enum ModelRunMutation {
     RunCancelled = "RunCancelled",
     Ready = "Ready",
     ClearResult = "ClearResult",
-    WarningsFetched = "WarningsFetched",
-    ClearWarnings = "ClearWarnings"
+    WarningsFetched = "WarningsFetched"
 }
 
 export const ModelRunUpdates = [
@@ -83,10 +82,6 @@ export const mutations: MutationTree<ModelRunState> = {
 
     [ModelRunMutation.WarningsFetched](state: ModelRunState, action: PayloadWithType<Warning[]>) {
         state.warnings = action.payload;
-    },
-
-    [ModelRunMutation.ClearWarnings](state: ModelRunState) {
-        state.warnings = [];
     },
 };
 

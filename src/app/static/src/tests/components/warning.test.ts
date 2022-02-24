@@ -102,8 +102,7 @@ describe("Warning component", () => {
             "Mostre mais", 
         store)
         await wrapper.find("button").trigger("click")
-        await Vue.nextTick();
-        expectTranslated(wrapper.find("button"),
+        expectTranslated(wrapper.find("button"), 
             "Show less", 
             "Montrer moins", 
             "Mostre menos", 

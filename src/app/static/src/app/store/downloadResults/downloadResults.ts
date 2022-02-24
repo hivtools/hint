@@ -18,6 +18,12 @@ export const initialDownloadResults = {
     error: null
 }
 
+export enum DOWNLOAD_TYPE {
+    SPECTRUM = "Spectrum",
+    COARSE = "CoarseOutput",
+    SUMMARY = "Summary"
+}
+
 export const initialDownloadResultsState = (): DownloadResultsState => {
     return {
         spectrum: {...initialDownloadResults},
@@ -31,4 +37,5 @@ export const downloadResults: Module<DownloadResultsState, RootState> = {
     state: {...initialDownloadResultsState()},
     actions,
     mutations
+
 }

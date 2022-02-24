@@ -26,8 +26,7 @@ export enum ModelCalibrateMutation {
     CalibrationPlotStarted = "CalibrationPlotStarted",
     SetPlotData = "SetPlotData",
     WarningsFetched = "WarningsFetched",
-    CalibrateResultFetched = "CalibrateResultFetched",
-    ClearWarnings = "ClearWarnings"
+    CalibrateResultFetched = "CalibrateResultFetched"
 }
 
 export const ModelCalibrateUpdates = [
@@ -112,10 +111,6 @@ export const mutations: MutationTree<ModelCalibrateState> = {
 
     [ModelCalibrateMutation.WarningsFetched](state: ModelCalibrateState, action: PayloadWithType<Warning[]>) {
         state.warnings = action.payload
-    },
-
-    [ModelCalibrateMutation.ClearWarnings](state: ModelCalibrateState) {
-        state.warnings = [];
     },
 
     [ModelCalibrateMutation.CalibrateResultFetched](state: ModelCalibrateState, action: PayloadWithType<CalibrateResultResponse>) {

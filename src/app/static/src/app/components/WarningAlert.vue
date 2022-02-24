@@ -1,9 +1,6 @@
 <template>
     <div v-if="showAlert">
         <div class="content alert alert-warning pt-0">
-            <button @click="$emit('clear-warnings')" type="button" class="close pt-2 pull-right" v-translate:aria-label="'close'">
-                <span aria-hidden="true">&times;</span>
-            </button>
             <warning v-for="(value, key) in filteredWarnings" :key="key" :origin="key" :warnings="value" :max-lines="maxLines"></warning>
         </div>
     </div>
@@ -33,7 +30,7 @@
                 default: 2,
                 required: false,
                 type: Number
-            },
+            }
         },
         computed: {
             filteredWarnings(){
@@ -47,7 +44,7 @@
             },
             showAlert(){
                 return Object.keys(this.warnings).some(key => this.warnings[key].length > 0)
-            },
+            }
         },
         components: {
             Warning

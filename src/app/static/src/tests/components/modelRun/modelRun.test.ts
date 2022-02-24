@@ -130,22 +130,12 @@ describe("Model run component", () => {
         });
     });
 
-    it("polls for status if runId already exists, pollId does not, and still running", (done) => {
-        const store = createStore({
-            modelRunId: "1234",
-            status: {
-                id: "123455abcdef",
-                done: false,
-                success: null,
-                errors: null
-            } as any,
-            result: null
-        });
+    it("polls for status if runId already exists, pollId does not, and run not complete", (done) => {
+        const store = createStore({modelRunId: "1234"});
         const wrapper = shallowMount(ModelRun, {store, localVue});
+        expect(store.state.modelRun.status).toStrictEqual({});
 
         setTimeout(() => {
-            expect(mockAxios.history.get[0].url).toBe(`/model/status/1234`);
-
             expect(wrapper.find("button").attributes().disabled).toBeUndefined();
             expect(store.state.modelRun.status).toStrictEqual(mockStatus);
             expect(store.state.modelRun.modelRunId).toBe("1234");
@@ -154,51 +144,6 @@ describe("Model run component", () => {
             done();
         }, 2500);
     });
-
-    it("does not poll for status if runId exists, pollId does not, and run completed successfully", (done) => {
-        const store = createStore({
-            modelRunId: "1234",
-            status: {
-                id: "123455abcdef",
-                done: true,
-                success: true,
-                errors: null
-            } as any,
-            result: ["result data"] as any
-        });
-        const wrapper = shallowMount(ModelRun, {store, localVue});
-
-        setTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(0);
-
-            expect(wrapper.find("button").attributes().disabled).toBeUndefined();
-            expect(wrapper.find(Modal).props().open).toBe(false);
-            done();
-        }, 2500);
-    });
-
-    it("does not poll for status if runId exists, pollId does not, and run failed", (done) => {
-        const store = createStore({
-            modelRunId: "1234",
-            status: {
-                id: "123455abcdef",
-                done: true,
-                success: false,
-                errors: ["Run failed"]
-            } as any,
-            result: null
-        });
-        const wrapper = shallowMount(ModelRun, {store, localVue});
-
-        setTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(0);
-
-            expect(wrapper.find("button").attributes().disabled).toBeUndefined();
-            expect(wrapper.find(Modal).props().open).toBe(false);
-            done();
-        }, 2500);
-    });
-
 
     it("modal does not close until run result fetched", (done) => {
         const getResultMock = jest.fn();

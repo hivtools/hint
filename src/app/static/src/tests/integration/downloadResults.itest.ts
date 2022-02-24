@@ -1,6 +1,8 @@
 import {actions} from "../../app/store/downloadResults/actions";
 import {rootState} from "./integrationTest";
-import {DOWNLOAD_TYPE} from "../../app/types";
+import {
+    DOWNLOAD_TYPE
+} from "../../app/store/downloadResults/downloadResults";
 
 describe(`download results actions integration`, () => {
 
@@ -12,7 +14,7 @@ describe(`download results actions integration`, () => {
             modelCalibrate: {calibrateId: "calibrate123"}
         };
 
-        await actions.prepareSummaryReport({commit, dispatch, state: {summary: {}}, rootState: root} as any);
+        await actions.prepareSummaryReport({commit, dispatch, rootState: root} as any);
 
         // passing an invalid calibrateId so this will return an error
         // but the expected error message confirms
@@ -55,7 +57,7 @@ describe(`download results actions integration`, () => {
             modelCalibrate: {calibrateId: "calibrate123"}
         };
 
-        await actions.prepareSpectrumOutput({commit, dispatch, state: {spectrum: {}}, rootState: root} as any);
+        await actions.prepareSpectrumOutput({commit, dispatch, rootState: root} as any);
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]["type"]).toBe("SpectrumError");
@@ -95,7 +97,7 @@ describe(`download results actions integration`, () => {
             modelCalibrate: {calibrateId: "calibrate123"}
         };
 
-        await actions.prepareCoarseOutput({commit, dispatch, state: {coarseOutput: {}}, rootState: root} as any);
+        await actions.prepareCoarseOutput({commit, dispatch, rootState: root} as any);
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]["type"]).toBe("CoarseOutputError");
@@ -124,6 +126,6 @@ describe(`download results actions integration`, () => {
             expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
             done()
 
-        }, 3100)
+        }, 2100)
     })
 })

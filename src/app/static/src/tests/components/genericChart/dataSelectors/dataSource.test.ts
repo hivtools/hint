@@ -36,7 +36,7 @@ describe("DataSource component", () => {
             "Teste da CPN", wrapper.vm.$store);
 
         expect(options.at(1).attributes("value")).toBe("dataset2");
-        expectTranslated(options.at(1), "ART", "TARV", "TARV", wrapper.vm.$store);
+        expectTranslated(options.at(1), "ART", "ART", "TARV", wrapper.vm.$store);
     });
 
     it("emits update when value changes", async () => {

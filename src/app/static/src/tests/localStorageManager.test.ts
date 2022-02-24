@@ -137,7 +137,6 @@ describe("LocalStorageManager", () => {
             surveyAndProgram: {selectedDataType: DataType.Survey},
             plottingSelections: mockPlottingSelections(),
             errors: mockErrorsState(),
-            stepper: mockStepperState()
         } as DataExplorationState;
         const result = serialiseState(mockDataExploration);
         expect(result).toStrictEqual({
@@ -150,7 +149,6 @@ describe("LocalStorageManager", () => {
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: {selectedDataType: DataType.Survey},
             hintrVersion: mockHintrVersionState(),
-            stepper: mockStepperState(),
             language: Language.en
         });
     });
