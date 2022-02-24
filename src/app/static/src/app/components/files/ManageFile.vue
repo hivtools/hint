@@ -3,7 +3,8 @@
         <label class="font-weight-bold mb-0" v-translate="label"></label>
         <span id="required" v-if="required"
               class="small"
-              :class="existingFileName? '': 'text-danger'">({{requiredText}})</span>
+              :class="existingFileName? '': 'text-danger'">(<span v-translate="'required'"></span>)
+        </span>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
         <span class="color-red" v-if="fromADR">ADR</span>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
@@ -50,8 +51,6 @@
 
     interface Computed {
         hasError: boolean
-        requiredText: string
-        currentLanguage: Language
     }
 
     interface Methods {
@@ -97,11 +96,6 @@
         computed: {
             hasError: function () {
                 return !!this.error
-            },
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
-            requiredText() {
-                return i18next.t("required", {lng: this.currentLanguage})
             }
         },
         components: {
