@@ -1,6 +1,10 @@
-# hint 1.90.5
+# hint 1.91.1
 
 * Handle resource with missing download gracefully
+
+# hint 1.91.0
+
+* add register link to login page
 
 # hint 1.90.4
 
