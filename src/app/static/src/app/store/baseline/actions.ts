@@ -163,11 +163,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
             .then((response) => {
                 if (response) {
                     commit({type: BaselineMutation.PJNZUpdated, payload: null});
-                    if (!context.rootState.dataExplorationMode) {
-                        dispatch("surveyAndProgram/deleteAll", {}, {root: true});
-                    } else {
-                        uploadCallback(dispatch, response)
-                    }
+                    uploadCallback(dispatch, response)
                 }
             });
     },
@@ -179,12 +175,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
             .then((response) => {
                 if (response) {
                     commit({type: BaselineMutation.ShapeUpdated, payload: null});
-                    if (!context.rootState.dataExplorationMode) {
-                        dispatch("surveyAndProgram/deleteAll", {}, {root: true});
-                    }
-                    else {
-                        uploadCallback(dispatch, response)
-                    }
+                    uploadCallback(dispatch, response)
                 }
             });
     },
@@ -196,12 +187,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
             .then((response) => {
                 if (response) {
                     commit({type: BaselineMutation.PopulationUpdated, payload: null});
-                    if (!context.rootState.dataExplorationMode) {
-                        dispatch("surveyAndProgram/deleteAll", {}, {root: true});
-                    }
-                    else {
-                        uploadCallback(dispatch, response);
-                    }
+                    uploadCallback(dispatch, response)
                 }
             });
     },
