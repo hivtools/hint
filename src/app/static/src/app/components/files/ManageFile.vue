@@ -1,6 +1,10 @@
 <template>
     <div class="form-group">
         <label class="font-weight-bold mb-0" v-translate="label"></label>
+        <span id="required" v-if="required"
+              class="small"
+              :class="existingFileName? '': 'text-danger'">(<span v-translate="'required'"></span>)
+        </span>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
         <span class="color-red" v-if="fromADR">ADR</span>
         <loading-spinner v-if="uploading" size="xs"></loading-spinner>
@@ -61,7 +65,8 @@
         error: Error,
         existingFileName: string,
         fromADR: boolean,
-        name: string
+        name: string,
+        required: boolean
     }
 
     export default ResetConfirmationMixin.extend<Data, Methods, Computed, Props>({
@@ -75,7 +80,8 @@
             "error": Object,
             "existingFileName": String,
             "fromADR": Boolean,
-            "name": String
+            "name": String,
+            "required": Boolean
         },
         data(): Data {
             return {
