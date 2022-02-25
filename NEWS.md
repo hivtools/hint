@@ -1,3 +1,10 @@
+# hint 1.92.1
+
+* Don't remove survey, ANC and ART data if user uploads a new baseline file
+
+# hint 1.92.0
+
+* Show asterisks for required files in both modes
 
 # hint 1.91.0
 
