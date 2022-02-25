@@ -132,6 +132,28 @@ describe("Survey and programme actions", () => {
         checkProgrammeImportUpload(commit)
     });
 
+    it("does not call import programme if url is missing", async () => {
+        const commit = jest.fn();
+        await actions.importProgram({commit, rootState} as any, "");
+
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
+    it("does not call import survey if url is missing", async () => {
+        const commit = jest.fn();
+        await actions.importSurvey({commit, rootState} as any, "");
+
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
+    it("does not call import ANC if url is missing", async () => {
+        const commit = jest.fn();
+        await actions.importANC({commit, rootState} as any, "");
+
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
+
     const checkProgrammeImportUpload = (commit: Mock) => {
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: SurveyAndProgramMutation.ProgramUpdated,

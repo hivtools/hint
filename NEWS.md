@@ -1,6 +1,10 @@
-# hint 1.92.1
+# hint 1.92.2
 
 * Don't remove survey, ANC and ART data if user uploads a new baseline file
+
+# hint 1.92.1
+
+* Handle resource with missing download gracefully
 
 # hint 1.92.0
 
