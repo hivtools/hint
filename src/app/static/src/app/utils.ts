@@ -164,21 +164,21 @@ const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => 
 
 export const flattenOptionsIdsByHierarchy = (filterOptions: NestedFilterOption[]): string[] => {
     const result: string[] = [];
-    const recursive = (filterOptions: NestedFilterOption[]) => {
-        // 1. Push ids for the top level of options
-        filterOptions.forEach((option: NestedFilterOption) => result.push(option.id));
+    const getIdsFromLayersRecursively = (filterOptions: NestedFilterOption[]) => {
         let nextLayer: NestedFilterOption[] = [];
-        // 2. Get all options at next layer and recurse
+        // 1. Push ids for the top level of options
         filterOptions.forEach((option: NestedFilterOption) => {
+            result.push(option.id);
+            // 2. Get all options at next layer and recurse
             if (option.children) {
                 nextLayer = nextLayer.concat(option.children as NestedFilterOption[]);
             }
         });
         if (nextLayer.length > 0) {
-            recursive(nextLayer);
+            getIdsFromLayersRecursively(nextLayer);
         }
     };
-    recursive(filterOptions);
+    getIdsFromLayersRecursively(filterOptions);
     return result;
 };
 
