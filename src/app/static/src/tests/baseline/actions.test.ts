@@ -670,4 +670,25 @@ describe("Baseline actions", () => {
         expect(commit.mock.calls.length).toBe(0);
     });
 
+    it("does not call import PJNZ if url is missing", async () => {
+        const commit = jest.fn();
+        await actions.importPJNZ({commit, rootState} as any, "");
+
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
+    it("does not call import shape if url is missing", async () => {
+        const commit = jest.fn();
+        await actions.importShape({commit, rootState} as any, "");
+
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
+    it("does not call import population if url is missing", async () => {
+        const commit = jest.fn();
+        await actions.importPopulation({commit, rootState} as any, "");
+
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
 });

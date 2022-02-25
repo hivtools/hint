@@ -379,7 +379,6 @@ describe("select dataset", () => {
 
         await Vue.nextTick();
         await Vue.nextTick();
-        await Vue.nextTick();
 
         expect(markResourcesUpdatedMock.mock.calls.length).toBe(1);
     });
@@ -396,7 +395,6 @@ describe("select dataset", () => {
 
         rendered.findAll("button").at(0).trigger("click");
 
-        await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
 
@@ -915,7 +913,6 @@ describe("select dataset", () => {
         await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
-        await Vue.nextTick();
 
         expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
         expect((surveyProgramActions.importProgram as Mock).mock.calls[0][1]).toBe("program.csv");
@@ -951,107 +948,10 @@ describe("select dataset", () => {
         await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
-        await Vue.nextTick();
 
         expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
         expect((surveyProgramActions.importProgram as Mock).mock.calls.length).toBe(0);
         expect((surveyProgramActions.importANC as Mock).mock.calls.length).toBe(0);
-
-        await Vue.nextTick();
-
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(false);
-    });
-
-    it("does not import files if resource url is missing", async () => {
-        const importShape = {
-            id: "2",
-            resource_type: schemas.shape,
-            url: "",
-            last_modified: "2020-11-03",
-            metadata_modified: "2020-11-04",
-            name: "Shape Resource"
-        }
-        const importSurvey = {
-            id: "4",
-            resource_type: schemas.survey,
-            url: "",
-            last_modified: "2020-11-07",
-            metadata_modified: "2020-11-08",
-            name: "Survey Resource"
-        }
-
-        const importPjnz = {
-            id: "1",
-            resource_type: schemas.pjnz,
-            url: "",
-            last_modified: "2020-11-01",
-            metadata_modified: "2020-11-02",
-            name: "PJNZ resource"
-        }
-
-        const importPop = {
-            id: "3",
-            resource_type: schemas.population,
-            url: "",
-            last_modified: "2020-11-05",
-            metadata_modified: "2020-11-06",
-            name: "Population Resource"
-        }
-
-        const importProgram = {
-            id: "5",
-            resource_type: schemas.programme,
-            url: "",
-            last_modified: "2020-11-07",
-            metadata_modified: "2020-11-08",
-            name: "Program Resource"
-        }
-        const importAnc = {
-            id: "6",
-            resource_type: schemas.anc,
-            url: "",
-            last_modified: "2020-11-09",
-            metadata_modified: "2020-11-10",
-            name: "ANC Resource"
-        }
-
-        const store = getStore(
-            {
-                selectedDataset: {
-                    ...fakeDataset,
-                    resources: {
-                        pjnz: mockDatasetResource(importPjnz),
-                        pop: mockDatasetResource(importPop),
-                        shape: mockDatasetResource(importShape),
-                        survey: mockDatasetResource(importSurvey),
-                        program: mockDatasetResource(importProgram),
-                        anc: mockDatasetResource(importAnc)
-                    } as any
-                }
-            }
-        );
-        const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
-        rendered.find("button").trigger("click");
-
-        expect(rendered.findAll(TreeSelect).length).toBe(1);
-        rendered.setData({newDatasetId: "id1"});
-        rendered.find(Modal).find("button").trigger("click");
-
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
-
-        await Vue.nextTick();
-        await Vue.nextTick();
-        await Vue.nextTick();
-        await Vue.nextTick();
-
-        expect((surveyProgramActions.importSurvey as Mock).mock.calls.length).toBe(0);
-        expect((surveyProgramActions.importProgram as Mock).mock.calls.length).toBe(0);
-        expect((surveyProgramActions.importANC as Mock).mock.calls.length).toBe(0);
-
-        expect((baselineActions.importPJNZ as Mock).mock.calls.length).toBe(0);
-        expect((baselineActions.importPopulation as Mock).mock.calls.length).toBe(0);
-        expect((baselineActions.importShape as Mock).mock.calls.length).toBe(0);
 
         await Vue.nextTick();
 
@@ -1125,7 +1025,6 @@ describe("select dataset", () => {
 
         await Vue.nextTick();
         await Vue.nextTick();
-        await Vue.nextTick();
 
         expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
         expect((surveyProgramActions.importProgram as Mock).mock.calls[0][1]).toBe("program.csv");
@@ -1185,7 +1084,6 @@ describe("select dataset", () => {
         await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
-        await Vue.nextTick();
 
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.find(Modal).props("open")).toBe(false);
@@ -1216,7 +1114,6 @@ describe("select dataset", () => {
 
         await rendered.find(Modal).find("button").trigger("click");
 
-        await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
