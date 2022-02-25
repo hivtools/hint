@@ -4,6 +4,7 @@
             <div class="col-sm-6 col-md-8">
                 <form>
                     <manage-file label="PJNZ"
+                                 :required="!dataExplorationMode"
                                  :valid="pjnz.valid"
                                  :fromADR="pjnz.fromADR"
                                  :error="pjnz.error || plottingMetadataError"
@@ -16,6 +17,7 @@
                             <strong v-translate="'country'"></strong>: {{ country }}</label>
                     </manage-file>
                     <manage-file label="shape"
+                                 :required="true"
                                  :valid="shape.valid"
                                  :fromADR="shape.fromADR"
                                  :error="shape.error"
@@ -26,6 +28,7 @@
                                  name="shape">
                     </manage-file>
                     <manage-file label="population"
+                                 :required="!dataExplorationMode"
                                  :valid="population.valid"
                                  :fromADR="population.fromADR"
                                  :error="population.error"
@@ -36,6 +39,7 @@
                                  name="population">
                     </manage-file>
                     <manage-file label="survey"
+                                 :required="!dataExplorationMode"
                                  :valid="survey.valid"
                                  :fromADR="survey.fromADR"
                                  :error="survey.error"
@@ -46,6 +50,7 @@
                                  name="survey">
                     </manage-file>
                     <manage-file label="ART"
+                                 :required="false"
                                  :valid="programme.valid"
                                  :fromADR="programme.fromADR"
                                  :error="programme.error"
@@ -56,6 +61,7 @@
                                  name="program">
                     </manage-file>
                     <manage-file label="ANC"
+                                 :required="false"
                                  :valid="anc.valid"
                                  :fromADR="anc.fromADR"
                                  :error="anc.error"
@@ -88,6 +94,7 @@
     import ManageFile from "../files/ManageFile.vue";
     import {RootState} from "../../root";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
+    import {mapStatePropByName} from "../../utils";
 
     const namespace = 'baseline';
 
@@ -140,7 +147,8 @@
                     error: surveyAndProgram.surveyError,
                     existingFileName: (surveyAndProgram.survey && surveyAndProgram.survey.filename) || surveyAndProgram.surveyErroredFile
                 } as PartialFileUploadProps)
-            })
+            }),
+            dataExplorationMode: mapStatePropByName(null, "dataExplorationMode"),
         },
         methods: {
             ...mapActions({

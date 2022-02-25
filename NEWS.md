@@ -1,6 +1,14 @@
-# hint 1.91.1
+# hint 1.92.2
 
 * Fix order of nested x-axis disaggregate options in barchart
+
+# hint 1.92.1
+
+* Handle resource with missing download gracefully
+
+# hint 1.92.0
+
+* Show asterisks for required files in both modes
 
 # hint 1.91.0
 
