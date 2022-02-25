@@ -1,3 +1,7 @@
+# hint 1.92.2
+
+* Fix order of nested x-axis disaggregate options in barchart
+
 # hint 1.92.1
 
 * Handle resource with missing download gracefully
