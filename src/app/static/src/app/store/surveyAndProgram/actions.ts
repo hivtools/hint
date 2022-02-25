@@ -110,18 +110,24 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
     },
 
     async importSurvey(context, url) {
-        await uploadOrImportSurvey(context, {url: "/adr/survey/", payload: qs.stringify({url})},
-            getFilenameFromImportUrl(url));
+        if (url) {
+            await uploadOrImportSurvey(context, {url: "/adr/survey/", payload: qs.stringify({url})},
+                getFilenameFromImportUrl(url));
+        }
     },
 
     async importProgram(context, url) {
-        await uploadOrImportProgram(context, {url: "/adr/programme/", payload: qs.stringify({url})},
-            getFilenameFromImportUrl(url));
+        if (url) {
+            await uploadOrImportProgram(context, {url: "/adr/programme/", payload: qs.stringify({url})},
+                getFilenameFromImportUrl(url));
+        }
     },
 
     async importANC(context, url) {
-        await uploadOrImportANC(context, {url: "/adr/anc/", payload: qs.stringify({url})},
-            getFilenameFromImportUrl(url))
+        if (url) {
+            await uploadOrImportANC(context, {url: "/adr/anc/", payload: qs.stringify({url})},
+                getFilenameFromImportUrl(url))
+        }
     },
 
     async uploadSurvey(context, formData) {
