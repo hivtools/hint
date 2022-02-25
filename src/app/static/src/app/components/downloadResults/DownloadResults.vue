@@ -192,6 +192,7 @@
         },
         methods: {
             downloadUrl(downloadId) {
+                console.log(downloadId)
                 return `/download/result/${downloadId}`;
             },
             handleUploadModal() {
