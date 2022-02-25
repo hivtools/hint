@@ -1,3 +1,6 @@
+# hint 1.92.0
+
+* Show asterisks for required files in both modes
 
 # hint 1.91.0
 
