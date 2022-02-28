@@ -1,6 +1,6 @@
 (
-$dataByArea := data {`area_name`: $};
-$areaNames := $keys($dataByArea);
+$dataByArea := data {`area_id`: $};
+$areaIds := $keys($dataByArea);
 
 $lineColor := "rgb(51, 51, 51)";
 $highlightColor := "rgb(255, 51, 51)";
@@ -11,7 +11,7 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
 
 {
     "data":
-        $map($areaNames, function($v, $i) {(
+        $map($areaIds, function($v, $i) {(
             $areaData := $lookup($dataByArea, $v);
             $values := $areaData.value;
 
@@ -59,7 +59,7 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
 
             [
                {
-                    "name": $v,
+                    "name": ($lookup($dataByArea, $v).area_name)[0],
                     "showlegend": false,
                     "x": $areaData.time_period,
                     "y": $areaData.value,
@@ -71,7 +71,7 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
                     }
                 },
                 {
-                    "name": $v,
+                    "name": ($lookup($dataByArea, $v).area_name)[0],
                     "showlegend": false,
                     "x": $highlightXAndY[0],
                     "y": $highlightXAndY[1],
@@ -95,9 +95,9 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
             "margin": {"t": 32},
             "dragmode": false,
             "grid": {"columns": subplots.columns, "rows": subplots.rows, "pattern": 'independent'},
-            "annotations": $map($areaNames, function($v, $i) {
+            "annotations": $map($areaIds, function($v, $i) {
                 {
-                    "text": $v & " (" & ($lookup($dataByArea,$v).area_id)[0] & ")",
+                    "text": ($lookup($dataByArea, $v).area_name)[0] & " (" & $v & ")",
                     "textfont": {},
                     "showarrow": false,
                     "x": 0.5,
@@ -109,8 +109,8 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
                 }
             })[]
         },
-        [1..$count($areaNames)].(
-           $row := $floor($/$$.subplots.columns);
+        [1..$count($areaIds)].(
+           $row := $floor(($-1)/$$.subplots.columns);
            {
                "yaxis"&$: {
                    "rangemode": "tozero",

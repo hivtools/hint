@@ -3,7 +3,7 @@ import {
     PlottingSelectionsState,
     BarchartSelections,
     BubblePlotSelections,
-    ChoroplethSelections, ScaleSelections, ColourScalesState
+    ChoroplethSelections, ScaleSelections
 } from "./plottingSelections";
 import {PayloadWithType} from "../../types";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
@@ -25,7 +25,7 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
     updateCalibratePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
         state.calibratePlot = {...state.calibratePlot, ...action.payload};
     },
-    updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
+    updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<BarchartSelections>) {
         state.barchart = {...state.barchart, ...action.payload};
     },
     updateBubblePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BubblePlotSelections>>) {

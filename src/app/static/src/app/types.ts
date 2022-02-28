@@ -166,9 +166,8 @@ export interface UploadFile {
 
 export interface DownloadResultsDependency {
     downloadId: string
-    downloading: boolean
+    preparing: boolean
     statusPollId: number
-    status: DownloadStatusResponse
     complete: boolean
     error: Error | null
 }
@@ -287,7 +286,9 @@ export interface ErrorReport extends ErrorReportManualDetails {
     projectName: string | undefined,
     browserAgent: string,
     timeStamp: string,
-    jobId: string,
+    modelRunId: string,
+    calibrateId?: string,
+    downloadIds?: DownloadIds
     versions: VersionInfo,
     errors: Error[]
 }
@@ -295,4 +296,10 @@ export interface ErrorReport extends ErrorReportManualDetails {
 export interface TranslatableState {
     language: Language
     updatingLanguage: boolean
+}
+
+interface DownloadIds {
+    spectrum: string,
+    summary: string,
+    coarse_output: string
 }

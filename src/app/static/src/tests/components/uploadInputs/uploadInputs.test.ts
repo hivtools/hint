@@ -1,11 +1,11 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
-import Vuex from 'vuex';
+import Vuex, {Store} from 'vuex';
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {
     mockBaselineState,
     mockError,
     mockMetadataState,
-    mockPopulationResponse,
+    mockPopulationResponse, mockRootState,
     mockShapeResponse,
     mockSurveyAndProgramState
 } from "../../mocks";
@@ -17,7 +17,6 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslatedWithStoreType} from "../../testHelpers";
-import {emptyState} from "../../../app/root";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
@@ -39,7 +38,8 @@ describe("UploadInputs upload component", () => {
 
     const createSut = (baselineState?: Partial<BaselineState>,
                        metadataState?: Partial<MetadataState>,
-                       surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey}) => {
+                       surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey},
+                       isDataExploration = true) => {
 
         actions = {
             refreshDatasetMetadata: jest.fn(),
@@ -58,7 +58,7 @@ describe("UploadInputs upload component", () => {
         };
 
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: mockRootState({dataExplorationMode: isDataExploration}),
             modules: {
                 baseline: {
                     namespaced: true,
@@ -88,6 +88,66 @@ describe("UploadInputs upload component", () => {
         const store = createSut();
         const wrapper = shallowMount(UploadInputs, {store, localVue});
         expect(wrapper.findAll(ManageFile).at(0).props().accept).toBe("PJNZ,pjnz,.pjnz,.PJNZ,.zip,zip,ZIP,.ZIP");
+    });
+
+    it("does not show required text in front of pjnz upload label when on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsNotRequired(store, 0)
+    });
+
+    it("shows required text in front of pjnz upload label when not on data exploration mode", () => {
+        const store = createSut({}, {}, {}, false);
+        expectFileIsRequired(store, 0)
+    });
+
+    it("shows required text in front of area file upload label when on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsRequired(store, 1)
+    });
+
+    it("shows required text in front of area file upload label when not on data exploration mode", () => {
+        const store = createSut({}, {}, {}, false);
+        expectFileIsRequired(store, 1)
+    });
+
+    it("does not show required text in front of population upload label when on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsNotRequired(store, 2)
+    });
+
+    it("shows required text in front of population upload label when not on data exploration mode", () => {
+        const store = createSut({}, {}, {}, false);
+        expectFileIsRequired(store, 2)
+    });
+
+    it("does not show required text in front of survey upload label when on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsNotRequired(store, 3)
+    });
+
+    it("shows required text in front of survey upload label when not on data exploration mode", () => {
+        const store = createSut({}, {}, {}, false);
+        expectFileIsRequired(store, 3)
+    });
+
+    it("does not show required text in front of ART upload label when on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsNotRequired(store, 4)
+    });
+
+    it("does not show required text in front of ART upload label when not on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsNotRequired(store, 4)
+    });
+
+    it("does not show required text in front of ANC upload label when on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsNotRequired(store, 5)
+    });
+
+    it("does not show required text in front of ANC upload label when not on data exploration mode", () => {
+        const store = createSut();
+        expectFileIsNotRequired(store, 5)
     });
 
     it("pjnz is not valid if country is not present", () => {
@@ -417,3 +477,13 @@ describe("UploadInputs upload component", () => {
         });
     }
 });
+
+const expectFileIsRequired = (store: Store<any>, index: number) => {
+    const wrapper = shallowMount(UploadInputs, {store, localVue});
+    expect(wrapper.findAll(ManageFile).at(index).props().required).toBe(true);
+}
+
+const expectFileIsNotRequired = (store: Store<any>, index: number) => {
+    const wrapper = shallowMount(UploadInputs, {store, localVue});
+    expect(wrapper.findAll(ManageFile).at(index).props().required).toBe(false);
+}

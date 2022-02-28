@@ -162,6 +162,26 @@ const flattenOption = (filterOption: NestedFilterOption): NestedFilterOption => 
     return result;
 };
 
+export const flattenOptionsIdsByHierarchy = (filterOptions: NestedFilterOption[]): string[] => {
+    const result: string[] = [];
+    const getIdsFromLayersRecursively = (filterOptions: NestedFilterOption[]) => {
+        let nextLayer: NestedFilterOption[] = [];
+        // 1. Push ids for the top level of options
+        filterOptions.forEach((option: NestedFilterOption) => {
+            result.push(option.id);
+            // 2. Get all options at next layer and recurse
+            if (option.children) {
+                nextLayer = nextLayer.concat(option.children as NestedFilterOption[]);
+            }
+        });
+        if (nextLayer.length > 0) {
+            getIdsFromLayersRecursively(nextLayer);
+        }
+    };
+    getIdsFromLayersRecursively(filterOptions);
+    return result;
+};
+
 export const rootOptionChildren = (filterOptions: FilterOption[]) => {
     const rootOption = filterOptions[0];
     return (rootOption && (rootOption as any).children) || [];
@@ -287,8 +307,8 @@ export function getFilenameFromUploadFormData(formdata: FormData) {
 }
 
 export enum HelpFile {
-    french = "public/resources/Naomi-instructions-de-base.pdf",
-    english = "public/resources/Naomi-Help-Guide.pdf"
+    french = "https://hivtools.unaids.org/wp-content/uploads/75D-Instructions-pour-Naomi.pdf",
+    english = "https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf"
 }
 
 export const extractErrors = (state: any) => {

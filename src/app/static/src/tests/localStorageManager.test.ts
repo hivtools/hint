@@ -82,7 +82,10 @@ describe("LocalStorageManager", () => {
             }),
             modelOptions: mockModelOptionsState(),
             modelOutput: mockModelOutputState(),
-            modelCalibrate: mockModelCalibrateState({result: mockCalibrateResultResponse()}),
+            modelCalibrate: mockModelCalibrateState({
+                result: mockCalibrateResultResponse(),
+                calibratePlotResult: {data: "test calibrate plot result"}
+            }),
             stepper: mockStepperState(),
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
             plottingSelections: mockPlottingSelections(),
@@ -108,7 +111,6 @@ describe("LocalStorageManager", () => {
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: {selectedDataType: DataType.Survey},
-            projects: mockProjectsState(),
             hintrVersion: mockHintrVersionState(),
             language: Language.en
         });
@@ -135,6 +137,7 @@ describe("LocalStorageManager", () => {
             surveyAndProgram: {selectedDataType: DataType.Survey},
             plottingSelections: mockPlottingSelections(),
             errors: mockErrorsState(),
+            stepper: mockStepperState()
         } as DataExplorationState;
         const result = serialiseState(mockDataExploration);
         expect(result).toStrictEqual({
@@ -147,6 +150,7 @@ describe("LocalStorageManager", () => {
             plottingSelections: mockPlottingSelections(),
             surveyAndProgram: {selectedDataType: DataType.Survey},
             hintrVersion: mockHintrVersionState(),
+            stepper: mockStepperState(),
             language: Language.en
         });
     });

@@ -20,7 +20,13 @@ class ErrorReportTests: SecureIntegrationTests()
             "country": "South Africa",
             "projectName": "South 2 Worldpop",
             "section": "Fit model",
-            "jobId": "job12",
+            "modelRunId": "job12",
+            "calibrateId": "1234",
+            "downloadIds": {
+            "spectrum": "spectrum123",
+             "summary": "summary123",
+              "coarse_output": "coarse123"
+            },
             "errors": [
                 {
                     "detail": "Please contact support for troubleshooting1",
