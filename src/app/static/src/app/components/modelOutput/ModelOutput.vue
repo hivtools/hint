@@ -29,13 +29,13 @@
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <area-indicators-table class="col-md-9"
-                                :table-data="chartdata"
-                                :area-filter-id="areaFilterId"
-                                :filters="choroplethFilters"
-                                :countryAreaFilterOption="countryAreaFilterOption"
-                                :indicators="filteredChoroplethIndicators"
-                                :selections="choroplethSelections"
-                                :selectedFilterOptions="choroplethSelections.selectedFilterOptions"
+                                           :table-data="chartdata"
+                                           :area-filter-id="areaFilterId"
+                                           :filters="choroplethFilters"
+                                           :countryAreaFilterOption="countryAreaFilterOption"
+                                           :indicators="filteredChoroplethIndicators"
+                                           :selections="choroplethSelections"
+                                           :selectedFilterOptions="choroplethSelections.selectedFilterOptions"
                     ></area-indicators-table>
                 </div>
             </div>
@@ -51,14 +51,14 @@
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <area-indicators-table class="col-md-9"
-                                :table-data="chartdata"
-                                :area-filter-id="areaFilterId"
-                                :filters="barchartFilters"
-                                :countryAreaFilterOption="countryAreaFilterOption"
-                                :indicators="filteredBarchartIndicators"
-                                :selections="barchartSelections"
+                                           :table-data="chartdata"
+                                           :area-filter-id="areaFilterId"
+                                           :filters="barchartFilters"
+                                           :countryAreaFilterOption="countryAreaFilterOption"
+                                           :indicators="filteredBarchartIndicators"
+                                           :selections="barchartSelections"
 
-                                :selectedFilterOptions="barchartSelections.selectedFilterOptions"
+                                           :selectedFilterOptions="barchartSelections.selectedFilterOptions"
                     ></area-indicators-table>
                 </div>
             </div>
@@ -76,14 +76,14 @@
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <area-indicators-table class="col-md-9"
-                                :table-data="chartdata"
-                                :area-filter-id="areaFilterId"
-                                :filters="bubblePlotFilters"
-                                :countryAreaFilterOption="countryAreaFilterOption"
-                                :indicators="filteredBubblePlotIndicators"
-                                :selections="bubblePlotSelections"
+                                           :table-data="chartdata"
+                                           :area-filter-id="areaFilterId"
+                                           :filters="bubblePlotFilters"
+                                           :countryAreaFilterOption="countryAreaFilterOption"
+                                           :indicators="filteredBubblePlotIndicators"
+                                           :selections="bubblePlotSelections"
 
-                                :selectedFilterOptions="bubblePlotSelections.selectedFilterOptions"
+                                           :selectedFilterOptions="bubblePlotSelections.selectedFilterOptions"
                     ></area-indicators-table>
                 </div>
             </div>
@@ -100,7 +100,16 @@
     import {BarchartIndicator, Filter, FilterConfig, FilterOption} from "@reside-ic/vue-charts/src/bar/types";
     import {BarChartWithFilters} from "@reside-ic/vue-charts";
 
-    import {mapGetterByName, mapGettersByNames, mapMutationByName, mapMutationsByNames, mapStateProp, mapStateProps, flattenOptions, flattenOptionsIdsByHierarchy} from "../../utils";
+    import {
+        mapGetterByName,
+        mapGettersByNames,
+        mapMutationByName,
+        mapMutationsByNames,
+        mapStateProp,
+        mapStateProps,
+        flattenOptions, mapActionByName, flattenOptionsIdsByHierarchy
+    } from "../../utils";
+
     import {
         BarchartSelections,
         BubblePlotSelections,
@@ -127,12 +136,13 @@
 
     interface Methods {
         tabSelected: (tab: string) => void
-        updateBarchartSelections: (data: {payload: BarchartSelections}) => void
+        updateBarchartSelections: (data: { payload: BarchartSelections }) => void
         updateBubblePlotSelections: (data: BubblePlotSelections) => void
         updateOutputColourScales: (colourScales: ScaleSelections) => void
         updateOutputBubbleSizeScales: (colourScales: ScaleSelections) => void
         formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => string
         updateBarchartSelectionsAndXAxisOrder: (data: BarchartSelections) => void
+        prepareOutputDownloads: () => void
     }
 
     interface Computed {
@@ -226,10 +236,10 @@
                     filters: this.barchartFilters
                 }
             },
-            flattenedXAxisFilterOptionIds(){
+            flattenedXAxisFilterOptionIds() {
                 const xAxisId = this.barchartSelections?.xAxisId
                 let ids: string[] = []
-                if (xAxisId && this.barchartFilters?.length){
+                if (xAxisId && this.barchartFilters?.length) {
                     const filter = this.barchartFilters.find((f: Filter) => f.id === xAxisId)
                     if (filter?.options.length){
                         ids = flattenOptionsIdsByHierarchy(filter.options)
@@ -246,11 +256,11 @@
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
             },
-            updateBarchartSelectionsAndXAxisOrder(data){
+            updateBarchartSelectionsAndXAxisOrder(data) {
                 const payload = {...this.barchartSelections, ...data}
-                if (data.xAxisId && data.selectedFilterOptions){
-                    const { xAxisId, selectedFilterOptions } = data
-                    if (selectedFilterOptions[xAxisId] && this.flattenedXAxisFilterOptionIds.length){
+                if (data.xAxisId && data.selectedFilterOptions) {
+                    const {xAxisId, selectedFilterOptions} = data
+                    if (selectedFilterOptions[xAxisId] && this.flattenedXAxisFilterOptionIds.length) {
                         // Sort the selected filter values according to the order given the barchart filters
                         const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
                             return this.flattenedXAxisFilterOptionIds.indexOf(a.id) - this.flattenedXAxisFilterOptionIds.indexOf(b.id);
@@ -260,7 +270,11 @@
                 }
                 // if unable to do the above, just updates the barchart as normal
                 this.updateBarchartSelections({payload})
-            }
+            },
+            prepareOutputDownloads: mapActionByName("downloadResults", "prepareOutputs")
+        },
+        mounted() {
+            this.prepareOutputDownloads();
         },
         components: {
             BarChartWithFilters,
