@@ -4,7 +4,7 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import Tick from "../../../app/components/Tick.vue";
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
-import {mockDataExplorationState, mockError, mockFile} from "../../mocks";
+import {mockDataExplorationState, mockError} from "../../mocks";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import Vuex, {Store} from "vuex";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
@@ -31,6 +31,7 @@ describe("Manage file component", () => {
         return shallowMount(ManageFile, {
             store: store || createStore(),
             propsData: {
+                required: false,
                 error: null,
                 label: "PJNZ",
                 valid: true,
@@ -44,7 +45,6 @@ describe("Manage file component", () => {
         });
     };
 
-    const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
 
     it("renders label", () => {
         const wrapper = createSut({
@@ -84,6 +84,42 @@ describe("Manage file component", () => {
         }, undefined, store);
         expectTranslatedWithStoreType(wrapper.find("label.file-name strong"), "File", "Fichier", "Ficheiro", store);
         expect(wrapper.find("label.file-name").text()).toContain("existing-name.csv");
+    });
+
+    it("can translate required text", () => {
+        const wrapper = createSut({
+            required: true
+        });
+
+        expectTranslated(wrapper.find("#required"),
+            "(required)",
+            "(obligatoire)",
+            "(necessário)",
+            wrapper.vm.$store)
+    });
+
+    it("renders red text for empty field if required is true", () => {
+        const wrapper = createSut({
+            required: true
+        });
+        expect(wrapper.find("#required").exists()).toBe(true);
+        expect(wrapper.find("#required").text()).toBe("(required)");
+        expect(wrapper.find("#required").attributes("class")).toBe("small text-danger");
+    });
+
+    it("renders text for filled form if required is true", () => {
+        const wrapper = createSut({
+            required: true,
+            existingFileName: "file.csv"
+        });
+        expect(wrapper.find("#required").exists()).toBe(true);
+        expect(wrapper.find("#required").text()).toBe("(required)");
+        expect(wrapper.find("#required").attributes("class")).toBe("small");
+    });
+
+    it("does not render text if required is false", () => {
+        const wrapper = createSut();
+        expect(wrapper.find("#required").exists()).toBe(false);
     });
 
     it("does not render tick if valid is false", () => {

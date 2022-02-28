@@ -3,6 +3,7 @@ import {
     freezer,
     verifyCheckSum,
     flattenOptions,
+    flattenOptionsIdsByHierarchy,
     flattenToIdSet,
     formatDateTime,
     validateEmail,
@@ -89,6 +90,35 @@ describe("utils", () => {
         const result = flattenOptions(testData);
         expect(result["1"]).toStrictEqual(testData[0]);
         expect(result["2"]).toStrictEqual({id: "2", label: "nested", children: []});
+    });
+
+    it("can flatten options ids by hierarchy", () => {
+
+        const testData: NestedFilterOption[] = [
+            {
+                id: "1", label: "name1", children: [
+                    { id: "1.1", label: "nested1.1", children: [] },
+                    { id: "1.2", label: "nested1.2", children: [
+                        { id: "1.2.1", label: "nested1.2.1", children: [
+                            { id: "1.2.1.1", label: "nested1.2.1.1", children: [] }
+                        ] }
+                    ] }
+                ],
+            },
+            {
+                id: "2", label: "name2", children: [{
+                    id: "2.1", label: "nested2.1", children: [
+                        { id: "2.1.1", label: "nested2.1.1", children: [] }
+                    ]
+                }],
+            },
+            {
+                id: "3", label: "name3", children: [],
+            },
+        ];
+
+        const result = flattenOptionsIdsByHierarchy(testData);
+        expect(result).toStrictEqual(["1", "2", "3", "1.1", "1.2", "2.1", "1.2.1", "2.1.1", "1.2.1.1" ]);
     });
 
     it("flatten ids returns set of selected ids", () => {

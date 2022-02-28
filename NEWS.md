@@ -1,3 +1,23 @@
+# hint 1.92.2
+
+* Fix order of nested x-axis disaggregate options in barchart
+
+# hint 1.92.1
+
+* Handle resource with missing download gracefully
+
+# hint 1.92.0
+
+* Show asterisks for required files in both modes
+
+# hint 1.91.0
+
+* add register link to login page
+
+# hint 1.90.4
+
+* Replace 'ART' with 'TARV' in French strings
+
 # hint 1.90.3
 
 * Make hintr warnings dismissable
