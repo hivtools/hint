@@ -1,3 +1,7 @@
+# hint 1.93.0
+
+* Improved user experience when downloading results
+
 # hint 1.92.2
 
 * Fix order of nested x-axis disaggregate options in barchart

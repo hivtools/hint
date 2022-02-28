@@ -182,6 +182,12 @@ export interface SelectedADRUploadFiles {
     coarseOutput?: any
 }
 
+export enum DOWNLOAD_TYPE {
+    SPECTRUM = "Spectrum",
+    COARSE = "CoarseOutput",
+    SUMMARY = "Summary"
+}
+
 export interface GenericChartTableConfig {
     columns: GenericChartTableColumnConfig[]
 }

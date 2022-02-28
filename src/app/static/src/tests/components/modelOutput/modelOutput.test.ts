@@ -88,6 +88,12 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                     ...partialSelections
                 },
                 mutations: plottingSelectionMutations
+            },
+            downloadResults: {
+                namespaced: true,
+                actions: {
+                    prepareOutputs: jest.fn()
+                }
             }
         }
     });
@@ -334,7 +340,7 @@ describe("ModelOutput component", () => {
             xAxisId: "region"
         };
 
-        const expectedBarchartSelections = {...currentBarchartSelections }
+        const expectedBarchartSelections = {...currentBarchartSelections}
         expectedBarchartSelections.selectedFilterOptions.region = testBarchartFilters[0].options
 
         barchart.vm.$emit("update", barchartSelections);
@@ -370,7 +376,7 @@ describe("ModelOutput component", () => {
             },
         };
 
-        const expectedBarchartSelections = {...currentBarchartSelections }
+        const expectedBarchartSelections = {...currentBarchartSelections}
         expectedBarchartSelections.selectedFilterOptions.region = barchartSelections.selectedFilterOptions.region
 
         barchart.vm.$emit("update", barchartSelections);
@@ -398,7 +404,7 @@ describe("ModelOutput component", () => {
             xAxisId: "region"
         };
 
-        const expectedBarchartSelections = {...currentBarchartSelections }
+        const expectedBarchartSelections = {...currentBarchartSelections}
         expectedBarchartSelections.selectedFilterOptions.region = barchartSelections.selectedFilterOptions.region
 
         barchart.vm.$emit("update", barchartSelections);
@@ -411,9 +417,10 @@ describe("ModelOutput component", () => {
                 id: "region",
                 options: [{
                     children: [
-                    { id: "r0", children: [{ id: "r0.0"}]},
-                    { id: "r1", children: [{ id: "r1.0"}]},
-                    { id: "r2"}]}
+                        {id: "r0", children: [{id: "r0.0"}]},
+                        {id: "r1", children: [{id: "r1.0"}]},
+                        {id: "r2"}]
+                }
                 ]
             }
         ]
@@ -438,7 +445,7 @@ describe("ModelOutput component", () => {
             xAxisId: "region"
         };
 
-        const expectedBarchartSelections = {...currentBarchartSelections }
+        const expectedBarchartSelections = {...currentBarchartSelections}
         expectedBarchartSelections.selectedFilterOptions.region = [
             {id: "r0", label: "region 0"},
             {id: "r1", label: "region 1"},

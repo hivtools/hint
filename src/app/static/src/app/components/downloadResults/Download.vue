@@ -8,9 +8,9 @@
             <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
         </button>
         <div>
-            <download-progress v-if="!modalOpen" id="progress"
-                               :translate-key="'downloading'"
-                               :downloading="file.preparing"/>
+            <download-status id="progress"
+                             :translate-key="'preparing'"
+                             :preparing="file.preparing"/>
         </div>
         <error-alert id="error" v-if="file.error" :error="file.error"></error-alert>
     </div>
@@ -18,7 +18,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import DownloadProgress from "./DownloadProgress.vue";
+    import DownloadStatus from "./DownloadStatus.vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import {DownloadIcon} from "vue-feather-icons";
     import {DownloadResultsDependency} from "../../types";
@@ -31,7 +31,6 @@
     interface Props {
         file: DownloadResultsDependency,
         translateKey: downloadTranslate,
-        modalOpen: boolean
         disabled: boolean
     }
 
@@ -44,7 +43,7 @@
         components: {
             DownloadIcon,
             ErrorAlert,
-            DownloadProgress
+            DownloadStatus
         },
         props: {
             file: {
@@ -55,19 +54,15 @@
                 required: true,
                 type: Object
             },
-            modalOpen: {
-                required: true,
-                type: Boolean
-            },
             disabled: {
                 required: true,
                 type: Boolean
             }
         },
         methods: {
-          download() {
-            this.$emit("click")
-         }
+            download() {
+                this.$emit("click")
+            }
         }
     })
 </script>
