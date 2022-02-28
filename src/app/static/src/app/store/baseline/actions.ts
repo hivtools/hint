@@ -127,18 +127,24 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
     },
 
     async importPJNZ(context, url) {
-        await uploadOrImportPJNZ(context, {url: "/adr/pjnz/", payload: qs.stringify({url})},
-            getFilenameFromImportUrl(url));
+        if (url) {
+            await uploadOrImportPJNZ(context, {url: "/adr/pjnz/", payload: qs.stringify({url})},
+                getFilenameFromImportUrl(url));
+        }
     },
 
     async importPopulation(context, url) {
-        await uploadOrImportPopulation(context, {url: "/adr/population/", payload: qs.stringify({url})},
-            getFilenameFromImportUrl(url));
+        if (url) {
+            await uploadOrImportPopulation(context, {url: "/adr/population/", payload: qs.stringify({url})},
+                getFilenameFromImportUrl(url));
+        }
     },
 
     async importShape(context, url) {
-        await uploadOrImportShape(context, {url: "/adr/shape/", payload: qs.stringify({url})},
-            getFilenameFromImportUrl(url));
+        if (url) {
+            await uploadOrImportShape(context, {url: "/adr/shape/", payload: qs.stringify({url})},
+                getFilenameFromImportUrl(url));
+        }
     },
 
     async uploadPJNZ(context, formData) {

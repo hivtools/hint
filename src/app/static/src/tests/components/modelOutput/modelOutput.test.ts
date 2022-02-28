@@ -448,10 +448,10 @@ describe("ModelOutput component", () => {
         const expectedBarchartSelections = {...currentBarchartSelections}
         expectedBarchartSelections.selectedFilterOptions.region = [
             {id: "r0", label: "region 0"},
-            {id: "r0.0", label: "region 0.0"},
             {id: "r1", label: "region 1"},
-            {id: "r1.0", label: "region 1.0"},
-            {id: "r2", label: "region 2"}
+            {id: "r2", label: "region 2"},
+            {id: "r0.0", label: "region 0.0"},
+            {id: "r1.0", label: "region 1.0"}
         ]
 
         barchart.vm.$emit("update", barchartSelections);
