@@ -276,6 +276,7 @@ export interface Translations {
     warningsHeaderModelOptions: string,
     warningsHeaderModelRun: string,
     warningsHeaderModelCalibrate: string,
+    warningsHeaderReviewInputs: string,
     xAxis: string,
     year: string
 }
@@ -590,6 +591,7 @@ const en: Translations = {
     warningsHeaderModelOptions: "Model option validation raised the following warning(s)",
     warningsHeaderModelRun: "Model fit raised the following warning(s)",
     warningsHeaderModelCalibrate: "Model calibration raised the following warning(s)",
+    warningsHeaderReviewInputs: "Review inputs raised the following warning(s)",
     xAxis: "X Axis",
     year: "Year"
 };
@@ -899,7 +901,8 @@ const fr: Partial<Translations> = {
     versions: "Versions",
     warningsHeaderModelOptions: "La validation de l'option de modèle a généré le(s) avertissement(s) suivant(s)",
     warningsHeaderModelRun: "L'ajustement du modèle a soulevé le(s) avertissement(s) suivant(s)",
-    warningsHeaderModelCalibrate: "L'étalonnage du modèle a déclenché le(s) avertissement(s) suivant(s)",
+    warningsHeaderModelCalibrate: "L'examen des entrées a généré le ou les avertissements suivants",
+    warningsHeaderReviewInputs: "",
     xAxis: "Axe X",
     year: "An"
 };
@@ -1209,6 +1212,7 @@ const pt: Partial<Translations> = {
     warningsHeaderModelOptions: "A validação da opção de modelo gerou o (s) seguinte (s) aviso (s)",
     warningsHeaderModelRun: "O ajuste do modelo gerou o seguinte aviso (s)",
     warningsHeaderModelCalibrate: "A calibração do modelo gerou o (s) seguinte (s) aviso (s)",
+    warningsHeaderReviewInputs: "As entradas de revisão geraram os seguintes avisos",
     xAxis: "Eixo X",
     year: "Ano"
 };

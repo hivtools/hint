@@ -1,3 +1,7 @@
+# hint 1.94.0
+
+* Display warnings on review-inputs
+
 # hint 1.93.1
 
 * fix issues as a result of regenerated types from hintr

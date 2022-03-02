@@ -2,7 +2,7 @@ import {ActionContext, ActionTree} from 'vuex';
 import {api} from "../../apiService";
 import {GenericChartState} from "./genericChart";
 import {GenericChartMutation} from "./mutations";
-import {DatasetConfig, Dict, GenericChartMetadata} from "../../types";
+import {DatasetConfig, Dict, GenericChartDataset, GenericChartMetadata} from "../../types";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface MetadataActions {
@@ -41,6 +41,9 @@ export const actions: ActionTree<GenericChartState, DataExplorationState> & Meta
                             dataset: response.data
                         }
                     });
+
+                    const data = response.data as GenericChartDataset
+                    commit({type: GenericChartMutation.WarningsFetched, payload: data.warnings});
                 }
             });
     },

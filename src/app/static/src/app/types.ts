@@ -271,13 +271,15 @@ export interface GenericChartDataset {
         defaults: {
             selected_filter_options: Dict<FilterOption[]>
         }
-    }
+    },
+    warnings: Warnings
 }
 
 export interface StepWarnings {
     modelOptions: Warnings,
     modelRun: Warnings,
-    modelCalibrate: Warnings
+    modelCalibrate: Warnings,
+    reviewInputs: Warnings
 }
 
 export interface ErrorReportManualDetails {
