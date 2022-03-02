@@ -38,19 +38,22 @@ describe("genericChart actions", () => {
         expect(commit.mock.calls.length).toEqual(0);
     });
 
-    it("gets dataset", async () => {
-        const mockResponse = mockSuccess("TEST DATASET");
+    it("gets dataset and warnings", async () => {
+        const response = {data: "TEST DATASET", metadata: "TEST META", warnings: "TEST WARNINGS"}
+        const mockResponse = mockSuccess(response);
         mockAxios.onGet("/dataset1")
             .reply(200, mockResponse);
         const commit = jest.fn();
         const payload = {datasetId: "dataset1", url: "/dataset1"};
         const deepFreeze = jest.spyOn(freezer, "deepFreeze");
         await actions.getDataset({commit, rootState} as any, payload);
-        expect(commit.mock.calls.length).toEqual(2);
+        expect(commit.mock.calls.length).toEqual(3);
         expect(commit.mock.calls[0][0]["type"]).toBe(GenericChartMutation.SetError);
         expect(commit.mock.calls[0][0]["payload"]).toBeNull();
         expect(commit.mock.calls[1][0]["type"]).toBe(GenericChartMutation.SetDataset);
-        expect(commit.mock.calls[1][0]["payload"]).toStrictEqual({dataset: "TEST DATASET", datasetId: "dataset1"});
+        expect(commit.mock.calls[1][0]["payload"]).toStrictEqual({dataset: response, datasetId: "dataset1"});
+        expect(commit.mock.calls[2][0]["type"]).toBe(GenericChartMutation.WarningsFetched);
+        expect(commit.mock.calls[2][0]["payload"]).toStrictEqual("TEST WARNINGS");
         expect(deepFreeze).toHaveBeenCalledWith(mockResponse);
     });
 
