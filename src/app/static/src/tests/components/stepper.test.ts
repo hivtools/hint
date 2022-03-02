@@ -35,7 +35,7 @@ import {StepperState} from "../../app/store/stepper/stepper";
 import {actions as rootActions} from "../../app/store/root/actions"
 import {mutations as rootMutations} from "../../app/store/root/mutations"
 import {metadataGetters, MetadataState} from "../../app/store/metadata/metadata";
-import {ModelStatusResponse, Warnings} from "../../app/generated";
+import {ModelStatusResponse} from "../../app/generated";
 import {modelOptionsGetters, ModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 import {LoadingState, LoadState} from "../../app/store/load/load";
 import registerTranslations from "../../app/store/translations/registerTranslations";
@@ -51,6 +51,7 @@ import WarningAlert from "../../app/components/WarningAlert.vue";
 import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
 import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {ModelRunMutation} from "../../app/store/modelRun/mutations";
+import {Warnings} from "../../app/types";
 
 const localVue = createLocalVue();
 

@@ -27,12 +27,11 @@
     import { mapStateProp } from "../utils";
     import { RootState } from "../root";
     import { Language } from "../store/translations/locales";
-    import { Warning } from "../generated";
-    import { Dict } from "../types";
+    import {Dict, Warnings} from "../types";
 
     interface Props {
         origin: string;
-        warnings: Warning[];
+        warnings: Warnings;
         maxLines: number;
     }
 

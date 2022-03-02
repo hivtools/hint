@@ -11,17 +11,16 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import { Warning as WarningType } from "../generated";
-    import { Dict } from "../types";
+    import {Dict, Warnings} from "../types";
     import Warning from "./Warning.vue"
 
     interface Props {
-        warnings: Dict<WarningType[]>;
+        warnings: Dict<Warnings>;
         maxLines: number;
     }
 
     interface Computed  {
-        filteredWarnings: Dict<WarningType[]>;
+        filteredWarnings: Dict<Warnings>;
         showAlert: boolean;
     }
 
@@ -37,7 +36,7 @@
         },
         computed: {
             filteredWarnings(){
-                const anObject: Dict<WarningType[]> = {}
+                const anObject: Dict<Warnings> = {}
                 Object.keys(this.warnings).forEach((k) => {
                     if (this.warnings[k].length > 0){
                         anObject[k] = this.warnings[k]
