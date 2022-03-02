@@ -1193,3 +1193,15 @@ export type Warnings = {
     | "review_output"
     | "download_results")[];
 }[];
+
+
+export type Warning = {
+  text: string;
+  locations: (
+      | "review_inputs"
+      | "model_options"
+      | "model_fit"
+      | "model_calibrate"
+      | "review_output"
+      | "download_results")[];
+};
