@@ -1,7 +1,7 @@
 import {MutationTree} from "vuex";
 import {initialModelRunState, maxPollErrors, ModelRunState} from "./modelRun";
-import {PayloadWithType} from "../../types";
-import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse, Error, Warnings} from "../../generated";
+import {PayloadWithType, Warnings} from "../../types";
+import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse, Error} from "../../generated";
 
 export enum ModelRunMutation {
     ModelRunStarted = "ModelRunStarted",

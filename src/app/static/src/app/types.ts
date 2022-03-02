@@ -1,10 +1,12 @@
 import {Payload} from "vuex";
-import {FilterOption, Error, Warnings, VersionInfo} from "./generated";
+import {FilterOption, Error, Warning, VersionInfo} from "./generated";
 import {Language} from "./store/translations/locales";
 
 export interface PayloadWithType<T> extends Payload {
     payload: T
 }
+
+export type Warnings = Warning[];
 
 export interface PartialFileUploadProps {
     valid: boolean,

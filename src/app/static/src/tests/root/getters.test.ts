@@ -15,9 +15,9 @@ import {
 } from "../mocks";
 import {RootState} from "../../app/root";
 import {initialDownloadResults} from "../../app/store/downloadResults/downloadResults";
-import {Warnings} from "../../app/generated";
 import {extractErrors} from "../../app/utils";
 import {expectArraysEqual} from "../testHelpers";
+import {Warnings} from "../../app/types";
 
 describe("root getters", () => {
 

@@ -1,7 +1,7 @@
 import {RootState} from "../../root";
 import {Getter, GetterTree} from "vuex";
-import {Error, Warnings} from "../../generated"
-import {Dict, StepWarnings} from "../../types";
+import {Error} from "../../generated"
+import {Dict, StepWarnings, Warnings} from "../../types";
 import {extractErrors} from "../../utils";
 
 interface RootGetters {
