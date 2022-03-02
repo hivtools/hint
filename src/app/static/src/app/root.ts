@@ -41,7 +41,7 @@ import {
 } from "./store/downloadResults/downloadResults";
 import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibrate/mutations";
 import {GenericChartState, initialGenericChartState, genericChart} from "./store/genericChart/genericChart";
-import {Warning} from "./generated";
+import {Warnings} from "./generated";
 import {DataExplorationState} from "./store/dataExploration/dataExploration";
 
 export interface RootState extends DataExplorationState {
@@ -70,7 +70,7 @@ export interface ReadyState {
 }
 
 export interface WarningsState {
-    warnings: Warning[]
+    warnings: Warnings
 }
 
 const persistState = (store: Store<RootState>): void => {

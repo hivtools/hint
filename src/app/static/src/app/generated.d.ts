@@ -104,7 +104,7 @@ export interface BarchartMetadata {
   };
 }
 export type CalibratePlotData = {
-  data_type: "spectrum" | "calibrated" | "raw";
+  data_type: "spectrum" | "calibrated" | "raw" | "calibration_ratio";
   spectrum_region_code: string;
   spectrum_region_name: string;
   sex: string;
@@ -116,7 +116,7 @@ export type CalibratePlotData = {
 }[];
 export interface CalibratePlotResponse {
   data: {
-    data_type: "spectrum" | "calibrated" | "raw";
+    data_type: "spectrum" | "calibrated" | "raw" | "calibration_ratio";
     spectrum_region_code: string;
     spectrum_region_name: string;
     sex: string;
@@ -164,7 +164,7 @@ export interface CalibratePlotResponse {
   };
 }
 export interface CalibratePlotRow {
-  data_type: "spectrum" | "calibrated" | "raw";
+  data_type: "spectrum" | "calibrated" | "raw" | "calibration_ratio";
   spectrum_region_code: string;
   spectrum_region_name: string;
   sex: string;
@@ -255,7 +255,13 @@ export interface CalibrateResultResponse {
   };
   warnings: {
     text: string;
-    locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+    locations: (
+      | "review_inputs"
+      | "model_options"
+      | "model_fit"
+      | "model_calibrate"
+      | "review_output"
+      | "download_results")[];
   }[];
   [k: string]: any;
 }
@@ -352,12 +358,16 @@ export interface Column {
         label: string;
         id: string;
         description?: string;
+        format?: string;
+        accuracy?: number | null;
       }[];
 }
 export type ColumnValues = {
   label: string;
   id: string;
   description?: string;
+  format?: string;
+  accuracy?: number | null;
 }[];
 export interface DownloadStatusResponse {
   id: string;
@@ -378,7 +388,6 @@ export interface DownloadStatusResponse {
 export interface DownloadSubmitResponse {
   id: string;
 }
-export type ErrorCode = string;
 export interface Error {
   error: string;
   detail: string | null;
@@ -386,6 +395,7 @@ export interface Error {
   trace?: string[];
   [k: string]: any;
 }
+export type ErrorCode = string;
 export type FileName = string;
 export type FilePath = string | null;
 export interface Filter {
@@ -442,6 +452,8 @@ export interface InputTimeSeriesMetadata {
           label: string;
           id: string;
           description?: string;
+          format?: string;
+          accuracy?: number | null;
         }[];
   }[];
   defaults: {
@@ -483,6 +495,8 @@ export interface InputTimeSeriesResponse {
             label: string;
             id: string;
             description?: string;
+            format?: string;
+            accuracy?: number | null;
           }[];
     }[];
     defaults: {
@@ -491,6 +505,16 @@ export interface InputTimeSeriesResponse {
       };
     };
   };
+  warnings: {
+    text: string;
+    locations: (
+      | "review_inputs"
+      | "model_options"
+      | "model_fit"
+      | "model_calibrate"
+      | "review_output"
+      | "download_results")[];
+  }[];
 }
 export interface InputTimeSeriesRow {
   area_id: string;
@@ -524,7 +548,13 @@ export interface ModelOptionsValidate {
   valid: true;
   warnings: {
     text: string;
-    locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+    locations: (
+      | "review_inputs"
+      | "model_options"
+      | "model_fit"
+      | "model_calibrate"
+      | "review_output"
+      | "download_results")[];
   }[];
 }
 export interface ModelOptionsValidateRequest {
@@ -587,7 +617,13 @@ export interface ModelResultResponse {
   complete: true;
   warnings: {
     text: string;
-    locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+    locations: (
+      | "review_inputs"
+      | "model_options"
+      | "model_fit"
+      | "model_calibrate"
+      | "review_output"
+      | "download_results")[];
   }[];
   [k: string]: any;
 }
@@ -1147,11 +1183,13 @@ export interface VersionInfo {
   rrq: string;
   [k: string]: any;
 }
-export interface Warning {
-  text: string;
-  locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
-}
 export type Warnings = {
   text: string;
-  locations: ("model_options" | "model_fit" | "model_calibrate" | "review_output" | "download_results")[];
+  locations: (
+    | "review_inputs"
+    | "model_options"
+    | "model_fit"
+    | "model_calibrate"
+    | "review_output"
+    | "download_results")[];
 }[];

@@ -35,7 +35,7 @@ import {StepperState} from "../../app/store/stepper/stepper";
 import {actions as rootActions} from "../../app/store/root/actions"
 import {mutations as rootMutations} from "../../app/store/root/mutations"
 import {metadataGetters, MetadataState} from "../../app/store/metadata/metadata";
-import {ModelStatusResponse, Warning} from "../../app/generated";
+import {ModelStatusResponse, Warnings} from "../../app/generated";
 import {modelOptionsGetters, ModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 import {LoadingState, LoadState} from "../../app/store/load/load";
 import registerTranslations from "../../app/store/translations/registerTranslations";
@@ -582,7 +582,7 @@ describe("Stepper component", () => {
         expect(steps.at(3).props().complete).toBe(true);
     });
 
-    const testModelRunCompletion = async (modelRunWarnings: Warning[], expectAdvanceToCalibrate: boolean)=> {
+    const testModelRunCompletion = async (modelRunWarnings: Warnings, expectAdvanceToCalibrate: boolean)=> {
         //store should consider first 3 steps to be complete initially
         const wrapper = createReadySut(
             {
