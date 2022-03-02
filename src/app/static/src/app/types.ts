@@ -1,12 +1,10 @@
 import {Payload} from "vuex";
-import {FilterOption, Error, Warning, VersionInfo} from "./generated";
+import {FilterOption, Error, VersionInfo, Warnings} from "./generated";
 import {Language} from "./store/translations/locales";
 
 export interface PayloadWithType<T> extends Payload {
     payload: T
 }
-
-export type Warnings = Warning[];
 
 export interface PartialFileUploadProps {
     valid: boolean,
@@ -310,4 +308,15 @@ interface DownloadIds {
     spectrum: string,
     summary: string,
     coarse_output: string
+}
+
+export interface Warning {
+    text: string;
+    locations: (
+        | "review_inputs"
+        | "model_options"
+        | "model_fit"
+        | "model_calibrate"
+        | "review_output"
+        | "download_results")[];
 }

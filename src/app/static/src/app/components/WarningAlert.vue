@@ -11,8 +11,9 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {Dict, Warnings} from "../types";
+    import {Dict} from "../types";
     import Warning from "./Warning.vue"
+    import {Warnings} from "../generated";
 
     interface Props {
         warnings: Dict<Warnings>;

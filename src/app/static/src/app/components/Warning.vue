@@ -27,7 +27,8 @@
     import { mapStateProp } from "../utils";
     import { RootState } from "../root";
     import { Language } from "../store/translations/locales";
-    import {Dict, Warnings} from "../types";
+    import {Dict} from "../types";
+    import {Warnings} from "../generated";
 
     interface Props {
         origin: string;

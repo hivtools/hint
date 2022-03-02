@@ -42,7 +42,7 @@ import {
 import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibrate/mutations";
 import {GenericChartState, initialGenericChartState, genericChart} from "./store/genericChart/genericChart";
 import {DataExplorationState} from "./store/dataExploration/dataExploration";
-import {Warnings} from "./types";
+import {Warnings} from "./generated";
 
 export interface RootState extends DataExplorationState {
     version: string,
