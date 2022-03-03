@@ -15,9 +15,9 @@ import {
 } from "../mocks";
 import {RootState} from "../../app/root";
 import {initialDownloadResults} from "../../app/store/downloadResults/downloadResults";
+import {Warning} from "../../app/generated";
 import {extractErrors} from "../../app/utils";
 import {expectArraysEqual} from "../testHelpers";
-import {Warnings} from "../../app/generated";
 
 describe("root getters", () => {
 
@@ -28,19 +28,19 @@ describe("root getters", () => {
             null as any);
     }
 
-    const modelOptionWarnings: Warnings = [
+    const modelOptionWarnings: Warning[] = [
         {text: "model option test", locations: ["model_options"]}
     ]
 
-    const calibrateWarnings: Warnings = [
+    const calibrateWarnings: Warning[] = [
         {text: "model calibrate test", locations: ["model_options", "model_calibrate"]}
     ]
 
-    const modelRunWarnings: Warnings = [
+    const modelRunWarnings: Warning[] = [
         {text: "model run test", locations: ["model_fit"]}
     ]
 
-    const reviewInputsWarnings: Warnings = [
+    const reviewInputsWarnings: Warning[] = [
         {text: "review input test", locations: ["review_inputs"]}
     ]
 

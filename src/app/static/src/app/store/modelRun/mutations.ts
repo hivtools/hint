@@ -1,7 +1,7 @@
 import {MutationTree} from "vuex";
 import {initialModelRunState, maxPollErrors, ModelRunState} from "./modelRun";
 import {PayloadWithType} from "../../types";
-import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse, Error, Warnings} from "../../generated";
+import {ModelResultResponse, ModelStatusResponse, ModelSubmitResponse, Error, Warning} from "../../generated";
 
 export enum ModelRunMutation {
     ModelRunStarted = "ModelRunStarted",
@@ -81,7 +81,7 @@ export const mutations: MutationTree<ModelRunState> = {
         state.result = null;
     },
 
-    [ModelRunMutation.WarningsFetched](state: ModelRunState, action: PayloadWithType<Warnings>) {
+    [ModelRunMutation.WarningsFetched](state: ModelRunState, action: PayloadWithType<Warning[]>) {
         state.warnings = action.payload;
     },
 

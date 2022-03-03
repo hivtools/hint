@@ -1183,8 +1183,7 @@ export interface VersionInfo {
   rrq: string;
   [k: string]: any;
 }
-
-export type Warnings = {
+export interface Warning {
   text: string;
   locations: (
     | "review_inputs"
@@ -1193,4 +1192,4 @@ export type Warnings = {
     | "model_calibrate"
     | "review_output"
     | "download_results")[];
-}[];
+}

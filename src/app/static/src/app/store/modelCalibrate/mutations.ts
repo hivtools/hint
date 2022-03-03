@@ -8,7 +8,7 @@ import {
     CalibrateStatusResponse,
     CalibrateSubmitResponse,
     Error,
-    VersionInfo, Warnings
+    VersionInfo, Warning
 } from "../../generated";
 
 export enum ModelCalibrateMutation {
@@ -110,7 +110,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.statusPollId = action.payload;
     },
 
-    [ModelCalibrateMutation.WarningsFetched](state: ModelCalibrateState, action: PayloadWithType<Warnings>) {
+    [ModelCalibrateMutation.WarningsFetched](state: ModelCalibrateState, action: PayloadWithType<Warning[]>) {
         state.warnings = action.payload
     },
 
