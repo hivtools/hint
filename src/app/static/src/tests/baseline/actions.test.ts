@@ -402,7 +402,7 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.deletePJNZ({commit, dispatch, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
-        expectSuccessfulValidation(dispatch)
+        expectValidationActionsDispatched(dispatch)
     });
 
     it("deletes shape and dispatches validation actions", async () => {
@@ -414,7 +414,7 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.deleteShape({commit, dispatch, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
-        expectSuccessfulValidation(dispatch)
+        expectValidationActionsDispatched(dispatch)
     });
 
     it("deletes population and dispatches validation actions", async () => {
@@ -426,7 +426,7 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.deletePopulation({commit, dispatch, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
-        expectSuccessfulValidation(dispatch)
+        expectValidationActionsDispatched(dispatch)
     });
 
     it("deletes all", async () => {
@@ -647,7 +647,7 @@ describe("Baseline actions", () => {
 
 });
 
-const expectSuccessfulValidation = (dispatch: Mock) => {
+const expectValidationActionsDispatched = (dispatch: Mock) => {
     expect(dispatch.mock.calls[0][0]).toBe("validate");
     expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
     expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
