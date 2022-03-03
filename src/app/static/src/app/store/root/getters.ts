@@ -1,6 +1,7 @@
 import {RootState} from "../../root";
 import {Getter, GetterTree} from "vuex";
-import {Error, Warnings} from "../../generated"
+import {Error} from "../../generated"
+import {Warning} from "../../generated";
 import {Dict, StepWarnings} from "../../types";
 import {extractErrors} from "../../utils";
 
@@ -54,7 +55,7 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
             state.errors.errors]);
     },
     warnings: (state: RootState) => (stepName: string): StepWarnings => {
-        const filterWarnings = (warnings: Warnings, stepLocation: string) =>
+        const filterWarnings = (warnings: Warning[], stepLocation: string) =>
             stepLocation ?
                 (warnings || []).filter(warning => warning.locations.some(location => location === stepLocation)) :
                 [];

@@ -1,7 +1,3 @@
-# hint 1.93.1
-
-* fix issues as a result of regenerated types from hintr
-
 # hint 1.93.0
 
 * Improved user experience when downloading results
