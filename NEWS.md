@@ -1,6 +1,14 @@
-# hint 1.92.2
+# hint 1.93.1
 
 * Don't remove survey, ANC and ART data if user uploads a new baseline file
+
+# hint 1.93.0
+
+* Improved user experience when downloading results
+
+# hint 1.92.2
+
+* Fix order of nested x-axis disaggregate options in barchart
 
 # hint 1.92.1
 
