@@ -20,6 +20,11 @@ describe("Warning component", () => {
         warnings: [{ text: 'model run warning', locations: []}]
     }
 
+    const mockPropsReviewInputs = {
+        origin: "reviewInputs",
+        warnings: [{ text: 'review input warning', locations: []}]
+    }
+
     const mockPropsModelCalibrate = {
         origin: "modelCalibrate",
         warnings: [{ text: 'calibrate warning', locations: []}]
@@ -86,6 +91,16 @@ describe("Warning component", () => {
         expect(wrapper.find("h5").find("alert-triangle-icon-stub").exists()).toBe(true);
         expect(wrapper.findAll("li").length).toBe(1);
         expect(wrapper.findAll("li").at(0).text()).toBe("calibrate warning");
+
+        wrapper.setProps(mockPropsReviewInputs)
+        expectTranslated(wrapper.find("h5"),
+            "Review inputs raised the following warning(s)",
+            "L'examen des entrées a généré le ou le(s) avertissements suivant(s)",
+            "As entradas de revisão geraram o (s) seguintes aviso (s)",
+            store)
+        expect(wrapper.find("h5").find("alert-triangle-icon-stub").exists()).toBe(true);
+        expect(wrapper.findAll("li").length).toBe(1);
+        expect(wrapper.findAll("li").at(0).text()).toBe("review input warning");
 
         const hiddenWarning = wrapper.find(".invisible")
         expect(hiddenWarning.find("p").text()).toBe("Hidden line");

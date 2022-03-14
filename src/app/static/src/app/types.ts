@@ -1,5 +1,5 @@
 import {Payload} from "vuex";
-import {FilterOption, Error, DownloadStatusResponse, DownloadSubmitResponse, Warning, VersionInfo} from "./generated";
+import {FilterOption, Error, Warning, VersionInfo} from "./generated";
 import {Language} from "./store/translations/locales";
 
 export interface PayloadWithType<T> extends Payload {
@@ -271,13 +271,15 @@ export interface GenericChartDataset {
         defaults: {
             selected_filter_options: Dict<FilterOption[]>
         }
-    }
+    },
+    warnings: Warning[]
 }
 
 export interface StepWarnings {
     modelOptions: Warning[],
     modelRun: Warning[],
-    modelCalibrate: Warning[]
+    modelCalibrate: Warning[],
+    reviewInputs: Warning[]
 }
 
 export interface ErrorReportManualDetails {
