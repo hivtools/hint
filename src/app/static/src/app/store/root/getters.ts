@@ -15,7 +15,8 @@ const warningStepLocationMapping: Dict<string> = {
     fitModel: "model_fit",
     calibrateModel: "model_calibrate",
     reviewOutput: "review_output",
-    downloadResults: "download_results"
+    downloadResults: "download_results",
+    reviewInputs: "review_inputs",
 };
 
 export const getters: RootGetters & GetterTree<RootState, RootState> = {
@@ -65,7 +66,8 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
         return {
             modelOptions: filterWarnings(state.modelOptions.warnings, location),
             modelRun: filterWarnings(state.modelRun.warnings, location),
-            modelCalibrate: filterWarnings(state.modelCalibrate.warnings, location)
+            modelCalibrate: filterWarnings(state.modelCalibrate.warnings, location),
+            reviewInputs: filterWarnings(state.genericChart.warnings, location)
         }
     }
 }

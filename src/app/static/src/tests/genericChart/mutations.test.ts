@@ -1,6 +1,6 @@
 import Vue from "vue";
 import {mutations} from "../../app/store/genericChart/mutations";
-import {mockGenericChartState} from "../mocks";
+import {mockGenericChartState, mockWarning} from "../mocks";
 
 describe("genericChart mutations", () => {
 
@@ -69,5 +69,14 @@ describe("genericChart mutations", () => {
         const error = {"detail": "TEST ERROR", "error": "OTHER_ERROR"};
         mutations.SetError(state, {payload: error});
         expect(state.genericChartError).toBe(error);
+    });
+
+    it("sets and clears warnings", () => {
+        const testState = mockGenericChartState();
+        const warnings = [mockWarning()]
+        mutations.WarningsFetched(testState, {payload: warnings});
+        expect(testState.warnings).toEqual([mockWarning()]);
+        mutations.ClearWarnings(testState);
+        expect(testState.warnings).toEqual([]);
     });
 });

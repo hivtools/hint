@@ -316,7 +316,8 @@ describe("GenericChart component", () => {
                     {age: "1", year: "1921", value: 2},
                     {age: "2", year: "1920", value: 3},
                     {age: "2", year: "1921", value: 4}
-                ]
+                ],
+                warnings: []
             },
             dataset2: {
                 metadata: datasets.dataset2.metadata,
@@ -325,11 +326,13 @@ describe("GenericChart component", () => {
                     {age: "10", year: "1921", value: 20},
                     {age: "20", year: "1920", value: 30},
                     {age: "20", year: "1921", value: 40}
-                ]
+                ],
+                warnings: []
             },
             dataset3: {
                 metadata: datasets.dataset3.metadata,
-                data: []
+                data: [],
+                warnings: []
             }
         };
         const state = {datasets: datasetsWithNoMatchingData};

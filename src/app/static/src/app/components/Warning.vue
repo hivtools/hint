@@ -142,7 +142,8 @@
                 const headers: { [key: string]: string } = {
                     modelOptions: "warningsHeaderModelOptions",
                     modelRun: "warningsHeaderModelRun",
-                    modelCalibrate: "warningsHeaderModelCalibrate"
+                    modelCalibrate: "warningsHeaderModelCalibrate",
+                    reviewInputs: "warningsHeaderReviewInputs"
                 }
                 return key in headers ? headers[key] : ""
             }
