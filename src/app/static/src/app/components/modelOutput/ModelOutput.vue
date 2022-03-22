@@ -254,6 +254,7 @@
                     "updateOutputColourScales", "updateOutputBubbleSizeScales"]),
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected),
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
+                console.log("formatBarchartValue", formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString(), value, indicator)
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
             },
             updateBarchartSelectionsAndXAxisOrder(data) {
@@ -275,6 +276,7 @@
         },
         mounted() {
             this.prepareOutputDownloads();
+            console.log("mounted", this.barchartIndicators, this.filteredBarchartIndicators, this.chartdata)
         },
         components: {
             BarChartWithFilters,
