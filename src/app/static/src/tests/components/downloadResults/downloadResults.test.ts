@@ -1,9 +1,9 @@
-import {createLocalVue, shallowMount, mount} from '@vue/test-utils';
+import {createLocalVue, shallowMount, mount, Wrapper} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
 import {
     mockADRState,
     mockADRUploadState, mockDownloadResultsDependency,
-    mockDownloadResultsState, mockError, mockMetadataState,
+    mockDownloadResultsState, mockMetadataState,
     mockModelCalibrateState
 } from "../../mocks";
 import DownloadResults from "../../../app/components/downloadResults/DownloadResults.vue";
@@ -12,31 +12,27 @@ import {emptyState} from "../../../app/root";
 import {expectTranslated} from "../../testHelpers";
 import UploadModal from "../../../app/components/downloadResults/UploadModal.vue";
 import {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";
-import DownloadProgress from "../../../app/components/downloadResults/DownloadProgress.vue";
-import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import Download from "../../../app/components/downloadResults/Download.vue";
+import {ADRState} from "../../../app/store/adr/adr";
+import {ADRUploadState} from "../../../app/store/adrUpload/adrUpload";
 
 const localVue = createLocalVue();
 
 describe("Download Results component", () => {
 
-    const mockSpectrumDownloadAction = jest.fn();
-    const mockSummaryDownloadAction = jest.fn();
-    const mockCoarseOutputDownloadAction = jest.fn();
+    const mockPrepareOutputs = jest.fn();
     const mockUploadMetadataAction = jest.fn();
 
-    const mockDownloading = mockDownloadResultsDependency({
-        preparing: true,
-        complete: false,
-        error: null,
-        downloadId: ""
-    })
-
     afterEach(() => {
-        jest.useRealTimers()
+        jest.useRealTimers();
+        jest.resetAllMocks();
     })
 
-    const createStore = (hasUploadPermission = true, getUserCanUpload = jest.fn(), uploading = false, uploadComplete = false, uploadError: any = null, downloadResults?: Partial<DownloadResultsState>, releaseCreated = false, releaseFailed = false, clearStatus = jest.fn()) => {
+    const createStore = (adr: Partial<ADRState> = {userCanUpload: true},
+                         getUserCanUpload = jest.fn(),
+                         adrUploadState: Partial<ADRUploadState> = {},
+                         downloadResults?: Partial<DownloadResultsState>,
+                         clearStatus = jest.fn()) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -46,7 +42,7 @@ describe("Download Results component", () => {
                 },
                 adr: {
                     namespaced: true,
-                    state: mockADRState({userCanUpload: hasUploadPermission}),
+                    state: mockADRState(adr),
                     actions: {
                         getUserCanUpload
                     }
@@ -54,11 +50,7 @@ describe("Download Results component", () => {
                 adrUpload: {
                     namespaced: true,
                     state: mockADRUploadState({
-                        uploading,
-                        uploadComplete,
-                        uploadError,
-                        releaseCreated,
-                        releaseFailed,
+                        ...adrUploadState,
                         currentFileUploading: 1,
                         totalFilesUploading: 2
                     }),
@@ -73,16 +65,7 @@ describe("Download Results component", () => {
                     namespaced: true,
                     state: mockDownloadResultsState(downloadResults),
                     actions: {
-                        prepareSpectrumOutput: mockSpectrumDownloadAction,
-                        prepareSummaryReport: mockSummaryDownloadAction,
-                        prepareCoarseOutput: mockCoarseOutputDownloadAction
-                    }
-                },
-                metadata: {
-                    namespaced: true,
-                    state: mockMetadataState(),
-                    actions: {
-                        getAdrUploadMetadata: mockUploadMetadataAction
+                        prepareOutputs: mockPrepareOutputs
                     }
                 }
             }
@@ -144,20 +127,20 @@ describe("Download Results component", () => {
 
     it("invokes getUserCanUpload on mounted", async () => {
         const mockGetUserCanUpload = jest.fn();
-        const store = createStore(true, mockGetUserCanUpload);
+        const store = createStore({userCanUpload: true}, mockGetUserCanUpload);
         shallowMount(DownloadResults, {store});
         expect(mockGetUserCanUpload.mock.calls.length).toBe(1);
     });
 
     it("does not display upload button when a user does not have permission", async () => {
-        const store = createStore(false);
+        const store = createStore({userCanUpload: false});
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
         const headers = wrapper.findAll("h4");
         expect(headers.length).toBe(3)
     });
 
     it("does not render status messages or error alerts without appropriate states", () => {
-        const store = createStore(true, jest.fn());
+        const store = createStore({userCanUpload: true}, jest.fn());
         const wrapper = shallowMount(DownloadResults, {store, localVue});
 
         expect(wrapper.find("#uploading").exists()).toBe(false);
@@ -166,7 +149,7 @@ describe("Download Results component", () => {
     });
 
     it("renders uploading status messages as expected and disables upload button", () => {
-        const store = createStore(true, jest.fn(), true);
+        const store = createStore({userCanUpload: true}, jest.fn(), {uploading: true});
         const wrapper = shallowMount(DownloadResults, {store, localVue});
 
         const statusMessage = wrapper.find("#uploading");
@@ -180,7 +163,7 @@ describe("Download Results component", () => {
     });
 
     it("renders upload complete and release created status messages as expected", () => {
-        const store = createStore(true, jest.fn(), false, true, null, undefined, true);
+        const store = createStore({userCanUpload: true}, jest.fn(), {uploadComplete: true, releaseCreated: true});
         const wrapper = shallowMount(DownloadResults, {store, localVue});
 
         const statusMessage = wrapper.find("#uploadComplete");
@@ -198,7 +181,7 @@ describe("Download Results component", () => {
     });
 
     it("renders release not created status messages as expected", () => {
-        const store = createStore(true, jest.fn(), false, true, null, undefined, false, true);
+        const store = createStore({userCanUpload: true}, jest.fn(), {uploadComplete: true, releaseFailed: true});
         const wrapper = shallowMount(DownloadResults, {store, localVue});
 
         const statusMessage = wrapper.find("#releaseCreated");
@@ -211,8 +194,8 @@ describe("Download Results component", () => {
     });
 
     it("renders upload error alert as expected", () => {
-        const error = {detail: "there was an error"}
-        const store = createStore(true, jest.fn(), false, false, error);
+        const error = {error: "ERR", detail: "there was an error"}
+        const store = createStore({userCanUpload: true}, jest.fn(), {uploadError: error});
         const wrapper = shallowMount(DownloadResults, {store, localVue});
 
         const errorAlert = wrapper.find("error-alert-stub");
@@ -224,7 +207,7 @@ describe("Download Results component", () => {
     });
 
     it("disables upload button when upload in progress", () => {
-        const store = createStore(true, jest.fn(), true, false);
+        const store = createStore({userCanUpload: true}, jest.fn(), {uploading: true});
         const wrapper = shallowMount(DownloadResults, {store, localVue});
 
         const uploadButton = wrapper.find("button");
@@ -233,7 +216,7 @@ describe("Download Results component", () => {
     });
 
     it("disables download buttons when upload in progress", () => {
-        const store = createStore(true, jest.fn(), true, false);
+        const store = createStore({userCanUpload: true}, jest.fn(), {uploading: true});
         const wrapper = shallowMount(DownloadResults, {store, localVue});
 
         const downloadButtons = wrapper.findAll(Download);
@@ -243,486 +226,133 @@ describe("Download Results component", () => {
         expect(downloadButtons.at(2).props("disabled")).toBe(true)
     });
 
-    it("can download spectrum file when download is complete", () => {
+    it("calls prepareOutputs on mount", () => {
         const store = createStore();
-        const downloadResults = {
-            summary: mockDownloadResultsDependency({
+        shallowMount(DownloadResults, {store});
+        expect(mockPrepareOutputs.mock.calls.length).toBe(1);
+    });
+
+    it("cannot download spectrum output while preparing", async () => {
+        const store = createStore({}, jest.fn(), {}, {
+            spectrum: mockDownloadResultsDependency({
                 preparing: true,
-                complete: false,
-                error: null,
-                downloadId: ""
-            }),
-            coarseOutput: mockDownloadResultsDependency({
-                preparing: true,
-                complete: false,
-                error: null,
-                downloadId: ""
-            }),
+                downloadId: "1"
+            })
+        });
+        const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
+
+        const button = wrapper.find("#spectrum-download").find("button")
+        expect(button.attributes().disabled).toBe("disabled");
+    });
+
+    it("cannot download spectrum output if downloadId does not exist", async () => {
+        const store = createStore();
+        const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
+
+        const button = wrapper.find("#spectrum-download").find("button")
+        expect(button.attributes().disabled).toBe("disabled");
+    });
+
+    it("can download spectrum file once prepared", () => {
+        const store = createStore({}, jest.fn(), {}, {
             spectrum: mockDownloadResultsDependency({
                 preparing: false,
                 complete: true,
                 error: null,
                 downloadId: "123"
             })
-        }
-        downloadFile(store, downloadResults)
-    });
-
-    it("does not call spectrum action when download is already in progress and can add props data to download progress", () => {
-        const store = createStore(
-            false,
-            jest.fn(),
-            false,
-            false,
-            null,
-            {spectrum: mockDownloading} as any);
-
-        doesNotCallAction(store, mockSpectrumDownloadAction, "#spectrum-download")
-    });
-
-    it("can invoke spectrum download action", async () => {
-        const store = createStore();
-        const wrapper = mount(DownloadResults, {
-            store,
-            stubs: ["upload-modal"]
         });
-
-        const button = wrapper.find("#spectrum-download").find("button")
-
-        await button.trigger("click")
-        expect(mockSpectrumDownloadAction.mock.calls.length).toBe(1)
-        expect(mockSpectrumDownloadAction.mock.calls[0][1]).toBeUndefined()
-
-        expect(mockSummaryDownloadAction.mock.calls.length).toBe(0)
-        expect(mockCoarseOutputDownloadAction.mock.calls.length).toBe(0)
-    });
-
-    it("can render error when spectrum download action is unsuccessful", () => {
-        const testError = mockDownloadResultsDependency({
-            preparing: false,
-            complete: false,
-            error: mockError("TEST FAILED"),
-            downloadId: ""
-        });
-
-        const store = createStore(
-            false,
-            jest.fn(),
-            false,
-            false,
-            null,
-            {spectrum: testError} as any);
-
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
-
-        const button = wrapper.find("#spectrum-download").find("button")
-
-        button.trigger("click")
-
-        expect(wrapper.find("#error").text()).toBe( "TEST FAILED")
+        const button = wrapper.find("#spectrum-download").find("button");
+        expect(button.attributes().disabled).toBeUndefined();
+        downloadFile(button);
     });
 
-    it("can stop polling spectrum download when error response", () => {
-        const spectrumDownloadStatus = mockDownloadResultsDependency({
-            preparing: true,
-            complete: false,
-            error: null,
-            downloadId: "1",
-            statusPollId: 123
-        });
-
-        const spectrumTestError = {
+    it("cannot download summary report while preparing", () => {
+        const store = createStore({}, jest.fn(), {}, {
             summary: mockDownloadResultsDependency({
-                preparing: false,
-                complete: false,
-                error: null,
-                downloadId: ""
-            }),
-            coarseOutput: mockDownloadResultsDependency({
-                preparing: false,
-                complete: false,
-                error: null,
-                downloadId: ""
-            }),
-            spectrum: mockDownloadResultsDependency({
-                preparing: false,
-                complete: false,
-                error: mockError("TEST FAILED"),
-                downloadId: "",
-                statusPollId: 123
+                preparing: true,
+                downloadId: "1"
             })
-        }
-
-        const store = createStore(
-            true,
-            jest.fn(),
-            false,
-            false,
-            null,
-            {spectrum: spectrumDownloadStatus} as any);
-
+        });
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
-
-        jest.useFakeTimers()
-        const button = wrapper.find("#spectrum-download").find("button")
-        button.trigger("click")
-        const uploadButton = wrapper.find("#upload").find("button");
-        expect(uploadButton.attributes("disabled")).toBe("disabled");
-
-        wrapper.vm.$store.state.downloadResults = spectrumTestError
-        expect(clearInterval).toHaveBeenCalledTimes(1)
-        expect(wrapper.find("#error").text()).toBe("TEST FAILED")
-    });
-
-    it("can fetch upload metadata when spectrum download action is complete", () => {
-        const testComplete = mockDownloadResultsDependency({
-            preparing: false,
-            complete: true,
-            error: null,
-            downloadId: "123"
-        });
-
-        const store = createStore(
-            false,
-            jest.fn(),
-            false,
-            false,
-            null,
-            {spectrum: testComplete} as any);
-
-        const wrapper = mount(DownloadResults, {
-            store,
-            localVue,
-            stubs: ["upload-modal"]
-        });
-
-        expect(mockUploadMetadataAction.mock.calls[0][1]).toBe("123")
-        expect(wrapper.find(DownloadProgress).find(LoadingSpinner).exists()).toBe(false)
-    });
-
-    it("does not call summary action when download is already in progress and can add props data to download progress", () => {
-        const store = createStore(
-            false,
-            jest.fn(),
-            false,
-            false,
-            null,
-            {summary: mockDownloading} as any);
-
-        doesNotCallAction(store, mockSummaryDownloadAction, "#summary-download")
-    });
-
-    it("can invoke summary download action", async () => {
-        const store = createStore();
-        const wrapper = mount(DownloadResults, {store, stubs:["upload-modal"]});
 
         const button = wrapper.find("#summary-download").find("button")
-
-        await button.trigger("click")
-        expect(mockSummaryDownloadAction.mock.calls.length).toBe(1)
-        expect(mockSummaryDownloadAction.mock.calls[0][1]).toBeUndefined()
+        expect(button.attributes().disabled).toBe("disabled");
     });
 
-    it("can download coarseOutput file when download is complete", () => {
+    it("cannot download summary report if downloadId does not exist", async () => {
         const store = createStore();
-        const downloadResults = {
+        const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
+
+        const button = wrapper.find("#summary-download").find("button")
+        expect(button.attributes().disabled).toBe("disabled");
+    });
+
+    it("can download summary report once prepared", () => {
+        const store = createStore({}, jest.fn(), {}, {
             summary: mockDownloadResultsDependency({
                 preparing: false,
                 complete: true,
                 error: null,
                 downloadId: "123"
-            }),
+            })
+        });
+        const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
+        const button = wrapper.find("#summary-download").find("button");
+        expect(button.attributes().disabled).toBeUndefined();
+        downloadFile(button);
+    });
+
+    it("cannot download coarse output while preparing", () => {
+        const store = createStore({}, jest.fn(), {}, {
             coarseOutput: mockDownloadResultsDependency({
                 preparing: true,
-                complete: false,
-                error: null,
-                downloadId: ""
-            }),
-            spectrum: mockDownloadResultsDependency({
-                preparing: true,
-                complete: false,
-                error: null,
-                downloadId: ""
+                downloadId: "1"
             })
-        }
-        downloadFile(store, downloadResults)
-    });
-
-    it("can render error when summary download action is unsuccessful", () => {
-        const testError = mockDownloadResultsDependency({
-            preparing: false,
-            complete: false,
-            error: mockError("TEST FAILED"),
-            downloadId: ""
         });
-
-        const store = createStore(
-            false,
-            jest.fn(),
-            false,
-            false,
-            null,
-            {summary: testError} as any);
-
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
 
-        const button = wrapper.find("#summary-download").find("button")
-
-        button.trigger("click")
-
-        expect(wrapper.find("#error").text()).toBe( "TEST FAILED")
+        const button = wrapper.find("#coarse-output-download").find("button")
+        expect(button.attributes().disabled).toBe("disabled");
     });
 
-    it("can fetch upload metadata when summary download action is complete", () => {
-        const testComplete = mockDownloadResultsDependency({
-            preparing: false,
-            complete: true,
-            error: null,
-            downloadId: "123"
-        });
-
-        const store = createStore(
-            false,
-            jest.fn(),
-            false,
-            false,
-            null,
-            {summary: testComplete} as any);
-
-        const wrapper = mount(DownloadResults, {
-            store,
-            localVue,
-            stubs: ["upload-modal"]
-        });
-
-        expect(mockUploadMetadataAction.mock.calls[0][1]).toBe("123")
-        expect(wrapper.find(DownloadProgress).find(LoadingSpinner).exists()).toBe(false)
-    });
-
-    it("can stop polling summary download when error response", () => {
-        const summaryDownloadStatus = mockDownloadResultsDependency({
-            preparing: true,
-            complete: false,
-            error: null,
-            downloadId: "1",
-            statusPollId: 123
-        });
-
-        const summaryTestError = {
-            summary: mockDownloadResultsDependency({
-                preparing: false,
-                complete: false,
-                error: mockError("TEST FAILED"),
-                downloadId: "",
-                statusPollId: 123
-            }),
-            coarseOutput: mockDownloadResultsDependency({
-                preparing: false,
-                complete: false,
-                error: null,
-                downloadId: ""
-            }),
-            spectrum: mockDownloadResultsDependency({
-                preparing: false,
-                complete: false,
-                error: null,
-                downloadId: ""
-            })
-        }
-
-        const store = createStore(
-            false,
-            jest.fn(),
-            false,
-            false,
-            null,
-            {summary: summaryDownloadStatus} as any);
-
-        const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
-
-        jest.useFakeTimers()
-        const button = wrapper.find("#summary-download").find("button")
-        button.trigger("click")
-
-        wrapper.vm.$store.state.downloadResults = summaryTestError
-        expect(clearInterval).toHaveBeenCalledTimes(1)
-        expect(wrapper.find("#error").text()).toBe("TEST FAILED")
-    });
-
-    it("can download coarseOutput file when download is complete", () => {
+    it("cannot download coarse output if downloadId does not exist", async () => {
         const store = createStore();
-        const downloadResults = {
-            summary: mockDownloadResultsDependency({
-                preparing: true,
-                complete: false,
-                error: null,
-                downloadId: ""
-            }),
+        const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
+
+        const button = wrapper.find("#coarse-output-download").find("button")
+        expect(button.attributes().disabled).toBe("disabled");
+    });
+
+    it("can download coarseOutput file once prepared", () => {
+        const store = createStore({}, jest.fn(), {}, {
             coarseOutput: mockDownloadResultsDependency({
                 preparing: false,
                 complete: true,
                 error: null,
                 downloadId: "123"
-            }),
-            spectrum: mockDownloadResultsDependency({
-                preparing: true,
-                complete: false,
-                error: null,
-                downloadId: ""
             })
-        }
-        downloadFile(store, downloadResults)
-    });
-
-    it("does not call coarse output action when download is in progress and can add props data to download progress", () => {
-        const store = createStore(
-            false,
-            jest.fn(),
-            false,
-            false,
-            null,
-            {coarseOutput: mockDownloading} as any);
-
-        doesNotCallAction(store, mockCoarseOutputDownloadAction, "#coarse-output-download")
-    });
-
-    it("can invoke coarseOutput download action", async () => {
-        const store = createStore();
-        const wrapper = mount(DownloadResults, {
-            store,
-            stubs: ["upload-modal"]
         });
-
-        const button = wrapper.find("#coarse-output-download").find("button")
-
-        await button.trigger("click")
-        expect(mockCoarseOutputDownloadAction.mock.calls.length).toBe(1)
-        expect(mockCoarseOutputDownloadAction.mock.calls[0][1]).toBeUndefined()
-    });
-
-    it("can render error when coarseOutput download action is unsuccessful", () => {
-        const testError = mockDownloadResultsDependency({
-            preparing: false,
-            complete: false,
-            error: mockError("TEST FAILED"),
-            downloadId: ""
-        });
-
-        const store = createStore(
-            false,
-            jest.fn(),
-            false,
-            false,
-            null,
-            {coarseOutput: testError} as any);
-
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
-        const button = wrapper.find("#coarse-output-download").find("button")
-
-        button.trigger("click")
-        expect(wrapper.find("#error").text()).toBe("TEST FAILED")
-    });
-
-    it("can stop polling coarseOutput download when error response", () => {
-        const coarseDownloadStatus = mockDownloadResultsDependency({
-            preparing: true,
-            complete: false,
-            error: null,
-            downloadId: "1",
-            statusPollId: 123
-        });
-
-        const coarseTestError = {
-            summary: mockDownloadResultsDependency({
-                preparing: false,
-                complete: false,
-                error: null,
-                downloadId: ""
-            }),
-            coarseOutput: mockDownloadResultsDependency({
-                preparing: false,
-                complete: false,
-                error: mockError("TEST FAILED"),
-                downloadId: "",
-                statusPollId: 123
-            }),
-            spectrum: mockDownloadResultsDependency({
-                preparing: false,
-                complete: false,
-                error: null,
-                downloadId: ""
-            })
-        }
-
-        const store = createStore(
-            false,
-            jest.fn(),
-            false,
-            false,
-            null,
-            {coarseOutput: coarseDownloadStatus} as any);
-
-        const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
-
-        jest.useFakeTimers()
-        const button = wrapper.find("#coarse-output-download").find("button")
-        button.trigger("click")
-
-        wrapper.vm.$store.state.downloadResults = coarseTestError
-        expect(clearInterval).toHaveBeenCalledTimes(1)
-        expect(wrapper.find("#error").text()).toBe("TEST FAILED")
+        const button = wrapper.find("#coarse-output-download").find("button");
+        expect(button.attributes().disabled).toBeUndefined();
+        downloadFile(button);
     });
 
     it("calls clear status mutation before mount", () => {
         const spy = jest.fn()
-        const store = createStore(true, jest.fn(), false, false, null, undefined, false, false, spy);
+        const store = createStore({}, jest.fn(), {}, {}, spy);
         shallowMount(DownloadResults, {store});
         expect(spy).toHaveBeenCalledTimes(1)
     });
-
 });
 
-const doesNotCallAction = (store: Store<any>, mockAction = jest.fn(), id: string) => {
-    const wrapper = mount(DownloadResults, {
-        store,
-        localVue,
-        stubs: ["upload-modal"],
-        data() {
-            return {
-                uploadModalOpen: false
-            }
-        }
-    });
-
-    const download = wrapper.find(id)
-    const button = download.find("button")
-    button.trigger("click")
-
-    expect(mockAction.mock.calls.length).toBe(0)
-    expect(download.find(Download).exists()).toBe(true)
-    expect(download.find(DownloadProgress).props())
-        .toEqual({translateKey: "downloading", downloading: true})
-
-    const downloading = download.find(DownloadProgress).find("#downloading")
-    expect(downloading.find(LoadingSpinner).exists()).toBe(true)
-    expectTranslated(downloading,
-        "Downloading...",
-        "Téléchargement...",
-        "Descarregando...", store)
-}
-
-const downloadFile = (store: Store<any>, downloadResultsData: {}) => {
-    mount(DownloadResults, {store, stubs: ["upload-modal"]});
-    jest.useFakeTimers()
-
+const downloadFile = (button: Wrapper<any>) => {
     const realLocation = window.location
     delete window.location;
     window.location = {...window.location, assign: jest.fn()};
-
-    expect(window.location.assign).not.toHaveBeenCalled()
-    store.state.downloadResults = downloadResultsData
-
-    expect(clearInterval).toHaveBeenCalledTimes(1)
+    button.trigger("click");
     expect(window.location.assign).toHaveBeenCalledTimes(1)
     expect(window.location.assign).toHaveBeenCalledWith("/download/result/123")
     window.location = realLocation

@@ -5,7 +5,7 @@ import {
     mockBaselineState,
     mockDownloadResultsState,
     mockError,
-    mockErrorsState,
+    mockErrorsState, mockGenericChartState,
     mockLoadState,
     mockMetadataState,
     mockModelCalibrateState,
@@ -40,11 +40,16 @@ describe("root getters", () => {
         {text: "model run test", locations: ["model_fit"]}
     ]
 
+    const reviewInputsWarnings: Warning[] = [
+        {text: "review input test", locations: ["review_inputs"]}
+    ]
+
     const testState = () => {
         return mockRootState({
             modelOptions: mockModelOptionsState({warnings: modelOptionWarnings}),
             modelRun: mockModelRunState({warnings: modelRunWarnings}),
-            modelCalibrate: mockModelCalibrateState({warnings: calibrateWarnings})
+            modelCalibrate: mockModelCalibrateState({warnings: calibrateWarnings}),
+            genericChart: mockGenericChartState({warnings: reviewInputsWarnings})
         })
     }
 
@@ -287,6 +292,14 @@ describe("root getters", () => {
         expect(result).toEqual(modelRunWarnings)
     })
 
+    it(`can get warnings when on review inputs step`, () => {
+        const rootState = testState()
+
+        const warnings = getters.warnings(rootState, null, testState() as any, null)
+        const result = warnings("reviewInputs").reviewInputs
+        expect(result).toEqual(reviewInputsWarnings)
+    })
+
     it(`can get modelCalibrate warnings when on model calibrate step`, () => {
         const rootState = testState()
 
@@ -335,19 +348,22 @@ describe("root getters", () => {
         const rootState = mockRootState({
             modelOptions: mockModelOptionsState({warnings: undefined}),
             modelRun: mockModelRunState({warnings: undefined}),
-            modelCalibrate: mockModelCalibrateState({warnings: undefined})
+            modelCalibrate: mockModelCalibrateState({warnings: undefined}),
+            genericChart: mockGenericChartState({warnings: undefined})
         });
         const warnings = getters.warnings(rootState, null, rootState, null);
         const expected = {
             modelOptions: [],
             modelRun: [],
-            modelCalibrate: []
+            modelCalibrate: [],
+            reviewInputs: []
         };
         expect(warnings("modelOptions")).toStrictEqual(expected);
         expect(warnings("fitModel")).toStrictEqual(expected);
         expect(warnings("calibrateModel")).toStrictEqual(expected);
         expect(warnings("reviewOutput")).toStrictEqual(expected);
         expect(warnings("downloadResults")).toStrictEqual(expected);
+        expect(warnings("reviewInputs")).toStrictEqual(expected);
     });
 
 })

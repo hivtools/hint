@@ -1,13 +1,14 @@
-import {Dict, GenericChartDataset, GenericChartMetadataResponse} from "../../types";
+import {GenericChartDataset, GenericChartMetadataResponse} from "../../types";
 import {Module} from "vuex";
-import {RootState} from "../../root";
 import {actions} from "./actions";
 import {mutations} from "./mutations";
 import {DataExplorationState} from "../dataExploration/dataExploration";
+import {WarningsState} from "../../root";
 
-export interface GenericChartState {
+export interface GenericChartState extends WarningsState{
     genericChartMetadata: GenericChartMetadataResponse | null
     datasets: Record<string, GenericChartDataset>
+    selectionDatasetId: string
     genericChartError: Error | null
 }
 
@@ -15,7 +16,9 @@ export const initialGenericChartState = (): GenericChartState => {
     return {
         genericChartMetadata: null,
         datasets: {},
-        genericChartError: null
+        genericChartError: null,
+        selectionDatasetId: "",
+        warnings: []
     }
 };
 

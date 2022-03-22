@@ -183,6 +183,7 @@ export interface Translations {
     period: string,
     PJNZ: string,
     population: string,
+    preparing: string,
     previousPage: string,
     project: string,
     projectDescription: string,
@@ -275,6 +276,7 @@ export interface Translations {
     warningsHeaderModelOptions: string,
     warningsHeaderModelRun: string,
     warningsHeaderModelCalibrate: string,
+    warningsHeaderReviewInputs: string,
     xAxis: string,
     year: string
 }
@@ -488,6 +490,7 @@ const en: Translations = {
     period: "Period",
     PJNZ: "Spectrum file",
     population: "Population",
+    preparing: "Preparing files...",
     previousPage: "Previous page",
     project: "Project",
     projectDescription: "Your work is organised into projects. Each project contains its own data and settings.",
@@ -588,6 +591,7 @@ const en: Translations = {
     warningsHeaderModelOptions: "Model option validation raised the following warning(s)",
     warningsHeaderModelRun: "Model fit raised the following warning(s)",
     warningsHeaderModelCalibrate: "Model calibration raised the following warning(s)",
+    warningsHeaderReviewInputs: "Review inputs raised the following warning(s)",
     xAxis: "X Axis",
     year: "Year"
 };
@@ -798,6 +802,7 @@ const fr: Partial<Translations> = {
     period: "Période",
     PJNZ: "Fichier Spectrum",
     population: "Population",
+    preparing: "Préparer les fichiers...",
     previousPage: "Page précédente",
     projectsHeaderCreate: "Créer un nouveau projet",
     projectsHeaderReturn: "retour au projet actuel",
@@ -897,6 +902,7 @@ const fr: Partial<Translations> = {
     warningsHeaderModelOptions: "La validation de l'option de modèle a généré le(s) avertissement(s) suivant(s)",
     warningsHeaderModelRun: "L'ajustement du modèle a soulevé le(s) avertissement(s) suivant(s)",
     warningsHeaderModelCalibrate: "L'étalonnage du modèle a déclenché le(s) avertissement(s) suivant(s)",
+    warningsHeaderReviewInputs: "L'examen des entrées a généré le ou le(s) avertissements suivant(s)",
     xAxis: "Axe X",
     year: "An"
 };
@@ -1107,6 +1113,7 @@ const pt: Partial<Translations> = {
     period: "Período",
     PJNZ: "Ficheiro Spectrum",
     population: "População",
+    preparing: "Preparando arquivos",
     previousPage: "Página anterior",
     project: "Projeto",
     projectDescription: "O seu trabalho está organizado em projetos. Cada projeto contém os seus próprios dados e definições.",
@@ -1205,6 +1212,7 @@ const pt: Partial<Translations> = {
     warningsHeaderModelOptions: "A validação da opção de modelo gerou o (s) seguinte (s) aviso (s)",
     warningsHeaderModelRun: "O ajuste do modelo gerou o seguinte aviso (s)",
     warningsHeaderModelCalibrate: "A calibração do modelo gerou o (s) seguinte (s) aviso (s)",
+    warningsHeaderReviewInputs: "As entradas de revisão geraram o (s) seguintes aviso (s)",
     xAxis: "Eixo X",
     year: "Ano"
 };

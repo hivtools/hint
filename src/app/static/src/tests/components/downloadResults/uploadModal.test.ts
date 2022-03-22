@@ -7,14 +7,14 @@ import {
     mockADRUploadState,
     mockBaselineState,
     mockDatasetResource, mockDownloadResultsDependency,
-    mockDownloadResultsState, mockError, mockMetadataState
+    mockDownloadResultsState
 } from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
 import Vue from 'vue';
-import { Dict } from "../../../app/types";
+import {Dict} from "../../../app/types";
 import {Language} from "../../../app/store/translations/locales";
-import DownloadProgress from "../../../app/components/downloadResults/DownloadProgress.vue"
+import DownloadStatus from "../../../app/components/downloadResults/DownloadStatus.vue"
 import {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";
 
 describe(`uploadModal `, () => {
@@ -80,33 +80,13 @@ describe(`uploadModal `, () => {
     }
 
     const mockDownloadResults = {
-        summary: mockDownloadResultsDependency({complete: false, preparing: false }),
+        summary: mockDownloadResultsDependency({complete: false, preparing: false}),
         spectrum: mockDownloadResultsDependency({complete: false, preparing: false})
     } as any
 
-    const failedDownloadResults = {
-        summary: mockDownloadResultsDependency({
-            preparing: false,
-            complete: false,
-            error: null,
-            downloadId: "",
-            statusPollId: 123
-        }),
-        spectrum: mockDownloadResultsDependency({
-            preparing: false,
-            complete: false,
-            error: mockError("TEST FAILED"),
-            downloadId: "",
-            statusPollId: 123
-        })
-    }
-
-    const mockSpectrumDownload = jest.fn();
-    const mockSummaryDownload = jest.fn();
     const mockUploadFilesToADR = jest.fn();
-    const mockUploadMetadataAction = jest.fn();
 
-    const createStore = (data: Dict<any> = fakeMetadata, downloadResults : Partial<DownloadResultsState> = mockDownloadResults) => {
+    const createStore = (data: Dict<any> = fakeMetadata, downloadResults: Partial<DownloadResultsState> = mockDownloadResults) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -145,18 +125,7 @@ describe(`uploadModal `, () => {
                 },
                 downloadResults: {
                     namespaced: true,
-                    state: mockDownloadResultsState(downloadResults),
-                    actions: {
-                        downloadSpectrum: mockSpectrumDownload,
-                        downloadSummary: mockSummaryDownload
-                    }
-                },
-                metadata: {
-                    namespaced: true,
-                    state: mockMetadataState(),
-                    actions: {
-                        getAdrUploadMetadata: mockUploadMetadataAction
-                    }
+                    state: mockDownloadResultsState(downloadResults)
                 }
             }
         });
@@ -249,13 +218,13 @@ describe(`uploadModal `, () => {
         const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(3)
 
-        const input1 =  inputs.at(0).element as HTMLInputElement
+        const input1 = inputs.at(0).element as HTMLInputElement
         expect(input1.checked).toBe(true)
 
-        const input2 =  inputs.at(1).element as HTMLInputElement
+        const input2 = inputs.at(1).element as HTMLInputElement
         expect(input2.checked).toBe(true)
 
-        const input3 =  inputs.at(2).element as HTMLInputElement
+        const input3 = inputs.at(2).element as HTMLInputElement
         expect(input3.checked).toBe(true)
     })
 
@@ -283,11 +252,11 @@ describe(`uploadModal `, () => {
         inputs.at(0).setChecked(false)
         inputs.at(1).setChecked(false)
         inputs.at(2).setChecked(false)
-        const input1 =  inputs.at(0).element as HTMLInputElement
+        const input1 = inputs.at(0).element as HTMLInputElement
         expect(input1.checked).toBe(false)
-        const input2 =  inputs.at(1).element as HTMLInputElement
+        const input2 = inputs.at(1).element as HTMLInputElement
         expect(input2.checked).toBe(false)
-        const input3 =  inputs.at(2).element as HTMLInputElement
+        const input3 = inputs.at(2).element as HTMLInputElement
         expect(input3.checked).toBe(false)
         const radialInput2 = wrapper.find("#createRelease")
         await radialInput2.trigger("click")
@@ -310,28 +279,19 @@ describe(`uploadModal `, () => {
     it(`can send upload files to ADR when download status is complete`, async () => {
         const downloadResults = {
             summary: mockDownloadResultsDependency({complete: true, preparing: false}),
-            spectrum: mockDownloadResultsDependency({complete: true, preparing: false}),
-            coarseOutput: mockDownloadResultsDependency()
+            spectrum: mockDownloadResultsDependency({complete: true, preparing: false})
         }
-        const store = createStore()
+        const store = createStore(fakeMetadata, downloadResults)
         const wrapper = mount(UploadModal, {store})
 
         await wrapper.setProps({open: true})
         const modal = wrapper.find(".modal");
         expect(modal.classes()).toContain("show");
 
-        //Refresh adrUpload upload files to trigger watch, which populates uploadFilesToADR
-        store.state.adrUpload.uploadFiles= {...fakeMetadata};
-
-        //Click ok to trigger population of uploadFilesPayload
         const okBtn = modal.find("button.btn-red");
-        expect(okBtn.element)
+        expect(okBtn.attributes().disabled).toBeUndefined();
         await okBtn.trigger("click");
-
-        store.state.downloadResults = downloadResults
-        await Vue.nextTick()
-        expect(mockUploadFilesToADR.mock.calls.length).toBe(2)
-        expect(mockUploadMetadataAction.mock.calls.length).toBe(2)
+        expect(mockUploadFilesToADR.mock.calls.length).toBe(1);
     });
 
     it(`can set createRelease and upload files in uploadFilesToAdrAction`, async () => {
@@ -344,15 +304,15 @@ describe(`uploadModal `, () => {
         const wrapper = mount(UploadModal, {store})
 
         const modal = wrapper.find(".modal");
-        store.state.adrUpload.uploadFiles= {...metadataWithInput};
+        store.state.adrUpload.uploadFiles = {...metadataWithInput};
         const okBtn = modal.find("button.btn-red");
         await okBtn.trigger("click");
 
         await Vue.nextTick()
         expect(wrapper.vm.$data.choiceUpload).toBe("createRelease")
         expect(mockUploadFilesToADR.mock.calls.length).toBe(1)
-        const num = mockUploadFilesToADR.mock.calls[0].length -2
-        expect(mockUploadFilesToADR.mock.calls[0][num]["uploadFiles"]).toStrictEqual([fakeMetadata["outputZip"],fakeMetadata["outputSummary"], metadataWithInput["population"]])
+        const num = mockUploadFilesToADR.mock.calls[0].length - 2
+        expect(mockUploadFilesToADR.mock.calls[0][num]["uploadFiles"]).toStrictEqual([fakeMetadata["outputZip"], fakeMetadata["outputSummary"], metadataWithInput["population"]])
         expect(mockUploadFilesToADR.mock.calls[0][num]["createRelease"]).toBe(true)
     });
 
@@ -366,7 +326,7 @@ describe(`uploadModal `, () => {
         const wrapper = mount(UploadModal, {store})
 
         const modal = wrapper.find(".modal");
-        store.state.adrUpload.uploadFiles= {...metadataWithInput};
+        store.state.adrUpload.uploadFiles = {...metadataWithInput};
         const radialInput = wrapper.find("#uploadFiles")
         await radialInput.trigger("click")
         const okBtn = modal.find("button.btn-red");
@@ -375,8 +335,8 @@ describe(`uploadModal `, () => {
         await Vue.nextTick()
         expect(wrapper.vm.$data.choiceUpload).toBe("uploadFiles")
         expect(mockUploadFilesToADR.mock.calls.length).toBe(1)
-        const num = mockUploadFilesToADR.mock.calls[0].length -2
-        expect(mockUploadFilesToADR.mock.calls[0][num]["uploadFiles"]).toStrictEqual([fakeMetadata["outputZip"],fakeMetadata["outputSummary"], metadataWithInput["population"]])
+        const num = mockUploadFilesToADR.mock.calls[0].length - 2
+        expect(mockUploadFilesToADR.mock.calls[0][num]["uploadFiles"]).toStrictEqual([fakeMetadata["outputZip"], fakeMetadata["outputSummary"], metadataWithInput["population"]])
         expect(mockUploadFilesToADR.mock.calls[0][num]["createRelease"]).toBe(false)
     });
 
@@ -390,7 +350,7 @@ describe(`uploadModal `, () => {
         const wrapper = mount(UploadModal, {store})
 
         const modal = wrapper.find(".modal");
-        store.state.adrUpload.uploadFiles= {...metadataWithInput};
+        store.state.adrUpload.uploadFiles = {...metadataWithInput};
         const radialInput = wrapper.find("#uploadFiles")
         await radialInput.trigger("click")
 
@@ -403,7 +363,7 @@ describe(`uploadModal `, () => {
         await Vue.nextTick()
         expect(wrapper.vm.$data.choiceUpload).toBe("uploadFiles")
         expect(mockUploadFilesToADR.mock.calls.length).toBe(1)
-        const num = mockUploadFilesToADR.mock.calls[0].length -2
+        const num = mockUploadFilesToADR.mock.calls[0].length - 2
         expect(mockUploadFilesToADR.mock.calls[0][num]["uploadFiles"]).toStrictEqual([fakeMetadata["outputZip"]])
         expect(mockUploadFilesToADR.mock.calls[0][num]["createRelease"]).toBe(false)
     });
@@ -427,126 +387,6 @@ describe(`uploadModal `, () => {
         expect(okBtn.text()).toBe("OK")
         await okBtn.trigger("click")
         expect(wrapper.emitted("close").length).toBe(1)
-    });
-
-    it(`ok button is enabled when inputs are set and does not trigger close modal when downloading files`, async () => {
-        const downloadResults = {
-            summary: mockDownloadResultsDependency({preparing: true}),
-            spectrum: mockDownloadResultsDependency({preparing: true})
-        }
-        const store = createStore(fakeMetadata, downloadResults)
-        const wrapper = mount(UploadModal, {store})
-
-        const radialInput = wrapper.find("#uploadFiles")
-        await radialInput.trigger("click")
-
-        const okBtn = wrapper.find("button");
-        expect(okBtn.attributes("disabled")).toBe("disabled");
-
-        const inputs = wrapper.findAll("input[type='checkbox']")
-        expect(inputs.length).toBe(2)
-        expect(okBtn.text()).toBe("OK")
-
-        expect(wrapper.find(DownloadProgress).props())
-            .toEqual({"downloading": true, "translateKey": "downloadProgressForADR"})
-        expectTranslated(wrapper.find(DownloadProgress),
-            "Preparing file(s) for upload...",
-            "Préparer le(s) fichier(s) pour le téléchargement...",
-            "Preparando arquivo(s) para upload...", store)
-        expect(wrapper.emitted("close")).toBeUndefined()
-    });
-
-    it("can invoke summary and spectrum download action", async () => {
-        const store = createStore();
-        const wrapper = mount(UploadModal, {store})
-        const radialInput = wrapper.find("#uploadFiles")
-        await radialInput.trigger("click")
-
-        const okBtn = wrapper.find("button");
-
-        const inputs = wrapper.findAll("input[type='checkbox']")
-        expect(inputs.length).toBe(2)
-
-        expect(okBtn.attributes("disabled")).toBeUndefined();
-        expect(okBtn.text()).toBe("OK")
-        await okBtn.trigger("click")
-
-        expect(mockSummaryDownload.mock.calls.length).toBe(1)
-        expect(mockSpectrumDownload.mock.calls.length).toBe(1)
-    });
-
-    it("can clear timer when download action is complete", async () => {
-        const store = createStore({outputZip: fakeMetadata.outputZip}, {
-            summary: mockDownloadResultsDependency({complete: false}),
-            spectrum: mockDownloadResultsDependency({complete: false})
-        });
-        const wrapper = mount(UploadModal, {store})
-
-
-        //Click ok to trigger population of uploadFilesPayload
-        const okBtn = wrapper.find(".modal button.btn-red");
-        expect(okBtn.element)
-        await okBtn.trigger("click");
-
-        wrapper.vm.$store.state.downloadResults.spectrum.complete = true;
-        await Vue.nextTick()
-
-        expect(clearInterval).toHaveBeenCalledTimes(1)
-        expect(mockUploadFilesToADR.mock.calls.length).toBe(1)
-        expect(wrapper.emitted().close.length).toBe(1)
-    });
-
-    it("can clear timer when any download action fails and does not send files to adr", async () => {
-        const store = createStore();
-        const wrapper = mount(UploadModal, {store})
-
-        wrapper.vm.$store.state.downloadResults = failedDownloadResults
-        await Vue.nextTick()
-
-        expect(clearInterval).toHaveBeenCalledTimes(1)
-        expect(wrapper.emitted().close).toBeUndefined()
-    });
-
-    it("can invoke spectrum download action", async () => {
-        const store = createStore();
-        const wrapper = mount(UploadModal, {store})
-
-        const radialInput = wrapper.find("#uploadFiles")
-        await radialInput.trigger("click")
-
-        const okBtn = wrapper.find("button");
-
-        const inputs = wrapper.findAll("input[type='checkbox']")
-        expect(inputs.length).toBe(2)
-        inputs.at(1).setChecked(false)
-
-        expect(okBtn.attributes("disabled")).toBeUndefined();
-        expect(okBtn.text()).toBe("OK")
-        await okBtn.trigger("click")
-
-        expect(mockSummaryDownload.mock.calls.length).toBe(0)
-        expect(mockSpectrumDownload.mock.calls.length).toBe(1)
-    });
-
-    it("can invoke summary download action", async () => {
-        const store = createStore();
-        const wrapper = mount(UploadModal, {store})
-
-        const radialInput = wrapper.find("#uploadFiles")
-        await radialInput.trigger("click")
-
-        const okBtn = wrapper.find("button");
-
-        const inputs = wrapper.findAll("input[type='checkbox']")
-        expect(inputs.length).toBe(2)
-        inputs.at(0).setChecked(false)
-
-        expect(okBtn.attributes("disabled")).toBeUndefined();
-        expect(okBtn.text()).toBe("OK")
-        await okBtn.trigger("click")
-
-        expect(mockSummaryDownload.mock.calls.length).toBe(1)
-        expect(mockSpectrumDownload.mock.calls.length).toBe(0)
     });
 
     it("does not render file section header when no input files", () => {
@@ -583,62 +423,21 @@ describe(`uploadModal `, () => {
         expect(labels.at(2).attributes("for")).toBe("id-1-0");
     });
 
-    it(`ok and cancel buttons are disabled when upload to ADR is in progress`, async () => {
-        const downloadResults = {
-            summary: mockDownloadResultsDependency({preparing: false}),
-            spectrum: mockDownloadResultsDependency({preparing: true})
-        }
-        const wrapper = mount(UploadModal,
-            {
-                store: createStore(fakeMetadata, downloadResults),
-                data() {
-                    return {
-                        uploadFilesToAdr: ["outputZip", "outputSummary"]
-                    }
-                }
-            })
+    it(`ok button is disabled if there are no uploadable files`, async () => {
+        const wrapper = mount(UploadModal, {store: createStore({})})
 
         const btn = wrapper.findAll("button");
         expect(btn.at(0).attributes("disabled")).toBe("disabled");
-        expect(btn.at(1).attributes("disabled")).toBe("disabled");
     });
 
-    it(`ok and cancel buttons are enabled when upload to Download/ADR is not in progress`, async () => {
+    it(`ok button is enabled when there are uploadable files`, async () => {
         const wrapper = mount(UploadModal,
             {
-                store: createStore(fakeMetadata),
-                data() {
-                    return {
-                        uploadFilesToAdr: ["outputZip", "outputSummary"]
-                    }
-                }
+                store: createStore(fakeMetadata)
             })
 
         const btn = wrapper.findAll("button");
         expect(btn.at(0).attributes("disabled")).toBeUndefined();
-        expect(btn.at(1).attributes("disabled")).toBeUndefined();
     });
 
-    it(`does not multiply files when ok button is triggered twice when uploading to ADR`, async () => {
-        const wrapper = mount(UploadModal,
-            {
-                store: createStore(fakeMetadata),
-                data() {
-                    return {
-                        uploadFilesToAdr: ["outputZip", "outputSummary"]
-                    }
-                }
-            })
-
-        const btn = wrapper.findAll("button");
-
-        expect(wrapper.vm.$data.selectedUploadFiles.length).toBe(0)
-
-        expect(btn.at(0).text()).toBe("OK")
-        await btn.at(0).trigger("click")
-        expect(wrapper.vm.$data.selectedUploadFiles.length).toBe(2)
-
-        await btn.at(0).trigger("click")
-        expect(wrapper.vm.$data.selectedUploadFiles.length).toBe(2)
-    });
 })

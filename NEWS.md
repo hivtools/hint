@@ -1,3 +1,15 @@
+# hint 1.94.0
+
+* Display warnings on review-inputs
+
+# hint 1.93.0
+
+* Improved user experience when downloading results
+
+# hint 1.92.2
+
+* Fix order of nested x-axis disaggregate options in barchart
+
 # hint 1.92.1
 
 * Handle resource with missing download gracefully

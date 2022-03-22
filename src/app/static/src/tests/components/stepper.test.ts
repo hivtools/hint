@@ -13,7 +13,7 @@ import {
     mockShapeResponse, mockStepperState,
     mockSurveyAndProgramState,
     mockValidateBaselineResponse,
-    mockProjectsState, mockModelCalibrateState, mockADRState, mockSurveyResponse
+    mockProjectsState, mockModelCalibrateState, mockADRState, mockSurveyResponse, mockGenericChartState
 
 } from "../mocks";
 import {SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
@@ -51,6 +51,8 @@ import WarningAlert from "../../app/components/WarningAlert.vue";
 import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
 import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {ModelRunMutation} from "../../app/store/modelRun/mutations";
+import {GenericChartState} from "../../app/store/genericChart/genericChart";
+import {GenericChartMutation} from "../../app/store/genericChart/mutations";
 
 const localVue = createLocalVue();
 
@@ -58,7 +60,8 @@ describe("Stepper component", () => {
 
     const clearOptionsWarnings = jest.fn(); 
     const clearCalibrateWarnings = jest.fn(); 
-    const clearRunWarnings = jest.fn(); 
+    const clearRunWarnings = jest.fn();
+    const clearReviewInputsWarnings = jest.fn();
 
     const createSut = (baselineState?: Partial<BaselineState>,
                        surveyAndProgramState?: Partial<SurveyAndProgramState>,
@@ -70,7 +73,8 @@ describe("Stepper component", () => {
                        mockRouterPush = jest.fn(),
                        partialRootState: Partial<RootState> = {},
                        modelOptionsState: Partial<ModelOptionsState> = {},
-                       modelCalibrateState: Partial<ModelCalibrateState> = {}) => {
+                       modelCalibrateState: Partial<ModelCalibrateState> = {},
+                       genericChartState: Partial<GenericChartState> = {}) => {
 
         const store = new Vuex.Store({
             actions: rootActions,
@@ -125,6 +129,13 @@ describe("Stepper component", () => {
                         [ModelCalibrateMutation.ClearWarnings]: clearCalibrateWarnings
                     }
                 },
+                genericChart: {
+                    namespaced: true,
+                    state: mockGenericChartState(genericChartState),
+                    mutations: {
+                        [GenericChartMutation.ClearWarnings]: clearReviewInputsWarnings
+                    }
+                },
                 stepper: {
                     namespaced: true,
                     state: mockStepperState(stepperState),
@@ -169,14 +180,16 @@ describe("Stepper component", () => {
                        mockRouterPush = jest.fn(),
                        partialRootState: Partial<RootState> = {},
                        modelOptionsState: Partial<ModelOptionsState> = {},
-                       modelCalibrateState: Partial<ModelCalibrateState> = {}) => {
+                       modelCalibrateState: Partial<ModelCalibrateState> = {},
+                       genericChartState: Partial<GenericChartState> = {}) => {
         return createSut(
             {...baselineState, ready: true},
             {...surveyAndProgramState, ready: true},
             metadataState,
             {...modelRunState, ready: true},
             stepperState, loadState, projectsState, mockRouterPush, partialRootState, modelOptionsState,
-            {...modelCalibrateState, ready: true}
+            {...modelCalibrateState, ready: true},
+            genericChartState
         );
     };
 
@@ -827,7 +840,8 @@ describe("Stepper component", () => {
                 text: "Model Run warning",
                 locations: ["model_fit"]
             }],
-            modelCalibrate: []
+            modelCalibrate: [],
+            reviewInputs: []
         });
         //Expect warnings component to be at top, immediately before content div, not at bottom immediately after content
         expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(true);
@@ -870,11 +884,57 @@ describe("Stepper component", () => {
                 locations: ["model_options", "model_fit"],
             }],
             modelRun: [],
-            modelCalibrate: []
+            modelCalibrate: [],
+            reviewInputs: []
         });
         //Expect warnings component to be at bottom, immediately after content div, not at top immediately before content
         expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(false);
         expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(true);
+    });
+
+    it("renders warning alert for review inputs", () => {
+        const wrapper = createReadySut(
+            {
+                validatedConsistent: true,
+                country: "TEST",
+                iso3: "TES",
+                shape: ["TEST SHAPE"] as any,
+                population: ["TEST POP"] as any
+            },
+            {
+                survey: ["TEST SURVEY"] as any
+            },
+            {plottingMetadata: ["TEST METADATA"] as any},
+            {},
+            {activeStep: 2},
+            {},
+            {},
+            jest.fn(),
+            {},
+            {},
+            {},
+            {
+                warnings: [{
+                    text: "review Inputs warning",
+                    locations: ["review_inputs"]
+                }]
+            }
+        );
+        expect(wrapper.findAll(WarningAlert).length).toBe(1)
+        const warnings = wrapper.find(WarningAlert).props("warnings");
+
+        expect(warnings).toStrictEqual({
+            modelOptions: [],
+            modelRun: [],
+            modelCalibrate: [],
+            reviewInputs: [{
+                text: "review Inputs warning",
+                locations: ["review_inputs"]
+            }]
+        });
+        //Expect warnings component to be at top, immediately before content div, not at bottom immediately after content
+        expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(true);
+        expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(false);
     });
 
     it("clear-warnings emit when in modelOptions triggers clear warnings mutation in modelOptions store", async () => {
@@ -899,6 +959,12 @@ describe("Stepper component", () => {
         const wrapper = createWarningAlertWrapper(6)
         await wrapper.find(WarningAlert).vm.$emit("clear-warnings")
         expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
+    });
+
+    it("clear-warnings emit when in reviewInputs triggers clear warnings mutation in genericChart store", async () => {
+        const wrapper = createWarningAlertWrapper(2)
+        await wrapper.find(WarningAlert).vm.$emit("clear-warnings")
+        expect(clearReviewInputsWarnings.mock.calls.length).toBe(1);
     });
 
     it("clear-warnings emit when in downloadResults triggers clear warnings mutation in modelCalibrate store", async () => {
