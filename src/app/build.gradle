@@ -33,6 +33,8 @@ dependencies {
     implementation "org.apache.tomcat.embed:tomcat-embed-el:${tomcatVersion}"
     implementation "org.apache.tomcat.embed:tomcat-embed-websocket:${tomcatVersion}"
     implementation "org.apache.tomcat:tomcat-annotations-api:${tomcatVersion}"
+    implementation 'org.slf4j:slf4j-api:2.0.0-alpha7'
+    runtime 'org.slf4j:slf4j-simple:2.0.0-alpha7'
 
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
