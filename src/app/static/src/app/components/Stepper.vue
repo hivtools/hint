@@ -73,6 +73,7 @@
     import {ModelRunMutation} from "../store/modelRun/mutations";
     import {ModelOptionsMutation} from "../store/modelOptions/mutations";
     import {ModelCalibrateMutation} from "../store/modelCalibrate/mutations";
+    import {GenericChartMutation} from "../store/genericChart/mutations";
 
     interface ComputedState {
         activeStep: number,
@@ -160,6 +161,7 @@
             },
             clearWarnings(){
                 const mutationMethods: { [key: number]: () => void; } = {
+                    2: this.clearReviewInputsWarnings,
                     3: this.clearModelOptionsWarnings,
                     4: this.clearModelRunWarnings,
                     5: this.clearModelCalibrateWarnings,
@@ -172,7 +174,8 @@
             },
             clearModelRunWarnings: mapMutationByName("modelRun", ModelRunMutation.ClearWarnings),
             clearModelCalibrateWarnings: mapMutationByName("modelCalibrate", ModelCalibrateMutation.ClearWarnings),
-            clearModelOptionsWarnings: mapMutationByName("modelOptions", ModelOptionsMutation.ClearWarnings)
+            clearModelOptionsWarnings: mapMutationByName("modelOptions", ModelOptionsMutation.ClearWarnings),
+            clearReviewInputsWarnings: mapMutationByName("genericChart", GenericChartMutation.ClearWarnings)
         },
         created() {
             //redirect to Projects if logged in with no currentProject

@@ -1,3 +1,7 @@
+# hint 1.94.0
+
+* Display warnings on review-inputs
+
 # hint 1.93.0
 
 * Improved user experience when downloading results
