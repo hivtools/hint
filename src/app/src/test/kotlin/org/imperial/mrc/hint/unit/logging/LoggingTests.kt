@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test
 class LoggingTests
 {
     private val testLogData = LogMetadata(
-        emptyMap(),
         "testUser",
         AppOrigin("hint", "backend"),
         Request(
@@ -32,13 +31,12 @@ class LoggingTests
     @Test
     fun `can display error logging in key value format`()
     {
-        val sut = Logger(mockLogger)
+        val sut = GenericLoggerImpl(mockLogger)
         sut.error(testLogData)
 
         verify(mockLogger).error(objectMapper.writeValueAsString(testLogData),
             StructuredArguments.kv("Username", testLogData.username),
             StructuredArguments.kv("App", testLogData.app),
-            StructuredArguments.kv("Project", testLogData.project),
             StructuredArguments.kv("Request", testLogData.request),
             StructuredArguments.kv("Response", testLogData.response),
             StructuredArguments.kv("Error", testLogData.error),
@@ -50,13 +48,12 @@ class LoggingTests
     @Test
     fun `can display info logging in key value format`()
     {
-        val sut = Logger(mockLogger)
+        val sut = GenericLoggerImpl(mockLogger)
         sut.info(testLogData)
 
         verify(mockLogger).info(objectMapper.writeValueAsString(testLogData),
             StructuredArguments.kv("Username", testLogData.username),
             StructuredArguments.kv("App", testLogData.app),
-            StructuredArguments.kv("Project", testLogData.project),
             StructuredArguments.kv("Request", testLogData.request),
             StructuredArguments.kv("Response", testLogData.response),
             StructuredArguments.kv("Error", testLogData.error),

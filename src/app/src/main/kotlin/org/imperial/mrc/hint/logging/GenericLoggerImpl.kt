@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import net.logstash.logback.argument.StructuredArguments
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.config.ConfigurableBeanFactory
+import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
-import java.lang.invoke.MethodHandles
 
 @Component
-class Logger(private val logger: Logger = LoggerFactory.getLogger(MethodHandles.lookup().javaClass)): GenericLogger
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+class GenericLoggerImpl(private val logger: Logger = LoggerFactory.getLogger(GenericLoggerImpl::class.java)): GenericLogger
 {
     private val objectMapper: ObjectMapper = ObjectMapper()
 
@@ -17,7 +19,6 @@ class Logger(private val logger: Logger = LoggerFactory.getLogger(MethodHandles.
         logger.info(objectMapper.writeValueAsString(log),
             StructuredArguments.kv("Username", log.username),
             StructuredArguments.kv("App", log.app),
-            StructuredArguments.kv("Project", log.project),
             StructuredArguments.kv("Request", log.request),
             StructuredArguments.kv("Response", log.response),
             StructuredArguments.kv("Error", log.error),
@@ -31,7 +32,6 @@ class Logger(private val logger: Logger = LoggerFactory.getLogger(MethodHandles.
         logger.error(objectMapper.writeValueAsString(log),
             StructuredArguments.kv("Username", log.username),
             StructuredArguments.kv("App", log.app),
-            StructuredArguments.kv("Project", log.project),
             StructuredArguments.kv("Request", log.request),
             StructuredArguments.kv("Response", log.response),
             StructuredArguments.kv("Error", log.error),

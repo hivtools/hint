@@ -33,7 +33,6 @@ data class Response(val message: String? = null, val status: String? = null)
 data class ErrorMessage(val error: String? = null, val details: String? = null)
 
 data class LogMetadata(
-        val project: Map<String, Any>? = emptyMap(),
         val username: String? = null,
         val app: AppOrigin? = AppOrigin(),
         val request: Request? = null,

@@ -52,7 +52,6 @@ class ProjectsControllerTests
     }
 
     private val testLogData = LogMetadata(
-        emptyMap(),
         "testUser",
         AppOrigin("hint", "backend"),
         Request(
@@ -67,7 +66,7 @@ class ProjectsControllerTests
         emptyList()
     )
 
-    private val mockLogger = mock<Logger>()
+    private val mockLogger = mock<GenericLoggerImpl>()
 
     private val mockVersion = Version("testVersion", "createdTime", "updatedTime", 1, "version notes")
 
