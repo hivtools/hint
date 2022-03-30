@@ -3,9 +3,8 @@ package org.imperial.mrc.hint.logging
 import javax.servlet.http.HttpServletRequest
 
 data class Client(
-        val username: String? = null,
         val agent: String? = null,
-        val geoip: String? = null,
+        val geoIp: String? = null,
         val sessionId: String? = null
 )
 
@@ -21,11 +20,11 @@ data class Request(
         val client: Client
 )
 {
-        constructor(request: HttpServletRequest, userId: String) : this(
+        constructor(request: HttpServletRequest) : this(
                 request.method,
                 request.servletPath,
                 request.serverName,
-                Client(userId, request.getHeader("User-Agent"), request.remoteAddr, request.session.id)
+                Client(request.getHeader("User-Agent"), request.remoteAddr, request.session.id)
         )
 }
 
@@ -34,6 +33,8 @@ data class Response(val message: String? = null, val status: String? = null)
 data class ErrorMessage(val error: String? = null, val details: String? = null)
 
 data class LogMetadata(
+        val project: Map<String, Any>? = emptyMap(),
+        val username: String? = null,
         val app: AppOrigin? = AppOrigin(),
         val request: Request? = null,
         val response: Response? = null,

@@ -3,7 +3,8 @@ package org.imperial.mrc.hint.logging
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-interface GenericLogger<T>
+interface GenericLogger
 {
-    fun <T> T.logger(): Logger = LoggerFactory.getLogger(javaClass)
+    fun info(log: LogMetadata)
+    fun error(log: LogMetadata)
 }

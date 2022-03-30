@@ -1,22 +1,42 @@
 package org.imperial.mrc.hint.logging
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import net.logstash.logback.argument.StructuredArguments
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Component
+import java.lang.invoke.MethodHandles
 
-open class Logger<T>(val objectMapper: ObjectMapper = ObjectMapper()) : GenericLogger<T>
+@Component
+class Logger(private val logger: Logger = LoggerFactory.getLogger(MethodHandles.lookup().javaClass)): GenericLogger
 {
-    fun info(logs: LogMetadata, msg: String? = null)
+    private val objectMapper: ObjectMapper = ObjectMapper()
+
+    override fun info(log: LogMetadata)
     {
-        logger()
-            .atInfo()
-            .addKeyValue("metadata", objectMapper.writeValueAsString(logs))
-            .log(msg)
+        logger.info(objectMapper.writeValueAsString(log),
+            StructuredArguments.kv("Username", log.username),
+            StructuredArguments.kv("App", log.app),
+            StructuredArguments.kv("Project", log.project),
+            StructuredArguments.kv("Request", log.request),
+            StructuredArguments.kv("Response", log.response),
+            StructuredArguments.kv("Error", log.error),
+            StructuredArguments.kv("Action", log.action),
+            StructuredArguments.kv("Tags", log.tags)
+        )
     }
 
-    fun error(logs: LogMetadata, msg: String? = null)
+    override fun error(log: LogMetadata)
     {
-        logger()
-            .atError()
-            .addKeyValue("app", objectMapper.writeValueAsString(logs))
-            .log(msg)
+        logger.error(objectMapper.writeValueAsString(log),
+            StructuredArguments.kv("Username", log.username),
+            StructuredArguments.kv("App", log.app),
+            StructuredArguments.kv("Project", log.project),
+            StructuredArguments.kv("Request", log.request),
+            StructuredArguments.kv("Response", log.response),
+            StructuredArguments.kv("Error", log.error),
+            StructuredArguments.kv("Action", log.action),
+            StructuredArguments.kv("Tags", log.tags)
+        )
     }
 }
