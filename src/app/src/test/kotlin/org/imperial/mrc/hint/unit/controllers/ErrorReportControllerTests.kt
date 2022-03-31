@@ -66,7 +66,7 @@ class ErrorReportControllerTests
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
-    @Test
+    /*@Test
     fun `can serialize request body`()
     {
         val client = mock<Client> {
@@ -114,6 +114,8 @@ class ErrorReportControllerTests
             assertThat(response["timeStamp"].asText()).isEqualTo("2021-10-12T14:07:22.759Z")
         })
     }
+
+     */
 
     private fun testFlowClient(response: ResponseEntity<String>): ResponseEntity<String>
     {
