@@ -15,7 +15,7 @@ abstract class FuelClient(protected val baseUrl: String)
 
     companion object
     {
-        private const val TIMEOUT = 100000
+        private const val TIMEOUT = 60000
     }
 
     abstract fun standardHeaders(): Map<String, Any>
@@ -52,7 +52,7 @@ abstract class FuelClient(protected val baseUrl: String)
         }
 
         return url.httpPost()
-
+                .addTimeouts()
                 .header(standardHeaders())
                 .header("Content-Type" to "application/json")
                 .body(json)
