@@ -15,7 +15,7 @@ abstract class FuelClient(protected val baseUrl: String)
 
     companion object
     {
-        private const val TIMEOUT = 10000000
+        private const val TIMEOUT = 100000
     }
 
     abstract fun standardHeaders(): Map<String, Any>
