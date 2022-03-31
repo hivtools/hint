@@ -55,7 +55,8 @@ export const actions: ActionTree<ADRState, DataExplorationState> & ADRActions = 
             .withError(ADRMutation.SetADRError)
             .withSuccess(ADRMutation.SetDatasets)
             .get("/adr/datasets/")
-            .then(() => {
+            .then((data) => {
+                console.log("returned data", data)
                 context.commit({type: ADRMutation.SetFetchingDatasets, payload: false});
             });
     },
@@ -79,8 +80,10 @@ export const actions: ActionTree<ADRState, DataExplorationState> & ADRActions = 
             .get(url)
             .then(response => {
                 if (response) {
+                    console.log("returned dataset", response)
                     const releaseId = release?.id
                     const dataset = datasetFromMetadata(response.data, state.schemas!, releaseId);
+                    console.log('created dataset', dataset)
                     commit(`baseline/${BaselineMutation.SetDataset}`, dataset, {root: true});
                     commit(`baseline/${BaselineMutation.SetRelease}`, release || null, {root: true});
                 }
