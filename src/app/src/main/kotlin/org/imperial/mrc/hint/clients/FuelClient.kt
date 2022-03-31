@@ -52,7 +52,7 @@ abstract class FuelClient(protected val baseUrl: String)
         }
 
         return url.httpPost()
-                .addTimeouts()
+
                 .header(standardHeaders())
                 .header("Content-Type" to "application/json")
                 .body(json)
