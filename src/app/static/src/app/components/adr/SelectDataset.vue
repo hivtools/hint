@@ -142,7 +142,7 @@
         updateDatasetRelease: (release: Release) => void;
         updateValid: (valid: boolean) => void;
         preSelectDataset: () => void;
-        resourceAvailable: (resourceType: string) => boolean;
+        checkResourceAvailable: (resourceType: string) => boolean;
     }
 
     interface Computed {
@@ -315,7 +315,7 @@
                 }
                 const resources: { [k in keyof DatasetResourceSet]?: DatasetResource | null } = {}
                 Object.entries(resourceTypes).forEach(([key, value]) => {
-                    resources[key as keyof typeof resources] = this.resourceAvailable(value) ? this.selectedDataset!.resources[key as keyof typeof resources] : null
+                    resources[key as keyof typeof resources] = this.checkResourceAvailable(value) ? this.selectedDataset!.resources[key as keyof typeof resources] : null
                 })
                 return resources
             }
@@ -338,7 +338,7 @@
             importSurvey: mapActionByName("surveyAndProgram", "importSurvey"),
             importProgram: mapActionByName("surveyAndProgram", "importProgram"),
             importANC: mapActionByName("surveyAndProgram", "importANC"),
-            resourceAvailable(resourceType){
+            checkResourceAvailable(resourceType){
                 return this.selectedDatasetFromDatasets?.resources.some((resource: any) => resource.resource_type && resource.resource_type === resourceType)
             },
             async importDataset() {
