@@ -1,3 +1,7 @@
+# hint 1.95.0
+
+* Show uncertainty ranges in the barchart tool tip
+
 # hint 1.94.0
 
 * Display warnings on review-inputs

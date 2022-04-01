@@ -146,6 +146,7 @@ describe("ModelOutput component", () => {
         expect(barchart.props().indicators).toStrictEqual(["TEST BARCHART INDICATORS"]);
         expect(barchart.props().selections).toBe(vm.barchartSelections);
         expect(barchart.props().formatFunction).toBe(vm.formatBarchartValue);
+        expect(barchart.props().showRangesInTooltips).toBe(true);
     });
 
     it("if no selected tab in state, defaults to select Map tab", () => {
