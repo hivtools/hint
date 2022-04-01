@@ -1,8 +1,11 @@
 FROM openjdk:8u121
 
-RUN mkdir /static/public -p
+RUN mkdir /static/public /src/main/resources -p
 
 COPY ./app/static/public /static/public
+
+COPY ./app/src/main/resources /src/main/resources/logback-spring.xml
+
 COPY ./docker/entrypoint /entrypoint
 
 ADD ./app/build/distributions/app-boot.tar /
