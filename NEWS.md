@@ -1,6 +1,10 @@
-# hint 1.94.1
+# hint 1.95.1
 
 * Don't remove survey, ANC and ART data if user uploads a new baseline file
+
+# hint 1.95.0
+
+* Show uncertainty ranges in the barchart tool tip
 
 # hint 1.94.0
 
