@@ -147,6 +147,7 @@
 
     interface Computed {
         datasets: any[];
+        selectedDatasetFromDatasets: any | null;
         selectedRelease: Release | null;
         releaseName: string | null;
         releaseURL: string;
@@ -300,6 +301,9 @@
             disableImport() {
                 return !this.newDatasetId || !this.valid
             },
+            selectedDatasetFromDatasets(){
+                return this.datasets.find(dataset => dataset.id === this.newDatasetId) || null
+            },
             availableResources(){
                 const resourceTypes = {
                     pjnz: "inputs-unaids-spectrum-file",
@@ -339,8 +343,7 @@
             importProgram: mapActionByName("surveyAndProgram", "importProgram"),
             importANC: mapActionByName("surveyAndProgram", "importANC"),
             resourceAvailable(resourceType){
-                const datasetFromDatasets = this.datasets.find(dataset => dataset.id === this.newDatasetId)
-                return datasetFromDatasets?.resources.some((resource: any) => resource.resource_type && resource.resource_type === resourceType)
+                return this.selectedDatasetFromDatasets?.resources.some((resource: any) => resource.resource_type && resource.resource_type === resourceType)
             },
             async importDataset() {
                 this.stopPolling();
