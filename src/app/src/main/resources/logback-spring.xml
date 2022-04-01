@@ -1,15 +1,10 @@
-<!-- logback-spring.xml -->
 <configuration>
     <springProfile name="default">
         <include resource="org/springframework/boot/logging/logback/base.xml"/>
     </springProfile>
-
     <springProfile name="prod">
         <appender name="jsonConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
-            <JsonLayout compact="true" eventEol="true" >
-                <KeyValuePair key="service" value="java-app" />
-            </JsonLayout>
         </appender>
         <root level="INFO">
             <appender-ref ref="jsonConsoleAppender"/>
