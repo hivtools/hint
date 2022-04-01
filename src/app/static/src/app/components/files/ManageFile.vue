@@ -129,7 +129,6 @@
             error: function (newVal: string) {
                 if (newVal) {
                     this.uploading = false;
-                    console.log("manage file error", this.error)
                 }
             }
         }
