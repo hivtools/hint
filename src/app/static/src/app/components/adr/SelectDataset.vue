@@ -106,6 +106,7 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {
         Dataset,
+        DatasetResource,
         DatasetResourceSet,
         Release
     } from "../../types";
@@ -141,6 +142,7 @@
         updateDatasetRelease: (release: Release) => void;
         updateValid: (valid: boolean) => void;
         preSelectDataset: () => void;
+        resourceAvailable: (resourceType: string) => boolean;
     }
 
     interface Computed {
@@ -161,6 +163,7 @@
         disableImport: boolean;
         hasPjnzFile: boolean;
         hasPopulationFile: boolean;
+        availableResources: { [k in keyof DatasetResourceSet]?: DatasetResource | null }
     }
 
     interface Data {
@@ -296,6 +299,25 @@
             ),
             disableImport() {
                 return !this.newDatasetId || !this.valid
+            },
+            availableResources(){
+                const resourceTypes = {
+                    pjnz: "inputs-unaids-spectrum-file",
+                    pop: "inputs-unaids-population",
+                    shape: "inputs-unaids-geographic",
+                    survey: "inputs-unaids-survey",
+                    program: "inputs-unaids-art",
+                    anc: "inputs-unaids-anc"
+                }
+                const resources: { [k in keyof DatasetResourceSet]?: DatasetResource | null } = {}
+                // for (const [key, value] of Object.entries(resourceTypes)) {
+                //     resources[key] = this.resourceAvailable(value) ? this.selectedDataset!.resources[key] : null
+                // }
+                Object.entries(resourceTypes).forEach(([key, value]) => {
+                    resources[key as keyof typeof resources] = this.resourceAvailable(value) ? this.selectedDataset!.resources[key as keyof typeof resources] : null
+                })
+                console.log("resources", resources)
+                return resources
             }
         },
         methods: {
@@ -316,6 +338,10 @@
             importSurvey: mapActionByName("surveyAndProgram", "importSurvey"),
             importProgram: mapActionByName("surveyAndProgram", "importProgram"),
             importANC: mapActionByName("surveyAndProgram", "importANC"),
+            resourceAvailable(resourceType){
+                const datasetFromDatasets = this.datasets.find(dataset => dataset.id === this.newDatasetId)
+                return datasetFromDatasets?.resources.some((resource: any) => resource.resource_type && resource.resource_type === resourceType)
+            },
             async importDataset() {
                 this.stopPolling();
 
@@ -327,6 +353,12 @@
 
                 await this.getDataset({id: this.newDatasetId!, release: this.newDatasetRelease});
 
+                // const resourceTypes = ["inputs-unaids-anc", "inputs-unaids-art", "inputs-unaids-spectrum-file", "inputs-unaids-population", "inputs-unaids-geographic", "inputs-unaids-survey"]
+
+                // const datasetFromDatasets = this.datasets.find(dataset => dataset.id === this.newDatasetId)
+
+                // const available = (resourceType: string) => !!datasetFromDatasets?.resources.some(resource => resource.resource_type === resourceType)
+
                 const {
                     pjnz,
                     pop,
@@ -334,7 +366,17 @@
                     survey,
                     program,
                     anc,
-                } = this.selectedDataset!.resources;
+                } = this.availableResources;
+
+
+                // const {
+                //     pjnz,
+                //     pop,
+                //     shape,
+                //     survey,
+                //     program,
+                //     anc,
+                // } = this.selectedDataset!.resources;
 
                 await Promise.all([
                     pjnz && this.importPJNZ(pjnz.url),
