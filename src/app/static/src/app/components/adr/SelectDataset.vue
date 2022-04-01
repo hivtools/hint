@@ -314,13 +314,9 @@
                     anc: "inputs-unaids-anc"
                 }
                 const resources: { [k in keyof DatasetResourceSet]?: DatasetResource | null } = {}
-                // for (const [key, value] of Object.entries(resourceTypes)) {
-                //     resources[key] = this.resourceAvailable(value) ? this.selectedDataset!.resources[key] : null
-                // }
                 Object.entries(resourceTypes).forEach(([key, value]) => {
                     resources[key as keyof typeof resources] = this.resourceAvailable(value) ? this.selectedDataset!.resources[key as keyof typeof resources] : null
                 })
-                console.log("resources", resources)
                 return resources
             }
         },
@@ -355,13 +351,6 @@
                 }
 
                 await this.getDataset({id: this.newDatasetId!, release: this.newDatasetRelease});
-
-                // const resourceTypes = ["inputs-unaids-anc", "inputs-unaids-art", "inputs-unaids-spectrum-file", "inputs-unaids-population", "inputs-unaids-geographic", "inputs-unaids-survey"]
-
-                // const datasetFromDatasets = this.datasets.find(dataset => dataset.id === this.newDatasetId)
-
-                // const available = (resourceType: string) => !!datasetFromDatasets?.resources.some(resource => resource.resource_type === resourceType)
-
                 const {
                     pjnz,
                     pop,
@@ -370,16 +359,6 @@
                     program,
                     anc,
                 } = this.availableResources;
-
-
-                // const {
-                //     pjnz,
-                //     pop,
-                //     shape,
-                //     survey,
-                //     program,
-                //     anc,
-                // } = this.selectedDataset!.resources;
 
                 await Promise.all([
                     pjnz && this.importPJNZ(pjnz.url),
