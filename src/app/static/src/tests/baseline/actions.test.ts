@@ -18,6 +18,7 @@ import {expectEqualsFrozen, testUploadErrorCommitted} from "../testHelpers";
 import {ADRSchemas} from "../../app/types";
 import Mock = jest.Mock;
 import {initialChorplethSelections} from "../../app/store/plottingSelections/plottingSelections";
+import {Dispatch} from "vuex";
 
 const FormData = require("form-data");
 const adrSchemas: ADRSchemas = {
@@ -392,7 +393,7 @@ describe("Baseline actions", () => {
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.Ready);
     });
 
-    it("deletes pjnz and dispatches survey and program delete action if main app", async () => {
+    it("deletes pjnz and dispatches validation actions", async () => {
 
         mockAxios.onDelete("/baseline/pjnz/")
             .reply(200, mockSuccess(true));
@@ -401,25 +402,10 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.deletePJNZ({commit, dispatch, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
-        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
-        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
+        expectValidationActionsDispatched(dispatch)
     });
 
-    it("deletes pjnz and validates if data exploration app", async () => {
-
-        mockAxios.onDelete("/baseline/pjnz/")
-            .reply(200, mockSuccess(true));
-
-        const commit = jest.fn();
-        const dispatch = jest.fn();
-        await actions.deletePJNZ({commit, dispatch, rootState: dataExplorationState} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
-        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
-        expect(dispatch.mock.calls[1][2]).toEqual({root: true});
-        expect(dispatch.mock.calls.length).toBe(2);
-    });
-
-    it("deletes shape and dispatches survey and program delete action if main app", async () => {
+    it("deletes shape and dispatches validation actions", async () => {
 
         mockAxios.onDelete("/baseline/shape/")
             .reply(200, mockSuccess(true));
@@ -428,26 +414,10 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.deleteShape({commit, dispatch, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
-        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
-        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
+        expectValidationActionsDispatched(dispatch)
     });
 
-    it("deletes shape and validates if data exploration app", async () => {
-
-        mockAxios.onDelete("/baseline/shape/")
-            .reply(200, mockSuccess(true));
-
-        const commit = jest.fn();
-        const dispatch = jest.fn();
-        await actions.deleteShape({commit, dispatch, rootState: dataExplorationState} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
-        expect(dispatch.mock.calls[0][0]).toBe("validate");
-        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
-        expect(dispatch.mock.calls[1][2]).toEqual({root: true});
-        expect(dispatch.mock.calls.length).toBe(2);
-    });
-
-    it("deletes population and dispatches survey and program delete action if main app", async () => {
+    it("deletes population and dispatches validation actions", async () => {
 
         mockAxios.onDelete("/baseline/population/")
             .reply(200, mockSuccess(true));
@@ -456,23 +426,7 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.deletePopulation({commit, dispatch, rootState} as any);
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
-        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
-        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
-    });
-
-    it("deletes population and validates if data exploration app", async () => {
-
-        mockAxios.onDelete("/baseline/population/")
-            .reply(200, mockSuccess(true));
-
-        const commit = jest.fn();
-        const dispatch = jest.fn();
-        await actions.deletePopulation({commit, dispatch, rootState: dataExplorationState} as any);
-        expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
-        expect(dispatch.mock.calls[0][0]).toBe("validate");
-        expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
-        expect(dispatch.mock.calls[1][2]).toEqual({root: true});
-        expect(dispatch.mock.calls.length).toBe(2);
+        expectValidationActionsDispatched(dispatch)
     });
 
     it("deletes all", async () => {
@@ -692,3 +646,9 @@ describe("Baseline actions", () => {
     });
 
 });
+
+const expectValidationActionsDispatched = (dispatch: Mock) => {
+    expect(dispatch.mock.calls[0][0]).toBe("validate");
+    expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
+    expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
+}
