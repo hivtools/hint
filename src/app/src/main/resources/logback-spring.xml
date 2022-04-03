@@ -1,8 +1,8 @@
 <configuration>
-    <springProfile name="default">
+    <springProfile name="dev">
         <include resource="org/springframework/boot/logging/logback/base.xml"/>
     </springProfile>
-    <springProfile name="prod">
+    <springProfile name="!dev">
         <appender name="jsonConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
         </appender>

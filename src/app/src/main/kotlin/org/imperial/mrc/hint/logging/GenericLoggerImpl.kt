@@ -4,12 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import net.logstash.logback.argument.StructuredArguments
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.config.ConfigurableBeanFactory
-import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
 
 @Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 class GenericLoggerImpl(private val logger: Logger = LoggerFactory.getLogger(GenericLoggerImpl::class.java)): GenericLogger
 {
     private val objectMapper: ObjectMapper = ObjectMapper()
