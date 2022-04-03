@@ -13,7 +13,7 @@ class GenericLoggerImpl(private val logger: Logger = LoggerFactory.getLogger(Gen
 
     override fun info(log: LogMetadata)
     {
-        logger.info(objectMapper.writeValueAsString(log),
+        logger.info("$log",
             StructuredArguments.kv("Username", log.username),
             StructuredArguments.kv("App", log.app),
             StructuredArguments.kv("Request", log.request),
