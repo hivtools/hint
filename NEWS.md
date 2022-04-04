@@ -1,3 +1,7 @@
+# hint 1.95.2
+
+* Bug: hint tries to pull resources it does not have access to
+
 # hint 1.95.1
 
 * Don't remove survey, ANC and ART data if user uploads a new baseline file
