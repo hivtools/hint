@@ -93,6 +93,14 @@ describe("select dataset", () => {
         name: "ANC Resource"
     }
 
+    const resources = [
+        { resource_type: "inputs-unaids-spectrum-file" },
+        { resource_type: "inputs-unaids-population" },
+        { resource_type: "inputs-unaids-geographic" },
+        { resource_type: "inputs-unaids-survey" },
+        { resource_type: "inputs-unaids-art" },
+        { resource_type: "inputs-unaids-anc" }
+    ]
 
     const fakeRawDatasets = [
         {
@@ -101,7 +109,7 @@ describe("select dataset", () => {
             organization: {title: "org", id: "org-id"},
             name: "some-data",
             type: "naomi-data",
-            resources: []
+            resources
         },
         {
             id: "id2",
@@ -109,7 +117,7 @@ describe("select dataset", () => {
             organization: {title: "org", id: "org-id"},
             name: "some-data",
             type: "naomi-data",
-            resources: []
+            resources
         }
     ]
 
@@ -499,7 +507,7 @@ describe("select dataset", () => {
             fakeDataset.resources.program = mockDatasetResource({url: "program.url", outOfDate: true});
             fakeDataset.resources.anc = mockDatasetResource({url: "anc.url", outOfDate: true});
             fakeDataset.resources.shape = mockDatasetResource();
-            const store = getStore({selectedDataset: fakeDataset});
+            const store = getStore({ selectedDataset: fakeDataset });
             const rendered = shallowMount(SelectDataset, {store, sync: false});
             rendered.findAll("button").at(0).trigger("click");
             await Vue.nextTick();

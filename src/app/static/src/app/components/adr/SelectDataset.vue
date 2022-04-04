@@ -390,7 +390,7 @@
                     survey,
                     program,
                     anc,
-                } = this.availableResources;
+                } = this.selectedDataset!.resources;
                 await Promise.all([
                     this.outOfDateResources["pjnz"] &&
                     pjnz &&
