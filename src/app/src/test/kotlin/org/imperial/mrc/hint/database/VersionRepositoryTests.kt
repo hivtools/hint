@@ -79,7 +79,7 @@ class VersionRepositoryTests
         sut.saveVersion(versionId, projectId, "test notes")
 
         val version = dsl.selectFrom(PROJECT_VERSION)
-                .fetchOne()
+                .fetchAny()
 
         assertThat(version[PROJECT_VERSION.ID]).isEqualTo(versionId)
         assertThat(version[PROJECT_VERSION.PROJECT_ID]).isEqualTo(projectId)
