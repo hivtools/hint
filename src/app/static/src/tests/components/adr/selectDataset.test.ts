@@ -895,6 +895,51 @@ describe("select dataset", () => {
         expect(rendered.find(Modal).props("open")).toBe(false);
     });
 
+    it("does not import baseline file if user does not have permission (ie, relevant dataset in datasets has no resources)", async () => {
+        const store = getStore(
+            {
+                selectedDataset: {
+                    ...fakeDataset,
+                    resources: {
+                        pjnz: mockDatasetResource(pjnz),
+                        pop: mockDatasetResource(pop),
+                        shape: mockDatasetResource(shape)
+                    } as any
+                }
+            },
+            {
+                datasets: [
+                    { ...fakeRawDatasets[0], resources: [] },
+                    fakeRawDatasets[1]
+                ]
+            }
+        );
+        const rendered = mount(SelectDataset, { store, stubs: ["tree-select"] });
+        rendered.find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        rendered.setData({ newDatasetId: "id1" })
+        rendered.find(Modal).find("button").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+
+        await Vue.nextTick();
+
+        expect((baselineActions.importPJNZ as Mock).mock.calls.length).toBe(0);
+        expect((baselineActions.importPopulation as Mock).mock.calls.length).toBe(0);
+        expect((baselineActions.importShape as Mock).mock.calls.length).toBe(0);
+
+        await Vue.nextTick(); // once for baseline actions to return
+        await Vue.nextTick(); // once for survey actions to return
+
+        expect(rendered.find("#loading-dataset").exists()).toBe(false);
+        expect(rendered.find(Modal).props("open")).toBe(false);
+    });
+
     it("imports survey and program files if they exist and shape file exists", async () => {
         const store = getStore(
             {
