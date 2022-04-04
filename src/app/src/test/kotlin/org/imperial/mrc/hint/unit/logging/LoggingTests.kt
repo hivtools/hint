@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.unit.logging
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
-import net.logstash.logback.argument.StructuredArguments
+import net.logstash.logback.argument.StructuredArguments.kv
 import org.imperial.mrc.hint.logging.*
 import org.junit.jupiter.api.Test
 
@@ -35,13 +35,13 @@ class LoggingTests
         sut.error(testLogData)
 
         verify(mockLogger).error(objectMapper.writeValueAsString(testLogData),
-            StructuredArguments.kv("Username", testLogData.username),
-            StructuredArguments.kv("App", testLogData.app),
-            StructuredArguments.kv("Request", testLogData.request),
-            StructuredArguments.kv("Response", testLogData.response),
-            StructuredArguments.kv("Error", testLogData.error),
-            StructuredArguments.kv("Action", testLogData.action),
-            StructuredArguments.kv("Tags", testLogData.tags)
+            kv("Username", testLogData.username),
+            kv("App", testLogData.app),
+            kv("Request", testLogData.request),
+            kv("Response", testLogData.response),
+            kv("Error", testLogData.error),
+            kv("Action", testLogData.action),
+            kv("Tags", testLogData.tags)
         )
     }
 
@@ -52,12 +52,12 @@ class LoggingTests
         sut.info(testLogData)
 
         verify(mockLogger).info(objectMapper.writeValueAsString(testLogData),
-            StructuredArguments.kv("Username", testLogData.username),
-            StructuredArguments.kv("App", testLogData.app),
-            StructuredArguments.kv("Request", testLogData.request),
-            StructuredArguments.kv("Response", testLogData.response),
-            StructuredArguments.kv("Error", testLogData.error),
-            StructuredArguments.kv("Action", testLogData.action),
-            StructuredArguments.kv("Tags", testLogData.tags))
+            kv("Username", testLogData.username),
+            kv("App", testLogData.app),
+            kv("Request", testLogData.request),
+            kv("Response", testLogData.response),
+            kv("Error", testLogData.error),
+            kv("Action", testLogData.action),
+            kv("Tags", testLogData.tags))
     }
 }
