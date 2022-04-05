@@ -3,7 +3,6 @@ package org.imperial.mrc.hint.unit.controllers
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
-import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.HintrAPIClient
@@ -102,7 +101,7 @@ class DiseaseControllerTests : HintrControllerTests()
         verify(mockApiClient, Times(2))
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.ANC, true)
+                        "shape-path", FileType.ANC, "pjnz-path", true)
     }
 
     @Test
@@ -120,7 +119,7 @@ class DiseaseControllerTests : HintrControllerTests()
         verify(mockApiClient, Times(2))
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.ANC, false)
+                        "shape-path", FileType.ANC, "pjnz-path", false)
     }
 
     @Test
@@ -138,6 +137,6 @@ class DiseaseControllerTests : HintrControllerTests()
         verify(mockApiClient, Times(2))
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.ANC, true)
+                        "shape-path", FileType.ANC, "pjnz-path", true)
     }
 }

@@ -60,7 +60,10 @@ open class HintrController(protected val fileManager: FileManager,
                 val shapePath = fileManager.getFile(FileType.Shape)?.path
                         ?: throw HintException("missingShapeFile",
                                 HttpStatus.BAD_REQUEST)
-                apiClient.validateSurveyAndProgramme(file, shapePath, type, strict)
+
+                val pjnzPath = fileManager.getFile(FileType.PJNZ)?.path
+
+                apiClient.validateSurveyAndProgramme(file, shapePath, type, pjnzPath, strict)
             }
         }
     }
