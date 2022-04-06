@@ -36,6 +36,9 @@ abstract class HintrControllerTests
 
     protected fun getMockFileManager(type: FileType): FileManager
     {
+        val mockShape = VersionFileWithPath("shape-path", "hash", "shape-file-name.csv", false)
+        val mockPjnz = VersionFileWithPath("pjnz-path", "hash", "pjnz-file-name.csv", false)
+
         return mock {
             on {
                 saveFile(argWhere<MultipartFile> {
@@ -48,16 +51,12 @@ abstract class HintrControllerTests
             } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv", false)
 
             on {
-                getFile(FileType.Shape)
-            } doReturn VersionFileWithPath("shape-path", "hash", "shape-file-name.csv", false)
-
-            on {
-                getFile(FileType.PJNZ)
-            } doReturn VersionFileWithPath("pjnz-path", "hash", "pjnz-file-name.csv", false)
-
-            on {
                 getFile(type)
             } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv", false)
+
+            on {
+                getFiles(FileType.PJNZ, FileType.Shape)
+            } doReturn mapOf(FileType.Shape.toString() to mockShape, FileType.PJNZ.toString() to mockPjnz)
         }
     }
 

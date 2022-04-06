@@ -59,12 +59,12 @@ open class HintrController(protected val fileManager: FileManager,
             {
                 val files = fileManager.getFiles(FileType.PJNZ, FileType.Shape)
 
-                if(files[FileType.PJNZ.toString()]?.path == null) {
+                if(files[FileType.PJNZ.toString()]?.path.isNullOrBlank()) {
                     throw HintException("missingPjnzFile",
                             HttpStatus.BAD_REQUEST)
                 }
 
-                if(files[FileType.Shape.toString()]?.path == null) {
+                if(files[FileType.Shape.toString()]?.path.isNullOrBlank()) {
                     throw HintException("missingShapeFile",
                             HttpStatus.BAD_REQUEST)
                 }
