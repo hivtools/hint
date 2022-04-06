@@ -1,8 +1,10 @@
 import {MutationTree} from 'vuex';
 import {DataType, SurveyAndProgramState} from "./surveyAndProgram";
 import {PayloadWithType} from "../../types";
-import {AncResponse, ProgrammeResponse, SurveyResponse, Error} from "../../generated";
+import {AncResponse, ProgrammeResponse, SurveyResponse, Error, Warning} from "../../generated";
 import {ReadyState} from "../../root";
+import {BaselineState} from "../baseline/baseline";
+import {BaselineMutation} from "../baseline/mutations";
 
 export enum SurveyAndProgramMutation {
     SelectedDataTypeUpdated = "SelectedDataTypeUpdated",
@@ -15,7 +17,9 @@ export enum SurveyAndProgramMutation {
     ANCUpdated = "ANCUpdated",
     ANCError = "ANCError",
     ANCErroredFile = "ANCErroredFile",
-    Ready = "Ready"
+    Ready = "Ready",
+    WarningsFetched = "WarningsFetched",
+    ClearWarnings = "ClearWarnings"
 }
 
 export const SurveyAndProgramUpdates = [
@@ -73,5 +77,13 @@ export const mutations: MutationTree<SurveyAndProgramState> = {
 
     [SurveyAndProgramMutation.Ready](state: ReadyState) {
         state.ready = true;
+    },
+
+    [SurveyAndProgramMutation.WarningsFetched](state: SurveyAndProgramState, action: PayloadWithType<Warning[]>){
+        state.warnings = [...state.warnings, ...action.payload];
+    },
+
+    [SurveyAndProgramMutation.ClearWarnings](state: SurveyAndProgramState){
+        state.warnings = [];
     }
 };

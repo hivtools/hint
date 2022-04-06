@@ -349,7 +349,8 @@ describe("root getters", () => {
             modelOptions: mockModelOptionsState({warnings: undefined}),
             modelRun: mockModelRunState({warnings: undefined}),
             modelCalibrate: mockModelCalibrateState({warnings: undefined}),
-            genericChart: mockGenericChartState({warnings: undefined})
+            genericChart: mockGenericChartState({warnings: undefined}),
+            surveyAndProgram: mockSurveyAndProgramState({warnings: undefined})
         });
         const warnings = getters.warnings(rootState, null, rootState, null);
         const expected = {

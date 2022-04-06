@@ -1,11 +1,16 @@
 import {DataType, SurveyAndProgramState} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {getters as surveyAndProgramGetters} from "../../app/store/surveyAndProgram/getters";
 import {mutations, SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
-import {mockError, mockRootState, mockSurveyAndProgramState, mockSurveyResponse} from "../mocks";
+import {
+    mockError,
+    mockRootState,
+    mockSurveyAndProgramState,
+    mockSurveyResponse,
+    mockWarning
+} from "../mocks";
 
 import {Module} from "vuex";
 import {RootState} from "../../app/root";
-import {Error} from "../../app/generated";
 import {expectAllMutationsDefined} from "../testHelpers";
 
 describe("Survey and programme mutations", () => {
@@ -118,6 +123,15 @@ describe("Survey and programme mutations", () => {
         const testState = mockSurveyAndProgramState({selectedDataType: DataType.Survey});
         mutations[SurveyAndProgramMutation.SelectedDataTypeUpdated](testState, {payload: DataType.Program});
         expect(testState.selectedDataType).toBe(DataType.Program);
+    });
+
+    it("sets and clears warnings", () => {
+        const testState = mockSurveyAndProgramState();
+        const warnings = [mockWarning()]
+        mutations.WarningsFetched(testState, {payload: warnings});
+        expect(testState.warnings).toEqual([mockWarning()]);
+        mutations.ClearWarnings(testState);
+        expect(testState.warnings).toEqual([]);
     });
 
 

@@ -29,6 +29,7 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("survey.csv")
+        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     });
 
     it("can upload programme", async () => {
@@ -59,6 +60,7 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
         expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("anc.csv");
+        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     });
 
     it("can upload data with lax validation", async () => {
@@ -74,6 +76,7 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
         expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("anc-pos-greater-than-total.csv");
+        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     });
 
     it("can delete survey", async () => {

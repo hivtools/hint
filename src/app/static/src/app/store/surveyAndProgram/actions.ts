@@ -56,6 +56,7 @@ async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, D
         .postAndReturn<ProgrammeResponse>(getUrlWithQuery(context, options.url), options.payload)
         .then((response) => {
             if (response) {
+                commit({type: SurveyAndProgramMutation.WarningsFetched, payload: response.data.warnings});
                 commitSelectedDataTypeUpdated(commit, DataType.ANC);
             } else {
                 commit({type: SurveyAndProgramMutation.ANCErroredFile, payload: filename});
@@ -76,6 +77,7 @@ async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramStat
         .postAndReturn<ProgrammeResponse>(getUrlWithQuery(context, options.url), options.payload)
         .then((response) => {
             if (response) {
+                commit({type: SurveyAndProgramMutation.WarningsFetched, payload: response.data.warnings})
                 commitSelectedDataTypeUpdated(commit, DataType.Program);
             } else {
                 commit({type: SurveyAndProgramMutation.ProgramErroredFile, payload: filename});
@@ -95,6 +97,7 @@ async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState
         .postAndReturn<SurveyResponse>(getUrlWithQuery(context, options.url), options.payload)
         .then((response) => {
             if (response) {
+                commit({type: SurveyAndProgramMutation.WarningsFetched, payload: response.data.warnings})
                 commitSelectedDataTypeUpdated(commit, DataType.Survey);
             } else {
                 commit({type: SurveyAndProgramMutation.SurveyErroredFile, payload: filename});
