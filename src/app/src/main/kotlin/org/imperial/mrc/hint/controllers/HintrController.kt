@@ -57,11 +57,20 @@ open class HintrController(protected val fileManager: FileManager,
                 apiClient.validateBaselineIndividual(file, type)
             else ->
             {
-                val shapePath = fileManager.getFile(FileType.Shape)?.path
-                        ?: throw HintException("missingShapeFile",
-                                HttpStatus.BAD_REQUEST)
+                val files = fileManager.getFiles(FileType.PJNZ, FileType.Shape)
 
-                val pjnzPath = fileManager.getFile(FileType.PJNZ)?.path
+                if(files[FileType.PJNZ.toString()]?.path == null) {
+                    throw HintException("missingPjnzFile",
+                            HttpStatus.BAD_REQUEST)
+                }
+
+                if(files[FileType.Shape.toString()]?.path == null) {
+                    throw HintException("missingShapeFile",
+                            HttpStatus.BAD_REQUEST)
+                }
+
+                val pjnzPath =  files[FileType.PJNZ.toString()]!!.path
+                val shapePath =  files[FileType.Shape.toString()]!!.path
 
                 apiClient.validateSurveyAndProgramme(file, shapePath, type, pjnzPath, strict)
             }

@@ -89,6 +89,19 @@ class DiseaseControllerTests : HintrControllerTests()
     }
 
     @Test
+    fun `throws error if the pjnz file does not exist`()
+    {
+        val mockApiClient = getMockAPIClient(FileType.Survey)
+        val mockFileManager = getMockFileManager(FileType.PJNZ)
+        val sut = DiseaseController(mockFileManager, mockApiClient, mock(), mock(), mock())
+
+        TranslationAssert.assertThatThrownBy { sut.uploadSurvey(mockFile) }
+                .isInstanceOf(HintException::class.java)
+                .matches { (it as HintException).httpStatus == HttpStatus.BAD_REQUEST }
+                .hasTranslatedMessage("You must upload a spectrum file before uploading survey or programme data.")
+    }
+
+    @Test
     fun `requests strict validation by default`()
     {
         val mockApiClient = getMockAPIClient(FileType.ANC)
