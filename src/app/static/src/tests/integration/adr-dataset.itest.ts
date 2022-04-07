@@ -7,7 +7,7 @@ import {actions as adrUploadActions} from "../../app/store/adrUpload/actions";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {getFormData} from "./helpers";
 import {ADRMutation} from "../../app/store/adr/mutations";
-import {UploadFile, Dataset} from "../../app/types";
+import {UploadFile} from "../../app/types";
 
 // this suite tests all endpoints that talk to the ADR
 // we put them in a suite of their own so that we can run
@@ -34,8 +34,8 @@ describe("ADR dataset-related actions", () => {
         await baselineActions.uploadShape({commit, dispatch, rootState} as any, formData);
 
         const state = {country: "Malawi"} as any;
-        const pjnzFormData = getFormData("Malawi2019.PJNZ");
-        await baselineActions.uploadPJNZ({commit, state, dispatch, rootState} as any, pjnzFormData);
+        await baselineActions.importPJNZ({commit, state, dispatch, rootState} as any,
+            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/Malawi2019.PJNZ");
     });
 
     it("can fetch ADR datasets", async () => {
