@@ -95,11 +95,53 @@ class DiseaseControllerTests : HintrControllerTests()
     }
 
     @Test
+    fun `throws error if the shape file path is empty`()
+    {
+        val mockPjnz = VersionFileWithPath("pjnzPath", "pjnzHash", "pjnzFile", false)
+        val mockShape = VersionFileWithPath(" ", "shapeHash", "shapeFile", false)
+        val mockFileManager = mock<FileManager> {
+            on { getFiles(FileType.PJNZ, FileType.Shape) } doReturn mapOf(
+                    FileType.PJNZ.toString() to mockPjnz,
+                    FileType.Shape.toString() to mockShape)
+        }
+
+        val mockApiClient = getMockAPIClient(FileType.Survey)
+        val sut = DiseaseController(mockFileManager, mockApiClient, mock(), mock(), mock())
+
+        TranslationAssert.assertThatThrownBy { sut.uploadSurvey(mockFile) }
+                .isInstanceOf(HintException::class.java)
+                .matches { (it as HintException).key == "missingShapeFile"}
+                .matches { (it as HintException).httpStatus == HttpStatus.BAD_REQUEST }
+                .hasTranslatedMessage("You must upload a shape file before uploading survey or programme data.")
+    }
+
+    @Test
     fun `throws error if the pjnz file does not exist`()
     {
         val mockShape = VersionFileWithPath("shapePath", "shapeHash", "shapeFile", false)
         val mockFileManager = mock<FileManager> {
             on { getFiles(FileType.PJNZ, FileType.Shape) } doReturn mapOf(FileType.Shape.toString() to mockShape)
+        }
+
+        val mockApiClient = getMockAPIClient(FileType.Survey)
+        val sut = DiseaseController(mockFileManager, mockApiClient, mock(), mock(), mock())
+
+        TranslationAssert.assertThatThrownBy { sut.uploadSurvey(mockFile) }
+                .isInstanceOf(HintException::class.java)
+                .matches { (it as HintException).key == "missingPjnzFile"}
+                .matches { (it as HintException).httpStatus == HttpStatus.BAD_REQUEST }
+                .hasTranslatedMessage("You must upload a spectrum file before uploading survey or programme data.")
+    }
+
+    @Test
+    fun `throws error if the pjnz file path is empty`()
+    {
+        val mockPjnz = VersionFileWithPath(" ", "pjnzHash", "pjnzFile", false)
+        val mockShape = VersionFileWithPath("shapePath", "shapeHash", "shapeFile", false)
+        val mockFileManager = mock<FileManager> {
+            on { getFiles(FileType.PJNZ, FileType.Shape) } doReturn mapOf(
+                    FileType.PJNZ.toString() to mockPjnz,
+                    FileType.Shape.toString() to mockShape)
         }
 
         val mockApiClient = getMockAPIClient(FileType.Survey)
