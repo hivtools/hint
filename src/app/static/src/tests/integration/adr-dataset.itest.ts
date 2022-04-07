@@ -30,12 +30,13 @@ describe("ADR dataset-related actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        const formData = getFormData("malawi.geojson");
-        await baselineActions.uploadShape({commit, dispatch, rootState} as any, formData);
 
         const state = {country: "Malawi"} as any;
-        await baselineActions.importPJNZ({commit, state, dispatch, rootState} as any,
-            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/Malawi2019.PJNZ");
+        const pjnzFormData = getFormData("Malawi2019.PJNZ");
+        await baselineActions.uploadPJNZ({commit, state, dispatch, rootState} as any, pjnzFormData);
+
+        const formData = getFormData("malawi.geojson");
+        await baselineActions.uploadShape({commit, dispatch, rootState} as any, formData);
     });
 
     it("can fetch ADR datasets", async () => {
