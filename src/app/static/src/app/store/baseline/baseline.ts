@@ -3,7 +3,7 @@ import {actions} from './actions';
 import {mutations} from './mutations';
 import {ReadyState} from "../../root";
 import {NestedFilterOption, PjnzResponse, PopulationResponse, ShapeResponse, Error} from "../../generated";
-import {Dataset, Release, Dict} from "../../types";
+import { Dataset, Release, Dict, DatasetResourceSet, DatasetResource } from "../../types";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface BaselineState extends ReadyState {
@@ -60,7 +60,33 @@ export const baselineGetters = {
         const validOrMissingPJNZ = !state.pjnzError
         const validOrMissingPop = !state.populationError
         return validOrMissingPJNZ && validOrMissingPop && state.validatedConsistent && !!state.shape
-    }
+    },
+    selectedDatasetAvailableResources: (state: BaselineState, getters: any, rooState: DataExplorationState) => {
+        const resources: { [k in keyof DatasetResourceSet]?: DatasetResource | null } = {}
+        const { selectedDataset } = state
+
+        if (selectedDataset?.id && selectedDataset.resources) {
+            const selectedDatasetFromDatasets = rooState.adr.datasets.find(dataset => dataset.id === selectedDataset.id) || null
+
+            const resourceTypes = {
+                pjnz: "inputs-unaids-spectrum-file",
+                pop: "inputs-unaids-population",
+                shape: "inputs-unaids-geographic",
+                survey: "inputs-unaids-survey",
+                program: "inputs-unaids-art",
+                anc: "inputs-unaids-anc"
+            }
+
+            const checkResourceAvailable = (resourceType: string) => {
+                return selectedDatasetFromDatasets?.resources.some((resource: any) => resource.resource_type && resource.resource_type === resourceType)
+            }
+
+            Object.entries(resourceTypes).forEach(([key, value]) => {
+                resources[key as keyof typeof resources] = checkResourceAvailable(value) ? selectedDataset.resources[key as keyof typeof resources] : null
+            })
+        }
+        return resources
+    },
 };
 
 const getters = baselineGetters;
@@ -71,7 +97,7 @@ export const baseline = (existingState: Partial<DataExplorationState> | null): M
     return {
         namespaced,
             state: {...initialBaselineState(), ...existingState && existingState.baseline},
-        getters,
+            getters,
             actions,
             mutations
     };

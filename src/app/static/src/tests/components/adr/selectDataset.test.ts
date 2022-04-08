@@ -213,7 +213,7 @@ describe("select dataset", () => {
 
     const mockGetters = {
         editsRequireConfirmation: () => false,
-        changesToRelevantSteps: () => [{number: 4, textKey: "fitModel"}]
+        changesToRelevantSteps: () => [{ number: 4, textKey: "fitModel" }]
     };
 
     let currentVersion = {id: "version-id", created: "", updated: "", versionNumber: 1}
@@ -246,6 +246,9 @@ describe("select dataset", () => {
                     [BaselineMutation.SetDataset]: setDatasetMock,
                     [BaselineMutation.SetRelease]: setReleaseMock,
                     [BaselineMutation.MarkDatasetResourcesUpdated]: markResourcesUpdatedMock
+                },
+                getters: {
+                    selectedDatasetAvailableResources: () => fakeDataset.resources
                 }
             },
             stepper: {
