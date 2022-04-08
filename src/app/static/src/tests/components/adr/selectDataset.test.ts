@@ -93,14 +93,14 @@ describe("select dataset", () => {
         name: "ANC Resource"
     }
 
-    const resources = [
-        { resource_type: "inputs-unaids-spectrum-file" },
-        { resource_type: "inputs-unaids-population" },
-        { resource_type: "inputs-unaids-geographic" },
-        { resource_type: "inputs-unaids-survey" },
-        { resource_type: "inputs-unaids-art" },
-        { resource_type: "inputs-unaids-anc" }
-    ]
+    // const resources = [
+    //     { resource_type: "inputs-unaids-spectrum-file" },
+    //     { resource_type: "inputs-unaids-population" },
+    //     { resource_type: "inputs-unaids-geographic" },
+    //     { resource_type: "inputs-unaids-survey" },
+    //     { resource_type: "inputs-unaids-art" },
+    //     { resource_type: "inputs-unaids-anc" }
+    // ]
 
     const fakeRawDatasets = [
         {
@@ -109,7 +109,8 @@ describe("select dataset", () => {
             organization: {title: "org", id: "org-id"},
             name: "some-data",
             type: "naomi-data",
-            resources
+            resources: []
+            // resources
         },
         {
             id: "id2",
@@ -117,7 +118,8 @@ describe("select dataset", () => {
             organization: {title: "org", id: "org-id"},
             name: "some-data",
             type: "naomi-data",
-            resources
+            resources: []
+            // resources
         }
     ]
 
@@ -218,7 +220,7 @@ describe("select dataset", () => {
 
     let currentVersion = {id: "version-id", created: "", updated: "", versionNumber: 1}
 
-    const genericModules = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}, requireConfirmation: boolean) => {
+    const genericModules = (baselineProps: Partial<BaselineState> = {}, adrProps: Partial<ADRState> = {}, requireConfirmation: boolean, baselineGetters = {}) => {
         return {
             adr: {
                 namespaced: true,
@@ -248,7 +250,8 @@ describe("select dataset", () => {
                     [BaselineMutation.MarkDatasetResourcesUpdated]: markResourcesUpdatedMock
                 },
                 getters: {
-                    selectedDatasetAvailableResources: () => fakeDataset.resources
+                    selectedDatasetAvailableResources: () => fakeDataset.resources,
+                    ...baselineGetters
                 }
             },
             stepper: {
@@ -267,8 +270,9 @@ describe("select dataset", () => {
     }
 
     const getRootStore = (baselineProps: Partial<BaselineState> = {},
-                          adrProps: Partial<ADRState> = {},
-                          requireConfirmation: boolean = false) => {
+        adrProps: Partial<ADRState> = {},
+        requireConfirmation: boolean = false,
+        baselineGetters = {}) => {
 
         const store = new Vuex.Store({
             state: mockRootState(),
@@ -281,7 +285,7 @@ describe("select dataset", () => {
                         newVersion: jest.fn()
                     }
                 },
-                ...genericModules(baselineProps, adrProps, requireConfirmation)
+                ...genericModules(baselineProps, adrProps, requireConfirmation, baselineGetters)
             }
         });
         registerTranslations(store);
@@ -289,13 +293,14 @@ describe("select dataset", () => {
     }
 
     const getStore = (baselineProps: Partial<BaselineState> = {},
-                      adrProps: Partial<ADRState> = {},
-                      requireConfirmation: boolean = false) => {
+        adrProps: Partial<ADRState> = {},
+        requireConfirmation: boolean = false,
+        baselineGetters = {}) => {
 
         const store = new Vuex.Store({
             state: mockDataExplorationState(),
             getters: getters,
-            modules: genericModules(baselineProps, adrProps, requireConfirmation)
+            modules: genericModules(baselineProps, adrProps, requireConfirmation, baselineGetters)
         });
         registerTranslations(store);
         return store;
@@ -783,18 +788,15 @@ describe("select dataset", () => {
     });
 
     it("imports baseline files if they exist", async () => {
-        const store = getStore(
-            {
-                selectedDataset: {
-                    ...fakeDataset,
-                    resources: {
-                        pjnz: mockDatasetResource(pjnz),
-                        pop: mockDatasetResource(pop),
-                        shape: mockDatasetResource(shape)
-                    } as any
+        const store = getStore({}, {}, false, {
+            selectedDatasetAvailableResources: () => {
+                return {
+                    pjnz: mockDatasetResource(pjnz),
+                    pop: mockDatasetResource(pop),
+                    shape: mockDatasetResource(shape)
                 }
             }
-        );
+        });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
@@ -822,18 +824,15 @@ describe("select dataset", () => {
     });
 
     it("imports baseline files does not trigger confirmation dialog when on data exploration mode", async () => {
-        const store = getStore(
-            {
-                selectedDataset: {
-                    ...fakeDataset,
-                    resources: {
-                        pjnz: mockDatasetResource(pjnz),
-                        pop: mockDatasetResource(pop),
-                        shape: mockDatasetResource(shape)
-                    } as any
+        const store = getStore({}, {}, true, {
+            selectedDatasetAvailableResources: () => {
+                return {
+                    pjnz: mockDatasetResource(pjnz),
+                    pop: mockDatasetResource(pop),
+                    shape: mockDatasetResource(shape)
                 }
-            }, {}, true
-        );
+            }
+        });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
@@ -861,16 +860,13 @@ describe("select dataset", () => {
     });
 
     it("does not import baseline file if it doesn't exist", async () => {
-        const store = getStore(
-            {
-                selectedDataset: {
-                    ...fakeDataset,
-                    resources: {
-                        pjnz: mockDatasetResource(pjnz)
-                    } as any
+        const store = getStore({}, {}, false, {
+            selectedDatasetAvailableResources: () => {
+                return {
+                    pjnz: mockDatasetResource(pjnz)
                 }
             }
-        );
+        });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
@@ -900,21 +896,11 @@ describe("select dataset", () => {
 
     it("does not import baseline file if user does not have permission (ie, relevant dataset in datasets has no resources)", async () => {
         const store = getStore(
+            {}, {}, false,
             {
-                selectedDataset: {
-                    ...fakeDataset,
-                    resources: {
-                        pjnz: mockDatasetResource(pjnz),
-                        pop: mockDatasetResource(pop),
-                        shape: mockDatasetResource(shape)
-                    } as any
+                selectedDatasetAvailableResources: () => {
+                    return {}
                 }
-            },
-            {
-                datasets: [
-                    { ...fakeRawDatasets[0], resources: [] },
-                    fakeRawDatasets[1]
-                ]
             }
         );
         const rendered = mount(SelectDataset, { store, stubs: ["tree-select"] });
@@ -944,19 +930,17 @@ describe("select dataset", () => {
     });
 
     it("imports survey and program files if they exist and shape file exists", async () => {
-        const store = getStore(
-            {
-                selectedDataset: {
-                    ...fakeDataset,
-                    resources: {
-                        shape: mockDatasetResource(shape),
-                        survey: mockDatasetResource(survey),
-                        program: mockDatasetResource(program),
-                        anc: mockDatasetResource(anc)
-                    } as any
+        const store = getStore({}, {}, false, {
+            selectedDatasetAvailableResources: () => {
+                return {
+                    shape: mockDatasetResource(shape),
+                    survey: mockDatasetResource(survey),
+                    program: mockDatasetResource(program),
+                    anc: mockDatasetResource(anc)
                 }
             }
-        );
+        });
+
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
@@ -981,17 +965,14 @@ describe("select dataset", () => {
     });
 
     it("does not import survey and program file if it doesn't exist", async () => {
-        const store = getStore(
-            {
-                selectedDataset: {
-                    ...fakeDataset,
-                    resources: {
-                        shape: mockDatasetResource(shape),
-                        survey: mockDatasetResource(survey)
-                    } as any
+        const store = getStore({}, {}, false, {
+            selectedDatasetAvailableResources: () => {
+                return {
+                    shape: mockDatasetResource(shape),
+                    survey: mockDatasetResource(survey)
                 }
             }
-        );
+        });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
@@ -1016,18 +997,15 @@ describe("select dataset", () => {
     });
 
     it("does not import any survey and program files if shape file doesn't exist", async () => {
-        const store = getStore(
-            {
-                selectedDataset: {
-                    ...fakeDataset,
-                    resources: {
+        const store = getStore({}, {}, false, {
+            selectedDatasetAvailableResources: () => {
+                return {
                         survey: mockDatasetResource(survey),
                         program: mockDatasetResource(program),
-                        anc: mockDatasetResource(anc)
-                    } as any
+                    anc: mockDatasetResource(anc)
                 }
             }
-        );
+        });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
         rendered.find("button").trigger("click");
 
@@ -1054,19 +1032,16 @@ describe("select dataset", () => {
     });
 
     it("imports survey and program files if pre-existing shape file is present", async () => {
-        const store = getStore(
-            {
-                selectedDataset: {
-                    ...fakeDataset,
-                    resources: {
-                        shape: mockDatasetResource(shape),
-                        survey: mockDatasetResource(survey),
-                        program: mockDatasetResource(program),
-                        anc: mockDatasetResource(anc)
-                    } as any
+        const store = getStore({}, {}, false, {
+            selectedDatasetAvailableResources: () => {
+                return {
+                    shape: mockDatasetResource(shape),
+                    survey: mockDatasetResource(survey),
+                    program: mockDatasetResource(program),
+                    anc: mockDatasetResource(anc)
                 }
             }
-        );
+        });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
 
         rendered.find("button").trigger("click");
