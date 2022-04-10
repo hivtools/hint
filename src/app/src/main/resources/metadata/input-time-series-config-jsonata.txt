@@ -68,7 +68,8 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
                     "type": "scatter",
                     "line": {
                         "color": $lineColor
-                    }
+                    },
+                    "hovertemplate": "(%{x}, %{y})<br>" & ($lookup($dataByArea, $v).area_hierarchy)[0] & "<extra></extra>"
                 },
                 {
                     "name": ($lookup($dataByArea, $v).area_name)[0],
@@ -80,7 +81,8 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
                     "type": "scatter",
                     "line": {
                         "color": $highlightColor
-                    }
+                    },
+                    "hovertemplate": "(%{x}, %{y})<br>" & ($lookup($dataByArea, $v).area_hierarchy)[0] & "<extra></extra>"
                 }
             ]
         )}
