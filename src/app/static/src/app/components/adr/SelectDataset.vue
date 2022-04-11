@@ -485,7 +485,10 @@
                 if (this.open) {
                     this.preSelectDataset();
                 }
-            }
+            },
+            // selectedDatasetAvailableResources(){
+            //     console.log("selectedDatasetAvailableResources", this.selectedDatasetAvailableResources)
+            // }
         },
         mounted() {
             this.refreshDatasetMetadata();
