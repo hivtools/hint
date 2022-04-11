@@ -99,7 +99,6 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
 
     async refreshDatasetMetadata(context) {
         const { commit, state, rootState, rootGetters } = context
-        // console.log("refresh getters", rootGetters)
         if (state.selectedDataset) {
             let url = `/adr/datasets/${state.selectedDataset.id}`;
             if (state.selectedDataset.release) {

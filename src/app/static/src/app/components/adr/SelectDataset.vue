@@ -143,12 +143,10 @@
         updateDatasetRelease: (release: Release) => void;
         updateValid: (valid: boolean) => void;
         preSelectDataset: () => void;
-        // checkResourceAvailable: (resourceType: string) => boolean;
     }
 
     interface Computed {
         datasets: any[];
-        // selectedDatasetFromDatasets: any | null;
         selectedRelease: Release | null;
         releaseName: string | null;
         releaseURL: string;
@@ -166,7 +164,6 @@
         hasPjnzFile: boolean;
         hasPopulationFile: boolean;
         selectedDatasetAvailableResources: { [k in keyof DatasetResourceSet]?: DatasetResource | null }
-        // availableResources: { [k in keyof DatasetResourceSet]?: DatasetResource | null }
     }
 
     interface Data {
@@ -303,25 +300,7 @@
             ),
             disableImport() {
                 return !this.newDatasetId || !this.valid
-            },
-            // selectedDatasetFromDatasets(){
-            //     return this.datasets.find(dataset => dataset.id === this.newDatasetId) || null
-            // },
-            // availableResources(){
-            //     const resourceTypes = {
-            //         pjnz: "inputs-unaids-spectrum-file",
-            //         pop: "inputs-unaids-population",
-            //         shape: "inputs-unaids-geographic",
-            //         survey: "inputs-unaids-survey",
-            //         program: "inputs-unaids-art",
-            //         anc: "inputs-unaids-anc"
-            //     }
-            //     const resources: { [k in keyof DatasetResourceSet]?: DatasetResource | null } = {}
-            //     Object.entries(resourceTypes).forEach(([key, value]) => {
-            //         resources[key as keyof typeof resources] = this.checkResourceAvailable(value) ? this.selectedDataset!.resources[key as keyof typeof resources] : null
-            //     })
-            //     return resources
-            // }
+            }
         },
         methods: {
             getDatasets: mapActionByName("adr", "getDatasets"),
@@ -341,9 +320,6 @@
             importSurvey: mapActionByName("surveyAndProgram", "importSurvey"),
             importProgram: mapActionByName("surveyAndProgram", "importProgram"),
             importANC: mapActionByName("surveyAndProgram", "importANC"),
-            // checkResourceAvailable(resourceType){
-            //     return this.selectedDatasetFromDatasets?.resources.some((resource: any) => resource.resource_type && resource.resource_type === resourceType)
-            // },
             async importDataset() {
                 this.stopPolling();
 
@@ -485,10 +461,7 @@
                 if (this.open) {
                     this.preSelectDataset();
                 }
-            },
-            // selectedDatasetAvailableResources(){
-            //     console.log("selectedDatasetAvailableResources", this.selectedDatasetAvailableResources)
-            // }
+            }
         },
         mounted() {
             this.refreshDatasetMetadata();
