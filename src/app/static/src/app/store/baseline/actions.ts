@@ -112,7 +112,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
                 .then((response) => {
                     if (response) {
                         const metadata = response.data;
-                        const avaliableResources = rootGetters["baseline/selectedDatasetAvailableResources"]
+                        const avaliableResources = rootGetters ? rootGetters["baseline/selectedDatasetAvailableResources"] : {}
                         const exceptions = { // where DatasetResource keys do not match ADRSchemas keys
                             pop: "population",
                             program: "programme"
