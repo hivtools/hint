@@ -128,10 +128,32 @@ describe("Survey and programme mutations", () => {
     it("sets and clears warnings", () => {
         const testState = mockSurveyAndProgramState();
         const warnings = [mockWarning()]
-        mutations.WarningsFetched(testState, {payload: warnings});
+        mutations.WarningsFetched(testState, {payload: {"type": 2, "warnings": warnings}});
         expect(testState.warnings).toEqual([mockWarning()]);
         mutations.ClearWarnings(testState);
         expect(testState.warnings).toEqual([]);
+        expect(testState.sapWarnings).toEqual([]);
+    });
+
+    it("does not display duplicate warnings", () => {
+
+        const testDuplicateWarnings = {
+            text: "be careful",
+            locations: ["review_inputs"]
+        };
+
+        const testState = mockSurveyAndProgramState();
+        const warnings = [mockWarning()]
+
+        mutations.WarningsFetched(testState, {payload: {"type": 2, "warnings": warnings}});
+        mutations.WarningsFetched(testState, {payload: {"type": 2, "warnings": testDuplicateWarnings}});
+
+        expect(testState.warnings).not.toEqual([mockWarning()]);
+        expect(testState.warnings).toEqual([testDuplicateWarnings]);
+        mutations.ClearWarnings(testState);
+
+        expect(testState.warnings).toEqual([]);
+        expect(testState.sapWarnings).toEqual([]);
     });
 
 

@@ -67,12 +67,12 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
             modelOptions: filterWarnings(state.modelOptions.warnings, location),
             modelRun: filterWarnings(state.modelRun.warnings, location),
             modelCalibrate: filterWarnings(state.modelCalibrate.warnings, location),
-            reviewInputs: filterWarnings(spreadReviewInputsWarnings(state), location)
+            reviewInputs: filterWarnings(allReviewInputsWarnings(state), location)
         }
     }
 }
 
-const spreadReviewInputsWarnings = (state: RootState) => {
+const allReviewInputsWarnings = (state: RootState) => {
     const sapWarnings = state.surveyAndProgram?.warnings || []
     const genericChartWarnings = state.genericChart?.warnings || []
     return [...sapWarnings, ...genericChartWarnings]

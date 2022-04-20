@@ -160,13 +160,13 @@
                 }
                 return !this.isComplete(activeStep)
             },
-            clearReviewInputWarnings: function() {
+            clearReviewInputsWarnings: function() {
                 this.clearSurveyAndProgramWarnings()
                 this.clearGenericChartWarnings()
             },
             clearWarnings(){
                 const mutationMethods: { [key: number]: () => void; } = {
-                    2: this.clearReviewInputWarnings,
+                    2: this.clearReviewInputsWarnings,
                     3: this.clearModelOptionsWarnings,
                     4: this.clearModelRunWarnings,
                     5: this.clearModelCalibrateWarnings,

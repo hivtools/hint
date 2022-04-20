@@ -66,7 +66,10 @@ describe("Survey and programme actions", () => {
             payload: {data: "SOME DATA", warnings: "TEST WARNINGS"}
         });
 
-        expect(commit.mock.calls[2][0]).toStrictEqual({type: "WarningsFetched", payload: "TEST WARNINGS"});
+        expect(commit.mock.calls[2][0]).toStrictEqual(
+            {type: "WarningsFetched",
+                payload: {type: 2, warnings: "TEST WARNINGS"}
+            });
 
         //Should also have set selectedDataType
         expect(commit.mock.calls[3][0]).toStrictEqual({type: "SelectedDataTypeUpdated", payload: DataType.Survey});
@@ -171,7 +174,11 @@ describe("Survey and programme actions", () => {
             payload: {data: "TEST", warnings: "TEST WARNINGS"}
         });
 
-        expect(commit.mock.calls[3][0]).toStrictEqual({type: "WarningsFetched", payload: "TEST WARNINGS"});
+        expect(commit.mock.calls[3][0]).toStrictEqual(
+            {
+                type: "WarningsFetched",
+                payload: {type: 1, warnings: "TEST WARNINGS"}
+            });
 
         //Should also have set selectedDataType
         expect(commit.mock.calls[4][0]).toStrictEqual(
@@ -268,7 +275,7 @@ describe("Survey and programme actions", () => {
         expect(commit.mock.calls[3][0]).toStrictEqual(
             {
                 type: "WarningsFetched",
-                payload: "TEST WARNINGS"
+                payload: {type: 0, warnings: "TEST WARNINGS"}
             });
 
         //Should also have set selectedDataType
