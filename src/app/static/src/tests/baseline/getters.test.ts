@@ -136,8 +136,14 @@ it("selectedDatasetAvailableResources only returns resources that the user has p
         adr: mockADRState({
             datasets: [
                 {
-                    ...datasets[0],
-                    resources: [resources[0]]
+                    id: "id1",
+                    title: "Some data",
+                    organization: { title: "org", id: "org-id" },
+                    name: "some-data",
+                    type: "naomi-data",
+                    resources: [
+                        { resource_type: "inputs-unaids-spectrum-file" }
+                    ]
                 }
             ]
         })

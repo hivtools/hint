@@ -614,8 +614,8 @@ describe("Baseline actions", () => {
             }))
 
         const resources = {
-            ...availableResources,
             shape: null,
+            pjnz: availableResources.pjnz,
             pop: null,
             survey: null,
             program: null,
