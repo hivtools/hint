@@ -130,7 +130,7 @@ class DiseaseControllerTests : HintrControllerTests()
                 .isInstanceOf(HintException::class.java)
                 .matches { (it as HintException).key == "missingPjnzFile"}
                 .matches { (it as HintException).httpStatus == HttpStatus.BAD_REQUEST }
-                .hasTranslatedMessage("You must upload a spectrum file before uploading survey or programme data.")
+                .hasTranslatedMessage("You must upload a Spectrum file before uploading survey or programme data.")
     }
 
     @Test
@@ -151,7 +151,7 @@ class DiseaseControllerTests : HintrControllerTests()
                 .isInstanceOf(HintException::class.java)
                 .matches { (it as HintException).key == "missingPjnzFile"}
                 .matches { (it as HintException).httpStatus == HttpStatus.BAD_REQUEST }
-                .hasTranslatedMessage("You must upload a spectrum file before uploading survey or programme data.")
+                .hasTranslatedMessage("You must upload a Spectrum file before uploading survey or programme data.")
     }
 
     @Test

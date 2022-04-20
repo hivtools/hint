@@ -79,7 +79,7 @@ export const mutations: MutationTree<SurveyAndProgramState> = {
 
     [SurveyAndProgramMutation.WarningsFetched](state: SurveyAndProgramState, action: PayloadWithType<SAPWarnings>) {
 
-        state.sapWarnings = state.sapWarnings.filter(warning => warning.type != action.payload.type)
+        state.sapWarnings = state.sapWarnings.filter(warning => warning.type !== action.payload.type)
 
         state.sapWarnings.push({type: action.payload.type, warnings: action.payload.warnings})
 
