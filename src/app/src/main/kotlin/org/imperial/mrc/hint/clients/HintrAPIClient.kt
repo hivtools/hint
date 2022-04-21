@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.Fuel.head
 import com.github.kittinunf.fuel.httpDownload
 import com.github.kittinunf.fuel.httpPost
-import org.imperial.mrc.hint.*
+import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.FileType
+import org.imperial.mrc.hint.asResponseEntity
+import org.imperial.mrc.hint.getStreamingResponseEntity
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.springframework.http.ResponseEntity
@@ -17,7 +20,7 @@ interface HintrAPIClient
 {
     fun validateBaselineIndividual(file: VersionFileWithPath, type: FileType): ResponseEntity<String>
     fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
-    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType, pjnzPath: String, strict: Boolean)
+    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType, strict: Boolean)
             : ResponseEntity<String>
 
     fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions): ResponseEntity<String>
@@ -77,13 +80,11 @@ class HintrFuelAPIClient(
     override fun validateSurveyAndProgramme(file: VersionFileWithPath,
                                             shapePath: String,
                                             type: FileType,
-                                            pjnzPath: String,
                                             strict: Boolean): ResponseEntity<String>
     {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("type" to type.toString().toLowerCase(),
-                        "pjnz" to pjnzPath,
                         "file" to file,
                         "shape" to shapePath))
 

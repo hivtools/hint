@@ -74,7 +74,6 @@
     import {ModelOptionsMutation} from "../store/modelOptions/mutations";
     import {ModelCalibrateMutation} from "../store/modelCalibrate/mutations";
     import {GenericChartMutation} from "../store/genericChart/mutations";
-    import {SurveyAndProgramMutation} from "../store/surveyAndProgram/mutations";
 
     interface ComputedState {
         activeStep: number,
@@ -90,9 +89,9 @@
     interface ComputedGetters {
         ready: boolean,
         complete: boolean,
-        loadingFromFile: boolean,
+        loadingFromFile: boolean
         loading: boolean,
-        warnings: (stepName: string) => StepWarnings,
+        warnings: (stepName: string) => StepWarnings
     }
 
     const namespace = 'stepper';
@@ -160,10 +159,6 @@
                 }
                 return !this.isComplete(activeStep)
             },
-            clearReviewInputsWarnings: function() {
-                this.clearSurveyAndProgramWarnings()
-                this.clearGenericChartWarnings()
-            },
             clearWarnings(){
                 const mutationMethods: { [key: number]: () => void; } = {
                     2: this.clearReviewInputsWarnings,
@@ -180,8 +175,7 @@
             clearModelRunWarnings: mapMutationByName("modelRun", ModelRunMutation.ClearWarnings),
             clearModelCalibrateWarnings: mapMutationByName("modelCalibrate", ModelCalibrateMutation.ClearWarnings),
             clearModelOptionsWarnings: mapMutationByName("modelOptions", ModelOptionsMutation.ClearWarnings),
-            clearGenericChartWarnings: mapMutationByName("genericChart", GenericChartMutation.ClearWarnings),
-            clearSurveyAndProgramWarnings: mapMutationByName("surveyAndProgram", SurveyAndProgramMutation.ClearWarnings)
+            clearReviewInputsWarnings: mapMutationByName("genericChart", GenericChartMutation.ClearWarnings)
         },
         created() {
             //redirect to Projects if logged in with no currentProject

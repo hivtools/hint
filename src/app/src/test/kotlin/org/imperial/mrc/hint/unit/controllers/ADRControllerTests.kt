@@ -11,6 +11,7 @@ import org.imperial.mrc.hint.clients.ADRClient
 import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.controllers.ADRController
+import org.imperial.mrc.hint.controllers.DiseaseController
 import org.imperial.mrc.hint.controllers.HintrController
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
@@ -21,6 +22,7 @@ import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.mockito.internal.verification.Times
 import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -73,7 +75,7 @@ class ADRControllerTests : HintrControllerTests()
 
     private val objectMapper = ObjectMapper()
 
-    private val mockUserRepo = mock<UserRepository> {
+    private val mockUserRepo = mock<UserRepository>() {
         on { getADRKey("test") } doReturn "encrypted".toByteArray()
     }
 
@@ -116,7 +118,7 @@ class ADRControllerTests : HintrControllerTests()
                 mockSession, mock(), mock())
         val result = sut.getAPIKey()
         val data = objectMapper.readTree(result.body!!)["data"]
-        assertThat(data.isNull).isTrue
+        assertThat(data.isNull).isTrue()
     }
 
     @Test
@@ -142,7 +144,7 @@ class ADRControllerTests : HintrControllerTests()
                 mock())
         val result = sut.getDatasets()
         val data = objectMapper.readTree(result.body!!)["data"]
-        assertThat(data.isArray).isTrue
+        assertThat(data.isArray).isTrue()
         assertThat(data[0]["resources"].count()).isEqualTo(2)
     }
 
@@ -169,7 +171,7 @@ class ADRControllerTests : HintrControllerTests()
                 mock())
         val result = sut.getDatasets(true)
         val data = objectMapper.readTree(result.body!!)["data"]
-        assertThat(data.isArray).isTrue
+        assertThat(data.isArray).isTrue()
         assertThat(data[0]["resources"].count()).isEqualTo(2)
     }
 
@@ -196,7 +198,7 @@ class ADRControllerTests : HintrControllerTests()
                 mock())
         val result = sut.getDatasets()
         val data = objectMapper.readTree(result.body!!)["data"]
-        assertThat(data.isArray).isTrue
+        assertThat(data.isArray).isTrue()
         assertThat(data.count()).isEqualTo(1)
         assertThat(data[0]["resources"].count()).isEqualTo(2)
     }
@@ -412,7 +414,7 @@ class ADRControllerTests : HintrControllerTests()
         verify(mockApiClient)
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.Survey, "pjnz-path", true)
+                        "shape-path", FileType.Survey, true)
     }
 
     @Test
@@ -428,7 +430,7 @@ class ADRControllerTests : HintrControllerTests()
         verify(mockApiClient)
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.Survey, "pjnz-path",false)
+                        "shape-path", FileType.Survey, false)
     }
 
     @Test
@@ -444,7 +446,7 @@ class ADRControllerTests : HintrControllerTests()
         verify(mockApiClient)
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.Survey, "pjnz-path", true)
+                        "shape-path", FileType.Survey, true)
     }
 
     @Test

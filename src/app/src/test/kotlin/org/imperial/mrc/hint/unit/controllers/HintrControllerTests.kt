@@ -36,9 +36,6 @@ abstract class HintrControllerTests
 
     protected fun getMockFileManager(type: FileType): FileManager
     {
-        val mockShape = VersionFileWithPath("shape-path", "hash", "shape-file-name.csv", false)
-        val mockPjnz = VersionFileWithPath("pjnz-path", "hash", "pjnz-file-name.csv", false)
-
         return mock {
             on {
                 saveFile(argWhere<MultipartFile> {
@@ -51,12 +48,12 @@ abstract class HintrControllerTests
             } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv", false)
 
             on {
-                getFile(type)
-            } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv", false)
+                getFile(FileType.Shape)
+            } doReturn VersionFileWithPath("shape-path", "hash", "shape-file-name.csv", false)
 
             on {
-                getFiles(FileType.PJNZ, FileType.Shape)
-            } doReturn mapOf(FileType.Shape.toString() to mockShape, FileType.PJNZ.toString() to mockPjnz)
+                getFile(type)
+            } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv", false)
         }
     }
 
@@ -64,7 +61,7 @@ abstract class HintrControllerTests
     {
         return mock {
             on { validateBaselineIndividual(argWhere { it.path == "test-path" }, eq(type)) } doReturn ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
-            on { validateSurveyAndProgramme(argWhere { it.path == "test-path" }, eq("shape-path"), eq(type), eq("pjnz-path"), any()) } doReturn
+            on { validateSurveyAndProgramme(argWhere { it.path == "test-path" }, eq("shape-path"), eq(type), any()) } doReturn
                     ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)
         }
     }
@@ -95,7 +92,7 @@ abstract class HintrControllerTests
             else -> verify(mockApiClient)
                     .validateSurveyAndProgramme(
                             VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                            "shape-path", fileType, "pjnz-path",true)
+                            "shape-path", fileType, true)
         }
     }
 
@@ -119,7 +116,7 @@ abstract class HintrControllerTests
                             VersionFileWithPath("test-path", "hash", "some-file-name.csv", false), fileType)
             else -> verify(mockApiClient)
                     .validateSurveyAndProgramme(VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                            "shape-path", fileType, "pjnz-path",true)
+                            "shape-path", fileType, true)
         }
     }
 

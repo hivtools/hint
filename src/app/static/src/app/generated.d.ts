@@ -1095,16 +1095,6 @@ export interface ProgrammeResponse {
       description?: string;
     }[];
   };
-  warnings: {
-    text: string;
-    locations: (
-      | "review_inputs"
-      | "model_options"
-      | "model_fit"
-      | "model_calibrate"
-      | "review_output"
-      | "download_results")[];
-  }[];
 }
 export interface AncResponse {
   hash: string;
@@ -1137,16 +1127,6 @@ export interface AncResponse {
       description?: string;
     }[];
   };
-  warnings: {
-    text: string;
-    locations: (
-      | "review_inputs"
-      | "model_options"
-      | "model_fit"
-      | "model_calibrate"
-      | "review_output"
-      | "download_results")[];
-  }[];
 }
 export interface SurveyResponse {
   hash: string;
@@ -1186,16 +1166,6 @@ export interface SurveyResponse {
       description?: string;
     }[];
   };
-  warnings: {
-    text: string;
-    locations: (
-      | "review_inputs"
-      | "model_options"
-      | "model_fit"
-      | "model_calibrate"
-      | "review_output"
-      | "download_results")[];
-  }[];
 }
 export interface ValidateSurveyAndProgrammeRequest {
   type: "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
@@ -1206,7 +1176,6 @@ export interface ValidateSurveyAndProgrammeRequest {
     fromADR: boolean;
   };
   shape: string | null;
-  pjnz: string | null;
 }
 export interface VersionInfo {
   hintr: string;

@@ -161,7 +161,7 @@ class ADRTests : SecureIntegrationTests()
     @EnumSource(IsAuthorized::class)
     fun `can save survey from ADR`(isAuthorized: IsAuthorized)
     {
-        importGeoFiles(isAuthorized)
+        importShapeFile(isAuthorized)
 
         val survey = extractUrl(isAuthorized, "inputs-unaids-survey")
         val result = testRestTemplate.postForEntity<String>("/adr/survey",
@@ -173,7 +173,7 @@ class ADRTests : SecureIntegrationTests()
     @EnumSource(IsAuthorized::class)
     fun `can save ANC from ADR`(isAuthorized: IsAuthorized)
     {
-        importGeoFiles(isAuthorized)
+        importShapeFile(isAuthorized)
 
         val anc = extractUrl(isAuthorized, "inputs-unaids-anc")
         val result = testRestTemplate.postForEntity<String>("/adr/anc",
@@ -185,7 +185,7 @@ class ADRTests : SecureIntegrationTests()
     @EnumSource(IsAuthorized::class)
     fun `can save programme from ADR`(isAuthorized: IsAuthorized)
     {
-        importGeoFiles(isAuthorized)
+        importShapeFile(isAuthorized)
 
         val programme = extractUrl(isAuthorized, "inputs-unaids-art")
         val result = testRestTemplate.postForEntity<String>("/adr/programme",
@@ -340,24 +340,12 @@ class ADRTests : SecureIntegrationTests()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         return HttpEntity(map, headers)
     }
+
     private fun importShapeFile(isAuthorized: IsAuthorized)
     {
         val shape = extractUrl(isAuthorized, "inputs-unaids-geographic")
         testRestTemplate.postForEntity<String>("/adr/shape",
                 getPostEntityWithUrl(shape))
-    }
-
-    private fun importPjnzFile(isAuthorized: IsAuthorized)
-    {
-        val pjnz = extractUrl(isAuthorized, "inputs-unaids-spectrum-file")
-        testRestTemplate.postForEntity<String>("/adr/pjnz",
-                getPostEntityWithUrl(pjnz))
-    }
-
-    private fun importGeoFiles(isAuthorized: IsAuthorized)
-    {
-        importPjnzFile(isAuthorized)
-        importShapeFile(isAuthorized)
     }
 
     private fun getPostEntityWithUrl(url: String): HttpEntity<LinkedMultiValueMap<String, String>>

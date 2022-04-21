@@ -1,7 +1,3 @@
-# hint 1.96.0
-
-* Display warnings from input validation 
-
 # hint 1.95.1
 
 * Don't remove survey, ANC and ART data if user uploads a new baseline file
