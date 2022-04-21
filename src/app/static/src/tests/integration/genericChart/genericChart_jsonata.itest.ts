@@ -127,7 +127,7 @@ describe("inputTimeSeries jsonata", () => {
                 "yaxis": "y1",
                 "type": "scatter",
                 "line": {"color": "rgb(51, 51, 51)"},
-                "hovertemplate": "(%{x}, %{y})<br>Northern/Chitipa<extra></extra>"
+                "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
             },
             {
                 "name": "Chitipa",
@@ -138,7 +138,7 @@ describe("inputTimeSeries jsonata", () => {
                 "yaxis": "y1",
                 "type": "scatter",
                 "line": {"color": "rgb(255, 51, 51)"},
-                "hovertemplate": "(%{x}, %{y})<br>Northern/Chitipa<extra></extra>"
+                "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
             },
             {
                 "name": "Karonga",
@@ -149,7 +149,7 @@ describe("inputTimeSeries jsonata", () => {
                 "yaxis": "y2",
                 "type": "scatter",
                 "line": {"color": "rgb(51, 51, 51)"},
-                "hovertemplate": "(%{x}, %{y})<br>Northern/Karonga<extra></extra>"
+                "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
             },
             {
                 "name": "Karonga",
@@ -160,7 +160,7 @@ describe("inputTimeSeries jsonata", () => {
                 "yaxis": "y2",
                 "type": "scatter",
                 "line": {"color": "rgb(255, 51, 51)"},
-                "hovertemplate": "(%{x}, %{y})<br>Northern/Karonga<extra></extra>"
+                "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
             },
             {
                 "name": "Rumphi",
@@ -171,7 +171,7 @@ describe("inputTimeSeries jsonata", () => {
                 "yaxis": "y3",
                 "type": "scatter",
                 "line": {"color": "rgb(51, 51, 51)"},
-                "hovertemplate": "(%{x}, %{y})<br>Northern/Rumphi<extra></extra>"
+                "hovertemplate": "%{x}, %{y}<br>Northern/Rumphi<extra></extra>"
             },
             {
                 "name": "Rumphi",
@@ -182,7 +182,7 @@ describe("inputTimeSeries jsonata", () => {
                 "yaxis": "y3",
                 "type": "scatter",
                 "line": {"color": "rgb(255, 51, 51)"},
-                "hovertemplate": "(%{x}, %{y})<br>Northern/Rumphi<extra></extra>"
+                "hovertemplate": "%{x}, %{y}<br>Northern/Rumphi<extra></extra>"
             }
         ]));
     });
@@ -325,7 +325,7 @@ describe("inputTimeSeries jsonata", () => {
                 "yaxis": "y1",
                 "type": "scatter",
                 "line": {"color": "rgb(51, 51, 51)"},
-                "hovertemplate": "(%{x}, %{y})<br>Northern/Chitipa<extra></extra>"
+                "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
             },
             {
                 "name": "Chitipa",
@@ -336,7 +336,7 @@ describe("inputTimeSeries jsonata", () => {
                 "yaxis": "y1",
                 "type": "scatter",
                 "line": {"color": "rgb(255, 51, 51)"},
-                "hovertemplate": "(%{x}, %{y})<br>Northern/Chitipa<extra></extra>"
+                "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
             },
             {
                 "name": "Karonga",
@@ -347,7 +347,7 @@ describe("inputTimeSeries jsonata", () => {
                 "yaxis": "y2",
                 "type": "scatter",
                 "line": {"color": "rgb(51, 51, 51)"},
-                "hovertemplate": "(%{x}, %{y})<br>Northern/Karonga<extra></extra>"
+                "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
             },
             {
                 "name": "Karonga",
@@ -358,7 +358,7 @@ describe("inputTimeSeries jsonata", () => {
                 "yaxis": "y2",
                 "type": "scatter",
                 "line": {"color": "rgb(255, 51, 51)"},
-                "hovertemplate": "(%{x}, %{y})<br>Northern/Karonga<extra></extra>"
+                "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
             },
             {
                 "name": "Chitipa",
@@ -369,7 +369,7 @@ describe("inputTimeSeries jsonata", () => {
                 "yaxis": "y3",
                 "type": "scatter",
                 "line": {"color": "rgb(51, 51, 51)"},
-                "hovertemplate": "(%{x}, %{y})<br>Southern/Chitipa<extra></extra>"
+                "hovertemplate": "%{x}, %{y}<br>Southern/Chitipa<extra></extra>"
             },
             {
                 "name": "Chitipa",
@@ -380,7 +380,7 @@ describe("inputTimeSeries jsonata", () => {
                 "yaxis": "y3",
                 "type": "scatter",
                 "line": {"color": "rgb(255, 51, 51)"},
-                "hovertemplate": "(%{x}, %{y})<br>Southern/Chitipa<extra></extra>"
+                "hovertemplate": "%{x}, %{y}<br>Southern/Chitipa<extra></extra>"
             }
         ]));
 
@@ -462,7 +462,7 @@ describe("inputTimeSeries jsonata", () => {
                 "yaxis": "y1",
                 "type": "scatter",
                 "line": {"color": "rgb(51, 51, 51)"},
-                "hovertemplate": "(%{x}, %{y})<extra></extra>"
+                "hovertemplate": "%{x}, %{y}<extra></extra>"
             },
             {
                 "name": "Malawi",
@@ -473,7 +473,7 @@ describe("inputTimeSeries jsonata", () => {
                 "yaxis": "y1",
                 "type": "scatter",
                 "line": {"color": "rgb(255, 51, 51)"},
-                "hovertemplate": "(%{x}, %{y})<extra></extra>"
+                "hovertemplate": "%{x}, %{y}<extra></extra>"
             }
         ]));
     });

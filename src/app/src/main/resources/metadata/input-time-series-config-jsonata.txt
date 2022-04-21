@@ -59,6 +59,7 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
 
             $areaHierarchy := ($lookup($dataByArea, $v).area_hierarchy)[0];
             $areaHierarchyTooltip := $areaHierarchy ? "<br>" & $areaHierarchy : "";
+            $hoverTemplate := "%{x}, %{y}" & $areaHierarchyTooltip & "<extra></extra>";
 
             [
                {
@@ -72,7 +73,7 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
                     "line": {
                         "color": $lineColor
                     },
-                    "hovertemplate": "(%{x}, %{y})" & $areaHierarchyTooltip & "<extra></extra>"
+                    "hovertemplate": $hoverTemplate
                 },
                 {
                     "name": ($lookup($dataByArea, $v).area_name)[0],
@@ -85,7 +86,7 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
                     "line": {
                         "color": $highlightColor
                     },
-                    "hovertemplate": "(%{x}, %{y})" & $areaHierarchyTooltip & "<extra></extra>"
+                    "hovertemplate": $hoverTemplate
                 }
             ]
         )}
