@@ -18,6 +18,8 @@ class DiseaseTests : VersionFileTests()
     {
         authorize()
         testRestTemplate.getForEntity<String>("/")
+        testRestTemplate.postForEntity<String>("/baseline/pjnz/",
+                getTestEntity("Malawi2019.PJNZ"))
         testRestTemplate.postForEntity<String>("/baseline/shape/",
                 getTestEntity("malawi.geojson"))
     }
