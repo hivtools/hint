@@ -1,3 +1,7 @@
+# hint 1.96.1
+
+* Bug fixes -Clear current warning before import or upload failure
+
 # hint 1.96.0
 
 * Display warnings from input validation 
