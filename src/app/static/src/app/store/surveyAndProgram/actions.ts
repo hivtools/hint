@@ -173,6 +173,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                         commitSelectedDataTypeUpdated(commit, DataType.ANC)
                     }
                 }
+                commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.Survey, warnings: []}});
             });
     },
 
@@ -190,6 +191,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     }
                 }
                 commitClearGenericChartDataset(commit, DATASET_TYPE.ART)
+                commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.Program, warnings: []}});
             });
     },
 
@@ -207,6 +209,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     }
                 }
                 commitClearGenericChartDataset(commit, DATASET_TYPE.ANC)
+                commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.ANC, warnings: []}});
             });
     },
 
