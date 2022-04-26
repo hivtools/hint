@@ -1,3 +1,7 @@
+# hint 1.96.1
+
+* Project history page not persisting language
+
 # hint 1.96.0
 
 * Display warnings from input validation 
