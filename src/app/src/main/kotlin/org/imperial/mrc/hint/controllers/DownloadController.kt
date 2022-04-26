@@ -30,4 +30,11 @@ class DownloadController(val apiClient: HintrAPIClient)
     {
         return apiClient.downloadOutputResult(id)
     }
+
+    @GetMapping("/submit/status/result/{id}")
+    @ResponseBody
+    fun getComparisonResult(@PathVariable("id") id: String): ResponseEntity<StreamingResponseBody>
+    {
+        return apiClient.downloadComparisonResult(id)
+    }
 }

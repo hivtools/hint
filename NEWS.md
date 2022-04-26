@@ -1,3 +1,7 @@
+# hint 1.97.0
+
+* HINT endpoints for comparison report
+
 # hint 1.96.0
 
 * Display warnings from input validation 

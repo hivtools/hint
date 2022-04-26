@@ -40,6 +40,7 @@ interface HintrAPIClient
     fun downloadOutputStatus(id: String): ResponseEntity<String>
     fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
     fun getUploadMetadata(id: String): ResponseEntity<String>
+    fun downloadComparisonResult(id: String): ResponseEntity<StreamingResponseBody>
 }
 
 @Component
@@ -211,5 +212,12 @@ class HintrFuelAPIClient(
                 mapOf("data" to files))
 
         return postJson("chart-data/input-time-series/$type", json)
+    }
+
+    override fun downloadComparisonResult(id: String): ResponseEntity<StreamingResponseBody>
+    {
+        return "$baseUrl/submit/status/result/${id}"
+                .httpDownload()
+                .getStreamingResponseEntity(::head)
     }
 }
