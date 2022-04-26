@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component
 class GenericLoggerImpl(private val logger: Logger = LoggerFactory.getLogger(GenericLoggerImpl::class.java)): GenericLogger
 {
 
-    override fun info(log: LogMetadata)
+    override fun info(log: LogMetadata, msg: String)
     {
-        logger.info("TEST INFO",
+        logger.info(msg,
             kv("Username", log.username),
             kv("App", log.app),
             kv("Request", log.request),
@@ -22,9 +22,9 @@ class GenericLoggerImpl(private val logger: Logger = LoggerFactory.getLogger(Gen
         )
     }
 
-    override fun error(log: LogMetadata)
+    override fun error(log: LogMetadata, msg: String)
     {
-        logger.error("TEST ERROR",
+        logger.error(msg,
             kv("Username", log.username),
             kv("App", log.app),
             kv("Request", log.request),

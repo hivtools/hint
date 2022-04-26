@@ -445,7 +445,7 @@ class ProjectsControllerTests
         val result = sut.updateProjectNote(1, "notes")
 
         verify(mockRepo).updateProjectNote(1, "testUser", "notes")
-        verify(mockLogger).info(testLogData)
+        verify(mockLogger).info(testLogData, "additional project note message")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -461,7 +461,7 @@ class ProjectsControllerTests
         val result = sut.updateProjectNote(1, "updated project notes")
 
         verify(mockProjectRepo).updateProjectNote(1, "testUser", "updated project notes")
-        verify(mockLogger).info(testLogData)
+        verify(mockLogger).info(testLogData, "additional project note message")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 

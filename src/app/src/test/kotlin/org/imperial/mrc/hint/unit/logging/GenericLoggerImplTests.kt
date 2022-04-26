@@ -7,7 +7,7 @@ import net.logstash.logback.argument.StructuredArguments.kv
 import org.imperial.mrc.hint.logging.*
 import org.junit.jupiter.api.Test
 
-class LoggingTests
+class GenericLoggerImplTests
 {
     private val testLogData = LogMetadata(
         "testUser",
@@ -32,7 +32,7 @@ class LoggingTests
     fun `can display error logging in key value format`()
     {
         val sut = GenericLoggerImpl(mockLogger)
-        sut.error(testLogData)
+        sut.error(testLogData, "test error")
 
         verify(mockLogger).error(objectMapper.writeValueAsString(testLogData),
             kv("Username", testLogData.username),
@@ -49,7 +49,7 @@ class LoggingTests
     fun `can display info logging in key value format`()
     {
         val sut = GenericLoggerImpl(mockLogger)
-        sut.info(testLogData)
+        sut.info(testLogData, "test info")
 
         verify(mockLogger).info(objectMapper.writeValueAsString(testLogData),
             kv("Username", testLogData.username),
