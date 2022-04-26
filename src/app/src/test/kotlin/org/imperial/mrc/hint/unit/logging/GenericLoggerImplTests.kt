@@ -1,6 +1,5 @@
 package org.imperial.mrc.hint.unit.logging
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import net.logstash.logback.argument.StructuredArguments.kv
@@ -26,15 +25,13 @@ class GenericLoggerImplTests
 
     private val mockLogger = mock<org.slf4j.Logger>()
 
-    private val objectMapper = ObjectMapper()
-
     @Test
     fun `can display error logging in key value format`()
     {
         val sut = GenericLoggerImpl(mockLogger)
-        sut.error(testLogData, "test error")
+        sut.error(testLogData, "TEST")
 
-        verify(mockLogger).error(objectMapper.writeValueAsString(testLogData),
+        verify(mockLogger).error("TEST",
             kv("Username", testLogData.username),
             kv("App", testLogData.app),
             kv("Request", testLogData.request),
@@ -49,9 +46,9 @@ class GenericLoggerImplTests
     fun `can display info logging in key value format`()
     {
         val sut = GenericLoggerImpl(mockLogger)
-        sut.info(testLogData, "test info")
+        sut.info(testLogData, "TEST")
 
-        verify(mockLogger).info(objectMapper.writeValueAsString(testLogData),
+        verify(mockLogger).info("TEST",
             kv("Username", testLogData.username),
             kv("App", testLogData.app),
             kv("Request", testLogData.request),
