@@ -20,7 +20,7 @@
                               :disabled="!summary.downloadId || summary.preparing"
                               :file="summary"/>
                 </div>
-                <div id="comparison-download">
+                <div id="comparison-download" v-if="comparisonSwitch">
                     <download :translate-key="translation.comparison"
                               @click="downloadComparisonReport"
                               :disabled="!comparison.downloadId || comparison.preparing"
@@ -84,6 +84,7 @@
     import {DownloadResultsDependency} from "../../types";
     import Download from "./Download.vue";
     import {Error} from "../../generated"
+    import {switches} from "../../featureSwitches";
 
     interface ComputedFromADRUpload {
         uploading: boolean,
@@ -115,24 +116,26 @@
         getUserCanUpload: () => void
         getUploadFiles: () => void
         clearStatus: () => void;
-        prepareOutputs: () => void
+        prepareOutputs: (comparisonSwitch: boolean) => void
         downloadSummaryReport: () => void
         downloadSpectrumOutput: () => void
         downloadCoarseOutput: () => void
-        downloadComparisonOutput: () => void
+        downloadComparisonReport: () => void
         downloadUrl: (downloadId: string) => string
         handleDownloadResult: (downloadResults: DownloadResultsDependency) => void
     }
 
     interface Data {
-        uploadModalOpen: boolean
+        uploadModalOpen: boolean,
+        comparisonSwitch: boolean
     }
 
     export default Vue.extend<Data, Methods, Computed>({
         name: "downloadResults",
         data() {
             return {
-                uploadModalOpen: false
+                uploadModalOpen: false,
+                comparisonSwitch: switches.comparisonOutput
             }
         },
         computed: {
@@ -194,7 +197,7 @@
             downloadCoarseOutput() {
                 this.handleDownloadResult(this.coarseOutput)
             },
-            downloadComparisonOutput() {
+            downloadComparisonReport() {
                 this.handleDownloadResult(this.comparison)
             },
             clearStatus: mapMutationByName("adrUpload", "ClearStatus"),
@@ -205,7 +208,7 @@
         mounted() {
             this.getUserCanUpload();
             this.getUploadFiles();
-            this.prepareOutputs();
+            this.prepareOutputs(this.comparisonSwitch);
         },
         beforeMount() {
             this.clearStatus();

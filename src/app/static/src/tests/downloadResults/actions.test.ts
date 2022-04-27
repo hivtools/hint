@@ -508,7 +508,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/submit/comparison/calibrate1`)
             .reply(200, mockSuccess(downloadId));
 
-        await actions.prepareComparisonOutput({commit, state, dispatch, rootState: root} as any);
+        await actions.prepareComparisonOutput({commit, state, dispatch, rootState: root} as any, true);
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]["type"]).toBe("PreparingComparisonOutput")
@@ -526,7 +526,7 @@ describe(`download Results actions`, () => {
             comparison: mockDownloadResultsDependency({downloadId: "1"})
         });
 
-        await actions.prepareComparisonOutput({commit, state} as any);
+        await actions.prepareComparisonOutput({commit, state} as any, true);
         expect(mockAxios.history.get.length).toBe(0);
         expect(commit.mock.calls.length).toBe(0);
     });
@@ -622,7 +622,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/submit/comparison/calibrate1`)
             .reply(500, mockFailure("TEST FAILED"));
 
-        await actions.prepareComparisonOutput({commit, state, dispatch, rootState: root} as any);
+        await actions.prepareComparisonOutput({commit, state, dispatch, rootState: root} as any, true);
 
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "ComparisonError",
@@ -664,7 +664,7 @@ describe(`download Results actions`, () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
-        await actions.prepareOutputs({commit, dispatch} as any);
+        await actions.prepareOutputs({commit, dispatch} as any, true);
 
         expect(dispatch.mock.calls.length).toBe(4);
         expect(dispatch.mock.calls[0][0]).toBe("prepareCoarseOutput");

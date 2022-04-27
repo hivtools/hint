@@ -10,20 +10,20 @@ export interface DownloadResultsActions {
     prepareSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareSpectrumOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareCoarseOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
-    prepareComparisonOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
-    prepareOutputs: (store: ActionContext<DownloadResultsState, RootState>) => void
+    prepareComparisonOutput: (store: ActionContext<DownloadResultsState, RootState>, featureSwitch: boolean) => void
+    prepareOutputs: (store: ActionContext<DownloadResultsState, RootState>, featureSwitch: boolean) => void
     poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: string) => void
 }
 
 export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResultsActions = {
 
-    async prepareOutputs(context) {
+    async prepareOutputs(context, featureSwitch ) {
         const {dispatch} = context
         await Promise.all([
             dispatch("prepareCoarseOutput"),
             dispatch("prepareSummaryReport"),
             dispatch("prepareSpectrumOutput"),
-            dispatch("prepareComparisonOutput")
+            dispatch("prepareComparisonOutput", featureSwitch)
         ]);
     },
 
@@ -72,9 +72,9 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         }
     },
 
-    async prepareComparisonOutput(context) {
+    async prepareComparisonOutput(context, featureSwitch) {
         const {state, dispatch, rootState} = context
-        if (!state.comparison.downloadId) {
+        if (!state.comparison.downloadId && featureSwitch) {
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingComparisonOutput)

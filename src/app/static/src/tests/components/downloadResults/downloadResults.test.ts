@@ -76,7 +76,15 @@ describe("Download Results component", () => {
 
     it("renders as expected", () => {
         const store = createStore();
-        const wrapper = mount(DownloadResults, {store, localVue, stubs: ["upload-modal"]});
+        const wrapper = mount(DownloadResults,
+            {
+                store, localVue, stubs: ["upload-modal"],
+                data() {
+                    return {
+                        comparisonSwitch: true
+                    }
+                }
+            });
 
         const headers = wrapper.findAll("h4");
         expectTranslated(headers.at(0), "Export model outputs for Spectrum",
@@ -86,15 +94,18 @@ describe("Download Results component", () => {
             "Descarregar resultados de grupos etários grosseiros", store);
         expectTranslated(headers.at(2), "Download summary report",
             "Télécharger le rapport de synthèse", "Descarregar relatório de síntese", store);
-        expectTranslated(headers.at(3), "Upload to ADR",
+        expectTranslated(headers.at(3), "Download comparison report",
+            "Télécharger le rapport de comparaison", "Baixar relatório de comparação", store);
+        expectTranslated(headers.at(4), "Upload to ADR",
             "Télécharger vers ADR", "Carregar para o ADR", store);
 
         const buttons = wrapper.findAll("button");
-        expect(buttons.length).toBe(4);
+        expect(buttons.length).toBe(5);
         expectTranslated(buttons.at(0), "Export", "Exporter", "Exportação", store);
         expectTranslated(buttons.at(1), "Download", "Télécharger", "Descarregar", store);
         expectTranslated(buttons.at(2), "Download", "Télécharger", "Descarregar", store);
-        expectTranslated(buttons.at(3), "Upload", "Télécharger", "Carregar", store);
+        expectTranslated(buttons.at(3), "Download", "Télécharger", "Descarregar", store);
+        expectTranslated(buttons.at(4), "Upload", "Télécharger", "Carregar", store);
     });
 
     it(`renders, opens and closes dialog as expected`, async () => {
@@ -134,9 +145,17 @@ describe("Download Results component", () => {
 
     it("does not display upload button when a user does not have permission", async () => {
         const store = createStore({userCanUpload: false});
-        const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
+        const wrapper = mount(DownloadResults,
+            {
+                store, stubs: ["upload-modal"],
+                data() {
+                    return {
+                        comparisonSwitch: true
+                    }
+                }
+            });
         const headers = wrapper.findAll("h4");
-        expect(headers.length).toBe(3)
+        expect(headers.length).toBe(4)
     });
 
     it("does not render status messages or error alerts without appropriate states", () => {
@@ -217,13 +236,21 @@ describe("Download Results component", () => {
 
     it("disables download buttons when upload in progress", () => {
         const store = createStore({userCanUpload: true}, jest.fn(), {uploading: true});
-        const wrapper = shallowMount(DownloadResults, {store, localVue});
+        const wrapper = shallowMount(DownloadResults, {
+            store, localVue,
+            data() {
+                return {
+                    comparisonSwitch: true
+                }
+            }
+        });
 
         const downloadButtons = wrapper.findAll(Download);
-        expect(downloadButtons.length).toBe(3)
+        expect(downloadButtons.length).toBe(4)
         expect(downloadButtons.at(0).props("disabled")).toBe(true)
         expect(downloadButtons.at(1).props("disabled")).toBe(true)
         expect(downloadButtons.at(2).props("disabled")).toBe(true)
+        expect(downloadButtons.at(3).props("disabled")).toBe(true)
     });
 
     it("calls prepareOutputs on mount", () => {
@@ -336,6 +363,67 @@ describe("Download Results component", () => {
         });
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
         const button = wrapper.find("#coarse-output-download").find("button");
+        expect(button.attributes().disabled).toBeUndefined();
+        downloadFile(button);
+    });
+
+    it("cannot download comparison output while preparing", async () => {
+        const store = createStore({}, jest.fn(), {}, {
+            comparison: mockDownloadResultsDependency({
+                preparing: true,
+                downloadId: "1"
+            })
+        });
+
+        const wrapper = mount(DownloadResults,
+            {
+                store, stubs: ["upload-modal"],
+                data() {
+                    return {
+                        comparisonSwitch: true
+                    }
+                }
+            });
+
+        const button = wrapper.find("#comparison-download").find("button")
+        expect(button.attributes().disabled).toBe("disabled");
+    });
+
+    it("cannot download comparison output if downloadId does not exist", async () => {
+        const store = createStore();
+        const wrapper = mount(DownloadResults,
+            {
+                store, stubs: ["upload-modal"],
+                data() {
+                    return {
+                        comparisonSwitch: true
+                    }
+                }
+            });
+
+        const button = wrapper.find("#comparison-download").find("button")
+        expect(button.attributes().disabled).toBe("disabled");
+    });
+
+    it("can download comparison file once prepared", () => {
+        const store = createStore({}, jest.fn(), {}, {
+            comparison: mockDownloadResultsDependency({
+                preparing: false,
+                complete: true,
+                error: null,
+                downloadId: "123"
+            })
+        });
+        const wrapper = mount(DownloadResults,
+            {
+                store, stubs: ["upload-modal"],
+                data() {
+                    return {
+                        comparisonSwitch: true
+                    }
+                }
+            });
+        const button = wrapper.find("#comparison-download").find("button");
         expect(button.attributes().disabled).toBeUndefined();
         downloadFile(button);
     });

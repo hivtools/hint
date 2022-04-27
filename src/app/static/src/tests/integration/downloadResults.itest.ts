@@ -135,7 +135,7 @@ describe(`download results actions integration`, () => {
             modelCalibrate: {calibrateId: "calibrate123"}
         };
 
-        await actions.prepareComparisonOutput({commit, dispatch, state: {comparison: {}}, rootState: root} as any);
+        await actions.prepareComparisonOutput({commit, dispatch, state: {comparison: {}}, rootState: root} as any, true);
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]["type"]).toBe("ComparisonError");
