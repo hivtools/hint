@@ -124,6 +124,10 @@ export const mutations: MutationTree<DownloadResultsState> = {
                 state.summary.statusPollId = action.payload.pollId
                 break
             }
+            case DOWNLOAD_TYPE.COMPARISON: {
+                state.comparison.statusPollId = action.payload.pollId
+                break
+            }
         }
     },
 
