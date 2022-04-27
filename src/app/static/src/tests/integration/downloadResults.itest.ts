@@ -126,4 +126,44 @@ describe(`download results actions integration`, () => {
 
         }, 3100)
     })
+
+    it(`can prepare comparison output for download`, async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const root = {
+            ...rootState,
+            modelCalibrate: {calibrateId: "calibrate123"}
+        };
+
+        await actions.prepareComparisonOutput({commit, dispatch, state: {spectrum: {}}, rootState: root} as any);
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ComparisonError");
+        expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
+    })
+
+    it(`can poll comparison output for status update`, async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const root = {
+            ...rootState,
+            modelCalibrate: {calibrateId: "calibrate123"}
+        };
+
+        const state = {comparison: {downloadId: 123}}
+
+        await actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(2);
+            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted");
+            expect(commit.mock.calls[0][0]["payload"].downloadType).toBe(DOWNLOAD_TYPE.COMPARISON);
+            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1);
+
+            expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated");
+            expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
+            done()
+
+        }, 3100)
+    })
 })

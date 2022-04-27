@@ -1,3 +1,7 @@
+# hint 1.97.0
+
+* Trigger generation of comparison report from front end
+
 # hint 1.96.0
 
 * Display warnings from input validation 
