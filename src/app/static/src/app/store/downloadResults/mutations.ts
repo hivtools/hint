@@ -132,7 +132,7 @@ export const mutations: MutationTree<DownloadResultsState> = {
     },
 
     [DownloadResultsMutation.ResetIds](state: DownloadResultsState) {
-        const files = [state.spectrum, state.summary, state.coarseOutput];
+        const files = [state.spectrum, state.summary, state.coarseOutput, state.comparison];
         files.forEach((file) => {
             file.downloadId = "";
             window.clearInterval(file.statusPollId);
