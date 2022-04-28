@@ -1,3 +1,7 @@
+# hint 1.97.2
+
+* Bug fixes -Clear current warning before import or upload failure
+
 # hint 1.97.1
 
 * Project history page not persisting language
