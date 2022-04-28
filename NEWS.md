@@ -1,3 +1,7 @@
+# hint 1.97.1
+
+* Project history page not persisting language
+
 # hint 1.97.0
 
 * Input Time Series area hierarchy tooltips
