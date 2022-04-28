@@ -1,6 +1,6 @@
 package org.imperial.mrc.hint
 
-@Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.BINARY)
 annotation class ExcludeFromGeneratedCodeCoverage
 
 typealias NoCoverage = ExcludeFromGeneratedCodeCoverage
