@@ -1,3 +1,27 @@
+# hint 1.97.2
+
+* Bug fixes -Clear current warning before import or upload failure
+
+# hint 1.97.1
+
+* Project history page not persisting language
+
+# hint 1.97.0
+
+* Input Time Series area hierarchy tooltips
+
+# hint 1.96.0
+
+* Display warnings from input validation 
+
+# hint 1.95.1
+
+* Don't remove survey, ANC and ART data if user uploads a new baseline file
+
+# hint 1.95.0
+
+* Show uncertainty ranges in the barchart tool tip
+
 # hint 1.94.0
 
 * Display warnings on review-inputs

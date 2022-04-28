@@ -13,8 +13,11 @@ describe("Survey and programme actions", () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const formData = getFormData("malawi.geojson");
-
         await baselineActions.uploadShape({commit, dispatch, rootState} as any, formData);
+
+        const state = {country: "Malawi"} as any;
+        const pjnzFormData = getFormData("Malawi2019.PJNZ");
+        await baselineActions.uploadPJNZ({commit, state, dispatch, rootState} as any, pjnzFormData);
     });
 
     it("can upload survey", async () => {
@@ -26,9 +29,10 @@ describe("Survey and programme actions", () => {
 
         await actions.uploadSurvey({commit, dispatch, rootState} as any, formData);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
-        expect(commit.mock.calls[1][0]["payload"]["filename"])
+        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
+        expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("survey.csv")
+        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     });
 
     it("can upload programme", async () => {
@@ -40,11 +44,12 @@ describe("Survey and programme actions", () => {
 
         await actions.uploadProgram({commit, dispatch, rootState} as any, formData);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
-        expect(commit.mock.calls[1][0]["payload"]).toBe("art");
-        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
-        expect(commit.mock.calls[2][0]["payload"]["filename"])
+        expect(commit.mock.calls[2][0]["type"]).toBe("genericChart/ClearDataset");
+        expect(commit.mock.calls[2][0]["payload"]).toBe("art");
+        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
+        expect(commit.mock.calls[3][0]["payload"]["filename"])
             .toBe("programme.csv")
+        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     });
 
     it("can upload anc", async () => {
@@ -53,12 +58,12 @@ describe("Survey and programme actions", () => {
         const formData = getFormData("anc.csv");
 
         await actions.uploadANC({commit, rootState} as any, formData);
-
-        expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
-        expect(commit.mock.calls[1][0]["payload"]).toBe("anc");
-        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
-        expect(commit.mock.calls[2][0]["payload"]["filename"])
+        expect(commit.mock.calls[2][0]["type"]).toBe("genericChart/ClearDataset");
+        expect(commit.mock.calls[2][0]["payload"]).toBe("anc");
+        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
+        expect(commit.mock.calls[3][0]["payload"]["filename"])
             .toBe("anc.csv");
+        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     });
 
     it("can upload data with lax validation", async () => {
@@ -68,12 +73,12 @@ describe("Survey and programme actions", () => {
         const root = {...rootState, dataExplorationMode: true}
 
         await actions.uploadANC({commit, rootState: root} as any, formData);
-
-        expect(commit.mock.calls[1][0]["type"]).toBe("genericChart/ClearDataset");
-        expect(commit.mock.calls[1][0]["payload"]).toBe("anc");
-        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
-        expect(commit.mock.calls[2][0]["payload"]["filename"])
+        expect(commit.mock.calls[2][0]["type"]).toBe("genericChart/ClearDataset");
+        expect(commit.mock.calls[2][0]["payload"]).toBe("anc");
+        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
+        expect(commit.mock.calls[3][0]["payload"]["filename"])
             .toBe("anc-pos-greater-than-total.csv");
+        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     });
 
     it("can delete survey", async () => {

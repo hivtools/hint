@@ -7,7 +7,7 @@ import {actions as adrUploadActions} from "../../app/store/adrUpload/actions";
 import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutations";
 import {getFormData} from "./helpers";
 import {ADRMutation} from "../../app/store/adr/mutations";
-import {UploadFile, Dataset} from "../../app/types";
+import {UploadFile} from "../../app/types";
 
 // this suite tests all endpoints that talk to the ADR
 // we put them in a suite of their own so that we can run
@@ -30,8 +30,13 @@ describe("ADR dataset-related actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
+
         const formData = getFormData("malawi.geojson");
         await baselineActions.uploadShape({commit, dispatch, rootState} as any, formData);
+
+        const state = {country: "Malawi"} as any;
+        const pjnzFormData = getFormData("Malawi2019.PJNZ");
+        await baselineActions.uploadPJNZ({commit, state, dispatch, rootState} as any, pjnzFormData);
     });
 
     it("can fetch ADR datasets", async () => {
@@ -165,11 +170,11 @@ describe("ADR dataset-related actions", () => {
         const dispatch = jest.fn();
         const state = {country: "Malawi"} as any;
         await baselineActions.importPJNZ({commit, state, dispatch, rootState} as any,
-            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/Botswana2018.PJNZ");
+            "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/Malawi2019.PJNZ");
 
         expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.PJNZUpdated);
         expect(commit.mock.calls[1][0]["payload"]["filename"])
-            .toBe("Botswana2018.PJNZ");
+            .toBe("Malawi2019.PJNZ");
     }, 10000);
 
     it("can import shape file", async () => {
@@ -203,9 +208,10 @@ describe("ADR dataset-related actions", () => {
         await surveyAndProgramActions.importSurvey({commit, dispatch, rootState} as any,
             "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/survey.csv");
 
-        expect(commit.mock.calls[1][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
-        expect(commit.mock.calls[1][0]["payload"]["filename"])
+        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
+        expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("survey.csv")
+        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     }, 7000);
 
     it("can import programme", async () => {
@@ -216,13 +222,14 @@ describe("ADR dataset-related actions", () => {
         await surveyAndProgramActions.importProgram({commit, dispatch, rootState} as any,
             "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/programme.csv");
 
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+        expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "genericChart/ClearDataset",
             payload: "art"
         });
-        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
-        expect(commit.mock.calls[2][0]["payload"]["filename"])
+        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.ProgramUpdated);
+        expect(commit.mock.calls[3][0]["payload"]["filename"])
             .toBe("programme.csv")
+        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     }, 7000);
 
     it("can import anc", async () => {
@@ -232,13 +239,14 @@ describe("ADR dataset-related actions", () => {
         await surveyAndProgramActions.importANC({commit, rootState} as any,
             "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/anc.csv");
 
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+        expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "genericChart/ClearDataset",
             payload: "anc"
         });
-        expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
-        expect(commit.mock.calls[2][0]["payload"]["filename"])
+        expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.ANCUpdated);
+        expect(commit.mock.calls[3][0]["payload"]["filename"])
             .toBe("anc.csv");
+        expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
     }, 7000);
 
     it("hits upload files to adr endpoint and gets appropriate error", async () => {

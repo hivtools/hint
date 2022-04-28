@@ -40,8 +40,12 @@ describe("root getters", () => {
         {text: "model run test", locations: ["model_fit"]}
     ]
 
-    const reviewInputsWarnings: Warning[] = [
-        {text: "review input test", locations: ["review_inputs"]}
+    const genericChartWarnings: Warning[] = [
+        {text: "generic chart test", locations: ["review_inputs"]}
+    ]
+
+    const surveyAndProgramWarnings: Warning[] = [
+        {text: "survey and program test", locations: ["review_inputs"]}
     ]
 
     const testState = () => {
@@ -49,7 +53,8 @@ describe("root getters", () => {
             modelOptions: mockModelOptionsState({warnings: modelOptionWarnings}),
             modelRun: mockModelRunState({warnings: modelRunWarnings}),
             modelCalibrate: mockModelCalibrateState({warnings: calibrateWarnings}),
-            genericChart: mockGenericChartState({warnings: reviewInputsWarnings})
+            genericChart: mockGenericChartState({warnings: genericChartWarnings}),
+            surveyAndProgram: mockSurveyAndProgramState({warnings: surveyAndProgramWarnings})
         })
     }
 
@@ -297,7 +302,9 @@ describe("root getters", () => {
 
         const warnings = getters.warnings(rootState, null, testState() as any, null)
         const result = warnings("reviewInputs").reviewInputs
-        expect(result).toEqual(reviewInputsWarnings)
+        expect(result).toEqual([
+            {locations: ["review_inputs"], text: "survey and program test"},
+            {locations: ["review_inputs"], text: "generic chart test"}])
     })
 
     it(`can get modelCalibrate warnings when on model calibrate step`, () => {
@@ -349,7 +356,8 @@ describe("root getters", () => {
             modelOptions: mockModelOptionsState({warnings: undefined}),
             modelRun: mockModelRunState({warnings: undefined}),
             modelCalibrate: mockModelCalibrateState({warnings: undefined}),
-            genericChart: mockGenericChartState({warnings: undefined})
+            genericChart: mockGenericChartState({warnings: undefined}),
+            surveyAndProgram: mockSurveyAndProgramState({warnings: undefined})
         });
         const warnings = getters.warnings(rootState, null, rootState, null);
         const expected = {
@@ -365,5 +373,28 @@ describe("root getters", () => {
         expect(warnings("downloadResults")).toStrictEqual(expected);
         expect(warnings("reviewInputs")).toStrictEqual(expected);
     });
+
+    it(`can get genericChart, survey and program warnings if exists in review inputs step`, () => {
+        const rootState = testState()
+
+        const warnings = getters.warnings(rootState, null, testState() as any, null)
+        const result = warnings("reviewInputs").reviewInputs
+        expect(result).toEqual([
+            {locations: ["review_inputs"], text: "survey and program test"},
+            {locations: ["review_inputs"], text: "generic chart test"}])
+    })
+
+    it(`can get only survey and program warnings if exists in review inputs step`, () => {
+        const SAPRoot = () => {
+            return mockRootState({
+                surveyAndProgram: mockSurveyAndProgramState({warnings: surveyAndProgramWarnings})
+            })
+        }
+        const rootState = SAPRoot()
+
+        const warnings = getters.warnings(rootState, null, SAPRoot() as any, null)
+        const result = warnings("reviewInputs").reviewInputs
+        expect(result).toEqual([{locations: ["review_inputs"], text: "survey and program test"}])
+    })
 
 })

@@ -1,7 +1,7 @@
 import {MutationTree} from 'vuex';
-import {DataType, SurveyAndProgramState} from "./surveyAndProgram";
+import {DataType, SAPWarnings, SurveyAndProgramState} from "./surveyAndProgram";
 import {PayloadWithType} from "../../types";
-import {AncResponse, ProgrammeResponse, SurveyResponse, Error} from "../../generated";
+import {AncResponse, ProgrammeResponse, SurveyResponse, Error, Warning} from "../../generated";
 import {ReadyState} from "../../root";
 
 export enum SurveyAndProgramMutation {
@@ -15,7 +15,9 @@ export enum SurveyAndProgramMutation {
     ANCUpdated = "ANCUpdated",
     ANCError = "ANCError",
     ANCErroredFile = "ANCErroredFile",
-    Ready = "Ready"
+    Ready = "Ready",
+    WarningsFetched = "WarningsFetched",
+    ClearWarnings = "ClearWarnings"
 }
 
 export const SurveyAndProgramUpdates = [
@@ -73,5 +75,21 @@ export const mutations: MutationTree<SurveyAndProgramState> = {
 
     [SurveyAndProgramMutation.Ready](state: ReadyState) {
         state.ready = true;
+    },
+
+    [SurveyAndProgramMutation.WarningsFetched](state: SurveyAndProgramState, action: PayloadWithType<SAPWarnings>) {
+
+        state.sapWarnings = state.sapWarnings.filter(warning => warning.type !== action.payload.type)
+
+        state.sapWarnings.push({type: action.payload.type, warnings: action.payload.warnings})
+
+        state.warnings = state.sapWarnings.reduce<Warning[]>((warnings, warning) => {
+            return warnings.concat(warning.warnings);
+        }, []);
+    },
+
+    [SurveyAndProgramMutation.ClearWarnings](state: SurveyAndProgramState) {
+        state.warnings = [];
+        state.sapWarnings = [];
     }
 };

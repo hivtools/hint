@@ -262,6 +262,7 @@ export const mockSurveyResponse = (props: Partial<SurveyResponse> = {}): SurveyR
             "surveys": [],
             indicators: []
         },
+        warnings: [],
         ...props
     }
 };
@@ -273,6 +274,7 @@ export const mockProgramResponse = (props: Partial<ProgrammeResponse> = {}): Pro
         data: [],
         hash: "1234.csv",
         filters: {"age": [], "calendar_quarter": [], indicators: []},
+        warnings: [],
         ...props
     }
 };
@@ -284,6 +286,7 @@ export const mockAncResponse = (props: Partial<AncResponse> = {}): AncResponse =
         hash: "1234.csv",
         data: [],
         filters: {"year": [], indicators: []},
+        warnings: [],
         ...props
     }
 };
