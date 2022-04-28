@@ -102,7 +102,7 @@
 
     interface ComputedFromDownloadResults {
         summaryIsAvailableForUpload: boolean,
-        coarseOutputIsAvailableForUpload: boolean
+        spectrumIsAvailableForUpload: boolean
     }
 
     interface Computed extends ComputedFromDownloadResults{
@@ -159,7 +159,7 @@
             //show and upload only successfully downloaded outputFiles in upload modal
             getAvailableOutputFiles: function (key) {
                 let availableOutputFiles = {} as UploadFile
-                if (key === "outputZip" && !this.coarseOutputIsAvailableForUpload) {
+                if (key === "outputZip" && !this.spectrumIsAvailableForUpload) {
                     availableOutputFiles = this.uploadableFiles[key]
                 } else if (key === "outputSummary" && !this.summaryIsAvailableForUpload) {
                     availableOutputFiles = this.uploadableFiles[key]
@@ -175,7 +175,7 @@
         computed: {
             ...mapStateProps<DownloadResultsState, keyof ComputedFromDownloadResults>("downloadResults", {
                 summaryIsAvailableForUpload: (state => !!state.summary.error),
-                coarseOutputIsAvailableForUpload: (state => !!state.coarseOutput.error)
+                spectrumIsAvailableForUpload: (state => !!state.spectrum.error)
             }),
             dataset: mapStateProp<BaselineState, string | undefined>("baseline",
                 (state: BaselineState) => state.selectedDataset?.title),

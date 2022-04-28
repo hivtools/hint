@@ -14,7 +14,6 @@ import {expectTranslated} from "../../testHelpers";
 import Vue from 'vue';
 import {Dict} from "../../../app/types";
 import {Language} from "../../../app/store/translations/locales";
-import DownloadStatus from "../../../app/components/downloadResults/DownloadStatus.vue"
 import {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";
 
 describe(`uploadModal `, () => {
@@ -440,10 +439,10 @@ describe(`uploadModal `, () => {
         expect(btn.at(0).attributes("disabled")).toBeUndefined();
     });
 
-    it(`does not render output files and headers when there are no outputFiles`, () => {
+    it(`does not render output files and headers when there not available for upload`, () => {
         const downloadResults = {
             summary: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()}),
-            coarseOutput: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()})
+            spectrum: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()})
         }
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
