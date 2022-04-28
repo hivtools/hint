@@ -1,3 +1,7 @@
+# hint 1.97.0
+
+* Input Time Series area hierarchy tooltips
+
 # hint 1.96.0
 
 * Display warnings from input validation 
