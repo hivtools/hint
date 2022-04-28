@@ -7,7 +7,7 @@ import {
     mockADRUploadState,
     mockBaselineState,
     mockDatasetResource, mockDownloadResultsDependency,
-    mockDownloadResultsState
+    mockDownloadResultsState, mockError
 } from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
@@ -439,5 +439,25 @@ describe(`uploadModal `, () => {
         const btn = wrapper.findAll("button");
         expect(btn.at(0).attributes("disabled")).toBeUndefined();
     });
+
+    it(`does not render output files and headers when there are no outputFiles`, () => {
+        const downloadResults = {
+            summary: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()}),
+            coarseOutput: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()})
+        }
+        const store = createStore(metadataWithInput, downloadResults)
+        const wrapper = mount(UploadModal, {store})
+
+        const inputs = wrapper.findAll("input[type='checkbox']")
+        expect(inputs.length).toBe(1)
+        expect(inputs.at(0).attributes("disabled")).toBe("disabled");
+        expect(inputs.at(0).attributes("id")).toBe("id-1-0");
+        expect(inputs.at(0).attributes("value")).toBe("population");
+
+        const headers = wrapper.findAll("h5");
+        expect(headers.length).toBe(2);
+        expect(headers.at(0).text()).toBe("")
+        expectTranslated(headers.at(1), "Input Files", "Fichiers d'entrée", "Ficheiros de entrada", store);
+    })
 
 })

@@ -36,7 +36,7 @@
                 </div>
                 <div v-for="(uploadFileSection, sectionIndex) in uploadFileSections" :key="sectionIndex" class="pl-4">
                     <h5 v-if="Object.keys(uploadFileSections[1]).length > 0"
-                        v-translate="sectionIndex === 0 ? 'outputFiles' : 'inputFiles'"
+                        v-translate="getSectionHeadings(sectionIndex)"
                         class="mt-3"></h5>
                     <div id="output-file-id" class="mt-3" v-for="(uploadFile, key, index) in uploadFileSection"
                          :key="uploadFile.index">
@@ -80,13 +80,14 @@
         UploadFile
     } from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {mapActionByName, mapStateProp} from "../../utils";
+    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
     import {HelpCircleIcon} from "vue-feather-icons";
     import {VTooltip} from "v-tooltip";
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
+    import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
 
     interface Methods {
         uploadFilesToADRAction: (selectedUploadFiles: { uploadFiles: UploadFile[], createRelease: boolean }) => void;
@@ -95,9 +96,16 @@
         setDefaultCheckedItems: () => void
         translate(text: string): string;
         sendUploadFilesToADR: () => void
+        getAvailableOutputFiles: (outputFileType: string) => UploadFile
+        getSectionHeadings: (index: number) => string
     }
 
-    interface Computed {
+    interface ComputedFromDownloadResults {
+        summaryIsAvailableForUpload: boolean,
+        coarseOutputIsAvailableForUpload: boolean
+    }
+
+    interface Computed extends ComputedFromDownloadResults{
         dataset: string | undefined,
         uploadableFiles: Dict<UploadFile>,
         uploadFileSections: Array<Dict<UploadFile>>
@@ -147,9 +155,28 @@
             setDefaultCheckedItems: function () {
                 this.uploadFilesToAdr = [...outputFileTypes, ...inputFileTypes]
                     .filter(key => this.uploadableFiles.hasOwnProperty(key))
+            },
+            //show and upload only successfully downloaded outputFiles in upload modal
+            getAvailableOutputFiles: function (key) {
+                let availableOutputFiles = {} as UploadFile
+                if (key === "outputZip" && !this.coarseOutputIsAvailableForUpload) {
+                    availableOutputFiles = this.uploadableFiles[key]
+                } else if (key === "outputSummary" && !this.summaryIsAvailableForUpload) {
+                    availableOutputFiles = this.uploadableFiles[key]
+                }
+
+                return availableOutputFiles
+            },
+            getSectionHeadings: function (sectionIndex) {
+                const hasOutputFile = Object.keys(this.uploadFileSections[0]).length > 0
+                return sectionIndex === 0 ? hasOutputFile ? 'outputFiles' : '' : 'inputFiles';
             }
         },
         computed: {
+            ...mapStateProps<DownloadResultsState, keyof ComputedFromDownloadResults>("downloadResults", {
+                summaryIsAvailableForUpload: (state => !!state.summary.error),
+                coarseOutputIsAvailableForUpload: (state => !!state.coarseOutput.error)
+            }),
             dataset: mapStateProp<BaselineState, string | undefined>("baseline",
                 (state: BaselineState) => state.selectedDataset?.title),
             createRelease() {
@@ -166,7 +193,9 @@
                 if (this.uploadableFiles) {
                     return Object.keys(this.uploadableFiles).reduce((sections, key) => {
                         if (outputFileTypes.includes(key)) {
-                            sections[0][key] = this.uploadableFiles[key];
+                            if (Object.keys(this.getAvailableOutputFiles(key)).length > 0) {
+                                sections[0][key] = this.getAvailableOutputFiles(key)
+                            }
                         } else {
                             sections[1][key] = this.uploadableFiles[key];
                         }
