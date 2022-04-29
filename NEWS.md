@@ -1,3 +1,7 @@
+# hint 1.99.0
+
+* Upload Comparison report to ADR
+
 # hint 1.98.0
 
 * Download comparison report
