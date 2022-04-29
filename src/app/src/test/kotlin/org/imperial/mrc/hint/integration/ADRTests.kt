@@ -77,7 +77,7 @@ class ADRTests : SecureIntegrationTests()
         assertThat(data["pjnz"].textValue()).isEqualTo("inputs-unaids-spectrum-file")
         assertThat(data["outputZip"].textValue()).isEqualTo("inputs-unaids-naomi-output-zip")
         assertThat(data["outputSummary"].textValue()).isEqualTo("inputs-unaids-naomi-report")
-        assertThat(data["outputComparison"].textValue()).isNull()
+        assertThat(data["outputComparison"].textValue()).isEqualTo(null)
     }
 
     private fun getPostEntityWithKey(): HttpEntity<LinkedMultiValueMap<String, String>>
