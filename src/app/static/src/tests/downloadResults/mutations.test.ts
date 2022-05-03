@@ -45,6 +45,7 @@ describe(`download results mutations`, () => {
         expect(state.summary.error).toEqual(errorMsg);
         expect(state.spectrum.error).toBe(null);
         expect(state.coarseOutput.error).toBe(null);
+        expect(state.comparison.error).toEqual(null);
         expect(state.summary.statusPollId).toBe(-1);
         expect(clearInterval.mock.calls[0][0]).toBe(1);
     });
@@ -97,6 +98,7 @@ describe(`download results mutations`, () => {
         expect(state.spectrum.error).toEqual(errorMsg);
         expect(state.coarseOutput.error).toBe(null);
         expect(state.summary.error).toBe(null);
+        expect(state.comparison.error).toEqual(null);
         expect(clearInterval.mock.calls[0][0]).toBe(123);
     });
 
@@ -150,6 +152,7 @@ describe(`download results mutations`, () => {
         expect(state.coarseOutput.error).toEqual(errorMsg);
         expect(state.spectrum.error).toBe(null);
         expect(state.summary.error).toBe(null);
+        expect(state.comparison.error).toEqual(null);
         expect(clearInterval.mock.calls[0][0]).toBe(123);
     });
 
@@ -178,6 +181,58 @@ describe(`download results mutations`, () => {
         expect(state.coarseOutput.error).toBe(null);
         expect(state.coarseOutput.statusPollId).toBe(-1);
         expect(state.coarseOutput.downloadId).toBe("111");
+        expect(clearInterval.mock.calls[0][0]).toBe(123);
+    });
+
+    it("sets comparison download started on ComparisonDownloadStarted", () => {
+        const state = mockDownloadResultsState();
+        mutations[DownloadResultsMutation.PreparingComparisonOutput](state, {payload: downloadStartedPayload});
+        expect(state.comparison.preparing).toBe(true);
+        expect(state.comparison.downloadId).toBe("P123");
+        expect(state.comparison.complete).toBe(false);
+        expect(state.comparison.error).toBe(null);
+    });
+
+    it("sets comparison download error on ComparisonError", () => {
+        jest.useFakeTimers();
+        const clearInterval = jest.spyOn(window, "clearInterval");
+        const state = mockDownloadResultsState({
+            comparison: mockDownloadResultsDependency({statusPollId: 123})
+        });
+        mutations[DownloadResultsMutation.ComparisonError](state, {payload: error});
+        expect(state.comparison.preparing).toBe(false);
+        expect(state.comparison.error).toEqual(errorMsg);
+        expect(state.coarseOutput.error).toBe(null);
+        expect(state.summary.error).toBe(null);
+        expect(state.spectrum.error).toBe(null);
+        expect(clearInterval.mock.calls[0][0]).toBe(123);
+    });
+
+    it("sets poll started for comparison download on PollingStatusStarted", () => {
+        const state = mockDownloadResultsState();
+        const payload = {pollId: 123, downloadType: DOWNLOAD_TYPE.COMPARISON}
+        mutations[DownloadResultsMutation.PollingStatusStarted](state, {payload: payload});
+        expect(state.comparison.statusPollId).toBeGreaterThan(-1);
+    });
+
+    it("set comparison status to complete, clears interval on ComparisonDownloadStatusUpdated", () => {
+        jest.useFakeTimers();
+        const clearInterval = jest.spyOn(window, "clearInterval");
+        const state = mockDownloadResultsState({
+            comparison: {
+                preparing: true,
+                complete: false,
+                error: mockError(),
+                statusPollId: 123,
+                downloadId: "111"
+            }
+        });
+        mutations[DownloadResultsMutation.ComparisonOutputStatusUpdated](state, {payload: CompleteStatusResponse});
+        expect(state.comparison.complete).toBe(true);
+        expect(state.comparison.preparing).toBe(false);
+        expect(state.comparison.error).toBe(null);
+        expect(state.comparison.statusPollId).toBe(-1);
+        expect(state.comparison.downloadId).toBe("111");
         expect(clearInterval.mock.calls[0][0]).toBe(123);
     });
 

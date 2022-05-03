@@ -185,7 +185,8 @@ export interface SelectedADRUploadFiles {
 export enum DOWNLOAD_TYPE {
     SPECTRUM = "Spectrum",
     COARSE = "CoarseOutput",
-    SUMMARY = "Summary"
+    SUMMARY = "Summary",
+    COMPARISON = "Comparison"
 }
 
 export interface GenericChartTableConfig {
