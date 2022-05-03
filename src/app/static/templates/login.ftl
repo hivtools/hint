@@ -12,9 +12,7 @@
             userIdInput.value = userIdInput.value.trim();
 
             const form = document.getElementById("login-form");
-            if (form.checkValidity()) {
-                localStorage.clear();
-            } else {
+            if (!form.checkValidity()) {
                 event.preventDefault();
                 form.classList.add('was-validated');
             }

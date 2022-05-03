@@ -10,6 +10,7 @@ const testChartData = {
         {
             "area_id": "MWI_4_1_demo",
             "area_name": "Chitipa",
+            "area_hierarchy": "Northern/Chitipa",
             "area_level": 4,
             "quarter": "Q4",
             "time_period": "2011 Q4",
@@ -20,6 +21,7 @@ const testChartData = {
         {
             "area_id": "MWI_4_1_demo",
             "area_name": "Chitipa",
+            "area_hierarchy": "Northern/Chitipa",
             "area_level": 4,
             "quarter": "Q4",
             "time_period": "2012 Q4",
@@ -30,6 +32,7 @@ const testChartData = {
         {
             "area_id": "MWI_4_2_demo",
             "area_name": "Karonga",
+            "area_hierarchy": "Northern/Karonga",
             "area_level": 4,
             "quarter": "Q4",
             "time_period": "2011 Q4",
@@ -40,6 +43,7 @@ const testChartData = {
         {
             "area_id": "MWI_4_2_demo",
             "area_name": "Karonga",
+            "area_hierarchy": "Northern/Karonga",
             "area_level": 4,
             "quarter": "Q4",
             "time_period": "2012 Q4",
@@ -50,6 +54,7 @@ const testChartData = {
         {
             "area_id": "MWI_4_3_demo",
             "area_name": "Rumphi",
+            "area_hierarchy": "Northern/Rumphi",
             "area_level": 4,
             "quarter": "Q4",
             "time_period": "2011 Q4",
@@ -60,6 +65,7 @@ const testChartData = {
         {
             "area_id": "MWI_4_3_demo",
             "area_name": "Rumphi",
+            "area_hierarchy": "Northern/Rumphi",
             "area_level": 4,
             "quarter": "Q4",
             "time_period": "2012 Q4",
@@ -120,7 +126,8 @@ describe("inputTimeSeries jsonata", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"}
+                "line": {"color": "rgb(51, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
             },
             {
                 "name": "Chitipa",
@@ -130,7 +137,8 @@ describe("inputTimeSeries jsonata", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"}
+                "line": {"color": "rgb(255, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
             },
             {
                 "name": "Karonga",
@@ -140,7 +148,8 @@ describe("inputTimeSeries jsonata", () => {
                 "xaxis": "x2",
                 "yaxis": "y2",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"}
+                "line": {"color": "rgb(51, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
             },
             {
                 "name": "Karonga",
@@ -150,7 +159,8 @@ describe("inputTimeSeries jsonata", () => {
                 "xaxis": "x2",
                 "yaxis": "y2",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"}
+                "line": {"color": "rgb(255, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
             },
             {
                 "name": "Rumphi",
@@ -160,7 +170,8 @@ describe("inputTimeSeries jsonata", () => {
                 "xaxis": "x3",
                 "yaxis": "y3",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"}
+                "line": {"color": "rgb(51, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<br>Northern/Rumphi<extra></extra>"
             },
             {
                 "name": "Rumphi",
@@ -170,7 +181,8 @@ describe("inputTimeSeries jsonata", () => {
                 "xaxis": "x3",
                 "yaxis": "y3",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"}
+                "line": {"color": "rgb(255, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<br>Northern/Rumphi<extra></extra>"
             }
         ]));
     });
@@ -251,36 +263,42 @@ describe("inputTimeSeries jsonata", () => {
                 {
                     "area_id": "MWI_4_1_demo",
                     "area_name": "Chitipa",
+                    "area_hierarchy": "Northern/Chitipa",
                     "time_period": "2011 Q4",
                     "value": 2116
                 },
                 {
                     "area_id": "MWI_4_1_demo",
                     "area_name": "Chitipa",
+                    "area_hierarchy": "Northern/Chitipa",
                     "time_period": "2012 Q4",
                     "value": 2663
                 },
                 {
                     "area_id": "MWI_4_2_demo",
                     "area_name": "Karonga",
+                    "area_hierarchy": "Northern/Karonga",
                     "time_period": "2011 Q4",
                     "value": 5673
                 },
                 {
                     "area_id": "MWI_4_2_demo",
                     "area_name": "Karonga",
+                    "area_hierarchy": "Northern/Karonga",
                     "time_period": "2012 Q4",
                     "value": 7674
                 },
                 {
                     "area_id": "MWI_4_3_demo",
                     "area_name": "Chitipa",
+                    "area_hierarchy": "Southern/Chitipa",
                     "time_period": "2011 Q4",
                     "value": 4555
                 },
                 {
                     "area_id": "MWI_4_3_demo",
                     "area_name": "Chitipa",
+                    "area_hierarchy": "Southern/Chitipa",
                     "time_period": "2012 Q4",
                     "value": 4795
                 }
@@ -306,7 +324,8 @@ describe("inputTimeSeries jsonata", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"}
+                "line": {"color": "rgb(51, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
             },
             {
                 "name": "Chitipa",
@@ -316,7 +335,8 @@ describe("inputTimeSeries jsonata", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"}
+                "line": {"color": "rgb(255, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
             },
             {
                 "name": "Karonga",
@@ -326,7 +346,8 @@ describe("inputTimeSeries jsonata", () => {
                 "xaxis": "x2",
                 "yaxis": "y2",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"}
+                "line": {"color": "rgb(51, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
             },
             {
                 "name": "Karonga",
@@ -336,7 +357,8 @@ describe("inputTimeSeries jsonata", () => {
                 "xaxis": "x2",
                 "yaxis": "y2",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"}
+                "line": {"color": "rgb(255, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
             },
             {
                 "name": "Chitipa",
@@ -346,7 +368,8 @@ describe("inputTimeSeries jsonata", () => {
                 "xaxis": "x3",
                 "yaxis": "y3",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"}
+                "line": {"color": "rgb(51, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<br>Southern/Chitipa<extra></extra>"
             },
             {
                 "name": "Chitipa",
@@ -356,7 +379,8 @@ describe("inputTimeSeries jsonata", () => {
                 "xaxis": "x3",
                 "yaxis": "y3",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"}
+                "line": {"color": "rgb(255, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<br>Southern/Chitipa<extra></extra>"
             }
         ]));
 
@@ -404,5 +428,53 @@ describe("inputTimeSeries jsonata", () => {
         expectYAxis(1, 0.7, layout.yaxis1);
         expectYAxis(1, 0.7, layout.yaxis2);
         expectYAxis(0.5, 0.2, layout.yaxis3);
+    });
+
+    it("evaluates single-line tooltips for area with null hierarchy", () => {
+        const testData_NullHierarchy = {
+            "data": [
+                {
+                    "area_id": "MWI_1_1_demo",
+                    "area_name": "Malawi",
+                    "area_hierarchy": null,
+                    "time_period": "2011 Q4",
+                    "value": 2116
+                },
+                {
+                    "area_id": "MWI_1_1_demo",
+                    "area_name": null,
+                    "area_hierarchy": "Northern/Chitipa",
+                    "time_period": "2012 Q4",
+                    "value": 4663
+                }
+            ]
+        };
+
+        const result = inputTimeSeriesJsonata.evaluate(testData_NullHierarchy);
+
+        expect(JSON.stringify(result.data)).toBe(JSON.stringify([
+            {
+                "name": "Malawi",
+                "showlegend": false,
+                "x": ["2011 Q4", "2012 Q4"],
+                "y": [2116, 4663],
+                "xaxis": "x1",
+                "yaxis": "y1",
+                "type": "scatter",
+                "line": {"color": "rgb(51, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<extra></extra>"
+            },
+            {
+                "name": "Malawi",
+                "showlegend": false,
+                "x": ["2011 Q4", "2012 Q4"],
+                "y": [2116, 4663],
+                "xaxis": "x1",
+                "yaxis": "y1",
+                "type": "scatter",
+                "line": {"color": "rgb(255, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<extra></extra>"
+            }
+        ]));
     });
 });
