@@ -49,7 +49,14 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                                 schemas.outputSummary,
                                 "naomi_summary.html",
                                 "uploadFileOutputSummary",
-                                "Naomi Results and Summary Report")
+                                "Naomi Results and Summary Report"),
+                            outputComparison: constructUploadFileWithResourceName(
+                                metadata,
+                                2,
+                                schemas.outputComparison,
+                                "naomi_comparison.html",
+                                "uploadFileOutputComparison",
+                                "Naomi Comparison Report")
                         };
 
                         const addLocalInputFileToUploads = (
@@ -117,6 +124,14 @@ export const actions: ActionTree<ADRUploadState, RootState> & ADRUploadActions =
                 requestParams["description"] =
                     uploadMetadata?.find(meta => meta.type === "spectrum")?.description
                     || "Naomi output uploaded from Naomi web app"
+            }
+
+            if (resourceType === rootState.adr.schemas?.outputComparison) {
+                downloadId = rootState.downloadResults.comparison.downloadId
+
+                requestParams["description"] =
+                    uploadMetadata?.find(meta => meta.type === "comparison")?.description
+                    || "Naomi comparison report uploaded from Naomi web app"
             }
 
             let apiRequest = api<ADRUploadMutation, ADRUploadMutation>(context)

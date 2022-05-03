@@ -111,7 +111,7 @@
         selectedUploadFiles: UploadFile[]
     }
 
-    const outputFileTypes = ["outputZip", "outputSummary"];
+    const outputFileTypes = ["outputZip", "outputSummary", "outComparison"];
     const inputFileTypes = ["anc", "programme", "pjnz", "population", "shape", "survey"];
 
     export default Vue.extend<Data, Methods, Computed, unknown>({

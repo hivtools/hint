@@ -18,9 +18,7 @@ import {expectEqualsFrozen, testUploadErrorCommitted} from "../testHelpers";
 import {ADRSchemas} from "../../app/types";
 import Mock = jest.Mock;
 import {initialChorplethSelections} from "../../app/store/plottingSelections/plottingSelections";
-import {Dispatch} from "vuex";
 
-const FormData = require("form-data");
 const adrSchemas: ADRSchemas = {
     baseUrl: "adr.com",
     pjnz: "pjnz",
@@ -30,7 +28,8 @@ const adrSchemas: ADRSchemas = {
     programme: "program",
     anc: "anc",
     outputZip: "zip",
-    outputSummary: "summary"
+    outputSummary: "summary",
+    outputComparison: "comparison"
 };
 
 const rootState = mockRootState({

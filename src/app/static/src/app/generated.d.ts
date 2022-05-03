@@ -5,7 +5,7 @@
   * and run ./generate-types.sh to regenerate this file.
 */
 export interface AdrMetadataResponse {
-  type: "spectrum" | "coarse_output" | "summary";
+  type: "spectrum" | "coarse_output" | "summary" | "comparison";
   description: string | null;
 }
 export interface AncDataRow {
