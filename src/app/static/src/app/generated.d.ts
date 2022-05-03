@@ -429,6 +429,7 @@ export type InputTimeSeriesData = {
   age_group?: string;
   time_period: string;
   quarter: string;
+  area_hierarchy: string;
 }[];
 export interface InputTimeSeriesDefaults {
   selected_filter_options: {
@@ -477,6 +478,7 @@ export interface InputTimeSeriesResponse {
     age_group?: string;
     time_period: string;
     quarter: string;
+    area_hierarchy: string;
   }[];
   metadata: {
     columns: {
@@ -525,6 +527,7 @@ export interface InputTimeSeriesRow {
   age_group?: string;
   time_period: string;
   quarter: string;
+  area_hierarchy: string;
 }
 export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
 export interface LevelLabels {

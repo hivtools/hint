@@ -135,7 +135,7 @@
         data() {
             return {
                 uploadModalOpen: false,
-                comparisonSwitch: switches.comparisonOutput
+                comparisonSwitch: !switches.comparisonOutput
             }
         },
         computed: {
