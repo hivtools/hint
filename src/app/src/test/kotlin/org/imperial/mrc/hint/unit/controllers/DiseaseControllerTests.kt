@@ -3,7 +3,6 @@ package org.imperial.mrc.hint.unit.controllers
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
-import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.HintrAPIClient
@@ -80,13 +79,79 @@ class DiseaseControllerTests : HintrControllerTests()
     @Test
     fun `throws error if the shape file does not exist`()
     {
+        val mockPjnz = VersionFileWithPath("pjnzPath", "pjnzHash", "pjnzFile", false)
+        val mockFileManager = mock<FileManager> {
+            on { getFiles(FileType.PJNZ, FileType.Shape) } doReturn mapOf(FileType.PJNZ.toString() to mockPjnz)
+        }
+
         val mockApiClient = getMockAPIClient(FileType.Survey)
-        val sut = DiseaseController(mock(), mockApiClient, mock(), mock(), mock())
+        val sut = DiseaseController(mockFileManager, mockApiClient, mock(), mock(), mock())
 
         TranslationAssert.assertThatThrownBy { sut.uploadSurvey(mockFile) }
                 .isInstanceOf(HintException::class.java)
+                .matches { (it as HintException).key == "missingShapeFile"}
                 .matches { (it as HintException).httpStatus == HttpStatus.BAD_REQUEST }
                 .hasTranslatedMessage("You must upload a shape file before uploading survey or programme data.")
+    }
+
+    @Test
+    fun `throws error if the shape file path is empty`()
+    {
+        val mockPjnz = VersionFileWithPath("pjnzPath", "pjnzHash", "pjnzFile", false)
+        val mockShape = VersionFileWithPath(" ", "shapeHash", "shapeFile", false)
+        val mockFileManager = mock<FileManager> {
+            on { getFiles(FileType.PJNZ, FileType.Shape) } doReturn mapOf(
+                    FileType.PJNZ.toString() to mockPjnz,
+                    FileType.Shape.toString() to mockShape)
+        }
+
+        val mockApiClient = getMockAPIClient(FileType.Survey)
+        val sut = DiseaseController(mockFileManager, mockApiClient, mock(), mock(), mock())
+
+        TranslationAssert.assertThatThrownBy { sut.uploadSurvey(mockFile) }
+                .isInstanceOf(HintException::class.java)
+                .matches { (it as HintException).key == "missingShapeFile"}
+                .matches { (it as HintException).httpStatus == HttpStatus.BAD_REQUEST }
+                .hasTranslatedMessage("You must upload a shape file before uploading survey or programme data.")
+    }
+
+    @Test
+    fun `throws error if the pjnz file does not exist`()
+    {
+        val mockShape = VersionFileWithPath("shapePath", "shapeHash", "shapeFile", false)
+        val mockFileManager = mock<FileManager> {
+            on { getFiles(FileType.PJNZ, FileType.Shape) } doReturn mapOf(FileType.Shape.toString() to mockShape)
+        }
+
+        val mockApiClient = getMockAPIClient(FileType.Survey)
+        val sut = DiseaseController(mockFileManager, mockApiClient, mock(), mock(), mock())
+
+        TranslationAssert.assertThatThrownBy { sut.uploadSurvey(mockFile) }
+                .isInstanceOf(HintException::class.java)
+                .matches { (it as HintException).key == "missingPjnzFile"}
+                .matches { (it as HintException).httpStatus == HttpStatus.BAD_REQUEST }
+                .hasTranslatedMessage("You must upload a Spectrum file before uploading survey or programme data.")
+    }
+
+    @Test
+    fun `throws error if the pjnz file path is empty`()
+    {
+        val mockPjnz = VersionFileWithPath(" ", "pjnzHash", "pjnzFile", false)
+        val mockShape = VersionFileWithPath("shapePath", "shapeHash", "shapeFile", false)
+        val mockFileManager = mock<FileManager> {
+            on { getFiles(FileType.PJNZ, FileType.Shape) } doReturn mapOf(
+                    FileType.PJNZ.toString() to mockPjnz,
+                    FileType.Shape.toString() to mockShape)
+        }
+
+        val mockApiClient = getMockAPIClient(FileType.Survey)
+        val sut = DiseaseController(mockFileManager, mockApiClient, mock(), mock(), mock())
+
+        TranslationAssert.assertThatThrownBy { sut.uploadSurvey(mockFile) }
+                .isInstanceOf(HintException::class.java)
+                .matches { (it as HintException).key == "missingPjnzFile"}
+                .matches { (it as HintException).httpStatus == HttpStatus.BAD_REQUEST }
+                .hasTranslatedMessage("You must upload a Spectrum file before uploading survey or programme data.")
     }
 
     @Test
@@ -102,7 +167,7 @@ class DiseaseControllerTests : HintrControllerTests()
         verify(mockApiClient, Times(2))
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.ANC, true)
+                        "shape-path", FileType.ANC, "pjnz-path", true)
     }
 
     @Test
@@ -120,7 +185,7 @@ class DiseaseControllerTests : HintrControllerTests()
         verify(mockApiClient, Times(2))
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.ANC, false)
+                        "shape-path", FileType.ANC, "pjnz-path", false)
     }
 
     @Test
@@ -138,6 +203,6 @@ class DiseaseControllerTests : HintrControllerTests()
         verify(mockApiClient, Times(2))
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.ANC, true)
+                        "shape-path", FileType.ANC, "pjnz-path", true)
     }
 }

@@ -1,14 +1,19 @@
 import {Module} from 'vuex';
 import {actions} from './actions';
 import {mutations} from './mutations';
-import {ReadyState, RootState} from "../../root";
-import {AncResponse, ProgrammeResponse, SurveyResponse, Error} from "../../generated";
+import {ReadyState, WarningsState} from "../../root";
+import {AncResponse, ProgrammeResponse, SurveyResponse, Error, Warning} from "../../generated";
 import {getters} from "./getters";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export enum DataType { ANC, Program, Survey}
 
-export interface SurveyAndProgramState extends ReadyState {
+export interface SAPWarnings {
+    type: string,
+    warnings: Warning[]
+}
+
+export interface SurveyAndProgramState extends ReadyState, WarningsState {
     selectedDataType: DataType | null
     survey: SurveyResponse | null
     surveyError: Error | null
@@ -19,6 +24,7 @@ export interface SurveyAndProgramState extends ReadyState {
     anc: AncResponse | null
     ancError: Error | null
     ancErroredFile: string | null
+    sapWarnings: SAPWarnings[]
 }
 
 export const initialSurveyAndProgramState = (): SurveyAndProgramState => {
@@ -33,7 +39,9 @@ export const initialSurveyAndProgramState = (): SurveyAndProgramState => {
         anc: null,
         ancError: null,
         ancErroredFile: null,
-        ready: false
+        ready: false,
+        warnings: [],
+        sapWarnings: []
     }
 };
 

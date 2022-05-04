@@ -47,6 +47,7 @@ async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, D
                                  filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.ANCUpdated, payload: null});
+    commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.ANC, warnings: []}});
     commitClearGenericChartDataset(commit, DATASET_TYPE.ANC);
 
     await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
@@ -56,6 +57,10 @@ async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, D
         .postAndReturn<ProgrammeResponse>(getUrlWithQuery(context, options.url), options.payload)
         .then((response) => {
             if (response) {
+                commit({
+                    type: SurveyAndProgramMutation.WarningsFetched,
+                    payload: {type: DataType.ANC, warnings: response.data.warnings}
+                })
                 commitSelectedDataTypeUpdated(commit, DataType.ANC);
             } else {
                 commit({type: SurveyAndProgramMutation.ANCErroredFile, payload: filename});
@@ -67,6 +72,7 @@ async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramStat
                                      filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.ProgramUpdated, payload: null});
+    commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.Program, warnings: []}});
     commitClearGenericChartDataset(commit, DATASET_TYPE.ART);
 
     await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
@@ -76,6 +82,10 @@ async function uploadOrImportProgram(context: ActionContext<SurveyAndProgramStat
         .postAndReturn<ProgrammeResponse>(getUrlWithQuery(context, options.url), options.payload)
         .then((response) => {
             if (response) {
+                commit({
+                    type: SurveyAndProgramMutation.WarningsFetched,
+                    payload: {type: DataType.Program, warnings: response.data.warnings}
+                })
                 commitSelectedDataTypeUpdated(commit, DataType.Program);
             } else {
                 commit({type: SurveyAndProgramMutation.ProgramErroredFile, payload: filename});
@@ -87,6 +97,7 @@ async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState
                                     filename: string) {
     const {commit} = context;
     commit({type: SurveyAndProgramMutation.SurveyUpdated, payload: null});
+    commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.Survey, warnings: []}});
 
     await api<SurveyAndProgramMutation, SurveyAndProgramMutation>(context)
         .withError(SurveyAndProgramMutation.SurveyError)
@@ -95,6 +106,10 @@ async function uploadOrImportSurvey(context: ActionContext<SurveyAndProgramState
         .postAndReturn<SurveyResponse>(getUrlWithQuery(context, options.url), options.payload)
         .then((response) => {
             if (response) {
+                commit({
+                    type: SurveyAndProgramMutation.WarningsFetched,
+                    payload: {type: DataType.Survey, warnings: response.data.warnings}
+                })
                 commitSelectedDataTypeUpdated(commit, DataType.Survey);
             } else {
                 commit({type: SurveyAndProgramMutation.SurveyErroredFile, payload: filename});
@@ -158,6 +173,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                         commitSelectedDataTypeUpdated(commit, DataType.ANC)
                     }
                 }
+                commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.Survey, warnings: []}});
             });
     },
 
@@ -175,6 +191,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     }
                 }
                 commitClearGenericChartDataset(commit, DATASET_TYPE.ART)
+                commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.Program, warnings: []}});
             });
     },
 
@@ -192,6 +209,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
                     }
                 }
                 commitClearGenericChartDataset(commit, DATASET_TYPE.ANC)
+                commit({type: SurveyAndProgramMutation.WarningsFetched, payload: {type: DataType.ANC, warnings: []}});
             });
     },
 
