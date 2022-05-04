@@ -1,15 +1,12 @@
-# hint 1.99.0
+# hint 2.0.0
 
 * Upload Comparison report to ADR
 
-# hint 1.98.0
+# hint 1.99.0
 
 * Download comparison report
 
-# hint 1.97.0
-=======
 # hint 1.98.0
->>>>>>> 33686bd901237bf512f8596551cdd2a2a34d900b
 
 * Trigger generation of comparison report from front end
 

@@ -116,7 +116,7 @@
         getUserCanUpload: () => void
         getUploadFiles: () => void
         clearStatus: () => void;
-        prepareOutputs: (comparisonSwitch: boolean) => void
+        prepareOutputs: () => void
         downloadSummaryReport: () => void
         downloadSpectrumOutput: () => void
         downloadCoarseOutput: () => void
@@ -208,7 +208,7 @@
         mounted() {
             this.getUserCanUpload();
             this.getUploadFiles();
-            this.prepareOutputs(this.comparisonSwitch);
+            this.prepareOutputs();
         },
         beforeMount() {
             this.clearStatus();

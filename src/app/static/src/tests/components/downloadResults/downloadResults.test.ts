@@ -1,9 +1,9 @@
 import {createLocalVue, shallowMount, mount, Wrapper} from '@vue/test-utils';
-import Vuex, {Store} from 'vuex';
+import Vuex from 'vuex';
 import {
     mockADRState,
     mockADRUploadState, mockDownloadResultsDependency,
-    mockDownloadResultsState, mockMetadataState,
+    mockDownloadResultsState,
     mockModelCalibrateState
 } from "../../mocks";
 import DownloadResults from "../../../app/components/downloadResults/DownloadResults.vue";
@@ -21,7 +21,6 @@ const localVue = createLocalVue();
 describe("Download Results component", () => {
 
     const mockPrepareOutputs = jest.fn();
-    const mockUploadMetadataAction = jest.fn();
 
     afterEach(() => {
         jest.useRealTimers();
