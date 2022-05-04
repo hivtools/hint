@@ -21,10 +21,10 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
     async prepareOutputs(context) {
         const {dispatch} = context
         await Promise.all([
+            dispatch("prepareComparisonOutput"),
             dispatch("prepareCoarseOutput"),
             dispatch("prepareSummaryReport"),
-            dispatch("prepareSpectrumOutput"),
-            dispatch("prepareComparisonOutput")
+            dispatch("prepareSpectrumOutput")
         ]);
     },
 
@@ -107,7 +107,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
     },
 };
 
-export const getSummaryReportStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
+export const getSummaryReportStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch} = context;
     const downloadId = state.summary.downloadId;
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
@@ -117,7 +117,7 @@ export const getSummaryReportStatus = async function (context: ActionContext<Dow
     await getADRUploadMetadata(response, dispatch);
 };
 
-export const getSpectrumOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
+export const getSpectrumOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch} = context;
     const downloadId = state.spectrum.downloadId;
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
@@ -127,7 +127,7 @@ export const getSpectrumOutputStatus = async function (context: ActionContext<Do
     await getADRUploadMetadata(response, dispatch);
 };
 
-export const getCoarseOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
+export const getCoarseOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch} = context;
     const downloadId = state.coarseOutput.downloadId;
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
