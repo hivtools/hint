@@ -21,10 +21,10 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
     async prepareOutputs(context) {
         const {dispatch} = context
         await Promise.all([
-            dispatch("prepareComparisonOutput"),
             dispatch("prepareCoarseOutput"),
             dispatch("prepareSummaryReport"),
-            dispatch("prepareSpectrumOutput")
+            dispatch("prepareSpectrumOutput"),
+            dispatch("prepareComparisonOutput")
         ]);
     },
 
