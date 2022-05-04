@@ -5,25 +5,26 @@ import {api, ResponseWithType} from "../../apiService";
 import {DownloadResultsMutation} from "./mutations";
 import {ModelStatusResponse} from "../../generated";
 import {DOWNLOAD_TYPE} from "../../types";
+import {switches} from "../../featureSwitches"
 
 export interface DownloadResultsActions {
     prepareSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareSpectrumOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareCoarseOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
-    prepareComparisonOutput: (store: ActionContext<DownloadResultsState, RootState>, featureSwitch: boolean) => void
-    prepareOutputs: (store: ActionContext<DownloadResultsState, RootState>, featureSwitch: boolean) => void
+    prepareComparisonOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
+    prepareOutputs: (store: ActionContext<DownloadResultsState, RootState>) => void
     poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: string) => void
 }
 
 export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResultsActions = {
 
-    async prepareOutputs(context, featureSwitch ) {
+    async prepareOutputs(context) {
         const {dispatch} = context
         await Promise.all([
             dispatch("prepareCoarseOutput"),
             dispatch("prepareSummaryReport"),
             dispatch("prepareSpectrumOutput"),
-            dispatch("prepareComparisonOutput", featureSwitch)
+            dispatch("prepareComparisonOutput")
         ]);
     },
 
@@ -72,9 +73,9 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         }
     },
 
-    async prepareComparisonOutput(context, featureSwitch) {
+    async prepareComparisonOutput(context) {
         const {state, dispatch, rootState} = context
-        if (!state.comparison.downloadId && featureSwitch) {
+        if (!state.comparison.downloadId && switches.comparisonOutput) {
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingComparisonOutput)
