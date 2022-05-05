@@ -1,6 +1,10 @@
-# hint 1.97.3
+# hint 1.98.1
 
 * Bug fixes- Display and upload output files to ADR if they are available for Upload
+
+# hint 1.98.0
+
+* Trigger generation of comparison report from front end
 
 # hint 1.97.2
 

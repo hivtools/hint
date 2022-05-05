@@ -170,6 +170,7 @@ export interface DownloadResultsDependency {
     statusPollId: number
     complete: boolean
     error: Error | null
+    metadataError: Error | null
 }
 
 export interface PollingStarted {
@@ -185,7 +186,8 @@ export interface SelectedADRUploadFiles {
 export enum DOWNLOAD_TYPE {
     SPECTRUM = "Spectrum",
     COARSE = "CoarseOutput",
-    SUMMARY = "Summary"
+    SUMMARY = "Summary",
+    COMPARISON = "Comparison"
 }
 
 export interface GenericChartTableConfig {

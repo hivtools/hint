@@ -8,6 +8,7 @@ export interface DownloadResultsState {
     spectrum: DownloadResultsDependency
     coarseOutput: DownloadResultsDependency
     summary: DownloadResultsDependency
+    comparison: DownloadResultsDependency
 }
 
 export const initialDownloadResults = {
@@ -15,14 +16,16 @@ export const initialDownloadResults = {
     preparing: false,
     statusPollId: -1,
     complete: false,
-    error: null
+    error: null,
+    metadataError: null
 }
 
 export const initialDownloadResultsState = (): DownloadResultsState => {
     return {
         spectrum: {...initialDownloadResults},
         coarseOutput: {...initialDownloadResults},
-        summary: {...initialDownloadResults}
+        summary: {...initialDownloadResults},
+        comparison: {...initialDownloadResults}
     }
 }
 
