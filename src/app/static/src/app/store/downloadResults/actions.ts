@@ -5,6 +5,7 @@ import {api, ResponseWithType} from "../../apiService";
 import {DownloadResultsMutation} from "./mutations";
 import {ModelStatusResponse} from "../../generated";
 import {DOWNLOAD_TYPE} from "../../types";
+import {switches} from "../../featureSwitches"
 
 export interface DownloadResultsActions {
     prepareSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => void
@@ -74,7 +75,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async prepareComparisonOutput(context) {
         const {state, dispatch, rootState} = context
-        if (!state.comparison.downloadId) {
+        if (!state.comparison.downloadId && switches.comparisonOutput) {
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingComparisonOutput)
@@ -106,7 +107,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
     },
 };
 
-export const getSummaryReportStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
+export const getSummaryReportStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch} = context;
     const downloadId = state.summary.downloadId;
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
@@ -116,7 +117,7 @@ export const getSummaryReportStatus = async function (context: ActionContext<Dow
     await getADRUploadMetadata(response, dispatch);
 };
 
-export const getSpectrumOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
+export const getSpectrumOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch} = context;
     const downloadId = state.spectrum.downloadId;
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
@@ -126,7 +127,7 @@ export const getSpectrumOutputStatus = async function (context: ActionContext<Do
     await getADRUploadMetadata(response, dispatch);
 };
 
-export const getCoarseOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
+export const getCoarseOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch} = context;
     const downloadId = state.coarseOutput.downloadId;
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)

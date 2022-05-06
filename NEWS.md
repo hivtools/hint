@@ -1,3 +1,7 @@
+# hint 1.99.0
+
+* Download comparison report
+
 # hint 1.98.0
 
 * Trigger generation of comparison report from front end
