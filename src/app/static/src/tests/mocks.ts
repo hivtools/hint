@@ -455,6 +455,7 @@ export const mockDownloadResultsDependency = (props: Partial<DownloadResultsDepe
         statusPollId: -1,
         complete: false,
         error: null,
+        metadataError: null,
         ...props
     }
 }
