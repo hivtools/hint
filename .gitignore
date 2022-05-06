@@ -5,5 +5,3 @@ app/static/coverage/**
 app/static/public/js/**
 app/static/public/css/**
 .DS_Store
-build-run.sh
-src/.idea/codeStyles/Project.xml
