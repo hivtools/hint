@@ -20,6 +20,12 @@
                               :disabled="!summary.downloadId || summary.preparing"
                               :file="summary"/>
                 </div>
+                <div id="comparison-download" v-if="comparisonSwitch">
+                    <download :translate-key="translation.comparison"
+                              @click="downloadComparisonReport"
+                              :disabled="!comparison.downloadId || comparison.preparing"
+                              :file="comparison"/>
+                </div>
             </div>
             <div id="upload" v-if="hasUploadPermission" class="col-sm">
                 <h4 v-translate="'uploadFileToAdr'"></h4>
@@ -78,6 +84,7 @@
     import {DownloadResultsDependency} from "../../types";
     import Download from "./Download.vue";
     import {Error} from "../../generated"
+    import {switches} from "../../featureSwitches";
 
     interface ComputedFromADRUpload {
         uploading: boolean,
@@ -92,7 +99,8 @@
     interface ComputedFromDownloadResults {
         spectrum: DownloadResultsDependency,
         coarseOutput: DownloadResultsDependency,
-        summary: DownloadResultsDependency
+        summary: DownloadResultsDependency,
+        comparison: DownloadResultsDependency
     }
 
     interface Computed extends ComputedFromADRUpload, ComputedFromDownloadResults {
@@ -112,19 +120,22 @@
         downloadSummaryReport: () => void
         downloadSpectrumOutput: () => void
         downloadCoarseOutput: () => void
+        downloadComparisonReport: () => void
         downloadUrl: (downloadId: string) => string
         handleDownloadResult: (downloadResults: DownloadResultsDependency) => void
     }
 
     interface Data {
-        uploadModalOpen: boolean
+        uploadModalOpen: boolean,
+        comparisonSwitch: boolean
     }
 
     export default Vue.extend<Data, Methods, Computed>({
         name: "downloadResults",
         data() {
             return {
-                uploadModalOpen: false
+                uploadModalOpen: false,
+                comparisonSwitch: switches.comparisonOutput
             }
         },
         computed: {
@@ -132,7 +143,8 @@
             ...mapStateProps<DownloadResultsState, keyof ComputedFromDownloadResults>("downloadResults", {
                 spectrum: (state => state.spectrum),
                 summary: (state => state.summary),
-                coarseOutput: (state => state.coarseOutput)
+                coarseOutput: (state => state.coarseOutput),
+                comparison: (state => state.comparison)
             }),
             ...mapStateProps<ADRUploadState, keyof ComputedFromADRUpload>("adrUpload", {
                 uploading: (state => state.uploading),
@@ -158,11 +170,12 @@
                 return {
                     spectrum: {header: 'exportOutputs', button: 'export'},
                     coarse: {header: 'downloadCoarseOutput', button: 'download'},
-                    summary: {header: 'downloadSummaryReport', button: 'download'}
+                    summary: {header: 'downloadSummaryReport', button: 'download'},
+                    comparison: {header: 'downloadComparisonReport', button: 'download'}
                 }
             },
             isPreparing() {
-                return this.summary.preparing || this.spectrum.preparing || this.coarseOutput.preparing
+                return this.summary.preparing || this.spectrum.preparing || this.coarseOutput.preparing || this.comparison.preparing
             }
         },
         methods: {
@@ -183,6 +196,9 @@
             },
             downloadCoarseOutput() {
                 this.handleDownloadResult(this.coarseOutput)
+            },
+            downloadComparisonReport() {
+                this.handleDownloadResult(this.comparison)
             },
             clearStatus: mapMutationByName("adrUpload", "ClearStatus"),
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),

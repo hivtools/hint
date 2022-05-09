@@ -5,11 +5,13 @@ import {api, ResponseWithType} from "../../apiService";
 import {DownloadResultsMutation} from "./mutations";
 import {ModelStatusResponse} from "../../generated";
 import {DOWNLOAD_TYPE} from "../../types";
+import {switches} from "../../featureSwitches"
 
 export interface DownloadResultsActions {
     prepareSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareSpectrumOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareCoarseOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
+    prepareComparisonOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareOutputs: (store: ActionContext<DownloadResultsState, RootState>) => void
     poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: string) => void
 }
@@ -21,7 +23,8 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         await Promise.all([
             dispatch("prepareCoarseOutput"),
             dispatch("prepareSummaryReport"),
-            dispatch("prepareSpectrumOutput")
+            dispatch("prepareSpectrumOutput"),
+            dispatch("prepareComparisonOutput")
         ]);
     },
 
@@ -70,6 +73,21 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         }
     },
 
+    async prepareComparisonOutput(context) {
+        const {state, dispatch, rootState} = context
+        if (!state.comparison.downloadId && switches.comparisonOutput) {
+            const calibrateId = rootState.modelCalibrate.calibrateId
+            const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
+                .withSuccess(DownloadResultsMutation.PreparingComparisonOutput)
+                .withError(DownloadResultsMutation.ComparisonError)
+                .get(`download/submit/comparison/${calibrateId}`)
+
+            if (response) {
+                await dispatch("poll", DOWNLOAD_TYPE.COMPARISON)
+            }
+        }
+    },
+
     async poll(context, downloadType) {
         const {commit} = context;
         const id = setInterval(() => {
@@ -80,6 +98,8 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
                 getCoarseOutputStatus(context)
             } else if (downloadType === DOWNLOAD_TYPE.SUMMARY) {
                 getSummaryReportStatus(context)
+            } else if (downloadType === DOWNLOAD_TYPE.COMPARISON) {
+                getComparisonOutputStatus(context)
             }
         }, 2000);
 
@@ -87,7 +107,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
     },
 };
 
-export const getSummaryReportStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
+export const getSummaryReportStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch} = context;
     const downloadId = state.summary.downloadId;
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
@@ -97,7 +117,7 @@ export const getSummaryReportStatus = async function (context: ActionContext<Dow
     await getADRUploadMetadata(response, dispatch);
 };
 
-export const getSpectrumOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
+export const getSpectrumOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch} = context;
     const downloadId = state.spectrum.downloadId;
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
@@ -107,12 +127,22 @@ export const getSpectrumOutputStatus = async function (context: ActionContext<Do
     await getADRUploadMetadata(response, dispatch);
 };
 
-export const getCoarseOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>) {
+export const getCoarseOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch} = context;
     const downloadId = state.coarseOutput.downloadId;
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.CoarseOutputStatusUpdated)
         .withError(DownloadResultsMutation.CoarseOutputError)
+        .get<ModelStatusResponse>(`download/status/${downloadId}`);
+    await getADRUploadMetadata(response, dispatch);
+};
+
+export const getComparisonOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
+    const {state, dispatch} = context;
+    const downloadId = state.comparison.downloadId;
+    const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
+        .withSuccess(DownloadResultsMutation.ComparisonOutputStatusUpdated)
+        .withError(DownloadResultsMutation.ComparisonError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`);
     await getADRUploadMetadata(response, dispatch);
 };

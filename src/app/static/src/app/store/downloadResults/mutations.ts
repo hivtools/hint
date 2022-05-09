@@ -13,6 +13,9 @@ export enum DownloadResultsMutation {
     PreparingSummaryReport = "PreparingSummaryReport",
     SummaryReportStatusUpdated = "SummaryReportStatusUpdated",
     SummaryError = "SummaryError",
+    PreparingComparisonOutput = "PreparingComparisonOutput",
+    ComparisonOutputStatusUpdated = "ComparisonOutputStatusUpdated",
+    ComparisonError = "ComparisonError",
     PollingStatusStarted = "PollingStatusStarted",
     ResetIds = "ResetIds"
 }
@@ -85,6 +88,28 @@ export const mutations: MutationTree<DownloadResultsState> = {
         state.summary.statusPollId = -1;
     },
 
+    [DownloadResultsMutation.PreparingComparisonOutput](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
+        const downloadId = action.payload.id
+        state.comparison = {...state.comparison, downloadId, preparing: true, complete: false, error: null}
+    },
+
+    [DownloadResultsMutation.ComparisonOutputStatusUpdated](state: DownloadResultsState, action: PayloadWithType<DownloadStatusResponse>) {
+        if (action.payload.done) {
+            state.comparison.complete = true;
+            state.comparison.preparing = false;
+            window.clearInterval(state.comparison.statusPollId);
+            state.comparison.statusPollId = -1;
+        }
+        state.comparison.error = null;
+    },
+
+    [DownloadResultsMutation.ComparisonError](state: DownloadResultsState, action: PayloadWithType<Error>) {
+        state.comparison.error = action.payload;
+        state.comparison.preparing = false;
+        window.clearInterval(state.comparison.statusPollId);
+        state.comparison.statusPollId = -1;
+    },
+
     [DownloadResultsMutation.PollingStatusStarted](state: DownloadResultsState, action: PayloadWithType<PollingStarted>) {
         switch (action.payload.downloadType) {
             case DOWNLOAD_TYPE.SPECTRUM: {
@@ -99,11 +124,15 @@ export const mutations: MutationTree<DownloadResultsState> = {
                 state.summary.statusPollId = action.payload.pollId
                 break
             }
+            case DOWNLOAD_TYPE.COMPARISON: {
+                state.comparison.statusPollId = action.payload.pollId
+                break
+            }
         }
     },
 
     [DownloadResultsMutation.ResetIds](state: DownloadResultsState) {
-        const files = [state.spectrum, state.summary, state.coarseOutput];
+        const files = [state.spectrum, state.summary, state.coarseOutput, state.comparison];
         files.forEach((file) => {
             file.downloadId = "";
             window.clearInterval(file.statusPollId);

@@ -1,3 +1,11 @@
+# hint 1.99.0
+
+* Download comparison report
+
+# hint 1.98.0
+
+* Trigger generation of comparison report from front end
+
 # hint 1.97.2
 
 * Bug fixes -Clear current warning before import or upload failure

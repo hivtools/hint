@@ -7,6 +7,7 @@ import {
 import {actions} from "../../app/store/downloadResults/actions";
 import {DOWNLOAD_TYPE} from "../../app/types";
 import {DownloadStatusResponse} from "../../app/generated";
+import {switches} from "../../app/featureSwitches";
 
 const RunningStatusResponse: DownloadStatusResponse = {
     id: "db0c4957aea4b32c507ac02d63930110",
@@ -494,15 +495,184 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
+    it("can submit comparison download request, commits and starts polling", async () => {
+        switches.comparisonOutput = true;
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const downloadId = {downloadId: "1"};
+
+        const root = mockRootState({
+            modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"})
+        });
+
+        const state = mockDownloadResultsState();
+
+        mockAxios.onGet(`download/submit/comparison/calibrate1`)
+            .reply(200, mockSuccess(downloadId));
+
+        await actions.prepareComparisonOutput({commit, state, dispatch, rootState: root} as any);
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe("PreparingComparisonOutput")
+        expect(commit.mock.calls[0][0]["payload"]).toEqual(downloadId)
+        expect(mockAxios.history.get.length).toBe(1);
+        expect(mockAxios.history.get[0]["url"]).toBe("download/submit/comparison/calibrate1");
+
+        expect(dispatch.mock.calls.length).toBe(1)
+        expect(dispatch.mock.calls[0]).toEqual(["poll", DOWNLOAD_TYPE.COMPARISON])
+    });
+
+    it("prepare comparison does not do anything if downloadId is already present", async () => {
+        const commit = jest.fn();
+        const state = mockDownloadResultsState({
+            comparison: mockDownloadResultsDependency({downloadId: "1"})
+        });
+
+        await actions.prepareComparisonOutput({commit, state} as any);
+        expect(mockAxios.history.get.length).toBe(0);
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
+    it("can invoke comparison poll action, gets pollId, commits PollingStatusStarted", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const root = mockRootState({
+            modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
+        });
+
+        const state = mockDownloadResultsState({
+            comparison: mockDownloadResultsDependency({downloadId: "1"})
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(200, mockSuccess(RunningStatusResponse));
+
+        await actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(2);
+            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COMPARISON)
+
+            expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
+            expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
+            done()
+
+        }, 2100)
+    });
+
+    it("can poll for comparison output status", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            comparison: mockDownloadResultsDependency({downloadId: "1"})
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(200, mockSuccess(RunningStatusResponse));
+
+        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(2);
+            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COMPARISON)
+
+            expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
+            expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
+            done()
+        }, 2100)
+    });
+
+    it("gets adr upload metadata if comparison status is done", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            comparison: mockDownloadResultsDependency({downloadId: "1"})
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(200, mockSuccess(CompleteStatusResponse));
+
+        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
+            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
+            done()
+        }, 2100)
+    });
+
+    it("does not start polling for comparison output status when submission is unsuccessful", async () => {
+        switches.comparisonOutput = true;
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const root = mockRootState({
+            modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
+        });
+
+        const state = mockDownloadResultsState();
+
+        mockAxios.onGet(`download/submit/comparison/calibrate1`)
+            .reply(500, mockFailure("TEST FAILED"));
+
+        await actions.prepareComparisonOutput({commit, state, dispatch, rootState: root} as any);
+
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "ComparisonError",
+            payload: mockError("TEST FAILED")
+        });
+    });
+
+    it("does not continue to poll comparison status when unsuccessful", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            comparison: mockDownloadResultsDependency({downloadId: "1"})
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(500, mockFailure("TEST FAILED"));
+
+        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(2)
+
+            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.COMPARISON)
+
+            expect(commit.mock.calls[1][0]).toStrictEqual({
+                type: "ComparisonError",
+                payload: mockError("TEST FAILED")
+            });
+
+            done()
+
+        }, 2100)
+    });
+
     it("can prepare all outputs", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
         await actions.prepareOutputs({commit, dispatch} as any);
 
-        expect(dispatch.mock.calls.length).toBe(3);
+        expect(dispatch.mock.calls.length).toBe(4);
         expect(dispatch.mock.calls[0][0]).toBe("prepareCoarseOutput");
         expect(dispatch.mock.calls[1][0]).toBe("prepareSummaryReport");
         expect(dispatch.mock.calls[2][0]).toBe("prepareSpectrumOutput");
+        expect(dispatch.mock.calls[3][0]).toBe("prepareComparisonOutput");
     });
 });
