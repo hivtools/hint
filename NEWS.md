@@ -1,4 +1,4 @@
-# hint 2.0.0
+# hint 1.99.1
 
 * Input data warnings are not persisted/displayed
 
