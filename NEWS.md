@@ -1,3 +1,7 @@
+# hint 2.0.0
+
+* Input data warnings are not persisted/displayed
+
 # hint 1.99.0
 
 * Download comparison report
