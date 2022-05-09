@@ -102,10 +102,10 @@ class ProjectsController(private val session: Session,
             @RequestParam("note") note: String): ResponseEntity<String>
     {
         logger.info(LogMetadata(
+                tags = listOf("project", "notes"),
                 action = "Updating project note",
                 request = Request(request),
-                username = userId()),
-                "additional project note message")
+                username = userId()))
         projectRepository.updateProjectNote(projectId, userId(), note)
         return EmptySuccessResponse.asResponseEntity()
     }

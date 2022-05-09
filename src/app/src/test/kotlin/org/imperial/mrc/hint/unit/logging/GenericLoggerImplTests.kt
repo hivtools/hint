@@ -20,7 +20,7 @@ class GenericLoggerImplTests
         null,
         null,
         "Updating project note",
-        emptyList()
+            listOf("project", "notes")
     )
 
     private val mockLogger = mock<org.slf4j.Logger>()
