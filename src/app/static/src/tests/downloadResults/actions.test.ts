@@ -7,6 +7,7 @@ import {
 import {actions} from "../../app/store/downloadResults/actions";
 import {DOWNLOAD_TYPE} from "../../app/types";
 import {DownloadStatusResponse} from "../../app/generated";
+import {switches} from "../../app/featureSwitches";
 
 const RunningStatusResponse: DownloadStatusResponse = {
     id: "db0c4957aea4b32c507ac02d63930110",
@@ -681,6 +682,7 @@ describe(`download Results actions`, () => {
     });
 
     it("can submit comparison download request, commits and starts polling", async () => {
+        switches.comparisonOutput = true;
         const commit = jest.fn();
         const dispatch = jest.fn();
         const downloadId = {downloadId: "1"};
@@ -859,6 +861,7 @@ describe(`download Results actions`, () => {
     });
 
     it("does not start polling for comparison output status when submission is unsuccessful", async () => {
+        switches.comparisonOutput = true;
         const commit = jest.fn();
         const dispatch = jest.fn();
 

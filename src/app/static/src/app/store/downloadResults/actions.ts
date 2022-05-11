@@ -5,6 +5,7 @@ import {api, ResponseWithType} from "../../apiService";
 import {DownloadResultsMutation} from "./mutations";
 import {ModelStatusResponse} from "../../generated";
 import {DOWNLOAD_TYPE} from "../../types";
+import {switches} from "../../featureSwitches"
 
 export interface DownloadResultsActions {
     prepareSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => void
@@ -74,7 +75,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async prepareComparisonOutput(context) {
         const {state, dispatch, rootState} = context
-        if (!state.comparison.downloadId) {
+        if (!state.comparison.downloadId && switches.comparisonOutput) {
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingComparisonOutput)

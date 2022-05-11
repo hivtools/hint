@@ -1,6 +1,18 @@
-# hint 1.98.1
+# hint 1.99.3
 
 * Bug fixes- Display and upload output files to ADR if they are available for Upload
+
+# hint 1.99.2
+
+* Input data warnings are not persisted/displayed
+
+# hint 1.99.1
+
+* Bug fix - app timeout when using large dataset before completing a request.
+
+# hint 1.99.0
+
+* Download comparison report
 
 # hint 1.98.0
 

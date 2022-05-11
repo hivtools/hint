@@ -89,7 +89,10 @@ describe("LocalStorageManager", () => {
             stepper: mockStepperState(),
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
             plottingSelections: mockPlottingSelections(),
-            surveyAndProgram: mockSurveyAndProgramState({selectedDataType: DataType.Survey}),
+            surveyAndProgram: mockSurveyAndProgramState({
+                selectedDataType: DataType.Survey,
+                warnings: [{text: "test warning", locations: ["review_inputs"]}]
+            }),
             projects: mockProjectsState(),
             hintrVersion: mockHintrVersionState(),
             errors: mockErrorsState(),
@@ -110,7 +113,10 @@ describe("LocalStorageManager", () => {
             stepper: mockStepperState(),
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
-            surveyAndProgram: {selectedDataType: DataType.Survey},
+            surveyAndProgram: {
+                selectedDataType: DataType.Survey,
+                warnings: [{text: "test warning", locations: ["review_inputs"]}]
+            },
             hintrVersion: mockHintrVersionState(),
             language: Language.en
         });
@@ -134,7 +140,10 @@ describe("LocalStorageManager", () => {
                 selectedRelease: release
             }) ,
             metadata: mockMetadataState(),
-            surveyAndProgram: {selectedDataType: DataType.Survey},
+            surveyAndProgram: {
+                selectedDataType: DataType.Survey,
+                warnings: [{text: "test warning", locations: ["review_inputs"]}]
+            },
             plottingSelections: mockPlottingSelections(),
             errors: mockErrorsState(),
             stepper: mockStepperState()
@@ -148,7 +157,10 @@ describe("LocalStorageManager", () => {
             },
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),
-            surveyAndProgram: {selectedDataType: DataType.Survey},
+            surveyAndProgram: {
+                selectedDataType: DataType.Survey,
+                warnings: [{text: "test warning", locations: ["review_inputs"]}]
+            },
             hintrVersion: mockHintrVersionState(),
             stepper: mockStepperState(),
             language: Language.en
