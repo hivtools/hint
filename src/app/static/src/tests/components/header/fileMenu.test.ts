@@ -7,7 +7,7 @@ import {
     mockError,
     mockFile,
     mockLoadState,
-    mockMetadataState, mockModelCalibrateState,
+    mockMetadataState,
     mockModelRunState,
     mockPJNZResponse,
     mockPopulationResponse,
@@ -116,7 +116,7 @@ describe("File menu", () => {
                 modelRun: mockModelRunState(),
                 modelCalibrate: {result: null, calibratePlotResult: null},
                 metadata: mockMetadataState(),
-                surveyAndProgram: {selectedDataType: null},
+                surveyAndProgram: {selectedDataType: null, warnings: []},
                 language: Language.en
             },
             files: {
