@@ -20,6 +20,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async prepareOutputs(context) {
         const {dispatch} = context
+        console.log("prepare outputs dispatch", dispatch)
         await Promise.all([
             dispatch("prepareCoarseOutput"),
             dispatch("prepareSummaryReport"),
