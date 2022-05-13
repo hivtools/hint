@@ -16,6 +16,7 @@ export enum DownloadResultsMutation {
     PreparingComparisonOutput = "PreparingComparisonOutput",
     ComparisonOutputStatusUpdated = "ComparisonOutputStatusUpdated",
     ComparisonError = "ComparisonError",
+    SetFetchingDownloadId = "SetFetchingDownloadId",
     PollingStatusStarted = "PollingStatusStarted",
     ResetIds = "ResetIds"
 }
@@ -108,6 +109,27 @@ export const mutations: MutationTree<DownloadResultsState> = {
         state.comparison.preparing = false;
         window.clearInterval(state.comparison.statusPollId);
         state.comparison.statusPollId = -1;
+    },
+
+    [DownloadResultsMutation.SetFetchingDownloadId](state: DownloadResultsState, action: PayloadWithType<string>) {
+        switch (action.payload) {
+            case DOWNLOAD_TYPE.SPECTRUM: {
+                state.spectrum = {...state.coarseOutput, fetchingDownloadId: true}
+                break;
+            }
+            case DOWNLOAD_TYPE.COARSE: {
+                state.coarseOutput = {...state.coarseOutput, fetchingDownloadId: true}
+                break;
+            }
+            case DOWNLOAD_TYPE.SUMMARY: {
+                state.summary = {...state.coarseOutput, fetchingDownloadId: true}
+                break
+            }
+            case DOWNLOAD_TYPE.COMPARISON: {
+                state.comparison = {...state.coarseOutput, fetchingDownloadId: true}
+                break
+            }
+        }
     },
 
     [DownloadResultsMutation.PollingStatusStarted](state: DownloadResultsState, action: PayloadWithType<PollingStarted>) {

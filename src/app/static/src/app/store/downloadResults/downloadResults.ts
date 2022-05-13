@@ -12,11 +12,16 @@ export interface DownloadResultsState {
 }
 
 export const initialDownloadResults = {
+    fetchingDownloadId: false,
     downloadId: "",
     preparing: false,
     statusPollId: -1,
     complete: false,
-    error: null
+    error: null,
+    // fetchingCoarseOutputDownloadId: false,
+    // fetchingSummaryReportDownloadId: false,
+    // fetchingSpectrumOutputDownloadId: false,
+    // fetchingComparisonOutputDownloadId: false,
 }
 
 export const initialDownloadResultsState = (): DownloadResultsState => {
