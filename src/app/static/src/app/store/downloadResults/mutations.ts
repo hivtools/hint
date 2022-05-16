@@ -118,7 +118,7 @@ export const mutations: MutationTree<DownloadResultsState> = {
     [DownloadResultsMutation.SetFetchingDownloadId](state: DownloadResultsState, action: PayloadWithType<string>) {
         switch (action.payload) {
             case DOWNLOAD_TYPE.SPECTRUM: {
-                state.spectrum = {...state.coarseOutput, fetchingDownloadId: true}
+                state.spectrum = {...state.spectrum, fetchingDownloadId: true}
                 break;
             }
             case DOWNLOAD_TYPE.COARSE: {
@@ -126,11 +126,11 @@ export const mutations: MutationTree<DownloadResultsState> = {
                 break;
             }
             case DOWNLOAD_TYPE.SUMMARY: {
-                state.summary = {...state.coarseOutput, fetchingDownloadId: true}
+                state.summary = {...state.summary, fetchingDownloadId: true}
                 break
             }
             case DOWNLOAD_TYPE.COMPARISON: {
-                state.comparison = {...state.coarseOutput, fetchingDownloadId: true}
+                state.comparison = {...state.comparison, fetchingDownloadId: true}
                 break
             }
         }

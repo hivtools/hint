@@ -30,13 +30,16 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async prepareCoarseOutput(context) {
         const {state, dispatch, rootState, commit} = context
+        console.log("fetchingDownloadId 1", state.coarseOutput.fetchingDownloadId, state.coarseOutput)
         if (!state.coarseOutput.downloadId && !state.coarseOutput.fetchingDownloadId) {
             commit({type: "SetFetchingDownloadId", payload: DOWNLOAD_TYPE.COARSE});
+            console.log("fetchingDownloadId 2", state.coarseOutput.fetchingDownloadId, state.coarseOutput)
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingCoarseOutput)
                 .withError(DownloadResultsMutation.CoarseOutputError)
                 .get(`download/submit/coarse-output/${calibrateId}`)
+            console.log("fetchingDownloadId 3", state.coarseOutput.fetchingDownloadId, state.coarseOutput)
 
             if (response) {
                 await dispatch("poll", DOWNLOAD_TYPE.COARSE)
