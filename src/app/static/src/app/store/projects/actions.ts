@@ -8,6 +8,7 @@ import {ProjectsMutations} from "./mutations";
 import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
 import {CurrentProject, Project, VersionDetails, VersionIds} from "../../types";
+import {DownloadResultsMutation} from "../downloadResults/mutations";
 
 export interface versionPayload {
     version: VersionIds,
@@ -104,6 +105,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     async getCurrentProject(context) {
         const {rootGetters, commit} = context;
         if (!rootGetters.isGuest) {
+            commit(`downloadResults/${DownloadResultsMutation.ResetIds}`, null, {root: true});
             commit({type: ProjectsMutations.SetLoading, payload: true});
             await api<ProjectsMutations, ProjectsMutations>(context)
                 .withSuccess(ProjectsMutations.SetCurrentProject)
