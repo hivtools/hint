@@ -117,6 +117,8 @@ export const getSummaryReportStatus = async function (context: ActionContext<Dow
 
     if (response && response.data?.done) {
         await getADRUploadMetadata(response, dispatch).then(() => {
+            // commit is neccessary for dispatching action
+            // to retrieve metadata for summary report
             commit({
                 type: DownloadResultsMutation.SummaryMetadataError,
                 payload: rootState.metadata.adrUploadMetadataError
@@ -135,6 +137,8 @@ export const getSpectrumOutputStatus = async function (context: ActionContext<Do
 
     if (response && response.data?.done) {
         await getADRUploadMetadata(response, dispatch).then(() => {
+            // commit is neccessary for dispatching action
+            // to retrieve metadata for spectrum report
             commit({
                 type: DownloadResultsMutation.SpectrumMetadataError,
                 payload: rootState.metadata.adrUploadMetadataError
@@ -153,6 +157,8 @@ export const getCoarseOutputStatus = async function (context: ActionContext<Down
 
     if (response && response.data?.done) {
         await getADRUploadMetadata(response, dispatch).then(() => {
+            // commit is neccessary for dispatching action
+            // to retrieve metadata for coarseOutput report
             commit({
                 type: DownloadResultsMutation.CoarseOutputMetadataError,
                 payload: rootState.metadata.adrUploadMetadataError
@@ -171,6 +177,8 @@ export const getComparisonOutputStatus = async function (context: ActionContext<
 
     if (response && response.data?.done) {
         await getADRUploadMetadata(response, dispatch).then(() => {
+            // commit is neccessary for dispatching action
+            // to retrieve metadata for comparison report
             commit({
                 type: DownloadResultsMutation.ComparisonOutputMetadataError,
                 payload: rootState.metadata.adrUploadMetadataError
