@@ -14,26 +14,20 @@ class GenericLoggerImpl(
     override fun info(log: LogMetadata, msg: String?)
     {
         logger.info(msg,
-            kv("Username", log.username),
-            kv("App", log.app),
-            kv("Request", log.request),
-            kv("Response", log.response),
-            kv("Error", log.error),
-            kv("Action", log.action),
-            kv("Tags", log.tags)
+                kv("hint", log)
         )
     }
 
     override fun error(log: LogMetadata, msg: String?)
     {
         logger.error(msg,
-            kv("Username", log.username),
-            kv("App", log.app),
-            kv("Request", log.request),
-            kv("Response", log.response),
-            kv("Error", log.error),
-            kv("Action", log.action),
-            kv("Tags", log.tags)
+                kv("username", log.username),
+                kv("app", log.app),
+                kv("request", log.request),
+                kv("response", log.response),
+                kv("error", log.error),
+                kv("action", log.action),
+                kv("tags", log.tags)
         )
     }
 }

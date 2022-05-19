@@ -33,7 +33,7 @@ data class Request(
 data class Response(val message: String? = null, val status: String? = null)
 
 @NoCoverage
-data class ErrorMessage(val error: String? = null, val details: String? = null)
+data class ErrorMessage(val error: String? = null, val details: String? = null, val traceId: String? = null)
 
 data class LogMetadata(
         val username: String? = null,
