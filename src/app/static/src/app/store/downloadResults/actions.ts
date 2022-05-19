@@ -30,16 +30,13 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async prepareCoarseOutput(context) {
         const {state, dispatch, rootState, commit} = context
-        console.log("fetchingDownloadId 1", state.coarseOutput.fetchingDownloadId, state.coarseOutput)
         if (!state.coarseOutput.downloadId && !state.coarseOutput.fetchingDownloadId) {
             commit({type: "SetFetchingDownloadId", payload: DOWNLOAD_TYPE.COARSE});
-            console.log("fetchingDownloadId 2", state.coarseOutput.fetchingDownloadId, state.coarseOutput)
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingCoarseOutput)
                 .withError(DownloadResultsMutation.CoarseOutputError)
                 .get(`download/submit/coarse-output/${calibrateId}`)
-            console.log("fetchingDownloadId 3", state.coarseOutput.fetchingDownloadId, state.coarseOutput)
 
             if (response) {
                 await dispatch("poll", DOWNLOAD_TYPE.COARSE)
@@ -116,50 +113,42 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
 export const getSummaryReportStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch} = context;
-    // if (state.summary.statusPollId !== -1){
-        const downloadId = state.summary.downloadId;
-        const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
-            .withSuccess(DownloadResultsMutation.SummaryReportStatusUpdated)
-            .withError(DownloadResultsMutation.SummaryError)
-            .get<ModelStatusResponse>(`download/status/${downloadId}`)
-        await getADRUploadMetadata(response, dispatch);
-    // }
+    const downloadId = state.summary.downloadId;
+    const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
+        .withSuccess(DownloadResultsMutation.SummaryReportStatusUpdated)
+        .withError(DownloadResultsMutation.SummaryError)
+        .get<ModelStatusResponse>(`download/status/${downloadId}`)
+    await getADRUploadMetadata(response, dispatch);
 };
 
 export const getSpectrumOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch} = context;
-    // if (state.spectrum.statusPollId !== -1){
-        const downloadId = state.spectrum.downloadId;
-        const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
-            .withSuccess(DownloadResultsMutation.SpectrumOutputStatusUpdated)
-            .withError(DownloadResultsMutation.SpectrumError)
-            .get<ModelStatusResponse>(`download/status/${downloadId}`);
-        await getADRUploadMetadata(response, dispatch);
-    // }
+    const downloadId = state.spectrum.downloadId;
+    const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
+        .withSuccess(DownloadResultsMutation.SpectrumOutputStatusUpdated)
+        .withError(DownloadResultsMutation.SpectrumError)
+        .get<ModelStatusResponse>(`download/status/${downloadId}`);
+    await getADRUploadMetadata(response, dispatch);
 };
 
 export const getCoarseOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch} = context;
-    // if (state.coarseOutput.statusPollId !== -1){
-        const downloadId = state.coarseOutput.downloadId;
-        const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
-            .withSuccess(DownloadResultsMutation.CoarseOutputStatusUpdated)
-            .withError(DownloadResultsMutation.CoarseOutputError)
-            .get<ModelStatusResponse>(`download/status/${downloadId}`);
-        await getADRUploadMetadata(response, dispatch);
-    // }
+    const downloadId = state.coarseOutput.downloadId;
+    const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
+        .withSuccess(DownloadResultsMutation.CoarseOutputStatusUpdated)
+        .withError(DownloadResultsMutation.CoarseOutputError)
+        .get<ModelStatusResponse>(`download/status/${downloadId}`);
+    await getADRUploadMetadata(response, dispatch);
 };
 
 export const getComparisonOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch} = context;
-    // if (state.comparison.statusPollId !== -1){
-        const downloadId = state.comparison.downloadId;
-        const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
-            .withSuccess(DownloadResultsMutation.ComparisonOutputStatusUpdated)
-            .withError(DownloadResultsMutation.ComparisonError)
-            .get<ModelStatusResponse>(`download/status/${downloadId}`);
-        await getADRUploadMetadata(response, dispatch);
-    // }
+    const downloadId = state.comparison.downloadId;
+    const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
+        .withSuccess(DownloadResultsMutation.ComparisonOutputStatusUpdated)
+        .withError(DownloadResultsMutation.ComparisonError)
+        .get<ModelStatusResponse>(`download/status/${downloadId}`);
+    await getADRUploadMetadata(response, dispatch);
 };
 
 const getADRUploadMetadata = async function(response: void | ResponseWithType<ModelStatusResponse>, dispatch: Dispatch) {

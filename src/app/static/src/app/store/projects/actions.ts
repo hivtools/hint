@@ -106,7 +106,6 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     async getCurrentProject(context) {
         const {rootGetters, commit} = context;
         if (!rootGetters.isGuest) {
-            // commit(`downloadResults/${DownloadResultsMutation.ResetIds}`, null, {root: true});
             commit({type: ProjectsMutations.SetLoading, payload: true});
             await api<ProjectsMutations, ProjectsMutations>(context)
                 .withSuccess(ProjectsMutations.SetCurrentProject)
@@ -176,7 +175,6 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 
     async loadVersion(context, version) {
         const {commit, dispatch, state} = context;
-        // commit(`downloadResults/${DownloadResultsMutation.ResetIds}`, null, {root: true});
         commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
         commit({type: ProjectsMutations.SetLoading, payload: true});
         await api<ProjectsMutations, ProjectsMutations>(context)

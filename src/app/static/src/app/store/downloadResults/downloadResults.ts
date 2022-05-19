@@ -17,11 +17,7 @@ export const initialDownloadResults = {
     preparing: false,
     statusPollId: -1,
     complete: false,
-    error: null,
-    // fetchingCoarseOutputDownloadId: false,
-    // fetchingSummaryReportDownloadId: false,
-    // fetchingSpectrumOutputDownloadId: false,
-    // fetchingComparisonOutputDownloadId: false,
+    error: null
 }
 
 export const initialDownloadResultsState = (): DownloadResultsState => {
