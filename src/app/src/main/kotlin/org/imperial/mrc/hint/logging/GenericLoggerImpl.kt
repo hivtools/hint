@@ -13,13 +13,6 @@ class GenericLoggerImpl(
 
     override fun info(log: LogMetadata, msg: String?)
     {
-        logger.info(msg,
-                kv("naomi_username", log.username),
-                kv("naomi_app", log.app),
-                kv("naomi_request", log.request),
-                kv("naomi_response", log.response),
-                kv("naomi_error", log.error),
-                kv("naomi_action", log.action),
-                kv("naomi_tags", log.tags))
+        logger.info(msg, kv("hint", log))
     }
 }
