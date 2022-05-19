@@ -30,7 +30,13 @@ class GenericLoggerImplTests
     {
         val sut = GenericLoggerImpl(mockLogger)
         sut.info(testLogData, "TEST")
-
-        verify(mockLogger).info("TEST", kv("hint", testLogData))
+        verify(mockLogger).info("TEST",
+                kv("naomi_username", testLogData.username),
+                kv("naomi_app", testLogData.app),
+                kv("naomi_request", testLogData.request),
+                kv("naomi_response", testLogData.response),
+                kv("naomi_error", testLogData.error),
+                kv("naomi_action", testLogData.action),
+                kv("naomi_tags", testLogData.tags))
     }
 }
