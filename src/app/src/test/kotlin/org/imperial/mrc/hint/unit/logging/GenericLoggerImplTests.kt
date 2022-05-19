@@ -33,6 +33,6 @@ class GenericLoggerImplTests
         sut.info(testLogData, "TEST")
 
         verify(mockLogger).info("TEST", kv("hint", testLogData))
-                .also { assertThat(it).isEqualToComparingFieldByField(testLogData) }
+                .also { assertThat(it).isEqualToComparingFieldByFieldRecursively(testLogData) }
     }
 }
