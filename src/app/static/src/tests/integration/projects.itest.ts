@@ -1,6 +1,7 @@
 import {actions} from "../../app/store/projects/actions";
 import {login, rootState} from "./integrationTest";
 import {ProjectsMutations} from "../../app/store/projects/mutations";
+import {DownloadResultsMutation} from "../../app/store/downloadResults/mutations";
 import {RootMutation} from "../../app/store/root/mutations";
 import {initialProjectsState} from "../../app/store/projects/projects";
 import {emptyState} from "../../app/root";
@@ -36,12 +37,13 @@ describe("Projects actions", () => {
         const commit = jest.fn();
         await actions.createProject({commit, rootState, state: initialProjectsState()} as any, "v1");
 
-        expect(commit.mock.calls.length).toBe(2);
-        expect(commit.mock.calls[0][0]["type"]).toBe(ProjectsMutations.SetLoading);
-        expect(commit.mock.calls[0][0]["payload"]).toBe(true);
+        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls[0][0]["type"]).toBe(DownloadResultsMutation.ResetIds);
+        expect(commit.mock.calls[1][0]["type"]).toBe(ProjectsMutations.SetLoading);
+        expect(commit.mock.calls[1][0]["payload"]).toBe(true);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe(RootMutation.SetProject);
-        const createdProject = commit.mock.calls[1][0]["payload"];
+        expect(commit.mock.calls[2][0]["type"]).toBe(RootMutation.SetProject);
+        const createdProject = commit.mock.calls[2][0]["payload"];
         expect(createdProject.id).toBeTruthy();
         expect(createdProject.name).toBe("v1");
         expect(createdProject.versions.length).toBe(1);
