@@ -1,3 +1,7 @@
+# hint 1.99.3
+
+* Prevent spamming download and meta endpoints after download generate completes
+
 # hint 1.99.2
 
 * Input data warnings are not persisted/displayed
