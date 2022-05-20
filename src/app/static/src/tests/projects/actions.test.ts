@@ -86,10 +86,11 @@ describe("Projects actions", () => {
         actions.createProject({commit, state, rootState} as any, "newProject");
 
         setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: "downloadResults/ResetIds"});
+            expect(commit.mock.calls[1][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
 
             const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
-            expect(commit.mock.calls[1][0]).toStrictEqual({
+            expect(commit.mock.calls[2][0]).toStrictEqual({
                 type: ProjectsMutations.ProjectError,
                 payload: expectedError
             });
@@ -107,12 +108,13 @@ describe("Projects actions", () => {
         actions.createProject({commit, state, rootState} as any, "newProject");
 
         setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: "downloadResults/ResetIds"});
+            expect(commit.mock.calls[1][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
 
             const posted = mockAxios.history.post[0].data;
             expect(posted).toEqual("name=newProject");
-            expect(commit.mock.calls[1][0]).toStrictEqual({type: RootMutation.SetProject, payload: "TestProject"});
-            expect(commit.mock.calls[1][1]).toStrictEqual({root: true});
+            expect(commit.mock.calls[2][0]).toStrictEqual({type: RootMutation.SetProject, payload: "TestProject"});
+            expect(commit.mock.calls[2][1]).toStrictEqual({root: true});
             done();
         });
     });
@@ -441,7 +443,8 @@ describe("Projects actions", () => {
 
         actions.loadVersion({commit, dispatch, state, rootState} as any, {projectId: 1, versionId: "testVersion"});
         setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
+            expect(commit.mock.calls[0][0]).toStrictEqual({type: "downloadResults/ResetIds"});
+            expect(commit.mock.calls[1][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
             expect(dispatch.mock.calls[0][0]).toBe("load/loadFromVersion");
             expect(dispatch.mock.calls[0][1]).toStrictEqual(mockVersionDetails);
             expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
@@ -458,9 +461,9 @@ describe("Projects actions", () => {
 
         actions.loadVersion({commit, dispatch, state, rootState} as any, {projectId: 1, versionId: "testVersion"});
         setTimeout(() => {
-            expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
+            expect(commit.mock.calls[1][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
             const expectedError = {detail: "test error", error: "OTHER_ERROR"};
-            expect(commit.mock.calls[1][0]).toStrictEqual({
+            expect(commit.mock.calls[2][0]).toStrictEqual({
                 type: ProjectsMutations.ProjectError,
                 payload: expectedError
             });

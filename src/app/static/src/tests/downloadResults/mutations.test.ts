@@ -57,6 +57,13 @@ describe(`download results mutations`, () => {
         expect(state.summary.statusPollId).toBeGreaterThan(-1);
     });
 
+    it("sets fetchingDownloadId for summary download on SetFetchingDownloadId", () => {
+        const state = mockDownloadResultsState();
+        const payload = DOWNLOAD_TYPE.SUMMARY
+        mutations[DownloadResultsMutation.SetFetchingDownloadId](state, {payload: payload});
+        expect(state.summary.fetchingDownloadId).toBe(true);
+    });
+
     it("set summary status to complete, clears interval on SummaryDownloadStatusUpdated", () => {
         jest.useFakeTimers();
         const clearInterval = jest.spyOn(window, "clearInterval");
@@ -66,7 +73,8 @@ describe(`download results mutations`, () => {
                 complete: false,
                 error: mockError(),
                 statusPollId: 123,
-                downloadId: "111"
+                downloadId: "111",
+                fetchingDownloadId: false
             }
         });
         mutations[DownloadResultsMutation.SummaryReportStatusUpdated](state, {payload: CompleteStatusResponse});
@@ -109,6 +117,13 @@ describe(`download results mutations`, () => {
         expect(state.spectrum.statusPollId).toBeGreaterThan(-1);
     });
 
+    it("sets fetchingDownloadId for spectrum download on SetFetchingDownloadId", () => {
+        const state = mockDownloadResultsState();
+        const payload = DOWNLOAD_TYPE.SPECTRUM
+        mutations[DownloadResultsMutation.SetFetchingDownloadId](state, {payload: payload});
+        expect(state.spectrum.fetchingDownloadId).toBe(true);
+    });
+
     it("set spectrum status to complete, clears interval on SpectrumDownloadStatusUpdated", () => {
         jest.useFakeTimers();
         const clearInterval = jest.spyOn(window, "clearInterval");
@@ -118,7 +133,8 @@ describe(`download results mutations`, () => {
                 complete: false,
                 error: mockError(),
                 statusPollId: 123,
-                downloadId: "111"
+                downloadId: "111",
+                fetchingDownloadId: false
             }
         });
         mutations[DownloadResultsMutation.SpectrumOutputStatusUpdated](state, {payload: CompleteStatusResponse});
@@ -163,6 +179,13 @@ describe(`download results mutations`, () => {
         expect(state.coarseOutput.statusPollId).toBeGreaterThan(-1);
     });
 
+    it("sets fetchingDownloadId for coarseOutput download on SetFetchingDownloadId", () => {
+        const state = mockDownloadResultsState();
+        const payload = DOWNLOAD_TYPE.COARSE
+        mutations[DownloadResultsMutation.SetFetchingDownloadId](state, {payload: payload});
+        expect(state.coarseOutput.fetchingDownloadId).toBe(true);
+    });
+
     it("set coarseOutput status to complete, clears interval on CoarseOutputDownloadStatusUpdated", () => {
         jest.useFakeTimers();
         const clearInterval = jest.spyOn(window, "clearInterval");
@@ -172,7 +195,8 @@ describe(`download results mutations`, () => {
                 complete: false,
                 error: mockError(),
                 statusPollId: 123,
-                downloadId: "111"
+                downloadId: "111",
+                fetchingDownloadId: false
             }
         });
         mutations[DownloadResultsMutation.CoarseOutputStatusUpdated](state, {payload: CompleteStatusResponse});
@@ -215,6 +239,13 @@ describe(`download results mutations`, () => {
         expect(state.comparison.statusPollId).toBeGreaterThan(-1);
     });
 
+    it("sets fetchingDownloadId for comparison download on SetFetchingDownloadId", () => {
+        const state = mockDownloadResultsState();
+        const payload = DOWNLOAD_TYPE.COMPARISON
+        mutations[DownloadResultsMutation.SetFetchingDownloadId](state, {payload: payload});
+        expect(state.comparison.fetchingDownloadId).toBe(true);
+    });
+
     it("set comparison status to complete, clears interval on ComparisonDownloadStatusUpdated", () => {
         jest.useFakeTimers();
         const clearInterval = jest.spyOn(window, "clearInterval");
@@ -224,7 +255,8 @@ describe(`download results mutations`, () => {
                 complete: false,
                 error: mockError(),
                 statusPollId: 123,
-                downloadId: "111"
+                downloadId: "111",
+                fetchingDownloadId: false
             }
         });
         mutations[DownloadResultsMutation.ComparisonOutputStatusUpdated](state, {payload: CompleteStatusResponse});
