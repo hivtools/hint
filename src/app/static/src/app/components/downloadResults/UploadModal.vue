@@ -6,9 +6,11 @@
                 <div id="dataset-id" class="mt-4">
                     <span v-translate="'uploadFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
+                <div class="pt-3 text-danger" id="output-file-error" v-if="outputFileError" v-translate="outputFileError"></div>
                 <div class="pt-3 form-check form-check-inline">
                     <input type="radio"
                            id="createRelease"
+                           :disabled="outputFileError"
                            value="createRelease"
                            v-model="choiceUpload"
                            class="form-check-input"/>
@@ -36,7 +38,7 @@
                 </div>
                 <div v-for="(uploadFileSection, sectionIndex) in uploadFileSections" :key="sectionIndex" class="pl-4">
                     <h5 v-if="Object.keys(uploadFileSections[1]).length > 0"
-                        v-translate="sectionIndex === 0 ? 'outputFiles' : 'inputFiles'"
+                        v-translate="getSectionHeading(sectionIndex)"
                         class="mt-3"></h5>
                     <div id="output-file-id" class="mt-3" v-for="(uploadFile, key, index) in uploadFileSection"
                          :key="uploadFile.index">
@@ -76,17 +78,18 @@
     import Vue from "vue";
     import Modal from "../Modal.vue";
     import {
-        Dict,
+        Dict, DownloadResultsDependency,
         UploadFile
     } from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {mapActionByName, mapStateProp} from "../../utils";
+    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
     import {HelpCircleIcon} from "vue-feather-icons";
     import {VTooltip} from "v-tooltip";
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
+    import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
 
     interface Methods {
         uploadFilesToADRAction: (selectedUploadFiles: { uploadFiles: UploadFile[], createRelease: boolean }) => void;
@@ -95,14 +98,23 @@
         setDefaultCheckedItems: () => void
         translate(text: string): string;
         sendUploadFilesToADR: () => void
+        outputFileIsAvailable: (outputFileType: string) => boolean
+        getSectionHeading: (index: number) => string,
+        translatedOutputFileError: (key: string) => string
     }
 
-    interface Computed {
+    interface ComputedFromDownloadResults {
+        summary: DownloadResultsDependency,
+        spectrum: DownloadResultsDependency
+    }
+
+    interface Computed extends ComputedFromDownloadResults{
         dataset: string | undefined,
         uploadableFiles: Dict<UploadFile>,
         uploadFileSections: Array<Dict<UploadFile>>
         currentLanguage: Language;
         createRelease: boolean
+        outputFileError:  string | null
     }
 
     interface Data {
@@ -147,9 +159,46 @@
             setDefaultCheckedItems: function () {
                 this.uploadFilesToAdr = [...outputFileTypes, ...inputFileTypes]
                     .filter(key => this.uploadableFiles.hasOwnProperty(key))
+            },
+            //show and upload only successfully downloaded outputFiles in upload modal
+            outputFileIsAvailable: function (key) {
+                if (key === "outputZip" && !(this.spectrum.error || this.spectrum.metadataError)) {
+                    return true
+                } else if (key === "outputSummary" && !(this.summary.error || this.summary.metadataError)) {
+                    return true
+                }
+                return false
+            },
+            getSectionHeading: function (sectionIndex) {
+                const hasOutputFile = Object.keys(this.uploadFileSections[0]).length > 0
+                return sectionIndex === 0 ? (hasOutputFile ? 'outputFiles' : '') : 'inputFiles';
+            },
+            translatedOutputFileError: function (key) {
+                return i18next.t("downloadSpectrumOrSummaryError", {
+                    outputFileType: this.translate(key),
+                    lng: this.currentLanguage,
+                });
             }
         },
         computed: {
+            ...mapStateProps<DownloadResultsState, keyof ComputedFromDownloadResults>("downloadResults", {
+                summary: (state => state.summary),
+                spectrum: (state => state.spectrum)
+            }),
+            outputFileError() {
+                if ((this.summary.error || this.summary.metadataError) &&
+                    (this.spectrum.error || this.spectrum.metadataError)) {
+                    return "downloadSpectrumAndSummaryError"
+
+                } else if (this.summary.error || this.summary.metadataError) {
+                    return this.translatedOutputFileError("downloadSummary")
+
+                } else if (this.spectrum.error || this.spectrum.metadataError) {
+                    return this.translatedOutputFileError("downloadSpectrum")
+                }
+
+                return null
+            },
             dataset: mapStateProp<BaselineState, string | undefined>("baseline",
                 (state: BaselineState) => state.selectedDataset?.title),
             createRelease() {
@@ -166,7 +215,9 @@
                 if (this.uploadableFiles) {
                     return Object.keys(this.uploadableFiles).reduce((sections, key) => {
                         if (outputFileTypes.includes(key)) {
-                            sections[0][key] = this.uploadableFiles[key];
+                            if (this.outputFileIsAvailable(key)) {
+                                sections[0][key] = this.uploadableFiles[key];
+                            }
                         } else {
                             sections[1][key] = this.uploadableFiles[key];
                         }
@@ -192,6 +243,9 @@
             tooltip: VTooltip,
         },
         mounted() {
+            if (this.outputFileError) {
+                this.choiceUpload = "uploadFiles";
+            }
             this.setDefaultCheckedItems()
         }
     });

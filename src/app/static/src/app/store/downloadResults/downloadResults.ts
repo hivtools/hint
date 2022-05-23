@@ -17,7 +17,8 @@ export const initialDownloadResults = {
     preparing: false,
     statusPollId: -1,
     complete: false,
-    error: null
+    error: null,
+    metadataError: null
 }
 
 export const initialDownloadResultsState = (): DownloadResultsState => {
