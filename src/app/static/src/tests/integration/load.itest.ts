@@ -3,6 +3,7 @@ import {actions as projectActions} from "../../app/store/projects/actions";
 import {mutations as projectMutations} from "../../app/store/projects/mutations";
 import {mutations as rootMutations} from "../../app/store/root/mutations";
 import {mutations as downloadResultsMutations} from "../../app/store/downloadResults/mutations";
+import {initialDownloadResultsState} from "../../app/store/downloadResults/downloadResults";
 import {addCheckSum} from "../../app/utils";
 import {login, rootState} from "./integrationTest";
 import {actions as baselineActions} from "../../app/store/baseline/actions";
@@ -131,6 +132,7 @@ describe("load actions", () => {
                 },
                 downloadResults: {
                     namespaced: true,
+                    state: initialDownloadResultsState(),
                     mutations: downloadResultsMutations
                 }
             }

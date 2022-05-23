@@ -54,7 +54,7 @@ describe("Projects actions", () => {
         const state = initialProjectsState();
         await actions.createProject({commit, rootState, state} as any, "v1");
 
-        const createdProject = commit.mock.calls[1][0]["payload"];
+        const createdProject = commit.mock.calls[2][0]["payload"];
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
@@ -78,7 +78,7 @@ describe("Projects actions", () => {
         const state = initialProjectsState();
         await actions.createProject({commit, rootState: emptyState(), state} as any, "v1");
 
-        const createdProject = commit.mock.calls[1][0]["payload"];
+        const createdProject = commit.mock.calls[2][0]["payload"];
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
@@ -105,7 +105,7 @@ describe("Projects actions", () => {
         const commit = jest.fn();
         await actions.createProject({commit, rootState, state} as any, "v1");
 
-        const createdProject = commit.mock.calls[1][0]["payload"];
+        const createdProject = commit.mock.calls[2][0]["payload"];
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
@@ -131,9 +131,9 @@ describe("Projects actions", () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         await actions.createProject({commit, rootState, state} as any, "v1");
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(3);
 
-        const createdProject = commit.mock.calls[1][0]["payload"];
+        const createdProject = commit.mock.calls[2][0]["payload"];
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
@@ -151,9 +151,9 @@ describe("Projects actions", () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         await actions.createProject({commit, rootState, state} as any, "v1");
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(3);
 
-        const createdProject = commit.mock.calls[1][0]["payload"];
+        const createdProject = commit.mock.calls[2][0]["payload"];
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
@@ -173,9 +173,9 @@ describe("Projects actions", () => {
         const dispatch = jest.fn();
 
         await actions.createProject({commit, rootState, state} as any, "v1");
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(3);
 
-        const createdProject = commit.mock.calls[1][0]["payload"];
+        const createdProject = commit.mock.calls[2][0]["payload"];
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
         const versionPayload = {
@@ -199,9 +199,9 @@ describe("Projects actions", () => {
         const dispatch = jest.fn();
 
         await actions.createProject({commit, rootState, state} as any, "v1");
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(3);
 
-        const createdProject = commit.mock.calls[1][0]["payload"];
+        const createdProject = commit.mock.calls[2][0]["payload"];
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
         const versionPayload = {
@@ -223,9 +223,9 @@ describe("Projects actions", () => {
         const dispatch = jest.fn();
 
         await actions.createProject({commit, rootState, state} as any, "v1");
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(3);
 
-        const createdProject = commit.mock.calls[1][0]["payload"];
+        const createdProject = commit.mock.calls[2][0]["payload"];
         state.currentProject = createdProject;
         const projectPayload = {
             projectId: state.currentProject!.id,
