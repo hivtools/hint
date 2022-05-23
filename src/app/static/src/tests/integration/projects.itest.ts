@@ -91,7 +91,7 @@ describe("Projects actions", () => {
             expect(commit.mock.calls[5][0]["payload"]).toBe(false);
             expect(commit.mock.calls[6][0]["type"]).toBe(ProjectsMutations.VersionCreated);
 
-            const newVersion = commit.mock.calls[5][0]["payload"];
+            const newVersion = commit.mock.calls[6][0]["payload"];
             expect(newVersion.id).toBeTruthy();
             expect(newVersion.id).not.toEqual(createdProject.versions[0].id);
 
