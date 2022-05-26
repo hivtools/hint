@@ -1,5 +1,6 @@
 import {RootMutation} from "../root/mutations";
 import {ErrorsMutation} from "../errors/mutations";
+import {DownloadResultsMutation} from "../downloadResults/mutations";
 import {ActionContext, ActionTree} from "vuex";
 import {ProjectsState} from "./projects";
 import {RootState} from "../../root";
@@ -74,7 +75,13 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     },
 
     async createProject(context, name) {
-        const {commit, state} = context;
+        const {commit, state, rootState} = context;
+        if (rootState.downloadResults.summary.preparing === true ||
+            rootState.downloadResults.comparison.preparing === true ||
+            rootState.downloadResults.spectrum.preparing === true ||
+            rootState.downloadResults.coarseOutput.preparing === true) {
+            commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
+        }
 
         //Ensure we have saved the current version
         if (state.currentVersion) {
@@ -255,6 +262,7 @@ async function immediateUploadVersionState(context: ActionContext<ProjectsState,
     const versionId = state.currentVersion && state.currentVersion.id;
     if (projectId && versionId) {
         commit({type: ProjectsMutations.SetVersionUploadInProgress, payload: true});
+        console.log("THIS IS THE SERIALISED STATE", serialiseState(rootState))
         await api<ProjectsMutations, ErrorsMutation>(context)
             .withSuccess(ProjectsMutations.VersionUploadSuccess)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)
