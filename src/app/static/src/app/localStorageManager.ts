@@ -51,6 +51,7 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
                 result: null,
                 // calibratePlotResult: null
             },
+            // downloadResults: rootState.downloadResults,
             stepper: rootState.stepper,
             hintrVersion: state.hintrVersion,
             language: state.language

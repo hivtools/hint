@@ -9,7 +9,6 @@ import {ProjectsMutations} from "./mutations";
 import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
 import {CurrentProject, Project, VersionDetails, VersionIds} from "../../types";
-import {DownloadResultsMutation} from "../downloadResults/mutations";
 
 export interface versionPayload {
     version: VersionIds,
@@ -89,7 +88,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             immediateUploadVersionState(context);
         }
 
-        commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
+        // commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
         commit({type: ProjectsMutations.SetLoading, payload: true});
         await api<RootMutation, ProjectsMutations>(context)
             .withSuccess(RootMutation.SetProject, true)
@@ -181,8 +180,14 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     },
 
     async loadVersion(context, version) {
-        const {commit, dispatch, state} = context;
-        commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
+        const {commit, dispatch, state, rootState} = context;
+        if (rootState.downloadResults.summary.preparing === true ||
+            rootState.downloadResults.comparison.preparing === true ||
+            rootState.downloadResults.spectrum.preparing === true ||
+            rootState.downloadResults.coarseOutput.preparing === true) {
+            commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
+        }
+        // commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
         commit({type: ProjectsMutations.SetLoading, payload: true});
         await api<ProjectsMutations, ProjectsMutations>(context)
             .ignoreSuccess()
