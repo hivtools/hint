@@ -49,7 +49,7 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
             modelCalibrate: {
                 ...rootState.modelCalibrate,
                 result: null,
-                calibratePlotResult: null
+                // calibratePlotResult: null
             },
             stepper: rootState.stepper,
             hintrVersion: state.hintrVersion,
