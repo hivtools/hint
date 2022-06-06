@@ -1,6 +1,6 @@
 package org.imperial.mrc.hint.logging
 
-import net.logstash.logback.argument.StructuredArguments.kv
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -11,8 +11,9 @@ class GenericLoggerImpl(
 ) : GenericLogger
 {
 
-    override fun info(log: LogMetadata, msg: String?)
+    override fun info(log: LogMetadata)
     {
-        logger.info(msg, kv("hint", log))
+        val objectMapper = ObjectMapper()
+        logger.info(objectMapper.writeValueAsString(mapOf("hint" to log)))
     }
 }
