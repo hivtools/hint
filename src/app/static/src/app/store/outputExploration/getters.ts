@@ -1,7 +1,6 @@
 import {Getter, GetterTree} from "vuex";
 import {OutputExplorationState} from "./outputExploration";
 import {RootState} from "../../root";
-import {currentHintVersion} from "../../hintVersion";
 import {VersionInfo} from "../../generated";
 
 interface OutputExploration {
@@ -48,23 +47,23 @@ export const getters: GetterTree<OutputExplorationState, RootState> & OutputExpl
                 },
                 model_fit: {
                     options: rootState.modelOptions.options || {},
-                    id: rootState.modelRun.modelRunId || null
+                    id: rootState.modelRun.modelRunId
                 },
                 calibrate: {
                     options: rootState.modelCalibrate.options || {},
-                    id: rootState.modelCalibrate.calibrateId || null
+                    id: rootState.modelCalibrate.calibrateId
                 },
                 model_output: {
-                    id: rootState.downloadResults.spectrum.downloadId || null
+                    id: rootState.downloadResults.spectrum.downloadId
                 },
                 coarse_output: {
-                    id: rootState.downloadResults.coarseOutput.downloadId || null
+                    id: rootState.downloadResults.coarseOutput.downloadId
                 },
                 summary_report: {
-                    id: rootState.downloadResults.summary.downloadId || null
+                    id: rootState.downloadResults.summary.downloadId
                 },
                 comparison_report: {
-                    id: rootState.downloadResults.comparison.downloadId || null
+                    id: rootState.downloadResults.comparison.downloadId
                 },
                 version: rootState.hintrVersion.hintrVersion as VersionInfo
             }
