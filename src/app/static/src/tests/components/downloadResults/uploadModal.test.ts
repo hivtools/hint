@@ -7,15 +7,15 @@ import {
     mockADRUploadState,
     mockBaselineState,
     mockDatasetResource, mockDownloadResultsDependency,
-    mockDownloadResultsState
+    mockDownloadResultsState, mockError, mockMetadataState
 } from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
 import Vue from 'vue';
 import {Dict} from "../../../app/types";
 import {Language} from "../../../app/store/translations/locales";
-import DownloadStatus from "../../../app/components/downloadResults/DownloadStatus.vue"
 import {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";
+import {MetadataState} from "../../../app/store/metadata/metadata";
 
 describe(`uploadModal `, () => {
 
@@ -86,7 +86,9 @@ describe(`uploadModal `, () => {
 
     const mockUploadFilesToADR = jest.fn();
 
-    const createStore = (data: Dict<any> = fakeMetadata, downloadResults: Partial<DownloadResultsState> = mockDownloadResults) => {
+    const createStore = (data: Dict<any> = fakeMetadata,
+                         downloadResults: Partial<DownloadResultsState> = mockDownloadResults,
+                         downloadMetadataError: Partial<MetadataState> = {}) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -126,6 +128,10 @@ describe(`uploadModal `, () => {
                 downloadResults: {
                     namespaced: true,
                     state: mockDownloadResultsState(downloadResults)
+                },
+                metadata: {
+                    namespaced: true,
+                    state: mockMetadataState(downloadMetadataError)
                 }
             }
         });
@@ -439,5 +445,148 @@ describe(`uploadModal `, () => {
         const btn = wrapper.findAll("button");
         expect(btn.at(0).attributes("disabled")).toBeUndefined();
     });
+
+    it(`does not render output files and headers when not available for upload`, () => {
+        const downloadResults = {
+            summary: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()}),
+            spectrum: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()})
+        }
+        const store = createStore(metadataWithInput, downloadResults)
+        const wrapper = mount(UploadModal, {store})
+
+        const inputs = wrapper.findAll("input[type='checkbox']")
+        expect(inputs.length).toBe(1)
+        expect(inputs.at(0).attributes("disabled")).toBeUndefined()
+        expect(inputs.at(0).attributes("id")).toBe("id-1-0");
+        expect(inputs.at(0).attributes("value")).toBe("population");
+
+        const headers = wrapper.findAll("h5");
+        expect(headers.length).toBe(2);
+        expect(headers.at(0).text()).toBe("")
+        expectTranslated(headers.at(1), "Input Files", "Fichiers d'entrée", "Ficheiros de entrada", store);
+    })
+
+    it(`does not render output files and headers when metadata request failed`, () => {
+        const downloadResults = {
+            summary: mockDownloadResultsDependency(
+                {
+                    complete: true,
+                    preparing: false,
+                    metadataError: mockError("META FAILED")
+                }),
+
+            spectrum: mockDownloadResultsDependency(
+                {
+                    complete: true,
+                    preparing: false,
+                    metadataError: mockError("META FAILED")
+                })
+        }
+        const store = createStore(metadataWithInput, downloadResults)
+        const wrapper = mount(UploadModal, {store})
+
+        const inputs = wrapper.findAll("input[type='checkbox']")
+        expect(inputs.length).toBe(1)
+        expect(inputs.at(0).attributes("disabled")).toBeUndefined()
+        expect(inputs.at(0).attributes("id")).toBe("id-1-0");
+        expect(inputs.at(0).attributes("value")).toBe("population");
+
+        const headers = wrapper.findAll("h5");
+        expect(headers.length).toBe(2);
+        expect(headers.at(0).text()).toBe("")
+        expectTranslated(headers.at(1),
+            "Input Files",
+            "Fichiers d'entrée",
+            "Ficheiros de entrada",
+            store);
+
+        expectTranslated(wrapper.find("#output-file-error"),
+            "Output files are not available for upload.",
+            "Les fichiers de sortie ne sont pas disponibles pour le téléchargement.",
+            "Os arquivos de saída não estão disponíveis para upload.",
+            store)
+    })
+
+    it(`does not render summary report when summary metadata request failed`, () => {
+        const downloadResults = {
+            summary: mockDownloadResultsDependency(
+                {
+                    complete: true,
+                    preparing: false,
+                    metadataError: mockError("META FAILED")
+                }),
+
+            spectrum: mockDownloadResultsDependency(
+                {
+                    complete: true,
+                    preparing: false,
+                })
+        }
+        const store = createStore(metadataWithInput, downloadResults)
+        const wrapper = mount(UploadModal, {store})
+
+        const inputs = wrapper.findAll("input[type='checkbox']")
+        expect(inputs.length).toBe(2)
+        expect(inputs.at(0).attributes("disabled")).toBeUndefined()
+
+        expect(inputs.at(0).attributes("id")).toBe("id-0-0");
+        expect(inputs.at(0).attributes("value")).toBe("outputZip");
+
+        expect(inputs.at(1).attributes("id")).toBe("id-1-0");
+        expect(inputs.at(1).attributes("value")).toBe("population");
+
+        const headers = wrapper.findAll("h5");
+
+        expect(headers.length).toBe(2);
+        expect(headers.at(0).text()).toBe("Output Files")
+        expect(headers.at(1).text()).toBe("Input Files")
+
+        expectTranslated(wrapper.find("#output-file-error"),
+            "Summary output file is not available for upload.",
+            "Le fichier de sortie résumé n'est pas disponible pour le téléchargement",
+            "O arquivo de saída do resumo não está disponível para upload",
+            store)
+    })
+
+    it(`does not render summary report when summary metadata request failed`, () => {
+        const downloadResults = {
+            summary: mockDownloadResultsDependency(
+                {
+                    complete: true,
+                    preparing: false
+                }),
+
+            spectrum: mockDownloadResultsDependency(
+                {
+                    complete: true,
+                    preparing: false,
+                    metadataError: mockError("META FAILED")
+                })
+        }
+        const store = createStore(metadataWithInput, downloadResults)
+        const wrapper = mount(UploadModal, {store})
+
+        const inputs = wrapper.findAll("input[type='checkbox']")
+        expect(inputs.length).toBe(2)
+        expect(inputs.at(0).attributes("disabled")).toBeUndefined()
+
+        expect(inputs.at(0).attributes("id")).toBe("id-0-0");
+        expect(inputs.at(0).attributes("value")).toBe("outputSummary");
+
+        expect(inputs.at(1).attributes("id")).toBe("id-1-0");
+        expect(inputs.at(1).attributes("value")).toBe("population");
+
+        const headers = wrapper.findAll("h5");
+
+        expect(headers.length).toBe(2);
+        expect(headers.at(0).text()).toBe("Output Files")
+        expect(headers.at(1).text()).toBe("Input Files")
+
+        expectTranslated(wrapper.find("#output-file-error"),
+            "Spectrum output file is not available for upload.",
+            "Le fichier de sortie spectre n'est pas disponible pour le téléchargement",
+            "O arquivo de saída do espectro não está disponível para upload",
+            store)
+    })
 
 })

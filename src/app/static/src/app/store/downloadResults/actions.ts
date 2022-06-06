@@ -108,47 +108,85 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 };
 
 export const getSummaryReportStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
-    const {state, dispatch} = context;
+    const {state, dispatch, rootState, commit} = context;
     const downloadId = state.summary.downloadId;
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.SummaryReportStatusUpdated)
         .withError(DownloadResultsMutation.SummaryError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`)
-    await getADRUploadMetadata(response, dispatch);
+
+    if (response && response.data?.done) {
+        await getADRUploadMetadata(response, dispatch).then(() => {
+            // commit is neccessary for dispatching action
+            // to retrieve metadata for summary report
+            commit({
+                type: DownloadResultsMutation.SummaryMetadataError,
+                payload: rootState.metadata.adrUploadMetadataError
+            });
+        });
+    }
 };
 
 export const getSpectrumOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
-    const {state, dispatch} = context;
+    const {state, dispatch, rootState, commit} = context;
     const downloadId = state.spectrum.downloadId;
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.SpectrumOutputStatusUpdated)
         .withError(DownloadResultsMutation.SpectrumError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`);
-    await getADRUploadMetadata(response, dispatch);
+
+    if (response && response.data?.done) {
+        await getADRUploadMetadata(response, dispatch).then(() => {
+            // commit is neccessary for dispatching action
+            // to retrieve metadata for spectrum report
+            commit({
+                type: DownloadResultsMutation.SpectrumMetadataError,
+                payload: rootState.metadata.adrUploadMetadataError
+            });
+        });
+    }
 };
 
 export const getCoarseOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
-    const {state, dispatch} = context;
+    const {state, dispatch, rootState, commit} = context;
     const downloadId = state.coarseOutput.downloadId;
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.CoarseOutputStatusUpdated)
         .withError(DownloadResultsMutation.CoarseOutputError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`);
-    await getADRUploadMetadata(response, dispatch);
+
+    if (response && response.data?.done) {
+        await getADRUploadMetadata(response, dispatch).then(() => {
+            // commit is neccessary for dispatching action
+            // to retrieve metadata for coarseOutput report
+            commit({
+                type: DownloadResultsMutation.CoarseOutputMetadataError,
+                payload: rootState.metadata.adrUploadMetadataError
+            });
+        });
+    }
 };
 
 export const getComparisonOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
-    const {state, dispatch} = context;
+    const {state, dispatch, rootState, commit} = context;
     const downloadId = state.comparison.downloadId;
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.ComparisonOutputStatusUpdated)
         .withError(DownloadResultsMutation.ComparisonError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`);
-    await getADRUploadMetadata(response, dispatch);
+
+    if (response && response.data?.done) {
+        await getADRUploadMetadata(response, dispatch).then(() => {
+            // commit is neccessary for dispatching action
+            // to retrieve metadata for comparison report
+            commit({
+                type: DownloadResultsMutation.ComparisonOutputMetadataError,
+                payload: rootState.metadata.adrUploadMetadataError
+            });
+        });
+    }
 };
 
-const getADRUploadMetadata = async function(response: void | ResponseWithType<ModelStatusResponse>, dispatch: Dispatch) {
-    if (response && response.data?.done) {
+const getADRUploadMetadata = async function (response: ResponseWithType<ModelStatusResponse>, dispatch: Dispatch) {
         await dispatch("metadata/getAdrUploadMetadata", response.data.id, {root: true});
-    }
 }

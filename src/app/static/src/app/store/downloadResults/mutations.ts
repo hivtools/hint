@@ -17,7 +17,11 @@ export enum DownloadResultsMutation {
     ComparisonOutputStatusUpdated = "ComparisonOutputStatusUpdated",
     ComparisonError = "ComparisonError",
     PollingStatusStarted = "PollingStatusStarted",
-    ResetIds = "ResetIds"
+    ResetIds = "ResetIds",
+    ComparisonOutputMetadataError = "ComparisonOutputMetadataError",
+    SummaryMetadataError = "SummaryMetadataError",
+    SpectrumMetadataError = "SpectrumMetadataError",
+    CoarseOutputMetadataError = "CoarseOutputMetadataError"
 }
 
 export const mutations: MutationTree<DownloadResultsState> = {
@@ -44,6 +48,10 @@ export const mutations: MutationTree<DownloadResultsState> = {
         state.spectrum.statusPollId = -1;
     },
 
+    [DownloadResultsMutation.SpectrumMetadataError](state: DownloadResultsState, action: PayloadWithType<Error>) {
+        state.spectrum.metadataError = action.payload;
+    },
+
     [DownloadResultsMutation.PreparingCoarseOutput](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
         const downloadId = action.payload.id
         state.coarseOutput = {...state.coarseOutput, downloadId, preparing: true, complete: false, error: null}
@@ -64,6 +72,10 @@ export const mutations: MutationTree<DownloadResultsState> = {
         state.coarseOutput.preparing = false;
         window.clearInterval(state.coarseOutput.statusPollId);
         state.coarseOutput.statusPollId = -1;
+    },
+
+    [DownloadResultsMutation.CoarseOutputMetadataError](state: DownloadResultsState, action: PayloadWithType<Error>) {
+        state.coarseOutput.metadataError = action.payload;
     },
 
     [DownloadResultsMutation.PreparingSummaryReport](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
@@ -88,6 +100,10 @@ export const mutations: MutationTree<DownloadResultsState> = {
         state.summary.statusPollId = -1;
     },
 
+    [DownloadResultsMutation.SummaryMetadataError](state: DownloadResultsState, action: PayloadWithType<Error>) {
+        state.summary.metadataError = action.payload;
+    },
+
     [DownloadResultsMutation.PreparingComparisonOutput](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
         const downloadId = action.payload.id
         state.comparison = {...state.comparison, downloadId, preparing: true, complete: false, error: null}
@@ -108,6 +124,10 @@ export const mutations: MutationTree<DownloadResultsState> = {
         state.comparison.preparing = false;
         window.clearInterval(state.comparison.statusPollId);
         state.comparison.statusPollId = -1;
+    },
+
+    [DownloadResultsMutation.ComparisonOutputMetadataError](state: DownloadResultsState, action: PayloadWithType<Error>) {
+        state.comparison.metadataError = action.payload;
     },
 
     [DownloadResultsMutation.PollingStatusStarted](state: DownloadResultsState, action: PayloadWithType<PollingStarted>) {

@@ -1,3 +1,7 @@
+# hint 1.99.3
+
+* Bug fixes- Display and upload output files to ADR if they are available for Upload
+
 # hint 1.99.2
 
 * Input data warnings are not persisted/displayed
