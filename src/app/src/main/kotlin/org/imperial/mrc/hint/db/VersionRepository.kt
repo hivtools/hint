@@ -206,6 +206,16 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
     override fun saveVersionState(versionId: String, projectId: Int, userId: String, state: String)
     {
         checkVersionExists(versionId, projectId, userId)
+
+        val name = dsl.select(PROJECT.NAME)
+                .from(PROJECT)
+                .where(PROJECT.ID.eq(projectId))
+                .first()[PROJECT.NAME]
+
+        if (name.startsWith("sac") && state.contains("\"calibrateId\":\"\"")) {
+            println("Saving sac project with no cal id")
+        }
+
         dsl.update(PROJECT_VERSION)
                 .set(PROJECT_VERSION.STATE, state)
                 .where(PROJECT_VERSION.ID.eq(versionId))

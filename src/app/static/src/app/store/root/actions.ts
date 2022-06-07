@@ -30,7 +30,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             .filter((i: number) => i < maxCompleteOrActive && !completeSteps.includes(i));
 
         if (invalidSteps.length > 0) {
-
+            console.log("SOME STEPS ARE INVALID!!")
             //Invalidate any steps which come after the first invalid step
             const maxValidStep = Math.min(...invalidSteps) - 1;
 

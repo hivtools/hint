@@ -251,8 +251,16 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 
 async function immediateUploadVersionState(context: ActionContext<ProjectsState, RootState>) {
     const {commit, state, rootState} = context;
-    const projectId = state.currentProject && state.currentProject.id;
-    const versionId = state.currentVersion && state.currentVersion.id;
+
+    if (state.currentProject!!.id !== rootState.projects.currentProject!!.id) {
+        console.log("PROJECT ID MISMATCH")
+    }
+
+    //const projectId = state.currentProject && state.currentProject.id;
+    //const versionId = state.currentVersion && state.currentVersion.id;
+
+    const projectId = rootState.projects.currentProject && rootState.projects.currentProject.id;
+    const versionId = rootState.projects.currentVersion && rootState.projects.currentVersion.id;
     if (projectId && versionId) {
         commit({type: ProjectsMutations.SetVersionUploadInProgress, payload: true});
         await api<ProjectsMutations, ErrorsMutation>(context)
