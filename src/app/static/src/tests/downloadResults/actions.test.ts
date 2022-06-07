@@ -6,7 +6,7 @@ import {
 } from "../mocks";
 import {actions} from "../../app/store/downloadResults/actions";
 import {DOWNLOAD_TYPE} from "../../app/types";
-import {DownloadStatusResponse, ProjectState} from "../../app/generated";
+import {DownloadStatusResponse} from "../../app/generated";
 import {switches} from "../../app/featureSwitches";
 
 const RunningStatusResponse: DownloadStatusResponse = {

@@ -3,7 +3,6 @@ package org.imperial.mrc.hint.clients
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.Fuel.head
 import com.github.kittinunf.fuel.httpDownload
-import com.github.kittinunf.fuel.httpPost
 import org.imperial.mrc.hint.*
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath

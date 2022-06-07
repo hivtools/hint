@@ -1,6 +1,5 @@
 package org.imperial.mrc.hint.controllers
 
-import com.fasterxml.jackson.databind.JsonNode
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
