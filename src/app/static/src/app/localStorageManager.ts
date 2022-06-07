@@ -49,35 +49,35 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
             modelCalibrate: {
                 ...rootState.modelCalibrate,
                 result: null,
-                // calibratePlotResult: null
+                calibratePlotResult: null
             },
             // downloadResults: rootState.downloadResults,
-            downloadResults: {
-                spectrum: {
-                    ...rootState.downloadResults.spectrum,
-                    statusPollId: -1,
-                    preparing: false,
-                    complete: false
-                },
-                comparison: {
-                    ...rootState.downloadResults.comparison,
-                    statusPollId: -1,
-                    preparing: false,
-                    complete: false
-                },
-                coarseOutput: {
-                    ...rootState.downloadResults.coarseOutput,
-                    statusPollId: -1,
-                    preparing: false,
-                    complete: false
-                },
-                summary: {
-                    ...rootState.downloadResults.summary,
-                    statusPollId: -1,
-                    preparing: false,
-                    complete: false
-                },
-            },
+            // downloadResults: {
+            //     spectrum: {
+            //         ...rootState.downloadResults.spectrum,
+            //         statusPollId: -1,
+            //         preparing: false,
+            //         complete: false
+            //     },
+            //     comparison: {
+            //         ...rootState.downloadResults.comparison,
+            //         statusPollId: -1,
+            //         preparing: false,
+            //         complete: false
+            //     },
+            //     coarseOutput: {
+            //         ...rootState.downloadResults.coarseOutput,
+            //         statusPollId: -1,
+            //         preparing: false,
+            //         complete: false
+            //     },
+            //     summary: {
+            //         ...rootState.downloadResults.summary,
+            //         statusPollId: -1,
+            //         preparing: false,
+            //         complete: false
+            //     },
+            // },
             stepper: rootState.stepper,
             hintrVersion: state.hintrVersion,
             language: state.language
