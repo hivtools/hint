@@ -23,7 +23,7 @@ class DownloadControllerTests
         }
 
         val sut = DownloadController(mockAPIClient)
-        val result = sut.getDownloadOutput("spectrum", "id1")
+        val result = sut.getDownloadOutput("spectrum", "id1", json)
         verify(mockAPIClient).downloadOutputSubmit( eq("spectrum"), eq("id1"), eq(json))
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
