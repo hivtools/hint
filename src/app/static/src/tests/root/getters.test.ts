@@ -5,11 +5,11 @@ import {
     mockBaselineState,
     mockDownloadResultsState,
     mockError,
-    mockErrorsState, mockGenericChartState,
+    mockErrorsState, mockGenericChartState, mockHintrVersionState,
     mockLoadState,
     mockMetadataState,
     mockModelCalibrateState,
-    mockModelOptionsState,
+    mockModelOptionsState, mockModelOutputState,
     mockModelRunState, mockProjectsState,
     mockRootState, mockSurveyAndProgramState
 } from "../mocks";
@@ -395,6 +395,45 @@ describe("root getters", () => {
         const warnings = getters.warnings(rootState, null, SAPRoot() as any, null)
         const result = warnings("reviewInputs").reviewInputs
         expect(result).toEqual([{locations: ["review_inputs"], text: "survey and program test"}])
+    })
+
+    it(`can get serialized project states`, () => {
+        const projectStates = () => {
+            return mockRootState({
+                baseline: mockBaselineState(),
+                surveyAndProgram: mockSurveyAndProgramState({warnings: surveyAndProgramWarnings}),
+                modelOptions: mockModelOptionsState(),
+                modelRun: mockModelRunState({ready: true}),
+                modelCalibrate: mockModelCalibrateState({calibrating: true}),
+                modelOutput: mockModelOutputState({}),
+                downloadResults: mockDownloadResultsState({coarseOutput: {downloadId: 1} as any}),
+                hintrVersion: mockHintrVersionState({hintrVersion: {hintr: "1.0.0", naomi: "2.0.0"}})
+            })
+        }
+        const rootState = projectStates()
+
+        const result = getters.projectOutput(rootState, null, projectStates() as any, null)
+        expect(result).toEqual(
+            {
+                state: {
+                    datasets: {
+                        anc: {"filename": undefined, "path": "uploads/undefined"},
+                        pjnz: {"filename": undefined, "path": "uploads/undefined"},
+                        population: {"filename": undefined, "path": "uploads/undefined"},
+                        programme: {"filename": undefined, "path": "uploads/undefined"},
+                        shape: {"filename": undefined, "path": "uploads/undefined"},
+                        survey: {"filename": undefined, "path": "uploads/undefined"}
+                    },
+                    model_fit: {"id": "", "options": {}},
+                    calibrate: {"id": "", "options": {}},
+                    model_output: {"id": ""},
+                    coarse_output: {"id": 1},
+                    summary_report: {"id": ""},
+                    comparison_report: {"id": ""},
+                    version: {"hintr": "1.0.0", "naomi": "2.0.0"}
+                }
+            }
+        )
     })
 
 })

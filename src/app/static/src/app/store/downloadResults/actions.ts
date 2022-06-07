@@ -6,7 +6,7 @@ import {DownloadResultsMutation} from "./mutations";
 import {ModelStatusResponse} from "../../generated";
 import {DOWNLOAD_TYPE} from "../../types";
 import {switches} from "../../featureSwitches"
-import {outputExploration} from "../outputExploration/outputExploration";
+import qs from "qs";
 
 export interface DownloadResultsActions {
     prepareSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => void
@@ -36,7 +36,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingCoarseOutput)
                 .withError(DownloadResultsMutation.CoarseOutputError)
-                .get(`download/submit/coarse-output/${calibrateId}`)
+                .postAndReturn(`download/submit/coarse-output/${calibrateId}`)
 
             if (response) {
                 await dispatch("poll", DOWNLOAD_TYPE.COARSE)
@@ -51,7 +51,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingSummaryReport)
                 .withError(DownloadResultsMutation.SummaryError)
-                .get(`download/submit/summary/${calibrateId}`)
+                .postAndReturn(`download/submit/summary/${calibrateId}`)
 
             if (response) {
                 await dispatch("poll", DOWNLOAD_TYPE.SUMMARY)
@@ -66,7 +66,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingSpectrumOutput)
                 .withError(DownloadResultsMutation.SpectrumError)
-                .get(`download/submit/spectrum/${calibrateId}`, JSON.stringify(rootGetters.projectOutput))
+                .postAndReturn(`download/submit/spectrum/${calibrateId}`, rootGetters.projectOutput.state)
 
             if (response) {
                 await dispatch("poll", DOWNLOAD_TYPE.SPECTRUM)
@@ -81,7 +81,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingComparisonOutput)
                 .withError(DownloadResultsMutation.ComparisonError)
-                .get(`download/submit/comparison/${calibrateId}`)
+                .postAndReturn(`download/submit/comparison/${calibrateId}`)
 
             if (response) {
                 await dispatch("poll", DOWNLOAD_TYPE.COMPARISON)

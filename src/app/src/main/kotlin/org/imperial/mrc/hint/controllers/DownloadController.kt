@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.controllers
 
+import com.fasterxml.jackson.databind.JsonNode
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -9,12 +10,14 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 @RequestMapping("/download")
 class DownloadController(val apiClient: HintrAPIClient)
 {
-    @GetMapping("/submit/{type}/{id}")
+    @PostMapping("/submit/{type}/{id}")
     @ResponseBody
-    fun getDownloadOutput(@PathVariable("type") type: String,
-                  @PathVariable("id") id: String): ResponseEntity<String>
+    fun getDownloadOutput(
+            @PathVariable("type") type: String,
+            @PathVariable("id") id: String,
+            @RequestBody state: Map<String, Any?>? = emptyMap()): ResponseEntity<String>
     {
-        return apiClient.downloadOutputSubmit(type, id)
+        return apiClient.downloadOutputSubmit(type, id, state)
     }
 
     @GetMapping("/status/{id}")

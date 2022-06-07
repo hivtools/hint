@@ -59,8 +59,9 @@ class DownloadTests : SecureIntegrationTests()
     @Test
     fun `can submit spectrum download`()
     {
+        val json = mapOf("project" to "state")
         val id = waitForModelRunResult()
-        val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/spectrum/$id")
+        val responseEntity = testRestTemplate.getForEntity<String>("/download/submit/spectrum/$id", json)
         assertSuccess(responseEntity, "DownloadSubmitResponse")
     }
 

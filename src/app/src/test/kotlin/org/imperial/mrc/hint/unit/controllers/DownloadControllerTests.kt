@@ -1,7 +1,9 @@
 package org.imperial.mrc.hint.unit.controllers
 
 import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.controllers.DownloadController
@@ -14,13 +16,15 @@ class DownloadControllerTests
     @Test
     fun `submit spectrum download`()
     {
+        val json = mapOf("project" to "state")
         val mockResponse = mock<ResponseEntity<String>>()
         val mockAPIClient = mock<HintrAPIClient> {
-            on { downloadOutputSubmit("spectrum", "id1") } doReturn mockResponse
+            on { downloadOutputSubmit("spectrum", "id1", json) } doReturn mockResponse
         }
 
         val sut = DownloadController(mockAPIClient)
         val result = sut.getDownloadOutput("spectrum", "id1")
+        verify(mockAPIClient).downloadOutputSubmit( eq("spectrum"), eq("id1"), eq(json))
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
 
@@ -34,6 +38,7 @@ class DownloadControllerTests
 
         val sut = DownloadController(mockAPIClient)
         val result = sut.getDownloadOutput("summary", "id1")
+        verify(mockAPIClient).downloadOutputSubmit("summary", "id1", emptyMap())
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
 
@@ -47,6 +52,7 @@ class DownloadControllerTests
 
         val sut = DownloadController(mockAPIClient)
         val result = sut.getDownloadOutput("coarse-output", "id1")
+        verify(mockAPIClient).downloadOutputSubmit("coarse-output", "id1", emptyMap())
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
 

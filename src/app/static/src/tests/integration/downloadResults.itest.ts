@@ -56,7 +56,14 @@ describe(`download results actions integration`, () => {
             modelCalibrate: {calibrateId: "calibrate123"}
         };
 
-        await actions.prepareSpectrumOutput({commit, dispatch, state: {spectrum: {}}, rootState: root} as any);
+        const getter = {projectOutput: {state: "json"}}
+
+        await actions.prepareSpectrumOutput({
+            commit, dispatch,
+            state: {spectrum: {}},
+            rootState: root,
+            rootGetters: getter
+        } as any);
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]["type"]).toBe("SpectrumError");
