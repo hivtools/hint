@@ -1,3 +1,7 @@
+# hint 2.0.0
+
+* HINT to send project state to hintr with generate output zip request
+
 # hint 1.99.3
 
 * Bug fixes- Display and upload output files to ADR if they are available for Upload
