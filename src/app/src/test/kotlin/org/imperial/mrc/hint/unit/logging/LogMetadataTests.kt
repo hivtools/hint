@@ -6,19 +6,28 @@ import org.junit.jupiter.api.Test
 
 class LogMetadataTests
 {
+
+    private val client = Client("Safari", "127.0.0.1", "session1")
+
+    private val errorMessage = ErrorMessage("error", "errorDetails", "errorTrace")
+
+    private val app = AppOrigin("hint", "backend")
+
+    private val response = Response("responseMessage", "responseStatus")
+
     private val request = Request(
             "POST",
             "/project",
             "hint",
-            Client("Safari", "127.0.0.1", "session1")
+            client
     )
 
     private val logMetadata = LogMetadata(
             "testUser",
-            AppOrigin("hint", "backend"),
+            app,
             request,
-            Response("responseMessage", "responseStatus"),
-            ErrorMessage("error", "errorDetails", "errorTrace"),
+            response,
+            errorMessage,
             "Updating project note",
             listOf("project", "notes")
     )
@@ -33,7 +42,9 @@ class LogMetadataTests
                 path = "/project",
                 hostname = "hint",
                 client = Client(agent = "Safari", geoIp = "127.0.0.1", sessionId = "session1")))
+        assertThat(logMetadata.request?.client).isEqualToComparingFieldByField(client)
         assertThat(logMetadata.response).isEqualToComparingFieldByField(Response(message = "responseMessage", status = "responseStatus"))
+        assertThat(logMetadata.error).isEqualToComparingFieldByField(errorMessage)
         assertThat(logMetadata.action).isEqualTo("Updating project note")
         assertThat(logMetadata.tags).isEqualTo(listOf("project", "notes"))
     }
