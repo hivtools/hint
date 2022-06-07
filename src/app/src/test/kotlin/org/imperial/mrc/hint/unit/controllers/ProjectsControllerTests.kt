@@ -28,8 +28,6 @@ import javax.servlet.http.HttpSession
 class ProjectsControllerTests
 {
 
-    private val objectMapper = ObjectMapper()
-
     private val mockProfile = mock<CommonProfile> {
         on { id } doReturn "testUser"
     }
