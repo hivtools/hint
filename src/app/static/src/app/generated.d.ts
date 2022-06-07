@@ -5,7 +5,7 @@
   * and run ./generate-types.sh to regenerate this file.
 */
 export interface AdrMetadataResponse {
-  type: "spectrum" | "coarse_output" | "summary";
+  type: "spectrum" | "coarse_output" | "summary" | "comparison";
   description: string | null;
 }
 export interface AncDataRow {
@@ -385,6 +385,76 @@ export interface DownloadStatusResponse {
       }
     | string)[];
 }
+export interface DownloadSubmitRequest {
+  notes?: {
+    project_notes?: Note;
+    version_notes?: Note[];
+    [k: string]: any;
+  };
+  state?: {
+    datasets: {
+      pjnz: {
+        path: string;
+        filename: string;
+      };
+      population: {
+        path: string;
+        filename: string;
+      };
+      shape: {
+        path: string;
+        filename: string;
+      };
+      survey: {
+        path: string;
+        filename: string;
+      };
+      programme?: {
+        path: string;
+        filename: string;
+      };
+      anc?: {
+        path: string;
+        filename: string;
+      };
+    };
+    model_fit: {
+      options: {
+        [k: string]: any;
+      };
+      id: string;
+    };
+    calibrate: {
+      options: {
+        [k: string]: any;
+      };
+      id: string;
+    };
+    model_output: {
+      id: string;
+    };
+    coarse_output: {
+      id: string;
+    };
+    summary_report: {
+      id: string;
+    };
+    comparison_report: {
+      id: string;
+    };
+    version: {
+      hintr: string;
+      naomi: string;
+      rrq: string;
+      [k: string]: any;
+    };
+  };
+}
+export interface Note {
+  name: string;
+  updated: string;
+  note: string;
+}
 export interface DownloadSubmitResponse {
   id: string;
 }
@@ -429,6 +499,7 @@ export type InputTimeSeriesData = {
   age_group?: string;
   time_period: string;
   quarter: string;
+  area_hierarchy: string;
 }[];
 export interface InputTimeSeriesDefaults {
   selected_filter_options: {
@@ -477,6 +548,7 @@ export interface InputTimeSeriesResponse {
     age_group?: string;
     time_period: string;
     quarter: string;
+    area_hierarchy: string;
   }[];
   metadata: {
     columns: {
@@ -525,6 +597,7 @@ export interface InputTimeSeriesRow {
   age_group?: string;
   time_period: string;
   quarter: string;
+  area_hierarchy: string;
 }
 export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
 export interface LevelLabels {
@@ -895,6 +968,41 @@ export interface ProgressPhase {
   value?: number;
   name: string;
   helpText?: string;
+}
+export interface ProjectState {
+  datasets: {
+    pjnz: File;
+    population: File;
+    shape: File;
+    survey: File;
+    programme?: File;
+    anc?: File;
+  };
+  model_fit: AsyncRunOptions;
+  calibrate: AsyncRunOptions;
+  model_output: AsyncRun;
+  coarse_output: AsyncRun;
+  summary_report: AsyncRun;
+  comparison_report: AsyncRun;
+  version: {
+    hintr: string;
+    naomi: string;
+    rrq: string;
+    [k: string]: any;
+  };
+}
+export interface File {
+  path: string;
+  filename: string;
+}
+export interface AsyncRunOptions {
+  options: {
+    [k: string]: any;
+  };
+  id: string;
+}
+export interface AsyncRun {
+  id: string;
 }
 export interface Response {
   status: "success" | "failure";

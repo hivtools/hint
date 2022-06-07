@@ -1,6 +1,6 @@
 import {RootState} from "../../root";
 import {Getter, GetterTree} from "vuex";
-import {Error, VersionInfo} from "../../generated"
+import {Error, ProjectState, VersionInfo} from "../../generated"
 import {Warning} from "../../generated";
 import {Dict, StepWarnings} from "../../types";
 import {extractErrors} from "../../utils";
@@ -8,7 +8,7 @@ import {extractErrors} from "../../utils";
 interface RootGetters {
     isGuest: Getter<RootState, RootState>
     warnings: Getter<RootState, RootState>
-    projectOutput: Getter<RootState, RootState>
+    projectState: Getter<RootState, RootState>
 }
 
 const warningStepLocationMapping: Dict<string> = {
@@ -25,57 +25,55 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
         return state.currentUser == "guest";
     },
 
-    projectOutput: (rootState: RootState) => {
+    projectState: (rootState: RootState): ProjectState => {
         return {
-            state: {
-                datasets: {
-                    pjnz: {
-                        path: `uploads/${rootState.baseline.pjnz?.hash}`,
-                        filename: rootState.baseline.pjnz?.filename
-                    },
-                    population: {
-                        path: `uploads/${rootState.baseline.population?.hash}`,
-                        filename: rootState.baseline.population?.filename
-                    },
-                    shape: {
-                        path: `uploads/${rootState.baseline.shape?.hash}`,
-                        filename: rootState.baseline.shape?.filename
-                    },
-                    survey: {
-                        path: `uploads/${rootState.surveyAndProgram.survey?.hash}`,
-                        filename: rootState.surveyAndProgram.survey?.filename
-                    },
-                    programme: {
-                        path: `uploads/${rootState.surveyAndProgram.program?.hash}`,
-                        filename: rootState.surveyAndProgram.program?.filename
-                    },
-                    anc: {
-                        path: `uploads/${rootState.surveyAndProgram.anc?.hash}`,
-                        filename: rootState.surveyAndProgram.anc?.filename
-                    }
+            datasets: {
+                pjnz: {
+                    path: `uploads/${rootState.baseline.pjnz?.hash}`,
+                    filename: rootState.baseline.pjnz?.filename || ""
                 },
-                model_fit: {
-                    options: rootState.modelOptions.options || {},
-                    id: rootState.modelRun.modelRunId
+                population: {
+                    path: `uploads/${rootState.baseline.population?.hash}`,
+                    filename: rootState.baseline.population?.filename || ""
                 },
-                calibrate: {
-                    options: rootState.modelCalibrate.options || {},
-                    id: rootState.modelCalibrate.calibrateId
+                shape: {
+                    path: `uploads/${rootState.baseline.shape?.hash}`,
+                    filename: rootState.baseline.shape?.filename || ""
                 },
-                model_output: {
-                    id: rootState.downloadResults.spectrum.downloadId
+                survey: {
+                    path: `uploads/${rootState.surveyAndProgram.survey?.hash}`,
+                    filename: rootState.surveyAndProgram.survey?.filename || ""
                 },
-                coarse_output: {
-                    id: rootState.downloadResults.coarseOutput.downloadId
+                programme: {
+                    path: `uploads/${rootState.surveyAndProgram.program?.hash}`,
+                    filename: rootState.surveyAndProgram.program?.filename || ""
                 },
-                summary_report: {
-                    id: rootState.downloadResults.summary.downloadId
-                },
-                comparison_report: {
-                    id: rootState.downloadResults.comparison.downloadId
-                },
-                version: rootState.hintrVersion.hintrVersion as VersionInfo
-            }
+                anc: {
+                    path: `uploads/${rootState.surveyAndProgram.anc?.hash}`,
+                    filename: rootState.surveyAndProgram.anc?.filename || ""
+                }
+            },
+            model_fit: {
+                options: rootState.modelOptions.options || {},
+                id: rootState.modelRun.modelRunId
+            },
+            calibrate: {
+                options: rootState.modelCalibrate.options || {},
+                id: rootState.modelCalibrate.calibrateId
+            },
+            model_output: {
+                id: rootState.downloadResults.spectrum.downloadId
+            },
+            coarse_output: {
+                id: rootState.downloadResults.coarseOutput.downloadId
+            },
+            summary_report: {
+                id: rootState.downloadResults.summary.downloadId
+            },
+            comparison_report: {
+                id: rootState.downloadResults.comparison.downloadId
+            },
+            version: rootState.hintrVersion.hintrVersion as VersionInfo
         }
     },
 

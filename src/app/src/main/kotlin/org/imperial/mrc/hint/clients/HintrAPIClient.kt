@@ -3,7 +3,6 @@ package org.imperial.mrc.hint.clients
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.Fuel.head
 import com.github.kittinunf.fuel.httpDownload
-import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import org.imperial.mrc.hint.*
 import org.imperial.mrc.hint.models.ModelOptions
@@ -171,11 +170,7 @@ class HintrFuelAPIClient(
 
     override fun cancelModelRun(id: String): ResponseEntity<String>
     {
-        return "$baseUrl/model/cancel/${id}".httpPost()
-                .addTimeouts()
-                .response()
-                .second
-                .asResponseEntity()
+        return post("model/cancel/${id}")
     }
 
     override fun getVersion(): ResponseEntity<String>
@@ -183,9 +178,15 @@ class HintrFuelAPIClient(
         return get("hintr/version")
     }
 
-    override fun downloadOutputSubmit(type:String, id: String, state: Map<String, Any?>?): ResponseEntity<String>
+    override fun downloadOutputSubmit(type: String, id: String, state: Map<String, Any?>?): ResponseEntity<String>
     {
-        val json = objectMapper.writeValueAsString(mapOf("data" to state))
+        val json = objectMapper.writeValueAsString(mapOf("state" to state))
+
+        if (state.isNullOrEmpty())
+        {
+            return post("download/submit/${type}/${id}")
+        }
+
         return postJson("download/submit/${type}/${id}", json)
     }
 

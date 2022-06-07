@@ -56,7 +56,7 @@ describe(`download results actions integration`, () => {
             modelCalibrate: {calibrateId: "calibrate123"}
         };
 
-        const getter = {projectOutput: {state: "json"}}
+        const getter = {projectState: "json"}
 
         await actions.prepareSpectrumOutput({
             commit, dispatch,

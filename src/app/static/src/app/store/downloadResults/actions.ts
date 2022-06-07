@@ -6,7 +6,6 @@ import {DownloadResultsMutation} from "./mutations";
 import {ModelStatusResponse} from "../../generated";
 import {DOWNLOAD_TYPE} from "../../types";
 import {switches} from "../../featureSwitches"
-import qs from "qs";
 
 export interface DownloadResultsActions {
     prepareSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => void
@@ -66,7 +65,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingSpectrumOutput)
                 .withError(DownloadResultsMutation.SpectrumError)
-                .postAndReturn(`download/submit/spectrum/${calibrateId}`, rootGetters.projectOutput.state)
+                .postAndReturn(`download/submit/spectrum/${calibrateId}`, rootGetters.projectState)
 
             if (response) {
                 await dispatch("poll", DOWNLOAD_TYPE.SPECTRUM)

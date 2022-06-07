@@ -6,7 +6,7 @@ import {
 } from "../mocks";
 import {actions} from "../../app/store/downloadResults/actions";
 import {DOWNLOAD_TYPE} from "../../app/types";
-import {DownloadStatusResponse} from "../../app/generated";
+import {DownloadStatusResponse, ProjectState} from "../../app/generated";
 import {switches} from "../../app/featureSwitches";
 
 const RunningStatusResponse: DownloadStatusResponse = {
@@ -241,7 +241,7 @@ describe(`download Results actions`, () => {
             modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"})
         });
 
-        const getter = {projectOutput: {state: "json"}}
+        const getter = {projectState: "json"}
 
         const state = mockDownloadResultsState();
 
@@ -422,7 +422,7 @@ describe(`download Results actions`, () => {
 
         const state = mockDownloadResultsState();
 
-        const getter = {projectOutput: {state: "json"}}
+        const getter = {projectState: "json"}
 
         mockAxios.onPost(`download/submit/spectrum/calibrate1`, "json")
             .reply(500, mockFailure("TEST FAILED"));
