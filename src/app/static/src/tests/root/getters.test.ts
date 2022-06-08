@@ -10,7 +10,7 @@ import {
     mockMetadataState,
     mockModelCalibrateState,
     mockModelOptionsState, mockModelOutputState,
-    mockModelRunState, mockProjectsState,
+    mockModelRunState, mockProjectOutputState, mockProjectsState,
     mockRootState, mockSurveyAndProgramState
 } from "../mocks";
 import {RootState} from "../../app/root";
@@ -414,34 +414,15 @@ describe("root getters", () => {
                 modelOptions: mockModelOptionsState(),
                 modelRun: mockModelRunState({ready: true}),
                 modelCalibrate: mockModelCalibrateState({calibrating: true}),
-                modelOutput: mockModelOutputState({}),
-                downloadResults: mockDownloadResultsState({coarseOutput: {downloadId: 1} as any}),
-                hintrVersion: mockHintrVersionState({hintrVersion: {hintr: "1.0.0", naomi: "2.0.0"}})
+                modelOutput: mockModelOutputState(),
+                downloadResults: mockDownloadResultsState({coarseOutput: {downloadId: "1"} as any}),
+                hintrVersion: mockHintrVersionState({hintrVersion: {hintr: "1.0.0", naomi: "2.0.0", rrq: "1.1.1"}})
             })
         }
         const rootState = projectStates()
 
         const result = getters.projectState(rootState, null, projectStates() as any, null)
-        expect(result).toEqual(
-            {
-                datasets: {
-                    anc: {"filename": "anc", "path": "uploads/ancHash"},
-                    pjnz: {"filename": "pjnz", "path": "uploads/pjnzHash"},
-                    population: {"filename": "population", "path": "uploads/populationHash"},
-                    programme: {"filename": "program", "path": "uploads/programHash"},
-                    shape: {"filename": "shape", "path": "uploads/shapeHash"},
-                    survey: {"filename": "survey", "path": "uploads/surveyHash"}
-                },
-                model_fit: {"id": "", "options": {}},
-                calibrate: {"id": "", "options": {}},
-                model_output: {"id": ""},
-                coarse_output: {"id": 1},
-                summary_report: {"id": ""},
-                comparison_report: {"id": ""},
-                version: {"hintr": "1.0.0", "naomi": "2.0.0"}
-
-            }
-        )
+        expect(result).toEqual(mockProjectOutputState())
     })
 
 })

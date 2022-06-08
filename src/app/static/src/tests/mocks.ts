@@ -21,7 +21,7 @@ import {
     SurveyFilters,
     SurveyResponse,
     ValidateBaselineResponse,
-    Error, CalibrateResultResponse, Warning
+    Error, CalibrateResultResponse, Warning, ProjectState
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
@@ -456,6 +456,28 @@ export const mockDownloadResultsDependency = (props: Partial<DownloadResultsDepe
         complete: false,
         error: null,
         metadataError: null,
+        ...props
+    }
+}
+
+
+export const mockProjectOutputState = (props: Partial<ProjectState> = {}) => {
+    return {
+        datasets: {
+            anc: {"filename": "anc", "path": "uploads/ancHash"},
+            pjnz: {"filename": "pjnz", "path": "uploads/pjnzHash"},
+            population: {"filename": "population", "path": "uploads/populationHash"},
+            programme: {"filename": "program", "path": "uploads/programHash"},
+            shape: {"filename": "shape", "path": "uploads/shapeHash"},
+            survey: {"filename": "survey", "path": "uploads/surveyHash"}
+        },
+        model_fit: {"id": "", "options": {}},
+        calibrate: {"id": "", "options": {}},
+        model_output: {"id": ""},
+        coarse_output: {"id": "1"},
+        summary_report: {"id": ""},
+        comparison_report: {"id": ""},
+        version: {"hintr": "1.0.0", "naomi": "2.0.0", "rrq": "1.1.1"},
         ...props
     }
 }

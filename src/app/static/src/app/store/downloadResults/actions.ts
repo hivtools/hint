@@ -35,7 +35,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingCoarseOutput)
                 .withError(DownloadResultsMutation.CoarseOutputError)
-                .postAndReturn(`download/submit/coarse-output/${calibrateId}`)
+                .postAndReturn(`download/submit/coarse-output/${calibrateId}`, {})
 
             if (response) {
                 await dispatch("poll", DOWNLOAD_TYPE.COARSE)
@@ -50,7 +50,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingSummaryReport)
                 .withError(DownloadResultsMutation.SummaryError)
-                .postAndReturn(`download/submit/summary/${calibrateId}`)
+                .postAndReturn(`download/submit/summary/${calibrateId}`, {})
 
             if (response) {
                 await dispatch("poll", DOWNLOAD_TYPE.SUMMARY)
@@ -80,7 +80,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingComparisonOutput)
                 .withError(DownloadResultsMutation.ComparisonError)
-                .postAndReturn(`download/submit/comparison/${calibrateId}`)
+                .postAndReturn(`download/submit/comparison/${calibrateId}`, {})
 
             if (response) {
                 await dispatch("poll", DOWNLOAD_TYPE.COMPARISON)
