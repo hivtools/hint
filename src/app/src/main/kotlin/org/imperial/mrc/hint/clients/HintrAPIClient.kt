@@ -3,7 +3,6 @@ package org.imperial.mrc.hint.clients
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.Fuel.head
 import com.github.kittinunf.fuel.httpDownload
-import com.github.kittinunf.fuel.httpPost
 import org.imperial.mrc.hint.*
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
@@ -180,7 +179,7 @@ class HintrFuelAPIClient(
 
     override fun downloadOutputSubmit(type: String, id: String, projectState: Map<String, Any?>?): ResponseEntity<String>
     {
-        if (projectState!!.isEmpty())
+        if (projectState.isNullOrEmpty())
         {
             return postEmpty("download/submit/${type}/${id}")
         }
