@@ -12,7 +12,10 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
         selectedDataset: state.baseline.selectedDataset,
         selectedRelease: state.baseline.selectedRelease
     } as any;
-    const surveyAndProgram = {selectedDataType: state.surveyAndProgram.selectedDataType} as any;
+    const surveyAndProgram = {
+        selectedDataType: state.surveyAndProgram.selectedDataType,
+        warnings: state.surveyAndProgram.warnings
+    } as any;
     const metadata =  {...state.metadata, plottingMetadataError: null};
     const plottingSelections = state.plottingSelections;
     if (state.dataExplorationMode) {

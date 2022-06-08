@@ -1,6 +1,7 @@
 import {actions} from "../../app/store/downloadResults/actions";
 import {rootState} from "./integrationTest";
 import {DOWNLOAD_TYPE} from "../../app/types";
+import {switches} from "../../app/featureSwitches";
 
 describe(`download results actions integration`, () => {
 
@@ -128,6 +129,7 @@ describe(`download results actions integration`, () => {
     })
 
     it(`can prepare comparison output for download`, async () => {
+        switches.comparisonOutput = true;
         const commit = jest.fn();
         const dispatch = jest.fn();
         const root = {

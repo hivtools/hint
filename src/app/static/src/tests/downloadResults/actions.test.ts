@@ -1,12 +1,13 @@
 import {
     mockAxios, mockDownloadResultsDependency,
-    mockDownloadResultsState, mockError, mockFailure, mockModelCalibrateState,
+    mockDownloadResultsState, mockError, mockFailure, mockMetadataState, mockModelCalibrateState,
     mockRootState,
     mockSuccess
 } from "../mocks";
 import {actions} from "../../app/store/downloadResults/actions";
 import {DOWNLOAD_TYPE} from "../../app/types";
 import {DownloadStatusResponse} from "../../app/generated";
+import {switches} from "../../app/featureSwitches";
 
 const RunningStatusResponse: DownloadStatusResponse = {
     id: "db0c4957aea4b32c507ac02d63930110",
@@ -136,6 +137,68 @@ describe(`download Results actions`, () => {
             expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
             expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
             expect(dispatch.mock.calls[0][2]).toEqual({root: true})
+            done()
+        }, 2100)
+    });
+
+    it("does get adr upload metadata error for summary if metadata request is successful", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            summary: mockDownloadResultsDependency(
+                {metadataError: mockError("test"), downloadId: "1"})
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(200, mockSuccess(CompleteStatusResponse));
+
+        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SUMMARY);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
+            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+
+            expect(commit.mock.calls[2][0]["type"]).toBe("SummaryMetadataError")
+            expect(commit.mock.calls[2][0]["payload"]).toBeNull()
+
+            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
+            done()
+        }, 2100)
+    });
+
+    it("can get adr upload metadata error for summary if metadata request is unsuccessful", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            summary: mockDownloadResultsDependency(
+                {metadataError: mockError("test"), downloadId: "1"})
+        });
+
+        const rootState = mockRootState({
+            metadata: mockMetadataState({
+                adrUploadMetadataError: mockError("METADATA REQUEST FAILED")
+            })
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(200, mockSuccess(CompleteStatusResponse));
+
+        await actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.SUMMARY);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
+            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+
+            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
+
+            expect(commit.mock.calls[2][0]["type"]).toBe("SummaryMetadataError")
+            expect(commit.mock.calls[2][0]["payload"]).toEqual(mockError("METADATA REQUEST FAILED"))
             done()
         }, 2100)
     });
@@ -284,6 +347,68 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
+    it("does get adr upload metadata error for spectrum if metadata request is successful", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            spectrum: mockDownloadResultsDependency(
+                {metadataError: mockError("test"), downloadId: "1"})
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(200, mockSuccess(CompleteStatusResponse));
+
+        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SPECTRUM);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
+            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+
+            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
+
+            expect(commit.mock.calls[2][0]["type"]).toBe("SpectrumMetadataError")
+            expect(commit.mock.calls[2][0]["payload"]).toBeNull()
+            done()
+        }, 2100)
+    });
+
+    it("can get adr upload metadata error for spectrum if metadata request is unsuccessful", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            spectrum: mockDownloadResultsDependency(
+                {metadataError: mockError("test"), downloadId: "1"})
+        });
+
+        const rootState = mockRootState({
+            metadata: mockMetadataState({
+                adrUploadMetadataError: mockError("METADATA REQUEST FAILED")
+            })
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(200, mockSuccess(CompleteStatusResponse));
+
+        await actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.SPECTRUM);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
+            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+
+            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
+
+            expect(commit.mock.calls[2][0]["type"]).toBe("SpectrumMetadataError")
+            expect(commit.mock.calls[2][0]["payload"]).toEqual(mockError("METADATA REQUEST FAILED"))
+            done()
+        }, 2100)
+    });
+
     it("does not start polling for spectrum output status when submission is unsuccessful", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -394,6 +519,68 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
+    it("does get adr upload metadata error for coarseOutput if metadata request is successful", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            coarseOutput: mockDownloadResultsDependency(
+                {metadataError: mockError("test"), downloadId: "1"})
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(200, mockSuccess(CompleteStatusResponse));
+
+        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
+            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+
+            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
+
+            expect(commit.mock.calls[2][0]["type"]).toBe("CoarseOutputMetadataError")
+            expect(commit.mock.calls[2][0]["payload"]).toBeNull()
+            done()
+        }, 2100)
+    });
+
+    it("can get adr upload metadata error for coarseOutput if metadata request is unsuccessful", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            coarseOutput: mockDownloadResultsDependency(
+                {metadataError: mockError("test"), downloadId: "1"})
+        });
+
+        const rootState = mockRootState({
+            metadata: mockMetadataState({
+                adrUploadMetadataError: mockError("METADATA REQUEST FAILED")
+            })
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(200, mockSuccess(CompleteStatusResponse));
+
+        await actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.COARSE);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
+            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+
+            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
+
+            expect(commit.mock.calls[2][0]["type"]).toBe("CoarseOutputMetadataError")
+            expect(commit.mock.calls[2][0]["payload"]).toEqual(mockError("METADATA REQUEST FAILED"))
+            done()
+        }, 2100)
+    });
+
     it("can invoke coarse output poll action, get pollId and commit PollingStatusStarted", async (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -495,6 +682,7 @@ describe(`download Results actions`, () => {
     });
 
     it("can submit comparison download request, commits and starts polling", async () => {
+        switches.comparisonOutput = true;
         const commit = jest.fn();
         const dispatch = jest.fn();
         const downloadId = {downloadId: "1"};
@@ -609,7 +797,71 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
+
+    it("does get adr upload metadata error for comparison if metadata request is successful", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            comparison: mockDownloadResultsDependency(
+                {metadataError: mockError("test"), downloadId: "1"})
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(200, mockSuccess(CompleteStatusResponse));
+
+        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
+            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+
+            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
+
+            expect(commit.mock.calls[2][0]["type"]).toBe("ComparisonOutputMetadataError")
+            expect(commit.mock.calls[2][0]["payload"]).toBeNull()
+            done()
+        }, 2100)
+    });
+
+    it("can get adr upload metadata error for comparison if metadata request is unsuccessful", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            comparison: mockDownloadResultsDependency(
+                {metadataError: mockError("test"), downloadId: "1"})
+        });
+
+        const rootState = mockRootState({
+            metadata: mockMetadataState({
+                adrUploadMetadataError: mockError("METADATA REQUEST FAILED")
+            })
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(200, mockSuccess(CompleteStatusResponse));
+
+        await actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.COMPARISON);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
+            expect(commit.mock.calls[1][0]["payload"]).toEqual(CompleteStatusResponse)
+
+            expect(dispatch.mock.calls[0][0]).toBe("metadata/getAdrUploadMetadata")
+            expect(dispatch.mock.calls[0][1]).toBe(CompleteStatusResponse.id)
+            expect(dispatch.mock.calls[0][2]).toEqual({root: true})
+
+            expect(commit.mock.calls[2][0]["type"]).toBe("ComparisonOutputMetadataError")
+            expect(commit.mock.calls[2][0]["payload"]).toEqual(mockError("METADATA REQUEST FAILED"))
+            done()
+        }, 2100)
+    });
+
     it("does not start polling for comparison output status when submission is unsuccessful", async () => {
+        switches.comparisonOutput = true;
         const commit = jest.fn();
         const dispatch = jest.fn();
 

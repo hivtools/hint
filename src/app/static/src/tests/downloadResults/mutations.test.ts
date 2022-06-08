@@ -1,6 +1,6 @@
 import {
     mockDownloadResultsDependency,
-    mockDownloadResultsState, mockError
+    mockDownloadResultsState, mockError, mockMetadataState, mockRootState
 } from "../mocks";
 import {mutations} from "../../app/store/downloadResults/mutations";
 import {DownloadResultsMutation} from "../../app/store/downloadResults/mutations";
@@ -50,6 +50,12 @@ describe(`download results mutations`, () => {
         expect(clearInterval.mock.calls[0][0]).toBe(1);
     });
 
+    it("sets summary download metadata error", () => {
+        const state = mockDownloadResultsState();
+        mutations[DownloadResultsMutation.SummaryMetadataError](state, {payload: error});
+        expect(state.summary.metadataError).toEqual(errorMsg);
+    });
+
     it("sets poll started for summary download on PollingStatusStarted", () => {
         const state = mockDownloadResultsState();
         const payload = {pollId: 123, downloadType: DOWNLOAD_TYPE.SUMMARY}
@@ -66,13 +72,15 @@ describe(`download results mutations`, () => {
                 complete: false,
                 error: mockError(),
                 statusPollId: 123,
-                downloadId: "111"
+                downloadId: "111",
+                metadataError: null
             }
         });
         mutations[DownloadResultsMutation.SummaryReportStatusUpdated](state, {payload: CompleteStatusResponse});
         expect(state.summary.preparing).toBe(false);
         expect(state.summary.complete).toBe(true);
         expect(state.summary.error).toBe(null);
+        expect(state.summary.metadataError).toBe(null);
         expect(state.summary.statusPollId).toBe(-1);
         expect(state.summary.downloadId).toBe("111");
         expect(clearInterval.mock.calls[0][0]).toBe(123);
@@ -102,6 +110,12 @@ describe(`download results mutations`, () => {
         expect(clearInterval.mock.calls[0][0]).toBe(123);
     });
 
+    it("sets spectrum download metadata error", () => {
+        const state = mockDownloadResultsState();
+        mutations[DownloadResultsMutation.SpectrumMetadataError](state, {payload: error});
+        expect(state.spectrum.metadataError).toEqual(errorMsg);
+    });
+
     it("sets poll started for spectrum download on PollingStatusStarted", () => {
         const state = mockDownloadResultsState();
         const payload = {pollId: 123, downloadType: DOWNLOAD_TYPE.SPECTRUM}
@@ -118,13 +132,15 @@ describe(`download results mutations`, () => {
                 complete: false,
                 error: mockError(),
                 statusPollId: 123,
-                downloadId: "111"
+                downloadId: "111",
+                metadataError: null
             }
         });
         mutations[DownloadResultsMutation.SpectrumOutputStatusUpdated](state, {payload: CompleteStatusResponse});
         expect(state.spectrum.complete).toBe(true);
         expect(state.spectrum.preparing).toBe(false);
         expect(state.spectrum.error).toBe(null);
+        expect(state.spectrum.metadataError).toBe(null);
         expect(state.spectrum.statusPollId).toBe(-1);
         expect(state.spectrum.downloadId).toBe("111");
         expect(clearInterval.mock.calls[0][0]).toBe(123);
@@ -156,6 +172,12 @@ describe(`download results mutations`, () => {
         expect(clearInterval.mock.calls[0][0]).toBe(123);
     });
 
+    it("sets coarseOutput download metadata error", () => {
+        const state = mockDownloadResultsState();
+        mutations[DownloadResultsMutation.CoarseOutputMetadataError](state, {payload: error});
+        expect(state.coarseOutput.metadataError).toEqual(errorMsg);
+    });
+
     it("sets poll started for coarseOutput download on PollingStatusStarted", () => {
         const state = mockDownloadResultsState();
         const payload = {pollId: 123, downloadType: DOWNLOAD_TYPE.COARSE}
@@ -172,13 +194,15 @@ describe(`download results mutations`, () => {
                 complete: false,
                 error: mockError(),
                 statusPollId: 123,
-                downloadId: "111"
+                downloadId: "111",
+                metadataError: null
             }
         });
         mutations[DownloadResultsMutation.CoarseOutputStatusUpdated](state, {payload: CompleteStatusResponse});
         expect(state.coarseOutput.complete).toBe(true);
         expect(state.coarseOutput.preparing).toBe(false);
         expect(state.coarseOutput.error).toBe(null);
+        expect(state.coarseOutput.metadataError).toBe(null);
         expect(state.coarseOutput.statusPollId).toBe(-1);
         expect(state.coarseOutput.downloadId).toBe("111");
         expect(clearInterval.mock.calls[0][0]).toBe(123);
@@ -208,6 +232,12 @@ describe(`download results mutations`, () => {
         expect(clearInterval.mock.calls[0][0]).toBe(123);
     });
 
+    it("sets comparison download metadata error", () => {
+        const state = mockDownloadResultsState();
+        mutations[DownloadResultsMutation.ComparisonOutputMetadataError](state, {payload: error});
+        expect(state.comparison.metadataError).toEqual(errorMsg);
+    });
+
     it("sets poll started for comparison download on PollingStatusStarted", () => {
         const state = mockDownloadResultsState();
         const payload = {pollId: 123, downloadType: DOWNLOAD_TYPE.COMPARISON}
@@ -224,13 +254,15 @@ describe(`download results mutations`, () => {
                 complete: false,
                 error: mockError(),
                 statusPollId: 123,
-                downloadId: "111"
+                downloadId: "111",
+                metadataError: null
             }
         });
         mutations[DownloadResultsMutation.ComparisonOutputStatusUpdated](state, {payload: CompleteStatusResponse});
         expect(state.comparison.complete).toBe(true);
         expect(state.comparison.preparing).toBe(false);
         expect(state.comparison.error).toBe(null);
+        expect(state.comparison.metadataError).toBe(null);
         expect(state.comparison.statusPollId).toBe(-1);
         expect(state.comparison.downloadId).toBe("111");
         expect(clearInterval.mock.calls[0][0]).toBe(123);

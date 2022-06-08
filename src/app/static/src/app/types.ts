@@ -170,6 +170,7 @@ export interface DownloadResultsDependency {
     statusPollId: number
     complete: boolean
     error: Error | null
+    metadataError: Error | null
 }
 
 export interface PollingStarted {
