@@ -4,6 +4,7 @@ import {mutations} from './mutations';
 import {ReadyState} from "../../root";
 import {NestedFilterOption, PjnzResponse, PopulationResponse, ShapeResponse, Error} from "../../generated";
 import { Dataset, Release, Dict, DatasetResourceSet, DatasetResource } from "../../types";
+import {resourceTypes} from "../../utils";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface BaselineState extends ReadyState {
@@ -61,28 +62,22 @@ export const baselineGetters = {
         const validOrMissingPop = !state.populationError
         return validOrMissingPJNZ && validOrMissingPop && state.validatedConsistent && !!state.shape
     },
-    selectedDatasetAvailableResources: (state: BaselineState, getters: any, rooState: DataExplorationState) => {
+    selectedDatasetAvailableResources: (state: BaselineState, rooState: DataExplorationState): unknown => {
         const resources: { [k in keyof DatasetResourceSet]?: DatasetResource | null } = {}
         const { selectedDataset } = state
 
         if (selectedDataset?.id && selectedDataset.resources) {
-            const selectedDatasetFromDatasets = rooState.adr.datasets.find(dataset => dataset.id === selectedDataset.id) || null
-
-            const resourceTypes = {
-                pjnz: "inputs-unaids-spectrum-file",
-                pop: "inputs-unaids-population",
-                shape: "inputs-unaids-geographic",
-                survey: "inputs-unaids-survey",
-                program: "inputs-unaids-art",
-                anc: "inputs-unaids-anc"
-            }
+            const selectedDatasetFromDatasets = rooState.adr.datasets
+                .find(dataset => dataset.id === selectedDataset.id) || null
 
             const checkResourceAvailable = (resourceType: string) => {
-                return selectedDatasetFromDatasets?.resources.some((resource: any) => resource.resource_type && resource.resource_type === resourceType)
+                return selectedDatasetFromDatasets?.resources
+                    .some((resource: any) => resource.resource_type && resource.resource_type === resourceType)
             }
 
             Object.entries(resourceTypes).forEach(([key, value]) => {
-                resources[key as keyof typeof resources] = checkResourceAvailable(value) ? selectedDataset.resources[key as keyof typeof resources] : null
+                resources[key as keyof typeof resources] =
+                    checkResourceAvailable(value) ? selectedDataset.resources[key as keyof typeof resources] : null
             })
         }
         return resources

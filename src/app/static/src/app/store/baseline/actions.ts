@@ -118,7 +118,10 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
                             program: "programme"
                         }
                         const resources: { [k in keyof DatasetResourceSet]?: DatasetResource | null } = {}
+
                         Object.entries(avaliableResources).forEach(([key, value]) => {
+                            // If an available resource has a value, find the resource (using the alternate schema key where needed)
+                            // and add it to the committed object under the original key
                             const schemaKey = key in exceptions ? exceptions[key as "pop" || "program"] : key
                             resources[key as keyof typeof resources] = value ? findResource(metadata, schemas[schemaKey as keyof ADRSchemas]) : null
                         })
