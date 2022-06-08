@@ -36,7 +36,7 @@ interface HintrAPIClient
             ResponseEntity<String>
     fun getInputTimeSeriesChartData(type: String, files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
-    fun downloadOutputSubmit(type: String, id: String, projectState: Map<String, Any?>? = null): ResponseEntity<String>
+    fun downloadOutputSubmit(type: String, id: String, projectState: Map<String, Any?>? = emptyMap()): ResponseEntity<String>
     fun downloadOutputStatus(id: String): ResponseEntity<String>
     fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
     fun getUploadMetadata(id: String): ResponseEntity<String>
@@ -180,7 +180,7 @@ class HintrFuelAPIClient(
 
     override fun downloadOutputSubmit(type: String, id: String, projectState: Map<String, Any?>?): ResponseEntity<String>
     {
-        if (projectState.isNullOrEmpty())
+        if (projectState!!.isEmpty())
         {
             return postEmpty("download/submit/${type}/${id}")
         }

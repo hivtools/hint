@@ -52,7 +52,7 @@ class DownloadControllerTests
 
         val sut = DownloadController(mockAPIClient)
         val result = sut.getDownloadOutput("coarse-output", "id1")
-        verify(mockAPIClient).downloadOutputSubmit("coarse-output", "id1", null)
+        verify(mockAPIClient).downloadOutputSubmit("coarse-output", "id1", emptyMap())
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
 
