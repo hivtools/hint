@@ -75,13 +75,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     },
 
     async createProject(context, name) {
-        const {commit, state, rootState} = context;
-        // if (rootState.downloadResults.summary.preparing === true ||
-        //     rootState.downloadResults.comparison.preparing === true ||
-        //     rootState.downloadResults.spectrum.preparing === true ||
-        //     rootState.downloadResults.coarseOutput.preparing === true) {
-        //     commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
-        // }
+        const {commit, state} = context;
 
         //Ensure we have saved the current version
         if (state.currentVersion) {
@@ -181,12 +175,6 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 
     async loadVersion(context, version) {
         const {commit, dispatch, state} = context;
-        // if (rootState.downloadResults.summary.preparing === true ||
-        //     rootState.downloadResults.comparison.preparing === true ||
-        //     rootState.downloadResults.spectrum.preparing === true ||
-        //     rootState.downloadResults.coarseOutput.preparing === true) {
-        //     commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
-        // }
         commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
         commit({type: ProjectsMutations.SetLoading, payload: true});
         await api<ProjectsMutations, ProjectsMutations>(context)
@@ -266,13 +254,10 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 
 async function immediateUploadVersionState(context: ActionContext<ProjectsState, RootState>) {
     const {commit, rootState} = context;
-    // const projectId = state.currentProject && state.currentProject.id;
-    // const versionId = state.currentVersion && state.currentVersion.id;
     const projectId = rootState.projects.currentProject && rootState.projects.currentProject.id;
     const versionId = rootState.projects.currentVersion && rootState.projects.currentVersion.id;
     if (projectId && versionId) {
         commit({type: ProjectsMutations.SetVersionUploadInProgress, payload: true});
-        // console.log("THIS IS THE SERIALISED STATE", serialiseState(rootState))
         await api<ProjectsMutations, ErrorsMutation>(context)
             .withSuccess(ProjectsMutations.VersionUploadSuccess)
             .withError(`errors/${ErrorsMutation.ErrorAdded}` as ErrorsMutation, true)

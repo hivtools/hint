@@ -174,6 +174,10 @@ describe("Projects actions", () => {
             versionUploadInProgress: true
         });
 
+        const rootState = mockRootState({
+            projects: state
+        });
+
         actions.createProject({commit, state, rootState} as any, "newProject");
 
         setTimeout(() => {
@@ -272,6 +276,10 @@ describe("Projects actions", () => {
             versionUploadInProgress: true
         });
 
+        const rootState = mockRootState({
+            projects: state
+        });
+
         const url = "/project/1/version/version-id/state/";
         mockAxios.onPost(url)
             .reply(200, mockSuccess("OK"));
@@ -331,6 +339,10 @@ describe("Projects actions", () => {
             versionUploadInProgress: false
         });
 
+        const rootState = mockRootState({
+            projects: state
+        });
+
         const url = "/project/1/version/version-id/state/";
         mockAxios.onPost(url)
             .reply(500, mockFailure("ERR"));
@@ -358,6 +370,10 @@ describe("Projects actions", () => {
         const state = mockProjectsState({
             currentProject: mockProject,
             currentVersion: mockProject.versions[0]
+        });
+
+        const rootState = mockRootState({
+            projects: state
         });
 
         const stateUrl = "/project/1/version/version-id/state/";
@@ -401,6 +417,10 @@ describe("Projects actions", () => {
         const state = mockProjectsState({
             currentProject: mockProject,
             currentVersion: mockProject.versions[0]
+        });
+
+        const rootState = mockRootState({
+            projects: state
         });
 
         const stateUrl = "/project/1/version/version-id/state/";
