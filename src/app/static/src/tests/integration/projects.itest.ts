@@ -51,13 +51,14 @@ describe("Projects actions", () => {
     it("can save version", async (done) => {
         const commit = jest.fn();
         const state = initialProjectsState();
+        const rootState = {...emptyState(), projects: state}
         await actions.createProject({commit, rootState, state} as any, "v1");
 
         const createdProject = commit.mock.calls[2][0]["payload"];
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
-        await actions.queueVersionStateUpload({commit, rootState: emptyState(), state} as any);
+        await actions.queueVersionStateUpload({commit, rootState, state} as any);
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(9);
             expect(commit.mock.calls[3][0]["type"]).toBe(ProjectsMutations.ClearQueuedVersionUpload);
@@ -75,13 +76,14 @@ describe("Projects actions", () => {
     it("can create new version", async (done) => {
         const commit = jest.fn();
         const state = initialProjectsState();
-        await actions.createProject({commit, rootState: emptyState(), state} as any, "v1");
+        const rootState = {...emptyState(), projects: state}
+        await actions.createProject({commit, rootState, state} as any, "v1");
 
         const createdProject = commit.mock.calls[2][0]["payload"];
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
-        await actions.newVersion({commit, rootState: emptyState(), state} as any, "version note");
+        await actions.newVersion({commit, rootState, state} as any, "version note");
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(7);
             expect(commit.mock.calls[3][0]["type"]).toBe(ProjectsMutations.SetVersionUploadInProgress);
@@ -101,6 +103,7 @@ describe("Projects actions", () => {
 
     it("can load version", async (done) => {
         const state = initialProjectsState();
+        const rootState = {...emptyState(), projects: state}
         const commit = jest.fn();
         await actions.createProject({commit, rootState, state} as any, "v1");
 
@@ -108,7 +111,7 @@ describe("Projects actions", () => {
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
 
-        await actions.queueVersionStateUpload({commit, rootState: emptyState(), state} as any);
+        await actions.queueVersionStateUpload({commit, rootState, state} as any);
 
         const dispatch = jest.fn();
         const projectId = createdProject.id;
