@@ -33,11 +33,11 @@ class DownloadControllerTests
     {
         val mockResponse = mock<ResponseEntity<String>>()
         val mockAPIClient = mock<HintrAPIClient> {
-            on { downloadOutputSubmit("summary", "id1") } doReturn mockResponse
+            on { downloadOutputSubmit("summary", "id1", mapOf()) } doReturn mockResponse
         }
 
         val sut = DownloadController(mockAPIClient)
-        val result = sut.getDownloadOutput("summary", "id1")
+        val result = sut.getDownloadOutput("summary", "id1", mapOf())
         verify(mockAPIClient).downloadOutputSubmit("summary", "id1", emptyMap())
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
@@ -52,7 +52,7 @@ class DownloadControllerTests
 
         val sut = DownloadController(mockAPIClient)
         val result = sut.getDownloadOutput("coarse-output", "id1")
-        verify(mockAPIClient).downloadOutputSubmit("coarse-output", "id1", emptyMap())
+        verify(mockAPIClient).downloadOutputSubmit("coarse-output", "id1", null)
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
 
