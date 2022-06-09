@@ -451,6 +451,7 @@ export const mockWarning = (props: Partial<Warning> = {}): Warning => {
 export const mockDownloadResultsDependency = (props: Partial<DownloadResultsDependency> = {}): DownloadResultsDependency => {
     return {
         downloadId: "",
+        fetchingDownloadId: false,
         preparing: false,
         statusPollId: -1,
         complete: false,
@@ -473,7 +474,7 @@ export const mockProjectOutputState = (props: Partial<ProjectState> = {}): Downl
                 survey: {"filename": "survey", "path": "uploads/surveyHash"}
             },
             model_fit: {"id": "", "options": {}},
-            calibrate: {"id": "", "options": {}},
+            calibrate: {"id": "", "options": {"controlSections": []}},
             model_output: {"id": ""},
             coarse_output: {"id": "1"},
             summary_report: {"id": ""},

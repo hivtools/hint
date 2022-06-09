@@ -12,6 +12,7 @@ export interface DownloadResultsState {
 }
 
 export const initialDownloadResults = {
+    fetchingDownloadId: false,
     downloadId: "",
     preparing: false,
     statusPollId: -1,

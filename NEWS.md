@@ -2,6 +2,10 @@
 
 * HINT to send project state to hintr with generate output zip request
 
+# hint 1.99.4
+
+* Prevent spamming download and meta endpoints after download generate completes
+
 # hint 1.99.3
 
 * Bug fixes- Display and upload output files to ADR if they are available for Upload

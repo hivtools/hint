@@ -4,7 +4,6 @@ import {DownloadSubmitRequest, Error, Note, VersionInfo} from "../../generated"
 import {Warning} from "../../generated";
 import {Dict, StepWarnings, Version} from "../../types";
 import {extractErrors, formatDateTime, formatToISODateTime} from "../../utils";
-import {format} from "numeral";
 
 interface RootGetters {
     isGuest: Getter<RootState, RootState>
@@ -64,7 +63,7 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
                     id: rootState.modelRun.modelRunId
                 },
                 calibrate: {
-                    options: rootState.modelCalibrate.options || {},
+                    options: rootState.modelCalibrate.optionsFormMeta || {},
                     id: rootState.modelCalibrate.calibrateId
                 },
                 model_output: {
