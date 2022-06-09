@@ -55,8 +55,8 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls[0][0]["payload"]).toEqual(DOWNLOAD_TYPE.SUMMARY)
         expect(commit.mock.calls[1][0]["type"]).toBe("PreparingSummaryReport")
         expect(commit.mock.calls[1][0]["payload"]).toEqual(partialDownloadResultsState)
-        expect(mockAxios.history.get.length).toBe(1);
-        expect(mockAxios.history.get[0]["url"]).toBe("download/submit/summary/calibrate1");
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0]["url"]).toBe("download/submit/summary/calibrate1");
 
         expect(dispatch.mock.calls.length).toBe(1)
         expect(dispatch.mock.calls[0]).toEqual(["poll", DOWNLOAD_TYPE.SUMMARY])
@@ -268,8 +268,8 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls[0][0]["payload"]).toEqual(DOWNLOAD_TYPE.SPECTRUM)
         expect(commit.mock.calls[1][0]["type"]).toBe("PreparingSpectrumOutput")
         expect(commit.mock.calls[1][0]["payload"]).toEqual(downloadId)
-        expect(mockAxios.history.get.length).toBe(1);
-        expect(mockAxios.history.get[0]["url"]).toBe("download/submit/spectrum/calibrate1");
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0]["url"]).toBe("download/submit/spectrum/calibrate1");
         expect(mockAxios.history.post[0]["data"]).toBe("json");
 
         expect(dispatch.mock.calls.length).toBe(1)
@@ -511,8 +511,8 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls[0][0]["payload"]).toEqual(DOWNLOAD_TYPE.COARSE)
         expect(commit.mock.calls[1][0]["type"]).toBe("PreparingCoarseOutput")
         expect(commit.mock.calls[1][0]["payload"]).toEqual(downloadId)
-        expect(mockAxios.history.get.length).toBe(1);
-        expect(mockAxios.history.get[0]["url"]).toBe("download/submit/coarse-output/calibrate1");
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0]["url"]).toBe("download/submit/coarse-output/calibrate1");
 
         expect(dispatch.mock.calls.length).toBe(1)
         expect(dispatch.mock.calls[0]).toEqual(["poll", DOWNLOAD_TYPE.COARSE])
@@ -747,8 +747,8 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls[0][0]["payload"]).toEqual(DOWNLOAD_TYPE.COMPARISON)
         expect(commit.mock.calls[1][0]["type"]).toBe("PreparingComparisonOutput")
         expect(commit.mock.calls[1][0]["payload"]).toEqual(downloadId)
-        expect(mockAxios.history.get.length).toBe(1);
-        expect(mockAxios.history.get[0]["url"]).toBe("download/submit/comparison/calibrate1");
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0]["url"]).toBe("download/submit/comparison/calibrate1");
 
         expect(dispatch.mock.calls.length).toBe(1)
         expect(dispatch.mock.calls[0]).toEqual(["poll", DOWNLOAD_TYPE.COMPARISON])
