@@ -1,5 +1,6 @@
 import {RootMutation} from "../root/mutations";
 import {ErrorsMutation} from "../errors/mutations";
+import {DownloadResultsMutation} from "../downloadResults/mutations";
 import {ActionContext, ActionTree} from "vuex";
 import {ProjectsState} from "./projects";
 import {RootState} from "../../root";
@@ -81,6 +82,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             immediateUploadVersionState(context);
         }
 
+        commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
         commit({type: ProjectsMutations.SetLoading, payload: true});
         await api<RootMutation, ProjectsMutations>(context)
             .withSuccess(RootMutation.SetProject, true)
@@ -173,6 +175,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 
     async loadVersion(context, version) {
         const {commit, dispatch, state} = context;
+        commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
         commit({type: ProjectsMutations.SetLoading, payload: true});
         await api<ProjectsMutations, ProjectsMutations>(context)
             .ignoreSuccess()
@@ -250,9 +253,9 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 };
 
 async function immediateUploadVersionState(context: ActionContext<ProjectsState, RootState>) {
-    const {commit, state, rootState} = context;
-    const projectId = state.currentProject && state.currentProject.id;
-    const versionId = state.currentVersion && state.currentVersion.id;
+    const {commit, rootState} = context;
+    const projectId = rootState.projects.currentProject && rootState.projects.currentProject.id;
+    const versionId = rootState.projects.currentVersion && rootState.projects.currentVersion.id;
     if (projectId && versionId) {
         commit({type: ProjectsMutations.SetVersionUploadInProgress, payload: true});
         await api<ProjectsMutations, ErrorsMutation>(context)

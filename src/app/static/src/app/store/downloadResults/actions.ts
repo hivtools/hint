@@ -29,8 +29,9 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
     },
 
     async prepareCoarseOutput(context) {
-        const {state, dispatch, rootState} = context
-        if (!state.coarseOutput.downloadId) {
+        const {state, dispatch, rootState, commit} = context
+        if (!state.coarseOutput.downloadId && !state.coarseOutput.fetchingDownloadId) {
+            commit({type: "SetFetchingDownloadId", payload: DOWNLOAD_TYPE.COARSE});
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingCoarseOutput)
@@ -44,8 +45,9 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
     },
 
     async prepareSummaryReport(context) {
-        const {state, dispatch, rootState} = context
-        if (!state.summary.downloadId) {
+        const {state, dispatch, rootState, commit} = context
+        if (!state.summary.downloadId && !state.summary.fetchingDownloadId) {
+            commit({type: "SetFetchingDownloadId", payload: DOWNLOAD_TYPE.SUMMARY});
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingSummaryReport)
@@ -59,8 +61,9 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
     },
 
     async prepareSpectrumOutput(context) {
-        const {dispatch, rootState, state} = context
-        if (!state.spectrum.downloadId) {
+        const {dispatch, rootState, state, commit} = context
+        if (!state.spectrum.downloadId && !state.spectrum.fetchingDownloadId) {
+            commit({type: "SetFetchingDownloadId", payload: DOWNLOAD_TYPE.SPECTRUM});
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingSpectrumOutput)
@@ -74,8 +77,9 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
     },
 
     async prepareComparisonOutput(context) {
-        const {state, dispatch, rootState} = context
-        if (!state.comparison.downloadId && switches.comparisonOutput) {
+        const {state, dispatch, rootState, commit} = context
+        if (!state.comparison.downloadId && switches.comparisonOutput && !state.comparison.fetchingDownloadId) {
+            commit({type: "SetFetchingDownloadId", payload: DOWNLOAD_TYPE.COMPARISON});
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingComparisonOutput)
