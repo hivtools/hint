@@ -58,7 +58,7 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
                 id: rootState.modelRun.modelRunId
             },
             calibrate: {
-                options: rootState.modelCalibrate.options || {},
+                options: rootState.modelCalibrate.optionsFormMeta || {},
                 id: rootState.modelCalibrate.calibrateId
             },
             model_output: {

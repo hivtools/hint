@@ -472,7 +472,7 @@ export const mockProjectOutputState = (props: Partial<ProjectState> = {}) => {
             survey: {"filename": "survey", "path": "uploads/surveyHash"}
         },
         model_fit: {"id": "", "options": {}},
-        calibrate: {"id": "", "options": {}},
+        calibrate: {"id": "", "optionsFormMeta": {}},
         model_output: {"id": ""},
         coarse_output: {"id": "1"},
         summary_report: {"id": ""},

@@ -67,7 +67,7 @@ describe(`download results actions integration`, () => {
                     survey: {"filename": "survey", "path": "uploads/surveyHash"}
                 },
                 model_fit: {"id": "", "options": {}},
-                calibrate: {"id": "", "options": {}},
+                calibrate: {"id": "", "optionsFormMeta": {}},
                 model_output: {"id": ""},
                 coarse_output: {"id": ""},
                 summary_report: {"id": ""},
