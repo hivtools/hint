@@ -1,6 +1,10 @@
-# hint 1.99.4
+# hint 1.99.5
 
 * Bug: hint tries to pull resources it does not have access to
+
+# hint 1.99.4
+
+* Prevent spamming download and meta endpoints after download generate completes
 
 # hint 1.99.3
 
