@@ -76,11 +76,6 @@ class DownloadTests : SecureIntegrationTests()
                 "name" to "projectName"
         )
 
-        val notes = mapOf(
-                "project_notes" to note,
-                "version_notes" to listOf(note, note)
-        )
-
         val state = mapOf("state" to mapOf(
                 "datasets" to datasets,
                 "model_fit" to mapOf("id" to "", "options" to mapOf("" to "")),
@@ -91,7 +86,10 @@ class DownloadTests : SecureIntegrationTests()
                 "comparison_report" to mapOf("id" to ""),
                 "version" to mapOf("hintr" to "1", "naomi" to "1", "rrq" to "1")
         ),
-                "notes" to notes
+                "notes" to mapOf(
+                        "project_notes" to note,
+                        "version_notes" to listOf(note, note)
+                )
         )
 
         val id = waitForModelRunResult()
