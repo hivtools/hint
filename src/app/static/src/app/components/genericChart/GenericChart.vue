@@ -315,6 +315,7 @@
 
                     result[dataSourceId] = filterData(unfilteredData, filters, selectedFilterOptions);
                 }
+                console.log("chart data", result)
 
                 if (result["data"]) {
                     const dataWithPages = this.addPageNumbersToData(result["data"])
