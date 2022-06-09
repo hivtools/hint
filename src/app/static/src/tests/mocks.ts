@@ -451,6 +451,7 @@ export const mockWarning = (props: Partial<Warning> = {}): Warning => {
 export const mockDownloadResultsDependency = (props: Partial<DownloadResultsDependency> = {}): DownloadResultsDependency => {
     return {
         downloadId: "",
+        fetchingDownloadId: false,
         preparing: false,
         statusPollId: -1,
         complete: false,

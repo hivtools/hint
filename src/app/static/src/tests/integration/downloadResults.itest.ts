@@ -18,9 +18,11 @@ describe(`download results actions integration`, () => {
         // passing an invalid calibrateId so this will return an error
         // but the expected error message confirms
         // that we're hitting the correct endpoint
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("SummaryError");
-        expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("SetFetchingDownloadId");
+        expect(commit.mock.calls[0][0]["payload"]).toBe(DOWNLOAD_TYPE.SUMMARY);
+        expect(commit.mock.calls[1][0]["type"]).toBe("SummaryError");
+        expect(commit.mock.calls[1][0]["payload"].detail).toBe("Failed to fetch result");
     })
 
     it(`can poll summary report for status update`, async (done) => {
@@ -83,9 +85,11 @@ describe(`download results actions integration`, () => {
             rootGetters: getter
         } as any);
 
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("SpectrumError");
-        expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("SetFetchingDownloadId");
+        expect(commit.mock.calls[0][0]["payload"]).toBe(DOWNLOAD_TYPE.SPECTRUM);
+        expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumError");
+        expect(commit.mock.calls[1][0]["payload"].detail).toBe("Failed to fetch result");
     })
 
     it(`can poll spectrum output for status update`, async (done) => {
@@ -123,9 +127,11 @@ describe(`download results actions integration`, () => {
 
         await actions.prepareCoarseOutput({commit, dispatch, state: {coarseOutput: {}}, rootState: root} as any);
 
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("CoarseOutputError");
-        expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("SetFetchingDownloadId");
+        expect(commit.mock.calls[0][0]["payload"]).toBe(DOWNLOAD_TYPE.COARSE);
+        expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputError");
+        expect(commit.mock.calls[1][0]["payload"].detail).toBe("Failed to fetch result");
     })
 
     it(`can poll coarseOutput for status update`, async (done) => {
@@ -164,9 +170,11 @@ describe(`download results actions integration`, () => {
 
         await actions.prepareComparisonOutput({commit, dispatch, state: {comparison: {}}, rootState: root} as any);
 
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ComparisonError");
-        expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("SetFetchingDownloadId");
+        expect(commit.mock.calls[0][0]["payload"]).toBe(DOWNLOAD_TYPE.COMPARISON);
+        expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonError");
+        expect(commit.mock.calls[1][0]["payload"].detail).toBe("Failed to fetch result");
     })
 
     it(`can poll comparison output for status update`, async (done) => {

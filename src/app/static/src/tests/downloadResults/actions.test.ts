@@ -50,11 +50,13 @@ describe(`download Results actions`, () => {
 
         await actions.prepareSummaryReport({commit, state, dispatch, rootState: root} as any);
 
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PreparingSummaryReport")
-        expect(commit.mock.calls[0][0]["payload"]).toEqual(partialDownloadResultsState)
-        expect(mockAxios.history.post.length).toBe(1);
-        expect(mockAxios.history.post[0]["url"]).toBe("download/submit/summary/calibrate1");
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("SetFetchingDownloadId")
+        expect(commit.mock.calls[0][0]["payload"]).toEqual(DOWNLOAD_TYPE.SUMMARY)
+        expect(commit.mock.calls[1][0]["type"]).toBe("PreparingSummaryReport")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(partialDownloadResultsState)
+        expect(mockAxios.history.get.length).toBe(1);
+        expect(mockAxios.history.get[0]["url"]).toBe("download/submit/summary/calibrate1");
 
         expect(dispatch.mock.calls.length).toBe(1)
         expect(dispatch.mock.calls[0]).toEqual(["poll", DOWNLOAD_TYPE.SUMMARY])
@@ -68,6 +70,17 @@ describe(`download Results actions`, () => {
 
         await actions.prepareSummaryReport({commit, state} as any);
         expect(mockAxios.history.post.length).toBe(0);
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
+    it("prepare summary does not do anything if fetchingDownloadId is set", async () => {
+        const commit = jest.fn();
+        const state = mockDownloadResultsState({
+            summary: mockDownloadResultsDependency({fetchingDownloadId: true})
+        });
+
+        await actions.prepareSummaryReport({commit, state} as any);
+        expect(mockAxios.history.get.length).toBe(0);
         expect(commit.mock.calls.length).toBe(0);
     });
 
@@ -112,7 +125,7 @@ describe(`download Results actions`, () => {
 
         await actions.prepareSummaryReport({commit, state, dispatch, rootState: root} as any);
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({
+        expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "SummaryError",
             payload: mockError("TEST FAILED")
         });
@@ -250,11 +263,13 @@ describe(`download Results actions`, () => {
 
         await actions.prepareSpectrumOutput({commit, state, dispatch, rootState: root, rootGetters: getter} as any);
 
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PreparingSpectrumOutput")
-        expect(commit.mock.calls[0][0]["payload"]).toEqual(downloadId)
-        expect(mockAxios.history.post.length).toBe(1);
-        expect(mockAxios.history.post[0]["url"]).toBe("download/submit/spectrum/calibrate1");
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("SetFetchingDownloadId")
+        expect(commit.mock.calls[0][0]["payload"]).toEqual(DOWNLOAD_TYPE.SPECTRUM)
+        expect(commit.mock.calls[1][0]["type"]).toBe("PreparingSpectrumOutput")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(downloadId)
+        expect(mockAxios.history.get.length).toBe(1);
+        expect(mockAxios.history.get[0]["url"]).toBe("download/submit/spectrum/calibrate1");
         expect(mockAxios.history.post[0]["data"]).toBe("json");
 
         expect(dispatch.mock.calls.length).toBe(1)
@@ -269,6 +284,17 @@ describe(`download Results actions`, () => {
 
         await actions.prepareSpectrumOutput({commit, state} as any);
         expect(mockAxios.history.post.length).toBe(0);
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
+    it("prepare spectrum does not do anything if fetchingDownloadId is set", async () => {
+        const commit = jest.fn();
+        const state = mockDownloadResultsState({
+            spectrum: mockDownloadResultsDependency({fetchingDownloadId: true})
+        });
+
+        await actions.prepareSpectrumOutput({commit, state} as any);
+        expect(mockAxios.history.get.length).toBe(0);
         expect(commit.mock.calls.length).toBe(0);
     });
 
@@ -429,7 +455,7 @@ describe(`download Results actions`, () => {
 
         await actions.prepareSpectrumOutput({commit, state, dispatch, rootState: root, rootGetters: getter} as any);
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({
+        expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "SpectrumError",
             payload: mockError("TEST FAILED")
         });
@@ -480,11 +506,13 @@ describe(`download Results actions`, () => {
 
         await actions.prepareCoarseOutput({commit, state, dispatch, rootState: root} as any);
 
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PreparingCoarseOutput")
-        expect(commit.mock.calls[0][0]["payload"]).toEqual(downloadId)
-        expect(mockAxios.history.post.length).toBe(1);
-        expect(mockAxios.history.post[0]["url"]).toBe("download/submit/coarse-output/calibrate1");
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("SetFetchingDownloadId")
+        expect(commit.mock.calls[0][0]["payload"]).toEqual(DOWNLOAD_TYPE.COARSE)
+        expect(commit.mock.calls[1][0]["type"]).toBe("PreparingCoarseOutput")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(downloadId)
+        expect(mockAxios.history.get.length).toBe(1);
+        expect(mockAxios.history.get[0]["url"]).toBe("download/submit/coarse-output/calibrate1");
 
         expect(dispatch.mock.calls.length).toBe(1)
         expect(dispatch.mock.calls[0]).toEqual(["poll", DOWNLOAD_TYPE.COARSE])
@@ -498,6 +526,17 @@ describe(`download Results actions`, () => {
 
         await actions.prepareCoarseOutput({commit, state} as any);
         expect(mockAxios.history.post.length).toBe(0);
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
+    it("prepare coarse output does not do anything if fetchingDownloadId is set", async () => {
+        const commit = jest.fn();
+        const state = mockDownloadResultsState({
+            coarseOutput: mockDownloadResultsDependency({fetchingDownloadId: true})
+        });
+
+        await actions.prepareCoarseOutput({commit, state} as any);
+        expect(mockAxios.history.get.length).toBe(0);
         expect(commit.mock.calls.length).toBe(0);
     });
 
@@ -651,7 +690,7 @@ describe(`download Results actions`, () => {
 
         await actions.prepareCoarseOutput({commit, state, dispatch, rootState: root} as any);
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({
+        expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "CoarseOutputError",
             payload: mockError("TEST FAILED")
         });
@@ -703,11 +742,13 @@ describe(`download Results actions`, () => {
 
         await actions.prepareComparisonOutput({commit, state, dispatch, rootState: root} as any);
 
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("PreparingComparisonOutput")
-        expect(commit.mock.calls[0][0]["payload"]).toEqual(downloadId)
-        expect(mockAxios.history.post.length).toBe(1);
-        expect(mockAxios.history.post[0]["url"]).toBe("download/submit/comparison/calibrate1");
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("SetFetchingDownloadId")
+        expect(commit.mock.calls[0][0]["payload"]).toEqual(DOWNLOAD_TYPE.COMPARISON)
+        expect(commit.mock.calls[1][0]["type"]).toBe("PreparingComparisonOutput")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(downloadId)
+        expect(mockAxios.history.get.length).toBe(1);
+        expect(mockAxios.history.get[0]["url"]).toBe("download/submit/comparison/calibrate1");
 
         expect(dispatch.mock.calls.length).toBe(1)
         expect(dispatch.mock.calls[0]).toEqual(["poll", DOWNLOAD_TYPE.COMPARISON])
@@ -721,6 +762,17 @@ describe(`download Results actions`, () => {
 
         await actions.prepareComparisonOutput({commit, state} as any);
         expect(mockAxios.history.post.length).toBe(0);
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
+    it("prepare comparison does not do anything if fetchingDownloadId is set", async () => {
+        const commit = jest.fn();
+        const state = mockDownloadResultsState({
+            comparison: mockDownloadResultsDependency({fetchingDownloadId: true})
+        });
+
+        await actions.prepareComparisonOutput({commit, state} as any);
+        expect(mockAxios.history.get.length).toBe(0);
         expect(commit.mock.calls.length).toBe(0);
     });
 
@@ -881,7 +933,7 @@ describe(`download Results actions`, () => {
 
         await actions.prepareComparisonOutput({commit, state, dispatch, rootState: root} as any);
 
-        expect(commit.mock.calls[0][0]).toStrictEqual({
+        expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "ComparisonError",
             payload: mockError("TEST FAILED")
         });
