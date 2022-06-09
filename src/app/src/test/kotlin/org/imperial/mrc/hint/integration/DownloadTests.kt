@@ -73,7 +73,7 @@ class DownloadTests : SecureIntegrationTests()
         val state = mapOf(
                 "datasets" to datasets,
                 "model_fit" to mapOf("id" to "", "options" to mapOf("" to "")),
-                "calibrate" to mapOf("id" to "", "optionsFormMeta" to mapOf("" to "")),
+                "calibrate" to mapOf("id" to "", "options" to mapOf("" to "")),
                 "model_output" to mapOf("id" to ""),
                 "coarse_output" to mapOf("id" to ""),
                 "summary_report" to mapOf("id" to ""),
