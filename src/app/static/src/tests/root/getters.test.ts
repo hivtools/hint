@@ -411,6 +411,17 @@ describe("root getters", () => {
                     program: {filename: "program", hash: "programHash"} as any,
                     survey: {filename: "survey", hash: "surveyHash"} as any
                 }),
+                projects: mockProjectsState({
+                    currentProject:
+                        {
+                            name: "My project 123",
+                            note: "These are my project notes",
+                            versions: [
+                                {note: "Notes specific to this version", updated: "2022/05/17 12:34:21"},
+                                {note: "Notes from the first version", updated: "2022/05/14 09:12:54"}
+                            ]
+                        } as any
+                }),
                 modelOptions: mockModelOptionsState(),
                 modelRun: mockModelRunState({ready: true}),
                 modelCalibrate: mockModelCalibrateState({calibrating: true}),
