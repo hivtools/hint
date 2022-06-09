@@ -1,7 +1,6 @@
 package org.imperial.mrc.hint.unit.controllers
 
 import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
@@ -24,7 +23,7 @@ class DownloadControllerTests
 
         val sut = DownloadController(mockAPIClient)
         val result = sut.getDownloadOutput("spectrum", "id1", json)
-        verify(mockAPIClient).downloadOutputSubmit( eq("spectrum"), eq("id1"), eq(json))
+        verify(mockAPIClient).downloadOutputSubmit("spectrum", "id1", json)
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
 
@@ -33,12 +32,12 @@ class DownloadControllerTests
     {
         val mockResponse = mock<ResponseEntity<String>>()
         val mockAPIClient = mock<HintrAPIClient> {
-            on { downloadOutputSubmit("summary", "id1") } doReturn mockResponse
+            on { downloadOutputSubmit("summary", "id1", emptyMap()) } doReturn mockResponse
         }
 
         val sut = DownloadController(mockAPIClient)
-        val result = sut.getDownloadOutput("summary", "id1")
-        verify(mockAPIClient).downloadOutputSubmit(eq("summary"), eq("id1"), eq(emptyMap()))
+        val result = sut.getDownloadOutput("summary", "id1", emptyMap())
+        verify(mockAPIClient).downloadOutputSubmit("summary", "id1", emptyMap())
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
 
@@ -47,12 +46,12 @@ class DownloadControllerTests
     {
         val mockResponse = mock<ResponseEntity<String>>()
         val mockAPIClient = mock<HintrAPIClient> {
-            on { downloadOutputSubmit("coarse-output", "id1", null) } doReturn mockResponse
+            on { downloadOutputSubmit("coarse-output", "id1") } doReturn mockResponse
         }
 
         val sut = DownloadController(mockAPIClient)
-        val result = sut.getDownloadOutput("coarse-output", "id1", null)
-        verify(mockAPIClient).downloadOutputSubmit(eq("coarse-output"), eq("id1"), eq(null))
+        val result = sut.getDownloadOutput("coarse-output", "id1")
+        verify(mockAPIClient).downloadOutputSubmit("coarse-output", "id1", null)
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
 

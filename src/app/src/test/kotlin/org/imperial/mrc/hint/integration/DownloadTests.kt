@@ -42,7 +42,8 @@ class DownloadTests : SecureIntegrationTests()
     fun `can submit summary download`()
     {
         val id = waitForModelRunResult()
-        val responseEntity = testRestTemplate.postForEntity<String>("/download/submit/summary/$id")
+        val postEntity = getJsonEntity(emptyMap())
+        val responseEntity = testRestTemplate.postForEntity<String>("/download/submit/summary/$id", postEntity)
         assertSuccess(responseEntity, "DownloadSubmitResponse")
     }
 
