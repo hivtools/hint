@@ -2,6 +2,7 @@ import {actions} from "../../app/store/downloadResults/actions";
 import {rootState} from "./integrationTest";
 import {DOWNLOAD_TYPE} from "../../app/types";
 import {switches} from "../../app/featureSwitches";
+import {formatToISODateTime} from "../../app/utils";
 
 describe(`download results actions integration`, () => {
 
@@ -78,18 +79,18 @@ describe(`download results actions integration`, () => {
                 notes: {
                     project_notes: {
                         name: "My project 123",
-                        updated: "2022/05/17 12:34:21",
+                        updated: formatToISODateTime("2022-06-09T13:56:19.280Z"),
                         note: "These are my project notes"
                     },
                     version_notes: [
                         {
                             name: "My project 123",
-                            updated: "2022/05/17 12:34:21",
+                            updated: formatToISODateTime("2022-06-09T13:56:19.280Z"),
                             note: "Notes specific to this version"
                         },
                         {
                             name: "My project 123",
-                            updated: "2022/05/14 09:12:54",
+                            updated: formatToISODateTime("2022-06-09T13:56:19.280Z"),
                             note: "Notes from the first version"
                         }
                     ]

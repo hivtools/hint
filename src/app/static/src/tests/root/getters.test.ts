@@ -16,7 +16,7 @@ import {
 import {RootState} from "../../app/root";
 import {initialDownloadResults} from "../../app/store/downloadResults/downloadResults";
 import {Warning} from "../../app/generated";
-import {extractErrors} from "../../app/utils";
+import {extractErrors, formatToISODateTime} from "../../app/utils";
 import {expectArraysEqual} from "../testHelpers";
 
 describe("root getters", () => {
@@ -417,8 +417,8 @@ describe("root getters", () => {
                             name: "My project 123",
                             note: "These are my project notes",
                             versions: [
-                                {note: "Notes specific to this version", updated: "2022/05/17 12:34:21"},
-                                {note: "Notes from the first version", updated: "2022/05/14 09:12:54"}
+                                {note: "Notes specific to this version", updated: formatToISODateTime("2022-06-09T13:56:19.280Z")},
+                                {note: "Notes from the first version", updated: formatToISODateTime("2022-06-09T13:30:19.280Z")}
                             ]
                         } as any
                 }),

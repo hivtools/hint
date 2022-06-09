@@ -3,7 +3,8 @@ import {Getter, GetterTree} from "vuex";
 import {DownloadSubmitRequest, Error, Note, VersionInfo} from "../../generated"
 import {Warning} from "../../generated";
 import {Dict, StepWarnings, Version} from "../../types";
-import {extractErrors} from "../../utils";
+import {extractErrors, formatDateTime, formatToISODateTime} from "../../utils";
+import {format} from "numeral";
 
 interface RootGetters {
     isGuest: Getter<RootState, RootState>
@@ -83,7 +84,7 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
             notes: {
                 project_notes: {
                     name: name,
-                    updated: versions && versions[0].updated,
+                    updated: versions && formatToISODateTime(versions[0].updated),
                     note: rootState.projects.currentProject?.note || ""
                 },
                 version_notes: getVersionNotes(versions, name)
@@ -148,7 +149,7 @@ const allReviewInputsWarnings = (state: RootState) => {
 const getVersionNotes = (versions: Version[], name: string) => {
     return versions.reduce((result: Note[], versionNote) => {
         const note = versionNote.note || ""
-        const updated = versionNote.updated
+        const updated = versions && formatToISODateTime(versionNote.updated)
 
         return result.concat({note, updated, name})
     }, [])

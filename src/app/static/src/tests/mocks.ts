@@ -483,18 +483,18 @@ export const mockProjectOutputState = (props: Partial<ProjectState> = {}): Downl
         notes: {
             project_notes: {
                 name: "My project 123",
-                updated: "2022/05/17 12:34:21",
+                updated: "2022/06/09 15:56:19",
                 note: "These are my project notes"
             },
             version_notes: [
                 {
                     name: "My project 123",
-                    updated: "2022/05/17 12:34:21",
+                    updated: "2022/06/09 15:56:19",
                     note: "Notes specific to this version"
                 },
                 {
                     name: "My project 123",
-                    updated: "2022/05/14 09:12:54",
+                    updated: "2022/06/09 15:30:19",
                     note: "Notes from the first version"
                 }
             ]

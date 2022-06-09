@@ -60,6 +60,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async prepareSpectrumOutput(context) {
         const {dispatch, rootState, state, rootGetters} = context
+        console.log(rootGetters.projectState)
         if (!state.spectrum.downloadId) {
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
