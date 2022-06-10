@@ -1,5 +1,5 @@
-import {ActionContext, ActionTree} from "vuex";
-import {LoadingState, LoadState} from "./load";
+import {ActionContext, ActionTree, Commit} from "vuex";
+import {FileSource, LoadingState, LoadState} from "./load";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {verifyCheckSum} from "../../utils";
@@ -15,6 +15,7 @@ export type LoadErrorActionTypes = "LoadFailed"
 export interface LoadActions {
     load: (store: ActionContext<LoadState, RootState>, payload: loadPayload) => void
     setFiles: (store: ActionContext<LoadState, RootState>, payload: setFilesPayload) => void
+    setModelOutputFiles: (store: ActionContext<LoadState, RootState>, payload: setFilesPayload) => void
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
     clearLoadState: (store: ActionContext<LoadState, RootState>) => void
@@ -22,7 +23,8 @@ export interface LoadActions {
 
 export interface loadPayload {
     file: File,
-    projectName: string | null
+    projectName: string | null,
+    source?: FileSource
 }
 
 export interface setFilesPayload {
@@ -32,10 +34,14 @@ export interface setFilesPayload {
 
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     load({dispatch}, payload) {
-        const {file, projectName} = payload;
+        const {file, projectName, source} = payload;
         const reader = new FileReader();
         reader.addEventListener('loadend', function () {
-            dispatch("setFiles", {savedFileContents: reader.result as string, projectName});
+            if (source === FileSource.ModelOutput) {
+                dispatch("setModelOutputFiles", {savedFileContents: reader.result as string, projectName});
+            } else {
+                dispatch("setFiles", {savedFileContents: reader.result as string, projectName});
+            }
         });
         reader.readAsText(file);
     },
@@ -47,15 +53,40 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
         const objectContents = verifyCheckSum(savedFileContents);
 
-        if (!objectContents) {
+        commitLoadFailureIfContentIsCorrupt(objectContents, commit)
+
+        const files = objectContents.files;
+        const savedState = objectContents.state;
+
+        const majorVersion = (s: string) => s ? s.split(".")[0] : null;
+        if (majorVersion(savedState.version) != majorVersion(currentHintVersion)) {
             commit({
                 type: "LoadFailed",
-                payload: {detail: "The file contents are corrupted."}
+                payload: {detail: "Unable to load file created by older version of the application."}
             });
             return;
         }
 
-        const files = objectContents.files;
+        if (!rootGetters.isGuest) {
+            await (dispatch("projects/createProject", projectName, {root: true}));
+            savedState.projects.currentProject = rootState.projects.currentProject;
+            savedState.projects.currentVersion = rootState.projects.currentVersion;
+        }
+
+        await getFilesAndLoad(context, files, savedState);
+    },
+
+    async setModelOutputFiles(context, payload) {
+        const {savedFileContents, projectName} = payload;
+        const {commit, rootState, rootGetters, dispatch} = context;
+        commit({type: "SettingFiles", payload: null});
+
+        const objectContents = JSON.parse(savedFileContents);
+
+        commitLoadFailureIfContentIsCorrupt(objectContents, commit)
+
+        const files = objectContents.state.datasets;
+        const modelFit = objectContents.state.datasets;
         const savedState = objectContents.state;
 
         const majorVersion = (s: string) => s ? s.split(".")[0] : null;
@@ -112,4 +143,14 @@ async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, fil
                 dispatch("updateStoreState", savedState);
             }
         });
+}
+
+const commitLoadFailureIfContentIsCorrupt = (objectContents: string, commit: Commit) => {
+    if (!objectContents) {
+        commit({
+            type: "LoadFailed",
+            payload: {detail: "The file contents are corrupted."}
+        });
+        return;
+    }
 }
