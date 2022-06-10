@@ -70,10 +70,6 @@ describe(`download results actions integration`, () => {
                 },
                 model_fit: {"id": "", "options": {}},
                 calibrate: {"id": "", "options": {}},
-                model_output: {"id": ""},
-                coarse_output: {"id": ""},
-                summary_report: {"id": ""},
-                comparison_report: {"id": ""},
                 version: {"hintr": "1.0.0", "naomi": "2.0.0", "rrq": "1.1.1"}
             }
         }

@@ -74,10 +74,6 @@ class DownloadTests : SecureIntegrationTests()
                 "datasets" to datasets,
                 "model_fit" to mapOf("id" to "", "options" to mapOf("" to "")),
                 "calibrate" to mapOf("id" to "", "options" to mapOf("" to "")),
-                "model_output" to mapOf("id" to ""),
-                "coarse_output" to mapOf("id" to ""),
-                "summary_report" to mapOf("id" to ""),
-                "comparison_report" to mapOf("id" to ""),
                 "version" to mapOf("hintr" to "1", "naomi" to "1", "rrq" to "1")
         )
 

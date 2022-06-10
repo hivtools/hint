@@ -61,18 +61,6 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
                 options: rootState.modelCalibrate.optionsFormMeta || {},
                 id: rootState.modelCalibrate.calibrateId
             },
-            model_output: {
-                id: rootState.downloadResults.spectrum.downloadId
-            },
-            coarse_output: {
-                id: rootState.downloadResults.coarseOutput.downloadId
-            },
-            summary_report: {
-                id: rootState.downloadResults.summary.downloadId
-            },
-            comparison_report: {
-                id: rootState.downloadResults.comparison.downloadId
-            },
             version: rootState.hintrVersion.hintrVersion as VersionInfo
         }
     },
