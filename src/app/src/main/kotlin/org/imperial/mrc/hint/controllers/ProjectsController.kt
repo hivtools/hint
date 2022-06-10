@@ -3,18 +3,24 @@ package org.imperial.mrc.hint.controllers
 import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.exceptions.UserException
+import org.imperial.mrc.hint.logging.GenericLogger
+import org.imperial.mrc.hint.logging.LogMetadata
+import org.imperial.mrc.hint.logging.Request
 import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.models.*
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import javax.servlet.http.HttpServletRequest
 
 @RestController
 class ProjectsController(private val session: Session,
                          private val versionRepository: VersionRepository,
                          private val projectRepository: ProjectRepository,
-                         private val userLogic: UserLogic)
+                         private val userLogic: UserLogic,
+                         private val request: HttpServletRequest,
+                         private val logger: GenericLogger)
 {
     @PostMapping("/project/")
     @ResponseBody
@@ -95,6 +101,11 @@ class ProjectsController(private val session: Session,
             @PathVariable("projectId") projectId: Int,
             @RequestParam("note") note: String): ResponseEntity<String>
     {
+        logger.info(LogMetadata(
+                tags = listOf("project", "notes"),
+                action = "Updating project note",
+                request = Request(request),
+                username = userId()))
         projectRepository.updateProjectNote(projectId, userId(), note)
         return EmptySuccessResponse.asResponseEntity()
     }
