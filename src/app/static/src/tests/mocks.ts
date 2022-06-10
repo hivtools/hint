@@ -473,8 +473,8 @@ export const mockProjectOutputState = (props: Partial<ProjectState> = {}): Downl
                 shape: {"filename": "shape", "path": "uploads/shapeHash"},
                 survey: {"filename": "survey", "path": "uploads/surveyHash"}
             },
-            model_fit: {"id": "", "options": {}},
-            calibrate: {"id": "", "options": {"controlSections": []}},
+            model_fit: {"id": "modelRunId", "options": {"test": "options"}},
+            calibrate: {"id": "calibrateId", "options": {"test": "options"}},
             version: {"hintr": "1.0.0", "naomi": "2.0.0", "rrq": "1.1.1"},
         },
         notes: {

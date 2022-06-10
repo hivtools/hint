@@ -37,7 +37,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const modelRunId = rootState.modelRun.modelRunId;
         const version = state.version;
 
-        commit(ModelCalibrateMutation.SetOptionsData, options);
+        commit({type: ModelCalibrateMutation.SetOptionsData, payload: options});
 
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
             .withSuccess(ModelCalibrateMutation.CalibrateStarted)

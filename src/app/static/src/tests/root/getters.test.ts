@@ -401,10 +401,10 @@ describe("root getters", () => {
         const projectStates = () => {
             return mockRootState({
                 baseline: mockBaselineState({
-                        pjnz: {filename: "pjnz", hash: "pjnzHash"} as any,
-                        population: {filename: "population", hash: "populationHash"} as any,
-                        shape: {filename: "shape", hash: "shapeHash"} as any
-                    }),
+                    pjnz: {filename: "pjnz", hash: "pjnzHash"} as any,
+                    population: {filename: "population", hash: "populationHash"} as any,
+                    shape: {filename: "shape", hash: "shapeHash"} as any
+                }),
                 surveyAndProgram: mockSurveyAndProgramState({
                     warnings: surveyAndProgramWarnings,
                     anc: {filename: "anc", hash: "ancHash"} as any,
@@ -417,15 +417,20 @@ describe("root getters", () => {
                             name: "My project 123",
                             note: "These are my project notes",
                             versions: [
-                                {note: "Notes specific to this version", updated: formatToISODateTime("2022-06-09T13:56:19.280Z")},
-                                {note: "Notes from the first version", updated: formatToISODateTime("2022-06-09T13:30:19.280Z")}
+                                {
+                                    note: "Notes specific to this version",
+                                    updated: formatToISODateTime("2022-06-09T13:56:19.280Z")
+                                },
+                                {
+                                    note: "Notes from the first version",
+                                    updated: formatToISODateTime("2022-06-09T13:30:19.280Z")
+                                }
                             ]
                         } as any
                 }),
-                modelOptions: mockModelOptionsState(),
-                modelRun: mockModelRunState({ready: true}),
-                modelCalibrate: mockModelCalibrateState({calibrating: true, options: {controlSections: []}}),
-                modelOutput: mockModelOutputState(),
+                modelOptions: mockModelOptionsState({options: {"test": "options"}}),
+                modelRun: mockModelRunState({modelRunId: "modelRunId"}),
+                modelCalibrate: mockModelCalibrateState({calibrateId: "calibrateId", options: {"test": "options"}}),
                 hintrVersion: mockHintrVersionState({hintrVersion: {hintr: "1.0.0", naomi: "2.0.0", rrq: "1.1.1"}})
             })
         }
