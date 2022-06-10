@@ -59,8 +59,8 @@ describe("ModelCalibrate actions", () => {
         expect(JSON.parse(mockAxios.history.post[0].data)).toStrictEqual({version: mockVersion, options: mockOptions});
 
         expect(commit.mock.calls.length).toBe(3);
-        expect(commit.mock.calls[0][0]).toBe(ModelCalibrateMutation.SetOptionsData);
-        expect(commit.mock.calls[0][1]).toBe(mockOptions);
+        expect(commit.mock.calls[0][0].type).toBe(ModelCalibrateMutation.SetOptionsData);
+        expect(commit.mock.calls[0][0].payload).toEqual(mockOptions);
         expect(commit.mock.calls[1][0].type).toBe(ModelCalibrateMutation.CalibrateStarted);
         expect(commit.mock.calls[2][0].type).toBe(`downloadResults/${DownloadResultsMutation.ResetIds}`);
         expect(commit.mock.calls[2][1]).toEqual({root: true});
@@ -82,7 +82,8 @@ describe("ModelCalibrate actions", () => {
         await actions.submit({commit, dispatch, state, rootState: root} as any, {});
 
         expect(commit.mock.calls.length).toBe(2);
-        expect(commit.mock.calls[0][0]).toBe(ModelCalibrateMutation.SetOptionsData);
+        expect(commit.mock.calls[0][0].type).toBe(ModelCalibrateMutation.SetOptionsData);
+        expect(commit.mock.calls[0][0].payload).toEqual({});
         expect(commit.mock.calls[1][0].type).toBe(ModelCalibrateMutation.SetError);
         expect(commit.mock.calls[1][0].payload).toStrictEqual(testError);
         expect(dispatch.mock.calls.length).toBe(0);
