@@ -424,9 +424,8 @@ describe("root getters", () => {
                 }),
                 modelOptions: mockModelOptionsState(),
                 modelRun: mockModelRunState({ready: true}),
-                modelCalibrate: mockModelCalibrateState({calibrating: true}),
+                modelCalibrate: mockModelCalibrateState({calibrating: true, options: {controlSections: []}}),
                 modelOutput: mockModelOutputState(),
-                downloadResults: mockDownloadResultsState({coarseOutput: {downloadId: "1"} as any}),
                 hintrVersion: mockHintrVersionState({hintrVersion: {hintr: "1.0.0", naomi: "2.0.0", rrq: "1.1.1"}})
             })
         }

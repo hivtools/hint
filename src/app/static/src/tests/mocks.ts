@@ -475,10 +475,6 @@ export const mockProjectOutputState = (props: Partial<ProjectState> = {}): Downl
             },
             model_fit: {"id": "", "options": {}},
             calibrate: {"id": "", "options": {"controlSections": []}},
-            model_output: {"id": ""},
-            coarse_output: {"id": "1"},
-            summary_report: {"id": ""},
-            comparison_report: {"id": ""},
             version: {"hintr": "1.0.0", "naomi": "2.0.0", "rrq": "1.1.1"},
         },
         notes: {

@@ -3,7 +3,7 @@ import {Getter, GetterTree} from "vuex";
 import {DownloadSubmitRequest, Error, Note, VersionInfo} from "../../generated"
 import {Warning} from "../../generated";
 import {Dict, StepWarnings, Version} from "../../types";
-import {extractErrors, formatDateTime, formatToISODateTime} from "../../utils";
+import {extractErrors, formatToISODateTime} from "../../utils";
 
 interface RootGetters {
     isGuest: Getter<RootState, RootState>
@@ -65,18 +65,6 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
                 calibrate: {
                     options: rootState.modelCalibrate.optionsFormMeta || {},
                     id: rootState.modelCalibrate.calibrateId
-                },
-                model_output: {
-                    id: rootState.downloadResults.spectrum.downloadId
-                },
-                coarse_output: {
-                    id: rootState.downloadResults.coarseOutput.downloadId
-                },
-                summary_report: {
-                    id: rootState.downloadResults.summary.downloadId
-                },
-                comparison_report: {
-                    id: rootState.downloadResults.comparison.downloadId
                 },
                 version: rootState.hintrVersion.hintrVersion as VersionInfo
             },
@@ -153,5 +141,3 @@ const getVersionNotes = (versions: Version[], name: string) => {
         return result.concat({note, updated, name})
     }, [])
 }
-
-
