@@ -411,10 +411,9 @@ describe("root getters", () => {
                     program: {filename: "program", hash: "programHash"} as any,
                     survey: {filename: "survey", hash: "surveyHash"} as any
                 }),
-                modelOptions: mockModelOptionsState(),
-                modelRun: mockModelRunState({ready: true}),
-                modelCalibrate: mockModelCalibrateState({calibrating: true}),
-                modelOutput: mockModelOutputState(),
+                modelOptions: mockModelOptionsState({options: {"test": "options"}}),
+                modelRun: mockModelRunState({modelRunId: "modelRunId"}),
+                modelCalibrate: mockModelCalibrateState({calibrateId: "calibrateId", options: {"test": "options"}}),
                 hintrVersion: mockHintrVersionState({hintrVersion: {hintr: "1.0.0", naomi: "2.0.0", rrq: "1.1.1"}})
             })
         }
