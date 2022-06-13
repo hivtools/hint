@@ -29,8 +29,9 @@ export function genericChartColumnsToFilters(columns: GenericChartColumn[], filt
 
 export function numeralJsToD3format(numeralJsFormat: string) {
     // Convert hintr metadata format (which are numeralJs style) to d3 format to be used by Plotly
-    // We currently support only numeric and percentage formats, and will return empty string for any other
-    // formats received, for default formatting in Plotly.
+    // We currently support only numeric, large number, and percentage formats, and will return 
+    // empty string for any other formats received, for default formatting in Plotly.
+
     if (numeralJsFormat === "0,0") {
         return ","
     }
