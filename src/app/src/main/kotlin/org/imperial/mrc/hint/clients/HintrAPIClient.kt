@@ -3,7 +3,6 @@ package org.imperial.mrc.hint.clients
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.Fuel.head
 import com.github.kittinunf.fuel.httpDownload
-import com.github.kittinunf.fuel.httpPost
 import org.imperial.mrc.hint.*
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
@@ -36,7 +35,7 @@ interface HintrAPIClient
             ResponseEntity<String>
     fun getInputTimeSeriesChartData(type: String, files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
-    fun downloadOutputSubmit(type: String, id: String): ResponseEntity<String>
+    fun downloadOutputSubmit(type: String, id: String, projectState: Map<String, Any?>? = null): ResponseEntity<String>
     fun downloadOutputStatus(id: String): ResponseEntity<String>
     fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
     fun getUploadMetadata(id: String): ResponseEntity<String>
@@ -170,11 +169,7 @@ class HintrFuelAPIClient(
 
     override fun cancelModelRun(id: String): ResponseEntity<String>
     {
-        return "$baseUrl/model/cancel/${id}".httpPost()
-                .addTimeouts()
-                .response()
-                .second
-                .asResponseEntity()
+        return postEmpty("model/cancel/${id}")
     }
 
     override fun getVersion(): ResponseEntity<String>
@@ -182,9 +177,16 @@ class HintrFuelAPIClient(
         return get("hintr/version")
     }
 
-    override fun downloadOutputSubmit(type:String, id: String): ResponseEntity<String>
+    override fun downloadOutputSubmit(type: String, id: String, projectState: Map<String, Any?>?): ResponseEntity<String>
     {
-        return get("download/submit/${type}/${id}")
+        if (projectState.isNullOrEmpty())
+        {
+            return postEmpty("download/submit/${type}/${id}")
+        }
+
+        val json = objectMapper.writeValueAsString(mapOf("state" to projectState))
+
+        return postJson("download/submit/${type}/${id}", json)
     }
 
     override fun downloadOutputStatus(id: String): ResponseEntity<String>

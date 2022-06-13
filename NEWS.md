@@ -1,6 +1,10 @@
-# hint 1.100.0
+# hint 2.1.0
 
 * Use commas as thousands separators for plain numbers in the input time series table
+
+# hint 2.0.0
+
+* HINT to send project state to hintr with generate output zip request
 
 # hint 1.99.4
 

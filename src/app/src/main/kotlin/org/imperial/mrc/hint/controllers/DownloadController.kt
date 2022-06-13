@@ -9,12 +9,14 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 @RequestMapping("/download")
 class DownloadController(val apiClient: HintrAPIClient)
 {
-    @GetMapping("/submit/{type}/{id}")
+    @PostMapping("/submit/{type}/{id}")
     @ResponseBody
-    fun getDownloadOutput(@PathVariable("type") type: String,
-                  @PathVariable("id") id: String): ResponseEntity<String>
+    fun getDownloadOutput(
+            @PathVariable("type") type: String,
+            @PathVariable("id") id: String,
+            @RequestBody projectState: Map<String, Any?>? = null): ResponseEntity<String>
     {
-        return apiClient.downloadOutputSubmit(type, id)
+        return apiClient.downloadOutputSubmit(type, id, projectState)
     }
 
     @GetMapping("/status/{id}")

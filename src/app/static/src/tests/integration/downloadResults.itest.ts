@@ -58,7 +58,28 @@ describe(`download results actions integration`, () => {
             modelCalibrate: {calibrateId: "calibrate123"}
         };
 
-        await actions.prepareSpectrumOutput({commit, dispatch, state: {spectrum: {}}, rootState: root} as any);
+        const getter = {
+            projectState: {
+                datasets: {
+                    anc: {"filename": "anc", "path": "uploads/ancHash"},
+                    pjnz: {"filename": "pjnz", "path": "uploads/pjnzHash"},
+                    population: {"filename": "population", "path": "uploads/populationHash"},
+                    programme: {"filename": "program", "path": "uploads/programHash"},
+                    shape: {"filename": "shape", "path": "uploads/shapeHash"},
+                    survey: {"filename": "survey", "path": "uploads/surveyHash"}
+                },
+                model_fit: {"id": "", "options": {}},
+                calibrate: {"id": "", "options": {}},
+                version: {"hintr": "1.0.0", "naomi": "2.0.0", "rrq": "1.1.1"}
+            }
+        }
+
+        await actions.prepareSpectrumOutput({
+            commit, dispatch,
+            state: {spectrum: {}},
+            rootState: root,
+            rootGetters: getter
+        } as any);
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]["type"]).toBe("SetFetchingDownloadId");

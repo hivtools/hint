@@ -1,6 +1,6 @@
 import {RootState} from "../../root";
 import {Getter, GetterTree} from "vuex";
-import {Error} from "../../generated"
+import {Error, ProjectState, VersionInfo} from "../../generated"
 import {Warning} from "../../generated";
 import {Dict, StepWarnings} from "../../types";
 import {extractErrors} from "../../utils";
@@ -8,6 +8,7 @@ import {extractErrors} from "../../utils";
 interface RootGetters {
     isGuest: Getter<RootState, RootState>
     warnings: Getter<RootState, RootState>
+    projectState: Getter<RootState, RootState>
 }
 
 const warningStepLocationMapping: Dict<string> = {
@@ -22,6 +23,46 @@ const warningStepLocationMapping: Dict<string> = {
 export const getters: RootGetters & GetterTree<RootState, RootState> = {
     isGuest: (state: RootState) => {
         return state.currentUser == "guest";
+    },
+
+    projectState: (rootState: RootState): ProjectState => {
+        return {
+            datasets: {
+                pjnz: {
+                    path: `uploads/${rootState.baseline.pjnz?.hash}`,
+                    filename: rootState.baseline.pjnz?.filename || ""
+                },
+                population: {
+                    path: `uploads/${rootState.baseline.population?.hash}`,
+                    filename: rootState.baseline.population?.filename || ""
+                },
+                shape: {
+                    path: `uploads/${rootState.baseline.shape?.hash}`,
+                    filename: rootState.baseline.shape?.filename || ""
+                },
+                survey: {
+                    path: `uploads/${rootState.surveyAndProgram.survey?.hash}`,
+                    filename: rootState.surveyAndProgram.survey?.filename || ""
+                },
+                programme: {
+                    path: `uploads/${rootState.surveyAndProgram.program?.hash}`,
+                    filename: rootState.surveyAndProgram.program?.filename || ""
+                },
+                anc: {
+                    path: `uploads/${rootState.surveyAndProgram.anc?.hash}`,
+                    filename: rootState.surveyAndProgram.anc?.filename || ""
+                }
+            },
+            model_fit: {
+                options: rootState.modelOptions.options || {},
+                id: rootState.modelRun.modelRunId
+            },
+            calibrate: {
+                options: rootState.modelCalibrate.options || {},
+                id: rootState.modelCalibrate.calibrateId
+            },
+            version: rootState.hintrVersion.hintrVersion as VersionInfo
+        }
     },
 
     errors: (state: RootState) => {
