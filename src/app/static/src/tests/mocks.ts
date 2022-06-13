@@ -21,7 +21,7 @@ import {
     SurveyFilters,
     SurveyResponse,
     ValidateBaselineResponse,
-    Error, CalibrateResultResponse, Warning, ProjectState, DownloadSubmitRequest
+    Error, CalibrateResultResponse, Warning, DownloadSubmitRequest
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
@@ -462,7 +462,7 @@ export const mockDownloadResultsDependency = (props: Partial<DownloadResultsDepe
 }
 
 
-export const mockProjectOutputState = (props: Partial<ProjectState> = {}): DownloadSubmitRequest => {
+export const mockProjectOutputState = (props: Partial<DownloadSubmitRequest> = {}): DownloadSubmitRequest => {
     return {
         state: {
             datasets: {
@@ -480,21 +480,10 @@ export const mockProjectOutputState = (props: Partial<ProjectState> = {}): Downl
         notes: {
             project_notes: {
                 name: "My project 123",
-                updated: "2022/06/09 15:56:19",
+                updated: "2022/06/09 14:56:19",
                 note: "These are my project notes"
             },
-            version_notes: [
-                {
-                    name: "My project 123",
-                    updated: "2022/06/09 15:56:19",
-                    note: "Notes specific to this version"
-                },
-                {
-                    name: "My project 123",
-                    updated: "2022/06/09 15:30:19",
-                    note: "Notes from the first version"
-                }
-            ]
+            version_notes: []
         },
         ...props
     }

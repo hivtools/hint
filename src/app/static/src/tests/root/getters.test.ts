@@ -9,14 +9,14 @@ import {
     mockLoadState,
     mockMetadataState,
     mockModelCalibrateState,
-    mockModelOptionsState, mockModelOutputState,
+    mockModelOptionsState,
     mockModelRunState, mockProjectOutputState, mockProjectsState,
     mockRootState, mockSurveyAndProgramState
 } from "../mocks";
 import {RootState} from "../../app/root";
 import {initialDownloadResults} from "../../app/store/downloadResults/downloadResults";
 import {Warning} from "../../app/generated";
-import {extractErrors, formatToISODateTime} from "../../app/utils";
+import {extractErrors} from "../../app/utils";
 import {expectArraysEqual} from "../testHelpers";
 
 describe("root getters", () => {
@@ -419,11 +419,11 @@ describe("root getters", () => {
                             versions: [
                                 {
                                     note: "Notes specific to this version",
-                                    updated: formatToISODateTime("2022-06-09T13:56:19.280Z")
+                                    updated: "2022-06-19T13:56:19.280Z"
                                 },
                                 {
                                     note: "Notes from the first version",
-                                    updated: formatToISODateTime("2022-06-09T13:30:19.280Z")
+                                    updated: "2022-06-19T13:56:19.280Z"
                                 }
                             ]
                         } as any
@@ -437,7 +437,34 @@ describe("root getters", () => {
         const rootState = projectStates()
 
         const result = getters.projectState(rootState, null, projectStates() as any, null)
-        expect(result).toEqual(mockProjectOutputState())
+
+        const millis = Date.UTC(2022, 6, 19, 13, 56, 19)
+
+        const date = new Date(millis)
+
+        const updated = `2022/06/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+
+        expect(result).toStrictEqual(mockProjectOutputState({
+            notes: {
+                project_notes: {
+                    name: "My project 123",
+                    updated: updated,
+                    note: "These are my project notes"
+                },
+                version_notes: [
+                    {
+                        name: "My project 123",
+                        updated: updated,
+                        note: "Notes specific to this version"
+                    },
+                    {
+                        name: "My project 123",
+                        updated: updated,
+                        note: "Notes from the first version"
+                    }
+                ]
+            } as any
+        }))
     })
 
 })
