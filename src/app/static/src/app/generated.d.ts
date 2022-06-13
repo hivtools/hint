@@ -437,18 +437,6 @@ export interface DownloadSubmitRequest {
       };
       id: string;
     };
-    model_output: {
-      id: string;
-    };
-    coarse_output: {
-      id: string;
-    };
-    summary_report: {
-      id: string;
-    };
-    comparison_report: {
-      id: string;
-    };
     version: {
       hintr: string;
       naomi: string;
@@ -1021,18 +1009,6 @@ export interface ProjectRehydrateResultResponse {
       };
       id: string;
     };
-    model_output: {
-      id: string;
-    };
-    coarse_output: {
-      id: string;
-    };
-    summary_report: {
-      id: string;
-    };
-    comparison_report: {
-      id: string;
-    };
     version: {
       hintr: string;
       naomi: string;
@@ -1079,10 +1055,6 @@ export interface ProjectState {
   };
   model_fit: AsyncRunOptions;
   calibrate: AsyncRunOptions;
-  model_output: AsyncRun;
-  coarse_output: AsyncRun;
-  summary_report: AsyncRun;
-  comparison_report: AsyncRun;
   version: {
     hintr: string;
     naomi: string;
@@ -1098,9 +1070,6 @@ export interface AsyncRunOptions {
   options: {
     [k: string]: any;
   };
-  id: string;
-}
-export interface AsyncRun {
   id: string;
 }
 export interface Response {

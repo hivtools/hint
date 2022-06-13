@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.helpers
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.HintProperties
 import org.springframework.core.io.FileSystemResource
@@ -38,3 +39,10 @@ fun readPropsFromTempFile(contents: String): HintProperties
     return ConfiguredAppProperties.readProperties("tmp/fake.properties")
 }
 
+fun getJsonEntity(payload: Map<String, Any>): HttpEntity<String>
+{
+    val headers = HttpHeaders()
+    headers.contentType = MediaType.APPLICATION_JSON
+    val jsonString = ObjectMapper().writeValueAsString(payload)
+    return HttpEntity(jsonString, headers)
+}

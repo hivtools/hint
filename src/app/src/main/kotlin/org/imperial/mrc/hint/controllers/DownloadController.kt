@@ -21,12 +21,14 @@ class DownloadController(apiClient: HintrAPIClient,
                          request: HttpServletRequest) :
         HintrController(fileManager, apiClient, session, versionRepository, request)
 {
-    @GetMapping("/submit/{type}/{id}")
+    @PostMapping("/submit/{type}/{id}")
     @ResponseBody
-    fun getDownloadOutput(@PathVariable("type") type: String,
-                  @PathVariable("id") id: String): ResponseEntity<String>
+    fun getDownloadOutput(
+            @PathVariable("type") type: String,
+            @PathVariable("id") id: String,
+            @RequestBody projectState: Map<String, Any?>? = null): ResponseEntity<String>
     {
-        return apiClient.downloadOutputSubmit(type, id)
+        return apiClient.downloadOutputSubmit(type, id, projectState)
     }
 
     @PostMapping("/rehydrate/submit")
