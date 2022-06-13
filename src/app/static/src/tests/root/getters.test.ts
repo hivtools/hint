@@ -5,12 +5,12 @@ import {
     mockBaselineState,
     mockDownloadResultsState,
     mockError,
-    mockErrorsState, mockGenericChartState,
+    mockErrorsState, mockGenericChartState, mockHintrVersionState,
     mockLoadState,
     mockMetadataState,
     mockModelCalibrateState,
-    mockModelOptionsState,
-    mockModelRunState, mockProjectsState,
+    mockModelOptionsState, mockModelOutputState,
+    mockModelRunState, mockProjectOutputState, mockProjectsState,
     mockRootState, mockSurveyAndProgramState
 } from "../mocks";
 import {RootState} from "../../app/root";
@@ -395,6 +395,32 @@ describe("root getters", () => {
         const warnings = getters.warnings(rootState, null, SAPRoot() as any, null)
         const result = warnings("reviewInputs").reviewInputs
         expect(result).toEqual([{locations: ["review_inputs"], text: "survey and program test"}])
+    })
+
+    it(`can get serialized project states`, () => {
+        const projectStates = () => {
+            return mockRootState({
+                baseline: mockBaselineState({
+                        pjnz: {filename: "pjnz", hash: "pjnzHash"} as any,
+                        population: {filename: "population", hash: "populationHash"} as any,
+                        shape: {filename: "shape", hash: "shapeHash"} as any
+                    }),
+                surveyAndProgram: mockSurveyAndProgramState({
+                    warnings: surveyAndProgramWarnings,
+                    anc: {filename: "anc", hash: "ancHash"} as any,
+                    program: {filename: "program", hash: "programHash"} as any,
+                    survey: {filename: "survey", hash: "surveyHash"} as any
+                }),
+                modelOptions: mockModelOptionsState({options: {"test": "options"}}),
+                modelRun: mockModelRunState({modelRunId: "modelRunId"}),
+                modelCalibrate: mockModelCalibrateState({calibrateId: "calibrateId", options: {"test": "options"}}),
+                hintrVersion: mockHintrVersionState({hintrVersion: {hintr: "1.0.0", naomi: "2.0.0", rrq: "1.1.1"}})
+            })
+        }
+        const rootState = projectStates()
+
+        const result = getters.projectState(rootState, null, projectStates() as any, null)
+        expect(result).toEqual(mockProjectOutputState())
     })
 
 })
