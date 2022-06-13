@@ -1,4 +1,4 @@
-# hint 1.100.0
+# hint 2.0.0
 
 * HINT to send project state to hintr with generate output zip request
 
