@@ -54,7 +54,7 @@
     import Vue from "vue";
     import {serialiseState} from "../../localStorageManager";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {LoadingState, LoadState} from "../../store/load/load";
+    import {FileSource, LoadingState, LoadState} from "../../store/load/load";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import {LocalSessionFile} from "../../types";
@@ -161,7 +161,7 @@
                 if (input.files && input.files.length > 0) {
                     const file = input.files[0];
                     if (this.isGuest) {
-                        this.loadAction({file, projectName: null});
+                        this.loadAction({file, projectName: null, source: FileSource.ModelOutput});
                     } else {
                         this.fileToLoad = file;
                         this.requestProjectName = true;
@@ -170,7 +170,7 @@
             },
             loadToNewProject() {
                 this.requestProjectName = false;
-                this.loadAction({file: this.fileToLoad!, projectName: this.newProjectName});
+                this.loadAction({file: this.fileToLoad!, projectName: this.newProjectName, source: FileSource.ModelOutput});
             },
             cancelLoad() {
                 this.requestProjectName = false;

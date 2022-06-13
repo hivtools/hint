@@ -17,6 +17,12 @@ class DownloadController(val apiClient: HintrAPIClient)
         return apiClient.downloadOutputSubmit(type, id)
     }
 
+    @PostMapping("/rehydrate/submit")
+    fun submitRehydrate(@RequestBody projectState: Map<String, Any>): ResponseEntity<String>
+    {
+        return apiClient.submitRehydrate(projectState);
+    }
+
     @GetMapping("/status/{id}")
     @ResponseBody
     fun getDownloadOutputStatus(@PathVariable("id") id: String): ResponseEntity<String>

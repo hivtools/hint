@@ -8,7 +8,11 @@ export enum LoadingState { NotLoading, SettingFiles, UpdatingState, LoadFailed }
 
 export interface LoadState {
     loadingState: LoadingState,
-    loadError: Error | null
+    loadError: Error | null,
+    downloadId: string
+    preparing: boolean
+    statusPollId: number
+    complete: boolean
 }
 
 export enum FileSource {
@@ -18,7 +22,11 @@ export enum FileSource {
 export const initialLoadState = (): LoadState => {
     return {
         loadingState: LoadingState.NotLoading,
-        loadError: null
+        loadError: null,
+        downloadId: "",
+        preparing: false,
+        statusPollId: -1,
+        complete: false
     }
 };
 
