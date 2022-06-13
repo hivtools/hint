@@ -38,6 +38,7 @@ interface FileManager
     fun getAllHashes(): Map<String, String>
     fun getFiles(vararg include: FileType): Map<String, VersionFileWithPath>
     fun setAllFiles(files: Map<String, VersionFile?>)
+    fun saveOutput(file: MultipartFile): VersionFileWithPath
 }
 
 @Component
@@ -85,6 +86,24 @@ class LocalFileManager(
         versionRepository.saveVersionFile(session.getVersionId(), type, hash, originalFilename, fromADR)
         return VersionFileWithPath(path, hash, originalFilename, fromADR)
 
+    }
+
+    override fun saveOutput(file: MultipartFile): VersionFileWithPath
+    {
+        val originalFilename = file.originalFilename!!
+        val md = MessageDigest.getInstance("MD5")
+        val bytes = file.inputStream.use {
+            DigestInputStream(it, md).readBytes()
+        }
+        val extension = originalFilename.split(".").last()
+        val hash = "${DatatypeConverter.printHexBinary(md.digest())}.${extension}"
+        val path = "${appProperties.uploadDirectory}/$hash"
+
+        val localFile = File(path)
+        FileUtils.forceMkdirParent(localFile)
+        localFile.writeBytes(bytes)
+
+        return VersionFileWithPath(path, hash, originalFilename, false)
     }
 
     override fun getFile(type: FileType): VersionFileWithPath?

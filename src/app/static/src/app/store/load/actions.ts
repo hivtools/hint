@@ -10,7 +10,6 @@ import {currentHintVersion} from "../../hintVersion";
 import {initialStepperState} from "../stepper/stepper";
 import {ModelStatusResponse} from "../../generated";
 import * as fs from 'fs';
-import qs from "qs";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingModelOutput" | "ModelOutputStatusUpdated" | "PollingStatusStarted"
 export type LoadErrorActionTypes = "LoadFailed" | "ModelOutputError"
@@ -39,13 +38,16 @@ export interface setFilesPayload {
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     load({dispatch}, payload) {
         const {file, projectName, source} = payload;
+
+        if (FileSource.ModelOutput === source) {
+            dispatch("prepareModelOutput", {savedFileContents: file, projectName});
+        }
+
+        console.log(file)
+
         const reader = new FileReader();
         reader.addEventListener('loadend', function () {
-            if (source === FileSource.ModelOutput) {
-                dispatch("prepareModelOutput", {savedFileContents: reader.result as string, projectName});
-            } else {
-                dispatch("setFiles", {savedFileContents: reader.result as string, projectName});
-            }
+            dispatch("setFiles", {savedFileContents: reader.result as string, projectName});
         });
         reader.readAsText(file);
     },
@@ -80,51 +82,6 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         await getFilesAndLoad(context, files, savedState);
     },
 
-    async prepareModelOutput(context, payload) {
-        const {savedFileContents, projectName} = payload;
-        const {commit, rootGetters, dispatch, state} = context;
-
-        console.log(savedFileContents)
-
-        commit({type: "SettingFiles", payload: null});
-
-        //call endpoint and start polling
-        const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
-            .withSuccess("PreparingModelOutput")
-            .withError("ModelOutputError")
-            .postAndReturn("download/rehydrate/submit", savedFileContents);
-
-        if (response) {
-            await dispatch("pollModelOutput", projectName);
-        }
-
-        const objectContents = JSON.parse(savedFileContents);
-
-        commitLoadFailureIfContentIsCorrupt(objectContents, commit)
-
-        console.log(response)
-
-        const files = objectContents.datasets;
-        const savedState = objectContents;
-
-        if (!rootGetters.isGuest) {
-            await (dispatch("projects/createProject", projectName, {root: true}));
-            //savedState.projects.currentProject = rootState.projects.currentProject;
-            //savedState.projects.currentVersion = rootState.projects.currentVersion;
-        }
-
-        //await getFilesAndLoad(context, files, savedState);
-    },
-
-    async pollModelOutput(context, projectName) {
-        const {commit} = context;
-        const id = setInterval(() => {
-            getRehydrateStatus(context)
-        }, 2000);
-
-        commit({type: "PollingStatusStarted", payload: id});
-    },
-
     async loadFromVersion(context, versionDetails) {
         const {commit} = context;
         commit({type: "SettingFiles", payload: null});
@@ -146,8 +103,61 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
     async clearLoadState({commit}) {
         commit({type: "LoadStateCleared", payload: null});
+    },
+
+    async prepareModelOutput(context, payload) {
+        const {savedFileContents, projectName} = payload;
+        const {commit, rootGetters, dispatch, state} = context;
+
+        const formData = new FormData()
+        formData.append("file", savedFileContents)
+
+        commit({type: "SettingFiles", payload: null});
+
+        //call endpoint and start polling
+        const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
+            .withSuccess("PreparingModelOutput")
+            .withError("ModelOutputError")
+            .postAndReturn("download/rehydrate/submit", formData);
+
+        if (response) {
+            await dispatch("pollModelOutput", projectName);
+        }
+    },
+
+    async pollModelOutput(context, projectName) {
+        const {commit} = context;
+        const id = setInterval(() => {
+            getRehydrateStatus(context)
+        }, 2000);
+
+        commit({type: "PollingStatusStarted", payload: id});
     }
 };
+
+const getRehydrateStatus = async (context: ActionContext<LoadState, RootState>) => {
+    const downloadId = context.state.downloadId
+    const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
+        .withSuccess("ModelOutputStatusUpdated")
+        .withError("ModelOutputError")
+        .get<ModelStatusResponse>(`download/status/${downloadId}`);
+
+    if(response && response.data.done) {
+        console.log(response.data)
+        console.log(downloadId)
+        //window.location.assign(`download/result/${downloadId}`);
+        //const content = readJsonFile(`download/result/${downloadId}`)
+
+        //console.log(content.data)
+        //console.log(content)
+        //const objectContents = JSON.parse(content.data.);
+
+        //const files = objectContents.files
+        //const savedState = objectContents.state
+
+        //await getFilesAndLoad(context, files, savedState);
+    }
+}
 
 async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, files: any, savedState: any) {
     savedState.stepper.steps = initialStepperState().steps;
@@ -161,27 +171,6 @@ async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, fil
                 dispatch("updateStoreState", savedState);
             }
         });
-}
-
-const getRehydrateStatus = async (context: ActionContext<LoadState, RootState>) => {
-    const downloadId = context.state.downloadId
-    const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
-        .withSuccess("ModelOutputStatusUpdated")
-        .withError("ModelOutputError")
-        .get<ModelStatusResponse>(`download/status/${downloadId}`);
-
-    if(response && response.data.done) {
-        const content = readJsonFile(`download/result/${downloadId}`)
-
-        console.log(content.data)
-        console.log(content)
-        //const objectContents = JSON.parse(content.data.);
-
-        //const files = objectContents.files
-        //const savedState = objectContents.state
-
-        //await getFilesAndLoad(context, files, savedState);
-    }
 }
 
 const commitLoadFailureIfContentIsCorrupt = (objectContents: string, commit: Commit) => {

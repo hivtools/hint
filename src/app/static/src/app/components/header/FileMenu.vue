@@ -12,7 +12,7 @@
             </a>
             <input v-translate:aria-label="'selectFile'"
                    type="file"
-                   style="display: none;" ref="loadFile" v-on:change="load" accept=".json">
+                   style="display: none;" ref="loadFile" v-on:change="load" accept=".json,.zip">
         </drop-down>
         <modal :open="hasError">
             <h4 v-translate="'loadError'"></h4>

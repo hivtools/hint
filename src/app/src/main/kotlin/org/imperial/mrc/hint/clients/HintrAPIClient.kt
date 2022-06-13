@@ -36,7 +36,7 @@ interface HintrAPIClient
             ResponseEntity<String>
     fun getInputTimeSeriesChartData(type: String, files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
-    fun submitRehydrate(projectState: Map<String, Any>): ResponseEntity<String>
+    fun submitRehydrate(outputZip: VersionFileWithPath): ResponseEntity<String>
     fun downloadOutputSubmit(type: String, id: String): ResponseEntity<String>
     fun downloadOutputStatus(id: String): ResponseEntity<String>
     fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
@@ -183,9 +183,14 @@ class HintrFuelAPIClient(
         return get("hintr/version")
     }
 
-    override fun submitRehydrate(projectState: Map<String, Any>): ResponseEntity<String>
+    override fun submitRehydrate(outputZip: VersionFileWithPath): ResponseEntity<String>
     {
-        return postJson("rehydrate/submit", ObjectMapper().writeValueAsString(projectState))
+        val payload = mapOf(
+                "filename" to outputZip.filename,
+                "hash" to outputZip.hash,
+                "path" to outputZip.path
+        )
+        return postJson("rehydrate/submit", objectMapper.writeValueAsString(mapOf("file" to payload)))
     }
 
     override fun downloadOutputSubmit(type:String, id: String): ResponseEntity<String>
