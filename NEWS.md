@@ -1,3 +1,7 @@
+# hint 1.100.0
+
+* Use commas as thousands separators for plain numbers in the input time series table
+
 # hint 1.99.4
 
 * Prevent spamming download and meta endpoints after download generate completes
