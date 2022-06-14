@@ -64,7 +64,6 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         const {dispatch, rootState, state, rootGetters, commit} = context
         if (!state.spectrum.downloadId && !state.spectrum.fetchingDownloadId) {
             commit({type: "SetFetchingDownloadId", payload: DOWNLOAD_TYPE.SPECTRUM});
-
             const calibrateId = rootState.modelCalibrate.calibrateId
             const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
                 .withSuccess(DownloadResultsMutation.PreparingSpectrumOutput)

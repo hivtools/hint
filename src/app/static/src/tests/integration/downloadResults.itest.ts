@@ -2,6 +2,7 @@ import {actions} from "../../app/store/downloadResults/actions";
 import {rootState} from "./integrationTest";
 import {DOWNLOAD_TYPE} from "../../app/types";
 import {switches} from "../../app/featureSwitches";
+import {formatToISODateTime} from "../../app/utils";
 
 describe(`download results actions integration`, () => {
 
@@ -60,17 +61,38 @@ describe(`download results actions integration`, () => {
 
         const getter = {
             projectState: {
-                datasets: {
-                    anc: {"filename": "anc", "path": "uploads/ancHash"},
-                    pjnz: {"filename": "pjnz", "path": "uploads/pjnzHash"},
-                    population: {"filename": "population", "path": "uploads/populationHash"},
-                    programme: {"filename": "program", "path": "uploads/programHash"},
-                    shape: {"filename": "shape", "path": "uploads/shapeHash"},
-                    survey: {"filename": "survey", "path": "uploads/surveyHash"}
+                state: {
+                    datasets: {
+                        anc: {"filename": "anc", "path": "uploads/ancHash"},
+                        pjnz: {"filename": "pjnz", "path": "uploads/pjnzHash"},
+                        population: {"filename": "population", "path": "uploads/populationHash"},
+                        programme: {"filename": "program", "path": "uploads/programHash"},
+                        shape: {"filename": "shape", "path": "uploads/shapeHash"},
+                        survey: {"filename": "survey", "path": "uploads/surveyHash"}
+                    },
+                    model_fit: {"id": "", "options": {}},
+                    calibrate: {"id": "", "options": {}},
+                    version: {"hintr": "1.0.0", "naomi": "2.0.0", "rrq": "1.1.1"},
                 },
-                model_fit: {"id": "", "options": {}},
-                calibrate: {"id": "", "options": {}},
-                version: {"hintr": "1.0.0", "naomi": "2.0.0", "rrq": "1.1.1"}
+                notes: {
+                    project_notes: {
+                        name: "My project 123",
+                        updated: formatToISODateTime("2022-06-09T13:56:19.280Z"),
+                        note: "These are my project notes"
+                    },
+                    version_notes: [
+                        {
+                            name: "My project 123",
+                            updated: formatToISODateTime("2022-06-09T13:56:19.280Z"),
+                            note: "Notes specific to this version"
+                        },
+                        {
+                            name: "My project 123",
+                            updated: formatToISODateTime("2022-06-09T13:56:19.280Z"),
+                            note: "Notes from the first version"
+                        }
+                    ]
+                }
             }
         }
 

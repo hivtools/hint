@@ -191,6 +191,10 @@ export const formatDateTime = (isoUTCString: string) => {
     return moment.utc(isoUTCString).local().format('DD/MM/YYYY HH:mm:ss');
 };
 
+export const formatToISODateTime = (isoUTCString: string) => {
+    return moment.utc(isoUTCString).local().format('YYYY/MM/DD HH:mm:ss');
+};
+
 export const findResource = (datasetWithResources: any, resourceType: string, resourceName?: string | null): DatasetResource | null => {
     let resources = datasetWithResources.resources;
 

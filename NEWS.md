@@ -1,3 +1,7 @@
+# hint 2.1.0
+
+* Include project notes in output zip
+
 # hint 2.0.0
 
 * HINT to send project state to hintr with generate output zip request

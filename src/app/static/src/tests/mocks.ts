@@ -21,7 +21,7 @@ import {
     SurveyFilters,
     SurveyResponse,
     ValidateBaselineResponse,
-    Error, CalibrateResultResponse, Warning, ProjectState
+    Error, CalibrateResultResponse, Warning, DownloadSubmitRequest
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
@@ -462,19 +462,29 @@ export const mockDownloadResultsDependency = (props: Partial<DownloadResultsDepe
 }
 
 
-export const mockProjectOutputState = (props: Partial<ProjectState> = {}) => {
+export const mockProjectOutputState = (props: Partial<DownloadSubmitRequest> = {}): DownloadSubmitRequest => {
     return {
-        datasets: {
-            anc: {"filename": "anc", "path": "uploads/ancHash"},
-            pjnz: {"filename": "pjnz", "path": "uploads/pjnzHash"},
-            population: {"filename": "population", "path": "uploads/populationHash"},
-            programme: {"filename": "program", "path": "uploads/programHash"},
-            shape: {"filename": "shape", "path": "uploads/shapeHash"},
-            survey: {"filename": "survey", "path": "uploads/surveyHash"}
+        state: {
+            datasets: {
+                anc: {"filename": "anc", "path": "uploads/ancHash"},
+                pjnz: {"filename": "pjnz", "path": "uploads/pjnzHash"},
+                population: {"filename": "population", "path": "uploads/populationHash"},
+                programme: {"filename": "program", "path": "uploads/programHash"},
+                shape: {"filename": "shape", "path": "uploads/shapeHash"},
+                survey: {"filename": "survey", "path": "uploads/surveyHash"}
+            },
+            model_fit: {"id": "modelRunId", "options": {"test": "options"}},
+            calibrate: {"id": "calibrateId", "options": {"test": "options"}},
+            version: {"hintr": "1.0.0", "naomi": "2.0.0", "rrq": "1.1.1"},
         },
-        model_fit: {"id": "modelRunId", "options": {"test": "options"}},
-        calibrate: {"id": "calibrateId", "options": {"test": "options"}},
-        version: {"hintr": "1.0.0", "naomi": "2.0.0", "rrq": "1.1.1"},
+        notes: {
+            project_notes: {
+                name: "My project 123",
+                updated: "2022/06/09 14:56:19",
+                note: "These are my project notes"
+            },
+            version_notes: []
+        },
         ...props
     }
 }

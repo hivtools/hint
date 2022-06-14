@@ -195,7 +195,7 @@ class HintrFuelAPIClient(
             return postEmpty("download/submit/${type}/${id}")
         }
 
-        val json = objectMapper.writeValueAsString(mapOf("state" to projectState))
+        val json = objectMapper.writeValueAsString(projectState)
 
         return postJson("download/submit/${type}/${id}", json)
     }

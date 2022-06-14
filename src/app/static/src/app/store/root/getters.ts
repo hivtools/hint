@@ -1,9 +1,9 @@
 import {RootState} from "../../root";
 import {Getter, GetterTree} from "vuex";
-import {Error, ProjectState, VersionInfo} from "../../generated"
+import {DownloadSubmitRequest, Error, Note, VersionInfo} from "../../generated"
 import {Warning} from "../../generated";
-import {Dict, StepWarnings} from "../../types";
-import {extractErrors} from "../../utils";
+import {Dict, StepWarnings, Version} from "../../types";
+import {extractErrors, formatToISODateTime} from "../../utils";
 
 interface RootGetters {
     isGuest: Getter<RootState, RootState>
@@ -25,43 +25,57 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
         return state.currentUser == "guest";
     },
 
-    projectState: (rootState: RootState): ProjectState => {
+    projectState: (rootState: RootState): DownloadSubmitRequest => {
+
+        const versions = rootState.projects.currentProject?.versions || []
+        const name = rootState.projects.currentProject?.name || ""
+
         return {
-            datasets: {
-                pjnz: {
-                    path: `uploads/${rootState.baseline.pjnz?.hash}`,
-                    filename: rootState.baseline.pjnz?.filename || ""
+            state: {
+                datasets: {
+                    pjnz: {
+                        path: `uploads/${rootState.baseline.pjnz?.hash}`,
+                        filename: rootState.baseline.pjnz?.filename || ""
+                    },
+                    population: {
+                        path: `uploads/${rootState.baseline.population?.hash}`,
+                        filename: rootState.baseline.population?.filename || ""
+                    },
+                    shape: {
+                        path: `uploads/${rootState.baseline.shape?.hash}`,
+                        filename: rootState.baseline.shape?.filename || ""
+                    },
+                    survey: {
+                        path: `uploads/${rootState.surveyAndProgram.survey?.hash}`,
+                        filename: rootState.surveyAndProgram.survey?.filename || ""
+                    },
+                    programme: {
+                        path: `uploads/${rootState.surveyAndProgram.program?.hash}`,
+                        filename: rootState.surveyAndProgram.program?.filename || ""
+                    },
+                    anc: {
+                        path: `uploads/${rootState.surveyAndProgram.anc?.hash}`,
+                        filename: rootState.surveyAndProgram.anc?.filename || ""
+                    }
                 },
-                population: {
-                    path: `uploads/${rootState.baseline.population?.hash}`,
-                    filename: rootState.baseline.population?.filename || ""
+                model_fit: {
+                    options: rootState.modelOptions.options || {},
+                    id: rootState.modelRun.modelRunId
                 },
-                shape: {
-                    path: `uploads/${rootState.baseline.shape?.hash}`,
-                    filename: rootState.baseline.shape?.filename || ""
+                calibrate: {
+                    options: rootState.modelCalibrate.options || {},
+                    id: rootState.modelCalibrate.calibrateId
                 },
-                survey: {
-                    path: `uploads/${rootState.surveyAndProgram.survey?.hash}`,
-                    filename: rootState.surveyAndProgram.survey?.filename || ""
-                },
-                programme: {
-                    path: `uploads/${rootState.surveyAndProgram.program?.hash}`,
-                    filename: rootState.surveyAndProgram.program?.filename || ""
-                },
-                anc: {
-                    path: `uploads/${rootState.surveyAndProgram.anc?.hash}`,
-                    filename: rootState.surveyAndProgram.anc?.filename || ""
-                }
+                version: rootState.hintrVersion.hintrVersion as VersionInfo
             },
-            model_fit: {
-                options: rootState.modelOptions.options || {},
-                id: rootState.modelRun.modelRunId
-            },
-            calibrate: {
-                options: rootState.modelCalibrate.options || {},
-                id: rootState.modelCalibrate.calibrateId
-            },
-            version: rootState.hintrVersion.hintrVersion as VersionInfo
+            notes: {
+                project_notes: {
+                    name: name,
+                    updated: versions && formatToISODateTime(versions[0].updated),
+                    note: rootState.projects.currentProject?.note || ""
+                },
+                version_notes: getVersionNotes(versions, name)
+            }
         }
     },
 
@@ -119,3 +133,11 @@ const allReviewInputsWarnings = (state: RootState) => {
     return [...sapWarnings, ...genericChartWarnings]
 }
 
+const getVersionNotes = (versions: Version[], name: string) => {
+    return versions.reduce((result: Note[], versionNote) => {
+        const note = versionNote.note || ""
+        const updated = versions && formatToISODateTime(versionNote.updated)
+
+        return result.concat({note, updated, name})
+    }, [])
+}
