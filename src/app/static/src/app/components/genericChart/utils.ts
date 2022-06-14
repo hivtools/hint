@@ -32,15 +32,15 @@ export function numeralJsToD3format(numeralJsFormat: string) {
     // We currently support only numeric, large number, and percentage formats, and will return 
     // empty string for any other formats received, for default formatting in Plotly.
 
-    if (numeralJsFormat === "0,0") {
-        return ","
-    }
-
-    const regex = /^0(\.0+)?(%)?$/; //This will always return three matches
+    const regex = /^0(\.0+)?(%)?$|^0(,0+)/; //This will always return four matches
 
     const match = numeralJsFormat.match(regex);
     if (match === null) {
         return "";
+    }
+
+    if (match[3] !== undefined) {
+        return ",";
     }
 
     const decPl = match[1] == undefined ? 0 : match[1].length - 1;
