@@ -2,7 +2,7 @@ import {Mutation, MutationTree} from 'vuex';
 import {LoadingState, LoadState} from "./load";
 import {PayloadWithType} from "../../types";
 import {
-    Error,
+    Error, ProjectRehydrateResultResponse,
     ProjectRehydrateStatusResponse
     , ProjectRehydrateSubmitResponse
 } from "../../generated";
@@ -17,7 +17,10 @@ export interface LoadMutations {
     PreparingModelOutput: LoadMutation,
     ModelOutputStatusUpdated: LoadMutation,
     ModelOutputError: LoadMutation,
-    PollingStatusStarted: LoadMutation
+    PollingStatusStarted: LoadMutation,
+    RehydrateResult: LoadMutation,
+    RehydrateResultError: LoadMutation,
+    SaveProjectName: LoadMutation
 }
 
 export const mutations: MutationTree<LoadState> & LoadMutations = {
@@ -36,6 +39,23 @@ export const mutations: MutationTree<LoadState> & LoadMutations = {
         state.loadingState = LoadingState.NotLoading;
         state.loadError = null;
     },
+    SaveProjectName(state: LoadState, action: PayloadWithType<string>) {
+        state.projectName = action.payload
+    },
+    RehydrateResult(state: LoadState, action: PayloadWithType<ProjectRehydrateResultResponse>) {
+        state.loadingState = LoadingState.NotLoading;
+        console.log(action.payload)
+        state.rehydrateResult = action.payload;
+        state.preparing = false;
+        console.log(state.rehydrateResult)
+    },
+
+    RehydrateResultError(state: LoadState, action: PayloadWithType<Error>) {
+        state.loadingState = LoadingState.NotLoading;
+        state.loadError = action.payload;
+        state.preparing = false;
+    },
+
     PreparingModelOutput(state: LoadState, action: PayloadWithType<ProjectRehydrateSubmitResponse>) {
         state.downloadId = action.payload.id;
         state.preparing = true;

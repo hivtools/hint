@@ -90,7 +90,6 @@
     "@types/plotly.js-basic-dist": "^1.54.0",
     "chart.js": "^2.9.2",
     "chartjs-plugin-error-bars": "^1.2.2",
-    "fs": "0.0.1-security",
     "jsonata": "^1.8.5",
     "plotly.js-basic-dist": "^2.4.0",
     "vue-chartjs": "^3.5.0",

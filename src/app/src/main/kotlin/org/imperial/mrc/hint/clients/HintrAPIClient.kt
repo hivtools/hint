@@ -35,11 +35,13 @@ interface HintrAPIClient
             ResponseEntity<String>
     fun getInputTimeSeriesChartData(type: String, files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
-    fun submitRehydrate(outputZip: VersionFileWithPath): ResponseEntity<String>
     fun downloadOutputSubmit(type: String, id: String, projectState: Map<String, Any?>? = null): ResponseEntity<String>
     fun downloadOutputStatus(id: String): ResponseEntity<String>
     fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
     fun getUploadMetadata(id: String): ResponseEntity<String>
+    fun submitRehydrate(outputZip: VersionFileWithPath): ResponseEntity<String>
+    fun rehydrateStatus(id: String): ResponseEntity<String>
+    fun rehydrateResult(id: String): ResponseEntity<String>
 }
 
 @Component
@@ -186,6 +188,16 @@ class HintrFuelAPIClient(
                 "path" to outputZip.path
         )
         return postJson("rehydrate/submit", objectMapper.writeValueAsString(mapOf("file" to payload)))
+    }
+
+    override fun rehydrateStatus(id: String): ResponseEntity<String>
+    {
+        return get("rehydrate/status/${id}")
+    }
+
+    override fun rehydrateResult(id: String): ResponseEntity<String>
+    {
+        return get("rehydrate/result/${id}")
     }
 
     override fun downloadOutputSubmit(type: String, id: String, projectState: Map<String, Any?>?): ResponseEntity<String>
