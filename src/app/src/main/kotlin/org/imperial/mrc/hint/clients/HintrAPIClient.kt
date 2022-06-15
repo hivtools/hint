@@ -35,7 +35,7 @@ interface HintrAPIClient
             ResponseEntity<String>
     fun getInputTimeSeriesChartData(type: String, files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
-    fun downloadOutputSubmit(type: String, id: String, projectState: Map<String, Any?>? = null): ResponseEntity<String>
+    fun downloadOutputSubmit(type: String, id: String, projectPayload: Map<String, Any?>? = null): ResponseEntity<String>
     fun downloadOutputStatus(id: String): ResponseEntity<String>
     fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
     fun getUploadMetadata(id: String): ResponseEntity<String>
@@ -177,14 +177,14 @@ class HintrFuelAPIClient(
         return get("hintr/version")
     }
 
-    override fun downloadOutputSubmit(type: String, id: String, projectState: Map<String, Any?>?): ResponseEntity<String>
+    override fun downloadOutputSubmit(type: String, id: String, projectPayload: Map<String, Any?>?): ResponseEntity<String>
     {
-        if (projectState.isNullOrEmpty())
+        if (projectPayload.isNullOrEmpty())
         {
             return postEmpty("download/submit/${type}/${id}")
         }
 
-        val json = objectMapper.writeValueAsString(projectState)
+        val json = objectMapper.writeValueAsString(projectPayload)
 
         return postJson("download/submit/${type}/${id}", json)
     }
