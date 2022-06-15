@@ -81,6 +81,11 @@ export class LocalStorageManager {
         const appStateKey = getAppStateKey(dataExplorationMode);
         const item = window.localStorage.getItem(appStateKey);
         if (item) {
+            // const language = window.localStorage.getItem("language");
+            // if (language){
+            //     const parsedItem = JSON.parse(item)
+            //     parsedItem.
+            // }
             return JSON.parse(item) as Partial<RootState>;
         } else {
             return null;

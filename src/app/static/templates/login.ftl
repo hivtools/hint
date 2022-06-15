@@ -62,12 +62,14 @@
         <#--  <button>English</button>
         <button>Français</button>
         <button>Português</button>  -->
+
         <#--  <input type="radio" class="btn-check" name="options-outlined" id="english-outlined" autocomplete="off" checked>
         <label class="btn btn-outline-primary" for="english-outlined">English</label>
 
         <input type="radio" class="btn-check" name="options-outlined" id="french-outlined" autocomplete="off">
         <label class="btn btn-outline-primary" for="french-outlined">Français</label>  -->
-        <div class="btn-group">
+        
+        <#--  <div class="btn-group">
             <input type="radio" class="btn-check" name="options" id="option1" autocomplete="off" checked />
             <label class="btn btn-secondary" for="option1">English</label>
 
@@ -76,7 +78,7 @@
 
             <input type="radio" class="btn-check" name="options" id="option3" autocomplete="off" />
             <label class="btn btn-secondary" for="option3">Português</label>
-        </div>
+        </div>  -->
     </div>
     <div id="partner-logos" class="logos mx-auto mt-5">
       <a href="https://www.fjelltopp.org"><img src="public/images/fjelltopp_logo.png" class="small-logo"></a>

@@ -155,9 +155,10 @@ export const emptyState = (): RootState => {
 
 localStorageManager.deleteState(true); //Clear state in other mode if it exists
 const existingState = localStorageManager.getState(false);
+const language = (window.localStorage.getItem("language") as Language | null) || existingState?.language || Language.en;
 
 export const storeOptions: StoreOptions<RootState> = {
-    state: {...emptyState(), ...existingState},
+    state: {...emptyState(), ...existingState, language},
     modules: {
         adr,
         genericChart,

@@ -11,6 +11,7 @@ export const mutations: MutationTree<TranslatableState> = {
 
     [LanguageMutation.ChangeLanguage](state: TranslatableState, action: PayloadWithType<Language>) {
         state.language = action.payload
+        localStorage.setItem("language", action.payload);
     },
 
     [LanguageMutation.SetUpdatingLanguage](state: TranslatableState, action: PayloadWithType<boolean>) {
