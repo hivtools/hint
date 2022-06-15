@@ -191,7 +191,7 @@ export const formatDateTime = (isoUTCString: string) => {
     return moment.utc(isoUTCString).local().format('DD/MM/YYYY HH:mm:ss');
 };
 
-export const formatToISODateTime = (isoUTCString: string) => {
+export const formatToLocalISODateTime = (isoUTCString: string) => {
     return moment.utc(isoUTCString).local().format('YYYY/MM/DD HH:mm:ss');
 };
 

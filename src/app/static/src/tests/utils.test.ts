@@ -12,7 +12,7 @@ import {
     constructUploadFile,
     constructUploadFileWithResourceName,
     getFilenameFromImportUrl,
-    updateForm, formatToISODateTime
+    updateForm, formatToLocalISODateTime
 } from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
 import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
@@ -192,7 +192,7 @@ describe("utils", () => {
 
         const expected = `2022/06/${d.getDate()} ${d.getHours()}:${d.getMinutes()}:39`;
 
-        const result = formatToISODateTime(isoUTCString);
+        const result = formatToLocalISODateTime(isoUTCString);
 
         expect(result).toStrictEqual(expected);
     });

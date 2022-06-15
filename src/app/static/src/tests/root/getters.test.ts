@@ -419,11 +419,13 @@ describe("root getters", () => {
                             versions: [
                                 {
                                     note: "Notes specific to this version",
-                                    updated: "2022-06-19T13:56:19.280Z"
+                                    updated: "2022-06-19T13:56:19.280Z",
+                                    versionNumber: "v1"
                                 },
                                 {
                                     note: "Notes from the first version",
-                                    updated: "2022-06-19T13:56:19.280Z"
+                                    updated: "2022-06-19T13:56:19.280Z",
+                                    versionNumber: "v2"
                                 }
                             ]
                         } as any
@@ -453,12 +455,12 @@ describe("root getters", () => {
                 },
                 version_notes: [
                     {
-                        name: "My project 123",
+                        name: "My project 123-v1",
                         updated: updated,
                         note: "Notes specific to this version"
                     },
                     {
-                        name: "My project 123",
+                        name: "My project 123-v2",
                         updated: updated,
                         note: "Notes from the first version"
                     }
