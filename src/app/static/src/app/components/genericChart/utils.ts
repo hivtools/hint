@@ -29,13 +29,20 @@ export function genericChartColumnsToFilters(columns: GenericChartColumn[], filt
 
 export function numeralJsToD3format(numeralJsFormat: string) {
     // Convert hintr metadata format (which are numeralJs style) to d3 format to be used by Plotly
-    // We currently support only numeric and percentage formats, and will return empty string for any other
-    // formats received, for default formatting in Plotly.
-    const regex = /^0(\.0+)?(%)?$/; //This will always return three matches
+    // We currently support only numeric, large number, and percentage formats, and will return 
+    // empty string for any other formats received, for default formatting in Plotly.
+
+    // The first part of this regex (before the |) captures formats with decimal precision and optional percentage
+    // The second part captures format with thousands separator for large integers
+    const regex = /^0(\.0+)?(%)?$|^0(,0)$/; //This will always return four matches
 
     const match = numeralJsFormat.match(regex);
     if (match === null) {
         return "";
+    }
+
+    if (match[3] !== undefined) {
+        return ",";
     }
 
     const decPl = match[1] == undefined ? 0 : match[1].length - 1;

@@ -33,6 +33,8 @@ dependencies {
     implementation "org.apache.tomcat.embed:tomcat-embed-el:${tomcatVersion}"
     implementation "org.apache.tomcat.embed:tomcat-embed-websocket:${tomcatVersion}"
     implementation "org.apache.tomcat:tomcat-annotations-api:${tomcatVersion}"
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.0.1'
+    testImplementation 'ch.qos.logback:logback-classic:1.2.11'
 
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
@@ -43,7 +45,7 @@ dependencies {
     implementation 'org.pac4j:pac4j-http:3.3.0'
     implementation 'org.pac4j:pac4j-jwt:3.7.0'
     implementation 'org.pac4j:pac4j-sql:3.3.0'
-    implementation 'org.postgresql:postgresql:9.4-1200-jdbc41'
+    implementation 'org.postgresql:postgresql:42.3.3'
     implementation 'org.mindrot:jbcrypt:0.4'
     implementation 'com.github.spullara.mustache.java:compiler:0.9.5'
     implementation "org.simplejavamail:simple-java-mail:4.4.5"

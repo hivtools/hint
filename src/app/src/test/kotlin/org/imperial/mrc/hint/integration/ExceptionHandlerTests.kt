@@ -20,9 +20,7 @@ import org.springframework.core.io.FileSystemResource
 import org.springframework.http.*
 import org.springframework.http.converter.HttpMessageNotWritableException
 import org.springframework.util.LinkedMultiValueMap
-import org.springframework.web.client.RestTemplate
 import org.springframework.web.context.request.WebRequest
-import org.springframework.web.servlet.NoHandlerFoundException
 import java.io.File
 import java.lang.reflect.UndeclaredThrowableException
 import java.util.*
@@ -158,7 +156,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     fun `does not include original message from handle exceptions`()
     {
         val sut = HintExceptionHandler(RandomErrorCodeGenerator(), ConfiguredAppProperties())
-        val result = sut.handleException(PSQLException("some message", mock()), mock())
+        val result = sut.handleException(PSQLException("some message", null), mock())
         JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
                 unexpectedErrorRegex)

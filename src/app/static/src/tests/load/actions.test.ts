@@ -329,7 +329,7 @@ describe("Load actions", () => {
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
         const dispatch = jest.fn();
         const rootGetters = {isGuest: true};
-        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": "1.1.0", stepper: {}}}));
+        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": "2.1.0", stepper: {}}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
             {savedFileContents: fileContents, projectName: null}
         );
@@ -370,7 +370,7 @@ describe("Load actions", () => {
                     }
                 ]
             },
-            "version": "1.1.0"
+            "version": "2.1.0"
         });
     });
 

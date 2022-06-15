@@ -156,6 +156,14 @@ describe("genericChartColumnsToFilters", () => {
             expect(format(result)(testValue)).toBe("98.77%");
         });
 
+        it("converts thousand separator formats as expected", () => {
+            const testValue = 100000;
+
+            let result = numeralJsToD3format("0,0");
+            expect(result).toBe(",");
+            expect(format(result)(testValue)).toBe("100,000");
+        });
+
         it("returns empty string for unsupported formats", () => {
             expect(numeralJsToD3format("0.")).toBe("");
             expect(numeralJsToD3format("00")).toBe("");
