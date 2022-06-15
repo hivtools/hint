@@ -16,11 +16,9 @@ export interface LoadMutations {
     LoadStateCleared: LoadMutation,
     PreparingModelOutput: LoadMutation,
     ModelOutputStatusUpdated: LoadMutation,
-    ModelOutputError: LoadMutation,
     PollingStatusStarted: LoadMutation,
     RehydrateResult: LoadMutation,
-    RehydrateResultError: LoadMutation,
-    SaveProjectName: LoadMutation
+    RehydrateResultError: LoadMutation
 }
 
 export const mutations: MutationTree<LoadState> & LoadMutations = {
@@ -39,23 +37,19 @@ export const mutations: MutationTree<LoadState> & LoadMutations = {
         state.loadingState = LoadingState.NotLoading;
         state.loadError = null;
     },
-    SaveProjectName(state: LoadState, action: PayloadWithType<string>) {
-        state.projectName = action.payload
-    },
     RehydrateResult(state: LoadState, action: PayloadWithType<ProjectRehydrateResultResponse>) {
-        state.loadingState = LoadingState.NotLoading;
-        console.log(action.payload)
         state.rehydrateResult = action.payload;
         state.preparing = false;
-        console.log(state.rehydrateResult)
-    },
-
-    RehydrateResultError(state: LoadState, action: PayloadWithType<Error>) {
         state.loadingState = LoadingState.NotLoading;
+    },
+    RehydrateResultError(state: LoadState, action: PayloadWithType<Error>) {
         state.loadError = action.payload;
         state.preparing = false;
+        state.loadingState = LoadingState.LoadFailed;
+        if (state.statusPollId > -1) {
+            stopPolling(state);
+        }
     },
-
     PreparingModelOutput(state: LoadState, action: PayloadWithType<ProjectRehydrateSubmitResponse>) {
         state.downloadId = action.payload.id;
         state.preparing = true;
@@ -67,14 +61,6 @@ export const mutations: MutationTree<LoadState> & LoadMutations = {
             stopPolling(state);
         }
         state.loadError = null;
-    },
-    ModelOutputError(state: LoadState, action: PayloadWithType<Error>) {
-        state.loadingState = LoadingState.NotLoading;
-        state.loadError = action.payload;
-        state.preparing = false;
-        if (state.statusPollId > -1) {
-            stopPolling(state);
-        }
     },
     PollingStatusStarted(state: LoadState, action: PayloadWithType<number>) {
         state.statusPollId = action.payload;

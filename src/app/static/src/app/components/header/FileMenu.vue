@@ -161,7 +161,7 @@
                 if (input.files && input.files.length > 0) {
                     const file = input.files[0];
                     if (this.isGuest) {
-                        this.loadAction({file, projectName: null, source: FileSource.ModelOutput});
+                        this.loadAction({file, projectName: null});
                     } else {
                         this.fileToLoad = file;
                         this.requestProjectName = true;
@@ -170,7 +170,21 @@
             },
             loadToNewProject() {
                 this.requestProjectName = false;
-                this.loadAction({file: this.fileToLoad!, projectName: this.newProjectName, source: FileSource.ModelOutput});
+                const ext = this.fileToLoad?.name.split(".")[1]
+                if (ext === "zip") {
+                    this.loadAction({
+                        file: this.fileToLoad!,
+                        projectName: this.newProjectName,
+                        source: FileSource.ModelOutput
+                    });
+                }
+
+                if (ext === "json") {
+                    this.loadAction({
+                        file: this.fileToLoad!,
+                        projectName: this.newProjectName
+                    });
+                }
             },
             cancelLoad() {
                 this.requestProjectName = false;

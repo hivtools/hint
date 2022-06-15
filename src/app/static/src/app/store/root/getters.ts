@@ -26,9 +26,10 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
     },
 
     projectState: (rootState: RootState): DownloadSubmitRequest => {
-
         const versions = rootState.projects.currentProject?.versions || []
         const name = rootState.projects.currentProject?.name || ""
+
+        console.log(rootState)
 
         return {
             state: {

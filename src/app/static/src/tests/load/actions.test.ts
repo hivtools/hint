@@ -1,9 +1,10 @@
 import {mockAxios, mockError, mockFailure, mockLoadState, mockRootState, mockSuccess} from "../mocks";
 import {actions} from "../../app/store/load/actions";
-import {LoadingState} from "../../app/store/load/load";
+import {FileSource, LoadingState} from "../../app/store/load/load";
 import {addCheckSum} from "../../app/utils";
 import {localStorageManager} from "../../app/localStorageManager";
 import {currentHintVersion} from "../../app/hintVersion";
+import {ProjectRehydrateStatusResponse} from "../../app/generated";
 
 const rootState = mockRootState();
 
@@ -20,6 +21,15 @@ describe("Load actions", () => {
         (console.log as jest.Mock).mockClear();
         (console.info as jest.Mock).mockClear();
     });
+
+    const RunningStatusResponse: ProjectRehydrateStatusResponse = {
+        id: "db0c4957aea4b32c507ac02d63930110",
+        done: true,
+        progress: ["Generating summary report"],
+        status: "COMPLETE",
+        success: true,
+        queue: 0
+    }
 
     it("load reads blob and dispatches setFiles action", (done) => {
         const dispatch = jest.fn();
@@ -388,5 +398,107 @@ describe("Load actions", () => {
 
         expect(mockSaveToLocalStorage.mock.calls[0][0]).toBe(testState);
         expect(mockLocationReload.mock.calls.length).toBe(1);
+    });
+
+    it("load reads outputZip and dispatches prepareModelOutput action", (done) => {
+        const dispatch = jest.fn();
+        actions.load({dispatch, rootState} as any,
+            {
+                file: new File([""], "testFile"),
+                projectName: "project name",
+                source: FileSource.ModelOutput
+            });
+
+        const interval = setInterval(() => {
+            if (dispatch.mock.calls.length > 0) {
+                expect(dispatch.mock.calls[0][0]).toEqual("prepareModelOutput");
+                expect(dispatch.mock.calls[0][1].projectName).toEqual("project name");
+                clearInterval(interval);
+                done();
+            }
+        });
+    });
+
+    it("can prepare modelOutput and dispatches pollModelOutput action", (done) => {
+        mockAxios.onPost("rehydrate/submit")
+            .reply(200, mockSuccess(true));
+
+        const file = new File(["TEST"], "testFile")
+        const form = new FormData()
+        form.append("file", file)
+
+        const dispatch = jest.fn();
+        const commit = jest.fn();
+        actions.prepareModelOutput({dispatch, commit, rootState} as any,
+            {
+                file: form,
+                projectName: null
+            });
+
+        const interval = setInterval(() => {
+            expect(mockAxios.history.post.length).toBe(1)
+            expect(mockAxios.history.post[0]["url"]).toBe("rehydrate/submit")
+            expect(commit.mock.calls.length).toBe(2)
+            expect(commit.mock.calls[0][0].type).toBe("SettingFiles")
+            expect(commit.mock.calls[1][0].type).toBe("PreparingModelOutput")
+            expect(commit.mock.calls[1][0].payload).toBeTruthy()
+            expect(dispatch.mock.calls.length).toBe(1)
+            expect(dispatch.mock.calls[0][0]).toEqual("pollModelOutput");
+
+            clearInterval(interval);
+            done();
+        });
+    });
+
+
+    it("can pollModelOutput status and dispatches PollingStatusStarted action", async (done) => {
+        mockAxios.onGet(`rehydrate/status/1`)
+            .reply(200, mockSuccess(RunningStatusResponse));
+
+        mockAxios.onGet(`rehydrate/result/1`)
+            .reply(200, mockSuccess("RESULT"));
+
+        const commit = jest.fn();
+        const state = mockLoadState({downloadId: "1"} as any)
+
+        actions.pollModelOutput({commit, rootState, state} as any);
+
+        setTimeout(() => {
+            expect(mockAxios.history.get.length).toBe(2)
+            expect(mockAxios.history.get[0]["url"]).toBe("rehydrate/status/1")
+            expect(mockAxios.history.get[1]["url"]).toBe("rehydrate/result/1")
+
+            expect(commit.mock.calls.length).toBe(3)
+            expect(commit.mock.calls[0][0].type).toBe("PollingStatusStarted")
+            expect(commit.mock.calls[0][0].payload).toBeGreaterThan(1)
+
+            expect(commit.mock.calls[1][0].type).toBe("ModelOutputStatusUpdated")
+            expect(commit.mock.calls[1][0].payload).toStrictEqual(RunningStatusResponse)
+
+            expect(commit.mock.calls[2][0].type).toBe("RehydrateResult")
+            expect(commit.mock.calls[2][0].payload).toBe("RESULT")
+
+            done();
+        }, 2100);
+    });
+
+    it("calls RehydrateResultError when polling errored", async (done) => {
+        mockAxios.onGet(`rehydrate/status/1`)
+            .reply(500, mockFailure("ERROR"));
+
+        const commit = jest.fn();
+
+        const state = mockLoadState({downloadId: "1"} as any)
+
+        actions.pollModelOutput({commit, rootState, state} as any);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(2)
+            expect(commit.mock.calls[0][0].type).toBe("PollingStatusStarted")
+            expect(commit.mock.calls[0][0].payload).toBeGreaterThan(1)
+            expect(commit.mock.calls[1][0].type).toBe("RehydrateResultError")
+            expect(commit.mock.calls[1][0].payload).toStrictEqual(mockError("ERROR"))
+            done();
+        },2100);
     });
 });

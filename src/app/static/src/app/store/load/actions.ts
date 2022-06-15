@@ -1,4 +1,4 @@
-import {ActionContext, ActionTree, Commit} from "vuex";
+import {ActionContext, ActionTree} from "vuex";
 import {FileSource, LoadingState, LoadState} from "./load";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
@@ -7,19 +7,11 @@ import {Dict, LocalSessionFile, VersionDetails} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
 import {currentHintVersion} from "../../hintVersion";
-import {initialStepperState, StepDescription} from "../stepper/stepper";
+import {initialStepperState} from "../stepper/stepper";
 import {ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generated";
-import {
-    mockModelCalibrateState,
-    mockModelOptionsState, mockModelOutputState,
-    mockModelRunState,
-    mockProjectsState,
-    mockRootState, mockStepperState
-} from "../../../tests/mocks";
-import {Language} from "../translations/locales";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingModelOutput" | "SaveProjectName" | "ModelOutputStatusUpdated" | "PollingStatusStarted" | "RehydrateResult"
-export type LoadErrorActionTypes = "LoadFailed" | "ModelOutputError" | "RehydrateResultError"
+export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
 
 export interface LoadActions {
     load: (store: ActionContext<LoadState, RootState>, payload: loadPayload) => void
@@ -27,7 +19,7 @@ export interface LoadActions {
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
     clearLoadState: (store: ActionContext<LoadState, RootState>) => void
-    prepareModelOutput: (store: ActionContext<LoadState, RootState>, payload: setFilesPayload) => void
+    prepareModelOutput: (store: ActionContext<LoadState, RootState>, payload: modelOutputPayload) => void
     pollModelOutput: (store: ActionContext<LoadState, RootState>) => void
 }
 
@@ -42,13 +34,20 @@ export interface setFilesPayload {
     projectName: string | null
 }
 
+export interface modelOutputPayload {
+    file: FormData,
+    projectName: string | null
+}
+
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
     async load({dispatch}, payload) {
         const {file, projectName, source} = payload;
 
         if (FileSource.ModelOutput === source) {
-            await dispatch("prepareModelOutput", {savedFileContents: file, projectName});
+            const formData = new FormData()
+            formData.append("file", file)
+            await dispatch("prepareModelOutput", {file: formData, projectName});
 
         } else {
             const reader = new FileReader();
@@ -64,9 +63,15 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         const {commit, rootState, rootGetters, dispatch} = context;
         commit({type: "SettingFiles", payload: null});
 
-        const objectContents = verifyCheckSum(savedFileContents);
+        const objectContents = verifyCheckSum(savedFileContents as string);
 
-        commitLoadFailureIfContentIsCorrupt(objectContents, commit)
+        if (!objectContents) {
+            commit({
+                type: "LoadFailed",
+                payload: {detail: "The file contents are corrupted."}
+            });
+            return;
+        }
 
         const files = objectContents.files;
         const savedState = objectContents.state;
@@ -113,19 +118,15 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     },
 
     async prepareModelOutput(context, payload) {
-        const {savedFileContents, projectName} = payload;
+        const {file} = payload;
         const {commit, dispatch} = context;
 
-        commit({type: "SaveProjectName", payload: projectName});
-        const formData = new FormData()
-
-        formData.append("file", savedFileContents)
         commit({type: "SettingFiles", payload: null});
 
         const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
             .withSuccess("PreparingModelOutput")
-            .withError("ModelOutputError")
-            .postAndReturn("rehydrate/submit", formData);
+            .withError("RehydrateResultError")
+            .postAndReturn("rehydrate/submit", file);
 
         if (response) {
             await dispatch("pollModelOutput");
@@ -143,8 +144,6 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 };
 
 const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) => {
-    const {rootGetters, dispatch, rootState} = context
-    const projectName = context.state.projectName
     const downloadId = context.state.downloadId
 
     const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
@@ -153,59 +152,7 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
         .get<ProjectRehydrateResultResponse>(`rehydrate/result/${downloadId}`);
 
     if (response && response.data) {
-        if (!rootGetters.isGuest) {
-            await (dispatch("projects/createProject", projectName, {root: true}));
-        }
-
-        const modelCalibrate = response.data.state.calibrate
-        const modelRun = response.data.state.model_fit
-        const version = response.data.state.version
-        const projects = {
-            currentProject: rootState.projects.currentProject,
-            currentVersion: rootState.projects.currentVersion
-        }
-        const files = response.data.state.datasets
-
-        const state = {
-            version: currentHintVersion,
-            baseline: {
-                selectedDataset: {},
-                selectedRelease: {}
-            },
-            surveyAndProgram: {
-                selectedDataType: null,
-                warnings: []
-            },
-            metadata: {},
-            plottingSelections: {},
-            modelCalibrate: {
-                calibrateId: modelCalibrate.id,
-                options: modelCalibrate.options,
-                ready: true
-            },
-            modelOptions: {
-                options: modelRun.options
-            },
-            modelRun: {
-                modelRunId: modelRun.id,
-                ready: true
-            },
-            projects,
-            /*
-            stepper: {
-                activeStep: 7,
-                steps: [{
-                    number: 7,
-                    textKey: "downloadResults"
-                }]
-            },
-
-             */
-            hintrVersion: version,
-            language: Language.en
-        }
-
-        await getFilesAndLoad(context, files, state);
+        console.log(response.data.state)
     }
 }
 
@@ -213,7 +160,7 @@ const getRehydrateStatus = async (context: ActionContext<LoadState, RootState>) 
     const downloadId = context.state.downloadId
     const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("ModelOutputStatusUpdated")
-        .withError("ModelOutputError")
+        .withError("RehydrateResultError")
         .get<ModelStatusResponse>(`rehydrate/status/${downloadId}`);
 
     if (response && response.data.done) {
@@ -235,12 +182,3 @@ async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, fil
         });
 }
 
-const commitLoadFailureIfContentIsCorrupt = (objectContents: string, commit: Commit) => {
-    if (!objectContents) {
-        commit({
-            type: "LoadFailed",
-            payload: {detail: "The file contents are corrupted."}
-        });
-        return;
-    }
-}
