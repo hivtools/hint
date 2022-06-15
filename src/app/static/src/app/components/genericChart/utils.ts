@@ -32,7 +32,9 @@ export function numeralJsToD3format(numeralJsFormat: string) {
     // We currently support only numeric, large number, and percentage formats, and will return 
     // empty string for any other formats received, for default formatting in Plotly.
 
-    const regex = /^0(\.0+)?(%)?$|^0(,0+)/; //This will always return four matches
+    // The first part of this regex (before the |) captures formats with decimal precision and optional percentage
+    // The second part captures format with thousands separator for large integers
+    const regex = /^0(\.0+)?(%)?$|^0(,0)$/; //This will always return four matches
 
     const match = numeralJsFormat.match(regex);
     if (match === null) {
