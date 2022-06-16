@@ -59,7 +59,11 @@
         .show {display:block;}
     </style>
     <script>
-        let language = "EN"
+        let language = window.localStorage.getItem("language") || "en"
+
+        document.addEventListener("DOMContentLoaded", function(event) { 
+            document.getElementsByClassName('dropbtn')[0].innerHTML = language.toUpperCase();
+        });
         /* When the user clicks on the button,
         toggle between hiding and showing the dropdown content */
         function toggleDropdown() {
@@ -82,7 +86,9 @@
 
         function selectLanguage(choice){
             language = choice
-            document.getElementsByClassName('dropbtn')[0].innerHTML = choice;
+            document.getElementsByClassName('dropbtn')[0].innerHTML = choice.toUpperCase();
+            localStorage.setItem("language", choice);
+            toggleDropdown()
         }
 
 
@@ -148,11 +154,11 @@
     </div>  -->
     <div class="d-flex flex-row-reverse">
         <div class="dropdown">
-            <button onclick="toggleDropdown()" class="dropbtn btn btn-secondary dropdown-toggle">EN</button>
+            <button onclick="toggleDropdown()" class="dropbtn btn btn-outline-secondary dropdown-toggle">EN</button>
             <div id="dropdownOptions" class="dropdown-content" style="right:0;">
-                <a onclick="selectLanguage('EN')" href="#">EN</a>
-                <a onclick="selectLanguage('FR')" href="#">FR</a>
-                <a onclick="selectLanguage('PT')" href="#">PT</a>
+                <a onclick="selectLanguage('en')" href="#">EN</a>
+                <a onclick="selectLanguage('fr')" href="#">FR</a>
+                <a onclick="selectLanguage('pt')" href="#">PT</a>
             </div>
         </div>
     </div>
