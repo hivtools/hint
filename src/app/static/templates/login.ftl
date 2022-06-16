@@ -6,7 +6,87 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <!-- inject:css -->
     <!-- endinject -->
+    <style type="text/css">
+
+        .topright {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        }
+        /* Dropdown Button */
+        <#--  .dropbtn {
+        background-color: #3498DB;
+        color: white;
+        padding: 16px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        }  -->
+
+        /* Dropdown button on hover & focus */
+        <#--  .dropbtn:hover, .dropbtn:focus {
+        background-color: #2980B9;
+        }  -->
+
+        /* The container <div> - needed to position the dropdown content */
+        .dropdown {
+        position: relative;
+        display: inline-block;
+        }
+
+        /* Dropdown Content (Hidden by Default) */
+        .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        }
+
+        /* Links inside the dropdown */
+        .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        }
+
+        /* Change color of dropdown links on hover */
+        .dropdown-content a:hover {background-color: #ddd}
+
+        /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+        .show {display:block;}
+    </style>
     <script>
+        let language = "EN"
+        /* When the user clicks on the button,
+        toggle between hiding and showing the dropdown content */
+        function toggleDropdown() {
+            document.getElementById("dropdownOptions").classList.toggle("show");
+        }
+
+        // Close the dropdown menu if the user clicks outside of it
+        window.onclick = function(event) {
+            if (!event.target.matches('.dropbtn')) {
+                var dropdowns = document.getElementsByClassName("dropdown-content");
+                var i;
+                for (i = 0; i < dropdowns.length; i++) {
+                    var openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        function selectLanguage(choice){
+            language = choice
+            document.getElementsByClassName('dropbtn')[0].innerHTML = choice;
+        }
+
+
+
         function validate(event) {
             const userIdInput = document.getElementById("user-id");
             userIdInput.value = userIdInput.value.trim();
@@ -24,6 +104,58 @@
     </script>
 </head>
 <body>
+    <#--  <drop-down :text="currentLanguage" :right="true" style="flex: none">
+        <a class="dropdown-item" href="#" v-on:mousedown="() => changeLanguage('en')">
+            EN
+        </a>
+        <a class="dropdown-item" href="#" v-on:mousedown="() => changeLanguage('fr')">
+            FR
+        </a>
+        <a class="dropdown-item" href="#" v-on:mousedown="() => changeLanguage('pt')">
+            PT
+        </a>
+    </drop-down>  -->
+    <#--  <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Dropdown button
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#">EN</a>
+            <a class="dropdown-item" href="#">FR</a>
+            <a class="dropdown-item" href="#">PT</a>
+        </div>
+    </div>  -->
+    <#--  <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">EN</a>
+        <a class="dropdown-item active" href="#">FR</a>
+        <a class="dropdown-item" href="#">PT</a>
+    </div>  -->
+    <#--  <div class="dropdown" style="float:right;">
+        <button class="dropbtn">Right</button>
+        <div class="dropdown-content">
+            <a href="#">Link 1</a>
+            <a href="#">Link 2</a>
+            <a href="#">Link 3</a>
+        </div>
+    </div>  -->
+    <#--  <div class="dropdown" style="float:right;">
+        <button class="btn btn-secondary dropdown-toggle" id="dropdownBtn">Right</button>
+            <div class="dropdown-menu" style="display:block">
+                <a class="dropdown-item" href="#">Link 1</a>
+                <a class="dropdown-item" href="#">Link 2</a>
+                <a class="dropdown-item" href="#">Link 3</a>
+            </div>
+    </div>  -->
+    <div class="d-flex flex-row-reverse">
+        <div class="dropdown">
+            <button onclick="toggleDropdown()" class="dropbtn btn btn-secondary dropdown-toggle">EN</button>
+            <div id="dropdownOptions" class="dropdown-content" style="right:0;">
+                <a onclick="selectLanguage('EN')" href="#">EN</a>
+                <a onclick="selectLanguage('FR')" href="#">FR</a>
+                <a onclick="selectLanguage('PT')" href="#">PT</a>
+            </div>
+        </div>
+    </div>
     <a href="https://www.unaids.org"><img src="public/images/unaids_logo.png" class="large-logo mx-auto mt-5 mb-4"/></a>
     <h1 class="text-center"><strong>${appTitle}</strong></h1>
     <div id="app" class="card login-form mx-auto mt-3">
@@ -68,7 +200,7 @@
 
         <input type="radio" class="btn-check" name="options-outlined" id="french-outlined" autocomplete="off">
         <label class="btn btn-outline-primary" for="french-outlined">Français</label>  -->
-        
+
         <#--  <div class="btn-group">
             <input type="radio" class="btn-check" name="options" id="option1" autocomplete="off" checked />
             <label class="btn btn-secondary" for="option1">English</label>
