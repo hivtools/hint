@@ -128,17 +128,12 @@ const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormDa
     }
 
     const section = modelCalibrate.optionsFormMeta.controlSections.find(section => section.controlGroups)
-
-    if (!section) {
-        return {}
-    }
-
-    return section.controlGroups
+    return section?.controlGroups
         .reduce((options: DynamicFormData, option): DynamicFormData => {
             option.controls.forEach(option => {
                 const name = option.name
                 options[name] = option.value || null
             })
             return options
-        }, {})
+        }, {}) || {}
 }
