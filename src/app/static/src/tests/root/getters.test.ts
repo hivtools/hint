@@ -470,10 +470,8 @@ describe("root getters", () => {
                             controlSections: [{
                                 label: "Test Section",
                                 description: "Just a test section",
-                                controlGroups: [{
-                                    controls: []
-                                }]
-                            }],
+                                controlGroups: []
+                            }]
                         })
                     })
                 }
