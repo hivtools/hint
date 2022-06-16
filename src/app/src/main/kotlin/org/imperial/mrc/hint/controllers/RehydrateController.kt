@@ -14,7 +14,7 @@ class RehydrateController(val apiClient: HintrAPIClient,
                           val fileManager: FileManager)
 {
     @PostMapping("/submit")
-    fun submitRehydrate(@RequestParam("file") @NotNull @Valid file: MultipartFile): ResponseEntity<String>
+    fun submitRehydrate(@RequestParam("file") file: MultipartFile): ResponseEntity<String>
     {
         val outputZip = fileManager.saveOutput(file)
         return apiClient.submitRehydrate(outputZip)
