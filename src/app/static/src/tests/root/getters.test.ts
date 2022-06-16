@@ -420,12 +420,12 @@ describe("root getters", () => {
                                 {
                                     note: "Notes specific to this version",
                                     updated: "2022-06-19T13:56:19.280Z",
-                                    versionNumber: "v1"
+                                    versionNumber: "1"
                                 },
                                 {
                                     note: "Notes from the first version",
                                     updated: "2022-06-19T13:56:19.280Z",
-                                    versionNumber: "v2"
+                                    versionNumber: "2"
                                 }
                             ]
                         } as any
