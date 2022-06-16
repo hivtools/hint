@@ -333,3 +333,12 @@ const extractErrorsRecursively = (state: any, errors: Error[]) => {
         keys.forEach(key => extractErrorsRecursively(state[key], errors));
     }
 };
+
+export const resourceTypes = {
+    pjnz: "inputs-unaids-spectrum-file",
+    pop: "inputs-unaids-population",
+    shape: "inputs-unaids-geographic",
+    survey: "inputs-unaids-survey",
+    program: "inputs-unaids-art",
+    anc: "inputs-unaids-anc"
+}

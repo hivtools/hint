@@ -1,6 +1,19 @@
-# hint 2.1.0
+
+# hint 2.3.0
+
+* Upload output zip action which calls hintr endpoint via backend
+
+# hint 2.2.0
 
 * Include project notes in output zip
+
+# hint 2.1.1
+
+* Bug: hint tries to pull resources it does not have access to
+
+# hint 2.1.0
+
+* Use commas as thousands separators for plain numbers in the input time series table
 
 # hint 2.0.0
 
