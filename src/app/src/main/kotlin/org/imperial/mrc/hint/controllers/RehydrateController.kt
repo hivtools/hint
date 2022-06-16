@@ -2,11 +2,9 @@ package org.imperial.mrc.hint.controllers
 
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.clients.HintrAPIClient
-import org.jetbrains.annotations.NotNull
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import javax.validation.Valid
 
 @RestController
 @RequestMapping("rehydrate")
