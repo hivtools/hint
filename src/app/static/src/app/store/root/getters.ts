@@ -1,9 +1,10 @@
 import {RootState} from "../../root";
 import {Getter, GetterTree} from "vuex";
-import {Error, ProjectState, VersionInfo} from "../../generated"
-import {Warning} from "../../generated";
+import {Error, ProjectState, VersionInfo, Warning} from "../../generated"
 import {Dict, StepWarnings} from "../../types";
 import {extractErrors} from "../../utils";
+import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
+import {DynamicFormData} from "@reside-ic/vue-dynamic-form";
 
 interface RootGetters {
     isGuest: Getter<RootState, RootState>
@@ -58,7 +59,7 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
                 id: rootState.modelRun.modelRunId
             },
             calibrate: {
-                options: rootState.modelCalibrate.options || {},
+                options: getCalibrateOptions(rootState.modelCalibrate) || {},
                 id: rootState.modelCalibrate.calibrateId
             },
             version: rootState.hintrVersion.hintrVersion as VersionInfo
@@ -119,3 +120,25 @@ const allReviewInputsWarnings = (state: RootState) => {
     return [...sapWarnings, ...genericChartWarnings]
 }
 
+// getCalibrateOptions extracts calibrate options from Dynamic Form, this allows
+// backward compatibility supports with for rehydrating of calibrate option
+const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormData => {
+    const section = modelCalibrate.optionsFormMeta.controlSections.find(section => section.controlGroups)
+
+    if (!section) {
+        return modelCalibrate.options
+    }
+
+    const extractedOptions = section.controlGroups
+        .reduce((options: DynamicFormData, option): DynamicFormData => {
+            option.controls.forEach(option => {
+                const name = option.name
+                if (name) {
+                    options[name] = option.value || null
+                }
+            })
+            return options
+        }, {})
+
+    return Object.keys(modelCalibrate.options).length ? modelCalibrate.options : extractedOptions
+}

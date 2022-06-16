@@ -1,3 +1,7 @@
+# hint 2.1.2
+
+* Bug: Fix bug backwards compatibility calibrate options
+
 # hint 2.1.1
 
 * Bug: hint tries to pull resources it does not have access to

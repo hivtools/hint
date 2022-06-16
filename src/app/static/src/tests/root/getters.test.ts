@@ -9,8 +9,8 @@ import {
     mockLoadState,
     mockMetadataState,
     mockModelCalibrateState,
-    mockModelOptionsState, mockModelOutputState,
-    mockModelRunState, mockProjectOutputState, mockProjectsState,
+    mockModelOptionsState,
+    mockModelRunState, mockOptionsFormMeta, mockProjectOutputState, mockProjectsState,
     mockRootState, mockSurveyAndProgramState
 } from "../mocks";
 import {RootState} from "../../app/root";
@@ -18,6 +18,7 @@ import {initialDownloadResults} from "../../app/store/downloadResults/downloadRe
 import {Warning} from "../../app/generated";
 import {extractErrors} from "../../app/utils";
 import {expectArraysEqual} from "../testHelpers";
+import {DynamicControlType} from "@reside-ic/vue-dynamic-form";
 
 describe("root getters", () => {
 
@@ -423,4 +424,66 @@ describe("root getters", () => {
         expect(result).toEqual(mockProjectOutputState())
     })
 
+    it(`can extract calibrate option from dynamic form meta`, () => {
+        const projectStates = () => {
+            return mockRootState({
+                baseline: mockBaselineState({
+                    pjnz: {filename: "pjnz", hash: "pjnzHash"} as any,
+                    population: {filename: "population", hash: "populationHash"} as any,
+                    shape: {filename: "shape", hash: "shapeHash"} as any
+                }),
+                surveyAndProgram: mockSurveyAndProgramState({
+                    warnings: surveyAndProgramWarnings,
+                    anc: {filename: "anc", hash: "ancHash"} as any,
+                    program: {filename: "program", hash: "programHash"} as any,
+                    survey: {filename: "survey", hash: "surveyHash"} as any
+                }),
+                modelOptions: mockModelOptionsState({options: {"test": "options"}}),
+                modelRun: mockModelRunState({modelRunId: "modelRunId"}),
+                modelCalibrate: mockModelCalibrateState({
+                    calibrateId: "calibrateId",
+                    options: {},
+                    optionsFormMeta: mockOptionsFormMeta({
+                        controlSections: [{
+                            label: "Test Section",
+                            description: "Just a test section",
+                            controlGroups: [{
+                                controls: [
+                                    {
+                                        name: "TestValue",
+                                        type: "number" as DynamicControlType,
+                                        required: false,
+                                        min: 0,
+                                        max: 10,
+                                        value: 5
+                                    },
+                                    {
+                                        name: "TestValue2",
+                                        type: "number" as DynamicControlType,
+                                        required: false,
+                                        min: 0,
+                                        max: 10,
+                                        value: 6
+                                    }
+                                ]
+                            }]
+                        }],
+                    })
+                }),
+                hintrVersion: mockHintrVersionState({hintrVersion: {hintr: "1.0.0", naomi: "2.0.0", rrq: "1.1.1"}})
+            })
+        }
+        const rootState = projectStates()
+
+        const result = getters.projectState(rootState, null, projectStates() as any, null)
+        expect(result).toEqual(mockProjectOutputState({
+            calibrate: {
+                "id": "calibrateId",
+                "options": {
+                    "TestValue": 5,
+                    "TestValue2": 6
+                }
+            }
+        }))
+    })
 })

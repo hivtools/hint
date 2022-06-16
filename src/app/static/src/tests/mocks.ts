@@ -45,6 +45,7 @@ import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrU
 import {DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
 import {GenericChartState, initialGenericChartState} from "../app/store/genericChart/genericChart";
 import {DataExplorationState, initialDataExplorationState} from "../app/store/dataExploration/dataExploration";
+import {DynamicControlType, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -478,3 +479,23 @@ export const mockProjectOutputState = (props: Partial<ProjectState> = {}) => {
         ...props
     }
 }
+
+export const mockOptionsFormMeta = (props: Partial<DynamicFormMeta> = {}) => {
+    return {
+        controlSections: [{
+            label: "Test Section",
+            description: "Just a test section",
+            controlGroups: [{
+                controls: [{
+                    name: "TestValue",
+                    type: "number" as DynamicControlType,
+                    required: false,
+                    min: 0,
+                    max: 10,
+                    value: 5
+                }]
+            }]
+        }],
+        ...props
+    }
+};
