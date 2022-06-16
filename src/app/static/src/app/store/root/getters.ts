@@ -123,22 +123,22 @@ const allReviewInputsWarnings = (state: RootState) => {
 // getCalibrateOptions extracts calibrate options from Dynamic Form, this allows
 // backward compatibility supports with for rehydrating of calibrate option
 const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormData => {
-    const section = modelCalibrate.optionsFormMeta.controlSections.find(section => section.controlGroups)
-
-    if (!section) {
+    if (Object.keys(modelCalibrate.options).length) {
         return modelCalibrate.options
     }
 
-    const extractedOptions = section.controlGroups
+    const section = modelCalibrate.optionsFormMeta.controlSections.find(section => section.controlGroups)
+
+    if (!section) {
+        return {}
+    }
+
+    return section.controlGroups
         .reduce((options: DynamicFormData, option): DynamicFormData => {
             option.controls.forEach(option => {
                 const name = option.name
-                if (name) {
-                    options[name] = option.value || null
-                }
+                options[name] = option.value || null
             })
             return options
         }, {})
-
-    return Object.keys(modelCalibrate.options).length ? modelCalibrate.options : extractedOptions
 }
