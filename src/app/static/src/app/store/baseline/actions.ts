@@ -5,7 +5,7 @@ import {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineRespons
 import {BaselineMutation} from "./mutations";
 import qs from "qs";
 import {findResource, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
-import {DatasetResourceSet} from "../../types";
+import { DatasetResourceSet, DatasetResource, ADRSchemas } from "../../types";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 import {initialChorplethSelections} from "../plottingSelections/plottingSelections";
 
@@ -98,7 +98,7 @@ async function uploadOrImportShape(context: ActionContext<BaselineState, DataExp
 export const actions: ActionTree<BaselineState, DataExplorationState> & BaselineActions = {
 
     async refreshDatasetMetadata(context) {
-        const {commit, state, rootState} = context
+        const { commit, state, rootState, rootGetters } = context
         if (state.selectedDataset) {
             let url = `/adr/datasets/${state.selectedDataset.id}`;
             if (state.selectedDataset.release) {
@@ -112,15 +112,22 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
                 .then((response) => {
                     if (response) {
                         const metadata = response.data;
-                        const pjnz = findResource(metadata, schemas.pjnz);
-                        const pop = findResource(metadata, schemas.population);
-                        const shape = findResource(metadata, schemas.shape);
-                        const survey = findResource(metadata, schemas.survey);
-                        const program = findResource(metadata, schemas.programme);
-                        const anc = findResource(metadata, schemas.anc);
+                        const avaliableResources = rootGetters ? rootGetters["baseline/selectedDatasetAvailableResources"] : {}
+                        const exceptions = { // where DatasetResource keys do not match ADRSchemas keys
+                            pop: "population",
+                            program: "programme"
+                        }
+                        const resources: { [k in keyof DatasetResourceSet]?: DatasetResource | null } = {}
+
+                        Object.entries(avaliableResources).forEach(([key, value]) => {
+                            // If an available resource has a value, find the resource (using the alternate schema key where needed)
+                            // and add it to the committed object under the original key
+                            const schemaKey = key in exceptions ? exceptions[key as "pop" || "program"] : key
+                            resources[key as keyof typeof resources] = value ? findResource(metadata, schemas[schemaKey as keyof ADRSchemas]) : null
+                        })
 
                         commit(BaselineMutation.UpdateDatasetResources,
-                            {pjnz, pop, shape, survey, program, anc} as DatasetResourceSet)
+                            { ...resources } as DatasetResourceSet)
                     }
                 });
         }
