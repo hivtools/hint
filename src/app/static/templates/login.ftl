@@ -14,19 +14,19 @@
         right: 0px;
         }
         /* Dropdown Button */
-        <#--  .dropbtn {
+        /*  .dropbtn {
         background-color: #3498DB;
         color: white;
         padding: 16px;
         font-size: 16px;
         border: none;
         cursor: pointer;
-        }  -->
+        }   */
 
         /* Dropdown button on hover & focus */
-        <#--  .dropbtn:hover, .dropbtn:focus {
+        /*  .dropbtn:hover, .dropbtn:focus {
         background-color: #2980B9;
-        }  -->
+        }   */
 
         /* The container <div> - needed to position the dropdown content */
         .dropdown {
@@ -59,10 +59,63 @@
         .show {display:block;}
     </style>
     <script>
+        const translations = {
+            dropbtn: {
+                en: "EN",
+                fr: "FR",
+                pt: "PT"
+            },
+            username: {
+                en: "Username (email address)",
+                fr: "Nom d'utilisateur (adresse e-mail)",
+                pt: "Nome de utilizador (endereço de email)"
+            },
+            password: {
+                en: "Password",
+                fr: "Mot de passe",
+                pt: "Palavra-passe"
+            },
+            forgottenPassword: {
+                en: "Forgotten your password?",
+                fr: "Vous avez oublié votre mot de passe ?",
+                pt: "Esqueceu-se da sua palavra-passe?"
+            },
+            logIn: {
+                en: "Log In",
+                fr: "Ouvrir une session",
+                pt: "Iniciar Sessão"
+            },
+            noAccount: {
+                en: "Don't have an account?",
+                fr: "Vous n'avez pas de compte ?",
+                pt: "Não tem uma conta?"
+            },
+            requestAccount: {
+                en: "Request an account",
+                fr: "Demander un compte",
+                pt: "Solicite uma conta"
+            },
+            or: {
+                en: "OR",
+                fr: "OU",
+                pt: "OU"
+            },
+            continueGuest: {
+                en: "Continue as guest",
+                fr: "Continuer en tant qu'invité",
+                pt: "Continuar como convidado"
+            },
+        }
         let language = window.localStorage.getItem("language") || "en"
 
+        function translateAll(){
+            for (const [key, value] of Object.entries(translations)) {
+                document.getElementById(key).innerHTML = value[language]
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", function(event) { 
-            document.getElementsByClassName('dropbtn')[0].innerHTML = language.toUpperCase();
+            translateAll()
         });
         /* When the user clicks on the button,
         toggle between hiding and showing the dropdown content */
@@ -86,8 +139,9 @@
 
         function selectLanguage(choice){
             language = choice
-            document.getElementsByClassName('dropbtn')[0].innerHTML = choice.toUpperCase();
+            // document.getElementsByClassName('dropbtn')[0].innerHTML = choice.toUpperCase();
             localStorage.setItem("language", choice);
+            translateAll()
             toggleDropdown()
         }
 
@@ -154,7 +208,7 @@
     </div>  -->
     <div class="d-flex flex-row-reverse">
         <div class="dropdown">
-            <button onclick="toggleDropdown()" class="dropbtn btn btn-outline-secondary dropdown-toggle">EN</button>
+            <button onclick="toggleDropdown()" id="dropbtn" class="dropbtn btn btn-outline-secondary dropdown-toggle">EN</button>
             <div id="dropdownOptions" class="dropdown-content" style="right:0;">
                 <a onclick="selectLanguage('en')" href="#">EN</a>
                 <a onclick="selectLanguage('fr')" href="#">FR</a>
@@ -168,33 +222,35 @@
         <div class="card-body">
             <form id="login-form" method="post" action="/callback" class="needs-validation" novalidate onsubmit="validate(event);">
                 <div class="form-group">
-                    <label for="user-id">Username (email address)</label>
+                    <label for="user-id" id="username">Username (email address)</label>
                     <input type="text" size="20" class="form-control" name="username" id="user-id" value="${username}" required>
                     <div id="userid-feedback" class="invalid-feedback">Please enter your username.</div>
                 </div>
                 <div class="form-group">
-                    <label for="pw-id">Password</label>
+                    <label for="pw-id" id="password">Password</label>
                     <input type="password" size="20" class="form-control" name="password" id="pw-id" required>
                     <div id="pw-feedback" class="invalid-feedback">Please enter your password.</div>
                     <div id="forgot-password">
-                        <a href="/password/forgot-password/">Forgotten your password?</a>
+                        <a href="/password/forgot-password/" id="forgottenPassword">Forgotten your password?</a>
                     </div>
                 </div>
                 <div class="text-center mt-2">
-                    <input class="btn btn-red" type="submit" value="Log In">
+                    <#--  <input class="btn btn-red" id="logIn" type="submit" value="Log In">  -->
+                    <button class="btn btn-red" id="logIn" type="submit">Log In</button>
                 </div>
             </form>
             <#if error != "">
                 <div id="error" class="alert alert-danger mt-3">${error}</div>
             </#if>
             <div id="register-an-account" class="text-center mt-4">
-                Don't have an account? <br><a href="https://forms.office.com/r/7S9EMigGr4" target="_blank">Request an account</a>
+                <div id="noAccount">Don't have an account?</div>
+                <a href="https://forms.office.com/r/7S9EMigGr4" target="_blank" id="requestAccount">Request an account</a>
             </div>
         </div>
     </div>
     <div id="continue-as-guest" class="text-center mt-3">
-        <div class="mb-3">OR</div>
-        <a class="btn btn-red" onclick="continueAsGuest()" type="submit" href="${continueTo}">Continue as guest</a>
+        <div class="mb-3" id="or">OR</div>
+        <a class="btn btn-red" onclick="continueAsGuest()" type="submit" href="${continueTo}" id="continueGuest">Continue as guest</a>
     </div>
     <div>
         <#--  <button>English</button>
