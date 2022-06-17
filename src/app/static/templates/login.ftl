@@ -7,7 +7,6 @@
     <!-- inject:css -->
     <!-- endinject -->
     <style type="text/css">
-    
         .dropdown {
         position: relative;
         display: inline-block;
@@ -129,7 +128,9 @@
         }
 
         document.addEventListener("DOMContentLoaded", function(event) { 
-            translateAll()
+            if (language !== "en"){
+                translateAll()
+            }
         });
     </script>
 </head>
