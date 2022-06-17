@@ -467,11 +467,7 @@ describe("root getters", () => {
                         calibrateId: "calibrateId",
                         options: {},
                         optionsFormMeta: mockOptionsFormMeta({
-                            controlSections: [{
-                                label: "Test Section",
-                                description: "Just a test section",
-                                controlGroups: []
-                            }]
+                            controlSections: []
                         })
                     })
                 }
