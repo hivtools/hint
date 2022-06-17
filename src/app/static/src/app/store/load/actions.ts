@@ -89,9 +89,9 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     },
 
     async updateStoreState({commit, dispatch, state}, savedState) {
-        //File hashes have now been set for session in backend so we save the state from the file we're loading into local
+        //File hashes have now been set for session in backend, so we save the state from the file we're loading into local
         //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
-        //NB load state is not included in the saved state so we will default back to NotLoading on page reload.
+        //NB load state is not included in the saved state, so we will default back to NotLoading on page reload.
 
         // Backwards compatibility fix: projects which calibrated before bug fix in mrc-3126 have empty calibrate options
         const {modelCalibrate} = savedState
