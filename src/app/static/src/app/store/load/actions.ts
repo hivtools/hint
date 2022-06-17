@@ -134,7 +134,7 @@ const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormDa
             options[option.name] = option.value || null
         })
         return options
-    }, {}) || {}
+    }, {})
 }
 
 const flatMapControlSection = (sections: DynamicControlSection[]) => {
