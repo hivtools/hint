@@ -95,7 +95,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
         // Backwards compatibility fix: projects which calibrated before bug fix in mrc-3126 have empty calibrate options
         const {modelCalibrate} = savedState
-        if (modelCalibrate && Object.keys(modelCalibrate.options).length === 0 && modelCalibrate.result) {
+        if (modelCalibrate?.result && Object.keys(modelCalibrate.options).length === 0) {
             savedState = {
                 ...savedState,
                 modelCalibrate: {...modelCalibrate, options: getCalibrateOptions(modelCalibrate)}
