@@ -92,7 +92,6 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         //File hashes have now been set for session in backend so we save the state from the file we're loading into local
         //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
         //NB load state is not included in the saved state so we will default back to NotLoading on page reload.
-        //let states: Partial<RootState> = {}
 
         const {modelCalibrate} = savedState
         if (modelCalibrate && Object.keys(modelCalibrate.options).length === 0) {
@@ -104,7 +103,6 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
         localStorageManager.savePartialState(savedState, false);
         location.reload();
-
     },
 
     async clearLoadState({commit}) {
