@@ -1,5 +1,5 @@
 import {
-    mockAxios,
+    mockAxios, mockCalibrateResultResponse,
     mockError,
     mockFailure,
     mockLoadState, mockModelCalibrateState,
@@ -410,6 +410,7 @@ describe("Load actions", () => {
 
         const testState = mockRootState({
             modelCalibrate: mockModelCalibrateState({
+                result: mockCalibrateResultResponse(),
                 optionsFormMeta: mockOptionsFormMeta({
                     controlSections: [{
                         label: "Test Section",
@@ -443,6 +444,52 @@ describe("Load actions", () => {
 
         const root = mockSaveToLocalStorage.mock.calls[0][0] as RootState
         expect(root.modelCalibrate.options).toStrictEqual({"TestValue": 5, "TestValue2": 6});
+        expect(mockLocationReload.mock.calls.length).toBe(1);
+    });
+
+    it("does not extracts calibrate options from dynamicFormMeta if model has not been calibrated", async () => {
+        const mockSaveToLocalStorage = jest.fn();
+        localStorageManager.savePartialState = mockSaveToLocalStorage;
+
+        const mockLocationReload = jest.fn();
+        delete window.location;
+        window.location = {reload: mockLocationReload} as any;
+
+        const testState = mockRootState({
+            modelCalibrate: mockModelCalibrateState({
+                optionsFormMeta: mockOptionsFormMeta({
+                    controlSections: [{
+                        label: "Test Section",
+                        description: "Just a test section",
+                        controlGroups: [{
+                            controls: [
+                                {
+                                    name: "TestValue",
+                                    type: "number" as DynamicControlType,
+                                    required: false,
+                                    min: 0,
+                                    max: 10,
+                                    value: 5
+                                },
+                                {
+                                    name: "TestValue2",
+                                    type: "number" as DynamicControlType,
+                                    required: false,
+                                    min: 0,
+                                    max: 10,
+                                    value: 6
+                                }
+                            ]
+                        }]
+                    }]
+                })
+            })
+        });
+
+        await actions.updateStoreState({rootState} as any, testState);
+
+        const root = mockSaveToLocalStorage.mock.calls[0][0] as RootState
+        expect(root.modelCalibrate.options).toStrictEqual({});
         expect(mockLocationReload.mock.calls.length).toBe(1);
     });
 
