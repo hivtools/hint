@@ -1,9 +1,19 @@
-import {mockAxios, mockError, mockFailure, mockLoadState, mockRootState, mockSuccess} from "../mocks";
+import {
+    mockAxios,
+    mockError,
+    mockFailure,
+    mockLoadState, mockModelCalibrateState,
+    mockOptionsFormMeta,
+    mockRootState,
+    mockSuccess
+} from "../mocks";
 import {actions} from "../../app/store/load/actions";
 import {LoadingState} from "../../app/store/load/load";
 import {addCheckSum} from "../../app/utils";
 import {localStorageManager} from "../../app/localStorageManager";
 import {currentHintVersion} from "../../app/hintVersion";
+import {DynamicControlType} from "@reside-ic/vue-dynamic-form";
+import {RootState} from "../../app/root";
 
 const rootState = mockRootState();
 
@@ -386,7 +396,76 @@ describe("Load actions", () => {
         const testState = mockRootState();
         await actions.updateStoreState({rootState} as any, testState);
 
-        expect(mockSaveToLocalStorage.mock.calls[0][0]).toBe(testState);
+        expect(mockSaveToLocalStorage.mock.calls[0][0]).toStrictEqual(testState);
+        expect(mockLocationReload.mock.calls.length).toBe(1);
+    });
+
+    it("extracts calibrate options from dynamicFormMeta and saves and loads file state", async () => {
+        const mockSaveToLocalStorage = jest.fn();
+        localStorageManager.savePartialState = mockSaveToLocalStorage;
+
+        const mockLocationReload = jest.fn();
+        delete window.location;
+        window.location = {reload: mockLocationReload} as any;
+
+        const testState = mockRootState({
+            modelCalibrate: mockModelCalibrateState({
+                optionsFormMeta: mockOptionsFormMeta({
+                    controlSections: [{
+                        label: "Test Section",
+                        description: "Just a test section",
+                        controlGroups: [{
+                            controls: [
+                                {
+                                    name: "TestValue",
+                                    type: "number" as DynamicControlType,
+                                    required: false,
+                                    min: 0,
+                                    max: 10,
+                                    value: 5
+                                },
+                                {
+                                    name: "TestValue2",
+                                    type: "number" as DynamicControlType,
+                                    required: false,
+                                    min: 0,
+                                    max: 10,
+                                    value: 6
+                                }
+                            ]
+                        }]
+                    }]
+                })
+            })
+        });
+
+        await actions.updateStoreState({rootState} as any, testState);
+
+        const root = mockSaveToLocalStorage.mock.calls[0][0] as RootState
+        expect(root.modelCalibrate.options).toStrictEqual({"TestValue": 5, "TestValue2": 6});
+        expect(mockLocationReload.mock.calls.length).toBe(1);
+    });
+
+    it("calibrate options returns empty object if no options to extract from dynamic form meta", async () => {
+        const mockSaveToLocalStorage = jest.fn();
+        localStorageManager.savePartialState = mockSaveToLocalStorage;
+
+        const mockLocationReload = jest.fn();
+        delete window.location;
+        window.location = {reload: mockLocationReload} as any;
+
+        const testState = mockRootState({
+            modelCalibrate: mockModelCalibrateState({
+                optionsFormMeta: mockOptionsFormMeta({
+                    controlSections: []
+                })
+            })
+        });
+
+        await actions.updateStoreState({rootState} as any, testState);
+
+        const root = mockSaveToLocalStorage.mock.calls[0][0] as RootState
+        expect(root.modelCalibrate.options).toStrictEqual({});
         expect(mockLocationReload.mock.calls.length).toBe(1);
     });
 });

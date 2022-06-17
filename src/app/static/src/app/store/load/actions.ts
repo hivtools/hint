@@ -8,6 +8,8 @@ import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
 import {currentHintVersion} from "../../hintVersion";
 import {initialStepperState} from "../stepper/stepper";
+import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
+import {DynamicFormData} from "@reside-ic/vue-dynamic-form";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError"
 export type LoadErrorActionTypes = "LoadFailed"
@@ -90,6 +92,16 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         //File hashes have now been set for session in backend so we save the state from the file we're loading into local
         //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
         //NB load state is not included in the saved state so we will default back to NotLoading on page reload.
+        //let states: Partial<RootState> = {}
+
+        const {modelCalibrate} = savedState
+        if (modelCalibrate && Object.keys(modelCalibrate.options).length === 0) {
+            savedState = {
+                ...savedState,
+                modelCalibrate: {...modelCalibrate, options: getCalibrateOptions(modelCalibrate)}
+            }
+        }
+
         localStorageManager.savePartialState(savedState, false);
         location.reload();
 
@@ -112,4 +124,18 @@ async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, fil
                 dispatch("updateStoreState", savedState);
             }
         });
+}
+
+// getCalibrateOptions extracts calibrate options from Dynamic Form, this allows
+// backward compatibility supports for calibrate option bug
+const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormData => {
+    const section = modelCalibrate.optionsFormMeta.controlSections.find(section => section.controlGroups)
+    return section?.controlGroups
+        .reduce((options: DynamicFormData, option): DynamicFormData => {
+            option.controls.forEach(option => {
+                const name = option.name
+                options[name] = option.value || null
+            })
+            return options
+        }, {}) || {}
 }

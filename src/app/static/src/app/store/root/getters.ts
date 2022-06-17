@@ -59,7 +59,7 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
                 id: rootState.modelRun.modelRunId
             },
             calibrate: {
-                options: getCalibrateOptions(rootState.modelCalibrate) || {},
+                options: rootState.modelCalibrate.options || {},
                 id: rootState.modelCalibrate.calibrateId
             },
             version: rootState.hintrVersion.hintrVersion as VersionInfo
@@ -120,20 +120,3 @@ const allReviewInputsWarnings = (state: RootState) => {
     return [...sapWarnings, ...genericChartWarnings]
 }
 
-// getCalibrateOptions extracts calibrate options from Dynamic Form, this allows
-// backward compatibility supports with for rehydrating of calibrate option
-const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormData => {
-    if (Object.keys(modelCalibrate.options).length) {
-        return modelCalibrate.options
-    }
-
-    const section = modelCalibrate.optionsFormMeta.controlSections.find(section => section.controlGroups)
-    return section?.controlGroups
-        .reduce((options: DynamicFormData, option): DynamicFormData => {
-            option.controls.forEach(option => {
-                const name = option.name
-                options[name] = option.value || null
-            })
-            return options
-        }, {}) || {}
-}

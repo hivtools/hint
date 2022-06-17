@@ -10,7 +10,7 @@ import {
     mockMetadataState,
     mockModelCalibrateState,
     mockModelOptionsState,
-    mockModelRunState, mockOptionsFormMeta, mockProjectOutputState, mockProjectsState,
+    mockModelRunState, mockProjectOutputState, mockProjectsState,
     mockRootState, mockSurveyAndProgramState
 } from "../mocks";
 import {RootState} from "../../app/root";
@@ -18,7 +18,6 @@ import {initialDownloadResults} from "../../app/store/downloadResults/downloadRe
 import {Warning} from "../../app/generated";
 import {extractErrors} from "../../app/utils";
 import {expectArraysEqual} from "../testHelpers";
-import {DynamicControlType} from "@reside-ic/vue-dynamic-form";
 
 describe("root getters", () => {
 
@@ -406,81 +405,6 @@ describe("root getters", () => {
 
         const result = getters.projectState(rootState, null, projectStates() as any, null)
         expect(result).toEqual(mockProjectOutputState())
-    })
-
-    it(`can extract calibrate option from dynamic form meta`, () => {
-        const projectStates = () => {
-            return mockRootState(projectStateTestData(
-                {
-                    modelCalibrate: mockModelCalibrateState({
-                        calibrateId: "calibrateId",
-                        options: {},
-                        optionsFormMeta: mockOptionsFormMeta({
-                            controlSections: [{
-                                label: "Test Section",
-                                description: "Just a test section",
-                                controlGroups: [{
-                                    controls: [
-                                        {
-                                            name: "TestValue",
-                                            type: "number" as DynamicControlType,
-                                            required: false,
-                                            min: 0,
-                                            max: 10,
-                                            value: 5
-                                        },
-                                        {
-                                            name: "TestValue2",
-                                            type: "number" as DynamicControlType,
-                                            required: false,
-                                            min: 0,
-                                            max: 10,
-                                            value: 6
-                                        }
-                                    ]
-                                }]
-                            }],
-                        })
-                    })
-                }
-            ))
-        }
-        const rootState = projectStates()
-
-        const result = getters.projectState(rootState, null, projectStates() as any, null)
-        expect(result).toEqual(mockProjectOutputState({
-            calibrate: {
-                "id": "calibrateId",
-                "options": {
-                    "TestValue": 5,
-                    "TestValue2": 6
-                }
-            }
-        }))
-    })
-
-    it(`returns empty object if there are no options to extract from dynamic form meta`, () => {
-        const projectStates = () => {
-            return mockRootState(projectStateTestData(
-                {
-                    modelCalibrate: mockModelCalibrateState({
-                        calibrateId: "calibrateId",
-                        options: {},
-                        optionsFormMeta: mockOptionsFormMeta({
-                            controlSections: []
-                        })
-                    })
-                }
-            ))
-        }
-        const rootState = projectStates()
-
-        const result = getters.projectState(rootState, null, projectStates() as any, null)
-
-        expect(result).toEqual(mockProjectOutputState({
-                calibrate: {"id": "calibrateId", "options": {}}
-            })
-        )
     })
 })
 
