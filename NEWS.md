@@ -1,4 +1,3 @@
-
 # hint 2.3.0
 
 * Upload output zip action which calls hintr endpoint via backend

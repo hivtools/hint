@@ -76,12 +76,13 @@ class DownloadTests : SecureIntegrationTests()
                 "name" to "projectName"
         )
 
-        val state = mapOf("state" to mapOf(
-                "datasets" to datasets,
-                "model_fit" to mapOf("id" to "", "options" to mapOf("" to "")),
-                "calibrate" to mapOf("id" to "", "options" to mapOf("" to "")),
-                "version" to mapOf("hintr" to "1", "naomi" to "1", "rrq" to "1")
-        ),
+        val state = mapOf(
+                "state" to mapOf(
+                        "datasets" to datasets,
+                        "model_fit" to mapOf("id" to "", "options" to mapOf("" to "")),
+                        "calibrate" to mapOf("id" to "", "options" to mapOf("" to "")),
+                        "version" to mapOf("hintr" to "1", "naomi" to "1", "rrq" to "1")
+                ),
                 "notes" to mapOf(
                         "project_notes" to note,
                         "version_notes" to listOf(note, note)

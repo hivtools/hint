@@ -29,8 +29,6 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
         const versions = rootState.projects.currentProject?.versions || []
         const name = rootState.projects.currentProject?.name || ""
 
-        console.log(rootState)
-
         return {
             state: {
                 datasets: {
@@ -139,6 +137,6 @@ const getVersionNotes = (versions: Version[], projectName: string) => {
         const note = versionNote.note || ""
         const updated = versions && formatToLocalISODateTime(versionNote.updated)
 
-        return result.concat({note, updated, name: `${projectName}-${versionNote.versionNumber}`})
+        return result.concat({note, updated, name: `${projectName}-v${versionNote.versionNumber}`})
     }, [])
 }

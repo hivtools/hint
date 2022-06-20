@@ -79,7 +79,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
 
         //Ensure we have saved the current version
         if (state.currentVersion) {
-            await immediateUploadVersionState(context);
+            immediateUploadVersionState(context);
         }
 
         commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
