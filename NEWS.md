@@ -1,3 +1,7 @@
+# hint 2.2.0
+
+* Include project notes in output zip
+
 # hint 2.1.1
 
 * Bug: hint tries to pull resources it does not have access to

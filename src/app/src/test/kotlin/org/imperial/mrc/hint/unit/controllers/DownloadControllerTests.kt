@@ -15,7 +15,7 @@ class DownloadControllerTests
     @Test
     fun `submit spectrum download`()
     {
-        val json = mapOf("project" to "state")
+        val json = mapOf("state" to mapOf("test" to "test"))
         val mockResponse = mock<ResponseEntity<String>>()
         val mockAPIClient = mock<HintrAPIClient> {
             on { downloadOutputSubmit("spectrum", "id1", json) } doReturn mockResponse
