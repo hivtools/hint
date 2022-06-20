@@ -1,3 +1,7 @@
+# hint 2.2.1
+
+* Bug: Fix bug backwards compatibility calibrate options
+
 # hint 2.2.0
 
 * Include project notes in output zip

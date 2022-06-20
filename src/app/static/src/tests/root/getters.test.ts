@@ -399,18 +399,7 @@ describe("root getters", () => {
 
     it(`can get serialized project states`, () => {
         const projectStates = () => {
-            return mockRootState({
-                baseline: mockBaselineState({
-                    pjnz: {filename: "pjnz", hash: "pjnzHash"} as any,
-                    population: {filename: "population", hash: "populationHash"} as any,
-                    shape: {filename: "shape", hash: "shapeHash"} as any
-                }),
-                surveyAndProgram: mockSurveyAndProgramState({
-                    warnings: surveyAndProgramWarnings,
-                    anc: {filename: "anc", hash: "ancHash"} as any,
-                    program: {filename: "program", hash: "programHash"} as any,
-                    survey: {filename: "survey", hash: "surveyHash"} as any
-                }),
+            return mockRootState(projectStateTestData({
                 projects: mockProjectsState({
                     currentProject:
                         {
@@ -429,13 +418,10 @@ describe("root getters", () => {
                                 }
                             ]
                         } as any
-                }),
-                modelOptions: mockModelOptionsState({options: {"test": "options"}}),
-                modelRun: mockModelRunState({modelRunId: "modelRunId"}),
-                modelCalibrate: mockModelCalibrateState({calibrateId: "calibrateId", options: {"test": "options"}}),
-                hintrVersion: mockHintrVersionState({hintrVersion: {hintr: "1.0.0", naomi: "2.0.0", rrq: "1.1.1"}})
-            })
+                })
+            }))
         }
+
         const rootState = projectStates()
 
         const result = getters.projectState(rootState, null, projectStates() as any, null)
@@ -468,5 +454,28 @@ describe("root getters", () => {
             } as any
         }))
     })
-
 })
+
+const projectStateTestData = (props: Partial<any> = {}) => {
+    const surveyAndProgramWarnings: Warning[] = [
+        {text: "survey and program test", locations: ["review_inputs"]}
+    ]
+    return {
+        baseline: mockBaselineState({
+            pjnz: {filename: "pjnz", hash: "pjnzHash"} as any,
+            population: {filename: "population", hash: "populationHash"} as any,
+            shape: {filename: "shape", hash: "shapeHash"} as any
+        }),
+        surveyAndProgram: mockSurveyAndProgramState({
+            warnings: surveyAndProgramWarnings,
+            anc: {filename: "anc", hash: "ancHash"} as any,
+            program: {filename: "program", hash: "programHash"} as any,
+            survey: {filename: "survey", hash: "surveyHash"} as any
+        }),
+        modelOptions: mockModelOptionsState({options: {"test": "options"}}),
+        modelRun: mockModelRunState({modelRunId: "modelRunId"}),
+        modelCalibrate: mockModelCalibrateState({calibrateId: "calibrateId", options: {"test": "options"}}),
+        hintrVersion: mockHintrVersionState({hintrVersion: {hintr: "1.0.0", naomi: "2.0.0", rrq: "1.1.1"}}),
+        ...props
+    }
+}
