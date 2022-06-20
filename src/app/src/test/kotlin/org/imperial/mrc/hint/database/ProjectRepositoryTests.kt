@@ -60,17 +60,18 @@ class ProjectRepositoryTests
     }
 
     @Test
-    fun `can get project notes`()
+    fun `can get project and version notes`()
     {
         val uid = setupUser()
 
         val projectId = sut.saveNewProject(uid, "testProjectRepo", note = "test project notes")
-        versionRepo.saveVersion("v11", projectId)
+        versionRepo.saveVersion("v11", projectId, "version note")
         val project = sut.getProject(projectId, uid)
         assertThat(project.name).isEqualTo("testProjectRepo")
         assertThat(project.note).isEqualTo("test project notes")
         assertThat(project.id).isEqualTo(projectId)
         assertThat(project.versions[0].id).isEqualTo("v11")
+        assertThat(project.versions[0].note).isEqualTo("version note")
     }
 
     @Test

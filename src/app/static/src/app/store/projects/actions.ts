@@ -221,7 +221,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     },
 
     async promoteVersion(context, versionPayload: versionPayload) {
-        const {state, dispatch} = context;
+        const {dispatch} = context;
         const {projectId, versionId} = versionPayload.version
         const name = versionPayload.name
         const note = versionPayload.note

@@ -399,12 +399,60 @@ describe("root getters", () => {
 
     it(`can get serialized project states`, () => {
         const projectStates = () => {
-            return mockRootState(projectStateTestData())
+            return mockRootState(projectStateTestData({
+                projects: mockProjectsState({
+                    currentProject:
+                        {
+                            name: "My project 123",
+                            note: "These are my project notes",
+                            versions: [
+                                {
+                                    note: "Notes specific to this version",
+                                    updated: "2022-06-19T13:56:19.280Z",
+                                    versionNumber: "1"
+                                },
+                                {
+                                    note: "Notes from the first version",
+                                    updated: "2022-06-19T13:56:19.280Z",
+                                    versionNumber: "2"
+                                }
+                            ]
+                        } as any
+                })
+            }))
         }
+
         const rootState = projectStates()
 
         const result = getters.projectState(rootState, null, projectStates() as any, null)
-        expect(result).toEqual(mockProjectOutputState())
+
+        const millis = Date.UTC(2022, 6, 19, 13, 56, 19)
+
+        const date = new Date(millis)
+
+        const updated = `2022/06/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+
+        expect(result).toStrictEqual(mockProjectOutputState({
+            notes: {
+                project_notes: {
+                    name: "My project 123",
+                    updated: updated,
+                    note: "These are my project notes"
+                },
+                version_notes: [
+                    {
+                        name: "My project 123-v1",
+                        updated: updated,
+                        note: "Notes specific to this version"
+                    },
+                    {
+                        name: "My project 123-v2",
+                        updated: updated,
+                        note: "Notes from the first version"
+                    }
+                ]
+            } as any
+        }))
     })
 })
 
