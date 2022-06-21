@@ -69,9 +69,7 @@ class LocalFileManager(
                          fromADR: Boolean): VersionFileWithPath
     {
         val md = MessageDigest.getInstance("MD5")
-        val bytes = inputStream.use {
-            DigestInputStream(it, md).readBytes()
-        }
+        val bytes = readFileBytes(inputStream, md)
         val hash = generateHash(originalFilename, md)
         val path = "${appProperties.uploadDirectory}/$hash"
         if (versionRepository.saveNewHash(hash))
@@ -88,9 +86,7 @@ class LocalFileManager(
         val originalFilename = file.originalFilename!!
         val inputStream = file.inputStream
         val md = MessageDigest.getInstance("MD5")
-        val bytes = inputStream.use {
-            DigestInputStream(it, md).readBytes()
-        }
+        val bytes = readFileBytes(inputStream, md)
         val hash = generateHash(originalFilename, md)
         val path = "${appProperties.uploadDirectory}/$hash"
         writeFileBytes(path, bytes)
@@ -120,13 +116,13 @@ class LocalFileManager(
 
     override fun setAllFiles(files: Map<String, VersionFile?>)
     {
-        versionRepository.setFilesForVersion(session.getVersionId(), files);
+        versionRepository.setFilesForVersion(session.getVersionId(), files)
     }
 
-    fun getFileBytes(inputStream: InputStream, md: MessageDigest): ByteArray
+    fun readFileBytes(inputStream: InputStream, md: MessageDigest): ByteArray
     {
-        return inputStream.use {
-            DigestInputStream(it, md).readBytes()
+        inputStream.use {
+            return DigestInputStream(it, md).readBytes()
         }
     }
 
