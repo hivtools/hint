@@ -69,12 +69,14 @@ class LocalFileManager(
                          fromADR: Boolean): VersionFileWithPath
     {
         val md = MessageDigest.getInstance("MD5")
+        val bytes = inputStream.use {
+            DigestInputStream(it, md).readBytes()
+        }
         val hash = generateHash(originalFilename, md)
         val path = "${appProperties.uploadDirectory}/$hash"
-
         if (versionRepository.saveNewHash(hash))
         {
-            writeFileBytes(path, inputStream, md)
+            writeFileBytes(path, bytes)
         }
 
         versionRepository.saveVersionFile(session.getVersionId(), type, hash, originalFilename, fromADR)
@@ -85,11 +87,13 @@ class LocalFileManager(
     {
         val originalFilename = file.originalFilename!!
         val inputStream = file.inputStream
-
         val md = MessageDigest.getInstance("MD5")
+        val bytes = inputStream.use {
+            DigestInputStream(it, md).readBytes()
+        }
         val hash = generateHash(originalFilename, md)
         val path = "${appProperties.uploadDirectory}/$hash"
-        writeFileBytes(path, inputStream, md)
+        writeFileBytes(path, bytes)
 
         return VersionFileWithPath(path, hash, originalFilename, false)
     }
@@ -119,24 +123,23 @@ class LocalFileManager(
         versionRepository.setFilesForVersion(session.getVersionId(), files);
     }
 
+    fun getFileBytes(inputStream: InputStream, md: MessageDigest): ByteArray
+    {
+        return inputStream.use {
+            DigestInputStream(it, md).readBytes()
+        }
+    }
+
     fun generateHash(originalFilename: String, md: MessageDigest): String
     {
         val extension = originalFilename.split(".").last()
         return "${DatatypeConverter.printHexBinary(md.digest())}.${extension}"
     }
 
-    fun writeFileBytes(path: String, inputStream: InputStream, md: MessageDigest)
+    fun writeFileBytes(path: String, bytes: ByteArray)
     {
-        val bytes = getFileBytes(inputStream, md)
         val localFile = File(path)
         FileUtils.forceMkdirParent(localFile)
         localFile.writeBytes(bytes)
-    }
-
-    fun getFileBytes(inputStream: InputStream, md: MessageDigest): ByteArray
-    {
-        return inputStream.use {
-            DigestInputStream(it, md).readBytes()
-        }
     }
 }
