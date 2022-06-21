@@ -14,9 +14,9 @@ export interface LoadMutations {
     UpdatingState: LoadMutation,
     LoadFailed: LoadMutation,
     LoadStateCleared: LoadMutation,
-    PreparingModelOutput: LoadMutation,
-    ModelOutputStatusUpdated: LoadMutation,
-    PollingStatusStarted: LoadMutation,
+    PreparingRehydrate: LoadMutation,
+    RehydrateStatusUpdated: LoadMutation,
+    RehydratePollingStarted: LoadMutation,
     RehydrateResult: LoadMutation,
     RehydrateResultError: LoadMutation
 }
@@ -50,19 +50,19 @@ export const mutations: MutationTree<LoadState> & LoadMutations = {
             stopPolling(state);
         }
     },
-    PreparingModelOutput(state: LoadState, action: PayloadWithType<ProjectRehydrateSubmitResponse>) {
-        state.downloadId = action.payload.id;
+    PreparingRehydrate(state: LoadState, action: PayloadWithType<ProjectRehydrateSubmitResponse>) {
+        state.rehydrateId = action.payload.id;
         state.preparing = true;
         state.complete = false;
         state.loadError = null;
     },
-    ModelOutputStatusUpdated(state: LoadState, action: PayloadWithType<ProjectRehydrateStatusResponse>) {
+    RehydrateStatusUpdated(state: LoadState, action: PayloadWithType<ProjectRehydrateStatusResponse>) {
         if (action.payload.done) {
             stopPolling(state);
         }
         state.loadError = null;
     },
-    PollingStatusStarted(state: LoadState, action: PayloadWithType<number>) {
+    RehydratePollingStarted(state: LoadState, action: PayloadWithType<number>) {
         state.statusPollId = action.payload;
     }
 };

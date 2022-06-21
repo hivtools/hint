@@ -37,31 +37,31 @@ describe("Load mutations", () => {
         expect(testState.rehydrateResult).toEqual({"rehydrateResult": "TEST"});
     });
 
-    it("set PreparingModelOutput state", () => {
+    it("set PreparingRehydrate state", () => {
         const payload = {id: "1"} as any
         const testState = mockLoadState();
-        mutations.PreparingModelOutput(testState, {type: "PreparingModelOutput", payload: payload});
-        expect(testState.downloadId).toEqual( "1");
+        mutations.PreparingRehydrate(testState, {type: "prepareRehydrate", payload: payload});
+        expect(testState.rehydrateId).toEqual( "1");
     });
 
     it("set ModelOutputStatusUpdated state", () => {
         const payload = {done: true} as any
-        const testState = mockLoadState();
-        mutations.ModelOutputStatusUpdated(testState, {type: "ModelOutputStatusUpdated", payload: payload});
+        const testState = mockLoadState({statusPollId: 4});
+        mutations.RehydrateStatusUpdated(testState, {type: "ModelOutputStatusUpdated", payload: payload});
         expect(testState.loadError).toEqual(null);
         expect(testState.statusPollId).toEqual(-1);
     });
 
     it("set PollingStatusStarted state", () => {
         const testState = mockLoadState();
-        mutations.PollingStatusStarted(testState, {type: "ModelOutputStatusUpdated", payload: 20});
+        mutations.RehydratePollingStarted(testState, {type: "ModelOutputStatusUpdated", payload: 20});
         expect(testState.loadError).toEqual(null);
         expect(testState.statusPollId).toEqual(20);
     });
 
     it("set RehydrateResultError state", () => {
         const error = mockError("TEST ERROR");
-        const testState = mockLoadState();
+        const testState = mockLoadState({statusPollId: 10});
         mutations.RehydrateResultError(testState, {type: "RehydrateResultError", payload: error});
         expect(testState.loadError).toBe(error);
         expect(testState.statusPollId).toEqual(-1);

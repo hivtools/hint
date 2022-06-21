@@ -22,7 +22,7 @@ class RehydrateControllerTests
         val multipartFile = mock<MultipartFile>()
 
         val mockFileManager = mock<FileManager> {
-            on {saveOutput(multipartFile)} doReturn payload
+            on {saveOutputZip(multipartFile)} doReturn payload
         }
 
         val mockAPIClient = mock<HintrAPIClient> {

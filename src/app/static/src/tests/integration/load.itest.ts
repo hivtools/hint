@@ -167,14 +167,14 @@ describe("load actions", () => {
         const commit = jest.fn();
         const dispatch = jest.fn()
         const formData = getFormData("output.zip");
-        const state = {downloadId: "1"}
+        const state = {rehydrateId: "1"}
 
-        await actions.prepareModelOutput({commit, dispatch, state, rootState} as any,
+        await actions.preparingRehydrate({commit, dispatch, state, rootState} as any,
             {file: formData, projectName: "new project"});
 
         setTimeout(() => {
             expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
-            expect(commit.mock.calls[1][0].type).toBe("PreparingModelOutput");
+            expect(commit.mock.calls[1][0].type).toBe("PreparingRehydrate");
             expect(commit.mock.calls[1][0].payload).not.toBeNull();
             done();
         })
@@ -183,19 +183,17 @@ describe("load actions", () => {
     it("can poll model output ZIP status", async (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn()
-        const state = {downloadId: "1"}
+        const state = {rehydrateId: "1"}
 
-        await actions.pollModelOutput({commit, dispatch, state, rootState} as any);
+        await actions.pollRehydrate({commit, dispatch, state, rootState} as any);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2)
-            expect(commit.mock.calls[0][0].type).toBe("PollingStatusStarted");
+            expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted");
             expect(commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
-
-            expect(commit.mock.calls[1][0].type).toBe("ModelOutputStatusUpdated");
+            expect(commit.mock.calls[1][0].type).toBe("RehydrateStatusUpdated");
             expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
             done();
         }, 3100)
     });
-
 });

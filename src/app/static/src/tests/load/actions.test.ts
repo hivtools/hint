@@ -339,7 +339,10 @@ describe("Load actions", () => {
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
         const dispatch = jest.fn();
         const rootGetters = {isGuest: true};
-        const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": "2.1.0", stepper: {}}}));
+        const fileContents = addCheckSum(JSON.stringify({
+            files: "TEST FILES",
+            state: {"version": "2.1.0", stepper: {}}
+        }));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
             {savedFileContents: fileContents, projectName: null}
         );
@@ -400,7 +403,7 @@ describe("Load actions", () => {
         expect(mockLocationReload.mock.calls.length).toBe(1);
     });
 
-    it("load reads outputZip and dispatches prepareModelOutput action", (done) => {
+    it("load reads outputZip and dispatches preparingRehydrate action", (done) => {
         const dispatch = jest.fn();
         actions.load({dispatch, rootState} as any,
             {
@@ -411,7 +414,7 @@ describe("Load actions", () => {
 
         const interval = setInterval(() => {
             if (dispatch.mock.calls.length > 0) {
-                expect(dispatch.mock.calls[0][0]).toEqual("prepareModelOutput");
+                expect(dispatch.mock.calls[0][0]).toEqual("preparingRehydrate");
                 expect(dispatch.mock.calls[0][1].projectName).toEqual("project name");
                 clearInterval(interval);
                 done();
@@ -419,7 +422,7 @@ describe("Load actions", () => {
         });
     });
 
-    it("can prepare modelOutput and dispatches pollModelOutput action", (done) => {
+    it("can prepare rehydrate and dispatches poll action", (done) => {
         mockAxios.onPost("rehydrate/submit")
             .reply(200, mockSuccess(true));
 
@@ -429,7 +432,7 @@ describe("Load actions", () => {
 
         const dispatch = jest.fn();
         const commit = jest.fn();
-        actions.prepareModelOutput({dispatch, commit, rootState} as any,
+        actions.preparingRehydrate({dispatch, commit, rootState} as any,
             {
                 file: form,
                 projectName: null
@@ -440,18 +443,16 @@ describe("Load actions", () => {
             expect(mockAxios.history.post[0]["url"]).toBe("rehydrate/submit")
             expect(commit.mock.calls.length).toBe(2)
             expect(commit.mock.calls[0][0].type).toBe("SettingFiles")
-            expect(commit.mock.calls[1][0].type).toBe("PreparingModelOutput")
+            expect(commit.mock.calls[1][0].type).toBe("PreparingRehydrate")
             expect(commit.mock.calls[1][0].payload).toBeTruthy()
             expect(dispatch.mock.calls.length).toBe(1)
-            expect(dispatch.mock.calls[0][0]).toEqual("pollModelOutput");
-
+            expect(dispatch.mock.calls[0][0]).toEqual("pollRehydrate");
             clearInterval(interval);
             done();
         });
     });
 
-
-    it("can pollModelOutput status and dispatches PollingStatusStarted action", async (done) => {
+    it("can pollRehydrate status and dispatches PollingStatusStarted action", async (done) => {
         mockAxios.onGet(`rehydrate/status/1`)
             .reply(200, mockSuccess(RunningStatusResponse));
 
@@ -459,25 +460,20 @@ describe("Load actions", () => {
             .reply(200, mockSuccess("RESULT"));
 
         const commit = jest.fn();
-        const state = mockLoadState({downloadId: "1"} as any)
-
-        actions.pollModelOutput({commit, rootState, state} as any);
+        const state = mockLoadState({rehydrateId: "1"} as any)
+        await actions.pollRehydrate({commit, rootState, state} as any);
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2)
             expect(mockAxios.history.get[0]["url"]).toBe("rehydrate/status/1")
             expect(mockAxios.history.get[1]["url"]).toBe("rehydrate/result/1")
-
             expect(commit.mock.calls.length).toBe(3)
-            expect(commit.mock.calls[0][0].type).toBe("PollingStatusStarted")
+            expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted")
             expect(commit.mock.calls[0][0].payload).toBeGreaterThan(1)
-
-            expect(commit.mock.calls[1][0].type).toBe("ModelOutputStatusUpdated")
+            expect(commit.mock.calls[1][0].type).toBe("RehydrateStatusUpdated")
             expect(commit.mock.calls[1][0].payload).toStrictEqual(RunningStatusResponse)
-
             expect(commit.mock.calls[2][0].type).toBe("RehydrateResult")
             expect(commit.mock.calls[2][0].payload).toBe("RESULT")
-
             done();
         }, 2100);
     });
@@ -487,18 +483,16 @@ describe("Load actions", () => {
             .reply(500, mockFailure("ERROR"));
 
         const commit = jest.fn();
-
-        const state = mockLoadState({downloadId: "1"} as any)
-
-        actions.pollModelOutput({commit, rootState, state} as any);
+        const state = mockLoadState({rehydrateId: "1"} as any)
+        await actions.pollRehydrate({commit, rootState, state} as any);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2)
-            expect(commit.mock.calls[0][0].type).toBe("PollingStatusStarted")
+            expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted")
             expect(commit.mock.calls[0][0].payload).toBeGreaterThan(1)
             expect(commit.mock.calls[1][0].type).toBe("RehydrateResultError")
             expect(commit.mock.calls[1][0].payload).toStrictEqual(mockError("ERROR"))
             done();
-        },2100);
+        }, 2100);
     });
 });

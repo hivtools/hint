@@ -94,10 +94,5 @@
     "plotly.js-basic-dist": "^2.4.0",
     "vue-chartjs": "^3.5.0",
     "vue-router": "^3.3.4"
-  },
-  "browser": {
-    "fs": false,
-    "path": false,
-    "os": false
   }
 }

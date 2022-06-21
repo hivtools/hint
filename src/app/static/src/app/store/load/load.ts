@@ -9,7 +9,7 @@ export enum LoadingState { NotLoading, SettingFiles, UpdatingState, LoadFailed }
 export interface LoadState {
     loadingState: LoadingState,
     loadError: Error | null,
-    downloadId: string
+    rehydrateId: string
     preparing: boolean
     statusPollId: number
     complete: boolean
@@ -24,7 +24,7 @@ export const initialLoadState = (): LoadState => {
     return {
         loadingState: LoadingState.NotLoading,
         loadError: null,
-        downloadId: "",
+        rehydrateId: "",
         preparing: false,
         statusPollId: -1,
         complete: false,

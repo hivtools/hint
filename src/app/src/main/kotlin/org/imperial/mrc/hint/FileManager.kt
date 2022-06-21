@@ -38,7 +38,7 @@ interface FileManager
     fun getAllHashes(): Map<String, String>
     fun getFiles(vararg include: FileType): Map<String, VersionFileWithPath>
     fun setAllFiles(files: Map<String, VersionFile?>)
-    fun saveOutput(file: MultipartFile): VersionFileWithPath
+    fun saveOutputZip(file: MultipartFile): VersionFileWithPath
 }
 
 @Component
@@ -88,7 +88,7 @@ class LocalFileManager(
 
     }
 
-    override fun saveOutput(file: MultipartFile): VersionFileWithPath
+    override fun saveOutputZip(file: MultipartFile): VersionFileWithPath
     {
         val originalFilename = file.originalFilename!!
         val md = MessageDigest.getInstance("MD5")
