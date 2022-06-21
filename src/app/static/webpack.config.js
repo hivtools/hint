@@ -89,6 +89,23 @@ const appConfig = {...commonConfig,
     ]
 };
 
+const loginAppConfig = {
+    ...commonConfig,
+    entry: './src/app/login.ts',
+    output: {
+        path: path.resolve(__dirname, './public'),
+        publicPath: '/public/',
+        filename: 'js/login.js'
+    },
+    plugins: [...commonConfig.plugins,
+    new HtmlWebpackPlugin({
+        hash: true,
+        template: 'public/login.ftl',
+        filename: 'login.ftl'
+    })
+    ]
+};
+
 const forgotPasswordAppConfig = {...commonConfig,
     entry: './src/app/forgotPassword.ts',
     output: {
@@ -137,7 +154,7 @@ const dataExplorationAppConfig = {...commonConfig,
     ]
 };
 
-module.exports = [appConfig, forgotPasswordAppConfig, resetPasswordAppConfig, dataExplorationAppConfig];
+module.exports = [appConfig, forgotPasswordAppConfig, resetPasswordAppConfig, dataExplorationAppConfig, loginAppConfig];
 
 if (process.env.NODE_ENV === 'production') {
     module.exports.forEach((moduleExport) =>

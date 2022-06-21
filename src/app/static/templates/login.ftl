@@ -7,7 +7,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <!-- inject:css -->
     <!-- endinject -->
-    <script>
+    <#--  <script>
         function validate(event) {
             const userIdInput = document.getElementById("user-id");
             userIdInput.value = userIdInput.value.trim();
@@ -20,10 +20,11 @@
         function continueAsGuest() {
             sessionStorage.setItem("asGuest", "continueAsGuest")
         }
-    </script>
+    </script>  -->
 </head>
 <body>
-    <a href="https://www.unaids.org"><img src="public/images/unaids_logo.png" class="large-logo mx-auto mt-5 mb-4"/></a>
+<div id="app" title="${title}"></div>
+    <#--  <a href="https://www.unaids.org"><img src="public/images/unaids_logo.png" class="large-logo mx-auto mt-5 mb-4"/></a>
     <h1 class="text-center"><strong>${appTitle}</strong></h1>
     <div id="app" class="card login-form mx-auto mt-3">
         <div class="card-body">
@@ -63,6 +64,6 @@
       <a href="https://github.com/reside-ic"><img src="public/images/reside_logo.png" class="small-logo"></a>
       <a href="https://www.avenirhealth.org"><img src="public/images/avenir_logo.png" class="small-logo"></a>
       <a href="https://www.washington.edu"><img src="public/images/uw_logo.png" class="small-logo"></a>
-    </div>
+    </div>  -->
 </body>
 </html>
