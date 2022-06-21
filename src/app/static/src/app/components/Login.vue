@@ -6,11 +6,11 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import ErrorAlert from "../ErrorAlert.vue";
+    import ErrorAlert from "./ErrorAlert.vue";
     import {mapActions, mapState} from "vuex";
-    import {LoginState} from "../../store/login/login";
-    import LoggedOutHeader from "../header/LoggedOutHeader.vue";
-    import {Language} from "../../store/translations/locales";
+    import {LoginState} from "../store/login/login";
+    import LoggedOutHeader from "./header/LoggedOutHeader.vue";
+    import {Language} from "../store/translations/locales";
 
     export default Vue.extend({
         name: "Login",
@@ -21,8 +21,8 @@
             };
         },
         computed: mapState<LoginState>({
-            error: (state: LoginState) => state.requestResetLinkError,
-            hasError: (state: LoginState) => !!state.requestResetLinkError,
+            error: (state: LoginState) => state.loginRequestError,
+            hasError: (state: LoginState) => !!state.loginRequestError,
             // resetLinkRequested: (state: LoginState) => state.resetLinkRequested,
             language: (state: LoginState) => state.language
         }),
