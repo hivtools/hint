@@ -36,7 +36,7 @@ class LoginTests
         assertThat(doc.select("form #pw-feedback").hasClass("invalid-feedback")).isTrue()
         assertThat(doc.select("form #pw-feedback").text()).isEqualTo("Please enter your password.")
 
-        assertThat(doc.select("form button[type='submit']").attr("value")).isEqualTo("Log In")
+        assertThat(doc.select("form input[type='submit']").attr("value")).isEqualTo("Log In")
         assertThat(doc.select("#error").text()).isEqualTo("test error")
 
         assertThat(doc.select("#forgot-password").text()).isEqualTo("Forgotten your password?")
@@ -67,7 +67,7 @@ class LoginTests
         assertThat(doc.select("form label[for='pw-id']").text()).isEqualTo("Password")
         assertThat(doc.select("form #pw-id").attr("value")).isEqualTo("")
 
-        assertThat(doc.select("form button[type='submit']").attr("value")).isEqualTo("Log In")
+        assertThat(doc.select("form input[type='submit']").attr("value")).isEqualTo("Log In")
         assertThat(doc.select("#error").count()).isEqualTo(0)
     }
 
