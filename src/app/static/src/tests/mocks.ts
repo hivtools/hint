@@ -21,7 +21,7 @@ import {
     SurveyFilters,
     SurveyResponse,
     ValidateBaselineResponse,
-    Error, CalibrateResultResponse, Warning, ProjectState
+    Error, CalibrateResultResponse, Warning, DownloadSubmitRequest
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
@@ -45,6 +45,7 @@ import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrU
 import {DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
 import {GenericChartState, initialGenericChartState} from "../app/store/genericChart/genericChart";
 import {DataExplorationState, initialDataExplorationState} from "../app/store/dataExploration/dataExploration";
+import {DynamicControlType, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -462,19 +463,49 @@ export const mockDownloadResultsDependency = (props: Partial<DownloadResultsDepe
 }
 
 
-export const mockProjectOutputState = (props: Partial<ProjectState> = {}) => {
+export const mockProjectOutputState = (props: Partial<DownloadSubmitRequest> = {}): DownloadSubmitRequest => {
     return {
-        datasets: {
-            anc: {"filename": "anc", "path": "uploads/ancHash"},
-            pjnz: {"filename": "pjnz", "path": "uploads/pjnzHash"},
-            population: {"filename": "population", "path": "uploads/populationHash"},
-            programme: {"filename": "program", "path": "uploads/programHash"},
-            shape: {"filename": "shape", "path": "uploads/shapeHash"},
-            survey: {"filename": "survey", "path": "uploads/surveyHash"}
+        state: {
+            datasets: {
+                anc: {"filename": "anc", "path": "uploads/ancHash"},
+                pjnz: {"filename": "pjnz", "path": "uploads/pjnzHash"},
+                population: {"filename": "population", "path": "uploads/populationHash"},
+                programme: {"filename": "program", "path": "uploads/programHash"},
+                shape: {"filename": "shape", "path": "uploads/shapeHash"},
+                survey: {"filename": "survey", "path": "uploads/surveyHash"}
+            },
+            model_fit: {"id": "modelRunId", "options": {"test": "options"}},
+            calibrate: {"id": "calibrateId", "options": {"test": "options"}},
+            version: {"hintr": "1.0.0", "naomi": "2.0.0", "rrq": "1.1.1"},
         },
-        model_fit: {"id": "modelRunId", "options": {"test": "options"}},
-        calibrate: {"id": "calibrateId", "options": {"test": "options"}},
-        version: {"hintr": "1.0.0", "naomi": "2.0.0", "rrq": "1.1.1"},
+        notes: {
+            project_notes: {
+                name: "My project 123",
+                updated: "2022/06/09 14:56:19",
+                note: "These are my project notes"
+            },
+            version_notes: []
+        },
         ...props
     }
 }
+
+export const mockOptionsFormMeta = (props: Partial<DynamicFormMeta> = {}) => {
+    return {
+        controlSections: [{
+            label: "Test Section",
+            description: "Just a test section",
+            controlGroups: [{
+                controls: [{
+                    name: "TestValue",
+                    type: "number" as DynamicControlType,
+                    required: false,
+                    min: 0,
+                    max: 10,
+                    value: 5
+                }]
+            }]
+        }],
+        ...props
+    }
+};

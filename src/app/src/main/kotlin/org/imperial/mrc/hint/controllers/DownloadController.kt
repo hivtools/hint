@@ -14,9 +14,9 @@ class DownloadController(val apiClient: HintrAPIClient)
     fun getDownloadOutput(
             @PathVariable("type") type: String,
             @PathVariable("id") id: String,
-            @RequestBody projectState: Map<String, Any?>? = null): ResponseEntity<String>
+            @RequestBody projectPayload: Map<String, Any?>? = null): ResponseEntity<String>
     {
-        return apiClient.downloadOutputSubmit(type, id, projectState)
+        return apiClient.downloadOutputSubmit(type, id, projectPayload)
     }
 
     @GetMapping("/status/{id}")

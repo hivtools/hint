@@ -12,7 +12,7 @@ import {
     constructUploadFile,
     constructUploadFileWithResourceName,
     getFilenameFromImportUrl,
-    updateForm
+    updateForm, formatToLocalISODateTime
 } from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
 import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
@@ -180,6 +180,19 @@ describe("utils", () => {
         const expected = `${d.getDate()}/07/2020 ${d.getHours()}:${d.getMinutes()}:39`;
 
         const result = formatDateTime(isoUTCString);
+
+        expect(result).toStrictEqual(expected);
+    });
+
+    it("can format ISO datetime as local semi-iso friendly string ", () => {
+        const isoUTCString = "2022-06-30T15:23:39.280Z";
+
+        const millis = Date.UTC(2022, 6, 30, 15, 23, 39, 898);
+        const d = new Date(millis);
+
+        const expected = `2022/06/${d.getDate()} ${d.getHours()}:${d.getMinutes()}:39`;
+
+        const result = formatToLocalISODateTime(isoUTCString);
 
         expect(result).toStrictEqual(expected);
     });

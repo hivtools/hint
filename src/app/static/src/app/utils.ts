@@ -191,6 +191,10 @@ export const formatDateTime = (isoUTCString: string) => {
     return moment.utc(isoUTCString).local().format('DD/MM/YYYY HH:mm:ss');
 };
 
+export const formatToLocalISODateTime = (isoUTCString: string) => {
+    return moment.utc(isoUTCString).local().format('YYYY/MM/DD HH:mm:ss');
+};
+
 export const findResource = (datasetWithResources: any, resourceType: string, resourceName?: string | null): DatasetResource | null => {
     let resources = datasetWithResources.resources;
 
@@ -329,3 +333,12 @@ const extractErrorsRecursively = (state: any, errors: Error[]) => {
         keys.forEach(key => extractErrorsRecursively(state[key], errors));
     }
 };
+
+export const resourceTypes = {
+    pjnz: "inputs-unaids-spectrum-file",
+    pop: "inputs-unaids-population",
+    shape: "inputs-unaids-geographic",
+    survey: "inputs-unaids-survey",
+    program: "inputs-unaids-art",
+    anc: "inputs-unaids-anc"
+}
