@@ -9,6 +9,8 @@ import {router} from "../../router";
 import {currentHintVersion} from "../../hintVersion";
 import {initialStepperState} from "../stepper/stepper";
 import {ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generated";
+import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
+import {DynamicControlGroup, DynamicControlSection, DynamicFormData} from "@reside-ic/vue-dynamic-form";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult"
 export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
@@ -105,12 +107,21 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     },
 
     async updateStoreState({commit, dispatch, state}, savedState) {
-        //File hashes have now been set for session in backend so we save the state from the file we're loading into local
+        //File hashes have now been set for session in backend, so we save the state from the file we're loading into local
         //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
-        //NB load state is not included in the saved state so we will default back to NotLoading on page reload.
+        //NB load state is not included in the saved state, so we will default back to NotLoading on page reload.
+
+        // Backwards compatibility fix: projects which calibrated before bug fix in mrc-3126 have empty calibrate options
+        const {modelCalibrate} = savedState
+        if (modelCalibrate?.result && Object.keys(modelCalibrate.options).length === 0) {
+            savedState = {
+                ...savedState,
+                modelCalibrate: {...modelCalibrate, options: getCalibrateOptions(modelCalibrate)}
+            }
+        }
+
         localStorageManager.savePartialState(savedState, false);
         location.reload();
-
     },
 
     async clearLoadState({commit}) {
@@ -182,3 +193,18 @@ async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, fil
         });
 }
 
+// getCalibrateOptions extracts calibrate options from Dynamic Form, this allows
+// backward compatibility supports for calibrate option bug
+const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormData => {
+    const allControlGroups = flatMapControlSection(modelCalibrate.optionsFormMeta.controlSections);
+    return allControlGroups.reduce<DynamicFormData>((options, option): DynamicFormData => {
+        option.controls.forEach(option => {
+            options[option.name] = option.value || null
+        })
+        return options
+    }, {})
+}
+
+const flatMapControlSection = (sections: DynamicControlSection[]) => {
+    return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
+}

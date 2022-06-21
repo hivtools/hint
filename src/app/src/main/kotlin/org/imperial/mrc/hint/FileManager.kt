@@ -68,40 +68,28 @@ class LocalFileManager(
                          type: FileType,
                          fromADR: Boolean): VersionFileWithPath
     {
-
         val md = MessageDigest.getInstance("MD5")
-        val bytes = inputStream.use {
-            DigestInputStream(it, md).readBytes()
-        }
-        val extension = originalFilename.split(".").last()
-        val hash = "${DatatypeConverter.printHexBinary(md.digest())}.${extension}"
+        val hash = generateHash(originalFilename, md)
         val path = "${appProperties.uploadDirectory}/$hash"
+
         if (versionRepository.saveNewHash(hash))
         {
-            val localFile = File(path)
-            FileUtils.forceMkdirParent(localFile)
-            localFile.writeBytes(bytes)
+            writeFileBytes(path, inputStream, md)
         }
 
         versionRepository.saveVersionFile(session.getVersionId(), type, hash, originalFilename, fromADR)
         return VersionFileWithPath(path, hash, originalFilename, fromADR)
-
     }
 
     override fun saveOutputZip(file: MultipartFile): VersionFileWithPath
     {
         val originalFilename = file.originalFilename!!
-        val md = MessageDigest.getInstance("MD5")
-        val bytes = file.inputStream.use {
-            DigestInputStream(it, md).readBytes()
-        }
-        val extension = originalFilename.split(".").last()
-        val hash = "${DatatypeConverter.printHexBinary(md.digest())}.${extension}"
-        val path = "${appProperties.uploadDirectory}/$hash"
+        val inputStream = file.inputStream
 
-        val localFile = File(path)
-        FileUtils.forceMkdirParent(localFile)
-        localFile.writeBytes(bytes)
+        val md = MessageDigest.getInstance("MD5")
+        val hash = generateHash(originalFilename, md)
+        val path = "${appProperties.uploadDirectory}/$hash"
+        writeFileBytes(path, inputStream, md)
 
         return VersionFileWithPath(path, hash, originalFilename, false)
     }
@@ -129,5 +117,26 @@ class LocalFileManager(
     override fun setAllFiles(files: Map<String, VersionFile?>)
     {
         versionRepository.setFilesForVersion(session.getVersionId(), files);
+    }
+
+    fun generateHash(originalFilename: String, md: MessageDigest): String
+    {
+        val extension = originalFilename.split(".").last()
+        return "${DatatypeConverter.printHexBinary(md.digest())}.${extension}"
+    }
+
+    fun writeFileBytes(path: String, inputStream: InputStream, md: MessageDigest)
+    {
+        val bytes = getFileBytes(inputStream, md)
+        val localFile = File(path)
+        FileUtils.forceMkdirParent(localFile)
+        localFile.writeBytes(bytes)
+    }
+
+    fun getFileBytes(inputStream: InputStream, md: MessageDigest): ByteArray
+    {
+        return inputStream.use {
+            DigestInputStream(it, md).readBytes()
+        }
     }
 }

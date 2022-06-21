@@ -2,6 +2,10 @@
 
 * Upload output zip action which calls hintr endpoint via backend
 
+# hint 2.2.1
+
+* Bug: Fix bug backwards compatibility calibrate options
+
 # hint 2.2.0
 
 * Include project notes in output zip

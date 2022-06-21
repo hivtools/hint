@@ -1,12 +1,12 @@
 import Vuex, {Store} from "vuex";
-import {mockError, mockModelCalibrateState, mockRootState} from "../../mocks";
+import {mockError, mockModelCalibrateState, mockOptionsFormMeta, mockRootState} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {RootState} from "../../../app/root";
 import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
 import {mount, shallowMount} from "@vue/test-utils";
 import ModelCalibrate from "../../../app/components/modelCalibrate/ModelCalibrate.vue";
 import CalibrationResults from "../../../app/components/modelCalibrate/CalibrationResults.vue";
-import {DynamicControlType, DynamicForm} from "@reside-ic/vue-dynamic-form";
+import {DynamicForm} from "@reside-ic/vue-dynamic-form";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {expectTranslated} from "../../testHelpers";
 import Tick from "../../../app/components/Tick.vue";
@@ -41,22 +41,6 @@ describe("Model calibrate component", () => {
         return shallowMount(ModelCalibrate, {store});
     };
 
-    const mockOptionsFormMeta = {
-        controlSections: [{
-            label: "Test Section",
-            description: "Just a test section",
-            controlGroups: [{
-                controls: [{
-                    name: "TestValue",
-                    type: "number" as DynamicControlType,
-                    required: false,
-                    min: 0,
-                    max: 10,
-                    value: 5
-                }]
-            }]
-        }]
-    };
 
     it("renders as expected when loading", () => {
         const store = getStore({fetching: true});
@@ -79,7 +63,7 @@ describe("Model calibrate component", () => {
     });
 
     it("renders options as expected", () => {
-        const store = getStore({optionsFormMeta: mockOptionsFormMeta});
+        const store = getStore({optionsFormMeta: mockOptionsFormMeta()});
         const wrapper = mount(ModelCalibrate, {store});
 
         expect(wrapper.find(LoadingSpinner).exists()).toBe(false);
@@ -150,7 +134,7 @@ describe("Model calibrate component", () => {
 
     it("setting options value commits update mutation", () => {
         const mockUpdate = jest.fn();
-        const store = getStore({optionsFormMeta: mockOptionsFormMeta}, jest.fn(), jest.fn(), mockUpdate);
+        const store = getStore({optionsFormMeta: mockOptionsFormMeta()}, jest.fn(), jest.fn(), mockUpdate);
         const wrapper = mount(ModelCalibrate, {store});
 
         wrapper.find(DynamicForm).find("input").setValue("6");
@@ -161,7 +145,7 @@ describe("Model calibrate component", () => {
 
     it("clicking Calibrate button invokes submit calibrate action", () => {
         const mockSubmit = jest.fn();
-        const store = getStore({optionsFormMeta: mockOptionsFormMeta}, jest.fn(), mockSubmit);
+        const store = getStore({optionsFormMeta: mockOptionsFormMeta()}, jest.fn(), mockSubmit);
         const wrapper = mount(ModelCalibrate, {store});
         wrapper.find("button").trigger("click");
         expect(mockSubmit.mock.calls.length).toBe(1);
