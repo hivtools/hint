@@ -1,5 +1,5 @@
 import {ActionContext, ActionTree} from "vuex";
-import {LoadingState, LoadState} from "./load";
+import {FileSource, LoadingState, LoadState} from "./load";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {verifyCheckSum} from "../../utils";
@@ -8,11 +8,12 @@ import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
 import {currentHintVersion} from "../../hintVersion";
 import {initialStepperState} from "../stepper/stepper";
+import {ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generated";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {DynamicControlGroup, DynamicControlSection, DynamicFormData} from "@reside-ic/vue-dynamic-form";
 
-export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError"
-export type LoadErrorActionTypes = "LoadFailed"
+export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult"
+export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
 
 export interface LoadActions {
     load: (store: ActionContext<LoadState, RootState>, payload: loadPayload) => void
@@ -20,11 +21,14 @@ export interface LoadActions {
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
     clearLoadState: (store: ActionContext<LoadState, RootState>) => void
+    preparingRehydrate: (store: ActionContext<LoadState, RootState>, payload: modelOutputPayload) => void
+    pollRehydrate: (store: ActionContext<LoadState, RootState>) => void
 }
 
 export interface loadPayload {
     file: File,
-    projectName: string | null
+    projectName: string | null,
+    source?: FileSource
 }
 
 export interface setFilesPayload {
@@ -32,14 +36,28 @@ export interface setFilesPayload {
     projectName: string | null
 }
 
+export interface modelOutputPayload {
+    file: FormData,
+    projectName: string | null
+}
+
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
-    load({dispatch}, payload) {
-        const {file, projectName} = payload;
-        const reader = new FileReader();
-        reader.addEventListener('loadend', function () {
-            dispatch("setFiles", {savedFileContents: reader.result as string, projectName});
-        });
-        reader.readAsText(file);
+
+    async load(context, payload) {
+        const {dispatch} = context
+        const {file, projectName, source} = payload;
+
+        if (FileSource.ModelOutput === source) {
+            const formData = new FormData()
+            formData.append("file", file)
+            await dispatch("preparingRehydrate", {file: formData, projectName});
+        } else {
+            const reader = new FileReader();
+            reader.addEventListener('loadend', function () {
+                dispatch("setFiles", {savedFileContents: reader.result as string, projectName});
+            });
+            reader.readAsText(file);
+        }
     },
 
     async setFiles(context, payload) {
@@ -47,7 +65,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         const {commit, rootState, rootGetters, dispatch} = context;
         commit({type: "SettingFiles", payload: null});
 
-        const objectContents = verifyCheckSum(savedFileContents);
+        const objectContents = verifyCheckSum(savedFileContents as string);
 
         if (!objectContents) {
             commit({
@@ -108,8 +126,58 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
     async clearLoadState({commit}) {
         commit({type: "LoadStateCleared", payload: null});
+    },
+
+    async preparingRehydrate(context, payload) {
+        const {file} = payload;
+        const {commit, dispatch} = context;
+
+        commit({type: "SettingFiles", payload: null});
+
+        const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
+            .withSuccess("PreparingRehydrate")
+            .withError("RehydrateResultError")
+            .postAndReturn("rehydrate/submit", file);
+
+        if (response) {
+            await dispatch("pollRehydrate");
+        }
+    },
+
+    async pollRehydrate(context) {
+        const {commit} = context;
+        const id = setInterval(() => {
+            getRehydrateStatus(context)
+        }, 2000);
+
+        commit({type: "RehydratePollingStarted", payload: id});
     }
 };
+
+const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) => {
+    const rehydrateId = context.state.rehydrateId
+
+    const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
+        .withSuccess("RehydrateResult")
+        .withError("RehydrateResultError")
+        .get<ProjectRehydrateResultResponse>(`rehydrate/result/${rehydrateId}`);
+
+    if (response && response.data) {
+        console.log(response.data.state)
+    }
+}
+
+const getRehydrateStatus = async (context: ActionContext<LoadState, RootState>) => {
+    const rehydrateId = context.state.rehydrateId
+    const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
+        .withSuccess("RehydrateStatusUpdated")
+        .withError("RehydrateResultError")
+        .get<ModelStatusResponse>(`rehydrate/status/${rehydrateId}`);
+
+    if (response && response.data.done) {
+        await getRehydrateResult(context)
+    }
+}
 
 async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, files: any, savedState: any) {
     savedState.stepper.steps = initialStepperState().steps;

@@ -1,3 +1,7 @@
+# hint 2.3.0
+
+* Upload output zip action which calls hintr endpoint via backend
+
 # hint 2.2.1
 
 * Bug: Fix bug backwards compatibility calibrate options

@@ -14,8 +14,6 @@ import {localStorageManager} from "../../app/localStorageManager";
 import {currentHintVersion} from "../../app/hintVersion";
 import {getFormData} from "./helpers";
 
-const fs = require("fs");
-const FormData = require("form-data");
 
 describe("load actions", () => {
 
@@ -103,7 +101,7 @@ describe("load actions", () => {
         });
     });
 
-    it("can create project and set files as logged in user", async (done) => {
+    it("can create project and set files as logged in user when uploading JSON file", async (done) => {
         const commit = jest.fn();
         const fakeState = JSON.stringify({
             files: {"shape": shape},
@@ -165,4 +163,37 @@ describe("load actions", () => {
         })
     });
 
+    it("can submit model output ZIP file", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn()
+        const formData = getFormData("output.zip");
+        const state = {rehydrateId: "1"}
+
+        await actions.preparingRehydrate({commit, dispatch, state, rootState} as any,
+            {file: formData, projectName: "new project"});
+
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
+            expect(commit.mock.calls[1][0].type).toBe("PreparingRehydrate");
+            expect(commit.mock.calls[1][0].payload).not.toBeNull();
+            done();
+        })
+    });
+
+    it("can poll model output ZIP status", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn()
+        const state = {rehydrateId: "1"}
+
+        await actions.pollRehydrate({commit, dispatch, state, rootState} as any);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(2)
+            expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted");
+            expect(commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
+            expect(commit.mock.calls[1][0].type).toBe("RehydrateStatusUpdated");
+            expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
+            done();
+        }, 3100)
+    });
 });

@@ -12,7 +12,7 @@
             </a>
             <input v-translate:aria-label="'selectFile'"
                    type="file"
-                   style="display: none;" ref="loadFile" v-on:change="load" accept=".json">
+                   style="display: none;" ref="loadFile" v-on:change="load" accept=".json,.zip">
         </drop-down>
         <modal :open="hasError">
             <h4 v-translate="'loadError'"></h4>
@@ -54,7 +54,7 @@
     import Vue from "vue";
     import {serialiseState} from "../../localStorageManager";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {LoadingState, LoadState} from "../../store/load/load";
+    import {FileSource, LoadingState, LoadState} from "../../store/load/load";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import {LocalSessionFile} from "../../types";
@@ -170,7 +170,21 @@
             },
             loadToNewProject() {
                 this.requestProjectName = false;
-                this.loadAction({file: this.fileToLoad!, projectName: this.newProjectName});
+                const ext = this.fileToLoad?.name.split(".")[1]
+                if (ext === "zip") {
+                    this.loadAction({
+                        file: this.fileToLoad!,
+                        projectName: this.newProjectName,
+                        source: FileSource.ModelOutput
+                    });
+                }
+
+                if (ext === "json") {
+                    this.loadAction({
+                        file: this.fileToLoad!,
+                        projectName: this.newProjectName
+                    });
+                }
             },
             cancelLoad() {
                 this.requestProjectName = false;

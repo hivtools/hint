@@ -39,6 +39,9 @@ interface HintrAPIClient
     fun downloadOutputStatus(id: String): ResponseEntity<String>
     fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
     fun getUploadMetadata(id: String): ResponseEntity<String>
+    fun submitRehydrate(outputZip: VersionFileWithPath): ResponseEntity<String>
+    fun rehydrateStatus(id: String): ResponseEntity<String>
+    fun rehydrateResult(id: String): ResponseEntity<String>
 }
 
 @Component
@@ -175,6 +178,26 @@ class HintrFuelAPIClient(
     override fun getVersion(): ResponseEntity<String>
     {
         return get("hintr/version")
+    }
+
+    override fun submitRehydrate(outputZip: VersionFileWithPath): ResponseEntity<String>
+    {
+        val payload = mapOf(
+                "filename" to outputZip.filename,
+                "hash" to outputZip.hash,
+                "path" to outputZip.path
+        )
+        return postJson("rehydrate/submit", objectMapper.writeValueAsString(mapOf("file" to payload)))
+    }
+
+    override fun rehydrateStatus(id: String): ResponseEntity<String>
+    {
+        return get("rehydrate/status/${id}")
+    }
+
+    override fun rehydrateResult(id: String): ResponseEntity<String>
+    {
+        return get("rehydrate/result/${id}")
     }
 
     override fun downloadOutputSubmit(type: String, id: String, projectPayload: Map<String, Any?>?): ResponseEntity<String>

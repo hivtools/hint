@@ -62,12 +62,12 @@ export const baselineGetters = {
         const validOrMissingPop = !state.populationError
         return validOrMissingPJNZ && validOrMissingPop && state.validatedConsistent && !!state.shape
     },
-    selectedDatasetAvailableResources: (state: BaselineState, rooState: DataExplorationState): unknown => {
+    selectedDatasetAvailableResources: (state: BaselineState, getters: any, rootState: DataExplorationState): unknown => {
         const resources: { [k in keyof DatasetResourceSet]?: DatasetResource | null } = {}
         const { selectedDataset } = state
 
         if (selectedDataset?.id && selectedDataset.resources) {
-            const selectedDatasetFromDatasets = rooState.adr.datasets
+            const selectedDatasetFromDatasets = rootState.adr.datasets
                 .find(dataset => dataset.id === selectedDataset.id) || null
 
             const checkResourceAvailable = (resourceType: string) => {
