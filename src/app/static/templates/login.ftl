@@ -9,6 +9,6 @@
     <!-- endinject -->
 </head>
 <body>
-<div id="app" title="${title}" app-title="${appTitle}"></div>
+<div id="app" title="${title}" app-title="${appTitle}" continue-to="${continueTo}" username="${username}" error="${error}"></div>
 </body>
 </html>

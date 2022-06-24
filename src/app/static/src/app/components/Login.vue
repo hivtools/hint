@@ -2,14 +2,13 @@
     <div>
         <logged-out-header :title="appTitle"></logged-out-header>
         <a href="https://www.unaids.org"><img src="public/images/unaids_logo.png" class="large-logo mx-auto mt-5 mb-4"/></a>
-    <!-- <h1 class="text-center"><strong>${appTitle}</strong></h1> -->
         <h1 class="text-center"><strong>{{appTitle}}</strong></h1>
         <div id="app" class="card login-form mx-auto mt-3">
             <div class="card-body">
-                <form id="login-form" method="post" action="/callback" class="needs-validation" novalidate onsubmit="validate(event);">
+                <form id="login-form" ref="form" method="post" action="/callback" class="needs-validation" novalidate @submit.prevent="validate">
                     <div class="form-group">
                         <label for="user-id" v-translate="'usernameEmail'"></label>
-                        <input type="text" size="20" class="form-control" name="username" id="user-id" value="${username}" required>
+                        <input type="text" size="20" class="form-control" name="username" id="user-id" v-model.trim="email" required>
                         <div id="userid-feedback" class="invalid-feedback" v-translate="'usernameValidation'"></div>
                     </div>
                     <div class="form-group">
@@ -38,7 +37,7 @@
         </div>
         <div id="continue-as-guest" class="text-center mt-3">
             <div class="mb-3" v-translate="'orCaps'"></div>
-            <a class="btn btn-red" onclick="continueAsGuest()" type="submit" href="${continueTo}" v-translate="'continueGuest'"></a>
+            <a class="btn btn-red" @click="continueAsGuest" type="submit" :href="continueTo" v-translate="'continueGuest'"></a>
         </div>
             <div id="partner-logos" class="logos mx-auto mt-5">
             <a href="https://www.fjelltopp.org"><img src="public/images/fjelltopp_logo.png" class="small-logo"></a>
@@ -60,14 +59,14 @@
 
     export default Vue.extend({
         name: "Login",
-        props: ["title", "appTitle"],
+        props: ["title", "appTitle", "username", "continueTo", "error"],
         data: () => {
             return {
-                email: ""
+                email: "",
             };
         },
         computed: mapState<LoginState>({
-            error: (state: LoginState) => state.loginRequestError,
+            error2: (state: LoginState) => state.loginRequestError,
             hasError: (state: LoginState) => !!state.loginRequestError,
             // resetLinkRequested: (state: LoginState) => state.resetLinkRequested,
             language: (state: LoginState) => state.language
@@ -76,7 +75,10 @@
             ErrorAlert,
             LoggedOutHeader
         },
-        // methods: {
+        mounted(){
+            this.email = this.username
+        },
+        methods: {
         //     ...mapActions({requestResetLink: 'requestResetLink'}),
         //     handleRequestResetLink: function (event: Event) {
         //         event.preventDefault();
@@ -86,7 +88,20 @@
         //         }
         //         form.classList.add('was-validated');
         //     }
-        // },
+            validate() {
+                // const userIdInput = document.getElementById("user-id");
+                // userIdInput.value = userIdInput.value.trim();
+                const form = this.$refs.form as HTMLFormElement
+                // const form = document.getElementById("login-form");
+                if (form && !form.checkValidity()) {
+                    // event.preventDefault();
+                    form.classList.add('was-validated');
+                }
+            },
+            continueAsGuest() {
+                sessionStorage.setItem("asGuest", "continueAsGuest")
+            }
+        },
         watch: {
             language(newVal: Language) {
                 document.documentElement.lang = newVal
