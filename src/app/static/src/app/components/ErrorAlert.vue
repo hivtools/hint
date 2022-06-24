@@ -61,3 +61,38 @@
         }
     });
 </script>
+
+<modal id="load-project-name" :open="requestProjectName">
+<h4 v-translate="'loadFileToProjectHeader'"></h4>
+<label class="h5" for="project-name-input" v-translate="'enterProjectName'"></label>
+<input id="project-name-input" type="text" class="form-control"
+       v-translate:placeholder="'projectName'" v-model="newProjectName">
+<template v-slot:footer>
+    <button id="confirm-load-project"
+            type="button"
+            class="btn btn-red"
+            @click="loadToNewProject"
+            v-translate="'createProject'"
+            :disabled="!newProjectName">
+    </button>
+    <button id="cancel-load-project"
+            type="button"
+            class="btn btn-white"
+            @click="cancelLoad"
+            v-translate="'cancel'">
+    </button>
+</template>
+</modal>
+
+<modal :open="hasError">
+<h4 v-translate="'loadError'"></h4>
+<p>{{ loadError }}</p>
+<template v-slot:footer>
+    <button type="button"
+            class="btn btn-red"
+            data-dismiss="modal"
+            aria-label="Close"
+            @click="clearLoadError" v-translate="'ok'">
+    </button>
+</template>
+</modal>

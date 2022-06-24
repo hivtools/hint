@@ -1,52 +1,37 @@
 <template>
     <div style="flex:auto">
         <drop-down text="file">
-            <a class="dropdown-item" v-on:mousedown="save">
-                <span v-translate="'save'"></span>
-                <download-icon size="20" class="icon"></download-icon>
-            </a>
-            <a style="display:none" ref="save"></a>
-            <a class="dropdown-item" ref="load" href="#" v-on:mousedown="$refs.loadFile.click()">
-                <span v-translate="'load'"></span>
+            <a class="dropdown-item" ref="loadModel" href="#" v-on:mousedown="$refs.loadModel.click()">
+                <span v-translate="'loadModel'"></span>
                 <upload-icon size="20" class="icon"></upload-icon>
             </a>
             <input v-translate:aria-label="'selectFile'"
                    type="file"
-                   style="display: none;" ref="loadFile" v-on:change="load" accept=".json,.zip">
+                   style="display: none;" ref="loadModel" v-on:change="loadModel" accept=".zip">
+
+            <a class="dropdown-item" v-on:mousedown="save">
+                <span><span class="pr-1" v-translate="'save'"></span>JSON</span>
+                <download-icon size="20" class="icon"></download-icon>
+            </a>
+            <a style="display:none" ref="save"></a>
+            <a class="dropdown-item" ref="load" href="#" v-on:mousedown="$refs.loadFile.click()">
+                <span><span class="pr-1" v-translate="'load'"></span>JSON</span>
+                <upload-icon size="20" class="icon"></upload-icon>
+            </a>
+            <input v-translate:aria-label="'selectFile'"
+                   type="file"
+                   style="display: none;" ref="loadFile" v-on:change="load" accept=".json">
         </drop-down>
-        <modal :open="hasError">
-            <h4 v-translate="'loadError'"></h4>
-            <p>{{ loadError }}</p>
-            <template v-slot:footer>
-                <button type="button"
-                        class="btn btn-red"
-                        data-dismiss="modal"
-                        aria-label="Close"
-                        @click="clearLoadError" v-translate="'ok'">
-                </button>
-            </template>
-        </modal>
-        <modal id="load-project-name" :open="requestProjectName">
-            <h4 v-translate="'loadFileToProjectHeader'"></h4>
-            <label class="h5" for="project-name-input" v-translate="'enterProjectName'"></label>
-            <input id="project-name-input" type="text" class="form-control"
-                   v-translate:placeholder="'projectName'" v-model="newProjectName">
-            <template v-slot:footer>
-                <button id="confirm-load-project"
-                        type="button"
-                        class="btn btn-red"
-                        @click="loadToNewProject"
-                        v-translate="'createProject'"
-                        :disabled="!newProjectName">
-                </button>
-                <button id="cancel-load-project"
-                        type="button"
-                        class="btn btn-white"
-                        @click="cancelLoad"
-                        v-translate="'cancel'">
-                </button>
-            </template>
-        </modal>
+        <load-error-modal :has-error="hasError"
+                          :load-error="loadError"
+                          :clear-load-error="clearLoadError"/>
+
+        <new-project-modal :header-text="'loadFileToProjectHeader'"
+                           :label-text="'enterProjectName'"
+                           :open-modal="requestProjectName"
+                           :input-value="newProjectName"
+                           :submit-load="loadToNewProject"
+                           :cancel-load="cancelLoad"/>
     </div>
 </template>
 <script lang="ts">
@@ -60,10 +45,11 @@
     import {LocalSessionFile} from "../../types";
     import {addCheckSum, mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {ValidateInputResponse} from "../../generated";
-    import Modal from "../Modal.vue"
     import DropDown from "./DropDown.vue";
     import {mapGetterByName} from "../../utils";
     import {loadPayload} from "../../store/load/actions";
+    import NewProjectModal from "../load/NewProjectModal.vue";
+    import LoadErrorModal from "../load/LoadErrorModal.vue";
 
     interface Data {
         requestProjectName: boolean,
@@ -74,6 +60,7 @@
     interface Methods {
         save: (e: Event) => void;
         load: () => void;
+        loadModel: () => void;
         loadAction: (payload: loadPayload) => void;
         loadToNewProject: () => void,
         clearLoadError: () => void,
@@ -168,6 +155,18 @@
                     }
                 }
             },
+            loadModel() {
+                const input = this.$refs.loadModel as HTMLInputElement;
+                if (input.files && input.files.length > 0) {
+                    const file = input.files[0];
+                    if (this.isGuest) {
+                        this.loadAction({file, projectName: null});
+                    } else {
+                        this.fileToLoad = file;
+                        this.requestProjectName = true;
+                    }
+                }
+            },
             loadToNewProject() {
                 this.requestProjectName = false;
                 const ext = this.fileToLoad?.name.split(".")[1]
@@ -193,8 +192,9 @@
         components: {
             UploadIcon,
             DownloadIcon,
-            Modal,
-            DropDown
+            DropDown,
+            NewProjectModal,
+            LoadErrorModal
         }
     })
 </script>
