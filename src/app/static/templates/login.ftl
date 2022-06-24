@@ -9,6 +9,6 @@
     <!-- endinject -->
 </head>
 <body>
-<div id="app" title="${title}"></div>
+<div id="app" title="${title}" app-title="${appTitle}"></div>
 </body>
 </html>
