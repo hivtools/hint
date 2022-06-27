@@ -5,8 +5,8 @@ import qs from "qs";
 import {LanguageActions} from "../language/language";
 import {changeLanguage} from "../language/actions";
 
-export type LoginActionTypes = "ResetLinkRequested" | "ResetLogin"
-export type LoginActionErrorTypes = "RequestResetLinkError" | "ResetLoginError"
+export type LoginActionTypes = "LoginRequested"
+export type LoginActionErrorTypes = "RequestLoginError"
 
 export interface ResetLoginActionParams {
     token: string
@@ -14,17 +14,17 @@ export interface ResetLoginActionParams {
 }
 
 export interface LoginActions extends LanguageActions<LoginState> {
-    requestResetLink: (store: ActionContext<LoginState, LoginState>, email: string) => void
+    loginRequest: (store: ActionContext<LoginState, LoginState>, email: string) => void
     // resetLogin: (store: ActionContext<LoginState, LoginState>, payload: ResetLoginActionParams) => void
 }
 
 export const actions: ActionTree<LoginState, LoginState> & LoginActions = {
 
-    async requestResetLink(context, email) {
+    async loginRequest(context, email) {
         await api<LoginActionTypes, LoginActionErrorTypes>(context)
-            .withError("RequestResetLinkError")
-            .withSuccess("ResetLinkRequested")
-            .postAndReturn<boolean>("/login/request-reset-link/", qs.stringify({email: email}));
+            .withError("RequestLoginError")
+            .withSuccess("LoginRequested")
+            .postAndReturn<boolean>("/login", qs.stringify({email: email}));
     },
 
     // async resetLogin(context, payload) {

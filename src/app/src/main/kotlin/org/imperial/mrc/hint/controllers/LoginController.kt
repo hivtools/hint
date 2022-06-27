@@ -47,4 +47,18 @@ class LoginController(private val request: HttpServletRequest,
 
         return "login"
     }
+
+    // @PostMapping("/login")
+    // @ResponseBody
+    // fun requestLogin(@RequestParam("email") email: String): String
+    // {
+    //     val user = userLogic.getUser(email)
+
+    //     if (user != null)
+    //     {
+    //         emailManager.sendPasswordEmail(email, user.username, PasswordEmailTemplate.ResetPassword())
+    //     }
+
+    //     return EmptySuccessResponse.toJsonString()
+    // }
 }

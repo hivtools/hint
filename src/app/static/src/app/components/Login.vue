@@ -5,14 +5,14 @@
         <h1 class="text-center"><strong>{{appTitle}}</strong></h1>
         <div id="app" class="card login-form mx-auto mt-3">
             <div class="card-body">
-                <form id="login-form" ref="form" method="post" action="/callback" class="needs-validation" novalidate @submit.prevent="validate">
+                <form id="login-form" ref="loginForm" method="post" action="/callback" class="needs-validation" novalidate>
                     <div class="form-group">
-                        <label for="user-id" v-translate="'usernameEmail'"></label>
+                        <label id="userid-label" for="user-id" v-translate="'usernameEmail'"></label>
                         <input type="text" size="20" class="form-control" name="username" id="user-id" v-model.trim="email" required>
                         <div id="userid-feedback" class="invalid-feedback" v-translate="'usernameValidation'"></div>
                     </div>
                     <div class="form-group">
-                        <label for="pw-id" v-translate="'password'"></label>
+                        <label id="pw-id-label" for="pw-id" v-translate="'password'"></label>
                         <input type="password" size="20" class="form-control" name="password" id="pw-id" required>
                         <div id="pw-feedback" class="invalid-feedback" v-translate="'passwordValidation'"></div>
                         <div id="forgot-password">
@@ -20,8 +20,8 @@
                         </div>
                     </div>
                     <div class="text-center mt-2">
-                        <!-- <input class="btn btn-red" type="submit" value="Log In"> -->
-                        <button class="btn btn-red" type="submit" v-translate="'logIn'"></button>
+                        <!-- <input @click="handleLoginSubmit" class="btn btn-red" type="submit" v-translate:value="'logIn'"> -->
+                        <button @click.prevent="handleLoginSubmit" class="btn btn-red" type="submit" v-translate="'logIn'"></button>
                     </div>
                 </form>
                 <error-alert v-if="hasError" :error="error"></error-alert>
@@ -68,7 +68,6 @@
         computed: mapState<LoginState>({
             error2: (state: LoginState) => state.loginRequestError,
             hasError: (state: LoginState) => !!state.loginRequestError,
-            // resetLinkRequested: (state: LoginState) => state.resetLinkRequested,
             language: (state: LoginState) => state.language
         }),
         components: {
@@ -79,23 +78,15 @@
             this.email = this.username
         },
         methods: {
-        //     ...mapActions({requestResetLink: 'requestResetLink'}),
-        //     handleRequestResetLink: function (event: Event) {
-        //         event.preventDefault();
-        //         const form = this.$refs.forgotPasswordForm as HTMLFieldSetElement;
-        //         if (form.checkValidity()) {
-        //             this.requestResetLink(this.email);
-        //         }
-        //         form.classList.add('was-validated');
-        //     }
-            validate() {
-                // const userIdInput = document.getElementById("user-id");
-                // userIdInput.value = userIdInput.value.trim();
-                const form = this.$refs.form as HTMLFormElement
-                // const form = document.getElementById("login-form");
-                if (form && !form.checkValidity()) {
-                    // event.preventDefault();
-                    form.classList.add('was-validated');
+            ...mapActions({loginRequest: 'loginRequest'}),
+            handleLoginSubmit() {
+                const loginForm = this.$refs.loginForm as HTMLFormElement
+
+                // if (loginForm.checkValidity()) {
+                //     this.loginRequest(this.email);
+                // }
+                if (loginForm && !loginForm.checkValidity()) {
+                    loginForm.classList.add('was-validated');
                 }
             },
             continueAsGuest() {
