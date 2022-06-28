@@ -21,7 +21,7 @@
                     </div>
                     <div class="text-center mt-2">
                         <!-- <input @click="handleLoginSubmit" class="btn btn-red" type="submit" v-translate:value="'logIn'"> -->
-                        <button @click.prevent="handleLoginSubmit" class="btn btn-red" type="submit" v-translate="'logIn'"></button>
+                        <button @click="validate" class="btn btn-red" type="submit" v-translate="'logIn'"></button>
                     </div>
                 </form>
                 <error-alert v-if="hasError" :error="error"></error-alert>
@@ -79,13 +79,14 @@
         },
         methods: {
             ...mapActions({loginRequest: 'loginRequest'}),
-            handleLoginSubmit() {
+            validate(event: Event) {
                 const loginForm = this.$refs.loginForm as HTMLFormElement
 
                 // if (loginForm.checkValidity()) {
                 //     this.loginRequest(this.email);
                 // }
                 if (loginForm && !loginForm.checkValidity()) {
+                    event.preventDefault()
                     loginForm.classList.add('was-validated');
                 }
             },

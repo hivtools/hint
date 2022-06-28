@@ -31,8 +31,8 @@ describe("Login component", () => {
         return store;
     };
 
-    const createSut = (store: Store<LoginState>) => {
-        return shallowMount(Login, {store, propsData: {title: "login", appTitle: "Naomi", username: "", continueTo: "/", error: null}});
+    const createSut = (store: Store<LoginState>, appTitle = "Naomi", continueTo = "/") => {
+        return shallowMount(Login, {store, propsData: {title: "login", appTitle, username: "", continueTo, error: null}});
     };
 
     it("renders form with no error", () => {
@@ -43,6 +43,8 @@ describe("Login component", () => {
 
         const wrapper = createSut(store);
 
+        // setTimeout(() => {
+
         expect(wrapper.find(LoggedOutHeader).props("title")).toBe("Naomi")
 
         expect(wrapper.find("h1>strong").text()).toBe("Naomi")
@@ -50,7 +52,7 @@ describe("Login component", () => {
         // Username
         expectTranslatedWithStoreType<LoginState>(wrapper.find("#userid-label"), "Username (email address)",
             "Nom d'utilisateur (adresse e-mail)", "Nome de utilizador (endereço de email)", store);
-        // expect(wrapper.find("#user-id").text()).toBe("test@email.com")
+        // expect(wrapper.find("#user-id").attributes("value")).toBe("test@email.com")
         expectTranslatedWithStoreType<LoginState>(wrapper.find("#userid-feedback"), "Please enter your username",
             "Veuillez entrer votre nom d’utilisateur", "Por favor, introduza o seu nome de utilizador", store);
 
@@ -98,6 +100,23 @@ describe("Login component", () => {
         expect(links.at(7).find("img").attributes("src")).toBe("public/images/avenir_logo.png")
         expect(links.at(8).attributes("href")).toBe("https://www.washington.edu")
         expect(links.at(8).find("img").attributes("src")).toBe("public/images/uw_logo.png")
+    //     done();
+    // });
+    });
+
+    it("renders correctly for data exploration", () => {
+        const store = createStore({
+            loginRequested: false,
+            loginRequestError: null
+        });
+
+        const wrapper = createSut(store, "Naomi Data Exploration", "explore");
+
+        expect(wrapper.find(LoggedOutHeader).props("title")).toBe("Naomi Data Exploration")
+
+        expect(wrapper.find("h1>strong").text()).toBe("Naomi Data Exploration")
+
+        expect(wrapper.findAll("a").at(3).attributes("href")).toBe("explore")
     });
 
 });

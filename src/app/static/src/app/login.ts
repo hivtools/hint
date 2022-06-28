@@ -9,7 +9,7 @@ import registerTranslations from "./store/translations/registerTranslations";
 Vue.use(Vuex);
 
 const loginStoreOptions: StoreOptions<LoginState> = {
-    state: initialLoginState,
+    state: initialLoginState, // use language state here directly
     actions,
     mutations
 };
