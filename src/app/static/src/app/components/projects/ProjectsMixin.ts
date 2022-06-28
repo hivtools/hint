@@ -8,10 +8,13 @@ interface Data {
 
 interface Computed {
     projects: Project[],
-    invalidName: boolean
 }
 
-export default Vue.extend<Data, unknown, Computed, unknown>({
+interface Methods {
+    invalidName: (projectName: string) => boolean
+}
+
+export default Vue.extend<Data, Methods, Computed, unknown>({
     data() {
         return {
             newProjectName: ""
@@ -19,8 +22,10 @@ export default Vue.extend<Data, unknown, Computed, unknown>({
     },
     computed: {
         projects: mapStatePropByName<Project[]>("projects", "previousProjects"),
-        invalidName() {
-            return this.projects.map(p => p.name).indexOf(this.newProjectName) > -1
+    },
+    methods: {
+        invalidName(projectName) {
+            return this.projects.map(p => p.name).indexOf(projectName) > -1
         }
     }
 });

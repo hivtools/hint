@@ -10,23 +10,31 @@
                        href="#" @click="handleCurrentProjectClick"></a> ({{ currentProject.name }})
                 </span>
             </div>
-            <div class="mb-3 col-6 clearfix">
-                <input type="text"
-                       id="new-project"
-                       class="form-control"
-                       v-translate:placeholder="'projectName'"
-                       @keyup.enter="createProject(newProjectName)"
-                       v-model="newProjectName">
-                <div class="invalid-feedback d-inline"
-                     v-translate="'uniqueProjectName'"
-                     v-if="invalidName"></div>
-                <button type="button"
-                        class="btn btn-red mt-2 float-right"
-                        :disabled="disableCreate"
-                        @click="createProject(newProjectName)"
-                        v-translate="'createProject'">
-                </button>
-            </div>
+                <div class="mb-3 clearfix col-10">
+                    <div class="d-flex flex-row">
+                        <div class="pr-2 col-6">
+                            <input type="text"
+                                   id="new-project"
+                                   class="form-control"
+                                   v-translate:placeholder="'projectName'"
+                                   @keyup.enter="createProject(newProjectName)"
+                                   v-model="newProjectName">
+
+                            <div class="invalid-feedback d-inline"
+                                 v-translate="'uniqueProjectName'"
+                                 v-if="invalidName(newProjectName)"></div>
+                            <button type="button"
+                                    class="btn btn-red mt-2 float-right"
+                                    :disabled="disableCreate"
+                                    @click="createProject(newProjectName)"
+                                    v-translate="'createProject'">
+                            </button>
+                        </div>
+                        <div>
+                            <project-upload-button :upload-project="(event) => uploadProject(event)"/>
+                        </div>
+                    </div>
+                </div>
             <div class="my-3 col-12">
                 <project-history></project-history>
             </div>
@@ -36,22 +44,31 @@
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingProject'"></h2>
         </div>
+
+        <upload-new-project :label-text="'enterProjectName'"
+                            :open-modal="openNewProjectModal"
+                            :submit-load="uploadToNewProject"
+                            :cancel-load="cancelUpload"/>
     </div>
 </template>
 
 <script lang="ts">
-    import {mapActionByName, mapGetterByName, mapStateProps} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapStatePropByName, mapStateProps} from "../../utils";
     import {ProjectsState} from "../../store/projects/projects";
     import {Error} from "../../generated";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {Project} from "../../types";
     import ProjectHistory from "./ProjectHistory.vue";
+    import ProjectsMixin from "./ProjectsMixin";
+    import ProjectUploadButton from "./ProjectUploadButton.vue";
+    import UploadNewProject from "../load/UploadNewProject.vue";
 
     const namespace = "projects";
 
     interface Data {
-        newProjectName: string
+        openNewProjectModal: boolean
+        fileToLoad: File | null
     }
 
     interface Computed {
@@ -61,17 +78,26 @@
         isGuest: boolean,
         disableCreate: boolean,
         loading: boolean
+        uploadProjectName: string
     }
 
     interface Methods {
         createProject: (name: string) => void,
         getProjects: () => void,
         handleCurrentProjectClick: (e: Event) => void
+        uploadProject: (e: Event) => void
+        cancelUpload: () => void
+        uploadToNewProject: () => void
+        preparingRehydrate: (payload: File) => void;
     }
 
-    import ProjectsMixin from "./ProjectsMixin";
-
     export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
+        data() {
+            return {
+                openNewProjectModal: false,
+                fileToLoad: null
+            }
+        },
         computed: {
             ...mapStateProps<ProjectsState, keyof Computed>(namespace, {
                 currentProject: state => state.currentProject,
@@ -79,9 +105,10 @@
                 hasError: state => !!state.error,
                 loading: state => state.loading
             }),
+            uploadProjectName: mapStatePropByName<string>("load", "projectName"),
             isGuest: mapGetterByName(null, "isGuest"),
             disableCreate: function () {
-                return !this.newProjectName || this.invalidName;
+                return !this.newProjectName || this.invalidName(this.newProjectName);
             }
         },
         methods: {
@@ -90,7 +117,26 @@
                 this.$router.push('/');
             },
             createProject: mapActionByName(namespace, "createProject"),
-            getProjects: mapActionByName(namespace, "getProjects")
+            getProjects: mapActionByName(namespace, "getProjects"),
+            preparingRehydrate: mapActionByName<File>("load", "preparingRehydrate"),
+            uploadProject(event) {
+                const target = event.target as HTMLInputElement;
+                if (target.files && target.files.length > 0) {
+                    this.fileToLoad = target.files[0];
+                    this.openNewProjectModal = true;
+                }
+            },
+            uploadToNewProject() {
+                this.openNewProjectModal = false;
+                if (!this.fileToLoad) {
+                    throw new Error("Cannot find uploaded file")
+                }
+
+                this.preparingRehydrate(this.fileToLoad);
+            },
+            cancelUpload() {
+                this.openNewProjectModal = false
+            }
         },
         mounted() {
             this.getProjects();
@@ -98,7 +144,9 @@
         components: {
             ErrorAlert,
             LoadingSpinner,
-            ProjectHistory
+            ProjectHistory,
+            ProjectUploadButton,
+            UploadNewProject
         }
     });
 </script>

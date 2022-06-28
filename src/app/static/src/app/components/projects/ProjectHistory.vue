@@ -46,6 +46,9 @@
                     <small v-if="p.sharedBy" class="text-muted d-flex">
                         {{ getTranslatedValue("sharedBy") }}: {{ p.sharedBy }}
                     </small>
+                    <small v-if="p.isUploaded" class="text-muted d-flex">
+                        {{ getTranslatedValue("isUploadedText") }}
+                    </small>
                 </div>
                 <div class="col-md-1 project-cell version-count-cell">
                     <small class="text-muted">{{ versionCountLabel(p) }}</small>

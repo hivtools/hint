@@ -25,9 +25,10 @@ class ProjectsController(private val session: Session,
     @PostMapping("/project/")
     @ResponseBody
     fun newProject(@RequestParam("name") name: String,
-                   @RequestParam("note") note: String?): ResponseEntity<String>
+                   @RequestParam("note") note: String?,
+                   @RequestParam("isUploaded") isUploaded: Boolean): ResponseEntity<String>
     {
-        val projectId = projectRepository.saveNewProject(userId(), name, note = note)
+        val projectId = projectRepository.saveNewProject(userId(), name, note = note, isUploaded = isUploaded)
 
         //Generate new version id and set it as the session variable, and save new version to db
         val newVersionId = session.generateVersionId()

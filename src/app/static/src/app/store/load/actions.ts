@@ -12,16 +12,16 @@ import {ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generat
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {DynamicControlGroup, DynamicControlSection, DynamicFormData} from "@reside-ic/vue-dynamic-form";
 
-export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult"
+export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult" | "SetProjectName" | "RehydrateCancel"
 export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
 
 export interface LoadActions {
     load: (store: ActionContext<LoadState, RootState>, payload: loadPayload) => void
+    preparingRehydrate: (store: ActionContext<LoadState, RootState>, file: File) => void
     setFiles: (store: ActionContext<LoadState, RootState>, payload: setFilesPayload) => void
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
     clearLoadState: (store: ActionContext<LoadState, RootState>) => void
-    preparingRehydrate: (store: ActionContext<LoadState, RootState>, payload: modelOutputPayload) => void
     pollRehydrate: (store: ActionContext<LoadState, RootState>) => void
 }
 
@@ -36,28 +36,17 @@ export interface setFilesPayload {
     projectName: string | null
 }
 
-export interface modelOutputPayload {
-    file: FormData,
-    projectName: string | null
-}
-
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
     async load(context, payload) {
         const {dispatch} = context
-        const {file, projectName, source} = payload;
+        const {file, projectName} = payload;
 
-        if (FileSource.ModelOutput === source) {
-            const formData = new FormData()
-            formData.append("file", file)
-            await dispatch("preparingRehydrate", {file: formData, projectName});
-        } else {
-            const reader = new FileReader();
-            reader.addEventListener('loadend', function () {
-                dispatch("setFiles", {savedFileContents: reader.result as string, projectName});
-            });
-            reader.readAsText(file);
-        }
+        const reader = new FileReader();
+        reader.addEventListener('loadend', function () {
+            dispatch("setFiles", {savedFileContents: reader.result as string, projectName});
+        });
+        reader.readAsText(file);
     },
 
     async setFiles(context, payload) {
@@ -128,16 +117,16 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         commit({type: "LoadStateCleared", payload: null});
     },
 
-    async preparingRehydrate(context, payload) {
-        const {file} = payload;
-        const {commit, dispatch} = context;
+    async preparingRehydrate(context, file) {
+        const {dispatch, commit} = context
+        const formData = new FormData()
+        formData.append("file", file)
 
         commit({type: "SettingFiles", payload: null});
-
         const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
             .withSuccess("PreparingRehydrate")
             .withError("RehydrateResultError")
-            .postAndReturn("rehydrate/submit", file);
+            .postAndReturn("rehydrate/submit", formData);
 
         if (response) {
             await dispatch("pollRehydrate");
@@ -155,8 +144,8 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 };
 
 const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) => {
-    const rehydrateId = context.state.rehydrateId
-
+    const {rootGetters, state, dispatch} = context
+    const rehydrateId = state.rehydrateId
     const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("RehydrateResult")
         .withError("RehydrateResultError")
@@ -164,6 +153,10 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
 
     if (response && response.data) {
         console.log(response.data.state)
+
+        if (!rootGetters.isGuest) {
+            await (dispatch("projects/createProject", state.projectName, {root: true}));
+        }
     }
 }
 

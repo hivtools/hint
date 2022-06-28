@@ -1,3 +1,7 @@
+# hint 2.4.0
+
+* Implement upload output zip UI
+
 # hint 2.3.0
 
 * Upload output zip action which calls hintr endpoint via backend

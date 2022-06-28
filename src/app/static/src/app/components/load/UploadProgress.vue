@@ -1,11 +1,20 @@
 <template>
     <div>
         <modal id="upload-progress" :open="openModal">
-            <div>
-                <h4 v-translate="headerText"></h4>
-                <loading-spinner size="xs"/>
+            <h4 class="pb-4">
+                <span class="pr-4" v-translate="headerText"></span>
+                <span><loading-spinner size="xs"/></span>
+            </h4>
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger"
+                     role="progressbar"
+                     aria-valuenow="100"
+                     aria-valuemin="0"
+                     aria-valuemax="100"
+                     style="width: 100%"/>
             </div>
-            <span v-translate="progressMessage"></span>
+            <span v-if="!progressMessage" v-translate="'uploading'"></span>
+            <span v-else>{{ progressMessage }}</span>
             <template v-slot:footer>
                 <button id="cancel-upload-progress"
                         type="button"

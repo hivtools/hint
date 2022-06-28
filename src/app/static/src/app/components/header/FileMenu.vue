@@ -22,16 +22,12 @@
                    type="file"
                    style="display: none;" ref="loadFile" v-on:change="load" accept=".json">
         </drop-down>
-        <load-error-modal :has-error="hasError"
-                          :load-error="loadError"
-                          :clear-load-error="clearLoadError"/>
 
-        <new-project-modal :header-text="'loadFileToProjectHeader'"
-                           :label-text="'enterProjectName'"
-                           :open-modal="requestProjectName"
-                           :input-value="newProjectName"
-                           :submit-load="loadToNewProject"
-                           :cancel-load="cancelLoad"/>
+        <upload-new-project :header-text="'loadFileToProjectHeader'"
+                            :label-text="'enterProjectName'"
+                            :open-modal="requestProjectName"
+                            :submit-load="loadToNewProject"
+                            :cancel-load="cancelLoad"/>
     </div>
 </template>
 <script lang="ts">
@@ -39,21 +35,19 @@
     import Vue from "vue";
     import {serialiseState} from "../../localStorageManager";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {FileSource, LoadingState, LoadState} from "../../store/load/load";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import {LocalSessionFile} from "../../types";
-    import {addCheckSum, mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+    import {addCheckSum, mapActionByName, mapStateProp} from "../../utils";
     import {ValidateInputResponse} from "../../generated";
     import DropDown from "./DropDown.vue";
     import {mapGetterByName} from "../../utils";
     import {loadPayload} from "../../store/load/actions";
-    import NewProjectModal from "../load/NewProjectModal.vue";
-    import LoadErrorModal from "../load/LoadErrorModal.vue";
+    import UploadNewProject from "../load/UploadNewProject.vue";
 
     interface Data {
         requestProjectName: boolean,
-        newProjectName: string | null,
+        newProjectName: string,
         fileToLoad: File | null
     }
 
@@ -62,17 +56,13 @@
         load: () => void;
         loadModel: () => void;
         loadAction: (payload: loadPayload) => void;
-        loadToNewProject: () => void,
-        clearLoadError: () => void,
-        cancelLoad: () => void
+        loadToNewProject: () => void;
+        cancelLoad: () => void;
+        preparingRehydrate: (payload: File) => void
     }
 
-    interface LoadComputed {
-        loadError: string
-        hasError: boolean
-    }
 
-    interface Computed extends LoadComputed {
+    interface Computed {
         baselineFiles: BaselineFiles
         surveyAndProgramFiles: SurveyAndProgramFiles,
         isGuest: boolean
@@ -99,15 +89,11 @@
         data(): Data {
             return {
                 requestProjectName: false,
-                newProjectName: null,
+                newProjectName: "",
                 fileToLoad: null
             }
         },
         computed: {
-            ...mapStateProps<LoadState, keyof LoadComputed>("load", {
-                hasError: state => state.loadingState == LoadingState.LoadFailed,
-                loadError: state => state.loadError && state.loadError.detail
-            }),
             isGuest: mapGetterByName(null, "isGuest"),
             baselineFiles: mapStateProp<BaselineState, BaselineFiles>("baseline", state => {
                 return {
@@ -126,7 +112,7 @@
         },
         methods: {
             loadAction: mapActionByName<File>("load", "load"),
-            clearLoadError: mapActionByName("load", "clearLoadState"),
+            preparingRehydrate: mapActionByName("load","preparingRehydrate"),
             save(e: Event) {
                 e.preventDefault();
                 const state = serialiseState(this.$store.state);
@@ -160,7 +146,7 @@
                 if (input.files && input.files.length > 0) {
                     const file = input.files[0];
                     if (this.isGuest) {
-                        this.loadAction({file, projectName: null});
+                        this.preparingRehydrate(file);
                     } else {
                         this.fileToLoad = file;
                         this.requestProjectName = true;
@@ -169,18 +155,17 @@
             },
             loadToNewProject() {
                 this.requestProjectName = false;
+                if (!this.fileToLoad) {
+                    throw new Error("Cannot find uploaded file")
+                }
                 const ext = this.fileToLoad?.name.split(".")[1]
                 if (ext === "zip") {
-                    this.loadAction({
-                        file: this.fileToLoad!,
-                        projectName: this.newProjectName,
-                        source: FileSource.ModelOutput
-                    });
+                    this.preparingRehydrate(this.fileToLoad);
                 }
 
-                if (ext === "json") {
+                else if (ext === "json") {
                     this.loadAction({
-                        file: this.fileToLoad!,
+                        file: this.fileToLoad,
                         projectName: this.newProjectName
                     });
                 }
@@ -193,8 +178,7 @@
             UploadIcon,
             DownloadIcon,
             DropDown,
-            NewProjectModal,
-            LoadErrorModal
+            UploadNewProject
         }
     })
 </script>
