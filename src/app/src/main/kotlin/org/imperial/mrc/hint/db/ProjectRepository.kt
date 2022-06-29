@@ -37,7 +37,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                 PROJECT.NAME,
                 PROJECT.SHARED_BY,
                 PROJECT.NOTE,
-                PROJECT.ISUPLOADED,
+                PROJECT.IS_UPLOADED,
                 PROJECT_VERSION.ID,
                 PROJECT_VERSION.CREATED,
                 PROJECT_VERSION.UPDATED,
@@ -85,7 +85,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                 PROJECT.NAME,
                 PROJECT.SHARED_BY,
                 PROJECT.NOTE,
-                PROJECT.ISUPLOADED)
+                PROJECT.IS_UPLOADED)
                 .values(userId, projectName, sharedBy, note, isUploaded)
                 .returning(PROJECT.ID)
                 .fetchOne()
@@ -99,7 +99,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                 dsl.select(
                         PROJECT.ID,
                         PROJECT.NAME,
-                        PROJECT.ISUPLOADED,
+                        PROJECT.IS_UPLOADED,
                         PROJECT.SHARED_BY,
                         PROJECT.NOTE,
                         PROJECT_VERSION.ID,
@@ -167,7 +167,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                 mapVersion(versions),
                 versions[0][PROJECT.SHARED_BY],
                 versions[0][PROJECT.NOTE],
-                versions[0][PROJECT.ISUPLOADED])
+                versions[0][PROJECT.IS_UPLOADED])
     }
 
     private fun mapVersion(records: List<Record>): List<Version>

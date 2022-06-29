@@ -28,7 +28,6 @@ export const mutations: MutationTree<LoadState> & LoadMutations = {
         state.loadingState = LoadingState.SettingFiles;
     },
     SetProjectName(state: LoadState, projectName: string) {
-        console.log("Nothing is set" + projectName)
         state.projectName = projectName
     },
     RehydrateCancel(state: LoadState) {

@@ -77,7 +77,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         }
 
         if (!rootGetters.isGuest) {
-            await (dispatch("projects/createProject", projectName, {root: true}));
+            await (dispatch("projects/createProject", {name: projectName}, {root: true}));
             savedState.projects.currentProject = rootState.projects.currentProject;
             savedState.projects.currentVersion = rootState.projects.currentVersion;
         }
@@ -155,7 +155,11 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
         console.log(response.data.state)
 
         if (!rootGetters.isGuest) {
-            await (dispatch("projects/createProject", state.projectName, {root: true}));
+            await (dispatch("projects/createProject",
+                {
+                    name: state.projectName,
+                    isUploaded: true
+                }, {root: true}));
         }
     }
 }

@@ -26,7 +26,7 @@ class ProjectsController(private val session: Session,
     @ResponseBody
     fun newProject(@RequestParam("name") name: String,
                    @RequestParam("note") note: String?,
-                   @RequestParam("isUploaded") isUploaded: Boolean): ResponseEntity<String>
+                   @RequestParam("isUploaded") isUploaded: Boolean?): ResponseEntity<String>
     {
         val projectId = projectRepository.saveNewProject(userId(), name, note = note, isUploaded = isUploaded)
 
@@ -36,7 +36,7 @@ class ProjectsController(private val session: Session,
         versionRepository.saveVersion(newVersionId, projectId)
 
         val version = versionRepository.getVersion(newVersionId)
-        val project = Project(projectId, name, listOf(version))
+        val project = Project(projectId, name, listOf(version), isUploaded = isUploaded)
         return SuccessResponse(project).asResponseEntity()
     }
 

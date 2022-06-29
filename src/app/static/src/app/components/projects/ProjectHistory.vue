@@ -46,7 +46,7 @@
                     <small v-if="p.sharedBy" class="text-muted d-flex">
                         {{ getTranslatedValue("sharedBy") }}: {{ p.sharedBy }}
                     </small>
-                    <small v-if="p.isUploaded" class="text-muted d-flex">
+                    <small v-if="p.uploaded" class="text-muted d-flex">
                         {{ getTranslatedValue("isUploadedText") }}
                     </small>
                 </div>
@@ -276,7 +276,7 @@
     } from "vue-feather-icons";
     import Modal from "../Modal.vue";
     import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
-    import {projectPayload, versionPayload} from "../../store/projects/actions";
+    import {createProjectPayload, projectPayload, versionPayload} from "../../store/projects/actions";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
@@ -336,7 +336,7 @@
         deleteVersionAction: (versionIds: VersionIds) => void;
         promoteVersionAction: (versionPayload: versionPayload) => void;
         renameProjectAction: (projectPayload: projectPayload) => void;
-        createProject: (name: string) => void;
+        createProject: (name: createProjectPayload) => void;
         getProjects: () => void;
         versionLabel: (version: Version) => string;
         renameProject: (event: Event, projectId: number) => void;

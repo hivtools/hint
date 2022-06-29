@@ -86,7 +86,7 @@ export interface Project {
     versions: Version[]
     sharedBy?: string
     note?: string,
-    isUploaded?: boolean
+    uploaded?: boolean
 }
 
 export interface CurrentProject {

@@ -17,7 +17,7 @@
                                    id="new-project"
                                    class="form-control"
                                    v-translate:placeholder="'projectName'"
-                                   @keyup.enter="createProject(newProjectName)"
+                                   @keyup.enter="createProject({name: newProjectName})"
                                    v-model="newProjectName">
 
                             <div class="invalid-feedback d-inline"
@@ -26,7 +26,7 @@
                             <button type="button"
                                     class="btn btn-red mt-2 float-right"
                                     :disabled="disableCreate"
-                                    @click="createProject(newProjectName)"
+                                    @click="createProject({name: newProjectName})"
                                     v-translate="'createProject'">
                             </button>
                         </div>
@@ -63,6 +63,7 @@
     import ProjectsMixin from "./ProjectsMixin";
     import ProjectUploadButton from "./ProjectUploadButton.vue";
     import UploadNewProject from "../load/UploadNewProject.vue";
+    import {createProjectPayload} from "../../store/projects/actions";
 
     const namespace = "projects";
 
@@ -82,7 +83,7 @@
     }
 
     interface Methods {
-        createProject: (name: string) => void,
+        createProject: (name: createProjectPayload) => void,
         getProjects: () => void,
         handleCurrentProjectClick: (e: Event) => void
         uploadProject: (e: Event) => void

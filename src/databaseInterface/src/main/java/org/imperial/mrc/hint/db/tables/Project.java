@@ -39,7 +39,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Project extends TableImpl<ProjectRecord> {
 
-    private static final long serialVersionUID = 996241108;
+    private static final long serialVersionUID = -738130146;
 
     /**
      * The reference instance of <code>public.project</code>
@@ -78,6 +78,11 @@ public class Project extends TableImpl<ProjectRecord> {
      * The column <code>public.project.shared_by</code>.
      */
     public final TableField<ProjectRecord, String> SHARED_BY = createField("shared_by", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>public.project.is_uploaded</code>.
+     */
+    public final TableField<ProjectRecord, Boolean> IS_UPLOADED = createField("is_uploaded", org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * Create a <code>public.project</code> table reference
