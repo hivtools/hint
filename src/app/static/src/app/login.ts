@@ -1,20 +1,25 @@
 import Vue from "vue";
 import Vuex, {StoreOptions} from "vuex";
 import Login from "./components/Login.vue";
-import {initialLoginState, LoginState} from "./store/login/login";
-import {actions} from './store/login/actions';
-import {mutations} from './store/login/mutations';
+import {Language} from "./store/translations/locales";
+import {TranslatableState} from "./types";
+import {initialLanguageState} from "./store/language/language";
+// import {initialLoginState, LoginState} from "./store/login/login";
+import {actions} from './store/language/actions';
+import {mutations} from './store/language/mutations';
+// import {actions} from './store/login/actions';
+// import {mutations} from './store/login/mutations';
 import registerTranslations from "./store/translations/registerTranslations";
 
 Vue.use(Vuex);
 
-const loginStoreOptions: StoreOptions<LoginState> = {
-    state: initialLoginState, // use language state here directly
+const loginStoreOptions: StoreOptions<TranslatableState> = {
+    state: initialLanguageState,
     actions,
     mutations
 };
 
-const store = new Vuex.Store<LoginState>(loginStoreOptions);
+const store = new Vuex.Store<TranslatableState>(loginStoreOptions);
 registerTranslations(store);
 
 export const loginApp = new Vue({
