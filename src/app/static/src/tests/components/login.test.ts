@@ -3,13 +3,11 @@ import Login from "../../app/components/Login.vue";
 import {TranslatableState} from "../../app/types";
 import {LanguageActions} from "../../app/store/language/language";
 import Vuex, {Store} from "vuex";
-import {mockError, mockLanguageState} from "../mocks";
-import ErrorAlert from "../../app/components/ErrorAlert.vue";
+import {mockLanguageState} from "../mocks";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import LoggedOutHeader from "../../app/components/header/LoggedOutHeader.vue";
 import {expectTranslatedWithStoreType} from "../testHelpers";
-import {LanguageMutation, mutations} from "../../app/store/language/mutations";
-import {Language} from "../../app/store/translations/locales";
+import {mutations} from "../../app/store/language/mutations";
 
 describe("Login component", () => {
 
@@ -30,16 +28,14 @@ describe("Login component", () => {
         return store;
     };
 
-    const createSut = (store: Store<TranslatableState>, appTitle = "Naomi", continueTo = "/") => {
-        return shallowMount(Login, {store, propsData: {title: "login", appTitle, username: "", continueTo, error: null}});
+    const createSut = (store: Store<TranslatableState>, appTitle = "Naomi", continueTo = "/", username = "", error: null | string = null) => {
+        return shallowMount(Login, {store, propsData: {title: "login", appTitle, username, continueTo, error}});
     };
 
     it("renders form with no error", () => {
         const store = createStore();
 
         const wrapper = createSut(store);
-
-        // setTimeout(() => {
 
         expect(wrapper.find(LoggedOutHeader).props("title")).toBe("Naomi")
 
@@ -48,7 +44,6 @@ describe("Login component", () => {
         // Username
         expectTranslatedWithStoreType<TranslatableState>(wrapper.find("#userid-label"), "Username (email address)",
             "Nom d'utilisateur (adresse e-mail)", "Nome de utilizador (endereço de email)", store);
-        // expect(wrapper.find("#user-id").attributes("value")).toBe("test@email.com")
         expectTranslatedWithStoreType<TranslatableState>(wrapper.find("#userid-feedback"), "Please enter your username",
             "Veuillez entrer votre nom d’utilisateur", "Por favor, introduza o seu nome de utilizador", store);
 
@@ -76,6 +71,7 @@ describe("Login component", () => {
         expectTranslatedWithStoreType<TranslatableState>(wrapper.find("#continue-as-guest>a"), "Continue as guest",
             "Continuer en tant qu'invité", "Continuar como convidado", store);
 
+        expect(wrapper.find("#error").exists()).toBe(false)
 
         const links = wrapper.findAll("a")
         expect(links.length).toBe(9)
@@ -96,8 +92,13 @@ describe("Login component", () => {
         expect(links.at(7).find("img").attributes("src")).toBe("public/images/avenir_logo.png")
         expect(links.at(8).attributes("href")).toBe("https://www.washington.edu")
         expect(links.at(8).find("img").attributes("src")).toBe("public/images/uw_logo.png")
-    //     done();
-    // });
+    });
+
+    it("renders form with error", () => {
+        const store = createStore();
+
+        const wrapper = createSut(store, "Naomi", "/", "", "test error");
+        expect(wrapper.find("#error").text()).toBe("test error")
     });
 
     it("renders correctly for data exploration", () => {
@@ -110,6 +111,14 @@ describe("Login component", () => {
         expect(wrapper.find("h1>strong").text()).toBe("Naomi Data Exploration")
 
         expect(wrapper.findAll("a").at(3).attributes("href")).toBe("explore")
+    });
+
+    it("email is updated from username prop", () => {
+        const store = createStore();
+
+        const wrapper = createSut(store, "Naomi", "/", "test");
+
+        expect(wrapper.vm.$data.email).toBe("test")
     });
 
 });

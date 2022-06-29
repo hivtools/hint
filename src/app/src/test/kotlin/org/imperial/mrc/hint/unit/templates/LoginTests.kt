@@ -22,7 +22,11 @@ class LoginTests
         model["continueTo"] = "/"
         val doc = template.jsoupDocFor(model)
 
+        assertThat(doc.select("#app").attr("username")).isEqualTo("test user")
+        assertThat(doc.select("#app").attr("error")).isEqualTo("test error")
         assertThat(doc.select("#app").attr("title")).isEqualTo("test title")
+        assertThat(doc.select("#app").attr("appTitle")).isEqualTo("Naomi")
+        assertThat(doc.select("#app").attr("continueTo")).isEqualTo("/")
     }
 
 }

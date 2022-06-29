@@ -20,16 +20,11 @@
                         </div>
                     </div>
                     <div class="text-center mt-2">
-                        <!-- <input @click="handleLoginSubmit" class="btn btn-red" type="submit" v-translate:value="'logIn'"> -->
                         <button @click="validate" class="btn btn-red" type="submit" v-translate="'logIn'"></button>
                     </div>
                 </form>
-                <error-alert v-if="hasError" :error="error"></error-alert>
-                <!-- <#if error != "">
-                    <div id="error" class="alert alert-danger mt-3">${error}</div>
-                </#if> -->
+                <div v-if="error" id="error" class="alert alert-danger mt-3">{{error}}</div>
                 <div id="register-an-account" class="text-center mt-4">
-                    <!-- Don't have an account? <br><a href="https://forms.office.com/r/7S9EMigGr4" target="_blank">Request an account</a> -->
                     <div v-translate="'noAccount'"></div>
                     <a href="https://forms.office.com/r/7S9EMigGr4" target="_blank" id="requestAccount" v-translate="'requestAccount'"></a>
                 </div>
@@ -51,9 +46,8 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import ErrorAlert from "./ErrorAlert.vue";
-    import {mapActions, mapState} from "vuex";
-    import {LoginState} from "../store/login/login";
+    import {mapState} from "vuex";
+    import {TranslatableState} from "../types";
     import LoggedOutHeader from "./header/LoggedOutHeader.vue";
     import {Language} from "../store/translations/locales";
 
@@ -65,26 +59,18 @@
                 email: "",
             };
         },
-        computed: mapState<LoginState>({
-            error2: (state: LoginState) => state.loginRequestError,
-            hasError: (state: LoginState) => !!state.loginRequestError,
-            language: (state: LoginState) => state.language
+        computed: mapState<TranslatableState>({
+            language: (state: TranslatableState) => state.language
         }),
         components: {
-            ErrorAlert,
             LoggedOutHeader
         },
         mounted(){
             this.email = this.username
         },
         methods: {
-            ...mapActions({loginRequest: 'loginRequest'}),
             validate(event: Event) {
                 const loginForm = this.$refs.loginForm as HTMLFormElement
-
-                // if (loginForm.checkValidity()) {
-                //     this.loginRequest(this.email);
-                // }
                 if (loginForm && !loginForm.checkValidity()) {
                     event.preventDefault()
                     loginForm.classList.add('was-validated');

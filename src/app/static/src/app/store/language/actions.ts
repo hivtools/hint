@@ -47,7 +47,6 @@ export const ChangeLanguageAction = async (context: ActionContext<DataExploratio
 
 export const actions: ActionTree<TranslatableState, TranslatableState> = {
     async changeLanguage(context, payload) {
-        console.log("language action called here", context, payload)
         await changeLanguage<TranslatableState>(context, payload)
     }
 };
