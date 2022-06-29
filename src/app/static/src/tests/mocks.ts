@@ -2,7 +2,7 @@ import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import {BaselineState, initialBaselineState} from "../app/store/baseline/baseline";
 import {initialPasswordState, PasswordState} from "../app/store/password/password";
-import {initialLoginState, LoginState} from "../app/store/login/login";
+import {initialLanguageState} from "../app/store/language/language";
 import {
     initialSurveyAndProgramState,
     SurveyAndProgramState
@@ -47,6 +47,7 @@ import {DownloadResultsState, initialDownloadResultsState} from "../app/store/do
 import {GenericChartState, initialGenericChartState} from "../app/store/genericChart/genericChart";
 import {DataExplorationState, initialDataExplorationState} from "../app/store/dataExploration/dataExploration";
 import {DynamicControlType, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {TranslatableState} from "../app/types";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -57,9 +58,9 @@ export const mockPasswordState = (props?: Partial<PasswordState>): PasswordState
     }
 };
 
-export const mockLoginState = (props?: Partial<LoginState>): LoginState => {
+export const mockLanguageState = (props?: Partial<TranslatableState>): TranslatableState => {
     return {
-        ...initialLoginState,
+        ...initialLanguageState,
         ...props
     }
 };
