@@ -25,8 +25,8 @@ class LoginTests
         assertThat(doc.select("#app").attr("username")).isEqualTo("test user")
         assertThat(doc.select("#app").attr("error")).isEqualTo("test error")
         assertThat(doc.select("#app").attr("title")).isEqualTo("test title")
-        assertThat(doc.select("#app").attr("appTitle")).isEqualTo("Naomi")
-        assertThat(doc.select("#app").attr("continueTo")).isEqualTo("/")
+        assertThat(doc.select("#app").attr("app-title")).isEqualTo("Naomi")
+        assertThat(doc.select("#app").attr("continue-to")).isEqualTo("/")
     }
 
 }
