@@ -121,4 +121,28 @@ describe("Login component", () => {
         expect(wrapper.vm.$data.email).toBe("test")
     });
 
+    it("adds validation class to form when log in", async () => {
+        const store = createStore();
+
+        const wrapper = createSut(store);
+
+        expect(wrapper.find("#login-form").attributes("class")).toBe("needs-validation")
+
+        const loginBtn = wrapper.find(".btn-red")
+        await loginBtn.trigger("click")
+        expect(wrapper.find("#login-form").attributes("class")).toBe("needs-validation was-validated")
+    });
+
+    // it("continue as guest is set in session storage", async () => {
+    //     const mockSaveToSessionStorage = jest.fn();
+    //     sessionStorage.setItem = mockSaveToSessionStorage;
+    //     const store = createStore();
+
+    //     const wrapper = createSut(store);
+
+    //     const guestLink = wrapper.find("#continue-as-guest>a")
+    //     await guestLink.trigger("click")
+    //     expect(mockSaveToSessionStorage.mock.calls).toBe("");
+    // });
+
 });
