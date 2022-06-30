@@ -78,7 +78,7 @@ describe("File menu", () => {
         return store;
     };
 
-    const triggerSelectFile = (wrapper: Wrapper<FileMenu>, testFile: File) => {
+    const triggerSelectFile = (wrapper: Wrapper<any>, testFile: File) => {
         const vm = wrapper.vm;
         const input = wrapper.find("input");
 
@@ -261,7 +261,36 @@ describe("File menu", () => {
 
     it("clicking confirm load to project button invokes load action", async () => {
         const mockLoadAction = jest.fn();
-        const testFile = mockFile("test filename", "test file contents");
+        const testFile = mockFile("test filename.json", "test file contents");
+
+        const wrapper = mount(FileMenu,
+            {
+                data: () => {
+                    return {requestProjectName: true, fileToLoad: testFile}
+                },
+                store: createStore({
+                    load: {
+                        namespaced: true,
+                        state: mockLoadState(),
+                        actions: {
+                            load: mockLoadAction
+                        }
+                    }
+                })
+            });
+
+        wrapper.find("#project-name-input").setValue("new project");
+        wrapper.find("#confirm-load-project").trigger("click");
+        await Vue.nextTick();
+        expect(mockLoadAction.mock.calls.length).toEqual(1);
+        expect(mockLoadAction.mock.calls[0][1].file).toBe(testFile);
+        expect(mockLoadAction.mock.calls[0][1].projectName).toBe("new project");
+        expect(wrapper.find("#load-project-name").props("open")).toBe(false);
+    });
+
+    it("clicking confirm load to project button invokes load action for outputZip", async () => {
+        const mockLoadAction = jest.fn();
+        const testFile = mockFile("test filename.zip", "test file contents");
 
         const wrapper = mount(FileMenu,
             {
