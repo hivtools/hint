@@ -1,5 +1,6 @@
 import {ActionContext, ActionTree} from "vuex";
 import i18next from "i18next";
+import {LanguageActions} from "./language";
 import {LanguageMutation} from "./mutations";
 import {Language} from "../translations/locales";
 import {TranslatableState} from "../../types";
@@ -45,7 +46,7 @@ export const ChangeLanguageAction = async (context: ActionContext<DataExploratio
     commit({type: LanguageMutation.SetUpdatingLanguage, payload: false});
 }
 
-export const actions: ActionTree<TranslatableState, TranslatableState> = {
+export const actions: ActionTree<TranslatableState, TranslatableState> & LanguageActions<TranslatableState> = {
     async changeLanguage(context, payload) {
         await changeLanguage<TranslatableState>(context, payload)
     }

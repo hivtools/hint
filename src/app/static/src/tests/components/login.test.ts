@@ -118,7 +118,7 @@ describe("Login component", () => {
 
         const wrapper = createSut(store, "Naomi", "/", "test");
 
-        expect(wrapper.vm.$data.email).toBe("test")
+        expect((wrapper.find("#user-id").element as HTMLInputElement).value).toBe("test");
     });
 
     it("adds validation class to form when log in", async () => {
@@ -133,16 +133,16 @@ describe("Login component", () => {
         expect(wrapper.find("#login-form").attributes("class")).toBe("needs-validation was-validated")
     });
 
-    // it("continue as guest is set in session storage", async () => {
-    //     const mockSaveToSessionStorage = jest.fn();
-    //     sessionStorage.setItem = mockSaveToSessionStorage;
-    //     const store = createStore();
+    it("continue as guest is set in session storage", async () => {
+        const spy = jest.spyOn(Storage.prototype, "setItem");
+        const store = createStore();
+        const wrapper = createSut(store);
 
-    //     const wrapper = createSut(store);
+        const guestLink = wrapper.find("#continue-as-guest>a")
+        await guestLink.trigger("click")
 
-    //     const guestLink = wrapper.find("#continue-as-guest>a")
-    //     await guestLink.trigger("click")
-    //     expect(mockSaveToSessionStorage.mock.calls).toBe("");
-    // });
+        expect(spy.mock.calls[0][0]).toBe("asGuest");
+        expect(spy.mock.calls[0][1]).toBe("continueAsGuest");
+    });
 
 });
