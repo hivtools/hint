@@ -1,3 +1,7 @@
+# hint 2.4.0
+
+* Add language toggle to login page
+
 # hint 2.3.0
 
 * Upload output zip action which calls hintr endpoint via backend
