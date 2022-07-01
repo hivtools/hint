@@ -236,13 +236,13 @@
             </div>
             <div v-if="projectNoteToEdit">
                 <label class="h4"
-                       for="edit-note-id"
+                       for="edit-project-note-id"
                        v-translate="'editProjectNoteHeader'"
                        id="editProjectNoteHeader"></label>
                 <div class="pb-3"
                      v-html="editProjectNoteSubHeader"
                      id="editProjectNoteSubHeader"></div>
-                <textarea id="edit-note-id" class="form-control"
+                <textarea id="edit-project-note-id" class="form-control"
                           v-model="editedNote"></textarea>
             </div>
             <template v-slot:footer>
