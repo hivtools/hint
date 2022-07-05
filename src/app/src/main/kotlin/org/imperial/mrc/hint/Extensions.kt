@@ -110,7 +110,6 @@ fun Response.asResponseEntity(logger: Log = LogFactory.getLog(HintExceptionHandl
 @Suppress("UNCHECKED_CAST")
 fun formatADRResponse(json: JsonNode, logger: Log): ResponseEntity<String>
 {
-   logger.info("Parsing ADR response")
     return if (json["success"].asBoolean())
     {
         logger.info("ADR request successful")
