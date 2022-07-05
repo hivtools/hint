@@ -17,10 +17,6 @@ export interface LoadState {
     projectName: string
 }
 
-export enum FileSource {
-    ModelOutput = "OUTPUT"
-}
-
 export const initialLoadState = (): LoadState => {
     return {
         loadingState: LoadingState.NotLoading,

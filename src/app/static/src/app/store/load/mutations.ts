@@ -53,10 +53,12 @@ export const mutations: MutationTree<LoadState> & LoadMutations = {
         state.rehydrateResult = action.payload;
         state.preparing = false;
         state.loadingState = LoadingState.NotLoading;
+        state.loadError = null;
     },
     RehydrateResultError(state: LoadState, action: PayloadWithType<Error>) {
         state.loadError = action.payload;
         state.preparing = false;
+        state.rehydrateResult = {} as ProjectRehydrateResultResponse
         state.loadingState = LoadingState.LoadFailed;
         if (state.statusPollId > -1) {
             stopPolling(state);

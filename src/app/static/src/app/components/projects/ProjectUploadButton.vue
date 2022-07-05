@@ -1,12 +1,12 @@
 <template>
-    <div>
+    <div id="test-clicker">
         <a ref="uploadProject"
            class="btn btn-red"
            href="#"
            v-on:mousedown="$refs.uploadProject.click()"
            v-translate="'Upload project from zip'">
         </a>
-        <input v-translate:aria-label="'selectFile'"
+        <input id="project-upload-input" v-translate:aria-label="'selectFile'"
                class="form-control"
                type="file"
                style="display: none;"

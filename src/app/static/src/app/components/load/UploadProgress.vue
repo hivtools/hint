@@ -1,8 +1,8 @@
 <template>
-    <div>
-        <modal id="upload-progress" :open="openModal">
+    <div id="upload-progress">
+        <modal :open="openModal">
             <h4 class="pb-4">
-                <span class="pr-4" v-translate="headerText"></span>
+                <span id="upload-header" class="pr-4" v-translate="'uploadFromZip'"></span>
                 <span><loading-spinner size="xs"/></span>
             </h4>
             <div class="progress">
@@ -13,8 +13,7 @@
                      aria-valuemax="100"
                      style="width: 100%"/>
             </div>
-            <span v-if="!progressMessage" v-translate="'uploading'"></span>
-            <span v-else>{{ progressMessage }}</span>
+            <span id="progress-message" v-translate="'uploading'"></span>
             <template v-slot:footer>
                 <button id="cancel-upload-progress"
                         type="button"
@@ -36,8 +35,6 @@
         name: "UploadProgress",
         props: {
             openModal: Boolean,
-            headerText: String,
-            progressMessage: String,
             cancel: Function
         },
         components: {

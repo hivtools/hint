@@ -276,7 +276,7 @@
     } from "vue-feather-icons";
     import Modal from "../Modal.vue";
     import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
-    import {createProjectPayload, projectPayload, versionPayload} from "../../store/projects/actions";
+    import {CreateProjectPayload, projectPayload, versionPayload} from "../../store/projects/actions";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
@@ -336,7 +336,7 @@
         deleteVersionAction: (versionIds: VersionIds) => void;
         promoteVersionAction: (versionPayload: versionPayload) => void;
         renameProjectAction: (projectPayload: projectPayload) => void;
-        createProject: (name: createProjectPayload) => void;
+        createProject: (name: CreateProjectPayload) => void;
         getProjects: () => void;
         versionLabel: (version: Version) => string;
         renameProject: (event: Event, projectId: number) => void;

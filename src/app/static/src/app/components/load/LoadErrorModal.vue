@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="load-error-modal">
         <modal :open="hasError">
             <h4 v-translate="'loadError'"></h4>
             <p>{{ loadError }}</p>
@@ -8,7 +8,8 @@
                         class="btn btn-red"
                         data-dismiss="modal"
                         aria-label="Close"
-                        @click="clearLoadError" v-translate="'ok'">
+                        @click="clearLoadError"
+                        v-translate="'ok'">
                 </button>
             </template>
         </modal>

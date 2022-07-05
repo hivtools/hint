@@ -14,7 +14,6 @@ import {localStorageManager} from "../../app/localStorageManager";
 import {currentHintVersion} from "../../app/hintVersion";
 import {getFormData} from "./helpers";
 
-
 describe("load actions", () => {
 
     let shape: any = {};
@@ -169,8 +168,7 @@ describe("load actions", () => {
         const formData = getFormData("output.zip");
         const state = {rehydrateId: "1"}
 
-        await actions.preparingRehydrate({commit, dispatch, state, rootState} as any,
-            {file: formData, projectName: "new project"});
+        await actions.preparingRehydrate({commit, dispatch, state, rootState} as any, formData);
 
         setTimeout(() => {
             expect(commit.mock.calls[0][0].type).toBe("SettingFiles");

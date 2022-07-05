@@ -22,13 +22,13 @@ export interface projectPayload {
     note?: string
 }
 
-export interface createProjectPayload {
+export interface CreateProjectPayload {
     name: string,
     isUploaded?: boolean
 }
 
 export interface ProjectsActions {
-    createProject: (store: ActionContext<ProjectsState, RootState>, payload: createProjectPayload) => void,
+    createProject: (store: ActionContext<ProjectsState, RootState>, payload: CreateProjectPayload) => void,
     getProjects: (store: ActionContext<ProjectsState, RootState>) => void
     getCurrentProject: (store: ActionContext<ProjectsState, RootState>) => void
     queueVersionStateUpload: (store: ActionContext<ProjectsState, RootState>) => void,

@@ -5,7 +5,7 @@
                 <span v-translate="'loadModel'"></span>
                 <upload-icon size="20" class="icon"></upload-icon>
             </a>
-            <input v-translate:aria-label="'selectFile'"
+            <input id="upload-model" v-translate:aria-label="'selectFile'"
                    type="file"
                    style="display: none;" ref="loadModel" v-on:change="loadModel" accept=".zip">
 
@@ -18,14 +18,12 @@
                 <span><span class="pr-1" v-translate="'load'"></span>JSON</span>
                 <upload-icon size="20" class="icon"></upload-icon>
             </a>
-            <input v-translate:aria-label="'selectFile'"
+            <input id="upload-file" v-translate:aria-label="'selectFile'"
                    type="file"
                    style="display: none;" ref="loadFile" v-on:change="load" accept=".json">
         </drop-down>
 
-        <upload-new-project :header-text="'loadFileToProjectHeader'"
-                            :label-text="'enterProjectName'"
-                            :open-modal="requestProjectName"
+        <upload-new-project :open-modal="requestProjectName"
                             :submit-load="loadToNewProject"
                             :cancel-load="cancelLoad"/>
     </div>
@@ -58,9 +56,8 @@
         loadAction: (payload: loadPayload) => void;
         loadToNewProject: () => void;
         cancelLoad: () => void;
-        preparingRehydrate: (payload: File) => void
+        preparingRehydrate: (formData: FormData) => void
     }
-
 
     interface Computed {
         baselineFiles: BaselineFiles
@@ -146,7 +143,9 @@
                 if (input.files && input.files.length > 0) {
                     const file = input.files[0];
                     if (this.isGuest) {
-                        this.preparingRehydrate(file);
+                        const formData = new FormData()
+                        formData.append("file", file)
+                        this.preparingRehydrate(formData);
                     } else {
                         this.fileToLoad = file;
                         this.requestProjectName = true;
@@ -160,7 +159,9 @@
                 }
                 const ext = this.fileToLoad?.name.split(".")[1]
                 if (ext === "zip") {
-                    this.preparingRehydrate(this.fileToLoad);
+                    const formData = new FormData()
+                    formData.append("file", this.fileToLoad)
+                    this.preparingRehydrate(formData);
                 }
 
                 else if (ext === "json") {

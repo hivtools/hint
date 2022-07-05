@@ -1,5 +1,5 @@
 import {ActionContext, ActionTree} from "vuex";
-import {FileSource, LoadingState, LoadState} from "./load";
+import {LoadingState, LoadState} from "./load";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {verifyCheckSum} from "../../utils";
@@ -17,7 +17,7 @@ export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
 
 export interface LoadActions {
     load: (store: ActionContext<LoadState, RootState>, payload: loadPayload) => void
-    preparingRehydrate: (store: ActionContext<LoadState, RootState>, file: File) => void
+    preparingRehydrate: (store: ActionContext<LoadState, RootState>, formData: FormData) => void
     setFiles: (store: ActionContext<LoadState, RootState>, payload: setFilesPayload) => void
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
@@ -28,7 +28,6 @@ export interface LoadActions {
 export interface loadPayload {
     file: File,
     projectName: string | null,
-    source?: FileSource
 }
 
 export interface setFilesPayload {
@@ -117,11 +116,8 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         commit({type: "LoadStateCleared", payload: null});
     },
 
-    async preparingRehydrate(context, file) {
+    async preparingRehydrate(context, formData) {
         const {dispatch, commit} = context
-        const formData = new FormData()
-        formData.append("file", file)
-
         commit({type: "SettingFiles", payload: null});
         const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
             .withSuccess("PreparingRehydrate")
@@ -151,16 +147,13 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
         .withError("RehydrateResultError")
         .get<ProjectRehydrateResultResponse>(`rehydrate/result/${rehydrateId}`);
 
-    if (response && response.data) {
-        console.log(response.data.state)
+    if (response && response.data && !rootGetters.isGuest) {
+        await (dispatch("projects/createProject",
+            {
+                name: state.projectName,
+                isUploaded: true
+            }, {root: true}));
 
-        if (!rootGetters.isGuest) {
-            await (dispatch("projects/createProject",
-                {
-                    name: state.projectName,
-                    isUploaded: true
-                }, {root: true}));
-        }
     }
 }
 

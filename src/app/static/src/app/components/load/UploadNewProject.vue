@@ -1,8 +1,7 @@
 <template>
-    <div>
-        <modal id="load-project-name" :open="openModal">
-            <h4 v-if="headerText" v-translate="headerText"></h4>
-            <label class="h5" for="project-name-input" v-translate="labelText"></label>
+    <div id="load-project-name">
+        <modal id="load" :open="openModal">
+            <label class="h5" for="project-name-input" v-translate="'enterProjectName'"></label>
             <input id="project-name-input"
                    type="text"
                    class="form-control"
@@ -32,10 +31,7 @@
                           :load-error="loadError"
                           :clear-load-error="clearLoadError"/>
 
-        <upload-progress :open-modal="preparing"
-                         :header-text="'uploadFromZip'"
-                         :progress-message="progressMessage"
-                         :cancel="cancelRehydration"/>
+        <upload-progress :open-modal="preparing" :cancel="cancelRehydration"/>
     </div>
 </template>
 
@@ -49,14 +45,12 @@
 
     interface Props {
         openModal: boolean
-        headerText: string,
-        labelText: string
         submitLoad: () => void
         cancelLoad: () => void
     }
 
     interface Data {
-        progressMessage: string
+        uploadProjectName: string
     }
 
     interface Methods {
@@ -68,12 +62,10 @@
     interface LoadComputed {
         loadError: string
         hasError: boolean
-        projectName: string
     }
 
     interface Computed extends  LoadComputed{
         preparing: boolean,
-        uploadProjectName: string
         disableCreate: boolean
     }
 
@@ -81,17 +73,12 @@
         name: "UploadNewProject",
         props: {
             openModal: Boolean,
-            labelText: String,
             submitLoad: Function,
-            cancelLoad: Function,
-            headerText: {
-                type: String,
-                required: false
-            }
+            cancelLoad: Function
         },
         data(): Data {
             return {
-                progressMessage: "",
+                uploadProjectName: ""
             }
         },
         methods: {
@@ -102,18 +89,9 @@
         computed: {
             ...mapStateProps<LoadState, keyof LoadComputed>("load", {
                 hasError: state => state.loadingState === LoadingState.LoadFailed,
-                loadError: state => state.loadError && state.loadError.detail,
-                projectName: state => state.projectName
+                loadError: state => state.loadError && state.loadError.detail
             }),
             preparing: mapStatePropByName<boolean>("load", "preparing"),
-            uploadProjectName: {
-                get() {
-                    return this.projectName
-                },
-                set(newValue) {
-                    this.setProjectName(newValue)
-                }
-            },
             disableCreate() {
                 return !this.uploadProjectName || this.invalidName(this.uploadProjectName)
             }
@@ -122,6 +100,11 @@
             Modal,
             UploadProgress,
             LoadErrorModal
+        },
+        watch: {
+            uploadProjectName(newValue) {
+                this.setProjectName(newValue)
+            }
         }
     })
 </script>

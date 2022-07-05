@@ -30,7 +30,7 @@
                                     v-translate="'createProject'">
                             </button>
                         </div>
-                        <div>
+                        <div id="project-upload-button">
                             <project-upload-button :upload-project="(event) => uploadProject(event)"/>
                         </div>
                     </div>
@@ -45,8 +45,7 @@
             <h2 id="loading-message" v-translate="'loadingProject'"></h2>
         </div>
 
-        <upload-new-project :label-text="'enterProjectName'"
-                            :open-modal="openNewProjectModal"
+        <upload-new-project :open-modal="openNewProjectModal"
                             :submit-load="uploadToNewProject"
                             :cancel-load="cancelUpload"/>
     </div>
@@ -63,7 +62,7 @@
     import ProjectsMixin from "./ProjectsMixin";
     import ProjectUploadButton from "./ProjectUploadButton.vue";
     import UploadNewProject from "../load/UploadNewProject.vue";
-    import {createProjectPayload} from "../../store/projects/actions";
+    import {CreateProjectPayload} from "../../store/projects/actions";
 
     const namespace = "projects";
 
@@ -83,13 +82,13 @@
     }
 
     interface Methods {
-        createProject: (name: createProjectPayload) => void,
+        createProject: (name: CreateProjectPayload) => void,
         getProjects: () => void,
         handleCurrentProjectClick: (e: Event) => void
         uploadProject: (e: Event) => void
         cancelUpload: () => void
         uploadToNewProject: () => void
-        preparingRehydrate: (payload: File) => void;
+        preparingRehydrate: (formData: FormData) => void;
     }
 
     export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
@@ -129,11 +128,11 @@
             },
             uploadToNewProject() {
                 this.openNewProjectModal = false;
-                if (!this.fileToLoad) {
-                    throw new Error("Cannot find uploaded file")
+                if (this.fileToLoad) {
+                    const formData = new FormData()
+                    formData.append("file", this.fileToLoad)
+                    this.preparingRehydrate(formData);
                 }
-
-                this.preparingRehydrate(this.fileToLoad);
             },
             cancelUpload() {
                 this.openNewProjectModal = false

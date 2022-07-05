@@ -83,7 +83,7 @@ describe("Projects actions", () => {
         const commit = jest.fn();
         const state = mockProjectsState({error: "TEST ERROR" as any});
 
-        actions.createProject({commit, state, rootState} as any, "newProject");
+        actions.createProject({commit, state, rootState} as any, {name: "newProject"});
 
         setTimeout(() => {
             expect(commit.mock.calls[0][0]).toStrictEqual({type: "downloadResults/ResetIds"});
@@ -105,7 +105,7 @@ describe("Projects actions", () => {
         const commit = jest.fn();
         const state = mockProjectsState();
 
-        actions.createProject({commit, state, rootState} as any, "newProject");
+        actions.createProject({commit, state, rootState} as any, {name: "newProject"});
 
         setTimeout(() => {
             expect(commit.mock.calls[0][0]).toStrictEqual({type: "downloadResults/ResetIds"});
@@ -178,7 +178,7 @@ describe("Projects actions", () => {
             projects: state
         });
 
-        actions.createProject({commit, state, rootState} as any, "newProject");
+        actions.createProject({commit, state, rootState} as any, {name: "newProject"});
 
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(2);
