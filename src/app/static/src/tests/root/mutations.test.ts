@@ -281,7 +281,6 @@ describe("Root mutations", () => {
 
         const version = {id: 1, name: "newVersion", versions: [{id: "newVersion"}]};
         mutations.SetProject(state, {payload: version});
-
         testOnlyExpectedModulesArePopulated([], state);
         expect(state.stepper.activeStep).toBe(1);
 
