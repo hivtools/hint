@@ -182,7 +182,6 @@ describe("File menu", () => {
 
     it("invokes load JSON action when file selected from dialog, when user is guest", () => {
         const mockLoadAction = jest.fn();
-
         const wrapper = mount(FileMenu,
             {
                 store: createStore({
@@ -196,7 +195,7 @@ describe("File menu", () => {
                 })
             });
 
-        const testFile = mockFile("test filename", "test file contents", "application/json");
+        const testFile = mockFile("testFilename.json", "test file contents", "application/json");
         triggerSelectFile(wrapper, testFile, "#upload-file");
         expect(mockLoadAction.mock.calls.length).toEqual(1);
         expect(mockLoadAction.mock.calls[0][1].file).toBe(testFile);
@@ -206,7 +205,6 @@ describe("File menu", () => {
 
     it("does not invoke load JSON action when file selected from dialog, when user is guest", () => {
         const mockLoadAction = jest.fn();
-
         const wrapper = mount(FileMenu,
             {
                 store: createStore({
@@ -316,22 +314,36 @@ describe("File menu", () => {
         expect(projectModal.props().openModal).toBe(false)
     });
 
-    it("does not triggered loading rehydrate model as non-guest when file is not uploaded", () => {
+    it("triggers preparingRehydrate action as non-guest when file is uploaded", () => {
         const mockPreparingRehydrate = jest.fn()
+        const mockProjectName = jest.fn()
         const store = createStore({
             load: {
                 namespaced: true,
                 state: mockLoadState(),
                 actions: {
                     preparingRehydrate: mockPreparingRehydrate
+                },
+                mutations: {
+                    SetProjectName: mockProjectName
                 }
             }
         }, false);
+
         const wrapper = mount(FileMenu, {store});
+        const testFile = mockFile("test.zip", "test file contents", "application/zip");
+        triggerSelectFile(wrapper, testFile, "#upload-model");
+        expect(wrapper.find("#load").props("open")).toBe(true);
         const projectModal = wrapper.find(UploadNewProject);
-        projectModal.find(".btn").trigger("click");
-        expect(mockPreparingRehydrate.mock.calls.length).toBe(0);
-        expect(projectModal.props().openModal).toBe(false)
+        const confirmLoad = projectModal.find("#confirm-load-project")
+        projectModal.find("#project-name-input").setValue("new uploaded project")
+        confirmLoad.trigger("click")
+
+        expect(mockProjectName.mock.calls.length).toBe(1);
+        expect(mockProjectName.mock.calls[0][1]).toBe("new uploaded project");
+        expect((wrapper.vm as any).fileToLoad).toBe(testFile);
+        expect(mockPreparingRehydrate.mock.calls.length).toBe(1);
+        expect(projectModal.props().openModal).toBe(false);
     });
 
     it("can render project upload modal props", async() => {
@@ -354,7 +366,7 @@ describe("File menu", () => {
 
     it("upload JSON shows project name modal when file selected from dialog, when user is not guest", () => {
         const wrapper = mount(FileMenu, {store: createStore({}, false)});
-        const testFile = mockFile("test filename", "test file contents", "application/json");
+        const testFile = mockFile("filename.json", "test file contents", "application/json");
         triggerSelectFile(wrapper, testFile, "#upload-file");
 
         expect(wrapper.find("#load").props("open")).toBe(true);
