@@ -31,7 +31,7 @@
                             </button>
                         </div>
                         <div id="project-upload-button">
-                            <project-upload-button :upload-project="(event) => uploadProject(event)"/>
+                            <project-upload-button :upload-project="uploadProject"/>
                         </div>
                     </div>
                 </div>

@@ -86,7 +86,7 @@ class ProjectsControllerTests
 
         val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock(), mock(), mockLogger)
 
-        val result = sut.newProject("testProject", null)
+        val result = sut.newProject("testProject", null, false)
 
         verify(mockVersionRepo).saveVersion("testVersion", 99)
         verifyZeroInteractions(mockLogger)
@@ -95,6 +95,7 @@ class ProjectsControllerTests
 
         assertThat(resultJson["id"].asInt()).isEqualTo(99)
         assertThat(resultJson["name"].asText()).isEqualTo("testProject")
+        assertThat(resultJson["uploaded"].asBoolean()).isEqualTo(false)
         val versions = resultJson["versions"] as ArrayNode
         assertThat(versions.count()).isEqualTo(1)
         assertExpectedVersion(versions[0])
@@ -108,13 +109,13 @@ class ProjectsControllerTests
         }
 
         val mockProjectRepo = mock<ProjectRepository> {
-            on { saveNewProject("testUser", "testProject", null, "notes") } doReturn 99
+            on { saveNewProject("testUser", "testProject", null, "notes", false) } doReturn 99
         }
 
         val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock(), mock(), mockLogger)
 
-        val result = sut.newProject("testProject", "notes")
-        verify(mockProjectRepo).saveNewProject("testUser", "testProject",null, "notes")
+        val result = sut.newProject("testProject", "notes", false)
+        verify(mockProjectRepo).saveNewProject("testUser", "testProject",null, "notes", false)
         verify(mockVersionRepo).saveVersion("testVersion", 99, null)
         verifyZeroInteractions(mockLogger)
 
@@ -122,6 +123,35 @@ class ProjectsControllerTests
 
         assertThat(resultJson["id"].asInt()).isEqualTo(99)
         assertThat(resultJson["name"].asText()).isEqualTo("testProject")
+        assertThat(resultJson["uploaded"].asBoolean()).isEqualTo(false)
+        val versions = resultJson["versions"] as ArrayNode
+        assertThat(versions.count()).isEqualTo(1)
+        assertExpectedVersion(versions[0])
+    }
+
+    @Test
+    fun `creates new project from upload`()
+    {
+        val mockVersionRepo = mock<VersionRepository> {
+            on { getVersion("testVersion") } doReturn mockVersion
+        }
+
+        val mockProjectRepo = mock<ProjectRepository> {
+            on { saveNewProject("testUser", "testProject", null, "notes", true) } doReturn 99
+        }
+
+        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock(), mock(), mockLogger)
+
+        val result = sut.newProject("testProject", "notes", true)
+        verify(mockProjectRepo).saveNewProject("testUser", "testProject",null, "notes", true)
+        verify(mockVersionRepo).saveVersion("testVersion", 99, null)
+        verifyZeroInteractions(mockLogger)
+
+        val resultJson = parser.readTree(result.body)["data"]
+
+        assertThat(resultJson["id"].asInt()).isEqualTo(99)
+        assertThat(resultJson["name"].asText()).isEqualTo("testProject")
+        assertThat(resultJson["uploaded"].asBoolean()).isEqualTo(true)
         val versions = resultJson["versions"] as ArrayNode
         assertThat(versions.count()).isEqualTo(1)
         assertExpectedVersion(versions[0])
@@ -297,7 +327,7 @@ class ProjectsControllerTests
         assertThatThrownBy { sut.cloneProjectToUser(1, userList) }
                 .isInstanceOf(UserException::class.java)
                 .hasMessageContaining("userDoesNotExist")
-        verify(mockRepo, Times(0)).saveNewProject(any(), any(), any(), any())
+        verify(mockRepo, Times(0)).saveNewProject(any(), any(), any(), any(), any())
         verifyZeroInteractions(mockLogger)
 
     }

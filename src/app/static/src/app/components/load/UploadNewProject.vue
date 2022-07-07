@@ -37,7 +37,7 @@
 
 <script lang="ts">
     import Modal from "../Modal.vue";
-    import {mapActionByName, mapMutationByName, mapStatePropByName, mapStateProps} from "../../utils";
+    import {mapActionByName, mapMutationByName, mapStateProps} from "../../utils";
     import UploadProgress from "./UploadProgress.vue";
     import {LoadingState, LoadState} from "../../store/load/load";
     import LoadErrorModal from "./LoadErrorModal.vue";
@@ -62,10 +62,10 @@
     interface LoadComputed {
         loadError: string
         hasError: boolean
+        preparing: boolean
     }
 
     interface Computed extends  LoadComputed{
-        preparing: boolean,
         disableCreate: boolean
     }
 
@@ -89,9 +89,9 @@
         computed: {
             ...mapStateProps<LoadState, keyof LoadComputed>("load", {
                 hasError: state => state.loadingState === LoadingState.LoadFailed,
-                loadError: state => state.loadError && state.loadError.detail
+                loadError: state => state.loadError && state.loadError.detail,
+                preparing: state => state.preparing
             }),
-            preparing: mapStatePropByName<boolean>("load", "preparing"),
             disableCreate() {
                 return !this.uploadProjectName || this.invalidName(this.uploadProjectName)
             }

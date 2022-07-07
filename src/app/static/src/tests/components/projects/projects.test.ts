@@ -1,7 +1,7 @@
 import {ProjectsState} from "../../../app/store/projects/projects";
-import Vuex, {Store} from "vuex";
+import Vuex from "vuex";
 import {mockFile, mockLoadState, mockProjectsState} from "../../mocks";
-import {mount, shallowMount} from "@vue/test-utils";
+import {mount, shallowMount, Wrapper} from "@vue/test-utils";
 import Projects from "../../../app/components/projects/Projects.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
@@ -20,7 +20,7 @@ describe("Projects component", () => {
     const mockCreateProject = jest.fn()
     const mockRouterPush = jest.fn()
 
-    const mockRehydrateAction = jest.fn()
+    const mockPreparingRehydrate = jest.fn()
     const mockSetLoadProjectName = jest.fn()
 
     const createSut = (state: Partial<ProjectsState> = {},
@@ -44,7 +44,7 @@ describe("Projects component", () => {
                     namespaced: true,
                     state: mockLoadState(),
                     actions: {
-                        preparingRehydrate: mockRehydrateAction
+                        preparingRehydrate: mockPreparingRehydrate
                     },
                     mutations: {
                         SetProjectName: mockSetLoadProjectName
@@ -119,7 +119,6 @@ describe("Projects component", () => {
         input.setValue("newProject with enter key");
         expect(wrapper.find("button").attributes("disabled")).toBeUndefined();
         input.trigger("keyup.enter")
-
         expect(mockCreateProject.mock.calls.length).toBe(1);
         expect(mockCreateProject.mock.calls[0][1]).toStrictEqual({name: "newProject with enter key"});
     });
@@ -141,7 +140,6 @@ describe("Projects component", () => {
         const wrapper = getWrapper();
         wrapper.find("input").setValue("newProject");
         wrapper.find("button").trigger("click");
-
         expect(mockCreateProject.mock.calls.length).toBe(1);
         expect(mockCreateProject.mock.calls[0][1]).toStrictEqual({name: "newProject"});
     });
@@ -149,20 +147,18 @@ describe("Projects component", () => {
     it("renders ProjectUploadButton prop as expected", () => {
         const wrapper = getWrapper();
         const uploadButton = wrapper.find(ProjectUploadButton);
-
         expect(uploadButton.props("uploadProject")).toBeInstanceOf(Function)
     });
 
     it("render UploadNewProject props as expected", () => {
         const wrapper = getWrapper();
         const uploadNewProject = wrapper.find(UploadNewProject);
-
         expect(uploadNewProject.props("submitLoad")).toBeInstanceOf(Function)
         expect(uploadNewProject.props("cancelLoad")).toBeInstanceOf(Function)
         expect(uploadNewProject.props("openModal")).toBe(false)
     });
 
-    it("should create a new project from upload", async () => {
+    it("should translate project button text as expected", () => {
         const {store, mocks} = createSut()
         const wrapper = mount(Projects, {
             store,
@@ -173,21 +169,81 @@ describe("Projects component", () => {
                 }
             }
         })
-        expect(wrapper.vm.$data.openNewProjectModal).toBe(true)
-        expect(wrapper.find("#load").props("open")).toBe(true)
+        const uploadProject = wrapper.find("#project-upload-button")
+        expectTranslated(uploadProject.find("a"),
+            "Uploading project from zip",
+            "Téléchargement du projet à partir du zip",
+            "Carregando projeto do zip",
+            store)
+
+        expectTranslated(uploadProject.find("#project-upload-input"),
+            "Select file",
+            "Sélectionner un fichier",
+            "Selecionar ficheiro",
+            store,
+            "aria-label")
+    });
+
+    it("should disable button when input is empty for new project upload ", () => {
+        const {store, mocks} = createSut()
+        const wrapper = mount(Projects, {
+            store,
+            mocks
+        })
+        openFileUpload(wrapper)
         const confirmLoad = wrapper.find("#confirm-load-project")
         expect(confirmLoad.attributes("disabled")).toBe("disabled")
-        await wrapper.find("#project-name-input").setValue("new uploaded project")
+        wrapper.find("#project-name-input").setValue("new uploaded project")
         expect(confirmLoad.attributes("disabled")).toBeUndefined()
-        await confirmLoad.trigger("click")
+    });
+
+    it("should create a new project from upload", () => {
+        const {store, mocks} = createSut()
+        const wrapper = mount(Projects, {
+            store,
+            mocks
+        })
+        openFileUpload(wrapper)
+        const confirmLoad = wrapper.find("#confirm-load-project")
+        wrapper.find("#project-name-input").setValue("new uploaded project")
+        confirmLoad.trigger("click")
+        expect(mockPreparingRehydrate.mock.calls.length).toBe(1)
+    });
+
+    it("should cancel create a new project from upload modal", () => {
+        const {store, mocks} = createSut()
+        const wrapper = mount(Projects, {
+            store,
+            mocks
+        })
+        openFileUpload(wrapper)
+        const cancelLoad = wrapper.find("#cancel-load-project")
+        cancelLoad.trigger("click")
+        expect(wrapper.vm.$data.openNewProjectModal).toBe(false)
         expect(wrapper.find("#load").props("open")).toBe(false)
+        expect(mockPreparingRehydrate.mock.calls.length).toBe(0)
+    });
+
+    it("does not create a new project from upload when file is not uploaded", () => {
+        const {store, mocks} = createSut()
+        const wrapper = mount(Projects, {
+            store,
+            mocks,
+            data() {
+                return {
+                    openNewProjectModal: true
+                }
+            }
+        })
+        const confirmLoad = wrapper.find("#confirm-load-project")
+        wrapper.find("#project-name-input").setValue("new uploaded project")
+        confirmLoad.trigger("click")
+        expect(mockPreparingRehydrate.mock.calls.length).toBe(0)
     });
 
     it("clicking back to current project link invokes router", () => {
         const wrapper = getWrapper({currentProject});
-
         wrapper.find("#projects-header a").trigger("click");
-
         expect(mockRouterPush.mock.calls.length).toBe(1);
         expect(mockRouterPush.mock.calls[0][0]).toStrictEqual("/");
     });
@@ -199,3 +255,13 @@ describe("Projects component", () => {
     });
 
 });
+
+const openFileUpload = (wrapper: Wrapper<any>) => {
+    const testFile = mockFile("test filename", "test file contents", "application/zip");
+    const input = wrapper.find("#project-upload-input").element as HTMLInputElement
+    Object.defineProperty(input, "files", {
+        value: [testFile]
+    })
+    wrapper.find("#project-upload-input").trigger("change")
+    expect(wrapper.find("#load").props("open")).toBe(true)
+}
