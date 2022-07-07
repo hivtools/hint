@@ -154,21 +154,18 @@
             },
             loadToNewProject() {
                 this.requestProjectName = false;
-                if (!this.fileToLoad) {
-                    throw new Error("Cannot find uploaded file")
-                }
-                const ext = this.fileToLoad?.name.split(".")[1]
-                if (ext === "zip") {
-                    const formData = new FormData()
-                    formData.append("file", this.fileToLoad)
-                    this.preparingRehydrate(formData);
-                }
-
-                else if (ext === "json") {
-                    this.loadAction({
-                        file: this.fileToLoad,
-                        projectName: this.newProjectName
-                    });
+                if (this.fileToLoad) {
+                    const ext = this.fileToLoad?.name.split(".")[1]
+                    if (ext === "zip") {
+                        const formData = new FormData()
+                        formData.append("file", this.fileToLoad)
+                        this.preparingRehydrate(formData);
+                    } else if (ext === "json") {
+                        this.loadAction({
+                            file: this.fileToLoad,
+                            projectName: this.newProjectName
+                        });
+                    }
                 }
             },
             cancelLoad() {

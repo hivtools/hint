@@ -1,4 +1,4 @@
-import {mockAxios, mockBaselineState, mockError, mockFailure, mockRootState} from "./mocks";
+import {mockAxios, mockBaselineState, mockError, mockFailure, mockFile, mockRootState} from "./mocks";
 import {ActionContext, MutationTree, Store} from "vuex";
 import {PayloadWithType, TranslatableState} from "../app/types";
 import {Wrapper} from "@vue/test-utils";
@@ -121,4 +121,14 @@ export const expectErrorReportOpen = (wrapper: Wrapper<any>, row = 0) => {
 export function expectArraysEqual(result: any[], expected: any[]) {
     expect(result).toEqual(expect.arrayContaining(expected));
     expect(expected).toEqual(expect.arrayContaining(result));
+}
+
+export const openProjectOutputZipUpload = (wrapper: Wrapper<any>, divId: string) => {
+    const testFile = mockFile("test filename", "test file contents", "application/zip");
+    const input = wrapper.find(divId).element as HTMLInputElement
+    Object.defineProperty(input, "files", {
+        value: [testFile]
+    })
+    wrapper.find(divId).trigger("change")
+    expect(wrapper.find("#load").props("open")).toBe(true)
 }

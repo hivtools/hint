@@ -1,13 +1,13 @@
 import {ProjectsState} from "../../../app/store/projects/projects";
 import Vuex from "vuex";
-import {mockFile, mockLoadState, mockProjectsState} from "../../mocks";
-import {mount, shallowMount, Wrapper} from "@vue/test-utils";
+import {mockLoadState, mockProjectsState} from "../../mocks";
+import {mount, shallowMount} from "@vue/test-utils";
 import Projects from "../../../app/components/projects/Projects.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, openProjectOutputZipUpload} from "../../testHelpers";
 import ProjectUploadButton from "../../../app/components/projects/ProjectUploadButton.vue";
 import UploadNewProject from "../../../app/components/load/UploadNewProject.vue";
 
@@ -190,7 +190,7 @@ describe("Projects component", () => {
             store,
             mocks
         })
-        openFileUpload(wrapper)
+        openProjectOutputZipUpload(wrapper, "#project-upload-input")
         const confirmLoad = wrapper.find("#confirm-load-project")
         expect(confirmLoad.attributes("disabled")).toBe("disabled")
         wrapper.find("#project-name-input").setValue("new uploaded project")
@@ -203,7 +203,7 @@ describe("Projects component", () => {
             store,
             mocks
         })
-        openFileUpload(wrapper)
+        openProjectOutputZipUpload(wrapper, "#project-upload-input")
         const confirmLoad = wrapper.find("#confirm-load-project")
         wrapper.find("#project-name-input").setValue("new uploaded project")
         confirmLoad.trigger("click")
@@ -216,7 +216,7 @@ describe("Projects component", () => {
             store,
             mocks
         })
-        openFileUpload(wrapper)
+        openProjectOutputZipUpload(wrapper, "#project-upload-input")
         const cancelLoad = wrapper.find("#cancel-load-project")
         cancelLoad.trigger("click")
         expect(wrapper.vm.$data.openNewProjectModal).toBe(false)
@@ -255,13 +255,3 @@ describe("Projects component", () => {
     });
 
 });
-
-const openFileUpload = (wrapper: Wrapper<any>) => {
-    const testFile = mockFile("test filename", "test file contents", "application/zip");
-    const input = wrapper.find("#project-upload-input").element as HTMLInputElement
-    Object.defineProperty(input, "files", {
-        value: [testFile]
-    })
-    wrapper.find("#project-upload-input").trigger("change")
-    expect(wrapper.find("#load").props("open")).toBe(true)
-}

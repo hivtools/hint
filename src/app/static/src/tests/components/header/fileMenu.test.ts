@@ -1,5 +1,5 @@
 import {mount, shallowMount, Wrapper} from "@vue/test-utils";
-import Vuex from "vuex";
+import Vuex, {Store} from "vuex";
 import {
     mockAncResponse,
     mockBaselineState,
@@ -19,8 +19,8 @@ import {LoadingState} from "../../../app/store/load/load";
 import FileMenu from "../../../app/components/header/FileMenu.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {Language} from "../../../app/store/translations/locales";
-import {expectTranslated} from "../../testHelpers";
 import UploadNewProject from "../../../app/components/load/UploadNewProject.vue";
+import {expectTranslated} from "../../testHelpers";
 
 // jsdom has only implemented navigate up to hashes, hence appending a hash here to the base url
 const mockCreateObjectUrl = jest.fn(() => "http://localhost#1234");
@@ -204,6 +204,27 @@ describe("File menu", () => {
         expect(wrapper.find("#load").props("open")).toBe(false);
     });
 
+    it("does not invoke load JSON action when file selected from dialog, when user is guest", () => {
+        const mockLoadAction = jest.fn();
+
+        const wrapper = mount(FileMenu,
+            {
+                store: createStore({
+                    load: {
+                        namespaced: true,
+                        state: mockLoadState(),
+                        actions: {
+                            load: mockLoadAction
+                        }
+                    }
+                })
+            });
+
+        wrapper.find("#upload-file").trigger("change")
+        expect(mockLoadAction.mock.calls.length).toEqual(0);
+        expect(wrapper.find("#load").props("open")).toBe(false);
+    });
+
     it("invokes load model output action when file selected from dialog, when user is guest", () => {
         const mockPreparingRehydrate = jest.fn()
 
@@ -262,15 +283,54 @@ describe("File menu", () => {
     });
 
     it("can open upload project modal when load JSON is triggered as non-guest", () => {
-        const projectModal = openUploadNewProject(createStore, "#upload-file")
+        const mockLoadAction = jest.fn()
+        const store = createStore({
+            load: {
+                namespaced: true,
+                state: mockLoadState(),
+                actions: {
+                    load: mockLoadAction
+                }
+            }
+        });
+        const projectModal = openUploadNewProject(store, "#upload-file")
         expect(projectModal.props().openModal).toBe(false)
         projectModal.find(".btn").trigger("click");
         expect(projectModal.props().openModal).toBe(false)
     });
 
     it("can open upload project modal when load rehydrate model is triggered as non-guest", () => {
-        const projectModal = openUploadNewProject(createStore, "#upload-model", "application/zip")
+        const mockPreparingRehydrate = jest.fn()
+        const store = createStore({
+            load: {
+                namespaced: true,
+                state: mockLoadState(),
+                actions: {
+                    preparingRehydrate: mockPreparingRehydrate
+                }
+            }
+        });
+        const projectModal = openUploadNewProject(store, "#upload-model", "application/zip")
         projectModal.find(".btn").trigger("click");
+        expect(mockPreparingRehydrate.mock.calls.length).toBe(1);
+        expect(projectModal.props().openModal).toBe(false)
+    });
+
+    it("does not triggered rehydrate as non-guest when file is not uploaded", () => {
+        const mockPreparingRehydrate = jest.fn()
+        const store = createStore({
+            load: {
+                namespaced: true,
+                state: mockLoadState(),
+                actions: {
+                    preparingRehydrate: mockPreparingRehydrate
+                }
+            }
+        });
+        const wrapper = mount(FileMenu, {store});
+        const projectModal = wrapper.find(UploadNewProject);
+        projectModal.find(".btn").trigger("click");
+        expect(mockPreparingRehydrate.mock.calls.length).toBe(0);
         expect(projectModal.props().openModal).toBe(false)
     });
 
@@ -326,20 +386,7 @@ describe("File menu", () => {
     });
 });
 
-const openUploadNewProject = (createStore: Function, inputId= "#upload-file", fileType = "") => {
-    const mockPreparingRehydrate = jest.fn()
-    const mockLoadAction = jest.fn()
-    const store = createStore({
-        load: {
-            namespaced: true,
-            state: mockLoadState(),
-            actions: {
-                load: mockLoadAction,
-                preparingRehydrate: mockPreparingRehydrate
-            }
-        }
-    });
-
+const openUploadNewProject = (store: Store<any>, inputId= "#upload-file", fileType = "") => {
     const wrapper = mount(FileMenu, {store});
     const testFile = mockFile("test filename", "test file contents", fileType);
     triggerSelectFile(wrapper, testFile, inputId);

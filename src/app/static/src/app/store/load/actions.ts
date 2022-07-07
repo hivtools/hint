@@ -11,6 +11,7 @@ import {initialStepperState} from "../stepper/stepper";
 import {ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generated";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {DynamicControlGroup, DynamicControlSection, DynamicFormData} from "@reside-ic/vue-dynamic-form";
+import {rootState} from "../../../tests/integration/integrationTest";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult" | "SetProjectName" | "RehydrateCancel"
 export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
@@ -140,7 +141,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 };
 
 const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) => {
-    const {rootGetters, state, dispatch} = context
+    const {rootGetters, state, dispatch, rootState} = context
     const rehydrateId = state.rehydrateId
     const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("RehydrateResult")
@@ -153,7 +154,6 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
                 name: state.projectName,
                 isUploaded: true
             }, {root: true}));
-
     }
 }
 
