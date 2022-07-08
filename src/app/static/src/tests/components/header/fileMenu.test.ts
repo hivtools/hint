@@ -346,6 +346,38 @@ describe("File menu", () => {
         expect(projectModal.props().openModal).toBe(false);
     });
 
+    it("triggers load action as non-guest when JSON file is uploaded", () => {
+        const mockLoadAction = jest.fn()
+        const mockProjectName = jest.fn()
+        const store = createStore({
+            load: {
+                namespaced: true,
+                state: mockLoadState(),
+                actions: {
+                    load: mockLoadAction
+                },
+                mutations: {
+                    SetProjectName: mockProjectName
+                }
+            }
+        }, false);
+
+        const wrapper = mount(FileMenu, {store});
+        const testFile = mockFile("test.json", "test file contents", "application/json");
+        triggerSelectFile(wrapper, testFile, "#upload-file");
+        expect(wrapper.find("#load").props("open")).toBe(true);
+        const projectModal = wrapper.find(UploadNewProject);
+        const confirmLoad = projectModal.find("#confirm-load-project")
+        projectModal.find("#project-name-input").setValue("new uploaded project")
+        confirmLoad.trigger("click")
+
+        expect(mockProjectName.mock.calls.length).toBe(1);
+        expect(mockProjectName.mock.calls[0][1]).toBe("new uploaded project");
+        expect((wrapper.vm as any).fileToLoad).toBe(testFile);
+        expect(mockLoadAction.mock.calls.length).toBe(1);
+        expect(projectModal.props().openModal).toBe(false);
+    });
+
     it("can render project upload modal props", async() => {
         const store = createStore({
             load: {

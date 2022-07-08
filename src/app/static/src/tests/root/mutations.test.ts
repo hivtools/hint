@@ -40,6 +40,10 @@ import {initialDownloadResultsState} from "../../app/store/downloadResults/downl
 
 describe("Root mutations", () => {
 
+    beforeAll(() => {
+        router.push('/login')
+    })
+
     const populatedState = function () {
         return mockRootState({
             adr: mockADRState({

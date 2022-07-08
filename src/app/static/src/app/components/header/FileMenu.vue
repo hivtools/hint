@@ -161,6 +161,7 @@
                         formData.append("file", this.fileToLoad)
                         this.preparingRehydrate(formData);
                     } else if (ext === "json") {
+                        console.log("Game started")
                         this.loadAction({
                             file: this.fileToLoad,
                             projectName: this.newProjectName
