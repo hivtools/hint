@@ -150,9 +150,9 @@ describe("File menu", () => {
         const wrapper = mount(FileMenu, {store});
         const link = wrapper.findAll(".dropdown-item").at(0);
         expectTranslated(link,
-            "Load zip Outputs",
-            "Charger la sortie zip",
-            "Carregar saída zip", store as any);
+            "Load Zip Outputs",
+            "Charger les sorties Zip",
+            "Carregar Saídas Zip", store as any);
         const input = wrapper.find("#upload-zip")
         expectTranslated(input,
             "Select file",
