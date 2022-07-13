@@ -11,14 +11,13 @@ import {initialStepperState} from "../stepper/stepper";
 import {ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generated";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {DynamicControlGroup, DynamicControlSection, DynamicFormData} from "@reside-ic/vue-dynamic-form";
-import {rootState} from "../../../tests/integration/integrationTest";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult" | "SetProjectName" | "RehydrateCancel"
 export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
 
 export interface LoadActions {
     load: (store: ActionContext<LoadState, RootState>, payload: loadPayload) => void
-    preparingRehydrate: (store: ActionContext<LoadState, RootState>, formData: FormData) => void
+    preparingRehydrate: (store: ActionContext<LoadState, RootState>, file: FormData) => void
     setFiles: (store: ActionContext<LoadState, RootState>, payload: setFilesPayload) => void
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
@@ -141,7 +140,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 };
 
 const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) => {
-    const {rootGetters, state, dispatch, rootState} = context
+    const {rootGetters, state, dispatch} = context
     const rehydrateId = state.rehydrateId
     const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("RehydrateResult")

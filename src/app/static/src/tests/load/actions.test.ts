@@ -534,12 +534,10 @@ describe("Load actions", () => {
             .reply(200, mockSuccess(true));
 
         const file = new File(["TEST"], "testFile.zip")
-        const fomData = new FormData()
-        fomData.append("file", file)
 
         const dispatch = jest.fn();
         const commit = jest.fn();
-        actions.preparingRehydrate({dispatch, commit, rootState} as any, fomData);
+        actions.preparingRehydrate({dispatch, commit, rootState} as any, file);
 
         const interval = setInterval(() => {
             expect(mockAxios.history.post.length).toBe(1)

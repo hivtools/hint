@@ -1,15 +1,13 @@
 import {ProjectsState} from "../../../app/store/projects/projects";
 import Vuex from "vuex";
-import {mockLoadState, mockProjectsState} from "../../mocks";
-import {mount, shallowMount} from "@vue/test-utils";
+import {mockProjectsState} from "../../mocks";
+import {shallowMount} from "@vue/test-utils";
 import Projects from "../../../app/components/projects/Projects.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
-import {expectTranslated, openProjectOutputZipUpload} from "../../testHelpers";
-import ProjectUploadButton from "../../../app/components/projects/ProjectUploadButton.vue";
-import UploadNewProject from "../../../app/components/load/UploadNewProject.vue";
+import {expectTranslated} from "../../testHelpers";
 
 describe("Projects component", () => {
 
@@ -19,9 +17,6 @@ describe("Projects component", () => {
 
     const mockCreateProject = jest.fn()
     const mockRouterPush = jest.fn()
-
-    const mockPreparingRehydrate = jest.fn()
-    const mockSetLoadProjectName = jest.fn()
 
     const createSut = (state: Partial<ProjectsState> = {},
                        isGuest = false) => {
@@ -39,18 +34,8 @@ describe("Projects component", () => {
                         createProject: mockCreateProject,
                         getProjects: jest.fn()
                     }
-                },
-                load: {
-                    namespaced: true,
-                    state: mockLoadState(),
-                    actions: {
-                        preparingRehydrate: mockPreparingRehydrate
-                    },
-                    mutations: {
-                        SetProjectName: mockSetLoadProjectName
-                    }
                 }
-            },
+            }
         });
         registerTranslations(store);
 
@@ -76,7 +61,6 @@ describe("Projects component", () => {
         const store = wrapper.vm.$store;
         expect(wrapper.find(LoadingSpinner).exists()).toBe(false);
         expect(wrapper.find("#projects-content").exists()).toBe(true);
-        expect(wrapper.find("#project-upload-button").exists()).toBe(true)
 
         expectTranslated(wrapper.find("#projects-header"), "Create a new project",
             "Créer un nouveau projet", "Criar um novo projeto", store);
@@ -142,103 +126,6 @@ describe("Projects component", () => {
         wrapper.find("button").trigger("click");
         expect(mockCreateProject.mock.calls.length).toBe(1);
         expect(mockCreateProject.mock.calls[0][1]).toStrictEqual({name: "newProject"});
-    });
-
-    it("renders ProjectUploadButton prop as expected", () => {
-        const wrapper = getWrapper();
-        const uploadButton = wrapper.find(ProjectUploadButton);
-        expect(uploadButton.props("uploadProject")).toBeInstanceOf(Function)
-    });
-
-    it("render UploadNewProject props as expected", () => {
-        const wrapper = getWrapper();
-        const uploadNewProject = wrapper.find(UploadNewProject);
-        expect(uploadNewProject.props("submitLoad")).toBeInstanceOf(Function)
-        expect(uploadNewProject.props("cancelLoad")).toBeInstanceOf(Function)
-        expect(uploadNewProject.props("openModal")).toBe(false)
-    });
-
-    it("should translate project button text as expected", () => {
-        const {store, mocks} = createSut()
-        const wrapper = mount(Projects, {
-            store,
-            mocks,
-            data() {
-                return {
-                    openNewProjectModal: true
-                }
-            }
-        })
-        const uploadProject = wrapper.find("#project-upload-button")
-        expectTranslated(uploadProject.find("a"),
-            "Uploading project from zip",
-            "Téléchargement du projet à partir du zip",
-            "Carregando projeto do zip",
-            store)
-
-        expectTranslated(uploadProject.find("#project-upload-input"),
-            "Select file",
-            "Sélectionner un fichier",
-            "Selecionar ficheiro",
-            store,
-            "aria-label")
-    });
-
-    it("should disable button when input is empty for new project upload ", () => {
-        const {store, mocks} = createSut()
-        const wrapper = mount(Projects, {
-            store,
-            mocks
-        })
-        openProjectOutputZipUpload(wrapper, "#project-upload-input")
-        const confirmLoad = wrapper.find("#confirm-load-project")
-        expect(confirmLoad.attributes("disabled")).toBe("disabled")
-        wrapper.find("#project-name-input").setValue("new uploaded project")
-        expect(confirmLoad.attributes("disabled")).toBeUndefined()
-    });
-
-    it("should create a new project from upload", () => {
-        const {store, mocks} = createSut()
-        const wrapper = mount(Projects, {
-            store,
-            mocks
-        })
-        openProjectOutputZipUpload(wrapper, "#project-upload-input")
-        const confirmLoad = wrapper.find("#confirm-load-project")
-        wrapper.find("#project-name-input").setValue("new uploaded project")
-        confirmLoad.trigger("click")
-        expect(mockPreparingRehydrate.mock.calls.length).toBe(1)
-    });
-
-    it("should cancel create a new project from upload modal", () => {
-        const {store, mocks} = createSut()
-        const wrapper = mount(Projects, {
-            store,
-            mocks
-        })
-        openProjectOutputZipUpload(wrapper, "#project-upload-input")
-        const cancelLoad = wrapper.find("#cancel-load-project")
-        cancelLoad.trigger("click")
-        expect(wrapper.vm.$data.openNewProjectModal).toBe(false)
-        expect(wrapper.find("#load").props("open")).toBe(false)
-        expect(mockPreparingRehydrate.mock.calls.length).toBe(0)
-    });
-
-    it("does not create a new project from upload when file is not uploaded", () => {
-        const {store, mocks} = createSut()
-        const wrapper = mount(Projects, {
-            store,
-            mocks,
-            data() {
-                return {
-                    openNewProjectModal: true
-                }
-            }
-        })
-        const confirmLoad = wrapper.find("#confirm-load-project")
-        wrapper.find("#project-name-input").setValue("new uploaded project")
-        confirmLoad.trigger("click")
-        expect(mockPreparingRehydrate.mock.calls.length).toBe(0)
     });
 
     it("clicking back to current project link invokes router", () => {

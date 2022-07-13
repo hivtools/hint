@@ -1,13 +1,15 @@
 <template>
     <div style="flex:auto">
         <drop-down text="file">
-            <a class="dropdown-item" ref="loadModel" href="#" v-on:mousedown="$refs.loadModel.click()">
-                <span v-translate="'loadModel'"></span>
+            <a class="dropdown-item" ref="loadZip" href="#"
+               @mousedown="$refs.loadZip.click()">
+                <span v-translate="'loadZip'"></span>
                 <upload-icon size="20" class="icon"></upload-icon>
             </a>
-            <input id="upload-model" v-translate:aria-label="'selectFile'"
+            <input id="upload-zip" v-translate:aria-label="'selectFile'"
                    type="file"
-                   style="display: none;" ref="loadModel" v-on:change="loadModel" accept=".zip">
+                   style="display: none;" ref="loadZip"
+                   @change="loadZip" accept=".zip">
 
             <a class="dropdown-item" v-on:mousedown="save">
                 <span><span class="pr-1" v-translate="'save'"></span>JSON</span>
@@ -23,9 +25,18 @@
                    style="display: none;" ref="loadFile" v-on:change="load" accept=".json">
         </drop-down>
 
-        <upload-new-project :open-modal="requestProjectName"
-                            :submit-load="loadToNewProject"
-                            :cancel-load="cancelLoad"/>
+        <div id="project-zip">
+            <upload-new-project :open-modal="projectNameZip"
+                                :submit-load="handleLoadZip"
+                                :cancel-load="cancelLoadZip"/>
+        </div>
+
+        <div id="project-json">
+            <upload-new-project :open-modal="projectNameJson"
+                                :submit-load="handleLoadJson"
+                                :cancel-load="cancelLoadJson"/>
+        </div>
+
     </div>
 </template>
 <script lang="ts">
@@ -36,7 +47,7 @@
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
     import {DownloadIcon, UploadIcon} from "vue-feather-icons";
     import {LocalSessionFile} from "../../types";
-    import {addCheckSum, mapActionByName, mapStateProp} from "../../utils";
+    import {addCheckSum, getFormData, mapActionByName, mapStateProp} from "../../utils";
     import {ValidateInputResponse} from "../../generated";
     import DropDown from "./DropDown.vue";
     import {mapGetterByName} from "../../utils";
@@ -44,7 +55,8 @@
     import UploadNewProject from "../load/UploadNewProject.vue";
 
     interface Data {
-        requestProjectName: boolean,
+        projectNameJson: boolean,
+        projectNameZip: boolean,
         newProjectName: string,
         fileToLoad: File | null
     }
@@ -52,11 +64,13 @@
     interface Methods {
         save: (e: Event) => void;
         load: () => void;
-        loadModel: () => void;
+        loadZip: () => void;
         loadAction: (payload: loadPayload) => void;
-        loadToNewProject: () => void;
-        cancelLoad: () => void;
-        preparingRehydrate: (formData: FormData) => void
+        preparingRehydrate: (file: FormData) => void
+        cancelLoadZip: () => void;
+        cancelLoadJson: () => void;
+        handleLoadJson: () => void
+        handleLoadZip: () => void
     }
 
     interface Computed {
@@ -85,7 +99,8 @@
         props: ["title"],
         data(): Data {
             return {
-                requestProjectName: false,
+                projectNameJson: false,
+                projectNameZip: false,
                 newProjectName: "",
                 fileToLoad: null
             }
@@ -134,43 +149,42 @@
                         this.loadAction({file, projectName: null});
                     } else {
                         this.fileToLoad = file;
-                        this.requestProjectName = true;
+                        this.projectNameJson = true;
                     }
                 }
             },
-            loadModel() {
-                const input = this.$refs.loadModel as HTMLInputElement;
+            loadZip() {
+                const input = this.$refs.loadZip as HTMLInputElement;
                 if (input.files && input.files.length > 0) {
                     const file = input.files[0];
                     if (this.isGuest) {
-                        const formData = new FormData()
-                        formData.append("file", file)
-                        this.preparingRehydrate(formData);
+                        this.preparingRehydrate(getFormData(file));
                     } else {
                         this.fileToLoad = file;
-                        this.requestProjectName = true;
+                        this.projectNameZip = true;
                     }
                 }
             },
-            loadToNewProject() {
-                this.requestProjectName = false;
+            handleLoadJson() {
+                this.projectNameJson = false;
                 if (this.fileToLoad) {
-                    const ext = this.fileToLoad?.name.split(".")[1]
-                    if (ext === "zip") {
-                        const formData = new FormData()
-                        formData.append("file", this.fileToLoad)
-                        this.preparingRehydrate(formData);
-                    } else if (ext === "json") {
-                        console.log("Game started")
-                        this.loadAction({
-                            file: this.fileToLoad,
-                            projectName: this.newProjectName
-                        });
-                    }
+                    this.loadAction({
+                        file: this.fileToLoad,
+                        projectName: this.newProjectName
+                    })
                 }
             },
-            cancelLoad() {
-                this.requestProjectName = false;
+            handleLoadZip() {
+                this.projectNameZip = false;
+                if (this.fileToLoad) {
+                    this.preparingRehydrate(getFormData(this.fileToLoad));
+                }
+            },
+            cancelLoadJson() {
+                this.projectNameJson = false;
+            },
+            cancelLoadZip() {
+                this.projectNameZip = false;
             }
         },
         components: {

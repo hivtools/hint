@@ -30,9 +30,6 @@
                                     v-translate="'createProject'">
                             </button>
                         </div>
-                        <div id="project-upload-button">
-                            <project-upload-button :upload-project="uploadProject"/>
-                        </div>
                     </div>
                 </div>
             <div class="my-3 col-12">
@@ -44,10 +41,6 @@
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingProject'"></h2>
         </div>
-
-        <upload-new-project :open-modal="openNewProjectModal"
-                            :submit-load="uploadToNewProject"
-                            :cancel-load="cancelUpload"/>
     </div>
 </template>
 
@@ -60,16 +53,9 @@
     import {Project} from "../../types";
     import ProjectHistory from "./ProjectHistory.vue";
     import ProjectsMixin from "./ProjectsMixin";
-    import ProjectUploadButton from "./ProjectUploadButton.vue";
-    import UploadNewProject from "../load/UploadNewProject.vue";
     import {CreateProjectPayload} from "../../store/projects/actions";
 
     const namespace = "projects";
-
-    interface Data {
-        openNewProjectModal: boolean
-        fileToLoad: File | null
-    }
 
     interface Computed {
         currentProject: Project | null,
@@ -85,19 +71,9 @@
         createProject: (name: CreateProjectPayload) => void,
         getProjects: () => void,
         handleCurrentProjectClick: (e: Event) => void
-        uploadProject: (e: Event) => void
-        cancelUpload: () => void
-        uploadToNewProject: () => void
-        preparingRehydrate: (formData: FormData) => void;
     }
 
-    export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
-        data() {
-            return {
-                openNewProjectModal: false,
-                fileToLoad: null
-            }
-        },
+    export default ProjectsMixin.extend<unknown, Methods, Computed, unknown>({
         computed: {
             ...mapStateProps<ProjectsState, keyof Computed>(namespace, {
                 currentProject: state => state.currentProject,
@@ -117,26 +93,7 @@
                 this.$router.push('/');
             },
             createProject: mapActionByName(namespace, "createProject"),
-            getProjects: mapActionByName(namespace, "getProjects"),
-            preparingRehydrate: mapActionByName<File>("load", "preparingRehydrate"),
-            uploadProject(event) {
-                const target = event.target as HTMLInputElement;
-                if (target.files && target.files.length > 0) {
-                    this.fileToLoad = target.files[0];
-                    this.openNewProjectModal = true;
-                }
-            },
-            uploadToNewProject() {
-                this.openNewProjectModal = false;
-                if (this.fileToLoad) {
-                    const formData = new FormData()
-                    formData.append("file", this.fileToLoad)
-                    this.preparingRehydrate(formData);
-                }
-            },
-            cancelUpload() {
-                this.openNewProjectModal = false
-            }
+            getProjects: mapActionByName(namespace, "getProjects")
         },
         mounted() {
             this.getProjects();
@@ -144,9 +101,7 @@
         components: {
             ErrorAlert,
             LoadingSpinner,
-            ProjectHistory,
-            ProjectUploadButton,
-            UploadNewProject
+            ProjectHistory
         }
     });
 </script>

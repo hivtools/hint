@@ -342,3 +342,9 @@ export const resourceTypes = {
     program: "inputs-unaids-art",
     anc: "inputs-unaids-anc"
 }
+
+export const getFormData = (file: File) => {
+    const formData = new FormData()
+    formData.append("file", file)
+    return formData
+}
