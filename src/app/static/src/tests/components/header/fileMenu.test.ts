@@ -198,8 +198,7 @@ describe("File menu", () => {
         const testFile = mockFile("testFilename.json", "test file contents", "application/json");
         triggerSelectFile(wrapper, testFile, "#upload-file");
         expect(mockLoadAction.mock.calls.length).toEqual(1);
-        expect(mockLoadAction.mock.calls[0][1].file).toBe(testFile);
-        expect(mockLoadAction.mock.calls[0][1].projectName).toBeNull();
+        expect(mockLoadAction.mock.calls[0][1]).toBe(testFile);
         expect(wrapper.find("#project-json #load").props("open")).toBe(false);
     });
 

@@ -16,7 +16,7 @@ export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded"
 export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
 
 export interface LoadActions {
-    load: (store: ActionContext<LoadState, RootState>, payload: loadPayload) => void
+    load: (store: ActionContext<LoadState, RootState>, file: File) => void
     preparingRehydrate: (store: ActionContext<LoadState, RootState>, file: FormData) => void
     setFiles: (store: ActionContext<LoadState, RootState>, payload: setFilesPayload) => void
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
@@ -25,32 +25,25 @@ export interface LoadActions {
     pollRehydrate: (store: ActionContext<LoadState, RootState>) => void
 }
 
-export interface loadPayload {
-    file: File,
-    projectName: string | null,
-}
-
 export interface setFilesPayload {
-    savedFileContents: string,
-    projectName: string | null
+    savedFileContents: string
 }
 
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
-    async load(context, payload) {
+    async load(context, file) {
         const {dispatch} = context
-        const {file, projectName} = payload;
 
         const reader = new FileReader();
         reader.addEventListener('loadend', function () {
-            dispatch("setFiles", {savedFileContents: reader.result as string, projectName});
+            dispatch("setFiles", {savedFileContents: reader.result as string});
         });
         reader.readAsText(file);
     },
 
     async setFiles(context, payload) {
-        const {savedFileContents, projectName} = payload;
-        const {commit, rootState, rootGetters, dispatch} = context;
+        const {savedFileContents} = payload;
+        const {commit, rootState, rootGetters, dispatch, state} = context;
         commit({type: "SettingFiles", payload: null});
 
         const objectContents = verifyCheckSum(savedFileContents as string);
@@ -76,7 +69,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         }
 
         if (!rootGetters.isGuest) {
-            await (dispatch("projects/createProject", {name: projectName}, {root: true}));
+            await (dispatch("projects/createProject", {name: state.projectName || null}, {root: true}));
             savedState.projects.currentProject = rootState.projects.currentProject;
             savedState.projects.currentVersion = rootState.projects.currentVersion;
         }

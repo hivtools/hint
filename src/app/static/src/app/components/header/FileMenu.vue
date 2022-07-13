@@ -51,13 +51,11 @@
     import {ValidateInputResponse} from "../../generated";
     import DropDown from "./DropDown.vue";
     import {mapGetterByName} from "../../utils";
-    import {loadPayload} from "../../store/load/actions";
     import UploadNewProject from "../load/UploadNewProject.vue";
 
     interface Data {
         projectNameJson: boolean,
         projectNameZip: boolean,
-        newProjectName: string,
         fileToLoad: File | null
     }
 
@@ -65,7 +63,7 @@
         save: (e: Event) => void;
         load: () => void;
         loadZip: () => void;
-        loadAction: (payload: loadPayload) => void;
+        loadAction: (file: File) => void;
         preparingRehydrate: (file: FormData) => void
         cancelLoadZip: () => void;
         cancelLoadJson: () => void;
@@ -101,7 +99,6 @@
             return {
                 projectNameJson: false,
                 projectNameZip: false,
-                newProjectName: "",
                 fileToLoad: null
             }
         },
@@ -146,7 +143,7 @@
                 if (input.files && input.files.length > 0) {
                     const file = input.files[0];
                     if (this.isGuest) {
-                        this.loadAction({file, projectName: null});
+                        this.loadAction(file);
                     } else {
                         this.fileToLoad = file;
                         this.projectNameJson = true;
@@ -168,10 +165,7 @@
             handleLoadJson() {
                 this.projectNameJson = false;
                 if (this.fileToLoad) {
-                    this.loadAction({
-                        file: this.fileToLoad,
-                        projectName: this.newProjectName
-                    })
+                    this.loadAction(this.fileToLoad)
                 }
             },
             handleLoadZip() {

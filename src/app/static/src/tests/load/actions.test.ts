@@ -43,17 +43,13 @@ describe("Load actions", () => {
 
     it("load reads blob and dispatches setFiles action", (done) => {
         const dispatch = jest.fn();
-        actions.load({dispatch, rootState} as any,
-            {
-                file: new File(["Test File Contents"], "testFile"),
-                projectName: "project name"
-            });
+        const file = new File(["Test File Contents"], "testFile")
+        actions.load({dispatch, rootState} as any, file);
 
         const interval = setInterval(() => {
             if (dispatch.mock.calls.length > 0) {
                 expect(dispatch.mock.calls[0][0]).toEqual("setFiles");
                 expect(dispatch.mock.calls[0][1].savedFileContents).toEqual("Test File Contents");
-                expect(dispatch.mock.calls[0][1].projectName).toEqual("project name");
                 clearInterval(interval);
                 done();
             }
@@ -134,7 +130,7 @@ describe("Load actions", () => {
         const rootGetters = {isGuest: true};
         const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": currentHintVersion, stepper: {}}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
-            {savedFileContents: fileContents, projectName: null}
+            {savedFileContents: fileContents}
         );
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
@@ -184,7 +180,7 @@ describe("Load actions", () => {
             .reply(200, mockSuccess({}));
 
         const commit = jest.fn();
-        const state = mockLoadState({loadingState: LoadingState.UpdatingState});
+        const state = mockLoadState({loadingState: LoadingState.UpdatingState, projectName: "new project"});
         const dispatch = jest.fn();
         const testRootState = {
             version: currentHintVersion,
@@ -200,7 +196,7 @@ describe("Load actions", () => {
         }));
 
         await actions.setFiles({commit, state, dispatch, rootState: testRootState, rootGetters} as any,
-            {savedFileContents: fileContents, projectName: "new project"}
+            {savedFileContents: fileContents}
         );
 
         expect(dispatch.mock.calls[0][0]).toEqual("projects/createProject");
@@ -264,7 +260,7 @@ describe("Load actions", () => {
         const dispatch = jest.fn();
         const fileContents = '["badchecksum", {"files": "TEST FILES", "state": "TEST STATE"}]';
         await actions.setFiles({commit, state, dispatch, rootState} as any,
-            {savedFileContents: fileContents, projectName: null}
+            {savedFileContents: fileContents}
         );
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
@@ -288,7 +284,7 @@ describe("Load actions", () => {
         const rootGetters = {isGuest: true};
         const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {version: currentHintVersion, stepper: {}}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
-            {savedFileContents: fileContents, projectName: null}
+            {savedFileContents: fileContents}
         );
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
@@ -308,7 +304,7 @@ describe("Load actions", () => {
         const rootGetters = {isGuest: true};
         const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": "0.0.0"}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
-            {savedFileContents: fileContents, projectName: null}
+            {savedFileContents: fileContents}
         );
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
@@ -329,7 +325,7 @@ describe("Load actions", () => {
         const rootGetters = {isGuest: true};
         const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
-            {savedFileContents: fileContents, projectName: null}
+            {savedFileContents: fileContents}
         );
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
@@ -354,7 +350,7 @@ describe("Load actions", () => {
             state: {"version": "2.1.0", stepper: {}}
         }));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
-            {savedFileContents: fileContents, projectName: null}
+            {savedFileContents: fileContents}
         );
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});

@@ -49,7 +49,7 @@ describe("load actions", () => {
         const fakeFileContents = addCheckSum(fakeState);
         const rootGetters = {isGuest: true};
         await actions.setFiles({commit, dispatch, state: {}, rootState, rootGetters} as any,
-            {savedFileContents: fakeFileContents, projectName: "new project"});
+            {savedFileContents: fakeFileContents});
 
         setTimeout(() => {
             expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
@@ -141,7 +141,7 @@ describe("load actions", () => {
         const dispatch = ((store as any)._modulesNamespaceMap["load/"] as any).context.dispatch;
 
         await actions.setFiles({commit, dispatch, state: {}, rootState: store.state, rootGetters} as any,
-            {savedFileContents: fakeFileContents, projectName: "new project"});
+            {savedFileContents: fakeFileContents});
 
         setTimeout(() => {
             //we expect the non-mocked dispatch to have created a project, and to have invoked the local store manager to
