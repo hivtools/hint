@@ -415,7 +415,7 @@ describe("File menu", () => {
         expect((wrapper.vm as any).fileToLoad).toBe(testFile);
     });
 
-    it("clicking cancel from project name modal hides modal", () => {
+    it("clicking cancel from Json project name modal hides modal", () => {
         const wrapper = mount(FileMenu,
             {
                 data: () => {
@@ -425,6 +425,21 @@ describe("File menu", () => {
             });
 
         const modal = wrapper.find("#project-json #load");
+        expect(modal.props("open")).toBe(true);
+        modal.find("#cancel-load-project").trigger("click");
+        expect(modal.props("open")).toBe(false);
+    });
+
+    it("clicking cancel from Json project name modal hides modal", () => {
+        const wrapper = mount(FileMenu,
+            {
+                data: () => {
+                    return {projectNameZip: true}
+                },
+                store: createStore({}, false)
+            });
+
+        const modal = wrapper.find("#project-zip #load");
         expect(modal.props("open")).toBe(true);
         modal.find("#cancel-load-project").trigger("click");
         expect(modal.props("open")).toBe(false);
