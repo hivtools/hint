@@ -83,7 +83,7 @@ describe("Load mutations", () => {
         });
         mutations.RehydrateCancel(testState, {type: "RehydrateCancel"});
         expect(testState.preparing).toEqual(false);
-        expect(testState.loadingState).toEqual(LoadingState.LoadFailed);
+        expect(testState.loadingState).toEqual(LoadingState.NotLoading);
         expect(testState.statusPollId).toEqual(-1);
     });
 

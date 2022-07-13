@@ -32,7 +32,7 @@ export const mutations: MutationTree<LoadState> & LoadMutations = {
     },
     RehydrateCancel(state: LoadState) {
         state.preparing = false;
-        state.loadingState = LoadingState.LoadFailed;
+        state.loadingState = LoadingState.NotLoading;
         if (state.statusPollId > -1) {
             stopPolling(state);
         }
