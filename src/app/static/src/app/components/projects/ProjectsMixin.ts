@@ -21,7 +21,7 @@ export default Vue.extend<Data, Methods, Computed, unknown>({
         }
     },
     computed: {
-        projects: mapStatePropByName<Project[]>("projects", "previousProjects"),
+        projects: mapStatePropByName<Project[]>("projects", "previousProjects")
     },
     methods: {
         invalidName(projectName) {

@@ -28,6 +28,9 @@ window.URL.createObjectURL = mockCreateObjectUrl;
 
 describe("File menu", () => {
 
+    const testProjects = [{id: 2, name: "proj1", versions: []}];
+    const mockGetProjects = jest.fn();
+
     const storeModules = {
         baseline: {
             namespaced: true,
@@ -59,7 +62,10 @@ describe("File menu", () => {
         },
         projects: {
             namespaced: true,
-            state: mockProjectsState()
+            state: mockProjectsState({previousProjects: testProjects}),
+            actions: {
+                getProjects: mockGetProjects
+            }
         }
     };
 
@@ -150,9 +156,9 @@ describe("File menu", () => {
         const wrapper = mount(FileMenu, {store});
         const link = wrapper.findAll(".dropdown-item").at(0);
         expectTranslated(link,
-            "Load Zip Outputs",
-            "Charger les sorties Zip",
-            "Carregar Saídas Zip", store as any);
+            "Load Model Outputs",
+            "Charger les sorties du modèle",
+            "Carregar Saídas do Modelo", store as any);
         const input = wrapper.find("#upload-zip")
         expectTranslated(input,
             "Select file",
@@ -182,6 +188,7 @@ describe("File menu", () => {
 
     it("invokes load JSON action when file selected from dialog, when user is guest", () => {
         const mockLoadAction = jest.fn();
+        const clearLoadJsonInput = jest.fn()
         const wrapper = mount(FileMenu,
             {
                 store: createStore({
@@ -192,7 +199,8 @@ describe("File menu", () => {
                             load: mockLoadAction
                         }
                     }
-                })
+                }),
+                methods: { clearLoadJsonInput }
             });
 
         const testFile = mockFile("testFilename.json", "test file contents", "application/json");
@@ -200,10 +208,12 @@ describe("File menu", () => {
         expect(mockLoadAction.mock.calls.length).toEqual(1);
         expect(mockLoadAction.mock.calls[0][1]).toBe(testFile);
         expect(wrapper.find("#project-json #load").props("open")).toBe(false);
+        expect(clearLoadJsonInput).toHaveBeenCalledTimes(1)
     });
 
     it("does not invoke load JSON action when file selected from dialog, when user is guest", () => {
         const mockLoadAction = jest.fn();
+        const clearLoadJsonInput = jest.fn();
         const wrapper = mount(FileMenu,
             {
                 store: createStore({
@@ -214,17 +224,19 @@ describe("File menu", () => {
                             load: mockLoadAction
                         }
                     }
-                })
+                }),
+                methods: { clearLoadJsonInput }
             });
 
         wrapper.find("#upload-file").trigger("change")
         expect(mockLoadAction.mock.calls.length).toEqual(0);
         expect(wrapper.find("#load").props("open")).toBe(false);
+        expect(clearLoadJsonInput).not.toHaveBeenCalled()
     });
 
-    it("invokes load model output action when file selected from dialog and user is guest", () => {
-        const mockPreparingRehydrate = jest.fn()
-
+    it("does not invoke preparingRehydrate action when file selected from dialog, when user is guest", () => {
+        const mockPreparingRehydrate = jest.fn();
+        const clearLoadZipInput = jest.fn();
         const wrapper = mount(FileMenu,
             {
                 store: createStore({
@@ -235,13 +247,38 @@ describe("File menu", () => {
                             preparingRehydrate: mockPreparingRehydrate
                         }
                     }
-                })
+                }),
+                methods: { clearLoadZipInput }
+            });
+
+        wrapper.find("#upload-zip").trigger("change")
+        expect(mockPreparingRehydrate.mock.calls.length).toEqual(0);
+        expect(wrapper.find("#load").props("open")).toBe(false);
+        expect(clearLoadZipInput).not.toHaveBeenCalled()
+    });
+
+    it("invokes load model output action when file selected from dialog and user is guest", () => {
+        const mockPreparingRehydrate = jest.fn()
+        const clearLoadZipInput = jest.fn()
+        const wrapper = mount(FileMenu,
+            {
+                store: createStore({
+                    load: {
+                        namespaced: true,
+                        state: mockLoadState(),
+                        actions: {
+                            preparingRehydrate: mockPreparingRehydrate
+                        }
+                    }
+                }),
+                methods: { clearLoadZipInput }
             });
 
         const testFile = mockFile("test filename", "test file contents", "application/zip");
         triggerSelectFile(wrapper, testFile, "#upload-zip");
         expect(mockPreparingRehydrate.mock.calls.length).toBe(1);
         expect(wrapper.find("#project-zip #load").props("open")).toBe(false);
+        expect(clearLoadZipInput).toHaveBeenCalledTimes(1)
     });
 
     it("does not open error modal if no load error", () => {
@@ -293,6 +330,8 @@ describe("File menu", () => {
         const projectModal = openUploadNewProject(store, "#upload-file")
         expect(projectModal.props().openModal).toBe(false)
         projectModal.find(".btn").trigger("click");
+        expect(mockLoadAction.mock.calls.length).toBe(1);
+        expect(mockGetProjects).toHaveBeenCalled()
         expect(projectModal.props().openModal).toBe(false)
     });
 
@@ -309,6 +348,7 @@ describe("File menu", () => {
         });
         const projectModal = openUploadNewProject(store, "#upload-zip", "application/zip")
         projectModal.find(".btn").trigger("click");
+        expect(mockGetProjects).toHaveBeenCalled()
         expect(mockPreparingRehydrate.mock.calls.length).toBe(1);
         expect(projectModal.props().openModal).toBe(false)
     });
@@ -409,42 +449,47 @@ describe("File menu", () => {
         const wrapper = mount(FileMenu, {store: createStore({}, false)});
         const testFile = mockFile("test filename", "test file contents", "application/zip");
         triggerSelectFile(wrapper, testFile, "#upload-zip");
-
         expect(wrapper.find("#project-zip #load").props("open")).toBe(true);
         expect((wrapper.vm as any).fileToLoad).toBe(testFile);
     });
 
     it("clicking cancel from Json project name modal hides modal", () => {
+        const clearLoadJsonInput = jest.fn()
         const wrapper = mount(FileMenu,
             {
                 data: () => {
                     return {projectNameJson: true}
                 },
-                store: createStore({}, false)
+                store: createStore({}, false),
+                methods: { clearLoadJsonInput }
             });
 
         const modal = wrapper.find("#project-json #load");
         expect(modal.props("open")).toBe(true);
         modal.find("#cancel-load-project").trigger("click");
         expect(modal.props("open")).toBe(false);
+        expect(clearLoadJsonInput).toHaveBeenCalledTimes(1)
     });
 
-    it("clicking cancel from Json project name modal hides modal", () => {
+    it("clicking cancel from Zip project name modal hides modal", () => {
+        const clearLoadZipInput = jest.fn()
         const wrapper = mount(FileMenu,
             {
                 data: () => {
                     return {projectNameZip: true}
                 },
-                store: createStore({}, false)
+                store: createStore({}, false),
+                methods: { clearLoadZipInput }
             });
 
         const modal = wrapper.find("#project-zip #load");
         expect(modal.props("open")).toBe(true);
         modal.find("#cancel-load-project").trigger("click");
         expect(modal.props("open")).toBe(false);
+        expect(clearLoadZipInput).toHaveBeenCalledTimes(1)
     });
 
-    it("should disable button when uploadZip input is empty for new project upload ", () => {
+    it("should disable button when uploadZip input field is empty for new project upload", () => {
         const mockPreparingRehydrate = jest.fn()
         const mockProjectName = jest.fn()
         const store = createStore({

@@ -11,7 +11,7 @@ import UploadProgress from "../../../app/components/load/UploadProgress.vue";
 import {LoadingState, LoadState} from "../../../app/store/load/load";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 
-describe("test upload new project modals", () => {
+describe("uploadNewProject", () => {
 
     beforeEach(() => {
         jest.resetAllMocks()
@@ -28,6 +28,7 @@ describe("test upload new project modals", () => {
 
     const mockSubmitFunction = jest.fn()
     const mockCancelFunction = jest.fn()
+    const mockGetProjects = jest.fn()
 
     const testProjects = [{id: 2, name: "proj1", versions: []}];
 
@@ -43,7 +44,10 @@ describe("test upload new project modals", () => {
                 },
                 projects: {
                     namespaced: true,
-                    state: mockProjectsState({previousProjects: testProjects})
+                    state: mockProjectsState({previousProjects: testProjects}),
+                    actions: {
+                        getProjects: mockGetProjects
+                    }
                 }
             }
         })
@@ -73,6 +77,7 @@ describe("test upload new project modals", () => {
         })
         const uploadProject = wrapper.find("#load-project-name");
         expect(uploadProject.exists()).toBe(true)
+        expect(mockGetProjects).toHaveBeenCalledTimes(1)
         expect(uploadProject.find(LoadErrorModal).exists()).toBe(true)
         expect(uploadProject.find(UploadProgress).exists()).toBe(true)
     })

@@ -1,7 +1,7 @@
 <template>
     <div style="flex:auto">
         <drop-down text="file">
-            <a class="dropdown-item" ref="loadZip" href="#"
+            <a class="dropdown-item" href="#"
                @mousedown="$refs.loadZip.click()">
                 <span v-translate="'loadZip'"></span>
                 <upload-icon size="20" class="icon"></upload-icon>
@@ -69,6 +69,8 @@
         cancelLoadJson: () => void;
         handleLoadJson: () => void
         handleLoadZip: () => void
+        clearLoadJsonInput: () => void,
+        clearLoadZipInput: () => void
     }
 
     interface Computed {
@@ -142,6 +144,7 @@
                 const input = this.$refs.loadFile as HTMLInputElement;
                 if (input.files && input.files.length > 0) {
                     const file = input.files[0];
+                    this.clearLoadJsonInput()
                     if (this.isGuest) {
                         this.loadAction(file);
                     } else {
@@ -154,6 +157,7 @@
                 const input = this.$refs.loadZip as HTMLInputElement;
                 if (input.files && input.files.length > 0) {
                     const file = input.files[0];
+                    this.clearLoadZipInput();
                     if (this.isGuest) {
                         this.preparingRehydrate(getFormData(file));
                     } else {
@@ -161,6 +165,16 @@
                         this.projectNameZip = true;
                     }
                 }
+            },
+            clearLoadZipInput() {
+                // clearing value because browser does not
+                // allow selection of the same file twice
+                const input = this.$refs.loadZip as HTMLInputElement
+                input.value = ""
+            },
+            clearLoadJsonInput() {
+                const input = this.$refs.loadFile as HTMLInputElement
+                input.value = ""
             },
             handleLoadJson() {
                 this.projectNameJson = false;
@@ -176,9 +190,11 @@
             },
             cancelLoadJson() {
                 this.projectNameJson = false;
+                this.clearLoadJsonInput();
             },
             cancelLoadZip() {
                 this.projectNameZip = false;
+                this.clearLoadZipInput();
             }
         },
         components: {

@@ -80,7 +80,7 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
     },
 
     async createProject(context, payload) {
-        const {commit, state} = context;
+        const {commit, state, dispatch} = context;
 
         //Ensure we have saved the current version
         if (state.currentVersion) {
@@ -92,7 +92,10 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         await api<RootMutation, ProjectsMutations>(context)
             .withSuccess(RootMutation.SetProject, true)
             .withError(ProjectsMutations.ProjectError)
-            .postAndReturn<string>("/project/", qs.stringify(payload));
+            .postAndReturn<string>("/project/", qs.stringify(payload))
+            .then(() => {
+                dispatch("getProjects")
+            })
     },
 
     async getProjects(context, isLoading = true) {

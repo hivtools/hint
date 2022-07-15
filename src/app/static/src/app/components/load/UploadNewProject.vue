@@ -5,7 +5,6 @@
             <input id="project-name-input"
                    type="text"
                    class="form-control"
-                   @keyup.enter="submitLoad"
                    v-translate:placeholder="'projectName'"
                    v-model="uploadProjectName">
             <div class="invalid-feedback d-inline"
@@ -57,6 +56,7 @@
         cancelRehydration: () => void;
         clearLoadError: () => void;
         setProjectName: (name: string) => void;
+        getProjects: () => void;
     }
 
     interface LoadComputed {
@@ -84,7 +84,8 @@
         methods: {
             cancelRehydration: mapMutationByName("load", "RehydrateCancel"),
             clearLoadError: mapActionByName("load", "clearLoadState"),
-            setProjectName: mapMutationByName("load", "SetProjectName")
+            setProjectName: mapMutationByName("load", "SetProjectName"),
+            getProjects: mapActionByName("projects", "getProjects")
         },
         computed: {
             ...mapStateProps<LoadState, keyof LoadComputed>("load", {
@@ -105,6 +106,9 @@
             uploadProjectName(newValue) {
                 this.setProjectName(newValue)
             }
+        },
+        mounted() {
+            this.getProjects();
         }
     })
 </script>

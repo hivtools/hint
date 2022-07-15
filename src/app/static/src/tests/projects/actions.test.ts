@@ -81,11 +81,13 @@ describe("Projects actions", () => {
             .reply(500, mockFailure("TestError"));
 
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const state = mockProjectsState({error: "TEST ERROR" as any});
 
-        actions.createProject({commit, state, rootState} as any, {name: "newProject"});
+        actions.createProject({commit, dispatch, state, rootState} as any, {name: "newProject"});
 
         setTimeout(() => {
+            expect(dispatch).toHaveBeenCalledTimes(1)
             expect(commit.mock.calls[0][0]).toStrictEqual({type: "downloadResults/ResetIds"});
             expect(commit.mock.calls[1][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
 
@@ -103,11 +105,13 @@ describe("Projects actions", () => {
             .reply(200, mockSuccess("TestProject"));
 
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const state = mockProjectsState();
 
-        actions.createProject({commit, state, rootState} as any, {name: "newProject"});
+        actions.createProject({commit, dispatch, state, rootState} as any, {name: "newProject"});
 
         setTimeout(() => {
+            expect(dispatch).toHaveBeenCalledTimes(1)
             expect(commit.mock.calls[0][0]).toStrictEqual({type: "downloadResults/ResetIds"});
             expect(commit.mock.calls[1][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
 
@@ -168,6 +172,7 @@ describe("Projects actions", () => {
             .reply(200, mockSuccess("ok"));
 
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const state = mockProjectsState({
             currentProject: mockProject,
             currentVersion: mockProject.versions[0],
@@ -178,9 +183,10 @@ describe("Projects actions", () => {
             projects: state
         });
 
-        actions.createProject({commit, state, rootState} as any, {name: "newProject"});
+        actions.createProject({commit, dispatch, state, rootState} as any, {name: "newProject"});
 
         setTimeout(() => {
+            expect(dispatch).toHaveBeenCalledTimes(1)
             expect(mockAxios.history.post.length).toBe(2);
             expect(mockAxios.history.post[0].url).toBe("/project/1/version/version-id/state/");
             expect(mockAxios.history.post[1].url).toBe("/project/");
