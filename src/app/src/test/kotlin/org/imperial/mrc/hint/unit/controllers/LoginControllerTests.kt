@@ -79,7 +79,7 @@ class LoginControllerTests
         Assertions.assertThat(result).isEqualTo("login")
         Assertions.assertThat(model["title"]).isEqualTo("Login")
         Assertions.assertThat(model["username"]).isEqualTo("")
-        Assertions.assertThat(model["error"]).isEqualTo("SessionExpiredLogin")
+        Assertions.assertThat(model["error"]).isEqualTo("sessionExpiredLogin")
     }
 
     @Test
