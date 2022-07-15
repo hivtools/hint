@@ -141,6 +141,7 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
         .get<ProjectRehydrateResultResponse>(`rehydrate/result/${rehydrateId}`);
 
     if (response && response.data && !rootGetters.isGuest) {
+        console.log(response.data);
         await (dispatch("projects/createProject",
             {
                 name: state.projectName,
