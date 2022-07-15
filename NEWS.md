@@ -2,6 +2,10 @@
 
 * Add language toggle to login page
 
+# hint 2.3.1
+
+* Remove 'Parsing ADR Response' log messages
+
 # hint 2.3.0
 
 * Upload output zip action which calls hintr endpoint via backend
