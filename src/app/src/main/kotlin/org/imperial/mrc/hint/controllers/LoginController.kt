@@ -26,7 +26,7 @@ class LoginController(private val request: HttpServletRequest,
         else if (request.getParameter("error") == "SessionExpired")
         {
 
-            request.getParameter("message") ?: "SessionExpiredLogin"
+            request.getParameter("message") ?: "sessionExpiredLogin"
         }
         else
         {
