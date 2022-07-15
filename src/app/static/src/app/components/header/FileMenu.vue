@@ -16,13 +16,13 @@
                 <download-icon size="20" class="icon"></download-icon>
             </a>
             <a style="display:none" ref="save"></a>
-            <a class="dropdown-item" ref="load" href="#" v-on:mousedown="$refs.loadFile.click()">
+            <a class="dropdown-item" ref="load" href="#" v-on:mousedown="$refs.loadJson.click()">
                 <span><span class="pr-1" v-translate="'load'"></span>JSON</span>
                 <upload-icon size="20" class="icon"></upload-icon>
             </a>
             <input id="upload-file" v-translate:aria-label="'selectFile'"
                    type="file"
-                   style="display: none;" ref="loadFile" v-on:change="load" accept=".json">
+                   style="display: none;" ref="loadJson" v-on:change="loadJson" accept=".json">
         </drop-down>
 
         <div id="project-zip">
@@ -61,7 +61,7 @@
 
     interface Methods {
         save: (e: Event) => void;
-        load: () => void;
+        loadJson: () => void;
         loadZip: () => void;
         loadAction: (file: File) => void;
         preparingRehydrate: (file: FormData) => void
@@ -140,8 +140,8 @@
                 a.download = `${this.title}-${new Date().toISOString()}.json`.toLowerCase();
                 a.click();
             },
-            load() {
-                const input = this.$refs.loadFile as HTMLInputElement;
+            loadJson() {
+                const input = this.$refs.loadJson as HTMLInputElement;
                 if (input.files && input.files.length > 0) {
                     const file = input.files[0];
                     this.clearLoadJsonInput()
@@ -173,7 +173,7 @@
                 input.value = ""
             },
             clearLoadJsonInput() {
-                const input = this.$refs.loadFile as HTMLInputElement
+                const input = this.$refs.loadJson as HTMLInputElement
                 input.value = ""
             },
             handleLoadJson() {

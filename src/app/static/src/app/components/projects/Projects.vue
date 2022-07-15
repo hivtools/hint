@@ -10,28 +10,23 @@
                        href="#" @click="handleCurrentProjectClick"></a> ({{ currentProject.name }})
                 </span>
             </div>
-                <div class="mb-3 clearfix col-10">
-                    <div class="d-flex flex-row">
-                        <div class="pr-2 col-6">
-                            <input type="text"
-                                   id="new-project"
-                                   class="form-control"
-                                   v-translate:placeholder="'projectName'"
-                                   @keyup.enter="createProject({name: newProjectName})"
-                                   v-model="newProjectName">
-
-                            <div class="invalid-feedback d-inline"
-                                 v-translate="'uniqueProjectName'"
-                                 v-if="invalidName(newProjectName)"></div>
-                            <button type="button"
-                                    class="btn btn-red mt-2 float-right"
-                                    :disabled="disableCreate"
-                                    @click="createProject({name: newProjectName})"
-                                    v-translate="'createProject'">
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <div class="mb-3 col-6 clearfix">
+                <input type="text"
+                       id="new-project"
+                       class="form-control"
+                       v-translate:placeholder="'projectName'"
+                       @keyup.enter="createProject({name: newProjectName})"
+                       v-model="newProjectName">
+                <div class="invalid-feedback d-inline"
+                     v-translate="'uniqueProjectName'"
+                     v-if="invalidName(newProjectName)"></div>
+                <button type="button"
+                        class="btn btn-red mt-2 float-right"
+                        :disabled="disableCreate"
+                        @click="createProject({name: newProjectName})"
+                        v-translate="'createProject'">
+                </button>
+            </div>
             <div class="my-3 col-12">
                 <project-history></project-history>
             </div>

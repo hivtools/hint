@@ -536,7 +536,7 @@ const triggerSelectFile = (wrapper: Wrapper<any>, testFile: File, id: string) =>
             files: [testFile]
         };
     } else if (testFile.type == "application/json") {
-        (vm.$refs as any).loadFile = {
+        (vm.$refs as any).loadJson = {
             files: [testFile]
         };
     }
