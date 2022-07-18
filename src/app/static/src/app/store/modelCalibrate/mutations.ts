@@ -24,7 +24,9 @@ export enum ModelCalibrateMutation {
     PollingForStatusStarted = "PollingForStatusStarted",
     Ready = "Ready",
     CalibrationPlotStarted = "CalibrationPlotStarted",
+    ComparisonPlotStarted = "ComparisonPlotStarted",
     SetPlotData = "SetPlotData",
+    SetComparisonPlotData = "SetComparisonPlotData",
     WarningsFetched = "WarningsFetched",
     CalibrateResultFetched = "CalibrateResultFetched",
     ClearWarnings = "ClearWarnings"
@@ -84,9 +86,20 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.error = null;
     },
 
+    [ModelCalibrateMutation.ComparisonPlotStarted](state: ModelCalibrateState) {
+        state.generatingComparisonPlot = true;
+        state.comparisonPlotResult = null;
+        state.error = null;
+    },
+
     [ModelCalibrateMutation.SetPlotData](state: ModelCalibrateState, action: PayloadWithType<any>) {
         state.generatingCalibrationPlot = false;
         state.calibratePlotResult = action;
+    },
+
+    [ModelCalibrateMutation.SetComparisonPlotData](state: ModelCalibrateState, action: PayloadWithType<any>) {
+        state.generatingComparisonPlot = false;
+        state.comparisonPlotResult = action;
     },
 
     [ModelCalibrateMutation.SetModelCalibrateOptionsVersion](state: ModelCalibrateState, action: PayloadWithType<VersionInfo>) {
