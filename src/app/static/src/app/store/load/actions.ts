@@ -133,7 +133,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 };
 
 const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) => {
-    const {rootGetters, state, dispatch} = context
+    const {rootGetters, state, dispatch, rootState} = context
     const rehydrateId = state.rehydrateId
     const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("RehydrateResult")
@@ -141,12 +141,38 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
         .get<ProjectRehydrateResultResponse>(`rehydrate/result/${rehydrateId}`);
 
     if (response && response.data && !rootGetters.isGuest) {
-        console.log(response.data);
         await (dispatch("projects/createProject",
             {
                 name: state.projectName,
                 isUploaded: true
             }, {root: true}));
+
+        const files = transformPathToHash(response.data.state.datasets);
+
+        const modelCalibrate = {
+            ...rootState.modelCalibrate,
+            calibrateId: response.data.state.calibrate.id,
+            options: response.data.state.calibrate.options
+        }
+
+        const modelRun = {
+            ...rootState.modelRun,
+            modelRunId: response.data.state.model_fit.id
+        }
+
+        const modelOptions = {
+            ...rootState.modelOptions,
+            options: response.data.state.model_fit.options
+        }
+
+        const savedState = {
+            ...rootState,
+            modelCalibrate,
+            modelRun,
+            modelOptions,
+        }
+
+        await getFilesAndLoad(context, files, savedState, true)
     }
 }
 
@@ -162,16 +188,24 @@ const getRehydrateStatus = async (context: ActionContext<LoadState, RootState>) 
     }
 }
 
-async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, files: any, savedState: any) {
+async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
+                               files: any,
+                               savedState: RootState,
+                               isFromZip = false) {
     savedState.stepper.steps = initialStepperState().steps;
     const {dispatch, state} = context;
     await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("UpdatingState")
         .withError("LoadFailed")
         .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
-        .then(() => {
+        .then((response) => {
             if (state.loadingState != LoadingState.LoadFailed) {
-                dispatch("updateStoreState", savedState);
+                if (isFromZip && response) {
+                    updateOutputZipStoreState(savedState);
+                }
+                else {
+                    dispatch("updateStoreState", savedState);
+                }
             }
         });
 }
@@ -190,4 +224,31 @@ const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormDa
 
 const flatMapControlSection = (sections: DynamicControlSection[]) => {
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
+}
+
+const updateOutputZipStoreState = async (savedState: RootState) => {
+    //File hashes have now been set for session in backend, so we save the state from the file we're loading into local
+    //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
+    //NB load state is not included in the saved state, so we will default back to NotLoading on page reload.
+
+    // Backwards compatibility fix: projects which calibrated before bug fix in mrc-3126 have empty calibrate options
+    const {modelCalibrate} = savedState
+    if (modelCalibrate?.result && Object.keys(modelCalibrate.options).length === 0) {
+        savedState = {
+            ...savedState,
+            modelCalibrate: {...modelCalibrate, options: getCalibrateOptions(modelCalibrate)}
+        }
+    }
+    localStorageManager.savePartialState(savedState, false);
+    location.reload();
+}
+
+const transformPathToHash = (dataset: any) => {
+    Object.keys(dataset).map((key: string) => {
+        return dataset[key] = {
+            hash: dataset[key].path.split("/")[1],
+            filename: dataset[key].filename
+        }
+    })
+    return dataset
 }

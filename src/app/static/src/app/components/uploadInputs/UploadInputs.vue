@@ -94,7 +94,7 @@
     import ManageFile from "../files/ManageFile.vue";
     import {RootState} from "../../root";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
-    import {mapStatePropByName} from "../../utils";
+    import {mapActionByName, mapStatePropByName} from "../../utils";
 
     const namespace = 'baseline';
 
@@ -163,13 +163,17 @@
                 uploadANC: 'surveyAndProgram/uploadANC',
                 deleteSurvey: 'surveyAndProgram/deleteSurvey',
                 deleteProgram: 'surveyAndProgram/deleteProgram',
-                deleteANC: 'surveyAndProgram/deleteANC'
+                deleteANC: 'surveyAndProgram/deleteANC',
+                getPlottingMetadata: 'metadata/getPlottingMetadata'
             })
         },
         components: {
             ErrorAlert,
             LoadingSpinner,
             ManageFile
+        },
+        mounted() {
+            this.getPlottingMetadata("default")
         }
     })
 </script>
