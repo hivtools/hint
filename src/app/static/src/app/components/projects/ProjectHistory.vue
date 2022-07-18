@@ -46,6 +46,9 @@
                     <small v-if="p.sharedBy" class="text-muted d-flex">
                         {{ getTranslatedValue("sharedBy") }}: {{ p.sharedBy }}
                     </small>
+                    <small v-if="p.uploaded" class="text-muted d-flex">
+                        {{ getTranslatedValue("isUploadedText") }}
+                    </small>
                 </div>
                 <div class="col-md-1 project-cell version-count-cell">
                     <small class="text-muted">{{ versionCountLabel(p) }}</small>
@@ -233,13 +236,13 @@
             </div>
             <div v-if="projectNoteToEdit">
                 <label class="h4"
-                       for="edit-note-id"
+                       for="edit-project-note-id"
                        v-translate="'editProjectNoteHeader'"
                        id="editProjectNoteHeader"></label>
                 <div class="pb-3"
                      v-html="editProjectNoteSubHeader"
                      id="editProjectNoteSubHeader"></div>
-                <textarea id="edit-note-id" class="form-control"
+                <textarea id="edit-project-note-id" class="form-control"
                           v-model="editedNote"></textarea>
             </div>
             <template v-slot:footer>
@@ -273,7 +276,7 @@
     } from "vue-feather-icons";
     import Modal from "../Modal.vue";
     import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
-    import {projectPayload, versionPayload} from "../../store/projects/actions";
+    import {CreateProjectPayload, projectPayload, versionPayload} from "../../store/projects/actions";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
@@ -333,7 +336,7 @@
         deleteVersionAction: (versionIds: VersionIds) => void;
         promoteVersionAction: (versionPayload: versionPayload) => void;
         renameProjectAction: (projectPayload: projectPayload) => void;
-        createProject: (name: string) => void;
+        createProject: (name: CreateProjectPayload) => void;
         getProjects: () => void;
         versionLabel: (version: Version) => string;
         renameProject: (event: Event, projectId: number) => void;

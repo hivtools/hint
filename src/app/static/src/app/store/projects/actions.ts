@@ -22,8 +22,13 @@ export interface projectPayload {
     note?: string
 }
 
+export interface CreateProjectPayload {
+    name: string,
+    isUploaded?: boolean
+}
+
 export interface ProjectsActions {
-    createProject: (store: ActionContext<ProjectsState, RootState>, name: string) => void,
+    createProject: (store: ActionContext<ProjectsState, RootState>, payload: CreateProjectPayload) => void,
     getProjects: (store: ActionContext<ProjectsState, RootState>) => void
     getCurrentProject: (store: ActionContext<ProjectsState, RootState>) => void
     queueVersionStateUpload: (store: ActionContext<ProjectsState, RootState>) => void,
@@ -74,8 +79,8 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .postAndReturn(`/project/${payload.projectId}/clone`, emails);
     },
 
-    async createProject(context, name) {
-        const {commit, state} = context;
+    async createProject(context, payload) {
+        const {commit, state, dispatch} = context;
 
         //Ensure we have saved the current version
         if (state.currentVersion) {
@@ -87,7 +92,10 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
         await api<RootMutation, ProjectsMutations>(context)
             .withSuccess(RootMutation.SetProject, true)
             .withError(ProjectsMutations.ProjectError)
-            .postAndReturn<string>("/project/", qs.stringify({name}));
+            .postAndReturn<string>("/project/", qs.stringify(payload))
+            .then(() => {
+                dispatch("getProjects")
+            })
     },
 
     async getProjects(context, isLoading = true) {
