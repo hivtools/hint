@@ -98,7 +98,9 @@ export const mutations: MutationTree<RootState> = {
         state.modelRun.ready = true;
         state.modelCalibrate.ready = true;
 
-        router.push("/");
+        if (router.currentRoute.path !== "/") {
+            router.push("/");
+        }
     },
 
     [RootMutation.ResetSelectedDataType](state: RootState) {

@@ -18,12 +18,24 @@ export interface LoadMutations {
     RehydrateStatusUpdated: LoadMutation,
     RehydratePollingStarted: LoadMutation,
     RehydrateResult: LoadMutation,
-    RehydrateResultError: LoadMutation
+    RehydrateResultError: LoadMutation,
+    SetProjectName: LoadMutation,
+    RehydrateCancel: LoadMutation
 }
 
 export const mutations: MutationTree<LoadState> & LoadMutations = {
     SettingFiles(state: LoadState) {
         state.loadingState = LoadingState.SettingFiles;
+    },
+    SetProjectName(state: LoadState, projectName: string) {
+        state.projectName = projectName
+    },
+    RehydrateCancel(state: LoadState) {
+        state.preparing = false;
+        state.loadingState = LoadingState.NotLoading;
+        if (state.statusPollId > -1) {
+            stopPolling(state);
+        }
     },
     UpdatingState(state: LoadState) {
         state.loadingState = LoadingState.UpdatingState;
@@ -41,10 +53,12 @@ export const mutations: MutationTree<LoadState> & LoadMutations = {
         state.rehydrateResult = action.payload;
         state.preparing = false;
         state.loadingState = LoadingState.NotLoading;
+        state.loadError = null;
     },
     RehydrateResultError(state: LoadState, action: PayloadWithType<Error>) {
         state.loadError = action.payload;
         state.preparing = false;
+        state.rehydrateResult = {} as ProjectRehydrateResultResponse
         state.loadingState = LoadingState.LoadFailed;
         if (state.statusPollId > -1) {
             stopPolling(state);

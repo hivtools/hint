@@ -8,7 +8,7 @@ import {
     mockSuccess
 } from "../mocks";
 import {actions} from "../../app/store/load/actions";
-import {FileSource, LoadingState} from "../../app/store/load/load";
+import {LoadingState} from "../../app/store/load/load";
 import {addCheckSum} from "../../app/utils";
 import {localStorageManager} from "../../app/localStorageManager";
 import {currentHintVersion} from "../../app/hintVersion";
@@ -43,17 +43,13 @@ describe("Load actions", () => {
 
     it("load reads blob and dispatches setFiles action", (done) => {
         const dispatch = jest.fn();
-        actions.load({dispatch, rootState} as any,
-            {
-                file: new File(["Test File Contents"], "testFile"),
-                projectName: "project name"
-            });
+        const file = new File(["Test File Contents"], "testFile")
+        actions.load({dispatch, rootState} as any, file);
 
         const interval = setInterval(() => {
             if (dispatch.mock.calls.length > 0) {
                 expect(dispatch.mock.calls[0][0]).toEqual("setFiles");
                 expect(dispatch.mock.calls[0][1].savedFileContents).toEqual("Test File Contents");
-                expect(dispatch.mock.calls[0][1].projectName).toEqual("project name");
                 clearInterval(interval);
                 done();
             }
@@ -134,7 +130,7 @@ describe("Load actions", () => {
         const rootGetters = {isGuest: true};
         const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": currentHintVersion, stepper: {}}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
-            {savedFileContents: fileContents, projectName: null}
+            {savedFileContents: fileContents}
         );
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
@@ -184,7 +180,7 @@ describe("Load actions", () => {
             .reply(200, mockSuccess({}));
 
         const commit = jest.fn();
-        const state = mockLoadState({loadingState: LoadingState.UpdatingState});
+        const state = mockLoadState({loadingState: LoadingState.UpdatingState, projectName: "new project"});
         const dispatch = jest.fn();
         const testRootState = {
             version: currentHintVersion,
@@ -200,11 +196,11 @@ describe("Load actions", () => {
         }));
 
         await actions.setFiles({commit, state, dispatch, rootState: testRootState, rootGetters} as any,
-            {savedFileContents: fileContents, projectName: "new project"}
+            {savedFileContents: fileContents}
         );
 
         expect(dispatch.mock.calls[0][0]).toEqual("projects/createProject");
-        expect(dispatch.mock.calls[0][1]).toEqual("new project");
+        expect(dispatch.mock.calls[0][1]).toEqual({name: "new project"});
         expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
@@ -264,7 +260,7 @@ describe("Load actions", () => {
         const dispatch = jest.fn();
         const fileContents = '["badchecksum", {"files": "TEST FILES", "state": "TEST STATE"}]';
         await actions.setFiles({commit, state, dispatch, rootState} as any,
-            {savedFileContents: fileContents, projectName: null}
+            {savedFileContents: fileContents}
         );
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
@@ -288,7 +284,7 @@ describe("Load actions", () => {
         const rootGetters = {isGuest: true};
         const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {version: currentHintVersion, stepper: {}}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
-            {savedFileContents: fileContents, projectName: null}
+            {savedFileContents: fileContents}
         );
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
@@ -308,7 +304,7 @@ describe("Load actions", () => {
         const rootGetters = {isGuest: true};
         const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {"version": "0.0.0"}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
-            {savedFileContents: fileContents, projectName: null}
+            {savedFileContents: fileContents}
         );
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
@@ -329,7 +325,7 @@ describe("Load actions", () => {
         const rootGetters = {isGuest: true};
         const fileContents = addCheckSum(JSON.stringify({files: "TEST FILES", state: {}}));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
-            {savedFileContents: fileContents, projectName: null}
+            {savedFileContents: fileContents}
         );
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
@@ -354,7 +350,7 @@ describe("Load actions", () => {
             state: {"version": "2.1.0", stepper: {}}
         }));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
-            {savedFileContents: fileContents, projectName: null}
+            {savedFileContents: fileContents}
         );
 
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "SettingFiles", payload: null});
@@ -529,40 +525,17 @@ describe("Load actions", () => {
         expect(mockLocationReload.mock.calls.length).toBe(1);
     });
 
-    it("load reads outputZip and dispatches preparingRehydrate action", (done) => {
-        const dispatch = jest.fn();
-        actions.load({dispatch, rootState} as any,
-            {
-                file: new File([""], "testFile"),
-                projectName: "project name",
-                source: FileSource.ModelOutput
-            });
-
-        const interval = setInterval(() => {
-            if (dispatch.mock.calls.length > 0) {
-                expect(dispatch.mock.calls[0][0]).toEqual("preparingRehydrate");
-                expect(dispatch.mock.calls[0][1].projectName).toEqual("project name");
-                clearInterval(interval);
-                done();
-            }
-        });
-    });
-
     it("can prepare rehydrate and dispatches poll action", (done) => {
         mockAxios.onPost("rehydrate/submit")
             .reply(200, mockSuccess(true));
 
-        const file = new File(["TEST"], "testFile")
-        const form = new FormData()
-        form.append("file", file)
+        const file = new File(["TEST"], "testFile.zip")
+        const fomData = new FormData()
+        fomData.append("file", file)
 
         const dispatch = jest.fn();
         const commit = jest.fn();
-        actions.preparingRehydrate({dispatch, commit, rootState} as any,
-            {
-                file: form,
-                projectName: null
-            });
+        actions.preparingRehydrate({dispatch, commit, rootState} as any, fomData);
 
         const interval = setInterval(() => {
             expect(mockAxios.history.post.length).toBe(1)
@@ -586,8 +559,10 @@ describe("Load actions", () => {
             .reply(200, mockSuccess("RESULT"));
 
         const commit = jest.fn();
-        const state = mockLoadState({rehydrateId: "1"} as any)
-        await actions.pollRehydrate({commit, rootState, state} as any);
+        const dispatch = jest.fn()
+        const rootGetters = {isGuest: false}
+        const state = mockLoadState({rehydrateId: "1", projectName: "testProject"} as any)
+        await actions.pollRehydrate({commit, dispatch, rootState, state, rootGetters} as any);
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2)
@@ -600,6 +575,34 @@ describe("Load actions", () => {
             expect(commit.mock.calls[1][0].payload).toStrictEqual(RunningStatusResponse)
             expect(commit.mock.calls[2][0].type).toBe("RehydrateResult")
             expect(commit.mock.calls[2][0].payload).toBe("RESULT")
+            expect(dispatch.mock.calls.length).toBe(1)
+            expect(dispatch.mock.calls[0][0]).toBe("projects/createProject")
+            expect(dispatch.mock.calls[0][1]).toStrictEqual({
+                name: "testProject",
+                isUploaded: true
+            })
+            done();
+        }, 2100);
+    });
+
+    it("does not dispatch create project action when use is guest", async (done) => {
+        mockAxios.onGet(`rehydrate/status/1`)
+            .reply(200, mockSuccess(RunningStatusResponse));
+
+        mockAxios.onGet(`rehydrate/result/1`)
+            .reply(200, mockSuccess("RESULT"));
+
+        const commit = jest.fn();
+        const dispatch = jest.fn()
+        const rootGetters = {isGuest: true}
+        const state = mockLoadState({rehydrateId: "1"} as any)
+        await actions.pollRehydrate({commit, dispatch, rootState, state, rootGetters} as any);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(3)
+            expect(commit.mock.calls[2][0].type).toBe("RehydrateResult")
+            expect(commit.mock.calls[2][0].payload).toBe("RESULT")
+            expect(dispatch.mock.calls.length).toBe(0)
             done();
         }, 2100);
     });

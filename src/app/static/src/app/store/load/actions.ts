@@ -1,5 +1,5 @@
 import {ActionContext, ActionTree} from "vuex";
-import {FileSource, LoadingState, LoadState} from "./load";
+import {LoadingState, LoadState} from "./load";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
 import {verifyCheckSum} from "../../utils";
@@ -12,57 +12,38 @@ import {ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generat
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {DynamicControlGroup, DynamicControlSection, DynamicFormData} from "@reside-ic/vue-dynamic-form";
 
-export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult"
+export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult" | "SetProjectName" | "RehydrateCancel"
 export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
 
 export interface LoadActions {
-    load: (store: ActionContext<LoadState, RootState>, payload: loadPayload) => void
+    load: (store: ActionContext<LoadState, RootState>, file: File) => void
+    preparingRehydrate: (store: ActionContext<LoadState, RootState>, file: FormData) => void
     setFiles: (store: ActionContext<LoadState, RootState>, payload: setFilesPayload) => void
     loadFromVersion: (store: ActionContext<LoadState, RootState>, versionDetails: VersionDetails) => void
     updateStoreState: (store: ActionContext<LoadState, RootState>, savedState: Partial<RootState>) => void
     clearLoadState: (store: ActionContext<LoadState, RootState>) => void
-    preparingRehydrate: (store: ActionContext<LoadState, RootState>, payload: modelOutputPayload) => void
     pollRehydrate: (store: ActionContext<LoadState, RootState>) => void
 }
 
-export interface loadPayload {
-    file: File,
-    projectName: string | null,
-    source?: FileSource
-}
-
 export interface setFilesPayload {
-    savedFileContents: string,
-    projectName: string | null
-}
-
-export interface modelOutputPayload {
-    file: FormData,
-    projectName: string | null
+    savedFileContents: string
 }
 
 export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
-    async load(context, payload) {
+    async load(context, file) {
         const {dispatch} = context
-        const {file, projectName, source} = payload;
 
-        if (FileSource.ModelOutput === source) {
-            const formData = new FormData()
-            formData.append("file", file)
-            await dispatch("preparingRehydrate", {file: formData, projectName});
-        } else {
-            const reader = new FileReader();
-            reader.addEventListener('loadend', function () {
-                dispatch("setFiles", {savedFileContents: reader.result as string, projectName});
-            });
-            reader.readAsText(file);
-        }
+        const reader = new FileReader();
+        reader.addEventListener('loadend', function () {
+            dispatch("setFiles", {savedFileContents: reader.result as string});
+        });
+        reader.readAsText(file);
     },
 
     async setFiles(context, payload) {
-        const {savedFileContents, projectName} = payload;
-        const {commit, rootState, rootGetters, dispatch} = context;
+        const {savedFileContents} = payload;
+        const {commit, rootState, rootGetters, dispatch, state} = context;
         commit({type: "SettingFiles", payload: null});
 
         const objectContents = verifyCheckSum(savedFileContents as string);
@@ -88,7 +69,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         }
 
         if (!rootGetters.isGuest) {
-            await (dispatch("projects/createProject", projectName, {root: true}));
+            await (dispatch("projects/createProject", {name: state.projectName || null}, {root: true}));
             savedState.projects.currentProject = rootState.projects.currentProject;
             savedState.projects.currentVersion = rootState.projects.currentVersion;
         }
@@ -128,16 +109,13 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         commit({type: "LoadStateCleared", payload: null});
     },
 
-    async preparingRehydrate(context, payload) {
-        const {file} = payload;
-        const {commit, dispatch} = context;
-
+    async preparingRehydrate(context, formData) {
+        const {dispatch, commit} = context
         commit({type: "SettingFiles", payload: null});
-
         const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
             .withSuccess("PreparingRehydrate")
             .withError("RehydrateResultError")
-            .postAndReturn("rehydrate/submit", file);
+            .postAndReturn("rehydrate/submit", formData);
 
         if (response) {
             await dispatch("pollRehydrate");
@@ -155,15 +133,19 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 };
 
 const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) => {
-    const rehydrateId = context.state.rehydrateId
-
+    const {rootGetters, state, dispatch} = context
+    const rehydrateId = state.rehydrateId
     const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("RehydrateResult")
         .withError("RehydrateResultError")
         .get<ProjectRehydrateResultResponse>(`rehydrate/result/${rehydrateId}`);
 
-    if (response && response.data) {
-        console.log(response.data.state)
+    if (response && response.data && !rootGetters.isGuest) {
+        await (dispatch("projects/createProject",
+            {
+                name: state.projectName,
+                isUploaded: true
+            }, {root: true}));
     }
 }
 

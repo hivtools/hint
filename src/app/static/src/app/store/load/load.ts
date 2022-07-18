@@ -14,10 +14,7 @@ export interface LoadState {
     statusPollId: number
     complete: boolean
     rehydrateResult: ProjectRehydrateResultResponse
-}
-
-export enum FileSource {
-    ModelOutput = "OUTPUT"
+    projectName: string
 }
 
 export const initialLoadState = (): LoadState => {
@@ -28,7 +25,8 @@ export const initialLoadState = (): LoadState => {
         preparing: false,
         statusPollId: -1,
         complete: false,
-        rehydrateResult: {} as ProjectRehydrateResultResponse
+        rehydrateResult: {} as ProjectRehydrateResultResponse,
+        projectName: ""
     }
 };
 

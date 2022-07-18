@@ -13,6 +13,7 @@ describe("Load mutations", () => {
         const testState = mockLoadState();
         mutations.UpdatingState(testState, null);
         expect(testState.loadingState).toBe(LoadingState.UpdatingState);
+        expect(testState.loadError).toBe(null);
     });
 
     it("LoadStateCleared updates loading state correctly and clears error", () => {
@@ -28,6 +29,7 @@ describe("Load mutations", () => {
         mutations.LoadFailed(testState, {type: "LoadFailed", payload: error});
         expect(testState.loadingState).toBe(LoadingState.LoadFailed);
         expect(testState.loadError).toBe(error);
+        expect(testState.rehydrateResult).toEqual({})
     });
 
     it("set RehydrateResult state", () => {
@@ -64,6 +66,24 @@ describe("Load mutations", () => {
         const testState = mockLoadState({statusPollId: 10});
         mutations.RehydrateResultError(testState, {type: "RehydrateResultError", payload: error});
         expect(testState.loadError).toBe(error);
+        expect(testState.statusPollId).toEqual(-1);
+    });
+
+    it("set Project name state", () => {
+        const testState = mockLoadState();
+        mutations.SetProjectName(testState,  "project name");
+        expect(testState.projectName).toBe("project name");
+    });
+
+    it("set RehydrateCancel state", () => {
+        const testState = mockLoadState({
+            statusPollId: 10,
+            preparing: true,
+            loadingState: LoadingState.SettingFiles
+        });
+        mutations.RehydrateCancel(testState, {type: "RehydrateCancel"});
+        expect(testState.preparing).toEqual(false);
+        expect(testState.loadingState).toEqual(LoadingState.NotLoading);
         expect(testState.statusPollId).toEqual(-1);
     });
 

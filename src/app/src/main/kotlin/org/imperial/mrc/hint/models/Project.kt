@@ -8,7 +8,8 @@ data class Project (
         val name: String,
         val versions: List<Version>,
         val sharedBy: String? = "",
-        val note: String? = null)
+        val note: String? = null,
+        val isUploaded: Boolean? = false)
 
 private val formatter = ISO_LOCAL_DATE_TIME
 

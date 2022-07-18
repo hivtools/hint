@@ -1,3 +1,7 @@
+# hint 2.4.0
+
+* Implement upload output zip UI
+
 # hint 2.3.1
 
 * Remove 'Parsing ADR Response' log messages
