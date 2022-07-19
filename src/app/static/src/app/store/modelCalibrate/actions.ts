@@ -15,6 +15,7 @@ export interface ModelCalibrateActions {
     poll: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getResult: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getCalibratePlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
+    getComparisonPlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
 }
 
 export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrateActions = {

@@ -114,6 +114,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.error = action.payload;
         state.calibrating = false;
         state.generatingCalibrationPlot = false;
+        state.generatingComparisonPlot = false;
         if (state.statusPollId > -1) {
             stopPolling(state);
         }
