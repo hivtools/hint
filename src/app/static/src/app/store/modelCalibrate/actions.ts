@@ -131,6 +131,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             .get<ModelResultResponse>(`model/comparison/plot/${calibrateId}`);
 
         if (response) {
+            console.log("response", response)
             commit(ModelCalibrateMutation.SetComparisonPlotData, response.data);
         }
     }
