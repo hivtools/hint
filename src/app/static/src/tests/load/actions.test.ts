@@ -32,6 +32,25 @@ describe("Load actions", () => {
         (console.info as jest.Mock).mockClear();
     });
 
+    const rehydrateResultResponse = {
+        state: {
+            datasets: {
+                pjnz: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                }
+            },
+            calibrate: {
+                id: "123",
+                options: {}
+            },
+            model_fit: {
+                id: "1",
+                options: {}
+            }
+        }
+    }
+
     const RunningStatusResponse: ProjectRehydrateStatusResponse = {
         id: "db0c4957aea4b32c507ac02d63930110",
         done: true,
@@ -556,7 +575,17 @@ describe("Load actions", () => {
             .reply(200, mockSuccess(RunningStatusResponse));
 
         mockAxios.onGet(`rehydrate/result/1`)
-            .reply(200, mockSuccess("RESULT"));
+            .reply(200, mockSuccess(rehydrateResultResponse));
+
+        mockAxios.onPost(`session/files/`)
+            .reply(200, mockSuccess({}));
+
+        const sessionFilesPayload = {
+            pjnz: {
+                hash: "test.csv",
+                filename: "test"
+            }
+        }
 
         const commit = jest.fn();
         const dispatch = jest.fn()
@@ -568,19 +597,30 @@ describe("Load actions", () => {
             expect(mockAxios.history.get.length).toBe(2)
             expect(mockAxios.history.get[0]["url"]).toBe("rehydrate/status/1")
             expect(mockAxios.history.get[1]["url"]).toBe("rehydrate/result/1")
-            expect(commit.mock.calls.length).toBe(3)
+            expect(mockAxios.history.post.length).toBe(1)
+            expect(mockAxios.history.post[0]["url"]).toBe("/session/files/")
+            expect(JSON.parse(mockAxios.history.post[0]["data"])).toStrictEqual(sessionFilesPayload)
+            expect(commit.mock.calls.length).toBe(4)
             expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted")
             expect(commit.mock.calls[0][0].payload).toBeGreaterThan(1)
             expect(commit.mock.calls[1][0].type).toBe("RehydrateStatusUpdated")
             expect(commit.mock.calls[1][0].payload).toStrictEqual(RunningStatusResponse)
             expect(commit.mock.calls[2][0].type).toBe("RehydrateResult")
-            expect(commit.mock.calls[2][0].payload).toBe("RESULT")
-            expect(dispatch.mock.calls.length).toBe(1)
+            expect(commit.mock.calls[2][0].payload).toStrictEqual(rehydrateResultResponse)
+            expect(commit.mock.calls[3][0].type).toBe("UpdatingState")
+            expect(commit.mock.calls[3][0].payload).toStrictEqual({})
+            expect(dispatch.mock.calls.length).toBe(2)
             expect(dispatch.mock.calls[0][0]).toBe("projects/createProject")
             expect(dispatch.mock.calls[0][1]).toStrictEqual({
                 name: "testProject",
                 isUploaded: true
             })
+            expect(dispatch.mock.calls[1][0]).toBe("updateStoreState")
+            const root: RootState = dispatch.mock.calls[1][1]
+            expect(root.modelCalibrate.calibrateId).toStrictEqual(rehydrateResultResponse.state.calibrate.id)
+            expect(root.modelCalibrate.options).toStrictEqual(rehydrateResultResponse.state.calibrate.options)
+            expect(root.modelRun.modelRunId).toStrictEqual(rehydrateResultResponse.state.model_fit.id)
+            expect(root.modelOptions.options).toStrictEqual(rehydrateResultResponse.state.model_fit.options)
             done();
         }, 2100);
     });
@@ -590,7 +630,7 @@ describe("Load actions", () => {
             .reply(200, mockSuccess(RunningStatusResponse));
 
         mockAxios.onGet(`rehydrate/result/1`)
-            .reply(200, mockSuccess("RESULT"));
+            .reply(200, mockSuccess(rehydrateResultResponse));
 
         const commit = jest.fn();
         const dispatch = jest.fn()
@@ -601,7 +641,7 @@ describe("Load actions", () => {
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(3)
             expect(commit.mock.calls[2][0].type).toBe("RehydrateResult")
-            expect(commit.mock.calls[2][0].payload).toBe("RESULT")
+            expect(commit.mock.calls[2][0].payload).toStrictEqual(rehydrateResultResponse)
             expect(dispatch.mock.calls.length).toBe(0)
             done();
         }, 2100);

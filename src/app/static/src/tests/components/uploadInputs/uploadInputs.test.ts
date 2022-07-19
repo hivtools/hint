@@ -36,6 +36,8 @@ describe("UploadInputs upload component", () => {
     testUploadComponent("program", 4);
     testUploadComponent("anc", 5);
 
+    const mockPlottingMetadata = jest.fn()
+
     const createSut = (baselineState?: Partial<BaselineState>,
                        metadataState?: Partial<MetadataState>,
                        surveyAndProgramState: Partial<SurveyAndProgramState> = {selectedDataType: DataType.Survey},
@@ -68,7 +70,10 @@ describe("UploadInputs upload component", () => {
                 },
                 metadata: {
                     namespaced: true,
-                    state: mockMetadataState(metadataState)
+                    state: mockMetadataState(metadataState),
+                    actions: {
+                        getPlottingMetadata: mockPlottingMetadata
+                    }
                 },
                 surveyAndProgram: {
                     namespaced: true,
@@ -449,6 +454,13 @@ describe("UploadInputs upload component", () => {
         expect(wrapper.findAll("manage-file-stub").at(4).props().fromADR).toBe(false);
         expect(wrapper.findAll("manage-file-stub").at(5).props().fromADR).toBe(false);
 
+    });
+
+    it("calls plotting metadata whn page is loaded", () => {
+        const store = createSut();
+        shallowMount(UploadInputs, {store, localVue});
+        expect(mockPlottingMetadata).toHaveBeenCalled();
+        expect(mockPlottingMetadata.mock.calls[0][1]).toBe("default")
     });
 
     const expectUploadToDispatchAction = (index: number,

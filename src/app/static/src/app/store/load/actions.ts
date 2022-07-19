@@ -147,8 +147,6 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
                 isUploaded: true
             }, {root: true}));
 
-        const files = transformPathToHash(response.data.state.datasets);
-
         const modelCalibrate = {
             ...rootState.modelCalibrate,
             calibrateId: response.data.state.calibrate.id,
@@ -171,7 +169,7 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
             modelRun,
             modelOptions,
         }
-
+        const files = transformPathToHash({...response.data.state.datasets});
         await getFilesAndLoad(context, files, savedState)
     }
 }
