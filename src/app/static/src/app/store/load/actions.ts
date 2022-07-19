@@ -87,7 +87,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
     },
 
-    async updateStoreState({commit, dispatch, state}, savedState) {
+    async updateStoreState(context, savedState) {
         //File hashes have now been set for session in backend, so we save the state from the file we're loading into local
         //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
         //NB load state is not included in the saved state, so we will default back to NotLoading on page reload.
@@ -172,7 +172,7 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
             modelOptions,
         }
 
-        await getFilesAndLoad(context, files, savedState, true)
+        await getFilesAndLoad(context, files, savedState)
     }
 }
 
@@ -190,22 +190,16 @@ const getRehydrateStatus = async (context: ActionContext<LoadState, RootState>) 
 
 async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
                                files: any,
-                               savedState: RootState,
-                               isFromZip = false) {
+                               savedState: RootState) {
     savedState.stepper.steps = initialStepperState().steps;
     const {dispatch, state} = context;
     await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("UpdatingState")
         .withError("LoadFailed")
         .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
-        .then((response) => {
+        .then(() => {
             if (state.loadingState != LoadingState.LoadFailed) {
-                if (isFromZip && response) {
-                    updateOutputZipStoreState(savedState);
-                }
-                else {
-                    dispatch("updateStoreState", savedState);
-                }
+                dispatch("updateStoreState", savedState);
             }
         });
 }
@@ -226,27 +220,10 @@ const flatMapControlSection = (sections: DynamicControlSection[]) => {
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }
 
-const updateOutputZipStoreState = async (savedState: RootState) => {
-    //File hashes have now been set for session in backend, so we save the state from the file we're loading into local
-    //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
-    //NB load state is not included in the saved state, so we will default back to NotLoading on page reload.
-
-    // Backwards compatibility fix: projects which calibrated before bug fix in mrc-3126 have empty calibrate options
-    const {modelCalibrate} = savedState
-    if (modelCalibrate?.result && Object.keys(modelCalibrate.options).length === 0) {
-        savedState = {
-            ...savedState,
-            modelCalibrate: {...modelCalibrate, options: getCalibrateOptions(modelCalibrate)}
-        }
-    }
-    localStorageManager.savePartialState(savedState, false);
-    location.reload();
-}
-
 const transformPathToHash = (dataset: any) => {
     Object.keys(dataset).map((key: string) => {
-        return dataset[key] = {
-            hash: dataset[key].path.split("/")[1],
+        dataset[key] = {
+            hash: dataset[key].path.split("/")[1] || "",
             filename: dataset[key].filename
         }
     })
