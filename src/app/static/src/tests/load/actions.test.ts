@@ -38,6 +38,26 @@ describe("Load actions", () => {
                 pjnz: {
                     path: "uploads/test.csv",
                     filename: "test"
+                },
+                population: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                },
+                shape: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                },
+                anc: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                },
+                survey: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                },
+                programme: {
+                    path: "uploads/test.csv",
+                    filename: "test"
                 }
             },
             calibrate: {
@@ -582,6 +602,26 @@ describe("Load actions", () => {
 
         const sessionFilesPayload = {
             pjnz: {
+                hash: "test.csv",
+                filename: "test"
+            },
+            population: {
+                hash: "test.csv",
+                filename: "test"
+            },
+            shape: {
+                hash: "test.csv",
+                filename: "test"
+            },
+            anc: {
+                hash: "test.csv",
+                filename: "test"
+            },
+            survey: {
+                hash: "test.csv",
+                filename: "test"
+            },
+            programme: {
                 hash: "test.csv",
                 filename: "test"
             }

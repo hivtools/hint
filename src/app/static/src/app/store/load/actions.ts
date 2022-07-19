@@ -2,7 +2,7 @@ import {ActionContext, ActionTree} from "vuex";
 import {LoadingState, LoadState} from "./load";
 import {RootState} from "../../root";
 import {api} from "../../apiService";
-import {verifyCheckSum} from "../../utils";
+import {constructRehydrateProjectState, verifyCheckSum} from "../../utils";
 import {Dict, LocalSessionFile, VersionDetails} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
@@ -147,29 +147,8 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
                 isUploaded: true
             }, {root: true}));
 
-        const modelCalibrate = {
-            ...rootState.modelCalibrate,
-            calibrateId: response.data.state.calibrate.id,
-            options: response.data.state.calibrate.options
-        }
+        const {files, savedState} = constructRehydrateProjectState(rootState, response.data)
 
-        const modelRun = {
-            ...rootState.modelRun,
-            modelRunId: response.data.state.model_fit.id
-        }
-
-        const modelOptions = {
-            ...rootState.modelOptions,
-            options: response.data.state.model_fit.options
-        }
-
-        const savedState = {
-            ...rootState,
-            modelCalibrate,
-            modelRun,
-            modelOptions,
-        }
-        const files = transformPathToHash({...response.data.state.datasets});
         await getFilesAndLoad(context, files, savedState)
     }
 }
@@ -218,12 +197,3 @@ const flatMapControlSection = (sections: DynamicControlSection[]) => {
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }
 
-const transformPathToHash = (dataset: any) => {
-    Object.keys(dataset).map((key: string) => {
-        dataset[key] = {
-            hash: dataset[key].path.split("/")[1] || "",
-            filename: dataset[key].filename
-        }
-    })
-    return dataset
-}

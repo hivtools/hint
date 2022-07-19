@@ -9,9 +9,11 @@ import {
     MutationMethod
 } from "vuex";
 import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
-import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
+import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse, Response} from "./generated";
 import moment from 'moment';
 import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
+import {RootState} from "./root";
 
 export type ComputedWithType<T> = () => T;
 
@@ -347,4 +349,82 @@ export const getFormData = (file: File) => {
     const formData = new FormData()
     formData.append("file", file)
     return formData
+}
+
+const transformPathToHash = (dataset: any) => {
+    Object.keys(dataset).map((key: string) => {
+        dataset[key] = {
+            hash: dataset[key].path.split("/")[1] || "",
+            filename: dataset[key].filename
+        }
+    })
+    return dataset
+}
+
+export const constructRehydrateProjectState = (rootState: RootState, data: ProjectRehydrateResultResponse) => {
+    const files = transformPathToHash({...data.state.datasets});
+
+    const modelCalibrate = {
+        ...rootState.modelCalibrate,
+        calibrateId: data.state.calibrate.id,
+        options: data.state.calibrate.options,
+        ready: true
+    }
+
+    const modelRun = {
+        ...rootState.modelRun,
+        modelRunId: data.state.model_fit.id,
+        ready: true
+    }
+
+    const modelOptions = {
+        ...rootState.modelOptions,
+        options: data.state.model_fit.options,
+    }
+
+    const surveyAndProgram = {
+        ...rootState.surveyAndProgram,
+        survey: {
+            hash: files.survey.hash,
+            filename: files.survey.filename
+        } as any,
+        program: {
+            hash: files.programme.hash,
+            filename: files.programme.filename
+        } as any,
+        anc: {
+            hash: files.anc.hash,
+            filename: files.anc.filename
+        } as any,
+        selectedDataType: DataType.Survey,
+        ready: true
+    }
+
+    const baseline = {
+        ...rootState.baseline,
+        pjnz: {
+            hash: files.pjnz.hash,
+            filename: files.pjnz.filename
+        } as any,
+        shape: {
+            hash: files.shape.hash,
+            filename: files.shape.filename
+        } as any,
+        population: {
+            hash: files.population.hash,
+            filename: files.population.filename
+        } as any,
+        ready: true
+    }
+
+    const savedState: RootState = {
+        ...rootState,
+        baseline,
+        surveyAndProgram,
+        modelCalibrate,
+        modelRun,
+        modelOptions,
+    }
+
+    return {files, savedState}
 }
