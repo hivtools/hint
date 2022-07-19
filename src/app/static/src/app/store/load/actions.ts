@@ -140,14 +140,19 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
         .withError("RehydrateResultError")
         .get<ProjectRehydrateResultResponse>(`rehydrate/result/${rehydrateId}`);
 
-    if (response && response.data && !rootGetters.isGuest) {
-        await (dispatch("projects/createProject",
-            {
-                name: state.projectName,
-                isUploaded: true
-            }, {root: true}));
-
+    if (response && response.data) {
         const {files, savedState} = constructRehydrateProjectState(rootState, response.data)
+
+        if (!rootGetters.isGuest) {
+            await (dispatch("projects/createProject",
+                {
+                    name: state.projectName,
+                    isUploaded: true
+                }, {root: true}));
+
+            savedState.projects.currentProject = rootState.projects.currentProject
+            savedState.projects.currentVersion = rootState.projects.currentVersion
+        }
 
         await getFilesAndLoad(context, files, savedState)
     }

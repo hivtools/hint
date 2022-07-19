@@ -665,12 +665,15 @@ describe("Load actions", () => {
         }, 2100);
     });
 
-    it("does not dispatch create project action when use is guest", async (done) => {
+    it("Update store states and does not dispatch create project action when user is guest", async (done) => {
         mockAxios.onGet(`rehydrate/status/1`)
             .reply(200, mockSuccess(RunningStatusResponse));
 
         mockAxios.onGet(`rehydrate/result/1`)
             .reply(200, mockSuccess(rehydrateResultResponse));
+
+        mockAxios.onPost(`session/files/`)
+            .reply(200, mockSuccess({}));
 
         const commit = jest.fn();
         const dispatch = jest.fn()
@@ -679,10 +682,13 @@ describe("Load actions", () => {
         await actions.pollRehydrate({commit, dispatch, rootState, state, rootGetters} as any);
 
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(3)
+            expect(commit.mock.calls.length).toBe(4)
             expect(commit.mock.calls[2][0].type).toBe("RehydrateResult")
             expect(commit.mock.calls[2][0].payload).toStrictEqual(rehydrateResultResponse)
-            expect(dispatch.mock.calls.length).toBe(0)
+            expect(commit.mock.calls[3][0].type).toBe("UpdatingState")
+            expect(commit.mock.calls[3][0].payload).toStrictEqual({})
+            expect(dispatch.mock.calls.length).toStrictEqual(1)
+            expect(dispatch.mock.calls[0][0]).toBe("updateStoreState")
             done();
         }, 2100);
     });
