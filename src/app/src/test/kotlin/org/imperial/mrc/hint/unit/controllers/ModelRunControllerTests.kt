@@ -137,6 +137,19 @@ class ModelRunControllerTests
     }
 
     @Test
+    fun `can get comparison plot`()
+    {
+        val mockFileManager = mock<FileManager>()
+        val mockAPIClient = mock<HintrAPIClient> {
+            on { getComparisonPlot("testId") } doReturn mockResponse
+        }
+        val sut = ModelRunController(mockFileManager, mockAPIClient)
+
+        val result = sut.comparisonPlot("testId")
+        assertThat(result).isSameAs(mockResponse)
+    }
+
+    @Test
     fun `can get options`()
     {
         val mockFiles: Map<String, VersionFileWithPath> = mapOf()
