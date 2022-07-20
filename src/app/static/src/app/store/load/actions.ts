@@ -9,7 +9,6 @@ import {router} from "../../router";
 import {currentHintVersion} from "../../hintVersion";
 import {initialStepperState} from "../stepper/stepper";
 import {ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generated";
-import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult" | "SetProjectName" | "RehydrateCancel"
@@ -141,7 +140,7 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
         .get<ProjectRehydrateResultResponse>(`rehydrate/result/${rehydrateId}`);
 
     if (response && response.data) {
-        const {files, savedState} = constructRehydrateProjectState(rootState, response.data)
+        const {files, savedState} = await constructRehydrateProjectState(context, response.data)
 
         if (!rootGetters.isGuest) {
             await (dispatch("projects/createProject",
@@ -153,6 +152,8 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
             savedState.projects.currentProject = rootState.projects.currentProject
             savedState.projects.currentVersion = rootState.projects.currentVersion
         }
+
+        savedState.stepper.activeStep = 7
 
         await getFilesAndLoad(context, files, savedState)
     }

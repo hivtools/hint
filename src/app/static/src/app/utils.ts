@@ -1,5 +1,6 @@
 import * as CryptoJS from 'crypto-js';
 import {
+    ActionContext,
     ActionMethod,
     CustomVue,
     mapActions,
@@ -17,8 +18,9 @@ import {
     DynamicFormMeta
 } from "@reside-ic/vue-dynamic-form";
 import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
-import {RootState} from "./root";
 import {ModelOptionsState} from "./store/modelOptions/modelOptions";
+import {LoadState} from "./store/load/load";
+import {RootState} from "./root";
 
 export type ComputedWithType<T> = () => T;
 
@@ -366,27 +368,57 @@ const transformPathToHash = (dataset: any) => {
     return dataset
 }
 
-export const constructRehydrateProjectState = (rootState: RootState, data: ProjectRehydrateResultResponse) => {
+export const constructRehydrateProjectState = async (context: ActionContext<LoadState, RootState>, data: ProjectRehydrateResultResponse) => {
     const files = transformPathToHash({...data.state.datasets});
+
+    context.rootState.modelRun.modelRunId = data.state.model_fit.id
+    context.rootState.modelCalibrate.calibrateId = data.state.calibrate.id
+
+    await Promise.all([
+        context.dispatch("modelRun/getResult", {}, {root: true}),
+        context.dispatch("modelCalibrate/getResult", {}, {root: true})
+    ])
 
     const modelOptions = {
         options: data.state.model_fit.options,
         valid: true
-    } as any
+    }
+
+    const modelRun = {
+        modelRunId: data.state.model_fit.id,
+        result: context.rootState.modelRun.result,
+        warnings: context.rootState.modelRun.warnings,
+        status: {success: true, done: true},
+        ready: true
+    }
+
+    const modelCalibrate = {
+        calibrateId: data.state.calibrate.id,
+        options: data.state.calibrate.options,
+        result: context.rootState.modelCalibrate.result,
+        warnings: context.rootState.modelCalibrate.warnings,
+        status: {success: true, done: true},
+        ready: true,
+        complete: true
+    }
+
+    const plottingSelections = {
+        barchart: context.rootState.plottingSelections.barchart
+    }
 
     const surveyAndProgram = {
         survey: {
             hash: files.survey.hash,
             filename: files.survey.filename
-        } as any,
+        },
         program: {
             hash: files.programme.hash,
             filename: files.programme.filename
-        } as any,
+        },
         anc: {
             hash: files.anc.hash,
             filename: files.anc.filename
-        } as any,
+        },
         selectedDataType: DataType.Survey,
     }
 
@@ -394,15 +426,15 @@ export const constructRehydrateProjectState = (rootState: RootState, data: Proje
         pjnz: {
             hash: files.pjnz.hash,
             filename: files.pjnz.filename
-        } as any,
+        },
         shape: {
             hash: files.shape.hash,
             filename: files.shape.filename
-        } as any,
+        },
         population: {
             hash: files.population.hash,
             filename: files.population.filename
-        } as any,
+        }
     }
 
     const stepper = {
@@ -421,6 +453,9 @@ export const constructRehydrateProjectState = (rootState: RootState, data: Proje
         baseline,
         surveyAndProgram,
         modelOptions,
+        modelCalibrate,
+        modelRun,
+        plottingSelections,
         version: data.state.version
     }
 
