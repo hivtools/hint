@@ -1,3 +1,7 @@
+# hint 2.5.0
+
+* Endpoint for comparison barchart dataset
+
 # hint 2.4.0
 
 * Implement upload output zip UI
