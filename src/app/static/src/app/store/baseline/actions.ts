@@ -234,7 +234,8 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
         ]);
 
         if (!rootState.metadata.plottingMetadata && state.iso3) {
-            await dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
+            // plot metadata should be fetched synchronously to avoid race issues while displaying charts
+             dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
         }
 
         await dispatch('validate');
