@@ -140,6 +140,18 @@ describe("Model run options mutations", () => {
         expect(state.valid).toBe(false);
     });
 
+    it("sets valid to true if optionsFormMeta is empty and options exist when payload has data", () => {
+
+        const state = mockModelOptionsState({
+            valid: true,
+            optionsFormMeta: {controlSections: []},
+            options: {"n1": "2"}
+        });
+
+        mutations.ModelOptionsFetched(state, {payload: newForm});
+        expect(state.valid).toBe(true);
+    });
+
     it("sets valid to false if updated form matches the existing form but the state is not valid to begin with", () => {
 
         const state = mockModelOptionsState({

@@ -11,9 +11,14 @@ import {
 import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse, Response} from "./generated";
 import moment from 'moment';
-import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {
+    DynamicControlGroup,
+    DynamicControlSection,
+    DynamicFormMeta
+} from "@reside-ic/vue-dynamic-form";
 import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
 import {RootState} from "./root";
+import {ModelOptionsState} from "./store/modelOptions/modelOptions";
 
 export type ComputedWithType<T> = () => T;
 
@@ -364,8 +369,12 @@ const transformPathToHash = (dataset: any) => {
 export const constructRehydrateProjectState = (rootState: RootState, data: ProjectRehydrateResultResponse) => {
     const files = transformPathToHash({...data.state.datasets});
 
+    const modelOptions = {
+        options: data.state.model_fit.options,
+        valid: true
+    } as any
+
     const surveyAndProgram = {
-        ...rootState.surveyAndProgram,
         survey: {
             hash: files.survey.hash,
             filename: files.survey.filename
@@ -382,7 +391,6 @@ export const constructRehydrateProjectState = (rootState: RootState, data: Proje
     }
 
     const baseline = {
-        ...rootState.baseline,
         pjnz: {
             hash: files.pjnz.hash,
             filename: files.pjnz.filename
@@ -412,7 +420,32 @@ export const constructRehydrateProjectState = (rootState: RootState, data: Proje
         projects,
         baseline,
         surveyAndProgram,
+        modelOptions,
+        version: data.state.version
     }
 
     return {files, savedState}
+}
+
+export const constructOptionsFormMetaFromData = (state: ModelOptionsState, meta: DynamicFormMeta) => {
+    const payloadContainsMeta = meta.controlSections.length > 0
+    const stateContainsOptions = Object.keys(state.options).length > 0
+    const emptyStateMeta = state.optionsFormMeta.controlSections.length === 0
+
+    if (emptyStateMeta && payloadContainsMeta && stateContainsOptions) {
+        meta.controlSections.forEach(newSection => {
+            newSection.controlGroups.forEach(newGroup => {
+                newGroup.controls.forEach(newControl => {
+                    if (newControl.name in state.options) {
+                        newControl.value = state.options[newControl.name];
+                    }
+                });
+            });
+        });
+        state.optionsFormMeta = meta
+    }
+}
+
+export const flatMapControlSection = (sections: DynamicControlSection[]): DynamicControlGroup[] => {
+    return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }

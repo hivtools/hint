@@ -3,7 +3,7 @@ import ModelOptions from "../../../app/components/modelOptions/ModelOptions.vue"
 import {DynamicForm} from "@reside-ic/vue-dynamic-form";
 import Vue from "vue";
 import Vuex, {ActionTree, MutationTree} from "vuex";
-import {mockError, mockModelOptionsState, mockRootState} from "../../mocks";
+import {mockError, mockModelOptionsState, mockOptionsFormMeta, mockRootState} from "../../mocks";
 import {ModelOptionsState} from "../../../app/store/modelOptions/modelOptions";
 import {DynamicControlSection} from "@reside-ic/vue-dynamic-form";
 import {ModelOptionsMutation} from "../../../app/store/modelOptions/mutations";
@@ -192,6 +192,25 @@ describe("Model options component", () => {
 
     it("dispatches validation event when form submit event is fired", async () => {
         const validateMock = jest.fn();
+        const options = {"area_scope": "MWI"}
+        const store = createStore({}, mockMutations, {
+
+            ...mockActions,
+            validateModelOptions: validateMock
+
+        });
+        const rendered = shallowMount(ModelOptions, {
+            store
+        });
+        rendered.find(DynamicForm).vm.$emit("submit", options);
+
+        await Vue.nextTick();
+        expect(validateMock.mock.calls.length).toBe(1);
+        expect(validateMock.mock.calls[0][1]).toStrictEqual(options);
+    });
+
+    it("does not dispatch validation when form submit event does not have options", async () => {
+        const validateMock = jest.fn();
         const store = createStore({}, mockMutations, {
 
             ...mockActions,
@@ -204,6 +223,6 @@ describe("Model options component", () => {
         rendered.find(DynamicForm).vm.$emit("submit");
 
         await Vue.nextTick();
-        expect(validateMock.mock.calls.length).toBe(1);
+        expect(validateMock.mock.calls.length).toBe(0);
     });
 });
