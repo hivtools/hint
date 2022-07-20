@@ -228,7 +228,7 @@ describe("ModelCalibrate actions", () => {
 
     it("getResult does not dispatch getCalibratePlot or getComparisonPlot when switches if off", async () => {
         switches.modelCalibratePlot = false;
-        switches.comparisonOutput = false;
+        switches.comparisonPlot = false;
         const testResult = {
             data: "TEST DATA",
             plottingMetadata: {

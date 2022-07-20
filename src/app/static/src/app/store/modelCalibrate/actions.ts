@@ -99,7 +99,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                 if (switches.modelCalibratePlot) {
                     dispatch("getCalibratePlot");
                 }
-                if (switches.comparisonOutput) {
+                if (switches.comparisonPlot) {
                     dispatch("getComparisonPlot");
                 }
             }
