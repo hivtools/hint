@@ -63,6 +63,8 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.complete = false;
         state.generatingCalibrationPlot = false;
         state.calibratePlotResult = null;
+        state.generatingComparisonPlot = false;
+        state.comparisonPlotResult = null;
         state.error = null;
         state.status = {} as CalibrateStatusResponse;
     },
