@@ -99,6 +99,9 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                 if (switches.modelCalibratePlot) {
                     dispatch("getCalibratePlot");
                 }
+                if (switches.comparisonOutput) {
+                    dispatch("getComparisonPlot");
+                }
             }
         }
         commit(ModelCalibrateMutation.Ready);
@@ -132,7 +135,6 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             .get<ModelResultResponse>(`model/comparison/plot/${calibrateId}`);
 
         if (response) {
-            console.log("response", response)
             commit(ModelCalibrateMutation.SetComparisonPlotData, response.data);
         }
     }

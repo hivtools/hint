@@ -144,7 +144,6 @@
         formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => string
         updateBarchartSelectionsAndXAxisOrder: (data: BarchartSelections) => void
         prepareOutputDownloads: () => void
-        getComparisonPlot: () => void
     }
 
     interface Computed {
@@ -273,12 +272,10 @@
                 // if unable to do the above, just updates the barchart as normal
                 this.updateBarchartSelections({payload})
             },
-            getComparisonPlot: mapActionByName("modelCalibrate", "getComparisonPlot"),
             prepareOutputDownloads: mapActionByName("downloadResults", "prepareOutputs")
         },
         mounted() {
             this.prepareOutputDownloads();
-            this.getComparisonPlot();
         },
         components: {
             BarChartWithFilters,

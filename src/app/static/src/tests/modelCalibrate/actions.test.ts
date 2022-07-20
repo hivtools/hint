@@ -157,7 +157,7 @@ describe("ModelCalibrate actions", () => {
         }, 2100);
     });
 
-    it("getResult commits result and warnings when successfully fetched, sets default plotting selections, and dispatches getCalibratePlot", async () => {
+    it("getResult commits result and warnings when successfully fetched, sets default plotting selections, and dispatches getCalibratePlot and getComparisonPlot", async () => {
         switches.modelCalibratePlot = true;
         const testResult = {
             data: "TEST DATA",
@@ -221,12 +221,14 @@ describe("ModelCalibrate actions", () => {
         expect(commit.mock.calls[3][0]).toBe("Calibrated");
         expect(commit.mock.calls[4][0]).toBe("Ready");
         expect(dispatch.mock.calls[0][0]).toBe("getCalibratePlot");
+        expect(dispatch.mock.calls[1][0]).toBe("getComparisonPlot");
 
         expect(spy).toHaveBeenCalledWith(mockResponse);
     });
 
-    it("getResult does not dispatch getCalibratePlot when switches if off", async () => {
+    it("getResult does not dispatch getCalibratePlot or getComparisonPlot when switches if off", async () => {
         switches.modelCalibratePlot = false;
+        switches.comparisonOutput = false;
         const testResult = {
             data: "TEST DATA",
             plottingMetadata: {
