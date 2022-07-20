@@ -365,7 +365,6 @@ export const constructRehydrateProjectState = (rootState: RootState, data: Proje
     const files = transformPathToHash({...data.state.datasets});
 
     const surveyAndProgram = {
-        ...rootState.surveyAndProgram,
         survey: {
             hash: files.survey.hash,
             filename: files.survey.filename
@@ -382,7 +381,6 @@ export const constructRehydrateProjectState = (rootState: RootState, data: Proje
     }
 
     const baseline = {
-        ...rootState.baseline,
         pjnz: {
             hash: files.pjnz.hash,
             filename: files.pjnz.filename
