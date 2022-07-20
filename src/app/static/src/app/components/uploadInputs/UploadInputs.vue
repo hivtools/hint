@@ -94,7 +94,7 @@
     import ManageFile from "../files/ManageFile.vue";
     import {RootState} from "../../root";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
-    import {mapActionByName, mapStatePropByName} from "../../utils";
+    import {mapStatePropByName} from "../../utils";
 
     const namespace = 'baseline';
 
@@ -171,9 +171,6 @@
             ErrorAlert,
             LoadingSpinner,
             ManageFile
-        },
-        mounted() {
-            this.getPlottingMetadata("default")
         }
     })
 </script>

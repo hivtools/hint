@@ -8,7 +8,7 @@ import {
     mapState,
     MutationMethod
 } from "vuex";
-import {ADRSchemas, DatasetResource, Dict, Project, UploadFile, Version} from "./types";
+import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse, Response} from "./generated";
 import moment from 'moment';
 import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
@@ -364,24 +364,6 @@ const transformPathToHash = (dataset: any) => {
 export const constructRehydrateProjectState = (rootState: RootState, data: ProjectRehydrateResultResponse) => {
     const files = transformPathToHash({...data.state.datasets});
 
-    const modelCalibrate = {
-        ...rootState.modelCalibrate,
-        calibrateId: data.state.calibrate.id,
-        options: data.state.calibrate.options,
-        ready: true
-    }
-
-    const modelRun = {
-        ...rootState.modelRun,
-        modelRunId: data.state.model_fit.id,
-        ready: true
-    }
-
-    const modelOptions = {
-        ...rootState.modelOptions,
-        options: data.state.model_fit.options,
-    }
-
     const surveyAndProgram = {
         ...rootState.surveyAndProgram,
         survey: {
@@ -397,7 +379,6 @@ export const constructRehydrateProjectState = (rootState: RootState, data: Proje
             filename: files.anc.filename
         } as any,
         selectedDataType: DataType.Survey,
-        ready: true
     }
 
     const baseline = {
@@ -414,16 +395,23 @@ export const constructRehydrateProjectState = (rootState: RootState, data: Proje
             hash: files.population.hash,
             filename: files.population.filename
         } as any,
-        ready: true
     }
 
-    const savedState: RootState = {
-        ...rootState,
+    const stepper = {
+        steps: [],
+        activeStep: 1
+    }
+
+    const projects = {
+        currentProject: null,
+        currentVersion: null
+    } as any
+
+    const savedState = {
+        stepper,
+        projects,
         baseline,
         surveyAndProgram,
-        modelCalibrate,
-        modelRun,
-        modelOptions,
     }
 
     return {files, savedState}

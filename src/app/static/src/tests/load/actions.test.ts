@@ -657,10 +657,13 @@ describe("Load actions", () => {
             })
             expect(dispatch.mock.calls[1][0]).toBe("updateStoreState")
             const root: RootState = dispatch.mock.calls[1][1]
-            expect(root.modelCalibrate.calibrateId).toStrictEqual(rehydrateResultResponse.state.calibrate.id)
-            expect(root.modelCalibrate.options).toStrictEqual(rehydrateResultResponse.state.calibrate.options)
-            expect(root.modelRun.modelRunId).toStrictEqual(rehydrateResultResponse.state.model_fit.id)
-            expect(root.modelOptions.options).toStrictEqual(rehydrateResultResponse.state.model_fit.options)
+            expect(root.baseline.pjnz).toStrictEqual(sessionFilesPayload.pjnz)
+            expect(root.baseline.population).toStrictEqual(sessionFilesPayload.population)
+            expect(root.baseline.shape).toStrictEqual(sessionFilesPayload.shape)
+
+            expect(root.surveyAndProgram.anc).toStrictEqual(sessionFilesPayload.anc)
+            expect(root.surveyAndProgram.survey).toStrictEqual(sessionFilesPayload.survey)
+            expect(root.surveyAndProgram.program).toStrictEqual(sessionFilesPayload.programme)
             done();
         }, 2100);
     });

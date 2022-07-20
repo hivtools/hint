@@ -21,7 +21,6 @@ export function testUploadComponent(name: string, position: number) {
 
     let expectedUploadAction: any;
     let expectedDeleteAction: any;
-    const mockPlottingMetadata = jest.fn()
 
     const createSut = (state?: Partial<SurveyAndProgramState>) => {
 
@@ -74,10 +73,7 @@ export function testUploadComponent(name: string, position: number) {
                 },
                 metadata: {
                     namespaced: true,
-                    state: mockMetadataState(),
-                    actions: {
-                        getPlottingMetadata: mockPlottingMetadata
-                    }
+                    state: mockMetadataState()
                 }
             }
         })
