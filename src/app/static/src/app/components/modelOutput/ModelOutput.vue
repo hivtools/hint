@@ -276,6 +276,7 @@
         },
         mounted() {
             this.prepareOutputDownloads();
+            console.log("this.prepareOutputDownloads()",this.prepareOutputDownloads())
         },
         components: {
             BarChartWithFilters,
