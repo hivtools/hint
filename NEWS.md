@@ -1,3 +1,7 @@
+# hint 2.4.1
+
+* Rename frontend translation text for enterProjectName and uploadFromZip keys
+
 # hint 2.4.0
 
 * Implement upload output zip UI
