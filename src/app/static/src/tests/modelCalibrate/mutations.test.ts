@@ -1,7 +1,7 @@
 import {expectAllMutationsDefined} from "../testHelpers";
 import {ModelCalibrateMutation, mutations} from "../../app/store/modelCalibrate/mutations";
 import {mockCalibrateResultResponse, mockError, mockModelCalibrateState, mockWarning,} from "../mocks";
-import {VersionInfo} from "../../app/generated";
+import {VersionInfo, ComparisonPlotResponse} from "../../app/generated";
 
 describe("ModelCalibrate mutations", () => {
     afterEach(() => {
@@ -56,7 +56,6 @@ describe("ModelCalibrate mutations", () => {
         expect(state.status).toStrictEqual({});
         expect(state.generatingCalibrationPlot).toBe(false);
         expect(state.calibratePlotResult).toBe(null);
-        expect(state.generatingComparisonPlot).toBe(false);
         expect(state.comparisonPlotResult).toBe(null);
     });
 
@@ -116,12 +115,11 @@ describe("ModelCalibrate mutations", () => {
         expect(spy).toHaveBeenCalledWith(99);
     });
 
-    it("sets error stops calibration and comparison plots being generated", () => {
+    it("sets error stops calibration plot being generated", () => {
         const state = mockModelCalibrateState({ generatingCalibrationPlot: true });
         const error = mockError("TEST ERROR");
         mutations[ModelCalibrateMutation.SetError](state, {payload: error});
         expect(state.generatingCalibrationPlot).toBe(false);
-        expect(state.generatingComparisonPlot).toBe(false);
     });
 
     it("sets options", () => {
@@ -154,19 +152,17 @@ describe("ModelCalibrate mutations", () => {
     });
 
     it("sets comparison plot started and resets error and previous plot", () => {
-        const state = mockModelCalibrateState({error: mockError("TEST ERROR"), comparisonPlotResult: {}});
+        const state = mockModelCalibrateState({error: mockError("TEST ERROR"), comparisonPlotResult: {} as ComparisonPlotResponse});
         mutations[ModelCalibrateMutation.ComparisonPlotStarted](state);
-        expect(state.generatingComparisonPlot).toBe(true);
         expect(state.comparisonPlotResult).toBe(null);
         expect(state.error).toBe(null);
     });
 
     it("sets comparison plot data", () => {
-        const state = mockModelCalibrateState({generatingComparisonPlot: true});
+        const state = mockModelCalibrateState();
         const payload = {data: "TEST DATA"};
         mutations[ModelCalibrateMutation.SetComparisonPlotData](state, {payload});
-        expect(state.comparisonPlotResult).toStrictEqual({payload});
-        expect(state.generatingComparisonPlot).toBe(false);
+        expect(state.comparisonPlotResult).toStrictEqual(payload);
     });
 
     it("sets and clears warnings", () => {

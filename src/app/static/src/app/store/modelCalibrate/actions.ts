@@ -128,15 +128,11 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const calibrateId = state.calibrateId;
         commit(ModelCalibrateMutation.ComparisonPlotStarted);
 
-        const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
-            .ignoreSuccess()
+        await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
             .withError(ModelCalibrateMutation.SetError)
+            .withSuccess(ModelCalibrateMutation.SetComparisonPlotData)
             .freezeResponse()
             .get<ModelResultResponse>(`model/comparison/plot/${calibrateId}`);
-
-        if (response) {
-            commit(ModelCalibrateMutation.SetComparisonPlotData, response.data);
-        }
     }
 };
 

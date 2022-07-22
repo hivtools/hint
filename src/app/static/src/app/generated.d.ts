@@ -369,6 +369,83 @@ export type ColumnValues = {
   format?: string;
   accuracy?: number | null;
 }[];
+export type ComparisonPlotData = {
+  area_id: string;
+  area_name: string;
+  sex: string;
+  age_group: string;
+  calendar_quarter: string;
+  indicator: string;
+  source: string;
+  mean: number | null;
+  lower: number | null;
+  upper: number | null;
+  [k: string]: any;
+}[];
+export interface ComparisonPlotResponse {
+  data: {
+    area_id: string;
+    area_name: string;
+    sex: string;
+    age_group: string;
+    calendar_quarter: string;
+    indicator: string;
+    source: string;
+    mean: number | null;
+    lower: number | null;
+    upper: number | null;
+    [k: string]: any;
+  }[];
+  plottingMetadata: {
+    barchart: {
+      indicators: {
+        indicator: string;
+        value_column: string;
+        indicator_column: string;
+        indicator_value: string;
+        indicator_sort_order?: number;
+        name: string;
+        error_low_column: string;
+        error_high_column: string;
+        scale: number;
+        accuracy: number | null;
+        format: string;
+      }[];
+      filters: {
+        id: string;
+        column_id: string;
+        label: string;
+        options: {
+          label: string;
+          id: string;
+          description?: string;
+        }[];
+        use_shape_regions?: boolean | null;
+      }[];
+      defaults?: {
+        indicator_id: string;
+        x_axis_id: string;
+        disaggregate_by_id: string;
+        selected_filter_options: {
+          [k: string]: any;
+        };
+      };
+    };
+  };
+}
+export interface ComparisonPlotRow {
+  area_id: string;
+  area_name: string;
+  sex: string;
+  age_group: string;
+  calendar_quarter: string;
+  indicator: string;
+  source: string;
+  mean: number | null;
+  lower: number | null;
+  upper: number | null;
+  [k: string]: any;
+}
 export interface DownloadStatusResponse {
   id: string;
   done: boolean | null;
@@ -448,6 +525,7 @@ export interface DownloadSubmitRequest {
 export interface DownloadSubmitResponse {
   id: string;
 }
+export type ErrorCode = string;
 export interface Error {
   error: string;
   detail: string | null;
@@ -455,7 +533,6 @@ export interface Error {
   trace?: string[];
   [k: string]: any;
 }
-export type ErrorCode = string;
 export type FileName = string;
 export type FilePath = string | null;
 export interface Filter {

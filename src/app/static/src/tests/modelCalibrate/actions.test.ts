@@ -374,8 +374,8 @@ describe("ModelCalibrate actions", () => {
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toStrictEqual("ComparisonPlotStarted");
-        expect(commit.mock.calls[1][0]).toBe("SetComparisonPlotData");
-        expect(commit.mock.calls[1][1]).toStrictEqual({data: "TEST DATA"});
+        expect(commit.mock.calls[1][0]["type"]).toBe("SetComparisonPlotData");
+        expect(commit.mock.calls[1][0]["payload"]).toStrictEqual({data: "TEST DATA"});
         expect(mockAxios.history.get.length).toBe(1);
     });
 

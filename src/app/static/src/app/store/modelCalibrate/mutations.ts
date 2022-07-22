@@ -63,7 +63,6 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.complete = false;
         state.generatingCalibrationPlot = false;
         state.calibratePlotResult = null;
-        state.generatingComparisonPlot = false;
         state.comparisonPlotResult = null;
         state.error = null;
         state.status = {} as CalibrateStatusResponse;
@@ -89,7 +88,6 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     },
 
     [ModelCalibrateMutation.ComparisonPlotStarted](state: ModelCalibrateState) {
-        state.generatingComparisonPlot = true;
         state.comparisonPlotResult = null;
         state.error = null;
     },
@@ -100,8 +98,8 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     },
 
     [ModelCalibrateMutation.SetComparisonPlotData](state: ModelCalibrateState, action: PayloadWithType<any>) {
-        state.generatingComparisonPlot = false;
-        state.comparisonPlotResult = action;
+        console.log("comparison plot data being set", action)
+        state.comparisonPlotResult = action.payload;
     },
 
     [ModelCalibrateMutation.SetModelCalibrateOptionsVersion](state: ModelCalibrateState, action: PayloadWithType<VersionInfo>) {
@@ -116,7 +114,6 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.error = action.payload;
         state.calibrating = false;
         state.generatingCalibrationPlot = false;
-        state.generatingComparisonPlot = false;
         if (state.statusPollId > -1) {
             stopPolling(state);
         }
