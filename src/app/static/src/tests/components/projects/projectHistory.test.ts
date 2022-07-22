@@ -458,13 +458,19 @@ describe("Project history component", () => {
         await Vue.nextTick();
 
         const modal = wrapper.findAll(".modal").at(1);
+
         expect(modal.classes()).toContain("show");
+
         expectTranslated(modal.find(".modal-body h4"), "Copying version v1 to a new project",
             "Copie de la version v1 dans un nouveau projet",
-            "A copiar versão v1 para um novo projeto", store);
-        expectTranslated(modal.find(".modal-body label.h5"), "What would you like to name the project?",
-            "Quel nom souhaitez-vous donner au projet ?",
-            "Como você gostaria de nomear o projeto?", store);
+            "A copiar versão v1 para um novo projeto",
+            store);
+
+        expectTranslated(modal.find(".modal-body label.h5"),
+            "Please enter a name for the new project",
+            "Veuillez saisir un nom pour le nouveau projet",
+            "Insira um nome para o novo projeto",
+            store);
 
         const input = modal.find("input")
         expectTranslated(input, "Project name", "Nom du projet", "Nome do projeto", store, "placeholder");
@@ -487,13 +493,19 @@ describe("Project history component", () => {
         await Vue.nextTick();
 
         const modal = wrapper.findAll(".modal").at(1);
+
         expect(modal.classes()).toContain("show");
+
         expectTranslated(modal.find(".modal-body h4"), "Copying version v1 to a new project",
             "Copie de la version v1 dans un nouveau projet",
-            "A copiar versão v1 para um novo projeto", store);
-        expectTranslated(modal.find(".modal-body label.h5"), "What would you like to name the project?",
-            "Quel nom souhaitez-vous donner au projet ?",
-            "Como você gostaria de nomear o projeto?", store);
+            "A copiar versão v1 para um novo projeto",
+            store);
+
+        expectTranslated(modal.find(".modal-body label.h5"),
+            "Please enter a name for the new project",
+            "Veuillez saisir un nom pour le nouveau projet",
+            "Insira um nome para o novo projeto",
+            store);
         const input = modal.find("input");
         expectTranslated(input, "Project name", "Nom du projet", "Nome do projeto", store, "placeholder");
         const buttons = modal.find(".modal-footer").findAll("button");
