@@ -13,7 +13,7 @@ import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse,
 import moment from 'moment';
 import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
-import {RootState} from "./root";
+import {emptyState, RootState} from "./root";
 
 export type ComputedWithType<T> = () => T;
 
@@ -406,6 +406,7 @@ export const constructRehydrateProjectState = (rootState: RootState, data: Proje
     } as any
 
     const savedState = {
+        ...emptyState(),
         stepper,
         projects,
         baseline,
