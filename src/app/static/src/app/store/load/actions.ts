@@ -179,9 +179,11 @@ async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
         .withSuccess("UpdatingState")
         .withError("LoadFailed")
         .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
-        .then(() => {
-            if (state.loadingState != LoadingState.LoadFailed) {
-                dispatch("updateStoreState", savedState);
+        .then((response) => {
+            if (response && response.data) {
+                if (state.loadingState != LoadingState.LoadFailed) {
+                    dispatch("updateStoreState", savedState);
+                }
             }
         });
 }
