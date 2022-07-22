@@ -150,8 +150,11 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
                     isUploaded: true
                 }, {root: true});
 
-            savedState.projects.currentProject = rootState.projects.currentProject
-            savedState.projects.currentVersion = rootState.projects.currentVersion
+            const project = {
+                currentProject: rootState.projects.currentProject,
+                currentVersion: rootState.projects.currentVersion
+            }
+            Object.assign(savedState.projects, project)
         }
 
         await getFilesAndLoad(context, files, savedState)
@@ -172,8 +175,8 @@ const getRehydrateStatus = async (context: ActionContext<LoadState, RootState>) 
 
 async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
                                files: any,
-                               savedState: any) {
-    savedState.stepper.steps = initialStepperState().steps;
+                               savedState: Partial<RootState>) {
+    Object.assign(savedState.stepper, {steps: initialStepperState().steps})
     const {dispatch, state} = context;
     await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("UpdatingState")

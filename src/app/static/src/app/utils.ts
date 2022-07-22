@@ -13,7 +13,7 @@ import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse,
 import moment from 'moment';
 import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
-import {emptyState, RootState} from "./root";
+import {RootState} from "./root";
 
 export type ComputedWithType<T> = () => T;
 
@@ -368,32 +368,32 @@ export const constructRehydrateProjectState = (rootState: RootState, data: Proje
         survey: {
             hash: files.survey.hash,
             filename: files.survey.filename
-        } as any,
+        },
         program: {
             hash: files.programme.hash,
             filename: files.programme.filename
-        } as any,
+        },
         anc: {
             hash: files.anc.hash,
             filename: files.anc.filename
-        } as any,
+        },
         selectedDataType: DataType.Survey,
-    }
+    } as any
 
     const baseline = {
         pjnz: {
             hash: files.pjnz.hash,
             filename: files.pjnz.filename
-        } as any,
+        },
         shape: {
             hash: files.shape.hash,
             filename: files.shape.filename
-        } as any,
+        },
         population: {
             hash: files.population.hash,
             filename: files.population.filename
-        } as any,
-    }
+        },
+    } as any
 
     const stepper = {
         steps: [],
@@ -405,8 +405,7 @@ export const constructRehydrateProjectState = (rootState: RootState, data: Proje
         currentVersion: null
     } as any
 
-    const savedState = {
-        ...emptyState(),
+    const savedState: Partial<RootState> = {
         stepper,
         projects,
         baseline,

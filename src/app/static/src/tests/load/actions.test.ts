@@ -664,6 +664,9 @@ describe("Load actions", () => {
             expect(root.surveyAndProgram.anc).toStrictEqual(sessionFilesPayload.anc)
             expect(root.surveyAndProgram.survey).toStrictEqual(sessionFilesPayload.survey)
             expect(root.surveyAndProgram.program).toStrictEqual(sessionFilesPayload.programme)
+
+            expect(root.projects.currentProject).toBe(null)
+            expect(root.projects.currentVersion).toBe(null)
             done();
         }, 2100);
     });
