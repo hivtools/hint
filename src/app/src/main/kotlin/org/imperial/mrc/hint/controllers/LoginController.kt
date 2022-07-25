@@ -7,6 +7,9 @@ import org.springframework.ui.set
 import org.springframework.web.bind.annotation.GetMapping
 import javax.servlet.http.HttpServletRequest
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.exceptions.HintException
+import org.springframework.http.HttpStatus
+import org.imperial.mrc.hint.exceptions.HintExceptionHandler
 
 @Controller
 class LoginController(private val request: HttpServletRequest,
@@ -26,11 +29,12 @@ class LoginController(private val request: HttpServletRequest,
         else if (request.getParameter("error") == "SessionExpired")
         {
 
-            request.getParameter("message") ?: "sessionExpiredLogin"
+            request.getParameter("message") ?: HintException("SessionExpiredLogin", HttpStatus.BAD_REQUEST)
         }
         else
         {
-            "badUsernamePassword"
+            HintException("badUsernamePassword", HttpStatus.BAD_REQUEST)
+            // HintExceptionHandler.handleHintException(HintException("badUsernamePassword", HttpStatus.BAD_REQUEST), request)
         }
 
         val redirectTo = request.getParameter("redirectTo")

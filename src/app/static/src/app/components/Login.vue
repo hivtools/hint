@@ -23,7 +23,7 @@
                         <button @click="validate" class="btn btn-red" type="submit" v-translate="'logIn'"></button>
                     </div>
                 </form>
-                <div v-if="error" id="error" class="alert alert-danger mt-3" v-translate="error"></div>
+                <div v-if="error" id="error" class="alert alert-danger mt-3">{{ error }}</div>
                 <div id="register-an-account" class="text-center mt-4">
                     <div v-translate="'noAccount'"></div>
                     <a href="https://forms.office.com/r/7S9EMigGr4" target="_blank" id="requestAccount" v-translate="'requestAccount'"></a>

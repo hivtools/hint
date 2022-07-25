@@ -40,6 +40,10 @@ import {initialDownloadResultsState} from "../../app/store/downloadResults/downl
 
 describe("Root mutations", () => {
 
+    beforeAll(() => {
+        router.push('/login')
+    })
+
     const populatedState = function () {
         return mockRootState({
             adr: mockADRState({
@@ -281,7 +285,6 @@ describe("Root mutations", () => {
 
         const version = {id: 1, name: "newVersion", versions: [{id: "newVersion"}]};
         mutations.SetProject(state, {payload: version});
-
         testOnlyExpectedModulesArePopulated([], state);
         expect(state.stepper.activeStep).toBe(1);
 

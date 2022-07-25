@@ -14,7 +14,6 @@ import {localStorageManager} from "../../app/localStorageManager";
 import {currentHintVersion} from "../../app/hintVersion";
 import {getFormData} from "./helpers";
 
-
 describe("load actions", () => {
 
     let shape: any = {};
@@ -50,7 +49,7 @@ describe("load actions", () => {
         const fakeFileContents = addCheckSum(fakeState);
         const rootGetters = {isGuest: true};
         await actions.setFiles({commit, dispatch, state: {}, rootState, rootGetters} as any,
-            {savedFileContents: fakeFileContents, projectName: "new project"});
+            {savedFileContents: fakeFileContents});
 
         setTimeout(() => {
             expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
@@ -142,7 +141,7 @@ describe("load actions", () => {
         const dispatch = ((store as any)._modulesNamespaceMap["load/"] as any).context.dispatch;
 
         await actions.setFiles({commit, dispatch, state: {}, rootState: store.state, rootGetters} as any,
-            {savedFileContents: fakeFileContents, projectName: "new project"});
+            {savedFileContents: fakeFileContents});
 
         setTimeout(() => {
             //we expect the non-mocked dispatch to have created a project, and to have invoked the local store manager to
@@ -169,8 +168,7 @@ describe("load actions", () => {
         const formData = getFormData("output.zip");
         const state = {rehydrateId: "1"}
 
-        await actions.preparingRehydrate({commit, dispatch, state, rootState} as any,
-            {file: formData, projectName: "new project"});
+        await actions.preparingRehydrate({commit, dispatch, state, rootState} as any, formData);
 
         setTimeout(() => {
             expect(commit.mock.calls[0][0].type).toBe("SettingFiles");

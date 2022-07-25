@@ -1,6 +1,14 @@
-# hint 2.4.0
+# hint 2.5.0
 
 * Add language toggle to login page
+
+# hint 2.4.1
+
+* Rename frontend translation text for enterProjectName and uploadFromZip keys
+
+# hint 2.4.0
+
+* Implement upload output zip UI
 
 # hint 2.3.1
 
