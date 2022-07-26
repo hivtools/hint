@@ -29,6 +29,11 @@ import java.net.BindException
 import java.text.MessageFormat
 import java.util.*
 
+// interface HintExceptionHandler2
+// {
+//     fun handleHintException(): ResponseEntity<Any>
+// }
+
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
@@ -80,7 +85,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         return ResourceBundle.getBundle("ErrorMessageBundle", Locale(language))
     }
 
-    private fun translatedError(key: String, status: HttpStatus, request: WebRequest): ResponseEntity<Any>
+    fun translatedError(key: String, status: HttpStatus, request: WebRequest): ResponseEntity<Any>
     {
         val resourceBundle = getBundle(request)
         val message = if (resourceBundle.containsKey(key))

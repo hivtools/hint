@@ -29,12 +29,15 @@ class LoginController(private val request: HttpServletRequest,
         else if (request.getParameter("error") == "SessionExpired")
         {
 
-            request.getParameter("message") ?: HintException("SessionExpiredLogin", HttpStatus.BAD_REQUEST)
+            // request.getParameter("message") ?: HintException("SessionExpiredLogin", HttpStatus.BAD_REQUEST)
+            // request.getParameter("message") ?: HintExceptionHandler.handleHintException(HintException("SessionExpiredLogin", HttpStatus.BAD_REQUEST), request)
+            request.getParameter("message") ?: HintExceptionHandler.translatedError("SessionExpiredLogin", HttpStatus.BAD_REQUEST, request)
         }
         else
         {
-            HintException("badUsernamePassword", HttpStatus.BAD_REQUEST)
+            // HintException("badUsernamePassword", HttpStatus.BAD_REQUEST)
             // HintExceptionHandler.handleHintException(HintException("badUsernamePassword", HttpStatus.BAD_REQUEST), request)
+            HintExceptionHandler.translatedError("badUsernamePassword", HttpStatus.BAD_REQUEST, request)
         }
 
         val redirectTo = request.getParameter("redirectTo")
