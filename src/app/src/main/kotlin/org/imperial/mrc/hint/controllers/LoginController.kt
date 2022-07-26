@@ -7,9 +7,24 @@ import org.springframework.ui.set
 import org.springframework.web.bind.annotation.GetMapping
 import javax.servlet.http.HttpServletRequest
 import org.imperial.mrc.hint.AppProperties
-import org.imperial.mrc.hint.exceptions.HintException
-import org.springframework.http.HttpStatus
-import org.imperial.mrc.hint.exceptions.HintExceptionHandler
+// import org.imperial.mrc.hint.exceptions.HintException
+// import org.springframework.http.HttpStatus
+// import org.imperial.mrc.hint.exceptions.HintExceptionHandler
+import java.util.*
+
+fun ResourceBundle.getUTF8String(key: String): String
+    {
+        return this.getString(key)
+                .toByteArray(Charsets.ISO_8859_1)
+                .toString(Charsets.UTF_8)
+    }
+
+fun getErrorMessageTranslation(key: String, request: HttpServletRequest): String
+{
+    val language = request.getHeader("Accept-Language") ?: "en"
+    val resourceBundle = ResourceBundle.getBundle("ErrorMessageBundle", Locale(language))
+    return resourceBundle.getUTF8String(key)
+}
 
 @Controller
 class LoginController(private val request: HttpServletRequest,
@@ -31,13 +46,15 @@ class LoginController(private val request: HttpServletRequest,
 
             // request.getParameter("message") ?: HintException("SessionExpiredLogin", HttpStatus.BAD_REQUEST)
             // request.getParameter("message") ?: HintExceptionHandler.handleHintException(HintException("SessionExpiredLogin", HttpStatus.BAD_REQUEST), request)
-            request.getParameter("message") ?: HintExceptionHandler.translatedError("SessionExpiredLogin", HttpStatus.BAD_REQUEST, request)
+            // request.getParameter("message") ?: HintExceptionHandler.translatedError("SessionExpiredLogin", HttpStatus.BAD_REQUEST, request)
+            request.getParameter("message") ?: getErrorMessageTranslation("SessionExpiredLogin", request)
         }
         else
         {
             // HintException("badUsernamePassword", HttpStatus.BAD_REQUEST)
             // HintExceptionHandler.handleHintException(HintException("badUsernamePassword", HttpStatus.BAD_REQUEST), request)
-            HintExceptionHandler.translatedError("badUsernamePassword", HttpStatus.BAD_REQUEST, request)
+            // HintExceptionHandler.translatedError("badUsernamePassword", HttpStatus.BAD_REQUEST, request)
+            getErrorMessageTranslation("badUsernamePassword", request)
         }
 
         val redirectTo = request.getParameter("redirectTo")
