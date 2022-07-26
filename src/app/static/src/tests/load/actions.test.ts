@@ -8,7 +8,7 @@ import {
     mockSuccess
 } from "../mocks";
 import {actions} from "../../app/store/load/actions";
-import {LoadingState} from "../../app/store/load/load";
+import {LoadingState} from "../../app/store/load/state";
 import {addCheckSum} from "../../app/utils";
 import {localStorageManager} from "../../app/localStorageManager";
 import {currentHintVersion} from "../../app/hintVersion";

@@ -30,7 +30,7 @@ import {
 } from "../../app/store/plottingSelections/plottingSelections";
 import {initialMetadataState} from "../../app/store/metadata/metadata";
 import {initialModelOutputState} from "../../app/store/modelOutput/modelOutput";
-import {initialLoadState} from "../../app/store/load/load";
+import {initialLoadState} from "../../app/store/load/state";
 import {initialErrorsState} from "../../app/store/errors/errors";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {Language} from "../../app/store/translations/locales";

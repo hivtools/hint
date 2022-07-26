@@ -1,6 +1,6 @@
 import {ActionContext, ActionTree} from "vuex";
-import {LoadingState, LoadState} from "./load";
-import {RootState} from "../../root";
+import {LoadingState, LoadState} from "./state";
+import {emptyState, RootState} from "../../root";
 import {api} from "../../apiService";
 import {constructRehydrateProjectState, verifyCheckSum} from "../../utils";
 import {Dict, LocalSessionFile, VersionDetails} from "../../types";
@@ -150,14 +150,17 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
                     isUploaded: true
                 }, {root: true});
 
-            const project = {
-                currentProject: rootState.projects.currentProject,
-                currentVersion: rootState.projects.currentVersion
-            }
-            Object.assign(savedState.projects, project)
+            Object.assign(
+                savedState.projects,
+                {currentProject: rootState.projects.currentProject},
+                {currentVersion: rootState.projects.currentVersion})
+
+            const newRootState = {...emptyState(), ...savedState}
+
+            Object.assign(rootState, newRootState);
         }
 
-        await getFilesAndLoad(context, files, savedState)
+        await getFilesAndLoad(context, files, rootState)
     }
 }
 
@@ -176,7 +179,7 @@ const getRehydrateStatus = async (context: ActionContext<LoadState, RootState>) 
 async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
                                files: any,
                                savedState: Partial<RootState>) {
-    Object.assign(savedState.stepper, {steps: initialStepperState().steps})
+    Object.assign(savedState?.stepper, {steps: initialStepperState().steps})
     const {dispatch, state} = context;
     await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("UpdatingState")
