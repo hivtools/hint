@@ -7,6 +7,7 @@ import {
     CalibrateResultResponse,
     CalibrateStatusResponse,
     CalibrateSubmitResponse,
+    ComparisonPlotResponse,
     Error,
     VersionInfo, Warning
 } from "../../generated";
@@ -97,8 +98,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.calibratePlotResult = action;
     },
 
-    [ModelCalibrateMutation.SetComparisonPlotData](state: ModelCalibrateState, action: PayloadWithType<any>) {
-        console.log("comparison plot data being set", action)
+    [ModelCalibrateMutation.SetComparisonPlotData](state: ModelCalibrateState, action: PayloadWithType<ComparisonPlotResponse>) {
         state.comparisonPlotResult = action.payload;
     },
 
