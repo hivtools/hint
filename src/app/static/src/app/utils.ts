@@ -14,6 +14,7 @@ import moment from 'moment';
 import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
 import {RootState} from "./root";
+import {initialStepperState} from "./store/stepper/stepper";
 
 export type ComputedWithType<T> = () => T;
 
@@ -396,20 +397,21 @@ export const constructRehydrateProjectState = (rootState: RootState, data: Proje
     } as any
 
     const stepper = {
-        steps: [],
+        steps: initialStepperState().steps,
         activeStep: 1
     }
 
     const projects = {
         currentProject: null,
-        currentVersion: null
+        currentVersion: null,
+        previousProjects: []
     } as any
 
     const savedState: Partial<RootState> = {
-        stepper,
         projects,
         baseline,
         surveyAndProgram,
+        stepper
     }
 
     return {files, savedState}

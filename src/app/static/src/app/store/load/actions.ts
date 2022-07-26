@@ -160,7 +160,7 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
             Object.assign(rootState, newRootState);
         }
 
-        await getFilesAndLoad(context, files, rootState)
+        await getFilesAndLoad(context, files, savedState)
     }
 }
 
@@ -179,7 +179,7 @@ const getRehydrateStatus = async (context: ActionContext<LoadState, RootState>) 
 async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
                                files: any,
                                savedState: Partial<RootState>) {
-    Object.assign(savedState?.stepper, {steps: initialStepperState().steps})
+    Object.assign(savedState.stepper, {steps: initialStepperState().steps})
     const {dispatch, state} = context;
     await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("UpdatingState")
@@ -197,7 +197,7 @@ async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
 // getCalibrateOptions extracts calibrate options from Dynamic Form, this allows
 // backward compatibility supports for calibrate option bug
 const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormData => {
-    const allControlGroups = flatMapControlSection(modelCalibrate.optionsFormMeta.controlSections);
+    const allControlGroups = flatMapControlSections(modelCalibrate.optionsFormMeta.controlSections);
     return allControlGroups.reduce<DynamicFormData>((options, option): DynamicFormData => {
         option.controls.forEach(option => {
             options[option.name] = option.value || null
@@ -206,7 +206,6 @@ const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormDa
     }, {})
 }
 
-const flatMapControlSection = (sections: DynamicControlSection[]) => {
+const flatMapControlSections = (sections: DynamicControlSection[]) => {
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }
-
