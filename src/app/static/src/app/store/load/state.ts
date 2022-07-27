@@ -1,5 +1,9 @@
 import {Error, ProjectRehydrateResultResponse} from "../../generated";
 
+// NB We define state and initialLoadState in separate file to the load module to 
+// avoid circular dependency issues when calling root emptyState from 
+// load/actions
+
 export enum LoadingState { NotLoading, SettingFiles, UpdatingState, LoadFailed }
 
 export interface LoadState {
