@@ -38,7 +38,7 @@
     import Modal from "../Modal.vue";
     import {mapActionByName, mapMutationByName, mapStateProps} from "../../utils";
     import UploadProgress from "./UploadProgress.vue";
-    import {LoadingState, LoadState} from "../../store/load/load";
+    import {LoadingState, LoadState} from "../../store/load/state";
     import LoadErrorModal from "./LoadErrorModal.vue";
     import ProjectsMixin from "../projects/ProjectsMixin";
 
