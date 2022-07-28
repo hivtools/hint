@@ -90,7 +90,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                 .returning(PROJECT.ID)
                 .fetchOne()
 
-        return result[PROJECT.ID]
+        return result!![PROJECT.ID]
     }
 
     override fun getProjects(userId: String): List<Project>

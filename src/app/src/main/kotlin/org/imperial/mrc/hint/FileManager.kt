@@ -26,7 +26,7 @@ enum class FileType
 
     override fun toString(): String
     {
-        return this.name.toLowerCase()
+        return this.name.lowercase()
     }
 }
 

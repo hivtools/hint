@@ -58,7 +58,7 @@ fun Response.asResponseEntity(logger: Log = LogFactory.getLog(HintExceptionHandl
 
     return try
     {
-        val body = this.body().asString(MediaType.APPLICATION_JSON_UTF8_VALUE)
+        val body = this.body().asString(MediaType.APPLICATION_JSON_VALUE)
         val json = ObjectMapper().readTree(body)
 
         if (!json.has("status") && !json.has("success"))

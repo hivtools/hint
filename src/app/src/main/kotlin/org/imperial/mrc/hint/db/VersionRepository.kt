@@ -77,7 +77,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
                 .where(PROJECT_VERSION.ID.eq(versionId))
                 .fetchOne()
 
-        return Version(result[PROJECT_VERSION.ID], result[PROJECT_VERSION.CREATED],
+        return Version(result!![PROJECT_VERSION.ID], result[PROJECT_VERSION.CREATED],
                 result[PROJECT_VERSION.UPDATED], result[PROJECT_VERSION.VERSION_NUMBER], result[PROJECT_VERSION.NOTE])
     }
 
@@ -86,9 +86,9 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
         checkVersionExists(versionId, projectId, userId)
         val files = getVersionFiles(versionId)
         val state = dsl.select(PROJECT_VERSION.STATE)
-                .from(PROJECT_VERSION)
-                .where(PROJECT_VERSION.ID.eq(versionId))
-                .fetchOne()[PROJECT_VERSION.STATE]
+            .from(PROJECT_VERSION)
+            .where(PROJECT_VERSION.ID.eq(versionId))
+            .fetchOne()!![PROJECT_VERSION.STATE]
 
         return VersionDetails(state, files)
     }

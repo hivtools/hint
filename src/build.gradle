@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.4.10'
+    ext.kotlin_version = '1.7.10'
 
     repositories {
         mavenCentral()
@@ -51,7 +51,7 @@ subprojects {
     }
 
     jacoco {
-        toolVersion = "0.8.3"
+        toolVersion = "0.8.8"
         reportsDir = file("$projectDir/coverage")
     }
 
