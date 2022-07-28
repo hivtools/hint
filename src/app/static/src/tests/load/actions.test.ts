@@ -8,7 +8,7 @@ import {
     mockSuccess
 } from "../mocks";
 import {actions} from "../../app/store/load/actions";
-import {LoadingState} from "../../app/store/load/load";
+import {LoadingState} from "../../app/store/load/state";
 import {addCheckSum} from "../../app/utils";
 import {localStorageManager} from "../../app/localStorageManager";
 import {currentHintVersion} from "../../app/hintVersion";
@@ -664,6 +664,9 @@ describe("Load actions", () => {
             expect(root.surveyAndProgram.anc).toStrictEqual(sessionFilesPayload.anc)
             expect(root.surveyAndProgram.survey).toStrictEqual(sessionFilesPayload.survey)
             expect(root.surveyAndProgram.program).toStrictEqual(sessionFilesPayload.programme)
+
+            expect(root.projects.currentProject).toBe(null)
+            expect(root.projects.currentVersion).toBe(null)
             done();
         }, 2100);
     });

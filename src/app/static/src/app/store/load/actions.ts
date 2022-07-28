@@ -1,6 +1,6 @@
 import {ActionContext, ActionTree} from "vuex";
-import {LoadingState, LoadState} from "./load";
-import {RootState} from "../../root";
+import {LoadingState, LoadState} from "./state";
+import {emptyState, RootState} from "../../root";
 import {api} from "../../apiService";
 import {constructRehydrateProjectState, flatMapControlSection, verifyCheckSum} from "../../utils";
 import {Dict, LocalSessionFile, VersionDetails} from "../../types";
@@ -144,14 +144,18 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
         const {files, savedState} = constructRehydrateProjectState(rootState, response.data)
 
         if (!rootGetters.isGuest) {
-            await (dispatch("projects/createProject",
+            await dispatch("projects/createProject",
                 {
                     name: state.projectName,
                     isUploaded: true
-                }, {root: true}));
+                }, {root: true});
+                
+            savedState.projects!.currentProject = rootState.projects.currentProject
+            savedState.projects!.currentVersion = rootState.projects.currentVersion
 
-            savedState.projects.currentProject = rootState.projects.currentProject
-            savedState.projects.currentVersion = rootState.projects.currentVersion
+            const newRootState = {...emptyState(), ...savedState}
+
+            Object.assign(rootState, newRootState);
         }
 
         await getFilesAndLoad(context, files, savedState)
@@ -172,16 +176,18 @@ const getRehydrateStatus = async (context: ActionContext<LoadState, RootState>) 
 
 async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
                                files: any,
-                               savedState: any) {
-    savedState.stepper.steps = initialStepperState().steps;
+                               savedState: Partial<RootState>) {
+    savedState.stepper!.steps = initialStepperState().steps
     const {dispatch, state} = context;
     await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("UpdatingState")
         .withError("LoadFailed")
         .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
-        .then(() => {
-            if (state.loadingState != LoadingState.LoadFailed) {
-                dispatch("updateStoreState", savedState);
+        .then((response) => {
+            if (response && response.data) {
+                if (state.loadingState != LoadingState.LoadFailed) {
+                    dispatch("updateStoreState", savedState);
+                }
             }
         });
 }
@@ -197,6 +203,4 @@ const getCalibrateOptions = (dynamicFormMeta: DynamicFormMeta): DynamicFormData 
         return options
     }, {})
 }
-
-
 

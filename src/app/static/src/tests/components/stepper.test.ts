@@ -37,7 +37,7 @@ import {mutations as rootMutations} from "../../app/store/root/mutations"
 import {metadataGetters, MetadataState} from "../../app/store/metadata/metadata";
 import {ModelStatusResponse, Warning} from "../../app/generated";
 import {modelOptionsGetters, ModelOptionsState} from "../../app/store/modelOptions/modelOptions";
-import {LoadingState, LoadState} from "../../app/store/load/load";
+import {LoadingState, LoadState} from "../../app/store/load/state";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {ProjectsState} from "../../app/store/projects/projects";
 import {ModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";

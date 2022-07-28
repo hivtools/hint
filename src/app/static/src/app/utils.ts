@@ -19,6 +19,7 @@ import {
 import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
 import {RootState} from "./root";
 import {ModelOptionsState} from "./store/modelOptions/modelOptions";
+import {initialStepperState} from "./store/stepper/stepper";
 
 export type ComputedWithType<T> = () => T;
 
@@ -378,50 +379,53 @@ export const constructRehydrateProjectState = (rootState: RootState, data: Proje
         survey: {
             hash: files.survey.hash,
             filename: files.survey.filename
-        } as any,
+        },
         program: {
             hash: files.programme.hash,
             filename: files.programme.filename
-        } as any,
+        },
         anc: {
             hash: files.anc.hash,
             filename: files.anc.filename
-        } as any,
+        },
         selectedDataType: DataType.Survey,
-    }
+    } as any
 
     const baseline = {
         pjnz: {
             hash: files.pjnz.hash,
             filename: files.pjnz.filename
-        } as any,
+        },
         shape: {
             hash: files.shape.hash,
             filename: files.shape.filename
-        } as any,
+        },
         population: {
             hash: files.population.hash,
             filename: files.population.filename
-        } as any,
-    }
+        },
+    } as any
 
     const stepper = {
-        steps: [],
+        steps: initialStepperState().steps,
         activeStep: 1
     }
 
     const projects = {
         currentProject: null,
-        currentVersion: null
+        currentVersion: null,
+        previousProjects: []
     } as any
 
-    const savedState = {
-        stepper,
+    const savedState: Partial<RootState> = {
         projects,
         baseline,
         surveyAndProgram,
         modelOptions,
-        version: data.state.version
+        stepper,
+        hintrVersion: {
+            hintrVersion: data.state.version
+        }
     }
 
     return {files, savedState}

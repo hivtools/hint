@@ -8,7 +8,7 @@ import RegisterTranslations from "../../../app/store/translations/registerTransl
 import {expectTranslated} from "../../testHelpers";
 import LoadErrorModal from "../../../app/components/load/LoadErrorModal.vue";
 import UploadProgress from "../../../app/components/load/UploadProgress.vue";
-import {LoadingState, LoadState} from "../../../app/store/load/load";
+import {LoadingState, LoadState} from "../../../app/store/load/state";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 
 describe("uploadNewProject", () => {
@@ -109,9 +109,9 @@ describe("uploadNewProject", () => {
         const store = wrapper.vm.$store
         const label = wrapper.find(".modal label")
         expectTranslated(label,
-            "What would you like to name the project?",
-            "Quel nom souhaitez-vous donner au projet ?",
-            "Como você gostaria de nomear o projeto?",
+            "Please enter a name for the new project",
+            "Veuillez saisir un nom pour le nouveau projet",
+            "Insira um nome para o novo projeto",
             store)
     })
 
@@ -208,9 +208,9 @@ describe("uploadNewProject", () => {
         expect(wrapper.find(UploadProgress).find(".progress").exists()).toBe(true)
 
         expectTranslated(wrapper.find("#upload-header"),
-            "Uploading project from zip",
-            "Téléchargement du projet à partir du zip",
-            "Carregando projeto do zip",
+            "Uploading project from model outputs",
+            "Téléchargement du projet à partir des sorties du modèle",
+            "Fazendo upload do projeto das saídas do modelo",
             store)
 
         expectTranslated(wrapper.find("#progress-message"),
