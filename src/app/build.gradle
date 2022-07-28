@@ -7,7 +7,7 @@ apply plugin: 'application'
 mainClassName = "org.imperial.mrc.hint.AppStartKt"
 
 jacoco {
-    toolVersion = "0.8.3"
+    toolVersion = "0.8.8"
     reportsDir = file("$projectDir/coverage")
 }
 
@@ -20,7 +20,7 @@ jacocoTestReport {
 
 group = 'org.imperial.mrc'
 sourceCompatibility = '1.8'
-def tomcatVersion = '9.0.30'
+def tomcatVersion = '9.0.65'
 
 dependencies {
 
@@ -35,6 +35,8 @@ dependencies {
     implementation "org.apache.tomcat:tomcat-annotations-api:${tomcatVersion}"
     implementation 'net.logstash.logback:logstash-logback-encoder:7.0.1'
     testImplementation 'ch.qos.logback:logback-classic:1.2.11'
+    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
+    implementation 'com.sun.xml.bind:jaxb-impl:4.0.0'
 
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
@@ -71,7 +73,7 @@ dependencies {
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
     kotlinOptions {
         freeCompilerArgs = ['-Xjsr305=strict']
-        jvmTarget = '1.8'
+        jvmTarget = '11'
     }
 }
 

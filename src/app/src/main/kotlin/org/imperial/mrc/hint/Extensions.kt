@@ -22,7 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.io.*
 import java.security.DigestInputStream
 import java.security.MessageDigest
-import javax.xml.bind.DatatypeConverter
+import jakarta.xml.bind.DatatypeConverter
 
 fun httpStatusFromCode(code: Int): HttpStatus
 {

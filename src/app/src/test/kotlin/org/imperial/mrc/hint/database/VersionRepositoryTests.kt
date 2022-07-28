@@ -326,7 +326,7 @@ class VersionRepositoryTests
 
         val originalVersionDetails = sut.getVersionDetails(originalVersionId, originalProject, uid)
         val clonedVersionDetails = sut.getVersionDetails(clonedVersionId, clonedProject, uid2)
-        assertThat(originalVersionDetails).isEqualToComparingFieldByFieldRecursively(clonedVersionDetails)
+        assertThat(originalVersionDetails).isEqualTo(clonedVersionDetails)
     }
 
     @Test
@@ -349,7 +349,7 @@ class VersionRepositoryTests
 
         val originalVersionDetails = sut.getVersionDetails(originalVersionId, originalProject, uid)
         val clonedVersionDetails = sut.getVersionDetails(clonedVersionId, clonedProject, uid2)
-        assertThat(originalVersionDetails).isEqualToComparingFieldByFieldRecursively(clonedVersionDetails)
+        assertThat(originalVersionDetails).isEqualTo(clonedVersionDetails)
     }
 
     @Test

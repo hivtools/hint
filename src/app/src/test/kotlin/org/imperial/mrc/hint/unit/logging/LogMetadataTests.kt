@@ -36,15 +36,15 @@ class LogMetadataTests
     fun `can serialise log metadata`()
     {
         assertThat(logMetadata.username).isEqualTo("testUser")
-        assertThat(logMetadata.app).isEqualToComparingFieldByField(AppOrigin(name = "hint", type = "backend"))
-        assertThat(logMetadata.request).isEqualToComparingFieldByField(Request(
+        assertThat(logMetadata.app).isEqualTo(AppOrigin(name = "hint", type = "backend"))
+        assertThat(logMetadata.request).isEqualTo(Request(
                 method = "POST",
                 path = "/project",
                 hostname = "hint",
                 client = Client(agent = "Safari", geoIp = "127.0.0.1", sessionId = "session1")))
-        assertThat(logMetadata.request?.client).isEqualToComparingFieldByField(client)
-        assertThat(logMetadata.response).isEqualToComparingFieldByField(Response(message = "responseMessage", status = "responseStatus"))
-        assertThat(logMetadata.error).isEqualToComparingFieldByField(errorMessage)
+        assertThat(logMetadata.request?.client).isEqualTo(client)
+        assertThat(logMetadata.response).isEqualTo(Response(message = "responseMessage", status = "responseStatus"))
+        assertThat(logMetadata.error).isEqualTo(errorMessage)
         assertThat(logMetadata.action).isEqualTo("Updating project note")
         assertThat(logMetadata.tags).isEqualTo(listOf("project", "notes"))
     }
