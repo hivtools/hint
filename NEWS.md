@@ -1,3 +1,7 @@
+# hint 2.5.0
+
+* Populate project input file data
+
 # hint 2.4.1
 
 * Rename frontend translation text for enterProjectName and uploadFromZip keys

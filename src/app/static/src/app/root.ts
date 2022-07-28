@@ -9,7 +9,8 @@ import {
 } from "./store/surveyAndProgram/surveyAndProgram";
 import {initialModelRunState, modelRun, ModelRunState} from "./store/modelRun/modelRun";
 import {initialStepperState, stepper, StepperState} from "./store/stepper/stepper";
-import {initialLoadState, load, LoadState} from "./store/load/load";
+import {initialLoadState, LoadState} from "./store/load/state";
+import {load} from "./store/load/load";
 import {initialModelOutputState, modelOutput, ModelOutputState} from "./store/modelOutput/modelOutput";
 import {localStorageManager} from "./localStorageManager";
 import {actions} from "./store/root/actions";
