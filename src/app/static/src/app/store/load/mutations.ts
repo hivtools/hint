@@ -1,5 +1,5 @@
 import {Mutation, MutationTree} from 'vuex';
-import {LoadingState, LoadState} from "./load";
+import {LoadingState, LoadState} from "./state";
 import {PayloadWithType} from "../../types";
 import {
     Error, ProjectRehydrateResultResponse,

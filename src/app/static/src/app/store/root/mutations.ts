@@ -4,7 +4,7 @@ import {initialModelOptionsState} from "../modelOptions/modelOptions";
 import {initialModelRunState} from "../modelRun/modelRun";
 import {initialModelOutputState} from "../modelOutput/modelOutput";
 import {initialPlottingSelectionsState} from "../plottingSelections/plottingSelections";
-import {initialLoadState} from "../load/load";
+import {initialLoadState} from "../load/state";
 import {initialMetadataState} from "../metadata/metadata";
 import {initialErrorsState} from "../errors/errors";
 import {initialBaselineState} from "../baseline/baseline";

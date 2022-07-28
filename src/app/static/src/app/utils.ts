@@ -9,9 +9,12 @@ import {
     MutationMethod
 } from "vuex";
 import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
-import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
+import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse, Response} from "./generated";
 import moment from 'moment';
 import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
+import {RootState} from "./root";
+import {initialStepperState} from "./store/stepper/stepper";
 
 export type ComputedWithType<T> = () => T;
 
@@ -347,4 +350,69 @@ export const getFormData = (file: File) => {
     const formData = new FormData()
     formData.append("file", file)
     return formData
+}
+
+const transformPathToHash = (dataset: any) => {
+    Object.keys(dataset).map((key: string) => {
+        dataset[key] = {
+            hash: dataset[key].path.split("/")[1] || "",
+            filename: dataset[key].filename
+        }
+    })
+    return dataset
+}
+
+export const constructRehydrateProjectState = (rootState: RootState, data: ProjectRehydrateResultResponse) => {
+    const files = transformPathToHash({...data.state.datasets});
+
+    const surveyAndProgram = {
+        survey: {
+            hash: files.survey.hash,
+            filename: files.survey.filename
+        },
+        program: {
+            hash: files.programme.hash,
+            filename: files.programme.filename
+        },
+        anc: {
+            hash: files.anc.hash,
+            filename: files.anc.filename
+        },
+        selectedDataType: DataType.Survey,
+    } as any
+
+    const baseline = {
+        pjnz: {
+            hash: files.pjnz.hash,
+            filename: files.pjnz.filename
+        },
+        shape: {
+            hash: files.shape.hash,
+            filename: files.shape.filename
+        },
+        population: {
+            hash: files.population.hash,
+            filename: files.population.filename
+        },
+    } as any
+
+    const stepper = {
+        steps: initialStepperState().steps,
+        activeStep: 1
+    }
+
+    const projects = {
+        currentProject: null,
+        currentVersion: null,
+        previousProjects: []
+    } as any
+
+    const savedState: Partial<RootState> = {
+        projects,
+        baseline,
+        surveyAndProgram,
+        stepper
+    }
+
+    return {files, savedState}
 }

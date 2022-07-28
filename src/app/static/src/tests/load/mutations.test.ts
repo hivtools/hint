@@ -1,5 +1,5 @@
 import {mutations} from "../../app/store/load/mutations";
-import {LoadingState} from "../../app/store/load/load";
+import {LoadingState} from "../../app/store/load/state";
 import {mockError, mockLoadState} from "../mocks";
 
 describe("Load mutations", () => {

@@ -7,7 +7,10 @@ const service = new Service(axios);
 
 declare let appUrl: string; // configured by jest
 
-export const rootState = {language: Language.en};
+export const rootState = {
+    language: Language.en,
+    metadata: {plottingMetadata: null}
+};
 
 export const login = async (username = "test.user@example.com", password = "password") => {
     const formData = new FormData();

@@ -1,6 +1,10 @@
-# hint 2.5.0
+# hint 2.6.0
 
 * Endpoint for comparison barchart dataset
+
+# hint 2.5.0
+
+* Populate project input file data
 
 # hint 2.4.1
 
