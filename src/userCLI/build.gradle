@@ -39,7 +39,7 @@ if (hasProperty('docker_name')) {
 }
 
 distDocker {
-    baseImage = "openjdk:8u121-jre"
+    baseImage = "openjdk:11-jre"
     dependsOn = [build]
     push = false
     tag = cli_docker_name
