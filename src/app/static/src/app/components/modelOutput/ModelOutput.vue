@@ -88,6 +88,30 @@
                     ></area-indicators-table>
                 </div>
             </div>
+
+            <div id="comparison-container" :class="selectedTab==='comparison' ? 'col-md-12' : 'd-none'">
+                <bar-chart-with-filters
+                    :chart-data="chartdata"
+                    :filter-config="filterConfig"
+                    :indicators="barchartIndicators"
+                    :selections="barchartSelections"
+                    :formatFunction="formatBarchartValue"
+                    :showRangesInTooltips="true"
+                    @update="updateBarchartSelectionsAndXAxisOrder"></bar-chart-with-filters>
+                <div class="row mt-2">
+                    <div class="col-md-3"></div>
+                    <area-indicators-table class="col-md-9"
+                                           :table-data="chartdata"
+                                           :area-filter-id="areaFilterId"
+                                           :filters="barchartFilters"
+                                           :countryAreaFilterOption="countryAreaFilterOption"
+                                           :indicators="filteredBarchartIndicators"
+                                           :selections="barchartSelections"
+
+                                           :selectedFilterOptions="barchartSelections.selectedFilterOptions"
+                    ></area-indicators-table>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -183,6 +207,10 @@
 
             if (!inactiveFeatures.includes("BubblePlot")) {
                 tabs.push("bubble");
+            }
+
+            if (!inactiveFeatures.includes("ComparisonPlot")) {
+                tabs.push("comparison");
             }
 
             return {
