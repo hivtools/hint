@@ -10,7 +10,10 @@ buildscript {
 
 apply plugin: 'application'
 apply plugin: 'docker'
-mainClassName = "org.imperial.mrc.hint.userCLI.AppKt"
+
+application {
+    mainClass.set("org.imperial.mrc.hint.userCLI.AppKt")
+}
 
 dependencies {
     implementation project(":app")

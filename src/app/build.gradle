@@ -4,7 +4,9 @@ buildscript {
 
 apply plugin: 'application'
 
-mainClassName = "org.imperial.mrc.hint.AppStartKt"
+application {
+    mainClass.set("org.imperial.mrc.hint.AppStartKt")
+}
 
 jacoco {
     toolVersion = "0.8.8"
