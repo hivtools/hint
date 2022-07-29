@@ -6,10 +6,8 @@ HERE=$(realpath "$(dirname $0)")
 function cleardocker() {
   $HERE/../scripts/clear-docker.sh
 }
-function printReport() {
-  cat $HERE/../src/userCLI/build/reports/tests/test/index.html
-}
-trap printReport cleardocker EXIT
+
+trap cleardocker EXIT
 
 # Create an image based on the shared build env that compiles, tests and builds CLI image
 docker build --tag=hint-cli-build \
