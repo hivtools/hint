@@ -91,14 +91,14 @@
 
             <div id="comparison-container" :class="selectedTab==='comparison' ? 'col-md-12' : 'd-none'">
                 <bar-chart-with-filters
-                    :chart-data="chartdata"
-                    :filter-config="filterConfig"
-                    :indicators="barchartIndicators"
-                    :selections="barchartSelections"
+                    :chart-data="comparisonPlotData"
+                    :filter-config="comparisonPlotFilterConfig"
+                    :indicators="comparisonPlotIndicators"
+                    :selections="comparisonPlotSelections"
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
-                    @update="updateBarchartSelectionsAndXAxisOrder"></bar-chart-with-filters>
-                <div class="row mt-2">
+                    @update="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
+                <!-- <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <area-indicators-table class="col-md-9"
                                            :table-data="chartdata"
@@ -110,7 +110,7 @@
 
                                            :selectedFilterOptions="barchartSelections.selectedFilterOptions"
                     ></area-indicators-table>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -162,22 +162,27 @@
     interface Methods {
         tabSelected: (tab: string) => void
         updateBarchartSelections: (data: { payload: BarchartSelections }) => void
+        updateComparisonPlotSelections: (data: { payload: BarchartSelections }) => void
         updateBubblePlotSelections: (data: BubblePlotSelections) => void
         updateOutputColourScales: (colourScales: ScaleSelections) => void
         updateOutputBubbleSizeScales: (colourScales: ScaleSelections) => void
         formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => string
         updateBarchartSelectionsAndXAxisOrder: (data: BarchartSelections) => void
+        updateComparisonPlotSelectionsAndXAxisOrder: (data: BarchartSelections) => void
         prepareOutputDownloads: () => void
     }
 
     interface Computed {
         barchartFilters: Filter[],
+        comparisonPlotFilters: Filter[],
         bubblePlotFilters: Filter[],
         choroplethFilters: Filter[],
         countryAreaFilterOption: FilterOption,
         barchartIndicators: BarchartIndicator[],
         chartdata: any,
+        comparisonPlotData: any
         barchartSelections: BarchartSelections,
+        comparisonPlotSelections: BarchartSelections,
         bubblePlotSelections: BubblePlotSelections,
         choroplethSelections: ChoroplethSelections,
         selectedTab: string,
@@ -185,6 +190,7 @@
         featureLevels: LevelLabel[]
         currentLanguage: Language,
         filterConfig: FilterConfig,
+        comparisonPlotFilterConfig: FilterConfig
         colourScales: ScaleSelections,
         bubbleSizeScales: ScaleSelections,
         choroplethIndicators: ChoroplethIndicatorMetadata[],
@@ -193,6 +199,7 @@
         filteredBarchartIndicators: BarchartIndicator[],
         filteredBubblePlotIndicators: ChoroplethIndicatorMetadata[],
         flattenedXAxisFilterOptionIds: string[]
+        flattenedComparisonPlotXAxisFilterOptionIds: string[]
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
@@ -222,9 +229,11 @@
             ...mapGettersByNames("modelOutput", [
                 "barchartFilters", "barchartIndicators",
                 "bubblePlotFilters", "bubblePlotIndicators",
-                "choroplethFilters", "choroplethIndicators", "countryAreaFilterOption"]),
+                "choroplethFilters", "choroplethIndicators",
+                "countryAreaFilterOption", "comparisonPlotIndicators", "comparisonPlotFilters"]),
             ...mapStateProps<PlottingSelectionsState, keyof Computed>("plottingSelections", {
                 barchartSelections: state => state.barchart,
+                comparisonPlotSelections: state => state.comparisonPlot,
                 bubblePlotSelections: state => state.bubble,
                 choroplethSelections: state => state.outputChoropleth,
                 colourScales: state => state.colourScales.output,
@@ -251,6 +260,9 @@
             chartdata: mapStateProp<ModelCalibrateState, any>("modelCalibrate", state => {
                 return state.result ? state.result.data : [];
             }),
+            comparisonPlotData: mapStateProp<ModelCalibrateState, any>("modelCalibrate", state => {
+                return state.comparisonPlotResult ? state.comparisonPlotResult.data : [];
+            }),
             barchartSelections() {
                 return this.$store.state.plottingSelections.barchart
             },
@@ -265,6 +277,15 @@
                     filters: this.barchartFilters
                 }
             },
+            comparisonPlotFilterConfig() {
+                return {
+                    filterLabel: i18next.t("filters", this.currentLanguage),
+                    indicatorLabel: i18next.t("indicator", this.currentLanguage),
+                    xAxisLabel: i18next.t("xAxis", this.currentLanguage),
+                    disaggLabel: i18next.t("disaggBy", this.currentLanguage),
+                    filters: this.comparisonPlotFilters
+                }
+            },
             flattenedXAxisFilterOptionIds() {
                 const xAxisId = this.barchartSelections?.xAxisId
                 let ids: string[] = []
@@ -275,12 +296,23 @@
                     }
                 }
                 return ids
+            },
+            flattenedComparisonPlotXAxisFilterOptionIds() {
+                const xAxisId = this.comparisonPlotSelections?.xAxisId
+                let ids: string[] = []
+                if (xAxisId && this.comparisonPlotFilters?.length) {
+                    const filter = this.comparisonPlotFilters.find((f: Filter) => f.id === xAxisId)
+                    if (filter?.options.length){
+                        ids = flattenOptionsIdsByHierarchy(filter.options)
+                    }
+                }
+                return ids
             }
         },
         methods: {
             ...mapMutationsByNames<keyof Methods>("plottingSelections",
-                ["updateBarchartSelections", "updateBubblePlotSelections", "updateOutputChoroplethSelections",
-                    "updateOutputColourScales", "updateOutputBubbleSizeScales"]),
+                ["updateBarchartSelections", "updateComparisonPlotSelections", "updateBubblePlotSelections",
+                "updateOutputChoroplethSelections", "updateOutputColourScales", "updateOutputBubbleSizeScales"]),
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected),
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
@@ -299,6 +331,21 @@
                 }
                 // if unable to do the above, just updates the barchart as normal
                 this.updateBarchartSelections({payload})
+            },
+            updateComparisonPlotSelectionsAndXAxisOrder(data) {
+                const payload = {...this.comparisonPlotSelections, ...data}
+                if (data.xAxisId && data.selectedFilterOptions) {
+                    const {xAxisId, selectedFilterOptions} = data
+                    if (selectedFilterOptions[xAxisId] && this.flattenedComparisonPlotXAxisFilterOptionIds.length) {
+                        // Sort the selected filter values according to the order given the barchart filters
+                        const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
+                            return this.flattenedComparisonPlotXAxisFilterOptionIds.indexOf(a.id) - this.flattenedComparisonPlotXAxisFilterOptionIds.indexOf(b.id);
+                        });
+                        payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
+                    }
+                }
+                // if unable to do the above, just updates the barchart as normal
+                this.updateComparisonPlotSelections({payload})
             },
             prepareOutputDownloads: mapActionByName("downloadResults", "prepareOutputs")
         },

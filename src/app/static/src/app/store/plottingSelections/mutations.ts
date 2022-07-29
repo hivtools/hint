@@ -13,6 +13,7 @@ type PlottingSelectionsMutation = Mutation<PlottingSelectionsState>
 export interface PlottingSelectionsMutations {
     updateCalibratePlotSelections: PlottingSelectionsMutation,
     updateBarchartSelections: PlottingSelectionsMutation,
+    updateComparisonPlotSelections: PlottingSelectionsMutation,
     updateBubblePlotSelections: PlottingSelectionsMutation,
     updateSAPChoroplethSelections: PlottingSelectionsMutation,
     updateOutputChoroplethSelections: PlottingSelectionsMutation,
@@ -27,6 +28,9 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
     },
     updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<BarchartSelections>) {
         state.barchart = {...state.barchart, ...action.payload};
+    },
+    updateComparisonPlotSelections(state: PlottingSelectionsState, action: PayloadWithType<BarchartSelections>) {
+        state.comparisonPlot = {...state.comparisonPlot, ...action.payload};
     },
     updateBubblePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BubblePlotSelections>>) {
         state.bubble = {...state.bubble, ...action.payload};
