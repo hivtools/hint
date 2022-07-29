@@ -1,6 +1,8 @@
 apply plugin: 'application'
 
-mainClassName = "org.imperial.mrc.hint.generateDatabaseInterface.AppKt"
+application {
+    mainClass.set("org.imperial.mrc.hint.generateDatabaseInterface.AppKt")
+}
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
