@@ -52,13 +52,13 @@ subprojects {
 
     jacoco {
         toolVersion = "0.8.8"
-        reportsDir = file("$projectDir/coverage")
+        reportsDirectory.set(layout.buildDirectory.dir("$projectDir/coverage"))
     }
 
-    jacocoTestReport {
+    tasks.jacocoTestReport {
         reports {
-            xml.enabled = true
-            csv.enabled = false
+            xml.required.set(true)
+            csv.required.set(false)
         }
     }
 
@@ -66,16 +66,15 @@ subprojects {
         enabled true
     }
 
-    test {
+    tasks.test {
         useJUnitPlatform()
         testLogging {
             exceptionFormat = 'full'
         }
-        if (project.hasProperty('excludeADR')) {
-            exclude "org/imperial/mrc/hint/integration/adr/**"
+        filter {
+            excludeTestsMatching("org.imperial.mrc.hint.integration.adr.**")
         }
     }
-
 
     group = 'org.imperial.mrc'
     sourceCompatibility = '1.8'

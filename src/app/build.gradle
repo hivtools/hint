@@ -8,13 +8,13 @@ mainClassName = "org.imperial.mrc.hint.AppStartKt"
 
 jacoco {
     toolVersion = "0.8.8"
-    reportsDir = file("$projectDir/coverage")
+    reportsDirectory.set(layout.buildDirectory.dir("$projectDir/coverage"))
 }
 
-jacocoTestReport {
+tasks.jacocoTestReport {
     reports {
-        xml.enabled = true
-        csv.enabled = false
+        xml.required.set(true)
+        csv.required.set(false)
     }
 }
 

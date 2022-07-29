@@ -165,8 +165,8 @@ class ProjectRepositoryTests
                 .where(PROJECT.ID.eq(projectId))
                 .fetchOne()
 
-        assertThat(project[PROJECT.USER_ID]).isEqualTo(uid)
-        assertThat(project[PROJECT.NAME]).isEqualTo("testProjectRepo")
+        assertThat(project?.get(PROJECT.USER_ID)).isEqualTo(uid)
+        assertThat(project?.get(PROJECT.NAME)).isEqualTo("testProjectRepo")
     }
 
     @Test
@@ -180,10 +180,10 @@ class ProjectRepositoryTests
                 .where(PROJECT.ID.eq(projectId))
                 .fetchOne()
 
-        assertThat(project[PROJECT.USER_ID]).isEqualTo(uid)
-        assertThat(project[PROJECT.NAME]).isEqualTo("testProjectRepo")
-        assertThat(project[PROJECT.SHARED_BY]).isEqualTo(uid)
-        assertThat(project[PROJECT.NOTE]).isEqualTo("test note")
+        assertThat(project?.get(PROJECT.USER_ID)).isEqualTo(uid)
+        assertThat(project?.get(PROJECT.NAME)).isEqualTo("testProjectRepo")
+        assertThat(project?.get(PROJECT.SHARED_BY)).isEqualTo(uid)
+        assertThat(project?.get(PROJECT.NOTE)).isEqualTo("test note")
     }
 
     @Test
@@ -213,14 +213,14 @@ class ProjectRepositoryTests
                 .where(PROJECT_VERSION.ID.eq(versionId1))
                 .and(PROJECT_VERSION.PROJECT_ID.eq(projectId))
                 .fetchOne()
-        assertThat(savedVersion1[PROJECT_VERSION.DELETED]).isTrue()
+        assertThat(savedVersion1?.get(PROJECT_VERSION.DELETED)).isTrue
 
         val savedVersion2 = dsl.select(PROJECT_VERSION.DELETED)
                 .from(PROJECT_VERSION)
                 .where(PROJECT_VERSION.ID.eq(versionId2))
                 .and(PROJECT_VERSION.PROJECT_ID.eq(projectId))
                 .fetchOne()
-        assertThat(savedVersion2[PROJECT_VERSION.DELETED]).isTrue()
+        assertThat(savedVersion2?.get(PROJECT_VERSION.DELETED)).isTrue
     }
 
     @Test
@@ -238,8 +238,8 @@ class ProjectRepositoryTests
                 .where(PROJECT.ID.eq(projectId))
                 .and(PROJECT.USER_ID.eq(uid))
                 .fetchOne()
-        assertThat(renamedProject[PROJECT.NAME]).isEqualTo("renamedProject")
-        assertThat(renamedProject[PROJECT.NOTE]).isEqualTo("project notes")
+        assertThat(renamedProject?.get(PROJECT.NAME)).isEqualTo("renamedProject")
+        assertThat(renamedProject?.get(PROJECT.NOTE)).isEqualTo("project notes")
     }
 
     @Test
@@ -257,8 +257,8 @@ class ProjectRepositoryTests
                 .where(PROJECT.ID.eq(projectId))
                 .and(PROJECT.USER_ID.eq(uid))
                 .fetchOne()
-        assertThat(renamedProject[PROJECT.NAME]).isEqualTo("renamedProject")
-        assertThat(renamedProject[PROJECT.NOTE]).isEqualTo(null)
+        assertThat(renamedProject?.get(PROJECT.NAME)).isEqualTo("renamedProject")
+        assertThat(renamedProject?.get(PROJECT.NOTE)).isEqualTo(null)
     }
 
     @Test
@@ -273,7 +273,7 @@ class ProjectRepositoryTests
                 .where(PROJECT.ID.eq(projectId))
                 .and(PROJECT.USER_ID.eq(uid))
                 .fetchOne()
-        assertThat(project[PROJECT.NOTE]).isEqualTo("test project notes")
+        assertThat(project?.get(PROJECT.NOTE)).isEqualTo("test project notes")
     }
 
     @Test
@@ -350,7 +350,7 @@ class ProjectRepositoryTests
                 .returning(PROJECT.ID)
                 .fetchOne()
 
-        return saved[PROJECT.ID]
+        return saved!![PROJECT.ID]
     }
 
     private fun insertVersion(versionId: String, projectId: Int, created: Instant, updated: Instant, deleted: Boolean,
