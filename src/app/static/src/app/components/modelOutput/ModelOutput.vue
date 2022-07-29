@@ -43,7 +43,7 @@
             <div id="barchart-container" :class="selectedTab==='bar' ? 'col-md-12' : 'd-none'">
                 <bar-chart-with-filters
                     :chart-data="chartdata"
-                    :filter-config="filterConfig"
+                    :filter-config="barchartFilterConfig"
                     :indicators="barchartIndicators"
                     :selections="barchartSelections"
                     :formatFunction="formatBarchartValue"
@@ -132,9 +132,10 @@
         mapMutationsByNames,
         mapStateProp,
         mapStateProps,
-        flattenOptions, mapActionByName, flattenOptionsIdsByHierarchy
+        flattenOptions, mapActionByName,
+        flattenXAxisFilterOptionIds,
+        updateSelectionsAndXAxisOrder
     } from "../../utils";
-
     import {
         BarchartSelections,
         BubblePlotSelections,
@@ -150,7 +151,7 @@
     import {RootState} from "../../root";
     import {LevelLabel, Dict} from "../../types";
     import {ChoroplethIndicatorMetadata, NestedFilterOption} from "../../generated";
-    import {formatOutput} from "../plots/utils";
+    import {formatOutput, filterConfig} from "../plots/utils";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
 
     const namespace = 'filteredData';
@@ -189,7 +190,7 @@
         features: Feature[],
         featureLevels: LevelLabel[]
         currentLanguage: Language,
-        filterConfig: FilterConfig,
+        barchartFilterConfig: FilterConfig,
         comparisonPlotFilterConfig: FilterConfig
         colourScales: ScaleSelections,
         bubbleSizeScales: ScaleSelections,
@@ -198,8 +199,8 @@
         filteredChoroplethIndicators: ChoroplethIndicatorMetadata[],
         filteredBarchartIndicators: BarchartIndicator[],
         filteredBubblePlotIndicators: ChoroplethIndicatorMetadata[],
-        flattenedXAxisFilterOptionIds: string[]
-        flattenedComparisonPlotXAxisFilterOptionIds: string[]
+        barchartFlattenedXAxisFilterOptionIds: string[]
+        comparisonPlotFlattenedXAxisFilterOptionIds: string[]
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
@@ -268,45 +269,49 @@
             },
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
-            filterConfig() {
-                return {
-                    filterLabel: i18next.t("filters", this.currentLanguage),
-                    indicatorLabel: i18next.t("indicator", this.currentLanguage),
-                    xAxisLabel: i18next.t("xAxis", this.currentLanguage),
-                    disaggLabel: i18next.t("disaggBy", this.currentLanguage),
-                    filters: this.barchartFilters
-                }
+            barchartFilterConfig() {
+                // return {
+                //     filterLabel: i18next.t("filters", this.currentLanguage),
+                //     indicatorLabel: i18next.t("indicator", this.currentLanguage),
+                //     xAxisLabel: i18next.t("xAxis", this.currentLanguage),
+                //     disaggLabel: i18next.t("disaggBy", this.currentLanguage),
+                //     filters: this.barchartFilters
+                // }
+                return filterConfig(this.currentLanguage, this.barchartFilters)
             },
             comparisonPlotFilterConfig() {
-                return {
-                    filterLabel: i18next.t("filters", this.currentLanguage),
-                    indicatorLabel: i18next.t("indicator", this.currentLanguage),
-                    xAxisLabel: i18next.t("xAxis", this.currentLanguage),
-                    disaggLabel: i18next.t("disaggBy", this.currentLanguage),
-                    filters: this.comparisonPlotFilters
-                }
+                // return {
+                //     filterLabel: i18next.t("filters", this.currentLanguage),
+                //     indicatorLabel: i18next.t("indicator", this.currentLanguage),
+                //     xAxisLabel: i18next.t("xAxis", this.currentLanguage),
+                //     disaggLabel: i18next.t("disaggBy", this.currentLanguage),
+                //     filters: this.comparisonPlotFilters
+                // }
+                return filterConfig(this.currentLanguage, this.comparisonPlotFilters)
             },
-            flattenedXAxisFilterOptionIds() {
-                const xAxisId = this.barchartSelections?.xAxisId
-                let ids: string[] = []
-                if (xAxisId && this.barchartFilters?.length) {
-                    const filter = this.barchartFilters.find((f: Filter) => f.id === xAxisId)
-                    if (filter?.options.length){
-                        ids = flattenOptionsIdsByHierarchy(filter.options)
-                    }
-                }
-                return ids
+            barchartFlattenedXAxisFilterOptionIds() {
+                // const xAxisId = this.barchartSelections?.xAxisId
+                // let ids: string[] = []
+                // if (xAxisId && this.barchartFilters?.length) {
+                //     const filter = this.barchartFilters.find((f: Filter) => f.id === xAxisId)
+                //     if (filter?.options.length){
+                //         ids = flattenOptionsIdsByHierarchy(filter.options)
+                //     }
+                // }
+                // return ids
+                return flattenXAxisFilterOptionIds(this.barchartSelections, this.barchartFilters)
             },
-            flattenedComparisonPlotXAxisFilterOptionIds() {
-                const xAxisId = this.comparisonPlotSelections?.xAxisId
-                let ids: string[] = []
-                if (xAxisId && this.comparisonPlotFilters?.length) {
-                    const filter = this.comparisonPlotFilters.find((f: Filter) => f.id === xAxisId)
-                    if (filter?.options.length){
-                        ids = flattenOptionsIdsByHierarchy(filter.options)
-                    }
-                }
-                return ids
+            comparisonPlotFlattenedXAxisFilterOptionIds() {
+                // const xAxisId = this.comparisonPlotSelections?.xAxisId
+                // let ids: string[] = []
+                // if (xAxisId && this.comparisonPlotFilters?.length) {
+                //     const filter = this.comparisonPlotFilters.find((f: Filter) => f.id === xAxisId)
+                //     if (filter?.options.length){
+                //         ids = flattenOptionsIdsByHierarchy(filter.options)
+                //     }
+                // }
+                // return ids
+                return flattenXAxisFilterOptionIds(this.comparisonPlotSelections, this.comparisonPlotFilters)
             }
         },
         methods: {
@@ -318,34 +323,36 @@
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
             },
             updateBarchartSelectionsAndXAxisOrder(data) {
-                const payload = {...this.barchartSelections, ...data}
-                if (data.xAxisId && data.selectedFilterOptions) {
-                    const {xAxisId, selectedFilterOptions} = data
-                    if (selectedFilterOptions[xAxisId] && this.flattenedXAxisFilterOptionIds.length) {
-                        // Sort the selected filter values according to the order given the barchart filters
-                        const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
-                            return this.flattenedXAxisFilterOptionIds.indexOf(a.id) - this.flattenedXAxisFilterOptionIds.indexOf(b.id);
-                        });
-                        payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
-                    }
-                }
-                // if unable to do the above, just updates the barchart as normal
-                this.updateBarchartSelections({payload})
+                // const payload = {...this.barchartSelections, ...data}
+                // if (data.xAxisId && data.selectedFilterOptions) {
+                //     const {xAxisId, selectedFilterOptions} = data
+                //     if (selectedFilterOptions[xAxisId] && this.barchartFlattenedXAxisFilterOptionIds.length) {
+                //         // Sort the selected filter values according to the order given the barchart filters
+                //         const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
+                //             return this.barchartFlattenedXAxisFilterOptionIds.indexOf(a.id) - this.barchartFlattenedXAxisFilterOptionIds.indexOf(b.id);
+                //         });
+                //         payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
+                //     }
+                // }
+                // // if unable to do the above, just updates the barchart as normal
+                // this.updateBarchartSelections({payload})
+                updateSelectionsAndXAxisOrder(data, this.barchartSelections, this.barchartFlattenedXAxisFilterOptionIds, this.updateBarchartSelections)
             },
             updateComparisonPlotSelectionsAndXAxisOrder(data) {
-                const payload = {...this.comparisonPlotSelections, ...data}
-                if (data.xAxisId && data.selectedFilterOptions) {
-                    const {xAxisId, selectedFilterOptions} = data
-                    if (selectedFilterOptions[xAxisId] && this.flattenedComparisonPlotXAxisFilterOptionIds.length) {
-                        // Sort the selected filter values according to the order given the barchart filters
-                        const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
-                            return this.flattenedComparisonPlotXAxisFilterOptionIds.indexOf(a.id) - this.flattenedComparisonPlotXAxisFilterOptionIds.indexOf(b.id);
-                        });
-                        payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
-                    }
-                }
-                // if unable to do the above, just updates the barchart as normal
-                this.updateComparisonPlotSelections({payload})
+                // const payload = {...this.comparisonPlotSelections, ...data}
+                // if (data.xAxisId && data.selectedFilterOptions) {
+                //     const {xAxisId, selectedFilterOptions} = data
+                //     if (selectedFilterOptions[xAxisId] && this.comparisonPlotFlattenedXAxisFilterOptionIds.length) {
+                //         // Sort the selected filter values according to the order given the barchart filters
+                //         const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
+                //             return this.comparisonPlotFlattenedXAxisFilterOptionIds.indexOf(a.id) - this.comparisonPlotFlattenedXAxisFilterOptionIds.indexOf(b.id);
+                //         });
+                //         payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
+                //     }
+                // }
+                // // if unable to do the above, just updates the barchart as normal
+                // this.updateComparisonPlotSelections({payload})
+                updateSelectionsAndXAxisOrder(data, this.comparisonPlotSelections, this.comparisonPlotFlattenedXAxisFilterOptionIds, this.updateComparisonPlotSelections)
             },
             prepareOutputDownloads: mapActionByName("downloadResults", "prepareOutputs")
         },
