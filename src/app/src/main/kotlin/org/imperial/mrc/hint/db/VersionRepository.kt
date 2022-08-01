@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.db
 
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.Tables.*
+import org.imperial.mrc.hint.exceptions.ProjectException
 import org.imperial.mrc.hint.exceptions.VersionException
 import org.imperial.mrc.hint.models.Version
 import org.imperial.mrc.hint.models.VersionDetails
@@ -75,10 +76,12 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
                 PROJECT_VERSION.VERSION_NUMBER)
                 .from(PROJECT_VERSION)
                 .where(PROJECT_VERSION.ID.eq(versionId))
-                .fetchOne()
+                .fetchOne() ?: throw VersionException("versionDoesNotExist")
 
-        return Version(result!![PROJECT_VERSION.ID], result[PROJECT_VERSION.CREATED],
-                result[PROJECT_VERSION.UPDATED], result[PROJECT_VERSION.VERSION_NUMBER], result[PROJECT_VERSION.NOTE])
+        return Version(
+            result[PROJECT_VERSION.ID], result[PROJECT_VERSION.CREATED],
+            result[PROJECT_VERSION.UPDATED], result[PROJECT_VERSION.VERSION_NUMBER], result[PROJECT_VERSION.NOTE]
+        )
     }
 
     override fun getVersionDetails(versionId: String, projectId: Int, userId: String): VersionDetails

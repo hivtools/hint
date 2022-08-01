@@ -88,9 +88,9 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                 PROJECT.IS_UPLOADED)
                 .values(userId, projectName, sharedBy, note, isUploaded)
                 .returning(PROJECT.ID)
-                .fetchOne()
+                .fetchOne() ?: throw ProjectException("projectDoesNotExist")
 
-        return result!![PROJECT.ID]
+        return result[PROJECT.ID]
     }
 
     override fun getProjects(userId: String): List<Project>

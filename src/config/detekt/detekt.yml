@@ -1,5 +1,5 @@
 build:
-  maxIssues: 10
+  maxIssues: 15
 
 comments:
    active: false
@@ -16,14 +16,6 @@ complexity:
     ignorePrivate: true
     ignoreOverridden: false
     excludes: ['**/HintrAPIClient.kt']
-
-formatting:
-  NoWildcardImports:
-    active: false
-  Indentation:
-    active: true
-    indentSize: 4
-    continuationIndentSize: 4
 
 style:
   MandatoryBracesIfStatements:
