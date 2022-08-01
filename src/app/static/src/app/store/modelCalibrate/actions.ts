@@ -128,11 +128,36 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const calibrateId = state.calibrateId;
         commit(ModelCalibrateMutation.ComparisonPlotStarted);
 
-        await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
+        const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
             .withError(ModelCalibrateMutation.SetError)
-            .withSuccess(ModelCalibrateMutation.SetComparisonPlotData)
+            // .withSuccess(ModelCalibrateMutation.SetComparisonPlotData)
+            .ignoreSuccess()
             .freezeResponse()
             .get<ModelResultResponse>(`model/comparison/plot/${calibrateId}`);
+
+        if (response) {
+            console.log("response", response)
+            if (response?.data?.plottingMetadata?.barchart?.defaults) {
+                const defaults = response.data.plottingMetadata.barchart.defaults;
+                const unfrozenDefaultOptions = Object.keys(defaults.selected_filter_options)
+                    .reduce((dict, key) => {
+                        dict[key] = [...defaults.selected_filter_options[key]];
+                        return dict;
+                    }, {} as Dict<FilterOption[]>);
+
+                commit({
+                    type: "plottingSelections/updateComparisonPlotSelections",
+                    payload: {
+                        indicatorId: defaults.indicator_id,
+                        xAxisId: defaults.x_axis_id,
+                        disaggregateById: defaults.disaggregate_by_id,
+                        selectedFilterOptions: unfrozenDefaultOptions
+                    }
+                },
+                    {root: true});
+            }
+            commit(ModelCalibrateMutation.SetComparisonPlotData, response.data);
+        }
     }
 };
 

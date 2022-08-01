@@ -30,6 +30,7 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
         state.barchart = {...state.barchart, ...action.payload};
     },
     updateComparisonPlotSelections(state: PlottingSelectionsState, action: PayloadWithType<BarchartSelections>) {
+        console.log("barchart action selection", action)
         state.comparisonPlot = {...state.comparisonPlot, ...action.payload};
     },
     updateBubblePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BubblePlotSelections>>) {

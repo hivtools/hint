@@ -16,7 +16,7 @@ export const modelOutputGetters = {
         return rootState.modelCalibrate.result!.plottingMetadata.barchart.indicators;
     },
     comparisonPlotIndicators: (state: ModelOutputState, getters: any, rootState: RootState): BarchartIndicator[] => {
-        return rootState.modelCalibrate.comparisonPlotResult ? rootState.modelCalibrate.comparisonPlotResult.plottingMetadata.barchart.indicators : [];
+        return rootState.modelCalibrate.comparisonPlotResult!.plottingMetadata.barchart.indicators;
     },
     barchartFilters: (state: ModelOutputState, getters: any, rootState: RootState): Filter[] => {
         return outputPlotFilters(rootState);
