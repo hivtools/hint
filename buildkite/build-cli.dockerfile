@@ -9,4 +9,4 @@ ENV GIT_ID=$GIT_ID
 
 CMD ./gradlew :userCLI:test && \
     rm /etc/hint/config.properties && \
-    ./gradlew :userCLI:docker -i -Pdocker_version=$GIT_ID
+    ./gradlew :userCLI:dockerBuild -i -Pdocker_version=$GIT_ID
