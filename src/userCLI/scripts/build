@@ -9,4 +9,4 @@ fi
 HERE=$(dirname $0)
 . $HERE/common
 
-$HERE/../../gradlew -p src :userCLI:dockerBuild -i -Pdocker_version=$GIT_SHA -Pdocker_name=$TAG_IMAGE;
+$HERE/../../gradlew -p src :userCLI:dockerMrcideHintUserCliBuild -i -Pdocker_version=$GIT_SHA -Pdocker_name=$TAG_IMAGE;
