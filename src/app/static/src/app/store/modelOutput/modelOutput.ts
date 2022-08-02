@@ -69,25 +69,6 @@ const outputPlotFilters = (rootState: RootState, resultName: "result" | "compari
     ];
 };
 
-// const comparisonPlotFilters = (rootState: RootState) => {
-//     let filters = [...rootState.modelCalibrate.comparisonPlotResult!.plottingMetadata?.barchart.filters];
-//     const area = filters.find((f: any) => f.id == "area");
-//     if (area && area.use_shape_regions) {
-//         const regions: FilterOption[] = rootState.baseline.shape!.filters!.regions ?
-//             [rootState.baseline.shape!.filters!.regions] : [];
-
-//         //remove old, frozen area filter, add new one with regions from shape
-//         filters = [
-//             {...area, options: regions},
-//             ...filters.filter((f: any) => f.id != "area")
-//         ];
-//     }
-
-//     return [
-//         ...filters
-//     ];
-// };
-
 export const initialModelOutputState = (): ModelOutputState => {
     return {
         selectedTab: ""

@@ -96,13 +96,10 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     [ModelCalibrateMutation.SetPlotData](state: ModelCalibrateState, action: PayloadWithType<any>) {
         state.generatingCalibrationPlot = false;
         state.calibratePlotResult = action;
-        console.log("calibratePlotResult", state.calibratePlotResult)
     },
 
     [ModelCalibrateMutation.SetComparisonPlotData](state: ModelCalibrateState, action: ComparisonPlotResponse) {
-        console.log("set comp plot action", action)
         state.comparisonPlotResult = action;
-        console.log("comparisoncalibratePlotResult", state.comparisonPlotResult)
     },
 
     [ModelCalibrateMutation.SetModelCalibrateOptionsVersion](state: ModelCalibrateState, action: PayloadWithType<VersionInfo>) {

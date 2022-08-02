@@ -112,13 +112,11 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
 
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
             .withError(ModelCalibrateMutation.SetError)
-            // .withSuccess(ModelCalibrateMutation.SetComparisonPlotData)
             .ignoreSuccess()
             .freezeResponse()
             .get<ModelResultResponse>(`model/comparison/plot/${calibrateId}`);
 
         if (response) {
-            console.log("response", response)
             if (response.data){
                 selectFilterDefaults(response.data, commit, "updateComparisonPlotSelections")
             }
