@@ -93,6 +93,7 @@
                 <bar-chart-with-filters
                     :chart-data="comparisonPlotData"
                     :filter-config="comparisonPlotFilterConfig"
+                    :disaggregate-by-config="{ fixed: true, hideFilter: true }"
                     :indicators="comparisonPlotIndicators"
                     :selections="comparisonPlotSelections"
                     :formatFunction="formatBarchartValue"
