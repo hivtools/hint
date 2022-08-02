@@ -22,7 +22,7 @@ import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicat
 
 const localVue = createLocalVue();
 
-function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"]) {
+function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"], comparisonPlotFilters: any = ["TEST COMPARISON FILTERS"]) {
     const store = new Vuex.Store({
         state: emptyState(),
         modules: {
@@ -56,6 +56,7 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                 getters: {
                     barchartIndicators: jest.fn().mockReturnValue(["TEST BARCHART INDICATORS"]),
                     barchartFilters: jest.fn().mockReturnValue(barchartFilters),
+                    comparisonPlotFilters: jest.fn().mockReturnValue(comparisonPlotFilters),
                     bubblePlotIndicators: jest.fn().mockReturnValue(["TEST BUBBLE INDICATORS"]),
                     bubblePlotFilters: jest.fn().mockReturnValue(["TEST BUBBLE FILTERS"]),
                     choroplethFilters: jest.fn().mockReturnValue(["TEST CHORO FILTERS"]),
@@ -72,6 +73,15 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                         indicatorId: "TestIndicator",
                         xAxisId: "region",
                         disaggregateById: "age",
+                        selectedFilterOptions: {
+                            region: [{id: "r1", label: "region 1"}],
+                            age: [{id: "a1", label: "0-4"}]
+                        }
+                    },
+                    comparisonPlot: {
+                        indicatorId: "TestIndicator",
+                        xAxisId: "age",
+                        disaggregateById: "source",
                         selectedFilterOptions: {
                             region: [{id: "r1", label: "region 1"}],
                             age: [{id: "a1", label: "0-4"}]
