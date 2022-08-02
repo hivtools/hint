@@ -10,7 +10,7 @@ import {currentHintVersion} from "../../hintVersion";
 import {initialStepperState} from "../stepper/stepper";
 import {ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generated";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
-import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {DynamicFormData} from "@reside-ic/vue-dynamic-form";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult" | "SetProjectName" | "RehydrateCancel"
 export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
@@ -97,7 +97,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         if (modelCalibrate?.result && Object.keys(modelCalibrate.options).length === 0) {
             savedState = {
                 ...savedState,
-                modelCalibrate: {...modelCalibrate, options: getCalibrateOptions(modelCalibrate.optionsFormMeta)}
+                modelCalibrate: {...modelCalibrate, options: getCalibrateOptions(modelCalibrate)}
             }
         }
 
@@ -194,8 +194,8 @@ async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
 
 // getCalibrateOptions extracts calibrate options from Dynamic Form, this allows
 // backward compatibility supports for calibrate option bug
-const getCalibrateOptions = (dynamicFormMeta: DynamicFormMeta): DynamicFormData => {
-    const allControlGroups = flatMapControlSection(dynamicFormMeta.controlSections);
+const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormData => {
+    const allControlGroups = flatMapControlSection(modelCalibrate.optionsFormMeta.controlSections);
     return allControlGroups.reduce<DynamicFormData>((options, option): DynamicFormData => {
         option.controls.forEach(option => {
             options[option.name] = option.value || null
