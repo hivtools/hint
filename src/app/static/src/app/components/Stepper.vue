@@ -62,7 +62,7 @@
     import DownloadResults from "./downloadResults/DownloadResults.vue";
     import WarningAlert from "./WarningAlert.vue";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
-    import {LoadingState, LoadState} from "../store/load/load";
+    import {LoadingState, LoadState} from "../store/load/state";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
     import VersionStatus from "./projects/VersionStatus.vue";
     import {mapGettersByNames, mapStateProp, mapStateProps, mapMutationByName} from "../utils";

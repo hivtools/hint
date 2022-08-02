@@ -1,15 +1,20 @@
 import {ActionContext, ActionTree} from "vuex";
-import {LoadingState, LoadState} from "./load";
-import {RootState} from "../../root";
+import {LoadingState, LoadState} from "./state";
+import {emptyState, RootState} from "../../root";
 import {api} from "../../apiService";
-import {constructRehydrateProjectState, flatMapControlSection, verifyCheckSum} from "../../utils";
+import {
+    constructRehydrateProjectState,
+    flatMapControlSections,
+    verifyCheckSum
+} from "../../utils";
 import {Dict, LocalSessionFile, VersionDetails} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
 import {currentHintVersion} from "../../hintVersion";
 import {initialStepperState} from "../stepper/stepper";
 import {ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generated";
-import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {DynamicFormData} from "@reside-ic/vue-dynamic-form";
+import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult" | "SetProjectName" | "RehydrateCancel"
 export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
@@ -96,7 +101,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         if (modelCalibrate?.result && Object.keys(modelCalibrate.options).length === 0) {
             savedState = {
                 ...savedState,
-                modelCalibrate: {...modelCalibrate, options: getCalibrateOptions(modelCalibrate.optionsFormMeta)}
+                modelCalibrate: {...modelCalibrate, options: getCalibrateOptions(modelCalibrate)}
             }
         }
 
@@ -143,17 +148,21 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
         const {files, savedState} = await constructRehydrateProjectState(context, response.data)
 
         if (!rootGetters.isGuest) {
-            await (dispatch("projects/createProject",
+            await dispatch("projects/createProject",
                 {
                     name: state.projectName,
                     isUploaded: true
-                }, {root: true}));
+                }, {root: true});
+                
+            savedState.projects!.currentProject = rootState.projects.currentProject
+            savedState.projects!.currentVersion = rootState.projects.currentVersion
 
-            savedState.projects.currentProject = rootState.projects.currentProject
-            savedState.projects.currentVersion = rootState.projects.currentVersion
+            const newRootState = {...emptyState(), ...savedState}
+
+            Object.assign(rootState, newRootState);
         }
 
-        savedState.stepper.activeStep = 7
+        savedState.stepper!.activeStep = 7
 
         await getFilesAndLoad(context, files, savedState)
     }
@@ -173,24 +182,26 @@ const getRehydrateStatus = async (context: ActionContext<LoadState, RootState>) 
 
 async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
                                files: any,
-                               savedState: any) {
-    savedState.stepper.steps = initialStepperState().steps;
+                               savedState: Partial<RootState>) {
+    savedState.stepper!.steps = initialStepperState().steps
     const {dispatch, state} = context;
     await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("UpdatingState")
         .withError("LoadFailed")
         .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
-        .then(() => {
-            if (state.loadingState != LoadingState.LoadFailed) {
-                dispatch("updateStoreState", savedState);
+        .then((response) => {
+            if (response && response.data) {
+                if (state.loadingState != LoadingState.LoadFailed) {
+                    dispatch("updateStoreState", savedState);
+                }
             }
         });
 }
 
 // getCalibrateOptions extracts calibrate options from Dynamic Form, this allows
 // backward compatibility supports for calibrate option bug
-const getCalibrateOptions = (dynamicFormMeta: DynamicFormMeta): DynamicFormData => {
-    const allControlGroups = flatMapControlSection(dynamicFormMeta.controlSections);
+const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormData => {
+    const allControlGroups = flatMapControlSections(modelCalibrate.optionsFormMeta.controlSections);
     return allControlGroups.reduce<DynamicFormData>((options, option): DynamicFormData => {
         option.controls.forEach(option => {
             options[option.name] = option.value || null
@@ -198,6 +209,3 @@ const getCalibrateOptions = (dynamicFormMeta: DynamicFormMeta): DynamicFormData 
         return options
     }, {})
 }
-
-
-

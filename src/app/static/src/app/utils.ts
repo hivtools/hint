@@ -19,8 +19,9 @@ import {
 } from "@reside-ic/vue-dynamic-form";
 import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
 import {ModelOptionsState} from "./store/modelOptions/modelOptions";
-import {LoadState} from "./store/load/load";
 import {RootState} from "./root";
+import {initialStepperState} from "./store/stepper/stepper";
+import {LoadState} from "./store/load/state";
 
 export type ComputedWithType<T> = () => T;
 
@@ -382,7 +383,7 @@ export const constructRehydrateProjectState = async (context: ActionContext<Load
     const modelOptions = {
         options: data.state.model_fit.options,
         valid: true
-    }
+    } as any
 
     const modelRun = {
         modelRunId: data.state.model_fit.id,
@@ -390,7 +391,7 @@ export const constructRehydrateProjectState = async (context: ActionContext<Load
         warnings: context.rootState.modelRun.warnings,
         status: {success: true, done: true},
         ready: true
-    }
+    } as any
 
     const modelCalibrate = {
         calibrateId: data.state.calibrate.id,
@@ -400,11 +401,11 @@ export const constructRehydrateProjectState = async (context: ActionContext<Load
         status: {success: true, done: true},
         ready: true,
         complete: true
-    }
+    } as any
 
     const plottingSelections = {
         barchart: context.rootState.plottingSelections.barchart
-    }
+    } as any
 
     const surveyAndProgram = {
         survey: {
@@ -420,7 +421,7 @@ export const constructRehydrateProjectState = async (context: ActionContext<Load
             filename: files.anc.filename
         },
         selectedDataType: DataType.Survey,
-    }
+    } as any
 
     const baseline = {
         pjnz: {
@@ -434,21 +435,21 @@ export const constructRehydrateProjectState = async (context: ActionContext<Load
         population: {
             hash: files.population.hash,
             filename: files.population.filename
-        }
-    }
+        },
+    } as any
 
     const stepper = {
-        steps: [],
+        steps: initialStepperState().steps,
         activeStep: 1
     }
 
     const projects = {
         currentProject: null,
-        currentVersion: null
+        currentVersion: null,
+        previousProjects: []
     } as any
 
-    const savedState = {
-        stepper,
+    const savedState: Partial<RootState> = {
         projects,
         baseline,
         surveyAndProgram,
@@ -456,7 +457,10 @@ export const constructRehydrateProjectState = async (context: ActionContext<Load
         modelCalibrate,
         modelRun,
         plottingSelections,
-        version: data.state.version
+        stepper,
+        hintrVersion: {
+            hintrVersion: data.state.version
+        }
     }
 
     return {files, savedState}
@@ -481,6 +485,6 @@ export const constructOptionsFormMetaFromData = (state: ModelOptionsState, meta:
     }
 }
 
-export const flatMapControlSection = (sections: DynamicControlSection[]): DynamicControlGroup[] => {
+export const flatMapControlSections = (sections: DynamicControlSection[]): DynamicControlGroup[] => {
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }
