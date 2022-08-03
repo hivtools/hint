@@ -1,16 +1,8 @@
 build:
-  maxIssues: 15
+  maxIssues: 10
 
 comments:
    active: false
-
-formatting:
-  NoWildcardImports:
-    active: false
-  Indentation:
-    active: true
-    indentSize: 4
-    continuationIndentSize: 4
 
 complexity:
   TooManyFunctions:
@@ -24,6 +16,14 @@ complexity:
     ignorePrivate: true
     ignoreOverridden: false
     excludes: ['**/HintrAPIClient.kt']
+
+formatting:
+  NoWildcardImports:
+    active: false
+  Indentation:
+    active: true
+    indentSize: 4
+    continuationIndentSize: 4
 
 style:
   MandatoryBracesIfStatements:
