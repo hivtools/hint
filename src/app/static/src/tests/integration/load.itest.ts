@@ -58,7 +58,7 @@ describe("load actions", () => {
                 shape: {
                     hash: shape.hash,
                     filename: shape.filename,
-                    fromADR: false
+                    fromAdr: false
                 }
             });
             expect(dispatch.mock.calls[0][1]).toStrictEqual({
