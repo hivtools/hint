@@ -73,8 +73,8 @@ subprojects {
         testLogging {
             exceptionFormat = 'full'
         }
-        filter {
-            excludeTestsMatching("org.imperial.mrc.hint.integration.adr.**")
+        if (project.hasProperty('excludeADR')) {
+             exclude "org/imperial/mrc/hint/integration/adr/**"
         }
     }
 
