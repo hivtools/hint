@@ -4,6 +4,14 @@ build:
 comments:
    active: false
 
+formatting:
+  NoWildcardImports:
+    active: false
+  Indentation:
+    active: true
+    indentSize: 4
+    continuationIndentSize: 4
+
 complexity:
   TooManyFunctions:
     active: true
