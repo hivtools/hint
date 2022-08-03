@@ -2,7 +2,6 @@ package org.imperial.mrc.hint.db
 
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.db.Tables.*
-import org.imperial.mrc.hint.exceptions.ProjectException
 import org.imperial.mrc.hint.exceptions.VersionException
 import org.imperial.mrc.hint.models.Version
 import org.imperial.mrc.hint.models.VersionDetails
@@ -193,7 +192,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
                                 .set(VERSION_FILE.TYPE, fileType)
                                 .set(VERSION_FILE.VERSION, versionId)
                                 .set(VERSION_FILE.FILENAME, versionFile.filename)
-                                .set(VERSION_FILE.FROM_ADR, versionFile.fromADR)
+                                .set(VERSION_FILE.FROM_ADR, versionFile.fromAdr)
                                 .execute()
                     }
                 }

@@ -10,6 +10,7 @@ import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
+import org.mockito.Mockito.verifyNoInteractions
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
@@ -68,7 +69,7 @@ class UserLogicTests
         val sut = DbProfileServiceUserLogic(mockUserRepo, mock(), mockEmailManager)
 
         sut.addUser(TEST_EMAIL, "test_pw")
-        verifyZeroInteractions(mockEmailManager)
+        verifyNoInteractions(mockEmailManager)
     }
 
     @Test
