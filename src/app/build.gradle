@@ -74,7 +74,7 @@ dependencies {
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
     kotlinOptions {
         freeCompilerArgs = ['-Xjsr305=strict']
-        jvmTarget = '11'
+        jvmTarget = JavaVersion.VERSION_11
     }
 }
 
