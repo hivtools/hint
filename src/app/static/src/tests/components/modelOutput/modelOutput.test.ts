@@ -4,6 +4,7 @@ import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import {
     mockBaselineState,
     mockCalibrateResultResponse,
+    mockComparisonPlotResponse,
     mockModelCalibrateState,
     mockShapeResponse,
 } from "../../mocks";
@@ -43,7 +44,8 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                 namespaced: true,
                 state: mockModelCalibrateState(
                     {
-                        result: mockCalibrateResultResponse({data: ["TEST DATA"] as any})
+                        result: mockCalibrateResultResponse({data: ["TEST DATA"] as any}),
+                        comparisonPlotResult: mockComparisonPlotResponse({data: ["TEST COMPARISON DATA"] as any})
                     }
                 )
             },
@@ -56,6 +58,7 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                 getters: {
                     barchartIndicators: jest.fn().mockReturnValue(["TEST BARCHART INDICATORS"]),
                     barchartFilters: jest.fn().mockReturnValue(barchartFilters),
+                    comparisonPlotIndicators: jest.fn().mockReturnValue(["TEST COMPARISON INDICATORS"]),
                     comparisonPlotFilters: jest.fn().mockReturnValue(comparisonPlotFilters),
                     bubblePlotIndicators: jest.fn().mockReturnValue(["TEST BUBBLE INDICATORS"]),
                     bubblePlotFilters: jest.fn().mockReturnValue(["TEST BUBBLE FILTERS"]),
@@ -152,11 +155,26 @@ describe("ModelOutput component", () => {
 
         const barchart = wrapper.find(BarChartWithFilters);
         expect(barchart.props().chartData).toStrictEqual(["TEST DATA"]);
-        expect(barchart.props().filterConfig).toBe(vm.filterConfig);
+        expect(barchart.props().filterConfig).toBe(vm.barchartFilterConfig);
         expect(barchart.props().indicators).toStrictEqual(["TEST BARCHART INDICATORS"]);
         expect(barchart.props().selections).toBe(vm.barchartSelections);
         expect(barchart.props().formatFunction).toBe(vm.formatBarchartValue);
         expect(barchart.props().showRangesInTooltips).toBe(true);
+    });
+
+    it("renders comparison plot", () => {
+        const store = getStore({selectedTab: "comparison"});
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const vm = wrapper.vm as any;
+
+        const comparisonPlot = wrapper.findAll(BarChartWithFilters).at(1);
+        expect(comparisonPlot.props().chartData).toStrictEqual(["TEST COMPARISON DATA"]);
+        expect(comparisonPlot.props().filterConfig).toBe(vm.comparisonPlotFilterConfig);
+        expect(comparisonPlot.props().indicators).toStrictEqual(["TEST COMPARISON INDICATORS"]);
+        expect(comparisonPlot.props().selections).toBe(vm.comparisonPlotSelections);
+        expect(comparisonPlot.props().formatFunction).toBe(vm.formatBarchartValue);
+        expect(comparisonPlot.props().showRangesInTooltips).toBe(true);
+        expect(comparisonPlot.props().disaggregateByConfig).toStrictEqual({fixed: true, hideFilter: true});
     });
 
     it("if no selected tab in state, defaults to select Map tab", () => {
@@ -196,7 +214,7 @@ describe("ModelOutput component", () => {
         expect(wrapper.findAll("choropleth-stub").length).toBe(0);
 
         expect(wrapper.find("#barchart-container").classes()).toEqual(["col-md-12"]);
-        expect(wrapper.findAll(BarChartWithFilters).length).toBe(1);
+        expect(wrapper.findAll(BarChartWithFilters).length).toBe(2);
 
         expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
         expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
@@ -242,7 +260,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         const vm = (wrapper as any).vm;
 
-        expect(vm.filterConfig).toStrictEqual({
+        expect(vm.barchartFilterConfig).toStrictEqual({
             indicatorLabel: "Indicator",
             xAxisLabel: "X Axis",
             disaggLabel: "Disaggregate by",
