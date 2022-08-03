@@ -8,7 +8,7 @@
 Requirements:
 * Docker
 * npm
-* openjdk 8
+* openjdk 11
 * coreutils or [realpath](https://github.com/harto/realpath-osx) (Mac users only)
 
 

@@ -90,9 +90,9 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
         val state = dsl.select(PROJECT_VERSION.STATE)
             .from(PROJECT_VERSION)
             .where(PROJECT_VERSION.ID.eq(versionId))
-            .fetchOne()!![PROJECT_VERSION.STATE]
+            .fetchOne()?: throw VersionException("versionDoesNotExist")
 
-        return VersionDetails(state, files)
+        return VersionDetails(state[PROJECT_VERSION.STATE], files)
     }
 
     override fun saveNewHash(hash: String): Boolean
