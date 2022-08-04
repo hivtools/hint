@@ -15,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
-import java.sql.Timestamp
 import java.time.Instant
-import java.time.Instant.now
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -284,10 +282,10 @@ class ProjectRepositoryTests
         userRepo.addUser("another.user@example.com", "pw")
         val anotherUserId = userRepo.getUser("another.user@example.com")!!.id
 
-        val ago_1h = now().minus(1, ChronoUnit.HOURS)
-        val ago_2h = now().minus(2, ChronoUnit.HOURS)
-        val ago_3h = now().minus(3, ChronoUnit.HOURS)
-        val ago_4h = now().minus(4, ChronoUnit.HOURS)
+        val ago_1h = LocalDateTime.now().minus(1, ChronoUnit.HOURS)
+        val ago_2h = LocalDateTime.now().minus(2, ChronoUnit.HOURS)
+        val ago_3h = LocalDateTime.now().minus(3, ChronoUnit.HOURS)
+        val ago_4h = LocalDateTime.now().minus(4, ChronoUnit.HOURS)
 
 
         val v1Id = insertProject("v1", userId, "another.user@example.com", "test project note")
@@ -297,7 +295,7 @@ class ProjectRepositoryTests
         insertVersion("v1s1", v1Id, ago_4h, ago_3h, false, 1)
         insertVersion("v1s2", v1Id, ago_2h, ago_2h, false, 2)
 
-        insertVersion("deletedVersion", v2Id, ago_1h, now(), true, 2) //should not be returned
+        insertVersion("deletedVersion", v2Id, ago_1h, LocalDateTime.now(), true, 2) //should not be returned
         insertVersion("v2s1", v2Id, ago_3h, ago_1h, false, 1)
 
         insertVersion("anotherVersion", anotherProject, ago_1h, ago_1h, false, 3)
@@ -337,10 +335,10 @@ class ProjectRepositoryTests
         return userRepo.getUser(email)!!.id
     }
 
-    private fun format(time: Instant): String
+    private fun format(time: LocalDateTime): String
     {
         val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        return formatter.format(LocalDateTime.ofInstant(time, ZoneId.systemDefault()))
+        return formatter.format(time)
     }
 
     private fun insertProject(name: String, userId: String, sharedBy: String? = null, note: String? = null): Int
@@ -353,17 +351,26 @@ class ProjectRepositoryTests
         return saved!![PROJECT.ID]
     }
 
-    private fun insertVersion(versionId: String, projectId: Int, created: Instant, updated: Instant, deleted: Boolean,
+    private fun insertVersion(versionId: String, projectId: Int, created: LocalDateTime, updated: LocalDateTime, deleted: Boolean,
                               versionNumber: Int)
     {
-        dsl.insertInto(PROJECT_VERSION,
-                PROJECT_VERSION.ID,
-                PROJECT_VERSION.PROJECT_ID,
-                PROJECT_VERSION.CREATED,
-                PROJECT_VERSION.UPDATED,
-                PROJECT_VERSION.DELETED,
-                PROJECT_VERSION.VERSION_NUMBER)
-                .values(versionId, projectId, Timestamp.from(created), Timestamp.from(updated), deleted, versionNumber)
-                .execute()
+        dsl.insertInto(
+            PROJECT_VERSION,
+            PROJECT_VERSION.ID,
+            PROJECT_VERSION.PROJECT_ID,
+            PROJECT_VERSION.CREATED,
+            PROJECT_VERSION.UPDATED,
+            PROJECT_VERSION.DELETED,
+            PROJECT_VERSION.VERSION_NUMBER
+        )
+            .values(
+                versionId,
+                projectId,
+                created,
+                updated,
+                deleted,
+                versionNumber
+            )
+            .execute()
     }
 }
