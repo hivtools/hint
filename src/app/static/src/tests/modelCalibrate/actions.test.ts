@@ -356,8 +356,20 @@ describe("ModelCalibrate actions", () => {
         expect(mockAxios.history.get.length).toBe(1);
     });
 
-    it("getComparisonPlot fetches the comparison plot data and sets it when successful", async () => {
-        const testResult = {data: "TEST DATA"};
+    it("getComparisonPlot fetches the comparison plot data and sets it with default filter values when successful", async () => {
+        const testResult = {
+            data: "TEST DATA",
+            plottingMetadata: {
+                barchart: {
+                    defaults: {
+                        indicator_id: "test indicator",
+                        x_axis_id: "test_x",
+                        disaggregate_by_id: "test_dis",
+                        selected_filter_options: {"test_name": ["test_value"]}
+                    }
+                }
+            }
+        };
         mockAxios.onGet(`/model/comparison/plot/1234`)
             .reply(200, mockSuccess(testResult));
 
@@ -372,10 +384,17 @@ describe("ModelCalibrate actions", () => {
 
         await actions.getComparisonPlot({commit, state, rootState} as any);
 
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toStrictEqual("ComparisonPlotStarted");
-        expect(commit.mock.calls[1][0]["type"]).toBe("SetComparisonPlotData");
-        expect(commit.mock.calls[1][0]["payload"]).toStrictEqual({data: "TEST DATA"});
+        expect(commit.mock.calls[1][0]["type"]).toBe("plottingSelections/updateComparisonPlotSelections");
+        expect(commit.mock.calls[1][0]["payload"]).toStrictEqual({
+            indicatorId: "test indicator",
+            xAxisId: "test_x",
+            disaggregateById: "test_dis",
+            selectedFilterOptions: {"test_name": ["test_value"]}
+        });
+        expect(commit.mock.calls[2][0]).toBe("SetComparisonPlotData");
+        expect(commit.mock.calls[2][1]).toStrictEqual(testResult);
         expect(mockAxios.history.get.length).toBe(1);
     });
 
