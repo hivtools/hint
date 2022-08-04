@@ -2,7 +2,7 @@ import {MutationTree} from 'vuex';
 import {ModelOptionsState} from "./modelOptions";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {PayloadWithType} from "../../types";
-import {updateForm} from "../../utils";
+import {constructOptionsFormMetaFromData, updateForm} from "../../utils";
 import {VersionInfo, Error, ModelOptionsValidate} from "../../generated";
 
 
@@ -65,7 +65,9 @@ export const mutations: MutationTree<ModelOptionsState> = {
     },
 
     [ModelOptionsMutation.ModelOptionsFetched](state: ModelOptionsState, action: PayloadWithType<DynamicFormMeta>) {
-        const newForm = {...updateForm(state.optionsFormMeta, action.payload)};
+        const newForm = state.optionsFormMeta.controlSections.length
+            ? {...updateForm(state.optionsFormMeta, action.payload)}
+            : constructOptionsFormMetaFromData(state, action.payload)
         state.valid = state.valid && JSON.stringify(newForm) == JSON.stringify(state.optionsFormMeta);
         state.optionsFormMeta = newForm;
         state.fetching = false;

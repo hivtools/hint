@@ -140,6 +140,62 @@ describe("Model run options mutations", () => {
         expect(state.valid).toBe(false);
     });
 
+    it("sets valid to false if state does not contain controlSections and options exists", () => {
+        const state = mockModelOptionsState({
+            valid: true,
+            optionsFormMeta: {controlSections: []},
+            options: {"n1": 200}
+        });
+
+        mutations.ModelOptionsFetched(state, {payload: newForm});
+        expect(state.valid).toBe(false);
+        expect(state.optionsFormMeta).toEqual({
+            "controlSections":
+                [
+                    {
+                        "controlGroups":
+                            [
+                                {
+                                    "controls":
+                                        [
+                                            {
+                                                "name": "n1",
+                                                "required": true,
+                                                "type": "number",
+                                                "value": 200
+                                            },
+                                            {
+                                                "name": "new_control",
+                                                "required": true,
+                                                "type": "number"
+                                            }
+                                        ], "label": "g1"
+                                }, {
+                                "controls":
+                                    [
+                                        {
+                                            "name": "i1",
+                                            "required": true,
+                                            "type": "number"
+                                        }
+                                    ],
+                                "label": "new_group"
+                            }
+                            ],
+                        "label": "general"
+                    }, {
+                    "controlGroups":
+                        [
+                            {
+                                "controls": [],
+                                "label": "g2"
+                            }
+                        ],
+                    "label": "survey"
+                }]
+        })
+    });
+
     it("sets valid to false if updated form matches the existing form but the state is not valid to begin with", () => {
 
         const state = mockModelOptionsState({
