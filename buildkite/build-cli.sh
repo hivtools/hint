@@ -24,7 +24,7 @@ docker run \
 
 # Tag and push to docker
 # Renamed due to image been generated with default name
-docker tag $USER_CLI_COMMIT_TAG_OLD $USER_CLI_COMMIT_TAG_NEW
+docker tag $USER_CLI_COMMIT_TAG_OLD $USER_CLI_COMMIT_TAG
 docker tag $USER_CLI_COMMIT_TAG $USER_CLI_BRANCH_TAG
 docker push $USER_CLI_COMMIT_TAG
 docker push $USER_CLI_BRANCH_TAG

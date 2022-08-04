@@ -1,5 +1,13 @@
 FROM vimc/node-docker:master
 
+#RUN echo 'deb http://deb.debian.org/debian stretch-backports main' > /etc/apt/sources.list.d/stretch-backports.list
+#RUN apt-get update
+#RUN apt-get install -t stretch-backports -y \
+#    openjdk-11-jdk
+
+#RUN apt-get install ca-certificates-java
+#RUN rm /etc/apt/sources.list.d/stretch-backports.list
+
 RUN wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
 RUN add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
 RUN apt-get update
