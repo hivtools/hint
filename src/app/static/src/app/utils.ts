@@ -466,12 +466,9 @@ export const constructRehydrateProjectState = async (context: ActionContext<Load
     return {files, savedState}
 }
 
-export const constructOptionsFormMetaFromData = (state: ModelOptionsState, meta: DynamicFormMeta) => {
-    const payloadContainsMeta = meta.controlSections.length > 0
+export const constructOptionsFormMetaFromData = (state: ModelOptionsState, meta: DynamicFormMeta): DynamicFormMeta => {
     const stateContainsOptions = Object.keys(state.options).length > 0
-    const emptyStateMeta = state.optionsFormMeta.controlSections.length === 0
-
-    if (emptyStateMeta && payloadContainsMeta && stateContainsOptions) {
+    if (stateContainsOptions) {
         meta.controlSections.forEach(newSection => {
             newSection.controlGroups.forEach(newGroup => {
                 newGroup.controls.forEach(newControl => {
@@ -481,8 +478,9 @@ export const constructOptionsFormMetaFromData = (state: ModelOptionsState, meta:
                 });
             });
         });
-        state.optionsFormMeta = meta
     }
+
+    return meta
 }
 
 export const flatMapControlSections = (sections: DynamicControlSection[]): DynamicControlGroup[] => {
