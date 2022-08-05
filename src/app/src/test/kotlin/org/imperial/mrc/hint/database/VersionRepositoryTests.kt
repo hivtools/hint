@@ -49,10 +49,10 @@ class VersionRepositoryTests
 
         val version = dsl.selectFrom(PROJECT_VERSION)
                 .fetchOne()
-        assertThat(version[PROJECT_VERSION.ID]).isEqualTo(versionId)
-        assertThat(version[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(1)
+        assertThat(version?.get(PROJECT_VERSION.ID)).isEqualTo(versionId)
+        assertThat(version?.get(PROJECT_VERSION.VERSION_NUMBER)).isEqualTo(1)
 
-        val projectId: Int? = version[PROJECT_VERSION.PROJECT_ID]
+        val projectId: Int? = version?.get(PROJECT_VERSION.PROJECT_ID)
         assertThat(projectId).isEqualTo(null)
     }
 
@@ -66,9 +66,9 @@ class VersionRepositoryTests
         val version = dsl.selectFrom(PROJECT_VERSION)
                 .fetchOne()
 
-        assertThat(version[PROJECT_VERSION.ID]).isEqualTo(versionId)
-        assertThat(version[PROJECT_VERSION.PROJECT_ID]).isEqualTo(projectId)
-        assertThat(version[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(1)
+        assertThat(version?.get(PROJECT_VERSION.ID)).isEqualTo(versionId)
+        assertThat(version?.get(PROJECT_VERSION.PROJECT_ID)).isEqualTo(projectId)
+        assertThat(version?.get(PROJECT_VERSION.VERSION_NUMBER)).isEqualTo(1)
     }
 
     @Test
@@ -81,10 +81,10 @@ class VersionRepositoryTests
         val version = dsl.selectFrom(PROJECT_VERSION)
                 .fetchOne()
 
-        assertThat(version[PROJECT_VERSION.ID]).isEqualTo(versionId)
-        assertThat(version[PROJECT_VERSION.PROJECT_ID]).isEqualTo(projectId)
-        assertThat(version[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(1)
-        assertThat(version[PROJECT_VERSION.NOTE]).isEqualTo("test notes")
+        assertThat(version?.get(PROJECT_VERSION.ID)).isEqualTo(versionId)
+        assertThat(version?.get(PROJECT_VERSION.PROJECT_ID)).isEqualTo(projectId)
+        assertThat(version?.get(PROJECT_VERSION.VERSION_NUMBER)).isEqualTo(1)
+        assertThat(version?.get(PROJECT_VERSION.NOTE)).isEqualTo("test notes")
     }
 
     @Test
@@ -103,7 +103,7 @@ class VersionRepositoryTests
                 .where(PROJECT_VERSION.ID.eq(versionId))
                 .fetchOne()
 
-        assertThat(version[PROJECT_VERSION.NOTE]).isEqualTo("notes")
+        assertThat(version?.get(PROJECT_VERSION.NOTE)).isEqualTo("notes")
     }
 
     @Test
@@ -114,8 +114,8 @@ class VersionRepositoryTests
         val version = dsl.selectFrom(PROJECT_VERSION)
                 .fetchOne()
 
-        assertThat(version[PROJECT_VERSION.ID]).isEqualTo(versionId)
-        assertThat(version[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(1)
+        assertThat(version?.get(PROJECT_VERSION.ID)).isEqualTo(versionId)
+        assertThat(version?.get(PROJECT_VERSION.VERSION_NUMBER)).isEqualTo(1)
     }
 
     @Test
@@ -135,13 +135,13 @@ class VersionRepositoryTests
                 .from(PROJECT_VERSION)
                 .where(PROJECT_VERSION.ID.eq(versionId))
                 .fetchOne()
-        assertThat(savedVersion[PROJECT_VERSION.STATE]).isEqualTo(testState)
+        assertThat(savedVersion?.get(PROJECT_VERSION.STATE)).isEqualTo(testState)
 
         val anotherVersion = dsl.select(PROJECT_VERSION.STATE)
                 .from(PROJECT_VERSION)
                 .where(PROJECT_VERSION.ID.eq(anotherId))
                 .fetchOne()
-        assertThat(anotherVersion[PROJECT_VERSION.STATE]).isEqualTo(null)
+        assertThat(anotherVersion?.get(PROJECT_VERSION.STATE)).isEqualTo(null)
     }
 
     @Test
@@ -203,9 +203,9 @@ class VersionRepositoryTests
                         .where(PROJECT_VERSION.ID.eq("newVersionId"))
                         .fetchOne()
 
-        assertThat(newVersionRecord[PROJECT_VERSION.STATE]).isEqualTo("TEST STATE")
-        assertThat(newVersionRecord[PROJECT_VERSION.PROJECT_ID]).isEqualTo(projectId)
-        assertThat(newVersionRecord[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(2)
+        assertThat(newVersionRecord?.get(PROJECT_VERSION.STATE)).isEqualTo("TEST STATE")
+        assertThat(newVersionRecord?.get(PROJECT_VERSION.PROJECT_ID)).isEqualTo(projectId)
+        assertThat(newVersionRecord?.get(PROJECT_VERSION.VERSION_NUMBER)).isEqualTo(2)
 
         val files = sut.getVersionFiles("newVersionId")
         assertThat(files.keys.count()).isEqualTo(2)
@@ -248,10 +248,10 @@ class VersionRepositoryTests
                         .where(PROJECT_VERSION.ID.eq("newVersionId"))
                         .fetchOne()
 
-        assertThat(newVersionRecord[PROJECT_VERSION.STATE]).isEqualTo("TEST STATE")
-        assertThat(newVersionRecord[PROJECT_VERSION.PROJECT_ID]).isEqualTo(newProjectId)
-        assertThat(newVersionRecord[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(1)
-        assertThat(newVersionRecord[PROJECT_VERSION.NOTE]).isEqualTo("version note")
+        assertThat(newVersionRecord?.get(PROJECT_VERSION.STATE)).isEqualTo("TEST STATE")
+        assertThat(newVersionRecord?.get(PROJECT_VERSION.PROJECT_ID)).isEqualTo(newProjectId)
+        assertThat(newVersionRecord?.get(PROJECT_VERSION.VERSION_NUMBER)).isEqualTo(1)
+        assertThat(newVersionRecord?.get(PROJECT_VERSION.NOTE)).isEqualTo("version note")
 
         val files = sut.getVersionFiles("newVersionId")
         assertThat(files.keys.count()).isEqualTo(2)
@@ -326,7 +326,7 @@ class VersionRepositoryTests
 
         val originalVersionDetails = sut.getVersionDetails(originalVersionId, originalProject, uid)
         val clonedVersionDetails = sut.getVersionDetails(clonedVersionId, clonedProject, uid2)
-        assertThat(originalVersionDetails).isEqualToComparingFieldByFieldRecursively(clonedVersionDetails)
+        assertThat(originalVersionDetails).isEqualTo(clonedVersionDetails)
     }
 
     @Test
@@ -349,7 +349,7 @@ class VersionRepositoryTests
 
         val originalVersionDetails = sut.getVersionDetails(originalVersionId, originalProject, uid)
         val clonedVersionDetails = sut.getVersionDetails(clonedVersionId, clonedProject, uid2)
-        assertThat(originalVersionDetails).isEqualToComparingFieldByFieldRecursively(clonedVersionDetails)
+        assertThat(originalVersionDetails).isEqualTo(clonedVersionDetails)
     }
 
     @Test
@@ -382,10 +382,10 @@ class VersionRepositoryTests
                         .where(PROJECT_VERSION.ID.eq("newVersionId"))
                         .fetchOne()
 
-        assertThat(newVersionRecord[PROJECT_VERSION.STATE]).isEqualTo("TEST STATE")
-        assertThat(newVersionRecord[PROJECT_VERSION.PROJECT_ID]).isEqualTo(projectId)
-        assertThat(newVersionRecord[PROJECT_VERSION.VERSION_NUMBER]).isEqualTo(2)
-        assertThat(newVersionRecord[PROJECT_VERSION.NOTE]).isEqualTo("test note")
+        assertThat(newVersionRecord?.get(PROJECT_VERSION.STATE)).isEqualTo("TEST STATE")
+        assertThat(newVersionRecord?.get(PROJECT_VERSION.PROJECT_ID)).isEqualTo(projectId)
+        assertThat(newVersionRecord?.get(PROJECT_VERSION.VERSION_NUMBER)).isEqualTo(2)
+        assertThat(newVersionRecord?.get(PROJECT_VERSION.NOTE)).isEqualTo("test note")
     }
 
     @Test
@@ -431,11 +431,11 @@ class VersionRepositoryTests
         val record = dsl.selectFrom(VERSION_FILE)
                 .fetchOne()
 
-        assertThat(record[VERSION_FILE.FILENAME]).isEqualTo("original.pjnz")
-        assertThat(record[VERSION_FILE.HASH]).isEqualTo("newhash")
-        assertThat(record[VERSION_FILE.VERSION]).isEqualTo(versionId)
-        assertThat(record[VERSION_FILE.TYPE]).isEqualTo("pjnz")
-        assertThat(record[VERSION_FILE.FROM_ADR]).isEqualTo(true)
+        assertThat(record?.get(VERSION_FILE.FILENAME)).isEqualTo("original.pjnz")
+        assertThat(record?.get(VERSION_FILE.HASH)).isEqualTo("newhash")
+        assertThat(record?.get(VERSION_FILE.VERSION)).isEqualTo(versionId)
+        assertThat(record?.get(VERSION_FILE.TYPE)).isEqualTo("pjnz")
+        assertThat(record?.get(VERSION_FILE.FROM_ADR)).isEqualTo(true)
     }
 
     @Test
@@ -490,7 +490,7 @@ class VersionRepositoryTests
         val result = sut.getVersionFile(versionId, FileType.PJNZ)!!
         assertThat(result.hash).isEqualTo("newhash")
         assertThat(result.filename).isEqualTo("original.pjnz")
-        assertThat(result.fromADR).isEqualTo(true)
+        assertThat(result.fromAdr).isEqualTo(true)
     }
 
     @Test
@@ -517,11 +517,11 @@ class VersionRepositoryTests
         val result = sut.getVersionFiles(versionId)
         assertThat(result["survey"]!!.filename).isEqualTo("original.csv")
         assertThat(result["survey"]!!.hash).isEqualTo("surveyhash")
-        assertThat(result["survey"]!!.fromADR).isEqualTo(true)
+        assertThat(result["survey"]!!.fromAdr).isEqualTo(true)
 
         assertThat(result["pjnz"]!!.filename).isEqualTo("original.pjnz")
         assertThat(result["pjnz"]!!.hash).isEqualTo("pjnzhash")
-        assertThat(result["pjnz"]!!.fromADR).isEqualTo(false)
+        assertThat(result["pjnz"]!!.fromAdr).isEqualTo(false)
     }
 
     @Test
@@ -678,14 +678,14 @@ class VersionRepositoryTests
         val deleted = dsl.select(PROJECT_VERSION.DELETED)
                 .from(PROJECT_VERSION)
                 .where(PROJECT_VERSION.ID.eq(versionId))
-                .fetchOne()[PROJECT_VERSION.DELETED]
-        assertThat(deleted).isTrue()
+                .fetchOne()!![PROJECT_VERSION.DELETED]
+        assertThat(deleted).isTrue
 
         val notDeleted = dsl.select(PROJECT_VERSION.DELETED)
                 .from(PROJECT_VERSION)
                 .where(PROJECT_VERSION.ID.eq("another version"))
-                .fetchOne()[PROJECT_VERSION.DELETED]
-        assertThat(notDeleted).isFalse()
+                .fetchOne()!![PROJECT_VERSION.DELETED]
+        assertThat(notDeleted).isFalse
     }
 
     @Test

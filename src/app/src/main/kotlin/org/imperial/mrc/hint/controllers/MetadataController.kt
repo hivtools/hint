@@ -49,7 +49,7 @@ class MetadataController(val apiClient: HintrAPIClient,
 
         val metadata = objectMapper.readValue<JsonNode>(metadataText)
         val chartConfigNode = metadata["input-time-series"]["chartConfig"][0]
-        (chartConfigNode as ObjectNode).set("config", TextNode(timeSeriesConfigText))
+        (chartConfigNode as ObjectNode).set<ObjectNode>("config", TextNode(timeSeriesConfigText))
 
         return SuccessResponse(metadata).asResponseEntity()
     }

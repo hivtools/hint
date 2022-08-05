@@ -1,10 +1,14 @@
-# hint 2.7.0
+# hint 2.8.0
 
 * Comparison barchart in review output step
 
-# hint 2.6.0
+# hint 2.7.0
 
 * Endpoint for comparison barchart dataset
+
+# hint .2.6.0
+
+* Upgrade java, gradle and dependecies  
 
 # hint 2.5.0
 
