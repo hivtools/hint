@@ -1,8 +1,8 @@
 import {ActionContext, ActionTree} from "vuex";
-import {LoadingState, LoadState} from "./load";
-import {RootState} from "../../root";
+import {LoadingState, LoadState} from "./state";
+import {emptyState, RootState} from "../../root";
 import {api} from "../../apiService";
-import {verifyCheckSum} from "../../utils";
+import {constructRehydrateProjectState, verifyCheckSum} from "../../utils";
 import {Dict, LocalSessionFile, VersionDetails} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
@@ -87,7 +87,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
     },
 
-    async updateStoreState({commit, dispatch, state}, savedState) {
+    async updateStoreState(context, savedState) {
         //File hashes have now been set for session in backend, so we save the state from the file we're loading into local
         //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
         //NB load state is not included in the saved state, so we will default back to NotLoading on page reload.
@@ -133,19 +133,32 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 };
 
 const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) => {
-    const {rootGetters, state, dispatch} = context
+    const {rootGetters, state, dispatch, rootState} = context
     const rehydrateId = state.rehydrateId
     const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("RehydrateResult")
         .withError("RehydrateResultError")
         .get<ProjectRehydrateResultResponse>(`rehydrate/result/${rehydrateId}`);
 
-    if (response && response.data && !rootGetters.isGuest) {
-        await (dispatch("projects/createProject",
-            {
-                name: state.projectName,
-                isUploaded: true
-            }, {root: true}));
+    if (response && response.data) {
+        const {files, savedState} = constructRehydrateProjectState(rootState, response.data)
+
+        if (!rootGetters.isGuest) {
+            await dispatch("projects/createProject",
+                {
+                    name: state.projectName,
+                    isUploaded: true
+                }, {root: true});
+                
+            savedState.projects!.currentProject = rootState.projects.currentProject
+            savedState.projects!.currentVersion = rootState.projects.currentVersion
+
+            const newRootState = {...emptyState(), ...savedState}
+
+            Object.assign(rootState, newRootState);
+        }
+
+        await getFilesAndLoad(context, files, savedState)
     }
 }
 
@@ -161,16 +174,20 @@ const getRehydrateStatus = async (context: ActionContext<LoadState, RootState>) 
     }
 }
 
-async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, files: any, savedState: any) {
-    savedState.stepper.steps = initialStepperState().steps;
+async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
+                               files: any,
+                               savedState: Partial<RootState>) {
+    savedState.stepper!.steps = initialStepperState().steps
     const {dispatch, state} = context;
     await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("UpdatingState")
         .withError("LoadFailed")
         .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
-        .then(() => {
-            if (state.loadingState != LoadingState.LoadFailed) {
-                dispatch("updateStoreState", savedState);
+        .then((response) => {
+            if (response && response.data) {
+                if (state.loadingState != LoadingState.LoadFailed) {
+                    dispatch("updateStoreState", savedState);
+                }
             }
         });
 }
@@ -178,7 +195,7 @@ async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, fil
 // getCalibrateOptions extracts calibrate options from Dynamic Form, this allows
 // backward compatibility supports for calibrate option bug
 const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormData => {
-    const allControlGroups = flatMapControlSection(modelCalibrate.optionsFormMeta.controlSections);
+    const allControlGroups = flatMapControlSections(modelCalibrate.optionsFormMeta.controlSections);
     return allControlGroups.reduce<DynamicFormData>((options, option): DynamicFormData => {
         option.controls.forEach(option => {
             options[option.name] = option.value || null
@@ -187,6 +204,6 @@ const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormDa
     }, {})
 }
 
-const flatMapControlSection = (sections: DynamicControlSection[]) => {
+const flatMapControlSections = (sections: DynamicControlSection[]) => {
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }

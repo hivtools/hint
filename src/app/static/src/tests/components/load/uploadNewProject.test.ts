@@ -8,7 +8,7 @@ import RegisterTranslations from "../../../app/store/translations/registerTransl
 import {expectTranslated} from "../../testHelpers";
 import LoadErrorModal from "../../../app/components/load/LoadErrorModal.vue";
 import UploadProgress from "../../../app/components/load/UploadProgress.vue";
-import {LoadingState, LoadState} from "../../../app/store/load/load";
+import {LoadingState, LoadState} from "../../../app/store/load/state";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 
 describe("uploadNewProject", () => {
