@@ -43,12 +43,14 @@ if (hasProperty('docker_name')) {
     cli_docker_name = docker_name
 }
 
-version = cli_docker_version
-
 docker {
     showLogs = true
     images {
-        create(cli_docker_name) {
+        userCli {
+            imageName = cli_docker_name
+            imageVersion = cli_docker_version
+        }
+        dockerJvmApp {
             setupJvmApp("openjdk:11-jre")
         }
     }
