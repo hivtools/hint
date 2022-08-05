@@ -1,3 +1,7 @@
+# hint .2.6.0
+
+* Upgrade java, gradle and dependecies  
+
 # hint 2.5.0
 
 * Populate project input file data

@@ -70,7 +70,7 @@ class HintrFuelAPIClient(
     {
 
         val json = objectMapper.writeValueAsString(
-                mapOf("type" to type.toString().toLowerCase(),
+                mapOf("type" to type.toString().lowercase(),
                         "file" to file))
 
         return postJson("validate/baseline-individual", json)
@@ -84,7 +84,7 @@ class HintrFuelAPIClient(
     {
 
         val json = objectMapper.writeValueAsString(
-                mapOf("type" to type.toString().toLowerCase(),
+                mapOf("type" to type.toString().lowercase(),
                         "pjnz" to pjnzPath,
                         "file" to file,
                         "shape" to shapePath))

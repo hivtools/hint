@@ -18,7 +18,7 @@ class ChartDataController(val fileManager: FileManager, val apiClient: HintrAPIC
     @GetMapping("/input-time-series/{type}")
     fun inputTimeSeries(@PathVariable("type") type: String): ResponseEntity<String>
     {
-        val inputFileType = when (type.toLowerCase()) {
+        val inputFileType = when (type.lowercase()) {
             "anc" -> FileType.ANC
             "programme" -> FileType.Programme
             else -> throw HintException("unknownInputTimeSeriesType", HttpStatus.BAD_REQUEST)
