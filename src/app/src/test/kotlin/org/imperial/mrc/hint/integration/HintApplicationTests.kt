@@ -18,6 +18,8 @@ import java.io.File
 class HintApplicationTests : SecureIntegrationTests()
 {
 
+    private val expectedSuccessResponse = "{\"data\":null,\"errors\":[],\"status\":\"success\"}"
+
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `all users can access index`(isAuthorized: IsAuthorized)
@@ -116,12 +118,12 @@ class HintApplicationTests : SecureIntegrationTests()
         if (isAuthorized == IsAuthorized.TRUE)
         {
             assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-            assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":null}")
+            assertThat(entity.body!!).isEqualTo(expectedSuccessResponse)
         }
         else
         {
             assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-            assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":null}")
+            assertThat(entity.body!!).isEqualTo(expectedSuccessResponse)
         }
     }
 

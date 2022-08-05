@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.unit.logging
 import com.nhaarman.mockito_kotlin.*
 import org.imperial.mrc.hint.logging.ErrorLoggingFilter
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.verifyNoInteractions
 import org.slf4j.Logger
 import org.springframework.web.util.ContentCachingResponseWrapper
 import javax.servlet.FilterChain
@@ -69,7 +70,7 @@ class ErrorLoggingFilterTests
         val sut = ErrorLoggingFilter(mockLogger)
         sut.doFilter(mockRequest, mockResponse, mock())
 
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
     }
 
     @Test

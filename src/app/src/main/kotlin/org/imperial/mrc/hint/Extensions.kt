@@ -22,7 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.io.*
 import java.security.DigestInputStream
 import java.security.MessageDigest
-import javax.xml.bind.DatatypeConverter
+import jakarta.xml.bind.DatatypeConverter
 
 fun httpStatusFromCode(code: Int): HttpStatus
 {
@@ -58,7 +58,7 @@ fun Response.asResponseEntity(logger: Log = LogFactory.getLog(HintExceptionHandl
 
     return try
     {
-        val body = this.body().asString(MediaType.APPLICATION_JSON_UTF8_VALUE)
+        val body = this.body().asString("application/json;charset=UTF-8")
         val json = ObjectMapper().readTree(body)
 
         if (!json.has("status") && !json.has("success"))

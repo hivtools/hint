@@ -75,10 +75,12 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
                 PROJECT_VERSION.VERSION_NUMBER)
                 .from(PROJECT_VERSION)
                 .where(PROJECT_VERSION.ID.eq(versionId))
-                .fetchOne()
+                .fetchOne() ?: throw VersionException("versionDoesNotExist")
 
-        return Version(result[PROJECT_VERSION.ID], result[PROJECT_VERSION.CREATED],
-                result[PROJECT_VERSION.UPDATED], result[PROJECT_VERSION.VERSION_NUMBER], result[PROJECT_VERSION.NOTE])
+        return Version(
+            result[PROJECT_VERSION.ID], result[PROJECT_VERSION.CREATED],
+            result[PROJECT_VERSION.UPDATED], result[PROJECT_VERSION.VERSION_NUMBER], result[PROJECT_VERSION.NOTE]
+        )
     }
 
     override fun getVersionDetails(versionId: String, projectId: Int, userId: String): VersionDetails
@@ -86,11 +88,11 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
         checkVersionExists(versionId, projectId, userId)
         val files = getVersionFiles(versionId)
         val state = dsl.select(PROJECT_VERSION.STATE)
-                .from(PROJECT_VERSION)
-                .where(PROJECT_VERSION.ID.eq(versionId))
-                .fetchOne()[PROJECT_VERSION.STATE]
+            .from(PROJECT_VERSION)
+            .where(PROJECT_VERSION.ID.eq(versionId))
+            .fetchOne()?: throw VersionException("versionDoesNotExist")
 
-        return VersionDetails(state, files)
+        return VersionDetails(state[PROJECT_VERSION.STATE], files)
     }
 
     override fun saveNewHash(hash: String): Boolean
@@ -190,7 +192,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
                                 .set(VERSION_FILE.TYPE, fileType)
                                 .set(VERSION_FILE.VERSION, versionId)
                                 .set(VERSION_FILE.FILENAME, versionFile.filename)
-                                .set(VERSION_FILE.FROM_ADR, versionFile.fromADR)
+                                .set(VERSION_FILE.FROM_ADR, versionFile.fromAdr)
                                 .execute()
                     }
                 }
