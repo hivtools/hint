@@ -81,6 +81,7 @@ export class LocalStorageManager {
         const appStateKey = getAppStateKey(dataExplorationMode);
         const item = window.localStorage.getItem(appStateKey);
         if (item) {
+            console.log("item", item)
             return JSON.parse(item) as Partial<RootState>;
         } else {
             return null;
