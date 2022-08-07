@@ -42,15 +42,12 @@ def cli_docker_name = 'mrcide/hint-user-cli'
 if (hasProperty('docker_name')) {
     cli_docker_name = docker_name
 }
+version = cli_docker_version
 
 docker {
     showLogs = true
     images {
-        userCli {
-            imageName = cli_docker_name
-            imageVersion = cli_docker_version
-        }
-        dockerJvmApp {
+        create(cli_docker_name) {
             setupJvmApp("openjdk:11-jre")
         }
     }

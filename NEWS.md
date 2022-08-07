@@ -1,4 +1,8 @@
-# hint .2.6.0
+# hint 2.6.1
+
+* Fix docker run entrypoint issue
+
+# hint 2.6.0
 
 * Upgrade java, gradle and dependecies  
 

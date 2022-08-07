@@ -110,7 +110,7 @@ class LocalFileManager(
     {
         val files = versionRepository.getVersionFiles(session.getVersionId())
         val includeKeys = include.map { it.toString() }
-        return files.filterKeys { includeKeys.isEmpty() || includeKeys.contains(it) }
+        return files.filterKeys { includeKeys.count() == 0 || includeKeys.contains(it) }
                 .mapValues { it.value.toVersionFileWithPath(uploadPath) }
     }
 
