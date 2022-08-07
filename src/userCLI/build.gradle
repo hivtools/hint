@@ -42,6 +42,7 @@ def cli_docker_name = 'mrcide/hint-user-cli'
 if (hasProperty('docker_name')) {
     cli_docker_name = docker_name
 }
+
 version = cli_docker_version
 
 docker {
