@@ -18,6 +18,7 @@ class OneTimeTokenAuthenticator(
 
     private val tokenIssuer = appProperties.tokenIssuer
 
+    /*
     override fun createJwtProfile(credentials: TokenCredentials, jwt: JWT)
     {
         super.createJwtProfile(credentials, jwt)
@@ -30,6 +31,8 @@ class OneTimeTokenAuthenticator(
 
         checkTokenAgainstRepository(credentials)
     }
+
+     */
 
     private fun checkTokenAgainstRepository(credentials: TokenCredentials)
     {

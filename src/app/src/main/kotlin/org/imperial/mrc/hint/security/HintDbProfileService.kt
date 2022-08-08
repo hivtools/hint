@@ -5,12 +5,14 @@ import org.pac4j.core.credentials.UsernamePasswordCredentials
 import org.pac4j.core.credentials.password.PasswordEncoder
 import org.pac4j.core.exception.BadCredentialsException
 import org.pac4j.core.util.CommonHelper
+import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
 import javax.sql.DataSource
 
 class HintDbProfileService(dataSource: DataSource, passwordEncoder: PasswordEncoder)
     : DbProfileService(dataSource, passwordEncoder)
 {
+    /*
     override fun validate(credentials: UsernamePasswordCredentials, context: WebContext)
     {
         //The base class considers a blank username or password to be an error state, and throws a TechnicalException
@@ -24,6 +26,16 @@ class HintDbProfileService(dataSource: DataSource, passwordEncoder: PasswordEnco
         {
             throw BadCredentialsException("Username and password must be provided")
         }
+    }
+
+     */
+
+    override fun convertAttributesToProfile(
+        listStorageAttributes: MutableList<MutableMap<String, Any>>?,
+        username: String?
+    ): DbProfile
+    {
+        return super.convertAttributesToProfile(listStorageAttributes, username)
     }
 
     override fun read(names: List<String?>?, key: String, value: String?): List<Map<String?, Any?>?>?

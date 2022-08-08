@@ -9,7 +9,7 @@ interface UserRepository
     fun getAllUserNames(): List<String>
     fun saveADRKey(userId: String, encryptedKey: ByteArray)
     fun deleteADRKey(userId: String)
-    fun getADRKey(userId: String): ByteArray?
+    fun getADRKey(userId: String?): ByteArray?
 }
 
 @Component
@@ -55,7 +55,7 @@ class JooqUserRepository(private val dsl: DSLContext) : UserRepository
 
     }
 
-    override fun getADRKey(userId: String): ByteArray?
+    override fun getADRKey(userId: String?): ByteArray?
     {
         return dsl.select(ADR_KEY.API_KEY)
                 .from(ADR_KEY)
