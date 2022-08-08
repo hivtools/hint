@@ -14,7 +14,7 @@ class SessionTests
     @Test
     fun `generates a version id`()
     {
-        val sut = Session(mock(), mock())
+        val sut = Session(mock(), mock(), mock())
         val versionId = sut.generateVersionId()
 
         // throws exception if not a valid uuid
@@ -25,15 +25,14 @@ class SessionTests
     fun `get version id gets existing version id`()
     {
         val mockWebContext = mock<WebContext>()
-        val mockSessionStore = mock<SessionStore<WebContext>>
-        {
-            on { get(mockWebContext, "version_id") } doReturn "testVersionId"
+        val mockSessionStore = mock<SessionStore>{
+            on { get(mockWebContext, "version_id").toString() } doReturn "testVersionId"
         }
         val mockConfig = mock<Config>
         {
             on { sessionStore } doReturn mockSessionStore
         }
-        val sut = Session(mockWebContext, mockConfig)
+        val sut = Session(mockWebContext, mockConfig, mockSessionStore)
         val versionId = sut.getVersionId()
         assertThat(versionId).isEqualTo("testVersionId")
     }
@@ -42,12 +41,12 @@ class SessionTests
     fun `get version id generates a new version id if none present`()
     {
         val mockWebContext = mock<WebContext>()
-        val mockSessionStore = mock<SessionStore<WebContext>>()
+        val mockSessionStore = mock<SessionStore>()
         val mockConfig = mock<Config>
         {
             on { sessionStore } doReturn mockSessionStore
         }
-        val sut = Session(mockWebContext, mockConfig)
+        val sut = Session(mockWebContext, mockConfig, mockSessionStore)
         val versionId = sut.getVersionId()
         UUID.fromString(versionId)
 
@@ -58,15 +57,15 @@ class SessionTests
     fun `setMode saves new mode and clears version id if mode has changed`()
     {
         val mockWebContext = mock<WebContext>()
-        val mockSessionStore = mock<SessionStore<WebContext>> {
-            on { get(mockWebContext, "mode") } doReturn "naomi"
+        val mockSessionStore = mock<SessionStore> {
+            on { get(mockWebContext, "mode").toString() } doReturn "naomi"
         }
         val mockConfig = mock<Config>
         {
             on { sessionStore } doReturn mockSessionStore
         }
 
-        val sut = Session(mockWebContext, mockConfig)
+        val sut = Session(mockWebContext, mockConfig, mockSessionStore)
         sut.setMode("explore")
 
         verify(mockSessionStore).set(mockWebContext, "mode", "explore")
@@ -77,15 +76,15 @@ class SessionTests
     fun `setMode does nothing if mode has not changed`()
     {
         val mockWebContext = mock<WebContext>()
-        val mockSessionStore = mock<SessionStore<WebContext>> {
-            on { get(mockWebContext, "mode") } doReturn "naomi"
+        val mockSessionStore = mock<SessionStore> {
+            on { get(mockWebContext, "mode").toString() } doReturn "naomi"
         }
         val mockConfig = mock<Config>
         {
             on { sessionStore } doReturn mockSessionStore
         }
 
-        val sut = Session(mockWebContext, mockConfig)
+        val sut = Session(mockWebContext, mockConfig, mockSessionStore)
         sut.setMode("naomi")
 
         verify(mockSessionStore, never()).set(any(), any(), any())
@@ -95,13 +94,13 @@ class SessionTests
     fun `can set pac4j requested url to string value`()
     {
         val mockWebContext = mock<WebContext>()
-        val mockSessionStore = mock<SessionStore<WebContext>>()
+        val mockSessionStore = mock<SessionStore>()
         val mockConfig = mock<Config>
         {
             on { sessionStore } doReturn mockSessionStore
         }
 
-        val sut = Session(mockWebContext, mockConfig)
+        val sut = Session(mockWebContext, mockConfig, mockSessionStore)
         sut.setRequestedUrl("explore")
 
         verify(mockSessionStore).set(mockWebContext, "pac4jRequestedUrl", "explore")
@@ -111,13 +110,13 @@ class SessionTests
     fun `can set pac4j requested url to null`()
     {
         val mockWebContext = mock<WebContext>()
-        val mockSessionStore = mock<SessionStore<WebContext>>()
+        val mockSessionStore = mock<SessionStore>()
         val mockConfig = mock<Config>
         {
             on { sessionStore } doReturn mockSessionStore
         }
 
-        val sut = Session(mockWebContext, mockConfig)
+        val sut = Session(mockWebContext, mockConfig, mockSessionStore)
         sut.setRequestedUrl(null)
 
         verify(mockSessionStore).set(mockWebContext, "pac4jRequestedUrl", null)

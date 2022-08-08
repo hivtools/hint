@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.imperial.mrc.hint.security.HintDbProfileService
 import org.junit.jupiter.api.Test
 import org.pac4j.core.context.WebContext
+import org.pac4j.core.context.session.SessionStore
 import org.pac4j.core.credentials.UsernamePasswordCredentials
 import org.pac4j.core.exception.AccountNotFoundException
 import org.pac4j.core.exception.BadCredentialsException
@@ -31,8 +32,9 @@ class HintDbProfileServiceTests
             on { getUsername() } doReturn ""
             on { getPassword() } doReturn "password"
         }
+        val mockSessionStore = mock<SessionStore>()
 
-        assertThatThrownBy { sut.validate(credentials, mockContext) }.isInstanceOf(BadCredentialsException::class.java)
+        assertThatThrownBy { sut.validate(credentials, mockContext, mockSessionStore) }.isInstanceOf(BadCredentialsException::class.java)
                 .hasMessage("Username and password must be provided")
 
     }
@@ -44,8 +46,9 @@ class HintDbProfileServiceTests
             on { getUsername() } doReturn "username"
             on { getPassword() } doReturn ""
         }
+        val mockSessionStore = mock<SessionStore>()
 
-        assertThatThrownBy { sut.validate(credentials, mockContext) }.isInstanceOf(BadCredentialsException::class.java)
+        assertThatThrownBy { sut.validate(credentials, mockContext, mockSessionStore) }.isInstanceOf(BadCredentialsException::class.java)
                 .hasMessage("Username and password must be provided")
     }
 
@@ -56,8 +59,9 @@ class HintDbProfileServiceTests
             on { getUsername() } doReturn "username"
             on { getPassword() } doReturn "password"
         }
+        val mockSessionStore = mock<SessionStore>()
 
-        assertThatThrownBy { sut.validate(credentials, mockContext) }.isInstanceOf(AccountNotFoundException::class.java)
+        assertThatThrownBy { sut.validate(credentials, mockContext, mockSessionStore) }.isInstanceOf(AccountNotFoundException::class.java)
                 .hasMessage("No account found for: username")
     }
 }

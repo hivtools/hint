@@ -43,7 +43,10 @@ class Pac4jConfig
 }
 
 @Component
-class Session(private val webContext: WebContext, private val pac4jConfig: Config, private val sessionStore: SessionStore)
+class Session(
+    private val webContext: WebContext,
+    private val pac4jConfig: Config,
+    private val sessionStore: SessionStore)
 {
 
     companion object
