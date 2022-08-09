@@ -54,23 +54,12 @@ class Session(
         private const val MODE = "mode"
     }
 
-    fun updatedProfileManager(): ProfileManager
+    fun getUserProfile(): CommonProfile
     {
         val manager = ProfileManager(webContext, sessionStore)
-        if (!manager.profile.isPresent)
-        {
-            val profile = CommonProfile().apply {
-                id = GUEST_USER
-            }
-
-            manager.save(true, profile, false)
-        }
-
-        return manager
-    }
-
-    fun getUserProfile(): CommonProfile {
-        return updatedProfileManager().getProfile(CommonProfile::class.java).orElseThrow()
+        return (manager.profiles.singleOrNull() ?: CommonProfile().apply {
+            id = GUEST_USER
+        }) as CommonProfile
     }
 
     fun userIsGuest(): Boolean
