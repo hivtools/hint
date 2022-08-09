@@ -22,7 +22,7 @@ export const login = async (username = "test.user@example.com", password = "pass
         {
             headers: formData.getHeaders(),
             maxRedirects: 0,
-            validateStatus: (status) => status == 302
+            validateStatus: (status) => status == 303
         });
 
     const cookie = res.headers["set-cookie"][0].split(";")[0];
