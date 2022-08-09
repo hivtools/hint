@@ -10,7 +10,6 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 import org.pac4j.core.util.Pac4jConstants
 import org.pac4j.http.client.indirect.FormClient
-import org.pac4j.jee.context.JEEContext
 import org.pac4j.sql.profile.service.DbProfileService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
