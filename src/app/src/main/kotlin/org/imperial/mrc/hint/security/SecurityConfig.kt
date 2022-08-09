@@ -8,7 +8,6 @@ import org.pac4j.core.context.session.SessionStore
 import org.pac4j.jee.context.session.JEESessionStore
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
-import org.pac4j.core.profile.UserProfile
 import org.pac4j.core.util.Pac4jConstants
 import org.pac4j.http.client.indirect.FormClient
 import org.pac4j.sql.profile.service.DbProfileService
@@ -55,14 +54,23 @@ class Session(
         private const val MODE = "mode"
     }
 
-    fun getUserProfile(): UserProfile
+    fun updatedProfileManager(): ProfileManager
     {
         val manager = ProfileManager(webContext, sessionStore)
-        val profiles = manager.profiles
+        if (!manager.profile.isPresent)
+        {
+            val profile = CommonProfile().apply {
+                id = GUEST_USER
+            }
 
-        return profiles.singleOrNull() ?: CommonProfile().apply {
-            id = GUEST_USER
+            manager.save(true, profile, false)
         }
+
+        return manager
+    }
+
+    fun getUserProfile(): CommonProfile {
+        return updatedProfileManager().getProfile(CommonProfile::class.java).orElseThrow()
     }
 
     fun userIsGuest(): Boolean

@@ -16,7 +16,7 @@ interface HintrAPIClient
 {
     fun validateBaselineIndividual(file: VersionFileWithPath, type: FileType): ResponseEntity<String>
     fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
-    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType, pjnzPath: String, strict: Boolean)
+    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String?, type: FileType, pjnzPath: String?, strict: Boolean)
             : ResponseEntity<String>
 
     fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions): ResponseEntity<String>
@@ -77,9 +77,9 @@ class HintrFuelAPIClient(
     }
 
     override fun validateSurveyAndProgramme(file: VersionFileWithPath,
-                                            shapePath: String,
+                                            shapePath: String?,
                                             type: FileType,
-                                            pjnzPath: String,
+                                            pjnzPath: String?,
                                             strict: Boolean): ResponseEntity<String>
     {
 

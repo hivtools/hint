@@ -29,8 +29,8 @@ class HintDbProfileServiceTests
     fun `throws BadCredentialsException if username is blank`()
     {
         val credentials = mock<UsernamePasswordCredentials> {
-            on { getUsername() } doReturn ""
-            on { getPassword() } doReturn "password"
+            on { username } doReturn ""
+            on { password } doReturn "password"
         }
         val mockSessionStore = mock<SessionStore>()
 
@@ -43,8 +43,8 @@ class HintDbProfileServiceTests
     fun `throws BadCredentialsException if password is blank`()
     {
         val credentials = mock<UsernamePasswordCredentials> {
-            on { getUsername() } doReturn "username"
-            on { getPassword() } doReturn ""
+            on { username } doReturn "username"
+            on { password } doReturn ""
         }
         val mockSessionStore = mock<SessionStore>()
 
@@ -56,8 +56,8 @@ class HintDbProfileServiceTests
     fun `validates as base class if username and password are both provided`()
     {
         val credentials = mock<UsernamePasswordCredentials> {
-            on { getUsername() } doReturn "username"
-            on { getPassword() } doReturn "password"
+            on { username } doReturn "username"
+            on { password } doReturn "password"
         }
         val mockSessionStore = mock<SessionStore>()
 

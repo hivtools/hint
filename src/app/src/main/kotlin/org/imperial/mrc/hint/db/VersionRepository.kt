@@ -117,26 +117,24 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
 
     override fun saveVersionFile(versionId: String, type: FileType, hash: String, fileName: String, fromADR: Boolean)
     {
-
-        if (getVersionFileRecord(versionId, type) == null)
+        if (getVersionFileRecord(versionId, type)?.size() == 0)
         {
             dsl.insertInto(VERSION_FILE)
-                    .set(VERSION_FILE.HASH, hash)
-                    .set(VERSION_FILE.TYPE, type.toString())
-                    .set(VERSION_FILE.VERSION, versionId)
-                    .set(VERSION_FILE.FILENAME, fileName)
-                    .set(VERSION_FILE.FROM_ADR, fromADR)
-                    .execute()
-        }
-        else
+                .set(VERSION_FILE.HASH, hash)
+                .set(VERSION_FILE.TYPE, type.toString())
+                .set(VERSION_FILE.VERSION, versionId)
+                .set(VERSION_FILE.FILENAME, fileName)
+                .set(VERSION_FILE.FROM_ADR, fromADR)
+                .execute()
+        }  else
         {
             dsl.update(VERSION_FILE)
-                    .set(VERSION_FILE.HASH, hash)
-                    .set(VERSION_FILE.FILENAME, fileName)
-                    .set(VERSION_FILE.FROM_ADR, fromADR)
-                    .where(VERSION_FILE.VERSION.eq(versionId))
-                    .and(VERSION_FILE.TYPE.eq(type.toString()))
-                    .execute()
+                .set(VERSION_FILE.HASH, hash)
+                .set(VERSION_FILE.FILENAME, fileName)
+                .set(VERSION_FILE.FROM_ADR, fromADR)
+                .where(VERSION_FILE.VERSION.eq(versionId))
+                .and(VERSION_FILE.TYPE.eq(type.toString()))
+                .execute()
         }
 
     }

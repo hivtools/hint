@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.security
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.context.session.SessionStore
 import org.pac4j.core.credentials.Credentials
+import org.pac4j.core.credentials.UsernamePasswordCredentials
 import org.pac4j.core.credentials.password.PasswordEncoder
 import org.pac4j.core.exception.BadCredentialsException
 import org.pac4j.core.util.CommonHelper
@@ -13,12 +14,14 @@ class HintDbProfileService(dataSource: DataSource, passwordEncoder: PasswordEnco
     : DbProfileService(dataSource, passwordEncoder)
 {
 
-    override fun validate(credentials: Credentials?, context: WebContext?, sessionStore: SessionStore?)
+    override fun validate(cred: Credentials?, context: WebContext?, sessionStore: SessionStore?)
     {
         //The base class considers a blank username or password to be an error state, and throws a TechnicalException
         //rather than BadCredentialsException which is what we want - treat blank pw or username same as wrong pw or
         //username
-        if (!CommonHelper.isBlank(credentials?.userProfile?.username))
+        val credentials = cred as UsernamePasswordCredentials
+
+        if (!CommonHelper.isBlank(credentials.username) && !CommonHelper.isBlank(credentials.password))
         {
             super.validate(credentials, context, sessionStore)
         }
