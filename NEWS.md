@@ -1,4 +1,8 @@
-# hint .2.6.0
+# hint 2.6.1
+
+* Ensure user cli docker image is tested during buildkite build 
+
+# hint 2.6.0
 
 * Upgrade java, gradle and dependecies  
 
