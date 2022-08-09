@@ -17,7 +17,7 @@ interface UserLogic
     fun addUser(email: String, password: String?)
     fun removeUser(email: String)
     fun getUser(email: String): CommonProfile?
-    fun updateUserPassword(user: CommonProfile, password: String)
+    fun updateUserPassword(user: UserProfile, password: String)
 }
 
 @Component
@@ -84,7 +84,7 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
         return profileService.findById(username)
     }
 
-    override fun updateUserPassword(user: CommonProfile, password: String)
+    override fun updateUserPassword(user: UserProfile, password: String)
     {
         val dbUser: DbProfile = getUser(user.id) as DbProfile
         profileService.update(dbUser, password)
