@@ -44,9 +44,9 @@ class OneTimeTokenManager(
         return token
     }
 
-    fun validateToken(token: String): UserProfile?
+    fun validateToken(token: String): CommonProfile?
     {
-        return authenticator.validateToken(token)
+        return authenticator.validateToken(token) as CommonProfile
     }
 
     fun validateTokenAndGetClaims(token: String): Map<String, Any>
