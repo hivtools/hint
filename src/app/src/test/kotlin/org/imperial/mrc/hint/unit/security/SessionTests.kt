@@ -26,7 +26,7 @@ class SessionTests
     {
         val mockWebContext = mock<WebContext>()
         val mockSessionStore = mock<SessionStore>{
-            on { get(mockWebContext, "version_id").toString() } doReturn "testVersionId"
+            on { get(mockWebContext, "version_id") } doReturn Optional.of("testVersionId")
         }
         val mockConfig = mock<Config>
         {

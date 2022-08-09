@@ -117,7 +117,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
 
     override fun saveVersionFile(versionId: String, type: FileType, hash: String, fileName: String, fromADR: Boolean)
     {
-        if (getVersionFileRecord(versionId, type)?.size() == 0)
+        if (getVersionFileRecord(versionId, type) == null)
         {
             dsl.insertInto(VERSION_FILE)
                 .set(VERSION_FILE.HASH, hash)

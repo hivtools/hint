@@ -10,6 +10,7 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 import org.pac4j.core.util.Pac4jConstants
 import org.pac4j.http.client.indirect.FormClient
+import org.pac4j.jee.context.JEEContext
 import org.pac4j.sql.profile.service.DbProfileService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
@@ -80,7 +81,7 @@ class Session(
 
     fun setMode(mode: String)
     {
-        val savedMode = pac4jConfig.sessionStore.get(webContext, MODE).toString()
+        val savedMode = pac4jConfig.sessionStore.get(webContext, MODE).orElse(null)
         if (savedMode != mode)
         {
             // If mode has changed, clear the session version id too
@@ -97,13 +98,14 @@ class Session(
     fun getVersionId(): String
     {
         //Generate a new id if none exists
-        var versionId = pac4jConfig.sessionStore.get(webContext, VERSION_ID).toString()
+        var versionId = pac4jConfig.sessionStore.get(webContext, VERSION_ID).orElse(null)
+
         if (versionId == null)
         {
             versionId = generateVersionId()
             setVersionId(versionId)
         }
-        return versionId
+        return versionId.toString()
     }
 
     fun setVersionId(value: String?)
