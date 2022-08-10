@@ -18,9 +18,9 @@ interface HintrAPIClient
     fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
     fun validateSurveyAndProgramme(
         file: VersionFileWithPath,
-        shapePath: String,
+        shapePath: String?,
         type: FileType,
-        pjnzPath: String,
+        pjnzPath: String?,
         strict: Boolean
     ): ResponseEntity<String>
 
@@ -40,7 +40,11 @@ interface HintrAPIClient
             ResponseEntity<String>
     fun getInputTimeSeriesChartData(type: String, files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
-    fun downloadOutputSubmit(type: String, id: String, projectPayload: Map<String, Any?>? = null): ResponseEntity<String>
+    fun downloadOutputSubmit(
+        type: String,
+        id: String,
+        projectPayload: Map<String, Any?>? = null
+    ): ResponseEntity<String>
     fun downloadOutputStatus(id: String): ResponseEntity<String>
     fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
     fun getUploadMetadata(id: String): ResponseEntity<String>
@@ -82,9 +86,9 @@ class HintrFuelAPIClient(
     }
 
     override fun validateSurveyAndProgramme(file: VersionFileWithPath,
-                                            shapePath: String,
+                                            shapePath: String?,
                                             type: FileType,
-                                            pjnzPath: String,
+                                            pjnzPath: String?,
                                             strict: Boolean): ResponseEntity<String>
     {
 
@@ -205,7 +209,11 @@ class HintrFuelAPIClient(
         return get("rehydrate/result/${id}")
     }
 
-    override fun downloadOutputSubmit(type: String, id: String, projectPayload: Map<String, Any?>?): ResponseEntity<String>
+    override fun downloadOutputSubmit(
+        type: String,
+        id: String,
+        projectPayload: Map<String, Any?>?
+    ): ResponseEntity<String>
     {
         if (projectPayload.isNullOrEmpty())
         {
