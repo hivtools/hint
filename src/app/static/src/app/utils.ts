@@ -390,7 +390,8 @@ export const constructRehydrateProjectState = async (context: ActionContext<Load
         result: context.rootState.modelRun.result,
         warnings: context.rootState.modelRun.warnings,
         status: {success: true, done: true},
-        ready: true
+        ready: true,
+        errors: []
     } as any
 
     const modelCalibrate = {
