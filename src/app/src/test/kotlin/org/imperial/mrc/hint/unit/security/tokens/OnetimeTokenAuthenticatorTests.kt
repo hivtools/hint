@@ -10,6 +10,7 @@ import org.imperial.mrc.hint.security.tokens.OneTimeTokenAuthenticator
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenChecker
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
+import org.pac4j.core.profile.UserProfile
 import org.pac4j.jwt.config.signature.RSASignatureConfiguration
 import org.pac4j.jwt.profile.JwtGenerator
 import java.security.KeyPair
@@ -22,7 +23,7 @@ class OnetimeTokenAuthenticatorTests
 
     private val keyPair: KeyPair = KeyHelper.keyPair
     private val signatureConfiguration = RSASignatureConfiguration(keyPair)
-    private val tokenGenerator = JwtGenerator<CommonProfile>(signatureConfiguration)
+    private val tokenGenerator = JwtGenerator(signatureConfiguration)
 
     private val okTokenChecker = mock<OneTimeTokenChecker> {
         on { checkToken(any()) } doReturn true

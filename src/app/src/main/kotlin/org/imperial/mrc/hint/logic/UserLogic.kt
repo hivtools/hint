@@ -5,6 +5,7 @@ import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.exceptions.UserException
 import org.pac4j.core.profile.CommonProfile
+import org.pac4j.core.profile.UserProfile
 import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
 import org.springframework.stereotype.Component
@@ -16,7 +17,7 @@ interface UserLogic
     fun addUser(email: String, password: String?)
     fun removeUser(email: String)
     fun getUser(email: String): CommonProfile?
-    fun updateUserPassword(user: CommonProfile, password: String)
+    fun updateUserPassword(user: UserProfile, password: String)
 }
 
 @Component
@@ -83,7 +84,7 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
         return profileService.findById(username)
     }
 
-    override fun updateUserPassword(user: CommonProfile, password: String)
+    override fun updateUserPassword(user: UserProfile, password: String)
     {
         val dbUser: DbProfile = getUser(user.id) as DbProfile
         profileService.update(dbUser, password)

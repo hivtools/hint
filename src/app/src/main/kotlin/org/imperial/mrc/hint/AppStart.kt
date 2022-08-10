@@ -45,7 +45,7 @@ class MvcConfig(val config: Config) : WebMvcConfigurer
         val t = ThreadPoolTaskExecutor()
         t.corePoolSize = CORE_POOL_SIZE
         t.maxPoolSize = MAX_POOL_SIZE
-        t.setQueueCapacity(QUEUE_CAPACITY)
+        t.queueCapacity = QUEUE_CAPACITY
         t.setAllowCoreThreadTimeOut(true)
         t.keepAliveSeconds = KEEP_ALIVE_SEC
         t.initialize()

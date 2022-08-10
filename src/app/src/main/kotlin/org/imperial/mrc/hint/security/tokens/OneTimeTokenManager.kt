@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.security.tokens
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.TokenRepository
 import org.pac4j.core.profile.CommonProfile
+import org.pac4j.core.profile.UserProfile
 import org.pac4j.jwt.config.signature.SignatureConfiguration
 import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
 import org.pac4j.jwt.profile.JwtGenerator
@@ -20,7 +21,7 @@ class OneTimeTokenManager(
         private val authenticator: JwtAuthenticator
 )
 {
-    private val generator = JwtGenerator<CommonProfile>(signatureConfiguration)
+    private val generator = JwtGenerator(signatureConfiguration)
     private val issuer = appProperties.tokenIssuer
     private val random = SecureRandom()
 
@@ -43,7 +44,7 @@ class OneTimeTokenManager(
         return token
     }
 
-    fun validateToken(token: String): CommonProfile?
+    fun validateToken(token: String): UserProfile?
     {
         return authenticator.validateToken(token)
     }
