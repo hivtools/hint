@@ -8,12 +8,12 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'org.jetbrains.gradle:jetbrains-gradle-plugins:1.4.2'
+        classpath 'com.palantir.gradle.docker:gradle-docker:0.33.0'
     }
 }
 
 apply plugin: 'application'
-apply plugin: "org.jetbrains.gradle.docker"
+apply plugin: 'com.palantir.docker'
 mainClassName = "org.imperial.mrc.hint.userCLI.AppKt"
 
 dependencies {
@@ -46,10 +46,7 @@ if (hasProperty('docker_name')) {
 version = cli_docker_version
 
 docker {
-    showLogs = true
-    images {
-        create(cli_docker_name) {
-            setupJvmApp("openjdk:11-jre")
-        }
-    }
+    name "${cli_docker_name}:${cli_docker_version}"
+    file('Dockerfile')
+    files tasks.distTar.outputs, "userCLI.jar"
 }

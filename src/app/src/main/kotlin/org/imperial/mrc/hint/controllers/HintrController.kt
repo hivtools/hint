@@ -71,8 +71,8 @@ open class HintrController(protected val fileManager: FileManager,
                             HttpStatus.BAD_REQUEST)
                 }
 
-                val pjnzPath = files[FileType.PJNZ.toString()]?.path
-                val shapePath = files[FileType.Shape.toString()]?.path
+                val pjnzPath = files[FileType.PJNZ.toString()]!!.path
+                val shapePath = files[FileType.Shape.toString()]!!.path
 
                 apiClient.validateSurveyAndProgramme(file, shapePath, type, pjnzPath, strict)
             }

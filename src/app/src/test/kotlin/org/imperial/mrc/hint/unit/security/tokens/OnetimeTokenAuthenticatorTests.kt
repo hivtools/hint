@@ -9,8 +9,6 @@ import org.imperial.mrc.hint.security.tokens.KeyHelper
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenAuthenticator
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenChecker
 import org.junit.jupiter.api.Test
-import org.pac4j.core.profile.CommonProfile
-import org.pac4j.core.profile.UserProfile
 import org.pac4j.jwt.config.signature.RSASignatureConfiguration
 import org.pac4j.jwt.profile.JwtGenerator
 import java.security.KeyPair
