@@ -22,14 +22,14 @@ class OneTimeTokenAuthenticator(
 
     override fun createJwtProfile(
         credentials: TokenCredentials,
-        jwt: JWT,
-        context: WebContext,
-        sessionStore: SessionStore
+        jwt: JWT?,
+        context: WebContext?,
+        sessionStore: SessionStore?
     )
     {
         super.createJwtProfile(credentials, jwt, context, sessionStore)
-        val claims = jwt.jwtClaimsSet
-        val issuer = claims.issuer
+        val claims = jwt?.jwtClaimsSet
+        val issuer = claims?.issuer
         if (issuer != tokenIssuer)
         {
             throw CredentialsException("Token was issued by '$issuer'. Must be issued by '${tokenIssuer}'")
