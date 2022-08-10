@@ -43,7 +43,6 @@ if (hasProperty('docker_name')) {
     cli_docker_name = docker_name
 }
 
-version = cli_docker_version
 
 docker {
     name "${cli_docker_name}:${cli_docker_version}"
