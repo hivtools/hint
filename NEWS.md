@@ -6,7 +6,7 @@
 
 * Endpoint for comparison barchart dataset
 
-# hint .2.6.0
+# hint 2.6.0
 
 * Upgrade java, gradle and dependecies  
 
