@@ -64,7 +64,7 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT.ID.eq(projectId))
                     .fetchOne()
 
-            assertThat(savedProject[PROJECT_VERSION.NOTE]).isEqualTo("notes")
+            assertThat(savedProject?.get(PROJECT_VERSION.NOTE)).isEqualTo("notes")
         }
     }
 
@@ -102,7 +102,7 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT_VERSION.ID.eq(newVersionId))
                     .fetchOne()
 
-            assertThat(version[PROJECT_VERSION.NOTE]).isEqualTo("test version note")
+            assertThat(version?.get(PROJECT_VERSION.NOTE)).isEqualTo("test version note")
         }
     }
 
@@ -129,7 +129,7 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT.ID.eq(projectId))
                     .fetchOne()
 
-            assertThat(savedProject[PROJECT_VERSION.NOTE]).isEqualTo("test note")
+            assertThat(savedProject?.get(PROJECT_VERSION.NOTE)).isEqualTo("test note")
         }
     }
 
@@ -169,7 +169,7 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT_VERSION.ID.eq(promoteProjId))
                     .fetchOne()
 
-            assertThat(savedProjectVersion[PROJECT_VERSION.NOTE]).isEqualTo("test promote project note")
+            assertThat(savedProjectVersion?.get(PROJECT_VERSION.NOTE)).isEqualTo("test promote project note")
         }
     }
 
@@ -197,7 +197,7 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT_VERSION.ID.eq(versionId))
                     .fetchOne()
 
-            assertThat(savedVersion[PROJECT_VERSION.NOTE]).isEqualTo("test note")
+            assertThat(savedVersion?.get(PROJECT_VERSION.NOTE)).isEqualTo("test note")
         }
     }
 
@@ -232,8 +232,8 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT_VERSION.ID.eq(newVersionId))
                     .fetchOne()
 
-            assertThat(savedProject[PROJECT_VERSION.STATE]).isEqualTo(testState)
-            assertThat(savedProject[PROJECT_VERSION.UPDATED]).isEqualTo(savedProject[PROJECT_VERSION.CREATED])
+            assertThat(savedProject?.get(PROJECT_VERSION.STATE)).isEqualTo(testState)
+            assertThat(savedProject?.get(PROJECT_VERSION.UPDATED)).isEqualTo(savedProject?.get(PROJECT_VERSION.CREATED))
         }
     }
 
@@ -301,8 +301,8 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT_VERSION.ID.eq(versionId))
                     .fetchOne()
 
-            assertThat(savedProject[PROJECT_VERSION.STATE]).isEqualTo(testState)
-            assertThat(savedProject[PROJECT_VERSION.UPDATED]).isAfter(savedProject[PROJECT_VERSION.CREATED])
+            assertThat(savedProject?.get(PROJECT_VERSION.STATE)).isEqualTo(testState)
+            assertThat(savedProject?.get(PROJECT_VERSION.UPDATED)).isAfter(savedProject?.get(PROJECT_VERSION.CREATED))
         }
     }
 
@@ -677,9 +677,9 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT_VERSION.ID.eq(newVersionId))
                     .fetchOne()
 
-            assertThat(newProject[PROJECT_VERSION.STATE]).isEqualTo(testState)
-            assertThat(newProject[PROJECT_VERSION.UPDATED]).isEqualTo(newProject[PROJECT_VERSION.CREATED])
-            assertThat(newProject[PROJECT_VERSION.NOTE]).isEqualTo(newProject[PROJECT_VERSION.NOTE])
+            assertThat(newProject?.get(PROJECT_VERSION.STATE)).isEqualTo(testState)
+            assertThat(newProject?.get(PROJECT_VERSION.UPDATED)).isEqualTo(newProject?.get(PROJECT_VERSION.CREATED))
+            assertThat(newProject?.get(PROJECT_VERSION.NOTE)).isEqualTo(newProject?.get(PROJECT_VERSION.NOTE))
         }
     }
 

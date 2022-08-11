@@ -1,0 +1,100 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>LargeClass:ADRControllerTests.kt$ADRControllerTests : HintrControllerTests</ID>
+    <ID>LargeClass:ProjectTests.kt$ProjectTests : VersionFileTests</ID>
+    <ID>LargeClass:VersionRepositoryTests.kt$VersionRepositoryTests</ID>
+    <ID>LongParameterList:IntegrationTests.kt$SecureIntegrationTests$(isAuthorized: IsAuthorized, responseEntity: ResponseEntity&lt;String&gt;, httpStatus: HttpStatus, errorCode: String, errorDetail: String? = null, errorTrace: String? = null)</ID>
+    <ID>LongParameterList:ProjectRepositoryTests.kt$ProjectRepositoryTests$(versionId: String, projectId: Int, created: Instant, updated: Instant, deleted: Boolean, versionNumber: Int)</ID>
+    <ID>MagicNumber:ErrorCodeGenerator.kt$RandomErrorCodeGenerator$3</ID>
+    <ID>MatchingDeclarationName:AppPropertiesTest.kt$AppPropertiesTests</ID>
+    <ID>MatchingDeclarationName:HintrAPIClientTests.kt$HintrApiClientTests</ID>
+    <ID>MatchingDeclarationName:IntegrationTests.kt$SecureIntegrationTests : CleanDatabaseTests</ID>
+    <ID>MatchingDeclarationName:PasswordResetEmailTests.kt$PasswordEmailTemplateTests</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$"restricted" to "{\"allowed_organizations\":\"unaids\",\"allowed_users\":\"\",\"level\":\"restricted\"}"</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$assertThat(objectMapper.readTree(result.body)["errors"][0]["detail"].textValue()).isEqualTo("Invalid resourceType")</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$assertThatThrownBy { pushInputFileMethod.call(sut, "dataset1", mockProperties.adrOutputZipSchema, "testResId", "testResName") }</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$on { downloadOutputResult("downloadId") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$on { downloadOutputResult("downloadId") } doReturn ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(StreamingResponseBody { it.write("Internal Server Error".toByteArray()) })</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$on { downloadOutputResult("modelResponseId") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$on { downloadOutputSubmit("spectrum", "model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$on { downloadOutputSubmit("summary", "model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$on { get("/dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$on { get("resource_show?id=resource1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$on { post("/dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) }</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$on { post("/dataset_version_create", listOf("dataset_id" to "dataset-1", "name" to "release-1")) } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$on { post("/version_delete", listOf("version_id" to "other-id")) } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$on { postFile(any(), any(), any()) } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$val expectedUrl = "package_search?q=type:adr-schema&amp;rows=1000&amp;include_private=true&amp;hide_inaccessible_resources=true"</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$val result = sut.pushFileToADR("dataset1", "adr-output-summary", "downloadId", "output1.html", null, "Output summary", "Naomi summary report")</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$val result = sut.pushFileToADR("dataset1", "adr-output-unknown", "model1", "output1.zip", "resource1", "Output zip", "Naomi model outputs")</ID>
+    <ID>MaxLineLength:ADRControllerTests.kt$ADRControllerTests$val result = sut.pushFileToADR("dataset1", "adr-output-zip", "downloadId", "output1.zip", "resource1", "Output zip", "Naomi model outputs")</ID>
+    <ID>MaxLineLength:ADRTests.kt$ADRTests$"${ConfiguredAppProperties().adrUrl}api/3/action/version_delete".httpPost(listOf("version_id" to data2["id"].textValue()))</ID>
+    <ID>MaxLineLength:ADRTests.kt$ADRTests$"${ConfiguredAppProperties().adrUrl}api/3/action/version_delete".httpPost(listOf("version_id" to data["id"].textValue()))</ID>
+    <ID>MaxLineLength:ADRTests.kt$ADRTests$assertThat(data["restricted"].textValue()).isEqualTo("{\"allowed_organizations\":\"unaids\",\"allowed_users\":\"\",\"level\":\"restricted\"}")</ID>
+    <ID>MaxLineLength:ADRTests.kt$ADRTests$private</ID>
+    <ID>MaxLineLength:ADRTests.kt$ADRTests$val url = "/adr/datasets/hint_test/resource/${ConfiguredAppProperties().adrOutputSummarySchema}/$downloadId?resourceFileName=output.html&amp;resourceName=TestZip&amp;description=test"</ID>
+    <ID>MaxLineLength:AuthInterceptor.kt$AuthInterceptor$override</ID>
+    <ID>MaxLineLength:DiseaseTests.kt$DiseaseTests$val laxValidationUploadResponse = testRestTemplate.postForEntity&lt;String&gt;("/disease/anc/?strict=false", postEntity)</ID>
+    <ID>MaxLineLength:EmailManagerConfigTests.kt$EmailManagerConfigTests$assertThatThrownBy { sut.getEmailManager(mockAppProperties, mock()) }.hasMessage("Unknown email mode 'unsupported'")</ID>
+    <ID>MaxLineLength:Helpers.kt$val</ID>
+    <ID>MaxLineLength:HintrAPIClient.kt$HintrAPIClient$fun</ID>
+    <ID>MaxLineLength:HintrAPIClient.kt$HintrAPIClient$fun downloadOutputSubmit(type: String, id: String, projectPayload: Map&lt;String, Any?&gt;? = null): ResponseEntity&lt;String&gt;</ID>
+    <ID>MaxLineLength:HintrAPIClient.kt$HintrFuelAPIClient$override</ID>
+    <ID>MaxLineLength:HintrControllerTests.kt$HintrControllerTests$on { validateBaselineIndividual(argWhere { it.path == "test-path" }, eq(type)) } doReturn ResponseEntity("VALIDATION_RESPONSE", HttpStatus.OK)</ID>
+    <ID>MaxLineLength:HintrControllerTests.kt$HintrControllerTests$on { validateSurveyAndProgramme(argWhere { it.path == "test-path" }, eq("shape-path"), eq(type), eq("pjnz-path"), any()) }</ID>
+    <ID>MaxLineLength:LoginTests.kt$LoginTests$assertThat(doc.select("a[href='https://github.com/reside-ic'] img").attr("src")).isEqualTo("public/images/reside_logo.png")</ID>
+    <ID>MaxLineLength:LoginTests.kt$LoginTests$assertThat(doc.select("a[href='https://www.avenirhealth.org'] img").attr("src")).isEqualTo("public/images/avenir_logo.png")</ID>
+    <ID>MaxLineLength:LoginTests.kt$LoginTests$assertThat(doc.select("a[href='https://www.fjelltopp.org'] img").attr("src")).isEqualTo("public/images/fjelltopp_logo.png")</ID>
+    <ID>MaxLineLength:LoginTests.kt$LoginTests$assertThat(doc.select("a[href='https://www.imperial.ac.uk'] img").attr("src")).isEqualTo("public/images/imperial_logo.png")</ID>
+    <ID>MaxLineLength:LoginTests.kt$LoginTests$assertThat(doc.select("a[href='https://www.unaids.org'] img").attr("src")).isEqualTo("public/images/unaids_logo.png")</ID>
+    <ID>MaxLineLength:LoginTests.kt$LoginTests$assertThat(doc.select("a[href='https://www.washington.edu'] img").attr("src")).isEqualTo("public/images/uw_logo.png")</ID>
+    <ID>MaxLineLength:ProjectTests.kt$ProjectTests$val promoteProjectResult = testRestTemplate.postForEntity&lt;String&gt;("/project/$projectId/version/$versionId/promote", httpEntity)</ID>
+    <ID>MaxLineLength:ProjectsControllerTests.kt$ProjectsControllerTests$on { getProject(1, "testUser") }</ID>
+    <ID>MaxLineLength:TranslationAssert.kt$TranslationAssert$failWithMessage("Expected key &lt;%s&gt; to be translated to &lt;%s&gt; but was &lt;%s&gt;", key, expectedMessage, translatedMessage)</ID>
+    <ID>MaxLineLength:VersionRepositoryTests.kt$VersionRepositoryTests$dsl.select(PROJECT_VERSION.STATE, PROJECT_VERSION.PROJECT_ID, PROJECT_VERSION.VERSION_NUMBER, PROJECT_VERSION.NOTE)</ID>
+    <ID>MaxLineLength:VersionRepositoryTests.kt$VersionRepositoryTests$private</ID>
+    <ID>MayBeConst:Helpers.kt$val unexpectedErrorRegex = "An unexpected error occurred. If you see this message while you are using (.*) at a workshop, please contact your" + " workshop technical support and show them this code: (u[a-z]{2}-[a-z]{3}-[a-z]{3})." + " Otherwise please contact support at (.*) and quote this code: (u[a-z]{2}-[a-z]{3}-[a-z]{3})"</ID>
+    <ID>NewLineAtEndOfFile:DbConfigTests.kt$org.imperial.mrc.hint.unit.db.DbConfigTests.kt</ID>
+    <ID>NewLineAtEndOfFile:ErrorCodeGeneratorTests.kt$org.imperial.mrc.hint.unit.exceptions.ErrorCodeGeneratorTests.kt</ID>
+    <ID>NewLineAtEndOfFile:ErrorLoggingFilterTests.kt$org.imperial.mrc.hint.unit.logging.ErrorLoggingFilterTests.kt</ID>
+    <ID>NewLineAtEndOfFile:ErrorReportTests.kt$org.imperial.mrc.hint.integration.ErrorReportTests.kt</ID>
+    <ID>NewLineAtEndOfFile:ExceptionHandlerTests.kt$org.imperial.mrc.hint.integration.ExceptionHandlerTests.kt</ID>
+    <ID>NewLineAtEndOfFile:ForgotPasswordTests.kt$org.imperial.mrc.hint.unit.templates.ForgotPasswordTests.kt</ID>
+    <ID>NewLineAtEndOfFile:FuelFlowClientTests.kt$org.imperial.mrc.hint.integration.clients.FuelFlowClientTests.kt</ID>
+    <ID>NewLineAtEndOfFile:HintDbProfileServiceTests.kt$org.imperial.mrc.hint.database.HintDbProfileServiceTests.kt</ID>
+    <ID>NewLineAtEndOfFile:JSONValidator.kt$org.imperial.mrc.hint.helpers.JSONValidator.kt</ID>
+    <ID>NewLineAtEndOfFile:JooqOneTimeTokenCheckerTests.kt$org.imperial.mrc.hint.unit.security.tokens.JooqOneTimeTokenCheckerTests.kt</ID>
+    <ID>NewLineAtEndOfFile:LogMetadataTests.kt$org.imperial.mrc.hint.unit.logging.LogMetadataTests.kt</ID>
+    <ID>NewLineAtEndOfFile:MustacheEmailTests.kt$org.imperial.mrc.hint.unit.emails.MustacheEmailTests.kt</ID>
+    <ID>NewLineAtEndOfFile:OneTimeTokenManagerTests.kt$org.imperial.mrc.hint.unit.security.tokens.OneTimeTokenManagerTests.kt</ID>
+    <ID>NewLineAtEndOfFile:OnetimeTokenAuthenticatorTests.kt$org.imperial.mrc.hint.unit.security.tokens.OnetimeTokenAuthenticatorTests.kt</ID>
+    <ID>NewLineAtEndOfFile:Pac4jConfigTests.kt$org.imperial.mrc.hint.unit.security.Pac4jConfigTests.kt</ID>
+    <ID>NewLineAtEndOfFile:PasswordTests.kt$org.imperial.mrc.hint.integration.PasswordTests.kt</ID>
+    <ID>NewLineAtEndOfFile:RehydrateControllerTests.kt$org.imperial.mrc.hint.unit.controllers.RehydrateControllerTests.kt</ID>
+    <ID>NewLineAtEndOfFile:SecurePasswordEncoderTests.kt$org.imperial.mrc.hint.unit.security.SecurePasswordEncoderTests.kt</ID>
+    <ID>NewLineAtEndOfFile:SignatureConfigTests.kt$org.imperial.mrc.hint.unit.security.tokens.SignatureConfigTests.kt</ID>
+    <ID>NewLineAtEndOfFile:TokenRepositoryTests.kt$org.imperial.mrc.hint.database.TokenRepositoryTests.kt</ID>
+    <ID>NewLineAtEndOfFile:TranslationAssert.kt$org.imperial.mrc.hint.helpers.TranslationAssert.kt</ID>
+    <ID>NewLineAtEndOfFile:TranslationTests.kt$org.imperial.mrc.hint.integration.TranslationTests.kt</ID>
+    <ID>NewLineAtEndOfFile:UserLogicTests.kt$org.imperial.mrc.hint.database.UserLogicTests.kt</ID>
+    <ID>ProtectedMemberInFinalClass:VersionFileTests.kt$VersionFileTests$protected fun assertVersionFileDoesNotExist(fileType: FileType)</ID>
+    <ID>ProtectedMemberInFinalClass:VersionFileTests.kt$VersionFileTests$protected fun assertVersionFileExists(fileType: FileType)</ID>
+    <ID>ProtectedMemberInFinalClass:VersionFileTests.kt$VersionFileTests$protected fun assertVersionFileExists(isAuthorized: IsAuthorized, fileType: FileType)</ID>
+    <ID>ProtectedMemberInFinalClass:VersionFileTests.kt$VersionFileTests$protected fun setUpVersionFileAndGetHash(filename: String, url: String): String</ID>
+    <ID>ProtectedMemberInFinalClass:VersionFileTests.kt$VersionFileTests$protected fun setUpVersionFileAndGetHash(isAuthorized: IsAuthorized, filename: String, url: String): String</ID>
+    <ID>ReturnCount:UserLogic.kt$DbProfileServiceUserLogic$override fun getUser(email: String): CommonProfile?</ID>
+    <ID>SwallowedException:JSONValidator.kt$JSONValidator$e: JsonParsingException</ID>
+    <ID>SwallowedException:VersionRepository.kt$JooqVersionRepository$e: DataIntegrityViolationException</ID>
+    <ID>TooGenericExceptionThrown:EmailConfig.kt$EmailConfig$throw Exception("Unknown email mode '$mode'")</ID>
+    <ID>TooManyFunctions:ADRControllerTests.kt$ADRControllerTests : HintrControllerTests</ID>
+    <ID>TooManyFunctions:AppPropertiesTest.kt$AppPropertiesTests</ID>
+    <ID>TooManyFunctions:IntegrationTests.kt$SecureIntegrationTests : CleanDatabaseTests</ID>
+    <ID>TooManyFunctions:ProjectTests.kt$ProjectTests : VersionFileTests</ID>
+    <ID>TooManyFunctions:ProjectsControllerTests.kt$ProjectsControllerTests</ID>
+    <ID>TooManyFunctions:VersionRepositoryTests.kt$VersionRepositoryTests</ID>
+    <ID>UnnecessaryAbstractClass:CleanDatabaseTests.kt$CleanDatabaseTests</ID>
+    <ID>UnusedPrivateMember:ProjectsController.kt$ProjectsController$@PathVariable("projectId") projectId: Int</ID>
+  </CurrentIssues>
+</SmellBaseline>

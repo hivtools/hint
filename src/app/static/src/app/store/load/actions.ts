@@ -2,7 +2,7 @@ import {ActionContext, ActionTree} from "vuex";
 import {LoadingState, LoadState} from "./state";
 import {emptyState, RootState} from "../../root";
 import {api} from "../../apiService";
-import {constructRehydrateProjectState, verifyCheckSum} from "../../utils";
+import {constructRehydrateProjectState, flatMapControlSection, verifyCheckSum} from "../../utils";
 import {Dict, LocalSessionFile, VersionDetails} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
@@ -10,7 +10,7 @@ import {currentHintVersion} from "../../hintVersion";
 import {initialStepperState} from "../stepper/stepper";
 import {ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generated";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
-import {DynamicControlGroup, DynamicControlSection, DynamicFormData} from "@reside-ic/vue-dynamic-form";
+import {DynamicFormData} from "@reside-ic/vue-dynamic-form";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult" | "SetProjectName" | "RehydrateCancel"
 export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
@@ -195,7 +195,7 @@ async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
 // getCalibrateOptions extracts calibrate options from Dynamic Form, this allows
 // backward compatibility supports for calibrate option bug
 const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormData => {
-    const allControlGroups = flatMapControlSections(modelCalibrate.optionsFormMeta.controlSections);
+    const allControlGroups = flatMapControlSection(modelCalibrate.optionsFormMeta.controlSections);
     return allControlGroups.reduce<DynamicFormData>((options, option): DynamicFormData => {
         option.controls.forEach(option => {
             options[option.name] = option.value || null
@@ -204,6 +204,3 @@ const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormDa
     }, {})
 }
 
-const flatMapControlSections = (sections: DynamicControlSection[]) => {
-    return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
-}
