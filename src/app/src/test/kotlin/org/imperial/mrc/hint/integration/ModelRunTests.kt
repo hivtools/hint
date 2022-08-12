@@ -109,4 +109,13 @@ class ModelRunTests : SecureIntegrationTests()
         assertSuccess(responseEntity, "ModelCancelResponse")
     }
 
+    @Test
+    fun `can get comparison plot`()
+    {
+        val responseEntity = testRestTemplate.getForEntity<String>("/model/comparison/plot/1234")
+        assertError(responseEntity,
+                HttpStatus.BAD_REQUEST,
+                "FAILED_TO_RETRIEVE_RESULT", "Failed to fetch result")
+    }
+
 }

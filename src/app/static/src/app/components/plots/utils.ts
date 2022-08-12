@@ -2,6 +2,8 @@ import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {Dict, Filter, NumericRange} from "../../types";
 import numeral from 'numeral';
+import i18next from "i18next";
+import {Language} from "../../store/translations/locales";
 
 export const getColor = (value: number,
                          metadata: ChoroplethIndicatorMetadata,
@@ -214,4 +216,14 @@ export const formatLegend = function (text: string | number, format: string, sca
         } else text = text.toString()
     }
     return text
+}
+
+export const filterConfig = (currentLanguage: Language, filters: Filter[]) => {
+    return {
+        filterLabel: i18next.t("filters", currentLanguage),
+        indicatorLabel: i18next.t("indicator", currentLanguage),
+        xAxisLabel: i18next.t("xAxis", currentLanguage),
+        disaggLabel: i18next.t("disaggBy", currentLanguage),
+        filters
+    }
 }

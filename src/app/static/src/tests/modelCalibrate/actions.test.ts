@@ -157,7 +157,7 @@ describe("ModelCalibrate actions", () => {
         }, 2100);
     });
 
-    it("getResult commits result and warnings when successfully fetched, sets default plotting selections, and dispatches getCalibratePlot", async () => {
+    it("getResult commits result and warnings when successfully fetched, sets default plotting selections, and dispatches getCalibratePlot and getComparisonPlot", async () => {
         switches.modelCalibratePlot = true;
         const testResult = {
             data: "TEST DATA",
@@ -221,12 +221,14 @@ describe("ModelCalibrate actions", () => {
         expect(commit.mock.calls[3][0]).toBe("Calibrated");
         expect(commit.mock.calls[4][0]).toBe("Ready");
         expect(dispatch.mock.calls[0][0]).toBe("getCalibratePlot");
+        expect(dispatch.mock.calls[1][0]).toBe("getComparisonPlot");
 
         expect(spy).toHaveBeenCalledWith(mockResponse);
     });
 
-    it("getResult does not dispatch getCalibratePlot when switches if off", async () => {
+    it("getResult does not dispatch getCalibratePlot or getComparisonPlot when switches if off", async () => {
         switches.modelCalibratePlot = false;
+        switches.comparisonPlot = false;
         const testResult = {
             data: "TEST DATA",
             plottingMetadata: {
@@ -347,6 +349,73 @@ describe("ModelCalibrate actions", () => {
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toStrictEqual("CalibrationPlotStarted");
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "SetError",
+            payload: mockError("Test Error")
+        });
+        expect(mockAxios.history.get.length).toBe(1);
+    });
+
+    it("getComparisonPlot fetches the comparison plot data and sets it with default filter values when successful", async () => {
+        const testResult = {
+            data: "TEST DATA",
+            plottingMetadata: {
+                barchart: {
+                    defaults: {
+                        indicator_id: "test indicator",
+                        x_axis_id: "test_x",
+                        disaggregate_by_id: "test_dis",
+                        selected_filter_options: {"test_name": ["test_value"]}
+                    }
+                }
+            }
+        };
+        mockAxios.onGet(`/model/comparison/plot/1234`)
+            .reply(200, mockSuccess(testResult));
+
+        const commit = jest.fn();
+        const state = mockModelCalibrateState({
+            calibrateId: "1234",
+            status: {
+                success: true,
+                done: true
+            } as any
+        });
+
+        await actions.getComparisonPlot({commit, state, rootState} as any);
+
+        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls[0][0]).toStrictEqual("ComparisonPlotStarted");
+        expect(commit.mock.calls[1][0]["type"]).toBe("plottingSelections/updateComparisonPlotSelections");
+        expect(commit.mock.calls[1][0]["payload"]).toStrictEqual({
+            indicatorId: "test indicator",
+            xAxisId: "test_x",
+            disaggregateById: "test_dis",
+            selectedFilterOptions: {"test_name": ["test_value"]}
+        });
+        expect(commit.mock.calls[2][0]).toBe("SetComparisonPlotData");
+        expect(commit.mock.calls[2][1]).toStrictEqual(testResult);
+        expect(mockAxios.history.get.length).toBe(1);
+    });
+
+    it("getComparisonPlot commits error with unsuccessful fetch", async () => {
+        const testResult = {data: "TEST DATA"};
+        mockAxios.onGet(`/model/comparison/plot/1234`)
+            .reply(500, mockFailure("Test Error"));
+
+        const commit = jest.fn();
+        const state = mockModelCalibrateState({
+            calibrateId: "1234",
+            status: {
+                success: true,
+                done: true
+            } as any
+        });
+
+        await actions.getComparisonPlot({commit, state, rootState} as any);
+
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]).toStrictEqual("ComparisonPlotStarted");
         expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "SetError",
             payload: mockError("Test Error")

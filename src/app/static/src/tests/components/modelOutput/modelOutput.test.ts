@@ -4,6 +4,7 @@ import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import {
     mockBaselineState,
     mockCalibrateResultResponse,
+    mockComparisonPlotResponse,
     mockModelCalibrateState,
     mockShapeResponse,
 } from "../../mocks";
@@ -22,7 +23,7 @@ import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicat
 
 const localVue = createLocalVue();
 
-function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"]) {
+function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"], comparisonPlotFilters: any = ["TEST COMPARISON FILTERS"]) {
     const store = new Vuex.Store({
         state: emptyState(),
         modules: {
@@ -43,7 +44,8 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                 namespaced: true,
                 state: mockModelCalibrateState(
                     {
-                        result: mockCalibrateResultResponse({data: ["TEST DATA"] as any})
+                        result: mockCalibrateResultResponse({data: ["TEST DATA"] as any}),
+                        comparisonPlotResult: mockComparisonPlotResponse({data: ["TEST COMPARISON DATA"] as any})
                     }
                 )
             },
@@ -56,6 +58,8 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                 getters: {
                     barchartIndicators: jest.fn().mockReturnValue(["TEST BARCHART INDICATORS"]),
                     barchartFilters: jest.fn().mockReturnValue(barchartFilters),
+                    comparisonPlotIndicators: jest.fn().mockReturnValue(["TEST COMPARISON INDICATORS"]),
+                    comparisonPlotFilters: jest.fn().mockReturnValue(comparisonPlotFilters),
                     bubblePlotIndicators: jest.fn().mockReturnValue(["TEST BUBBLE INDICATORS"]),
                     bubblePlotFilters: jest.fn().mockReturnValue(["TEST BUBBLE FILTERS"]),
                     choroplethFilters: jest.fn().mockReturnValue(["TEST CHORO FILTERS"]),
@@ -72,6 +76,15 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                         indicatorId: "TestIndicator",
                         xAxisId: "region",
                         disaggregateById: "age",
+                        selectedFilterOptions: {
+                            region: [{id: "r1", label: "region 1"}],
+                            age: [{id: "a1", label: "0-4"}]
+                        }
+                    },
+                    comparisonPlot: {
+                        indicatorId: "TestIndicator",
+                        xAxisId: "age",
+                        disaggregateById: "source",
                         selectedFilterOptions: {
                             region: [{id: "r1", label: "region 1"}],
                             age: [{id: "a1", label: "0-4"}]
@@ -142,11 +155,26 @@ describe("ModelOutput component", () => {
 
         const barchart = wrapper.find(BarChartWithFilters);
         expect(barchart.props().chartData).toStrictEqual(["TEST DATA"]);
-        expect(barchart.props().filterConfig).toBe(vm.filterConfig);
+        expect(barchart.props().filterConfig).toBe(vm.barchartFilterConfig);
         expect(barchart.props().indicators).toStrictEqual(["TEST BARCHART INDICATORS"]);
         expect(barchart.props().selections).toBe(vm.barchartSelections);
         expect(barchart.props().formatFunction).toBe(vm.formatBarchartValue);
         expect(barchart.props().showRangesInTooltips).toBe(true);
+    });
+
+    it("renders comparison plot", () => {
+        const store = getStore({selectedTab: "comparison"});
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const vm = wrapper.vm as any;
+
+        const comparisonPlot = wrapper.findAll(BarChartWithFilters).at(1);
+        expect(comparisonPlot.props().chartData).toStrictEqual(["TEST COMPARISON DATA"]);
+        expect(comparisonPlot.props().filterConfig).toBe(vm.comparisonPlotFilterConfig);
+        expect(comparisonPlot.props().indicators).toStrictEqual(["TEST COMPARISON INDICATORS"]);
+        expect(comparisonPlot.props().selections).toBe(vm.comparisonPlotSelections);
+        expect(comparisonPlot.props().formatFunction).toBe(vm.formatBarchartValue);
+        expect(comparisonPlot.props().showRangesInTooltips).toBe(true);
+        expect(comparisonPlot.props().disaggregateByConfig).toStrictEqual({fixed: true, hideFilter: true});
     });
 
     it("if no selected tab in state, defaults to select Map tab", () => {
@@ -174,6 +202,7 @@ describe("ModelOutput component", () => {
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
 
         expect(wrapper.find("#barchart-container").classes()).toEqual(["d-none"]);
+        expect(wrapper.find("#comparison-container").classes()).toEqual(["d-none"]);
 
         expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
         expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
@@ -186,7 +215,8 @@ describe("ModelOutput component", () => {
         expect(wrapper.findAll("choropleth-stub").length).toBe(0);
 
         expect(wrapper.find("#barchart-container").classes()).toEqual(["col-md-12"]);
-        expect(wrapper.findAll(BarChartWithFilters).length).toBe(1);
+        expect(wrapper.findAll(BarChartWithFilters).length).toBe(2);
+        expect(wrapper.find("#comparison-container").classes()).toEqual(["d-none"]);
 
         expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
         expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
@@ -198,9 +228,23 @@ describe("ModelOutput component", () => {
         expect(wrapper.findAll("choropleth-stub").length).toBe(0);
 
         expect(wrapper.find("#barchart-container").classes()).toEqual(["d-none"]);
+        expect(wrapper.find("#comparison-container").classes()).toEqual(["d-none"]);
 
         expect(wrapper.findAll("#bubble-plot-container").length).toBe(1);
         expect(wrapper.findAll("bubble-plot-stub").length).toBe(1);
+
+        wrapper.findAll(".nav-link").at(3).trigger("click");
+
+        expect(wrapper.find(".nav-link.active").text()).toBe("Comparison");
+        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
+
+        expect(wrapper.find("#barchart-container").classes()).toEqual(["d-none"]);
+        expect(wrapper.find("#comparison-container").classes()).toEqual(["col-md-12"]);
+        expect(wrapper.findAll(BarChartWithFilters).length).toBe(2);
+
+        expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
+        expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
     });
 
     it("computes chartdata", () => {
@@ -227,17 +271,47 @@ describe("ModelOutput component", () => {
         });
     });
 
+    it("computes comparison plot selections", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const vm = (wrapper as any).vm;
+
+        expect(vm.comparisonPlotSelections).toStrictEqual({
+            indicatorId: "TestIndicator",
+            xAxisId: "age",
+            disaggregateById: "source",
+            selectedFilterOptions: {
+                region: [{id: "r1", label: "region 1"}],
+                age: [{id: "a1", label: "0-4"}]
+            }
+        });
+    });
+
     it("computes barchart filters", () => {
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         const vm = (wrapper as any).vm;
 
-        expect(vm.filterConfig).toStrictEqual({
+        expect(vm.barchartFilterConfig).toStrictEqual({
             indicatorLabel: "Indicator",
             xAxisLabel: "X Axis",
             disaggLabel: "Disaggregate by",
             filterLabel: "Filters",
             filters: ["TEST BAR FILTERS"]
+        });
+    });
+
+    it("computes comparison plot filters", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const vm = (wrapper as any).vm;
+
+        expect(vm.comparisonPlotFilterConfig).toStrictEqual({
+            indicatorLabel: "Indicator",
+            xAxisLabel: "X Axis",
+            disaggLabel: "Disaggregate by",
+            filterLabel: "Filters",
+            filters: ["TEST COMPARISON FILTERS"]
         });
     });
 
@@ -348,6 +422,43 @@ describe("ModelOutput component", () => {
         expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
     });
 
+    it("commits updated selections from comparison plot and orders them according to filter", () => {
+        const testComparisonPlotFilters = [
+            {
+                id: "region",
+                options: [
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"}
+                ]
+            }
+        ]
+        const store = getStore({selectedTab: "comparison"}, {}, {}, testComparisonPlotFilters);
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
+
+        const comparisonPlot = wrapper.findAll(BarChartWithFilters).at(1);
+        const comparisonPlotSelections = {
+            selectedFilterOptions: {
+                region: [
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"}
+                ],
+                age: [
+                    {id: "a1", label: "0-4"},
+                ]
+            },
+            xAxisId: "age"
+        };
+
+        const expectedComparisonPlotSelections = {...currentComparisonPlotSelections}
+        expectedComparisonPlotSelections.selectedFilterOptions.region = testComparisonPlotFilters[0].options
+
+        comparisonPlot.vm.$emit("update", comparisonPlotSelections);
+        expect(store.state.plottingSelections.comparisonPlot).toStrictEqual(expectedComparisonPlotSelections);
+    });
+
     it("commits updated selections from barchart as normal if no matching xAxis key is provided", () => {
         const testBarchartFilters = [
             {
@@ -384,6 +495,42 @@ describe("ModelOutput component", () => {
         expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
     });
 
+    it("commits updated selections from comparison plot as normal if no matching xAxis key is provided", () => {
+        const testComparisonPlotFilters = [
+            {
+                id: "region",
+                options: [
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"}
+                ]
+            }
+        ]
+        const store = getStore({selectedTab: "bar"}, {}, {}, testComparisonPlotFilters);
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
+
+        const comparisonPlot = wrapper.find(BarChartWithFilters);
+        const comparisonPlotSelections = {
+            selectedFilterOptions: {
+                region: [
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"}
+                ],
+                age: [
+                    {id: "a1", label: "0-4"},
+                ]
+            },
+        };
+
+        const expectedComparisonPlotSelections = {...currentComparisonPlotSelections}
+        expectedComparisonPlotSelections.selectedFilterOptions.region = comparisonPlotSelections.selectedFilterOptions.region
+
+        comparisonPlot.vm.$emit("update", comparisonPlotSelections);
+        expect(store.state.plottingSelections.comparisonPlot).toStrictEqual(expectedComparisonPlotSelections);
+    });
+
     it("commits updated selections from barchart as normal if no barchart filters are provided", () => {
         const testBarchartFilters: Filter[] = []
         const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
@@ -410,6 +557,34 @@ describe("ModelOutput component", () => {
 
         barchart.vm.$emit("update", barchartSelections);
         expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
+    });
+
+    it("commits updated selections from comparison plot as normal if no barchart filters are provided", () => {
+        const testComparisonPlotFilters: Filter[] = []
+        const store = getStore({selectedTab: "bar"}, {}, {}, testComparisonPlotFilters);
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
+
+        const comparisonPlot = wrapper.find(BarChartWithFilters);
+        const comparisonPlotSelections = {
+            selectedFilterOptions: {
+                region: [
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"}
+                ],
+                age: [
+                    {id: "a1", label: "0-4"},
+                ]
+            },
+            xAxisId: "region"
+        };
+
+        const expectedComparisonPlotSelections = {...currentComparisonPlotSelections}
+        expectedComparisonPlotSelections.selectedFilterOptions.region = comparisonPlotSelections.selectedFilterOptions.region
+
+        comparisonPlot.vm.$emit("update", comparisonPlotSelections);
+        expect(store.state.plottingSelections.comparisonPlot).toStrictEqual(expectedComparisonPlotSelections);
     });
 
     it("commits updated selections from barchart and orders them according to nested filter", () => {
@@ -457,6 +632,53 @@ describe("ModelOutput component", () => {
 
         barchart.vm.$emit("update", barchartSelections);
         expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
+    });
+
+    it("commits updated selections from comparison plot and orders them according to nested filter", () => {
+        const testComparisonPlotFilters = [
+            {
+                id: "region",
+                options: [{
+                    children: [
+                        {id: "r0", children: [{id: "r0.0"}]},
+                        {id: "r1", children: [{id: "r1.0"}]},
+                        {id: "r2"}]
+                }
+                ]
+            }
+        ]
+        const store = getStore({selectedTab: "bar"}, {}, {}, testComparisonPlotFilters);
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
+
+        const comparisonPlot = wrapper.find(BarChartWithFilters);
+        const comparisonPlotSelections = {
+            selectedFilterOptions: {
+                region: [
+                    {id: "r1", label: "region 1"},
+                    {id: "r0", label: "region 0"},
+                    {id: "r2", label: "region 2"},
+                    {id: "r0.0", label: "region 0.0"},
+                    {id: "r1.0", label: "region 1.0"}
+                ],
+                age: [
+                    {id: "a1", label: "0-4"},
+                ]
+            },
+            xAxisId: "region"
+        };
+
+        const expectedComparisonPlotSelections = {...currentComparisonPlotSelections}
+        expectedComparisonPlotSelections.selectedFilterOptions.region = [
+            {id: "r0", label: "region 0"},
+            {id: "r1", label: "region 1"},
+            {id: "r2", label: "region 2"},
+            {id: "r0.0", label: "region 0.0"},
+            {id: "r1.0", label: "region 1.0"}
+        ]
+
+        comparisonPlot.vm.$emit("update", comparisonPlotSelections);
+        expect(store.state.plottingSelections.comparisonPlot).toStrictEqual(expectedComparisonPlotSelections);
     });
 
     it("renders choropleth table", () => {

@@ -8,7 +8,7 @@ import {
     mapState,
     MutationMethod
 } from "vuex";
-import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
+import {ADRSchemas, DatasetResource, Dict, UploadFile, Version, Filter} from "./types";
 import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse, Response} from "./generated";
 import moment from 'moment';
 import {
@@ -20,6 +20,7 @@ import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
 import {RootState} from "./root";
 import {ModelOptionsState} from "./store/modelOptions/modelOptions";
 import {initialStepperState} from "./store/stepper/stepper";
+import {BarchartSelections} from "./store/plottingSelections/plottingSelections";
 
 export type ComputedWithType<T> = () => T;
 
@@ -189,6 +190,35 @@ export const flattenOptionsIdsByHierarchy = (filterOptions: NestedFilterOption[]
     getIdsFromLayersRecursively(filterOptions);
     return result;
 };
+
+export const flattenXAxisFilterOptionIds = (selections: BarchartSelections, filters: Filter[]) => {
+    const xAxisId = selections?.xAxisId
+    let ids: string[] = []
+    if (xAxisId && filters?.length) {
+        const filter = filters.find((f: Filter) => f.id === xAxisId)
+        if (filter?.options.length) {
+            ids = flattenOptionsIdsByHierarchy(filter.options)
+        }
+    }
+    return ids
+}
+
+
+export const updateSelectionsAndXAxisOrder = (data: BarchartSelections, selections: BarchartSelections, flattenedXAxisFilterOptionIds: string[], updateSelections: (data: {payload: BarchartSelections}) => void) => {
+    const payload = {...selections, ...data}
+    if (data.xAxisId && data.selectedFilterOptions) {
+        const {xAxisId, selectedFilterOptions} = data
+        if (selectedFilterOptions[xAxisId] && flattenedXAxisFilterOptionIds.length) {
+            // Sort the selected filter values according to the order given the barchart filters
+            const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
+                return flattenedXAxisFilterOptionIds.indexOf(a.id) - flattenedXAxisFilterOptionIds.indexOf(b.id);
+            });
+            payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
+        }
+    }
+    // if unable to do the above, just updates the barchart as normal
+    updateSelections({payload})
+}
 
 export const rootOptionChildren = (filterOptions: FilterOption[]) => {
     const rootOption = filterOptions[0];

@@ -15,8 +15,14 @@ export const modelOutputGetters = {
     barchartIndicators: (state: ModelOutputState, getters: any, rootState: RootState): BarchartIndicator[] => {
         return rootState.modelCalibrate.result!.plottingMetadata.barchart.indicators;
     },
+    comparisonPlotIndicators: (state: ModelOutputState, getters: any, rootState: RootState): BarchartIndicator[] => {
+        return rootState.modelCalibrate.comparisonPlotResult!.plottingMetadata.barchart.indicators;
+    },
     barchartFilters: (state: ModelOutputState, getters: any, rootState: RootState): Filter[] => {
-       return outputPlotFilters(rootState);
+        return outputPlotFilters(rootState);
+    },
+    comparisonPlotFilters: (state: ModelOutputState, getters: any, rootState: RootState): Filter[] => {
+        return outputPlotFilters(rootState, "comparisonPlotResult");
     },
     bubblePlotIndicators: (state: ModelOutputState, getters: any, rootState: RootState): ChoroplethIndicatorMetadata[] => {
         return rootState.modelCalibrate.result!.plottingMetadata.choropleth.indicators;
@@ -44,8 +50,8 @@ export const modelOutputGetters = {
     }
 };
 
-const outputPlotFilters = (rootState: RootState) => {
-    let filters = [...rootState.modelCalibrate.result!.plottingMetadata?.barchart.filters];
+const outputPlotFilters = (rootState: RootState, resultName: "result" | "comparisonPlotResult" = "result") => {
+    let filters = [...rootState.modelCalibrate[resultName]!.plottingMetadata?.barchart.filters];
     const area = filters.find((f: any) => f.id == "area");
     if (area && area.use_shape_regions) {
         const regions: FilterOption[] = rootState.baseline.shape!.filters!.regions ?
