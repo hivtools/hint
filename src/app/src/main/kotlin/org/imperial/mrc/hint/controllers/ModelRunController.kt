@@ -92,4 +92,11 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
     {
         return apiClient.getCalibratePlot(id)
     }
+
+    @GetMapping("/comparison/plot/{id}")
+    @ResponseBody
+    fun comparisonPlot(@PathVariable("id") id: String): ResponseEntity<String>
+    {
+        return apiClient.getComparisonPlot(id)
+    }
 }
