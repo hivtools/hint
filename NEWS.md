@@ -1,3 +1,7 @@
+# hint 2.7.2
+
+* Change userCLI target to master
+
 # hint 2.7.1
 
 * Fix docker run entrypoint issue and update pac4j
