@@ -1,3 +1,7 @@
+# hint 2.7.2
+
+* Fix guest login issue
+
 # hint 2.7.1
 
 * Fix docker run entrypoint issue and update pac4j
