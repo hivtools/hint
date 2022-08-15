@@ -3,11 +3,12 @@ package org.imperial.mrc.hint.security
 import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic.Companion.GUEST_USER
 import org.pac4j.core.client.Clients
 import org.pac4j.core.config.Config
-import org.pac4j.core.context.Pac4jConstants
 import org.pac4j.core.context.WebContext
-import org.pac4j.core.context.session.J2ESessionStore
+import org.pac4j.core.context.session.SessionStore
+import org.pac4j.jee.context.session.JEESessionStore
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
+import org.pac4j.core.util.Pac4jConstants
 import org.pac4j.http.client.indirect.FormClient
 import org.pac4j.sql.profile.service.DbProfileService
 import org.springframework.context.annotation.Bean
@@ -35,13 +36,16 @@ class Pac4jConfig
         val formClient = FormClient("/login", profileService)
         val clients = Clients("/callback", formClient)
         return Config(clients).apply {
-            sessionStore = J2ESessionStore()
+            sessionStore = JEESessionStore.INSTANCE
         }
     }
 }
 
 @Component
-class Session(private val webContext: WebContext, private val pac4jConfig: Config)
+class Session(
+    private val webContext: WebContext,
+    private val pac4jConfig: Config,
+    private val sessionStore: SessionStore)
 {
 
     companion object
@@ -52,11 +56,10 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
 
     fun getUserProfile(): CommonProfile
     {
-        val manager = ProfileManager<CommonProfile>(webContext)
-        val profiles = manager.getAll(true)
-        return profiles.singleOrNull() ?: CommonProfile().apply {
+        val manager = ProfileManager(webContext, sessionStore)
+        return (manager.profiles.singleOrNull() ?: CommonProfile().apply {
             id = GUEST_USER
-        }
+        }) as CommonProfile
     }
 
     fun userIsGuest(): Boolean
@@ -66,7 +69,7 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
 
     fun setMode(mode: String)
     {
-        val savedMode = pac4jConfig.sessionStore.get(webContext, MODE) as String?
+        val savedMode = pac4jConfig.sessionStore.get(webContext, MODE).orElse(null)
         if (savedMode != mode)
         {
             // If mode has changed, clear the session version id too
@@ -83,13 +86,14 @@ class Session(private val webContext: WebContext, private val pac4jConfig: Confi
     fun getVersionId(): String
     {
         //Generate a new id if none exists
-        var versionId = pac4jConfig.sessionStore.get(webContext, VERSION_ID) as String?
+        var versionId = pac4jConfig.sessionStore.get(webContext, VERSION_ID).orElse(null)
+
         if (versionId == null)
         {
             versionId = generateVersionId()
             setVersionId(versionId)
         }
-        return versionId
+        return versionId.toString()
     }
 
     fun setVersionId(value: String?)
