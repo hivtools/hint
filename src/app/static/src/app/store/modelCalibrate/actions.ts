@@ -15,6 +15,7 @@ export interface ModelCalibrateActions {
     poll: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getResult: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getCalibratePlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
+    getComparisonPlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
 }
 
 export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrateActions = {
@@ -98,6 +99,9 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                 if (switches.modelCalibratePlot) {
                     dispatch("getCalibratePlot");
                 }
+                if (switches.comparisonPlot) {
+                    dispatch("getComparisonPlot");
+                }
             }
         }
         commit(ModelCalibrateMutation.Ready);
@@ -117,6 +121,18 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         if (response) {
             commit(ModelCalibrateMutation.SetPlotData, response.data);
         }
+    },
+
+    async getComparisonPlot(context) {
+        const {commit, state} = context;
+        const calibrateId = state.calibrateId;
+        commit(ModelCalibrateMutation.ComparisonPlotStarted);
+
+        await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
+            .withError(ModelCalibrateMutation.SetError)
+            .withSuccess(ModelCalibrateMutation.SetComparisonPlotData)
+            .freezeResponse()
+            .get<ModelResultResponse>(`model/comparison/plot/${calibrateId}`);
     }
 };
 

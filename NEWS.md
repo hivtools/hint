@@ -1,6 +1,10 @@
-# hint 2.6.1
+# hint 2.7.1
 
-* Fix docker run entrypoint issue
+* Fix docker run entrypoint issue and update pac4j
+
+# hint 2.7.0
+
+* Endpoint for comparison barchart dataset
 
 # hint 2.6.0
 
