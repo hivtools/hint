@@ -127,6 +127,15 @@ class HintrApiClientTests
     }
 
     @Test
+    fun `can get comparison plot`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val result = sut.getComparisonPlot("1234")
+        assertThat(result.statusCodeValue).isEqualTo(400)
+        JSONValidator().validateError(result.body!!, "FAILED_TO_RETRIEVE_RESULT")
+    }
+
+    @Test
     fun `can get model calibration options`()
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())

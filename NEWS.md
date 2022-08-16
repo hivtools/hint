@@ -1,6 +1,18 @@
-# hint 2.6.1
+# hint 2.8.0
 
-* Fix docker run entrypoint issue
+* Populate model Run Id and calibrate options from project summary
+
+# hint 2.7.2
+
+* Change userCLI target to master
+
+# hint 2.7.1
+
+* Fix docker run entrypoint issue and update pac4j
+
+# hint 2.7.0
+
+* Endpoint for comparison barchart dataset
 
 # hint 2.6.0
 
