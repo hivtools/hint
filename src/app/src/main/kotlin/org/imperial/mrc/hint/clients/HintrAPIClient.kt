@@ -16,8 +16,13 @@ interface HintrAPIClient
 {
     fun validateBaselineIndividual(file: VersionFileWithPath, type: FileType): ResponseEntity<String>
     fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
-    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType, pjnzPath: String, strict: Boolean)
-            : ResponseEntity<String>
+    fun validateSurveyAndProgramme(
+        file: VersionFileWithPath,
+        shapePath: String?,
+        type: FileType,
+        pjnzPath: String?,
+        strict: Boolean
+    ): ResponseEntity<String>
 
     fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
@@ -36,7 +41,11 @@ interface HintrAPIClient
             ResponseEntity<String>
     fun getInputTimeSeriesChartData(type: String, files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
-    fun downloadOutputSubmit(type: String, id: String, projectPayload: Map<String, Any?>? = null): ResponseEntity<String>
+    fun downloadOutputSubmit(
+        type: String,
+        id: String,
+        projectPayload: Map<String, Any?>? = null
+    ): ResponseEntity<String>
     fun downloadOutputStatus(id: String): ResponseEntity<String>
     fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
     fun getUploadMetadata(id: String): ResponseEntity<String>
@@ -78,17 +87,17 @@ class HintrFuelAPIClient(
     }
 
     override fun validateSurveyAndProgramme(file: VersionFileWithPath,
-                                            shapePath: String,
+                                            shapePath: String?,
                                             type: FileType,
-                                            pjnzPath: String,
+                                            pjnzPath: String?,
                                             strict: Boolean): ResponseEntity<String>
     {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("type" to type.toString().lowercase(),
-                        "pjnz" to pjnzPath,
+                        "pjnz" to pjnzPath.orEmpty(),
                         "file" to file,
-                        "shape" to shapePath))
+                        "shape" to shapePath.orEmpty()))
 
         return postJson("validate/survey-and-programme?strict=$strict", json)
     }
@@ -206,7 +215,11 @@ class HintrFuelAPIClient(
         return get("rehydrate/result/${id}")
     }
 
-    override fun downloadOutputSubmit(type: String, id: String, projectPayload: Map<String, Any?>?): ResponseEntity<String>
+    override fun downloadOutputSubmit(
+        type: String,
+        id: String,
+        projectPayload: Map<String, Any?>?
+    ): ResponseEntity<String>
     {
         if (projectPayload.isNullOrEmpty())
         {
