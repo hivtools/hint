@@ -8,6 +8,7 @@ import {FilterOption, ModelResultResponse, ModelStatusResponse, ModelSubmitRespo
 import {switches} from "../../featureSwitches";
 import {Dict} from "../../types";
 import {DownloadResultsMutation} from "../downloadResults/mutations";
+import {PlottingSelectionsMutations} from "../plottingSelections/mutations";
 
 export interface ModelCalibrateActions {
     fetchModelCalibrateOptions: (store: ActionContext<ModelCalibrateState, RootState>) => void
@@ -76,7 +77,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                 commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: data});
                 commit({type: ModelCalibrateMutation.WarningsFetched, payload: data.warnings});
 
-                selectFilterDefaults(data, commit, "updateBarchartSelections")
+                selectFilterDefaults(data, commit, PlottingSelectionsMutations.updateBarchartSelections)
                 commit(ModelCalibrateMutation.Calibrated);
                 if (switches.modelCalibratePlot) {
                     dispatch("getCalibratePlot");
@@ -118,7 +119,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
 
         if (response) {
             if (response.data){
-                selectFilterDefaults(response.data, commit, "updateComparisonPlotSelections")
+                selectFilterDefaults(response.data, commit, PlottingSelectionsMutations.updateComparisonPlotSelections)
             }
             commit(ModelCalibrateMutation.SetComparisonPlotData, response.data);
         }
