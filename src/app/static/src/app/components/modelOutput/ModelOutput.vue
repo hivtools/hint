@@ -117,9 +117,7 @@
         mapMutationByName,
         mapMutationsByNames,
         mapStateProp,
-        mapStateProps,mapActionByName,
-        flattenXAxisFilterOptionIds,
-        updateSelectionsAndXAxisOrder
+        mapStateProps,mapActionByName
     } from "../../utils";
     import {
         BarchartSelections,
@@ -133,10 +131,16 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {Language, Translations} from "../../store/translations/locales";
     import {inactiveFeatures} from "../../main";
+    import {switches} from "../../featureSwitches";
     import {RootState} from "../../root";
     import {LevelLabel} from "../../types";
     import {ChoroplethIndicatorMetadata,} from "../../generated";
-    import {formatOutput, filterConfig} from "../plots/utils";
+    import {
+        formatOutput, 
+        filterConfig,
+        flattenXAxisFilterOptionIds,
+        updateSelectionsAndXAxisOrder
+    } from "../plots/utils";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
 
     const namespace = 'filteredData';
@@ -202,7 +206,7 @@
                 tabs.push("bubble");
             }
 
-            if (!inactiveFeatures.includes("ComparisonPlot")) {
+            if (switches.comparisonPlot) {
                 tabs.push("comparison");
             }
 
