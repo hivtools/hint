@@ -53,7 +53,7 @@ class HomeController(
         val data = objectMapper.readTree(workerStatus)["data"]
         val statuses = mutableMapOf("busy" to 0, "idle" to 0, "paused" to 0, "exited" to 0, "lost" to 0)
         data.fields().forEach {
-            val s = it.value.asText().toLowerCase()
+            val s = it.value.asText().lowercase()
             statuses[s] = statuses.valueOrZero(s) + 1
         }
         statuses["live"] = statuses.valueOrZero("busy") + statuses.valueOrZero("idle") + statuses.valueOrZero("paused")

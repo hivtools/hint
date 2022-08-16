@@ -1,11 +1,13 @@
 import {
     mockADRState,
     mockAxios,
-    mockBaselineState, mockDataExplorationState,
+    mockBaselineState,
     mockDataset,
     mockDatasetResource,
     mockError,
     mockFailure,
+    mockMetadataState,
+    mockPlottingMetadataResponse,
     mockPopulationResponse,
     mockRootState,
     mockShapeResponse,
@@ -18,9 +20,7 @@ import {expectEqualsFrozen, testUploadErrorCommitted} from "../testHelpers";
 import {ADRSchemas} from "../../app/types";
 import Mock = jest.Mock;
 import {initialChorplethSelections} from "../../app/store/plottingSelections/plottingSelections";
-import {Dispatch} from "vuex";
 
-const FormData = require("form-data");
 const adrSchemas: ADRSchemas = {
     baseUrl: "adr.com",
     pjnz: "pjnz",
@@ -34,12 +34,10 @@ const adrSchemas: ADRSchemas = {
 };
 
 const rootState = mockRootState({
-    adr: mockADRState({schemas: adrSchemas})
+    adr: mockADRState({schemas: adrSchemas}),
+    metadata: mockMetadataState({plottingMetadata: null})
 });
 
-const dataExplorationState = mockDataExplorationState({
-    adr: mockADRState({schemas: adrSchemas})
-});
 
 const mockFormData = {
     get: (key: string) => {
@@ -409,12 +407,12 @@ describe("Baseline actions", () => {
         mockFormData,
         actions.uploadPopulation);
 
-    it("gets baseline data, commits it and marks state as ready", async () => {
+    it("gets baseline data, commits and get plotting metadata if not available and marks state as ready", async () => {
 
         const mockShape = mockShapeResponse();
         const mockPopulation = mockPopulationResponse();
         mockAxios.onGet(`/baseline/pjnz/`)
-            .reply(200, mockSuccess({data: {country: "Malawi"}, filename: "test.pjnz"}));
+            .reply(200, mockSuccess({data: {country: "Malawi", iso3: "Malawi"}, filename: "test.pjnz"}));
 
         mockAxios.onGet(`/baseline/shape/`)
             .reply(200, mockSuccess(mockShape));
@@ -422,9 +420,11 @@ describe("Baseline actions", () => {
         mockAxios.onGet(`/baseline/population/`)
             .reply(200, mockSuccess(mockPopulation));
 
+        const state = {iso3: "Malawi"}
+
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.getBaselineData({commit, dispatch, rootState} as any);
+        await actions.getBaselineData({commit, dispatch, rootState, state} as any);
 
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
         expect(calls).toContain(BaselineMutation.PJNZUpdated);
@@ -435,6 +435,11 @@ describe("Baseline actions", () => {
         const payloads = commit.mock.calls.map((callArgs) => callArgs[0]["payload"]);
         expect(payloads.filter(p => Object.isFrozen(p)).length).toBe(4);
         //ready payload is true, which is frozen by definition
+
+        expect(dispatch).toHaveBeenCalledTimes(2)
+        expect(dispatch.mock.calls[0][0]).toBe("metadata/getPlottingMetadata")
+        expect(dispatch.mock.calls[0][1]).toBe("Malawi")
+        expect(dispatch.mock.calls[1][0]).toBe("validate")
     });
 
     it("commits response on validate", async () => {
@@ -478,7 +483,7 @@ describe("Baseline actions", () => {
         });
     });
 
-    it("fails silently and marks state ready if getting baseline data fails", async () => {
+    it("fails silently and marks state ready and does not get plotting metadata if getting baseline data fails", async () => {
 
         mockAxios.onGet(`/baseline/pjnz/`)
             .reply(500);
@@ -491,7 +496,8 @@ describe("Baseline actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.getBaselineData({commit, dispatch, rootState} as any);
+        const state = {iso3: ""}
+        await actions.getBaselineData({commit, dispatch, rootState, state} as any);
 
         expect(commit).toBeCalledTimes(1);
         expect(commit.mock.calls[0][0]["type"]).toBe(BaselineMutation.Ready);

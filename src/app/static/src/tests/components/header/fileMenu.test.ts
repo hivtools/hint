@@ -15,7 +15,7 @@ import {
     mockSurveyAndProgramState,
     mockSurveyResponse
 } from "../../mocks";
-import {LoadingState} from "../../../app/store/load/load";
+import {LoadingState} from "../../../app/store/load/state";
 import FileMenu from "../../../app/components/header/FileMenu.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {Language} from "../../../app/store/translations/locales";

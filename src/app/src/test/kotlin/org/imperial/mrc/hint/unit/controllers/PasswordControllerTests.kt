@@ -27,7 +27,7 @@ class PasswordControllerTests
 
     val mockEmailManager = mock<EmailManager>()
 
-    val expectedSuccessResponse = "{\"errors\":[],\"status\":\"success\",\"data\":true}"
+    private val expectedSuccessResponse = "{\"data\":true,\"errors\":[],\"status\":\"success\"}"
 
     private val mockProps = mock<AppProperties> {
         on { applicationTitle } doReturn "AppTitle"

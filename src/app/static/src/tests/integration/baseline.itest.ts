@@ -9,6 +9,8 @@ describe("Baseline actions", () => {
         await login();
     });
 
+    const state = {iso3: "Malawi"}
+
     it("can upload PJNZ file", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -25,7 +27,7 @@ describe("Baseline actions", () => {
     it("can get baseline data", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.getBaselineData({commit, dispatch, rootState} as any);
+        await actions.getBaselineData({commit, dispatch, rootState, state} as any);
 
         const calls = commit.mock.calls.map((callArgs) => callArgs[0]["type"]);
         expect(calls).toContain(BaselineMutation.PJNZUpdated);
@@ -82,7 +84,7 @@ describe("Baseline actions", () => {
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
-        await actions.getBaselineData({commit, dispatch, rootState} as any);
+        await actions.getBaselineData({commit, dispatch, rootState, state} as any);
         expect(commit.mock.calls.find(c => c[0]["type"] == BaselineMutation.PJNZUpdated)[0]["payload"]).toBe(null);
     });
 
@@ -103,7 +105,7 @@ describe("Baseline actions", () => {
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
-        await actions.getBaselineData({commit, dispatch, rootState} as any);
+        await actions.getBaselineData({commit, dispatch, rootState, state} as any);
         expect(commit.mock.calls.find(c => c[0]["type"] == BaselineMutation.ShapeUpdated)[0]["payload"]).toBe(null);
     });
 
@@ -124,7 +126,7 @@ describe("Baseline actions", () => {
         commit.mockReset();
 
         // if the file has been deleted, data should come back null
-        await actions.getBaselineData({commit, dispatch, rootState} as any);
+        await actions.getBaselineData({commit, dispatch, rootState, state} as any);
         expect(commit.mock.calls.find(c => c[0]["type"] == BaselineMutation.PopulationUpdated)[0]["payload"]).toBe(null);
     });
 

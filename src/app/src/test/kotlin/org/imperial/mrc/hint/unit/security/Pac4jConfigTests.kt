@@ -7,8 +7,8 @@ import org.imperial.mrc.hint.security.SecurePasswordEncoder
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.pac4j.core.client.BaseClient
-import org.pac4j.core.context.session.J2ESessionStore
 import org.pac4j.http.client.indirect.FormClient
+import org.pac4j.jee.context.session.JEESessionStore
 import org.pac4j.sql.profile.service.DbProfileService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -45,7 +45,7 @@ class Pac4jConfigTests
         field.isAccessible = true
         assertThat(field.get(client)).isInstanceOf(DbProfileService::class.java)
 
-        assertThat(config.sessionStore).isInstanceOf(J2ESessionStore::class.java)
+        assertThat(config.sessionStore).isInstanceOf(JEESessionStore::class.java)
     }
 
     @Test

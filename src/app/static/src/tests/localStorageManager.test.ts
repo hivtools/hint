@@ -45,6 +45,7 @@ describe("LocalStorageManager", () => {
         error: null,
         fetching: false,
         generatingCalibrationPlot: false,
+        comparisonPlotResult: null,
         options: {},
         optionsFormMeta: {
             "controlSections": [],

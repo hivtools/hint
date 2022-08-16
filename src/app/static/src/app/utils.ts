@@ -9,9 +9,17 @@ import {
     MutationMethod
 } from "vuex";
 import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
-import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
+import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse, Response} from "./generated";
 import moment from 'moment';
-import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {
+    DynamicControlGroup,
+    DynamicControlSection,
+    DynamicFormMeta
+} from "@reside-ic/vue-dynamic-form";
+import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
+import {RootState} from "./root";
+import {ModelOptionsState} from "./store/modelOptions/modelOptions";
+import {initialStepperState} from "./store/stepper/stepper";
 
 export type ComputedWithType<T> = () => T;
 
@@ -347,4 +355,99 @@ export const getFormData = (file: File) => {
     const formData = new FormData()
     formData.append("file", file)
     return formData
+}
+
+const transformPathToHash = (dataset: any) => {
+    Object.keys(dataset).map((key: string) => {
+        dataset[key] = {
+            hash: dataset[key].path.split("/")[1] || "",
+            filename: dataset[key].filename
+        }
+    })
+    return dataset
+}
+
+export const constructRehydrateProjectState = (rootState: RootState, data: ProjectRehydrateResultResponse) => {
+    const files = transformPathToHash({...data.state.datasets});
+
+    const modelOptions = {
+        options: data.state.model_fit.options,
+        valid: true
+    } as any
+
+    const surveyAndProgram = {
+        survey: {
+            hash: files.survey.hash,
+            filename: files.survey.filename
+        },
+        program: {
+            hash: files.programme.hash,
+            filename: files.programme.filename
+        },
+        anc: {
+            hash: files.anc.hash,
+            filename: files.anc.filename
+        },
+        selectedDataType: DataType.Survey,
+    } as any
+
+    const baseline = {
+        pjnz: {
+            hash: files.pjnz.hash,
+            filename: files.pjnz.filename
+        },
+        shape: {
+            hash: files.shape.hash,
+            filename: files.shape.filename
+        },
+        population: {
+            hash: files.population.hash,
+            filename: files.population.filename
+        },
+    } as any
+
+    const stepper = {
+        steps: initialStepperState().steps,
+        activeStep: 1
+    }
+
+    const projects = {
+        currentProject: null,
+        currentVersion: null,
+        previousProjects: []
+    } as any
+
+    const savedState: Partial<RootState> = {
+        projects,
+        baseline,
+        surveyAndProgram,
+        modelOptions,
+        stepper,
+        hintrVersion: {
+            hintrVersion: data.state.version
+        }
+    }
+
+    return {files, savedState}
+}
+
+export const constructOptionsFormMetaFromData = (state: ModelOptionsState, meta: DynamicFormMeta): DynamicFormMeta => {
+    const stateContainsOptions = Object.keys(state.options).length > 0
+    if (stateContainsOptions) {
+        meta.controlSections.forEach(newSection => {
+            newSection.controlGroups.forEach(newGroup => {
+                newGroup.controls.forEach(newControl => {
+                    if (newControl.name in state.options) {
+                        newControl.value = state.options[newControl.name];
+                    }
+                });
+            });
+        });
+    }
+
+    return meta
+}
+
+export const flatMapControlSection = (sections: DynamicControlSection[]): DynamicControlGroup[] => {
+    return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }

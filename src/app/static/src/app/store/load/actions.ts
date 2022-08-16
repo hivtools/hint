@@ -1,8 +1,8 @@
 import {ActionContext, ActionTree} from "vuex";
-import {LoadingState, LoadState} from "./load";
-import {RootState} from "../../root";
+import {LoadingState, LoadState} from "./state";
+import {emptyState, RootState} from "../../root";
 import {api} from "../../apiService";
-import {verifyCheckSum} from "../../utils";
+import {constructRehydrateProjectState, flatMapControlSection, verifyCheckSum} from "../../utils";
 import {Dict, LocalSessionFile, VersionDetails} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
@@ -10,7 +10,7 @@ import {currentHintVersion} from "../../hintVersion";
 import {initialStepperState} from "../stepper/stepper";
 import {ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generated";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
-import {DynamicControlGroup, DynamicControlSection, DynamicFormData} from "@reside-ic/vue-dynamic-form";
+import {DynamicFormData} from "@reside-ic/vue-dynamic-form";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult" | "SetProjectName" | "RehydrateCancel"
 export type LoadErrorActionTypes = "LoadFailed" | "RehydrateResultError"
@@ -87,7 +87,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
     },
 
-    async updateStoreState({commit, dispatch, state}, savedState) {
+    async updateStoreState(context, savedState) {
         //File hashes have now been set for session in backend, so we save the state from the file we're loading into local
         //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
         //NB load state is not included in the saved state, so we will default back to NotLoading on page reload.
@@ -133,19 +133,32 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 };
 
 const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) => {
-    const {rootGetters, state, dispatch} = context
+    const {rootGetters, state, dispatch, rootState} = context
     const rehydrateId = state.rehydrateId
     const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("RehydrateResult")
         .withError("RehydrateResultError")
         .get<ProjectRehydrateResultResponse>(`rehydrate/result/${rehydrateId}`);
 
-    if (response && response.data && !rootGetters.isGuest) {
-        await (dispatch("projects/createProject",
-            {
-                name: state.projectName,
-                isUploaded: true
-            }, {root: true}));
+    if (response && response.data) {
+        const {files, savedState} = constructRehydrateProjectState(rootState, response.data)
+
+        if (!rootGetters.isGuest) {
+            await dispatch("projects/createProject",
+                {
+                    name: state.projectName,
+                    isUploaded: true
+                }, {root: true});
+                
+            savedState.projects!.currentProject = rootState.projects.currentProject
+            savedState.projects!.currentVersion = rootState.projects.currentVersion
+
+            const newRootState = {...emptyState(), ...savedState}
+
+            Object.assign(rootState, newRootState);
+        }
+
+        await getFilesAndLoad(context, files, savedState)
     }
 }
 
@@ -161,16 +174,20 @@ const getRehydrateStatus = async (context: ActionContext<LoadState, RootState>) 
     }
 }
 
-async function getFilesAndLoad(context: ActionContext<LoadState, RootState>, files: any, savedState: any) {
-    savedState.stepper.steps = initialStepperState().steps;
+async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
+                               files: any,
+                               savedState: Partial<RootState>) {
+    savedState.stepper!.steps = initialStepperState().steps
     const {dispatch, state} = context;
     await api<LoadActionTypes, LoadErrorActionTypes>(context)
         .withSuccess("UpdatingState")
         .withError("LoadFailed")
         .postAndReturn<Dict<LocalSessionFile>>("/session/files/", files)
-        .then(() => {
-            if (state.loadingState != LoadingState.LoadFailed) {
-                dispatch("updateStoreState", savedState);
+        .then((response) => {
+            if (response && response.data) {
+                if (state.loadingState != LoadingState.LoadFailed) {
+                    dispatch("updateStoreState", savedState);
+                }
             }
         });
 }
@@ -187,6 +204,3 @@ const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormDa
     }, {})
 }
 
-const flatMapControlSection = (sections: DynamicControlSection[]) => {
-    return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
-}

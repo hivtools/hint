@@ -8,7 +8,7 @@ import {
     mockSuccess
 } from "../mocks";
 import {actions} from "../../app/store/load/actions";
-import {LoadingState} from "../../app/store/load/load";
+import {LoadingState} from "../../app/store/load/state";
 import {addCheckSum} from "../../app/utils";
 import {localStorageManager} from "../../app/localStorageManager";
 import {currentHintVersion} from "../../app/hintVersion";
@@ -31,6 +31,45 @@ describe("Load actions", () => {
         (console.log as jest.Mock).mockClear();
         (console.info as jest.Mock).mockClear();
     });
+
+    const rehydrateResultResponse = {
+        state: {
+            datasets: {
+                pjnz: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                },
+                population: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                },
+                shape: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                },
+                anc: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                },
+                survey: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                },
+                programme: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                }
+            },
+            calibrate: {
+                id: "123",
+                options: {}
+            },
+            model_fit: {
+                id: "1",
+                options: {}
+            }
+        }
+    }
 
     const RunningStatusResponse: ProjectRehydrateStatusResponse = {
         id: "db0c4957aea4b32c507ac02d63930110",
@@ -556,7 +595,37 @@ describe("Load actions", () => {
             .reply(200, mockSuccess(RunningStatusResponse));
 
         mockAxios.onGet(`rehydrate/result/1`)
-            .reply(200, mockSuccess("RESULT"));
+            .reply(200, mockSuccess(rehydrateResultResponse));
+
+        mockAxios.onPost(`session/files/`)
+            .reply(200, mockSuccess({}));
+
+        const sessionFilesPayload = {
+            pjnz: {
+                hash: "test.csv",
+                filename: "test"
+            },
+            population: {
+                hash: "test.csv",
+                filename: "test"
+            },
+            shape: {
+                hash: "test.csv",
+                filename: "test"
+            },
+            anc: {
+                hash: "test.csv",
+                filename: "test"
+            },
+            survey: {
+                hash: "test.csv",
+                filename: "test"
+            },
+            programme: {
+                hash: "test.csv",
+                filename: "test"
+            }
+        }
 
         const commit = jest.fn();
         const dispatch = jest.fn()
@@ -568,29 +637,49 @@ describe("Load actions", () => {
             expect(mockAxios.history.get.length).toBe(2)
             expect(mockAxios.history.get[0]["url"]).toBe("rehydrate/status/1")
             expect(mockAxios.history.get[1]["url"]).toBe("rehydrate/result/1")
-            expect(commit.mock.calls.length).toBe(3)
+            expect(mockAxios.history.post.length).toBe(1)
+            expect(mockAxios.history.post[0]["url"]).toBe("/session/files/")
+            expect(JSON.parse(mockAxios.history.post[0]["data"])).toStrictEqual(sessionFilesPayload)
+            expect(commit.mock.calls.length).toBe(4)
             expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted")
             expect(commit.mock.calls[0][0].payload).toBeGreaterThan(1)
             expect(commit.mock.calls[1][0].type).toBe("RehydrateStatusUpdated")
             expect(commit.mock.calls[1][0].payload).toStrictEqual(RunningStatusResponse)
             expect(commit.mock.calls[2][0].type).toBe("RehydrateResult")
-            expect(commit.mock.calls[2][0].payload).toBe("RESULT")
-            expect(dispatch.mock.calls.length).toBe(1)
+            expect(commit.mock.calls[2][0].payload).toStrictEqual(rehydrateResultResponse)
+            expect(commit.mock.calls[3][0].type).toBe("UpdatingState")
+            expect(commit.mock.calls[3][0].payload).toStrictEqual({})
+            expect(dispatch.mock.calls.length).toBe(2)
             expect(dispatch.mock.calls[0][0]).toBe("projects/createProject")
             expect(dispatch.mock.calls[0][1]).toStrictEqual({
                 name: "testProject",
                 isUploaded: true
             })
+            expect(dispatch.mock.calls[1][0]).toBe("updateStoreState")
+            const root: RootState = dispatch.mock.calls[1][1]
+            expect(root.baseline.pjnz).toStrictEqual(sessionFilesPayload.pjnz)
+            expect(root.baseline.population).toStrictEqual(sessionFilesPayload.population)
+            expect(root.baseline.shape).toStrictEqual(sessionFilesPayload.shape)
+
+            expect(root.surveyAndProgram.anc).toStrictEqual(sessionFilesPayload.anc)
+            expect(root.surveyAndProgram.survey).toStrictEqual(sessionFilesPayload.survey)
+            expect(root.surveyAndProgram.program).toStrictEqual(sessionFilesPayload.programme)
+
+            expect(root.projects.currentProject).toBe(null)
+            expect(root.projects.currentVersion).toBe(null)
             done();
         }, 2100);
     });
 
-    it("does not dispatch create project action when use is guest", async (done) => {
+    it("Update store states and does not dispatch create project action when user is guest", async (done) => {
         mockAxios.onGet(`rehydrate/status/1`)
             .reply(200, mockSuccess(RunningStatusResponse));
 
         mockAxios.onGet(`rehydrate/result/1`)
-            .reply(200, mockSuccess("RESULT"));
+            .reply(200, mockSuccess(rehydrateResultResponse));
+
+        mockAxios.onPost(`session/files/`)
+            .reply(200, mockSuccess({}));
 
         const commit = jest.fn();
         const dispatch = jest.fn()
@@ -599,10 +688,13 @@ describe("Load actions", () => {
         await actions.pollRehydrate({commit, dispatch, rootState, state, rootGetters} as any);
 
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(3)
+            expect(commit.mock.calls.length).toBe(4)
             expect(commit.mock.calls[2][0].type).toBe("RehydrateResult")
-            expect(commit.mock.calls[2][0].payload).toBe("RESULT")
-            expect(dispatch.mock.calls.length).toBe(0)
+            expect(commit.mock.calls[2][0].payload).toStrictEqual(rehydrateResultResponse)
+            expect(commit.mock.calls[3][0].type).toBe("UpdatingState")
+            expect(commit.mock.calls[3][0].payload).toStrictEqual({})
+            expect(dispatch.mock.calls.length).toStrictEqual(1)
+            expect(dispatch.mock.calls[0][0]).toBe("updateStoreState")
             done();
         }, 2100);
     });

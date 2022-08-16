@@ -1,4 +1,9 @@
-FROM vimc/node-docker-openjdk:master
+FROM vimc/node-docker:master
+
+RUN wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
+RUN add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
+RUN apt-get update
+RUN apt-get install adoptopenjdk-11-hotspot -y
 
 # Setup gradle
 COPY ./src/gradlew /hint/src/

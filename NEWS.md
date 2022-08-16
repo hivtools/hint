@@ -1,3 +1,23 @@
+# hint 2.7.2
+
+* Change userCLI target to master
+
+# hint 2.7.1
+
+* Fix docker run entrypoint issue and update pac4j
+
+# hint 2.7.0
+
+* Endpoint for comparison barchart dataset
+
+# hint 2.6.0
+
+* Upgrade java, gradle and dependecies  
+
+# hint 2.5.0
+
+* Populate project input file data
+
 # hint 2.4.1
 
 * Rename frontend translation text for enterProjectName and uploadFromZip keys

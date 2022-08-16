@@ -12,7 +12,7 @@ import java.io.File
 import java.io.InputStream
 import java.security.DigestInputStream
 import java.security.MessageDigest
-import javax.xml.bind.DatatypeConverter
+import jakarta.xml.bind.DatatypeConverter
 
 enum class FileType
 {
@@ -26,7 +26,7 @@ enum class FileType
 
     override fun toString(): String
     {
-        return this.name.toLowerCase()
+        return this.name.lowercase()
     }
 }
 
@@ -110,7 +110,7 @@ class LocalFileManager(
     {
         val files = versionRepository.getVersionFiles(session.getVersionId())
         val includeKeys = include.map { it.toString() }
-        return files.filterKeys { includeKeys.count() == 0 || includeKeys.contains(it) }
+        return files.filterKeys { includeKeys.isEmpty() || includeKeys.contains(it) }
                 .mapValues { it.value.toVersionFileWithPath(uploadPath) }
     }
 
