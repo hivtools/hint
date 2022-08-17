@@ -16,7 +16,6 @@ DB_MIGRATE_IMAGE=$REGISTRY/hint-db-migrate:master
 HINTR_IMAGE=$REGISTRY/$API:$HINTR_VERSION
 
 
-
 docker network create $NETWORK
 docker pull $DB_IMAGE
 docker pull $HINTR_IMAGE
@@ -50,4 +49,3 @@ docker run --rm --network=$NETWORK \
 
 $HERE/add-test-user.sh
 
-$HERE/add-vault-secrets.sh
