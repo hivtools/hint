@@ -14,8 +14,6 @@ docker build --tag=hint-cli-build \
   -f $HERE/build-cli.dockerfile \
   .
 
-$HERE/add-vault-secrets.sh
-
 $HERE/../scripts/run-dependencies.sh
 
 # Run image to test and build CLI image
