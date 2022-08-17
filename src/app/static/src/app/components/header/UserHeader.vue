@@ -21,7 +21,7 @@
                 </a>
                 <a v-if="!isGuest" href="/logout" class="pr-2 mr-2 border-right" v-translate="'logout'">
                 </a>
-                <a v-if="isGuest" href="/oauth2/authorization/auth0" class="pr-2 mr-2 border-right" v-translate="'logIn'">
+                <a v-if="isGuest" href="/login" class="pr-2 mr-2 border-right" v-translate="'logIn'">
                 </a>
                 <language-menu></language-menu>
             </div>

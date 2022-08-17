@@ -15,15 +15,7 @@ DB_IMAGE=$REGISTRY/hint-db:master
 DB_MIGRATE_IMAGE=$REGISTRY/hint-db-migrate:master
 HINTR_IMAGE=$REGISTRY/$API:$HINTR_VERSION
 
-export VAULT_ADDR=https://vault.dide.ic.ac.uk:8200
-OAUTH2_CLIENT_ID="$(vault read -field=password /secret/oauth2/clientid/auth0)"
-OAUTH2_CLIENT_SECRET="$(vault read -field=password /secret/oauth2/clientsecret/auth0)"
-OAUTH2_ISSUER_URI="$(vault read -field=password /secret/oauth2/issueruri/auth0)"
-OAUTH2_ISSUER_OPENID="$(vault read -field=password /secret/oauth2/scopeopenid/auth0)"
-OAUTH2_SCOPE_PROFILE="$(vault read -field=password /secret/oauth2/scopeprofile/auth0)"
-OAUTH2_SCOPE_EMAIL="$(vault read -field=password /secret/oauth2/scopeemail/auth0)"
 
-export OAUTH2_CLIENT_ID OAUTH2_CLIENT_SECRET OAUTH2_ISSUER_URI OAUTH2_ISSUER_OPENID OAUTH2_SCOPE_PROFILE OAUTH2_SCOPE_EMAIL
 
 docker network create $NETWORK
 docker pull $DB_IMAGE
@@ -57,3 +49,5 @@ docker run --rm --network=$NETWORK \
   -url=jdbc:postgresql://$DB/hint
 
 $HERE/add-test-user.sh
+
+$HERE/add-vault-secrets.sh

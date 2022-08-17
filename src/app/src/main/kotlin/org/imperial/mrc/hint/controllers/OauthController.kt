@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class OauthController
 {
-    @GetMapping("/oauth2")
+    @GetMapping("/oauth2/test")
     fun oauth(@AuthenticationPrincipal principal: OidcUser): ResponseEntity<String> {
         return ResponseEntity.ok("works! `${principal.userInfo}`")
     }
