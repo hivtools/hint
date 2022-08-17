@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 export VAULT_ADDR=https://vault.dide.ic.ac.uk:8200
 OAUTH2_CLIENT_ID="$(vault read -field=value /secret/hint/oauth2/client-id)"
 OAUTH2_CLIENT_SECRET="$(vault read -field=value /secret/hint/oauth2/client-secret)"

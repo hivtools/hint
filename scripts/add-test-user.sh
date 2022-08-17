@@ -4,8 +4,6 @@ NETWORK=hint_nw
 HERE=$(realpath "$(dirname $0)")
 TEST_CONFIG=$HERE/../src/app/static/scripts/test.properties
 
-$HERE/add-vault-secrets.sh
-
 image=mrcide/hint-user-cli:master
 docker pull $image
 docker run --network=hint_nw \
