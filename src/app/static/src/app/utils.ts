@@ -22,6 +22,8 @@ import {ModelOptionsState} from "./store/modelOptions/modelOptions";
 import {RootState} from "./root";
 import {initialStepperState} from "./store/stepper/stepper";
 import {LoadState} from "./store/load/state";
+import {initialModelRunState} from "./store/modelRun/modelRun";
+import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
 
 export type ComputedWithType<T> = () => T;
 
@@ -372,40 +374,22 @@ const transformPathToHash = (dataset: any) => {
 export const constructRehydrateProjectState = async (context: ActionContext<LoadState, RootState>, data: ProjectRehydrateResultResponse) => {
     const files = transformPathToHash({...data.state.datasets});
 
-    context.rootState.modelRun.modelRunId = data.state.model_fit.id
-    context.rootState.modelCalibrate.calibrateId = data.state.calibrate.id
-
-    await Promise.all([
-        context.dispatch("modelRun/getResult", {}, {root: true}),
-        context.dispatch("modelCalibrate/getResult", {}, {root: true})
-    ])
-
     const modelOptions = {
         options: data.state.model_fit.options,
         valid: true
     } as any
 
     const modelRun = {
+        ...initialModelRunState(),
         modelRunId: data.state.model_fit.id,
-        result: context.rootState.modelRun.result,
-        warnings: context.rootState.modelRun.warnings,
-        status: {success: true, done: true},
-        ready: true,
-        errors: []
+        status: {success: true, done: true}
     } as any
 
     const modelCalibrate = {
+        ...initialModelCalibrateState(),
         calibrateId: data.state.calibrate.id,
         options: data.state.calibrate.options,
-        result: context.rootState.modelCalibrate.result,
-        warnings: context.rootState.modelCalibrate.warnings,
-        status: {success: true, done: true},
-        ready: true,
-        complete: true
-    } as any
-
-    const plottingSelections = {
-        barchart: context.rootState.plottingSelections.barchart
+        status: {success: true, done: true}
     } as any
 
     const surveyAndProgram = {
@@ -441,7 +425,7 @@ export const constructRehydrateProjectState = async (context: ActionContext<Load
 
     const stepper = {
         steps: initialStepperState().steps,
-        activeStep: 1
+        activeStep: 6
     }
 
     const projects = {
@@ -457,7 +441,6 @@ export const constructRehydrateProjectState = async (context: ActionContext<Load
         modelOptions,
         modelCalibrate,
         modelRun,
-        plottingSelections,
         stepper,
         hintrVersion: {
             hintrVersion: data.state.version

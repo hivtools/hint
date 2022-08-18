@@ -650,17 +650,15 @@ describe("Load actions", () => {
             expect(commit.mock.calls[2][0].payload).toStrictEqual(rehydrateResultResponse)
             expect(commit.mock.calls[3][0].type).toBe("UpdatingState")
             expect(commit.mock.calls[3][0].payload).toStrictEqual({})
-            expect(dispatch.mock.calls.length).toBe(4)
-            expect(dispatch.mock.calls[0][0]).toBe("modelRun/getResult")
-            expect(dispatch.mock.calls[1][0]).toBe("modelCalibrate/getResult")
-            expect(dispatch.mock.calls[2][0]).toBe("projects/createProject")
-            expect(dispatch.mock.calls[2][1]).toStrictEqual({
+            expect(dispatch.mock.calls.length).toBe(2)
+            expect(dispatch.mock.calls[0][0]).toBe("projects/createProject")
+            expect(dispatch.mock.calls[0][1]).toStrictEqual({
                 name: "testProject",
                 isUploaded: true
             })
 
-            expect(dispatch.mock.calls[3][0]).toBe("updateStoreState")
-            const root: RootState = dispatch.mock.calls[3][1]
+            expect(dispatch.mock.calls[1][0]).toBe("updateStoreState")
+            const root: RootState = dispatch.mock.calls[1][1]
 
             //Baseline
             expect(root.baseline.pjnz).toStrictEqual(sessionFilesPayload.pjnz)
@@ -679,14 +677,11 @@ describe("Load actions", () => {
             //ModelRun
             expect(root.modelRun.modelRunId).toStrictEqual(rehydrateResultResponse.state.model_fit.id)
             expect(root.modelRun.status).toStrictEqual({success: true, done: true})
-            expect(root.modelRun.ready).toBe(true)
 
             //Calibrate
             expect(root.modelCalibrate.options).toStrictEqual(rehydrateResultResponse.state.calibrate.options)
             expect(root.modelCalibrate.calibrateId).toStrictEqual(rehydrateResultResponse.state.calibrate.id)
             expect(root.modelCalibrate.status).toStrictEqual({success: true, done: true})
-            expect(root.modelCalibrate.ready).toBe(true)
-            expect(root.modelCalibrate.complete).toBe(true)
 
             //Project
             expect(root.projects.currentProject).toBe(null)
@@ -696,7 +691,7 @@ describe("Load actions", () => {
             expect(root.hintrVersion.hintrVersion).toStrictEqual(rehydrateResultResponse.state.version)
 
             //Steps
-            expect(root.stepper.activeStep).toBe(7)
+            expect(root.stepper.activeStep).toBe(6)
 
             done();
         }, 2100);
@@ -724,10 +719,8 @@ describe("Load actions", () => {
             expect(commit.mock.calls[2][0].payload).toStrictEqual(rehydrateResultResponse)
             expect(commit.mock.calls[3][0].type).toBe("UpdatingState")
             expect(commit.mock.calls[3][0].payload).toStrictEqual({})
-            expect(dispatch.mock.calls.length).toStrictEqual(3)
-            expect(dispatch.mock.calls[0][0]).toBe("modelRun/getResult")
-            expect(dispatch.mock.calls[1][0]).toBe("modelCalibrate/getResult")
-            expect(dispatch.mock.calls[2][0]).toBe("updateStoreState")
+            expect(dispatch.mock.calls.length).toStrictEqual(1)
+            expect(dispatch.mock.calls[0][0]).toBe("updateStoreState")
             done();
         }, 2100);
     });

@@ -162,7 +162,6 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
             Object.assign(rootState, newRootState);
         }
 
-        savedState.stepper!.activeStep = 7
 
         await getFilesAndLoad(context, files, savedState)
     }
