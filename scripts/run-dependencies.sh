@@ -15,7 +15,6 @@ DB_IMAGE=$REGISTRY/hint-db:master
 DB_MIGRATE_IMAGE=$REGISTRY/hint-db-migrate:master
 HINTR_IMAGE=$REGISTRY/$API:$HINTR_VERSION
 
-
 docker network create $NETWORK
 docker pull $DB_IMAGE
 docker pull $HINTR_IMAGE
@@ -48,4 +47,3 @@ docker run --rm --network=$NETWORK \
   -url=jdbc:postgresql://$DB/hint
 
 $HERE/add-test-user.sh
-
