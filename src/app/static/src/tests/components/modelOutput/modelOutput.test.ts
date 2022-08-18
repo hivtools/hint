@@ -810,6 +810,50 @@ describe("ModelOutput component", () => {
         );
     });
 
+    it("renders comparison plot table", () => {
+        const store = getStore({selectedTab: "comparison"});
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const table = wrapper.findAll(AreaIndicatorsTable).at(1);
+        expect(table.props().areaFilterId).toBe("area");
+        expect(table.props().filters).toStrictEqual(["TEST COMPARISON FILTERS"]);
+        expect(table.props().selections).toStrictEqual({
+            indicatorId: "TestIndicator",
+            xAxisId: "age",
+            disaggregateById: "source",
+            selectedFilterOptions: {
+                region: [{id: "r1", label: "region 1"}],
+                age: [{id: "a1", label: "0-4"}]
+            }
+        });
+        expect(table.props().tableData).toStrictEqual(["TEST COMPARISON DATA"]);
+        expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
+        expect(table.props().translateLabels).toBe(undefined);
+    });
+
+    it("renders comparison plot table with correct indicator props", () => {
+        const store = getStore({selectedTab: "comparison"}, {
+            comparisonPlotIndicators: jest.fn().mockReturnValue(
+                [
+                    {"indicator": "prevalence", "indicator_value": "2"},
+                    {"indicator": "art_coverage", "indicator_value": "4"}
+                ]
+            )
+        },
+            {
+                comparisonPlot: {indicatorId: "art_coverage"}
+            });
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const table = wrapper.findAll(AreaIndicatorsTable).at(1);
+        expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
+        expect(table.props().indicators).toStrictEqual(
+            [
+                {"indicator": "art_coverage", "indicator_value": "4"}
+            ]
+        );
+    });
+
     it("formatBarchartValue formats value", () => {
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {store, localVue});
