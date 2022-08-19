@@ -1,3 +1,7 @@
+# hint 2.9.0
+
+* Table for comparison barchart
+
 # hint 2.8.0
 
 * Comparison barchart in review output step
