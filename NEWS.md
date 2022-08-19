@@ -2,6 +2,10 @@
 
 * Comparison barchart in review output step
 
+# hint 2.7.3
+
+* Fix guest login issue
+
 # hint 2.7.2
 
 * Change userCLI target to master

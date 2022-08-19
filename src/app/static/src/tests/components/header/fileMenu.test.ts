@@ -31,6 +31,10 @@ describe("File menu", () => {
     const testProjects = [{id: 2, name: "proj1", versions: []}];
     const mockGetProjects = jest.fn();
 
+    beforeEach(() => {
+        jest.clearAllMocks()
+    })
+
     const storeModules = {
         baseline: {
             namespaced: true,
@@ -331,11 +335,22 @@ describe("File menu", () => {
         expect(projectModal.props().openModal).toBe(false)
         projectModal.find(".btn").trigger("click");
         expect(mockLoadAction.mock.calls.length).toBe(1);
-        expect(mockGetProjects).toHaveBeenCalled()
         expect(projectModal.props().openModal).toBe(false)
     });
 
-    it("can open upload project modal as guest when file is uploaded", () => {
+    it("can get projects when user is logged in when file is uploaded", () => {
+        const store = createStore({
+            load: {
+                namespaced: true,
+                state: mockLoadState()
+            }
+        }, false);
+        const projectModal = openUploadNewProject(store, "#upload-zip", "application/zip")
+        projectModal.find(".btn").trigger("click");
+        expect(mockGetProjects).toHaveBeenCalled()
+    });
+
+    it("can open upload project modal and does not get projects as guest when file is uploaded", () => {
         const mockPreparingRehydrate = jest.fn()
         const store = createStore({
             load: {
@@ -348,7 +363,7 @@ describe("File menu", () => {
         });
         const projectModal = openUploadNewProject(store, "#upload-zip", "application/zip")
         projectModal.find(".btn").trigger("click");
-        expect(mockGetProjects).toHaveBeenCalled()
+        expect(mockGetProjects).not.toHaveBeenCalled()
         expect(mockPreparingRehydrate.mock.calls.length).toBe(1);
         expect(projectModal.props().openModal).toBe(false)
     });
