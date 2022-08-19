@@ -124,14 +124,16 @@ export function stripNamespace(name: string) {
 
 const flattenToIdArray = (filterOption: NestedFilterOption): string[] => {
     let result: string[] = [];
-    result.push(filterOption.id);
-    if (filterOption.children) {
-        filterOption.children.forEach(o =>
-            result = [
-                ...result,
-                ...flattenToIdArray(o as NestedFilterOption)
-            ]);
+    if (filterOption?.id) {
+        result.push(filterOption.id);
+        if (filterOption.children) {
+            filterOption.children.forEach(o =>
+                result = [
+                    ...result,
+                    ...flattenToIdArray(o as NestedFilterOption)
+                ]);
 
+        }
     }
     return result;
 };
