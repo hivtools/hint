@@ -33,8 +33,8 @@ export const mapStatePropByName = <T>(namespace: string | null, name: string): C
 };
 
 export const mapStateProps = <S, K extends string>(namespace: string,
-                                                   map: Dict<(this: CustomVue, state: S) => any>) => {
-    type R = { [key in K]: any }
+    map: Dict<(this: CustomVue, state: S) => any>) => {
+    type R = {[key in K]: any}
     return mapState<S>(namespace, map) as R
 };
 
@@ -43,7 +43,7 @@ export const mapGetterByName = <T>(namespace: string | null, name: string): Comp
 }
 
 export const mapGettersByNames = <K extends string>(namespace: string, names: string[]) => {
-    type R = { [key in K]: any }
+    type R = {[key in K]: any}
     return mapGetters(namespace, names) as R
 };
 
@@ -52,12 +52,12 @@ export const mapActionByName = <T>(namespace: string | null, name: string): Acti
 };
 
 export const mapActionsByNames = <K extends string>(namespace: string | null, names: string[]) => {
-    type R = { [key in K]: any }
+    type R = {[key in K]: any}
     return (!!namespace && mapActions(namespace, names) || mapActions(names)) as R
 };
 
 export const mapMutationsByNames = <K extends string>(namespace: string, names: string[]) => {
-    type R = { [key in K]: any }
+    type R = {[key in K]: any}
     return mapMutations(namespace, names) as R
 };
 
@@ -132,7 +132,6 @@ const flattenToIdArray = (filterOption: NestedFilterOption): string[] => {
                     ...result,
                     ...flattenToIdArray(o as NestedFilterOption)
                 ]);
-    
         }
     }
     return result;
@@ -148,7 +147,7 @@ export const flattenToIdSet = (ids: string[], lookup: Dict<NestedFilterOption>):
     return new Set(result);
 };
 
-export const flattenOptions = (filterOptions: NestedFilterOption[]): { [k: string]: NestedFilterOption } => {
+export const flattenOptions = (filterOptions: NestedFilterOption[]): {[k: string]: NestedFilterOption} => {
     let result = {};
     filterOptions.forEach(r =>
         result = {
@@ -218,7 +217,8 @@ export const findResource = (datasetWithResources: any, resourceType: string, re
         url: metadata.url,
         lastModified: metadata.last_modified,
         metadataModified: metadata.metadata_modified,
-        outOfDate: false} : null
+        outOfDate: false
+    } : null
 };
 
 export const datasetFromMetadata = (fullMetaData: any, schemas: ADRSchemas, release?: string) => {
@@ -242,7 +242,7 @@ export const datasetFromMetadata = (fullMetaData: any, schemas: ADRSchemas, rele
 };
 
 export const constructUploadFile = (datasetWithResources: any, index: number, resourceType: string,
-                                 resourceFilename: string, displayName: string): UploadFile | null => {
+    resourceFilename: string, displayName: string): UploadFile | null => {
     const resource = findResource(datasetWithResources, resourceType, null);
     // We expect to find resource name on the resource - return null if not found - file should
     // not be uploadable.
@@ -262,8 +262,7 @@ export const constructUploadFileWithResourceName = (datasetWithResources: any, i
 };
 
 function getUploadFileFromResource(resource: DatasetResource | null, resourceName: string, index: number,
-                                resourceType: string, resourceFilename: string, displayName: string): UploadFile
-{
+    resourceType: string, resourceFilename: string, displayName: string): UploadFile {
     const resourceId = resource ? resource.id : null;
     const lastModified = resource ? ([resource.lastModified, resource.metadataModified].sort()[1]) : null;
     const resourceUrl = resource ? resource.url : null;

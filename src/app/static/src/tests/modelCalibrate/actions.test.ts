@@ -159,6 +159,7 @@ describe("ModelCalibrate actions", () => {
 
     it("getResult commits result and warnings when successfully fetched, sets default plotting selections, and dispatches getCalibratePlot and getComparisonPlot", async () => {
         switches.modelCalibratePlot = true;
+        switches.comparisonPlot = true;
         const testResult = {
             data: "TEST DATA",
             plottingMetadata: {
