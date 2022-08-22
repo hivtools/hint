@@ -65,9 +65,10 @@ describe("Load actions", () => {
                 options: {}
             },
             model_fit: {
-                id: "1",
+                id: "100",
                 options: {}
-            }
+            },
+            version: {hintr: "1", naomi: "2", rrq: "3"}
         }
     }
 
@@ -655,18 +656,43 @@ describe("Load actions", () => {
                 name: "testProject",
                 isUploaded: true
             })
+
             expect(dispatch.mock.calls[1][0]).toBe("updateStoreState")
             const root: RootState = dispatch.mock.calls[1][1]
+
+            //Baseline
             expect(root.baseline.pjnz).toStrictEqual(sessionFilesPayload.pjnz)
             expect(root.baseline.population).toStrictEqual(sessionFilesPayload.population)
             expect(root.baseline.shape).toStrictEqual(sessionFilesPayload.shape)
 
+            //SurveyAndProgram
             expect(root.surveyAndProgram.anc).toStrictEqual(sessionFilesPayload.anc)
             expect(root.surveyAndProgram.survey).toStrictEqual(sessionFilesPayload.survey)
             expect(root.surveyAndProgram.program).toStrictEqual(sessionFilesPayload.programme)
 
+            //Model Options
+            expect(root.modelOptions.options).toStrictEqual(rehydrateResultResponse.state.model_fit.options)
+            expect(root.modelOptions.valid).toBe(true)
+
+            //ModelRun
+            expect(root.modelRun.modelRunId).toStrictEqual(rehydrateResultResponse.state.model_fit.id)
+            expect(root.modelRun.status).toStrictEqual({success: true, done: true})
+
+            //Calibrate
+            expect(root.modelCalibrate.options).toStrictEqual(rehydrateResultResponse.state.calibrate.options)
+            expect(root.modelCalibrate.calibrateId).toStrictEqual(rehydrateResultResponse.state.calibrate.id)
+            expect(root.modelCalibrate.status).toStrictEqual({success: true, done: true})
+
+            //Project
             expect(root.projects.currentProject).toBe(null)
             expect(root.projects.currentVersion).toBe(null)
+
+            //Version
+            expect(root.hintrVersion.hintrVersion).toStrictEqual(rehydrateResultResponse.state.version)
+
+            //Steps
+            expect(root.stepper.activeStep).toBe(6)
+
             done();
         }, 2100);
     });
@@ -704,8 +730,9 @@ describe("Load actions", () => {
             .reply(500, mockFailure("ERROR"));
 
         const commit = jest.fn();
+        const dispatch = jest.fn()
         const state = mockLoadState({rehydrateId: "1"} as any)
-        await actions.pollRehydrate({commit, rootState, state} as any);
+        await actions.pollRehydrate({commit, rootState, state, dispatch} as any);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2)
@@ -713,6 +740,7 @@ describe("Load actions", () => {
             expect(commit.mock.calls[0][0].payload).toBeGreaterThan(1)
             expect(commit.mock.calls[1][0].type).toBe("RehydrateResultError")
             expect(commit.mock.calls[1][0].payload).toStrictEqual(mockError("ERROR"))
+            expect(dispatch).not.toHaveBeenCalled()
             done();
         }, 2100);
     });
