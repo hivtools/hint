@@ -69,7 +69,7 @@ export class LocalStorageManager {
 
     savePartialState = (partialState: Partial<RootState>, dataExplorationMode: boolean) => {
         const appStateKey = getAppStateKey(dataExplorationMode);
-        window.localStorage.setItem(appStateKey, JSON.stringify(partialState));
+            window.localStorage.setItem(appStateKey, JSON.stringify(partialState));
     };
 
     getState = (dataExplorationMode: boolean): Partial<RootState> | null => {
