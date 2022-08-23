@@ -168,6 +168,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {localVue, store});
         const vm = wrapper.vm as any;
 
+        expect(wrapper.findAll(BarChartWithFilters).length).toBe(2);
         const comparisonPlot = wrapper.findAll(BarChartWithFilters).at(1);
         expect(comparisonPlot.props().chartData).toStrictEqual(["TEST COMPARISON DATA"]);
         expect(comparisonPlot.props().filterConfig).toBe(vm.comparisonPlotFilterConfig);
@@ -176,6 +177,12 @@ describe("ModelOutput component", () => {
         expect(comparisonPlot.props().formatFunction).toBe(vm.formatBarchartValue);
         expect(comparisonPlot.props().showRangesInTooltips).toBe(true);
         expect(comparisonPlot.props().disaggregateByConfig).toStrictEqual({fixed: true, hideFilter: true});
+    });
+
+    it("does not render comparison plot if no there are no comparison plot indicators", () => {
+        const store = getStore({selectedTab: "comparison"}, {comparisonPlotIndicators: jest.fn().mockReturnValue([])});
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        expect(wrapper.findAll(BarChartWithFilters).length).toBe(1);
     });
 
     it("if no selected tab in state, defaults to select Map tab", () => {
