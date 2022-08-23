@@ -4,7 +4,9 @@
     <title>${title}: Reset your password</title>
     <link rel="shortcut icon" href="/public/favicon.ico"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src https://*; child-src 'none';"/>
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self'; script-src 'self';
+           style-src 'self'; font-src 'self'; img-src 'self'; frame-src 'self';"/>
     <!-- inject:css -->
     <!-- endinject -->
 </head>
