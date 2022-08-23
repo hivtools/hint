@@ -4,6 +4,7 @@
     <title> 404 Error Page</title>
     <link rel="shortcut icon" href="/public/favicon.ico"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="Content-Security-Policy"  content="default-src"/>
     <!-- inject:css -->
     <link rel="stylesheet" href="/public/css/style-393864d1b82cb6d8b6fc400efabd5e90.min.css">
     <!-- endinject -->
