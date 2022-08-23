@@ -26,6 +26,11 @@
                         @click="createProject({name: newProjectName})"
                         v-translate="'createProject'">
                 </button>
+                <a type="pr-4 button"
+                   class="btn btn-red mt-2 float-right"
+                   :href="'/oauth2'"
+                   v-translate="'Test ADR Resource Server'">
+                </a>
             </div>
             <div class="my-3 col-12">
                 <project-history></project-history>

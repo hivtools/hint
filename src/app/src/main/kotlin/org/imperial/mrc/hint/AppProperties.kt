@@ -35,6 +35,9 @@ interface AppProperties
     val dbUrl: String
     val issueReportUrl: String
     val supportEmail: String
+    val oauth2ClientId: String
+    val oauth2ClientSecret: String
+    val oauth2ClientUrl: String
 }
 
 //prevent auto-wiring of default Properties
@@ -70,6 +73,9 @@ class ConfiguredAppProperties(private val props: HintProperties = properties) : 
     override val dbUrl: String = propString("db_url")
     override val issueReportUrl: String = propString("issue_report_url")
     override val supportEmail: String = propString("support_email")
+    override val oauth2ClientId: String = propString("oauth2_client_id")
+    override val oauth2ClientSecret: String = propString("oauth2_client_secret")
+    override val oauth2ClientUrl: String = propString("oauth2_client_url")
 
     companion object
     {

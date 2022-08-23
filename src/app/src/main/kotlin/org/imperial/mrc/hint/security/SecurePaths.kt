@@ -5,7 +5,7 @@ enum class SecurePaths{
     ADD{
         override fun pathList(): List<String>
         {
-            return listOf("/adr/**","/user/**","/project/**")
+            return listOf("/adr/**","/user/**","/project/**","/oauth2/test")
         }
     },
     EXCLUDE{

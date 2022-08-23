@@ -29,7 +29,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-freemarker'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
     implementation "org.apache.tomcat.embed:tomcat-embed-el:${tomcatVersion}"
     implementation "org.apache.tomcat.embed:tomcat-embed-websocket:${tomcatVersion}"
@@ -49,6 +48,8 @@ dependencies {
     implementation 'org.pac4j:pac4j-http:5.4.3'
     implementation 'org.pac4j:pac4j-jwt:5.4.3'
     implementation 'org.pac4j:pac4j-sql:5.4.3'
+    implementation 'org.pac4j:pac4j-oidc:5.4.3'
+    implementation 'org.pac4j:pac4j-oauth:5.4.3'
     implementation 'org.postgresql:postgresql:42.3.3'
     implementation 'org.mindrot:jbcrypt:0.4'
     implementation 'com.github.spullara.mustache.java:compiler:0.9.5'
