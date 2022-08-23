@@ -35,7 +35,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         this._commit = context.commit;
         this._headers = {
             "Accept-Language": context.rootState.language,
-            'Content-Security-Policy-Report-Only': "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; frame-src 'self'"
+            "Content-Security-Policy-Report-Only": "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; frame-src 'self'"
         };
     }
 

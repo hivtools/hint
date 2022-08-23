@@ -4,6 +4,7 @@ import {freezer} from '../app/utils';
 
 const rootState = mockRootState();
 
+const contentSecurityPolicy = "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; frame-src 'self'"
 describe("ApiService", () => {
 
     beforeEach(() => {
@@ -339,7 +340,8 @@ describe("ApiService", () => {
 
         expect(mockAxios.history.get[0].headers).toStrictEqual({
             "Accept": "application/json, text/plain, */*",
-            "Accept-Language": "en"
+            "Accept-Language": "en",
+            "Content-Security-Policy-Report-Only": contentSecurityPolicy
         })
     });
 
@@ -356,7 +358,8 @@ describe("ApiService", () => {
         expect(mockAxios.history.post[0].headers).toStrictEqual({
             "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en",
-            "Content-Type": "application/x-www-form-urlencoded"
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Security-Policy-Report-Only": contentSecurityPolicy
         })
     });
 
