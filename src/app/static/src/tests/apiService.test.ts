@@ -1,10 +1,9 @@
 import {api} from "../app/apiService";
 import {mockAxios, mockError, mockFailure, mockRootState, mockSuccess} from "./mocks";
-import {freezer} from '../app/utils';
+import {contentSecurityPolicy, freezer} from '../app/utils';
 
 const rootState = mockRootState();
 
-const contentSecurityPolicy = "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; frame-src 'self'"
 describe("ApiService", () => {
 
     beforeEach(() => {

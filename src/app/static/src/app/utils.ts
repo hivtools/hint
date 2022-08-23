@@ -470,3 +470,5 @@ export const constructOptionsFormMetaFromData = (state: ModelOptionsState, meta:
 export const flatMapControlSections = (sections: DynamicControlSection[]): DynamicControlGroup[] => {
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }
+
+export const contentSecurityPolicy = "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; frame-src 'self'"
