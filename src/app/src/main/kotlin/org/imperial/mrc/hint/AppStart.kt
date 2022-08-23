@@ -25,7 +25,7 @@ class MvcConfig(val config: Config) : WebMvcConfigurer
 {
     override fun addResourceHandlers(registry: ResourceHandlerRegistry)
     {
-        registry.addResourceHandler("/public/**")
+        registry.addResourceHandler("/public/**","/favicon.ico")
                 .addResourceLocations("file:/static/public/", "file:static/public/")
                 .resourceChain(true)
                 .addResolver(EncodedResourceResolver())
