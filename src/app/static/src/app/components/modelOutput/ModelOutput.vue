@@ -89,7 +89,7 @@
                 </div>
             </div>
 
-            <div id="comparison-container" :class="selectedTab==='comparison' ? 'col-md-12' : 'd-none'">
+            <div id="comparison-container" v-if="comparisonPlotIndicators.length" :class="selectedTab==='comparison' ? 'col-md-12' : 'd-none'">
                 <bar-chart-with-filters
                     :chart-data="comparisonPlotData"
                     :filter-config="comparisonPlotFilterConfig"
@@ -169,6 +169,7 @@
         choroplethFilters: Filter[],
         countryAreaFilterOption: FilterOption,
         barchartIndicators: BarchartIndicator[],
+        comparisonPlotIndicators: BarchartIndicator[],
         chartdata: any,
         comparisonPlotData: any
         barchartSelections: BarchartSelections,
