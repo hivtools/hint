@@ -15,8 +15,6 @@ class ProfileDefinition : OAuthProfileDefinition()
 
     override fun extractUserProfile(body: String?): CommonProfile
     {
-        //TODO: check if email exists in our db, if not save email
-        //TODO: add LoginSource to user table
         return OAuth20Profile().apply {
             id = "test.user@example.com"
         }
