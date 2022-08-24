@@ -1,3 +1,16 @@
+
+# hint 2.8.1
+
+* Bug: HINT login is broken on dev and staging
+
+# hint 2.8.0
+
+* Populate model Run Id and calibrate options from project summary
+
+# hint 2.7.3
+
+* Fix guest login issue
+
 # hint 2.7.2
 
 * Change userCLI target to master
