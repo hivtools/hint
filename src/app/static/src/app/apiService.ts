@@ -1,7 +1,7 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {ErrorsMutation} from "./store/errors/mutations";
 import {ActionContext, Commit} from "vuex";
-import {contentSecurityPolicy, freezer, isHINTResponse} from "./utils";
+import {freezer, isHINTResponse} from "./utils";
 import {Error, Response} from "./generated";
 import i18next from "i18next";
 import {TranslatableState} from "./types";
@@ -33,10 +33,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
     constructor(context: ActionContext<any, TranslatableState>) {
         this._commit = context.commit;
-        this._headers = {
-            "Accept-Language": context.rootState.language,
-            "Content-Security-Policy-Report-Only": contentSecurityPolicy
-        };
+        this._headers = {"Accept-Language": context.rootState.language};
     }
 
     // appUrl will be set as a jest global during testing

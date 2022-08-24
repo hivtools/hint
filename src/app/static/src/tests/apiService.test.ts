@@ -1,6 +1,6 @@
 import {api} from "../app/apiService";
 import {mockAxios, mockError, mockFailure, mockRootState, mockSuccess} from "./mocks";
-import {contentSecurityPolicy, freezer} from '../app/utils';
+import {freezer} from '../app/utils';
 
 const rootState = mockRootState();
 
@@ -339,8 +339,7 @@ describe("ApiService", () => {
 
         expect(mockAxios.history.get[0].headers).toStrictEqual({
             "Accept": "application/json, text/plain, */*",
-            "Accept-Language": "en",
-            "Content-Security-Policy-Report-Only": contentSecurityPolicy
+            "Accept-Language": "en"
         })
     });
 
@@ -357,8 +356,7 @@ describe("ApiService", () => {
         expect(mockAxios.history.post[0].headers).toStrictEqual({
             "Accept": "application/json, text/plain, */*",
             "Accept-Language": "en",
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Content-Security-Policy-Report-Only": contentSecurityPolicy
+            "Content-Type": "application/x-www-form-urlencoded"
         })
     });
 

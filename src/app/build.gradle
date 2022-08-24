@@ -33,7 +33,7 @@ dependencies {
     implementation "org.apache.tomcat.embed:tomcat-embed-el:${tomcatVersion}"
     implementation "org.apache.tomcat.embed:tomcat-embed-websocket:${tomcatVersion}"
     implementation "org.apache.tomcat:tomcat-annotations-api:${tomcatVersion}"
-    implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.0.1'
     testImplementation 'ch.qos.logback:logback-classic:1.2.11'
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
     implementation 'com.sun.xml.bind:jaxb-impl:4.0.0'
