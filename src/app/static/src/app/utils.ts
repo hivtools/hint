@@ -1,5 +1,6 @@
 import * as CryptoJS from 'crypto-js';
 import {
+    ActionContext,
     ActionMethod,
     CustomVue,
     mapActions,
@@ -17,9 +18,12 @@ import {
     DynamicFormMeta
 } from "@reside-ic/vue-dynamic-form";
 import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
-import {RootState} from "./root";
 import {ModelOptionsState} from "./store/modelOptions/modelOptions";
+import {RootState} from "./root";
 import {initialStepperState} from "./store/stepper/stepper";
+import {LoadState} from "./store/load/state";
+import {initialModelRunState} from "./store/modelRun/modelRun";
+import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
 
 export type ComputedWithType<T> = () => T;
 
@@ -368,12 +372,25 @@ const transformPathToHash = (dataset: any) => {
     return dataset
 }
 
-export const constructRehydrateProjectState = (rootState: RootState, data: ProjectRehydrateResultResponse) => {
+export const constructRehydrateProjectState = async (context: ActionContext<LoadState, RootState>, data: ProjectRehydrateResultResponse) => {
     const files = transformPathToHash({...data.state.datasets});
 
     const modelOptions = {
         options: data.state.model_fit.options,
         valid: true
+    } as any
+
+    const modelRun = {
+        ...initialModelRunState(),
+        modelRunId: data.state.model_fit.id,
+        status: {success: true, done: true}
+    } as any
+
+    const modelCalibrate = {
+        ...initialModelCalibrateState(),
+        calibrateId: data.state.calibrate.id,
+        options: data.state.calibrate.options,
+        status: {success: true, done: true}
     } as any
 
     const surveyAndProgram = {
@@ -409,7 +426,7 @@ export const constructRehydrateProjectState = (rootState: RootState, data: Proje
 
     const stepper = {
         steps: initialStepperState().steps,
-        activeStep: 1
+        activeStep: 6
     }
 
     const projects = {
@@ -423,6 +440,8 @@ export const constructRehydrateProjectState = (rootState: RootState, data: Proje
         baseline,
         surveyAndProgram,
         modelOptions,
+        modelCalibrate,
+        modelRun,
         stepper,
         hintrVersion: {
             hintrVersion: data.state.version
@@ -449,6 +468,6 @@ export const constructOptionsFormMetaFromData = (state: ModelOptionsState, meta:
     return meta
 }
 
-export const flatMapControlSection = (sections: DynamicControlSection[]): DynamicControlGroup[] => {
+export const flatMapControlSections = (sections: DynamicControlSection[]): DynamicControlGroup[] => {
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }

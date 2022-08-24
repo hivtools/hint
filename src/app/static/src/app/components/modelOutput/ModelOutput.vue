@@ -91,6 +91,7 @@
 
             <div id="comparison-container" :class="selectedTab==='comparison' ? 'col-md-12' : 'd-none'">
                 <bar-chart-with-filters
+                    v-if="comparisonPlotIndicators.length"
                     :chart-data="comparisonPlotData"
                     :filter-config="comparisonPlotFilterConfig"
                     :disaggregate-by-config="{ fixed: true, hideFilter: true }"

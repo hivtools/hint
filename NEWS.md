@@ -1,10 +1,14 @@
-# hint 2.9.0
+# hint 2.10.0
 
 * Table for comparison barchart
 
-# hint 2.8.0
+# hint 2.9.0
 
 * Comparison barchart in review output step
+
+# hint 2.8.0
+
+* Populate model Run Id and calibrate options from project summary
 
 # hint 2.7.3
 
