@@ -16,7 +16,7 @@ interface UserLogic
 {
     fun addUser(email: String, password: String?)
     fun removeUser(email: String)
-    fun getUser(email: String): UserProfile?
+    fun getUser(email: String): CommonProfile?
     fun updateUserPassword(user: UserProfile, password: String)
 }
 
@@ -61,7 +61,7 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
         profileService.removeById(user.id)
     }
 
-    override fun getUser(email: String): UserProfile?
+    override fun getUser(email: String): CommonProfile?
     {
 
         if (email == GUEST_USER)
