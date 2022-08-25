@@ -101,6 +101,7 @@
                     :showRangesInTooltips="true"
                     @update="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <error-alert v-if="hasComparisonPlotError" :error="comparisonPlotError"></error-alert>
+                <!-- <error-alert v-if="true" :error="{error: 'OTHER_ERROR', detail: 'message'}"></error-alert> -->
             </div>
         </div>
     </div>
@@ -194,6 +195,8 @@
         filteredBubblePlotIndicators: ChoroplethIndicatorMetadata[],
         barchartFlattenedXAxisFilterOptionIds: string[]
         comparisonPlotFlattenedXAxisFilterOptionIds: string[]
+        comparisonPlotError: Error | null
+        hasComparisonPlotError: boolean
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
@@ -297,6 +300,7 @@
         },
         mounted() {
             this.prepareOutputDownloads();
+            // console.log("errors", this.hasComparisonPlotError, this.comparisonPlotError)
         },
         components: {
             BarChartWithFilters,
