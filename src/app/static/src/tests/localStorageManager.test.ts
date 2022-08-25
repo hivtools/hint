@@ -40,6 +40,7 @@ describe("LocalStorageManager", () => {
     const modelCalibrateResponse = {
         calibrateId: "",
         calibratePlotResult: null,
+        comparisonPlotError: null,
         calibrating: false,
         complete: false,
         error: null,
