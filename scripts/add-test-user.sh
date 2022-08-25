@@ -9,4 +9,4 @@ docker pull $image
 docker run --network=hint_nw \
 		-v $TEST_CONFIG:/etc/hint/config.properties \
 		$image \
-		add-user test.user@imperial.ac.uk password
+		add-user test.user@example.com password
