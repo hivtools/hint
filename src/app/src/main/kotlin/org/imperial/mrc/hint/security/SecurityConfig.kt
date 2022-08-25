@@ -5,6 +5,9 @@ import org.pac4j.core.client.Clients
 import org.pac4j.core.config.Config
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.context.session.SessionStore
+import org.pac4j.core.engine.DefaultLogoutLogic
+import org.pac4j.core.engine.LogoutLogic
+import org.pac4j.core.http.adapter.HttpActionAdapter
 import org.pac4j.jee.context.session.JEESessionStore
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
@@ -36,8 +39,36 @@ class Pac4jConfig
         val formClient = FormClient("/login", profileService)
         val clients = Clients("/callback", formClient)
         return Config(clients).apply {
+            logoutLogic = Logout()
             sessionStore = JEESessionStore.INSTANCE
         }
+    }
+}
+class Logout : DefaultLogoutLogic()
+{
+    override fun perform(
+        context: WebContext?,
+        sessionStore: SessionStore?,
+        config: Config?,
+        httpActionAdapter: HttpActionAdapter?,
+        defaultUrl: String?,
+        logoutUrlPattern: String?,
+        localLogout: Boolean?,
+        destroySession: Boolean?,
+        centralLogout: Boolean?
+    ): Any
+    {
+        return super.perform(
+            context,
+            sessionStore,
+            config,
+            httpActionAdapter,
+            "/login",
+            logoutUrlPattern,
+            localLogout,
+            true,
+            true
+        )
     }
 }
 
