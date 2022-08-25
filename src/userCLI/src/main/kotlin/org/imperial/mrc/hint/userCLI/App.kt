@@ -36,6 +36,19 @@ fun main(args: Array<String>) {
 
     val dataSource = DbConfig().dataSource(ConfiguredAppProperties())
 
+    fun printErrorMessage(e: Exception)
+    {
+        val resources = PropertyResourceBundle.getBundle("ErrorMessageBundle", Locale("en"))
+        try
+        {
+            val message = resources.getString(e.message!!)
+            System.err.println(message)
+        } catch (e: MissingResourceException)
+        {
+            System.err.println("Could not load ErrorMessageBundle: ${e.message}")
+        }
+    }
+
     try {
         val userCLI = UserCLI(getUserLogic(dataSource))
         val result = when {
@@ -46,11 +59,12 @@ fun main(args: Array<String>) {
         }
 
         println(result)
-    } catch (e: Exception) {
-        val resources = PropertyResourceBundle.getBundle("ErrorMessageBundle", Locale("en"))
-        System.err.println(resources.getString(e.message!!))
+    } catch (e: Exception)
+    {
+        printErrorMessage(e)
         exitProcess(1)
-    } finally {
+    } finally
+    {
         dataSource.connection.close()
     }
 }
