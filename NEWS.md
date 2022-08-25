@@ -1,3 +1,7 @@
+# hint 2.10.0
+
+* Display comparison plot error message
+
 # hint 2.9.0
 
 * Comparison barchart in review output step
