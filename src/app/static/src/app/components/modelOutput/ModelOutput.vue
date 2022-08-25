@@ -101,7 +101,6 @@
                     :showRangesInTooltips="true"
                     @update="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <error-alert v-if="hasComparisonPlotError" :error="comparisonPlotError"></error-alert>
-                <!-- <error-alert v-if="true" :error="{error: 'OTHER_ERROR', detail: 'message'}"></error-alert> -->
             </div>
         </div>
     </div>
@@ -300,7 +299,6 @@
         },
         mounted() {
             this.prepareOutputDownloads();
-            // console.log("errors", this.hasComparisonPlotError, this.comparisonPlotError)
         },
         components: {
             BarChartWithFilters,
