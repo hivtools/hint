@@ -1,10 +1,6 @@
 package org.imperial.mrc.hint.userCLI
 
-import com.nhaarman.mockito_kotlin.eq
-import com.nhaarman.mockito_kotlin.isNull
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
-import org.assertj.core.api.Assert
+import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.db.DbConfig
@@ -47,7 +43,6 @@ class AppTests {
 
         Assertions.assertThat(sut.userExists(mapOf("<email>" to TEST_EMAIL))).isEqualTo("true")
     }
-
 
     @Test
     fun `can add user without password`()
