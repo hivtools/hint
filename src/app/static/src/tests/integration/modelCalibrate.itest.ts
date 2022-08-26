@@ -96,7 +96,7 @@ describe("model calibrate actions integration", () => {
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toBe("ComparisonPlotStarted");
-        expect(commit.mock.calls[1][0]["type"]).toBe("SetError");
+        expect(commit.mock.calls[1][0]["type"]).toBe("SetComparisonPlotError");
         expect(commit.mock.calls[1][0]["payload"].detail).toBe("Failed to fetch result");
     });
 });
