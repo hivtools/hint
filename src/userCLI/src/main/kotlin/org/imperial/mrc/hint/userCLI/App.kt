@@ -47,7 +47,7 @@ fun main(args: Array<String>) {
 
         println(result)
     } catch (e: Exception) {
-        val resources = ResourceBundle.getBundle("org.imperial.mrc.hint.userCLI.ErrorMessageBundle", Locale("en"))
+        val resources = ResourceBundle.getBundle("org.imperial.mrc.hint.ErrorMessageBundle", Locale("en"))
         System.err.println(resources.getString(e.message!!))
         exitProcess(1)
     } finally {
