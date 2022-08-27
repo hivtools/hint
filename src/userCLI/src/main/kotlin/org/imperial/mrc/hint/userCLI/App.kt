@@ -16,9 +16,6 @@ import org.jooq.SQLDialect
 import org.jooq.impl.DSL
 import org.pac4j.jwt.config.signature.RSASignatureConfiguration
 import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.util.*
 import javax.sql.DataSource
 import kotlin.system.exitProcess
 
@@ -38,20 +35,16 @@ fun main(args: Array<String>) {
 
     val dataSource = DbConfig().dataSource(ConfiguredAppProperties())
 
-    fun printErrorMessage(e: Exception)
+    fun errorOutputStream(msg: String)
     {
-        try
+        val message = when (msg)
         {
-            val resources = ResourceBundle.getBundle("ErrorMessageBundle", Locale("en"))
-            val message = resources.getString(e.message!!)
-            System.err.println(message)
-        } catch (e: MissingResourceException)
-        {
-            val externalResources =
-                PropertyResourceBundle(Files.newInputStream(Paths.get("ErrorMessageBundle.properties")))
-            val externalMessage = externalResources.getString(e.message!!)
-            System.err.println(externalMessage)
+            "userExists" -> "User already exists."
+            "invalidEmail" -> "Please provide a valid email address."
+            "userDoesNotExist" -> "User does not exist."
+            else -> "unexpected error $msg"
         }
+        System.err.println(message)
     }
 
     try {
@@ -66,7 +59,7 @@ fun main(args: Array<String>) {
         println(result)
     } catch (e: Exception)
     {
-        printErrorMessage(e)
+        e.message?.let { errorOutputStream(it) }
         exitProcess(1)
     } finally
     {
