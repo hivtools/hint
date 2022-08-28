@@ -16,6 +16,7 @@ import org.jooq.SQLDialect
 import org.jooq.impl.DSL
 import org.pac4j.jwt.config.signature.RSASignatureConfiguration
 import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
+import java.util.*
 import javax.sql.DataSource
 import kotlin.system.exitProcess
 
@@ -37,14 +38,15 @@ fun main(args: Array<String>) {
 
     fun errorOutputStream(msg: String)
     {
-        val message = when (msg)
+        val resources = ResourceBundle.getBundle("ErrorMessageBundle", Locale("en"))
+        try
         {
-            "userExists" -> "User already exists."
-            "invalidEmail" -> "Please provide a valid email address."
-            "userDoesNotExist" -> "User does not exist."
-            else -> "unexpected error $msg"
+            val message = resources.getString(msg.takeLastWhile { it.isLetter() })
+            System.err.println(message)
+        } catch (e: MissingResourceException)
+        {
+            System.err.println("Could not load ErrorMessageBundle: $msg")
         }
-        System.err.println(message)
     }
 
     try {
