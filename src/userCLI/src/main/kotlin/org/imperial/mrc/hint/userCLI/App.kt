@@ -38,9 +38,9 @@ fun main(args: Array<String>) {
 
     fun errorOutputStream(msg: String)
     {
-        val resources = ResourceBundle.getBundle("ErrorMessageBundle", Locale("en"))
         try
         {
+            val resources = ResourceBundle.getBundle("ErrorMessageBundle", Locale("en"))
             val message = resources.getString(msg.takeLastWhile { it.isLetter() })
             System.err.println(message)
         } catch (e: MissingResourceException)
