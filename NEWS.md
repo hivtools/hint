@@ -1,3 +1,6 @@
+# hint 2.9.0
+
+* Comparison barchart in review output step
 
 # hint 2.8.1
 

@@ -8,36 +8,38 @@ import {
 import {PayloadWithType} from "../../types";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
 
-type PlottingSelectionsMutation = Mutation<PlottingSelectionsState>
-
-export interface PlottingSelectionsMutations {
-    updateCalibratePlotSelections: PlottingSelectionsMutation,
-    updateBarchartSelections: PlottingSelectionsMutation,
-    updateBubblePlotSelections: PlottingSelectionsMutation,
-    updateSAPChoroplethSelections: PlottingSelectionsMutation,
-    updateOutputChoroplethSelections: PlottingSelectionsMutation,
-    updateSAPColourScales: PlottingSelectionsMutation,
-    updateOutputColourScales: PlottingSelectionsMutation,
-    updateOutputBubbleSizeScales: PlottingSelectionsMutation
+export enum PlottingSelectionsMutations {
+    updateCalibratePlotSelections = "updateCalibratePlotSelections",
+    updateBarchartSelections = "updateBarchartSelections",
+    updateComparisonPlotSelections = "updateComparisonPlotSelections",
+    updateBubblePlotSelections = "updateBubblePlotSelections",
+    updateSAPChoroplethSelections = "updateSAPChoroplethSelections",
+    updateOutputChoroplethSelections = "updateOutputChoroplethSelections",
+    updateSAPColourScales = "updateSAPColourScales",
+    updateOutputColourScales = "updateOutputColourScales",
+    updateOutputBubbleSizeScales = "updateOutputBubbleSizeScales"
 }
 
-export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectionsMutations = {
-    updateCalibratePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
+export const mutations: MutationTree<PlottingSelectionsState> = {
+    [PlottingSelectionsMutations.updateCalibratePlotSelections](state: PlottingSelectionsState, action: PayloadWithType<Partial<BarchartSelections>>) {
         state.calibratePlot = {...state.calibratePlot, ...action.payload};
     },
-    updateBarchartSelections(state: PlottingSelectionsState, action: PayloadWithType<BarchartSelections>) {
+    [PlottingSelectionsMutations.updateBarchartSelections](state: PlottingSelectionsState, action: PayloadWithType<BarchartSelections>) {
         state.barchart = {...state.barchart, ...action.payload};
     },
-    updateBubblePlotSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<BubblePlotSelections>>) {
+    [PlottingSelectionsMutations.updateComparisonPlotSelections](state: PlottingSelectionsState, action: PayloadWithType<BarchartSelections>) {
+        state.comparisonPlot = {...state.comparisonPlot, ...action.payload};
+    },
+    [PlottingSelectionsMutations.updateBubblePlotSelections](state: PlottingSelectionsState, action: PayloadWithType<Partial<BubblePlotSelections>>) {
         state.bubble = {...state.bubble, ...action.payload};
     },
-    updateSAPChoroplethSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<ChoroplethSelections>>) {
+    [PlottingSelectionsMutations.updateSAPChoroplethSelections](state: PlottingSelectionsState, action: PayloadWithType<Partial<ChoroplethSelections>>) {
         state.sapChoropleth = {...state.sapChoropleth, ...action.payload}
     },
-    updateOutputChoroplethSelections(state: PlottingSelectionsState, action: PayloadWithType<Partial<ChoroplethSelections>>) {
+    [PlottingSelectionsMutations.updateOutputChoroplethSelections](state: PlottingSelectionsState, action: PayloadWithType<Partial<ChoroplethSelections>>) {
         state.outputChoropleth = {...state.outputChoropleth, ...action.payload}
     },
-    updateSAPColourScales(state: PlottingSelectionsState, action: PayloadWithType<[DataType, ScaleSelections]>) {
+    [PlottingSelectionsMutations.updateSAPColourScales](state: PlottingSelectionsState, action: PayloadWithType<[DataType, ScaleSelections]>) {
         const value = action.payload[1];
         switch (action.payload[0]) {
             case DataType.Survey:
@@ -53,10 +55,10 @@ export const mutations: MutationTree<PlottingSelectionsState> & PlottingSelectio
 
         }
     },
-    updateOutputColourScales(state: PlottingSelectionsState, action: PayloadWithType<ScaleSelections>) {
+    [PlottingSelectionsMutations.updateOutputColourScales](state: PlottingSelectionsState, action: PayloadWithType<ScaleSelections>) {
         state.colourScales.output = action.payload;
     },
-    updateOutputBubbleSizeScales(state: PlottingSelectionsState, action: PayloadWithType<ScaleSelections>) {
+    [PlottingSelectionsMutations.updateOutputBubbleSizeScales](state: PlottingSelectionsState, action: PayloadWithType<ScaleSelections>) {
         state.bubbleSizeScales.output = action.payload;
     }
 };
