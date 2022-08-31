@@ -26,11 +26,6 @@
                         @click="createProject({name: newProjectName})"
                         v-translate="'createProject'">
                 </button>
-                <a type="pr-4 button"
-                   class="btn btn-red mt-2 float-right"
-                   :href="'/oauth2'"
-                   v-translate="'Test ADR Resource Server'">
-                </a>
             </div>
             <div class="my-3 col-12">
                 <project-history></project-history>
@@ -40,6 +35,18 @@
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingProject'"></h2>
+        </div>
+        <div>
+            <a type="pr-4 button"
+               class="btn btn-red mr-2 pr-4"
+               :href="'/oauth2/authenticated'"
+               v-translate="'Authenticated ADR access'">
+            </a>
+            <a type="pr-4 button"
+               class="btn btn-red ml-2"
+               :href="'/oauth2/authorisation'"
+               v-translate="'Authenticated and authorised ADR access'">
+            </a>
         </div>
     </div>
 </template>

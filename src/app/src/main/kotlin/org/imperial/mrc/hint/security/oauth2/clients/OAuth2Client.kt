@@ -20,7 +20,7 @@ class OAuth2Client(
             callbackUrlResolver = PathParameterCallbackUrlResolver()
             configuration = getConfig()
             name = "oauth2Client"
-            callbackUrl = "http://localhost:8080/callback/oauth2Client"
+            callbackUrl = "${appProperties.applicationUrl}/callback/oauth2Client"
         }
     }
 
@@ -28,7 +28,6 @@ class OAuth2Client(
     {
         return config.apply {
             responseType = OAuth20Configuration.OAUTH_CODE
-            scope = "openid profile email"
             secret = appProperties.oauth2ClientSecret
             key = appProperties.oauth2ClientId
             profileDefinition = ProfileDefinition()

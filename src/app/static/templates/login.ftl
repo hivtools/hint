@@ -60,7 +60,7 @@
     </div>
     <div id="sso" class="text-center mt-3">
         <div class="mb-3">OR</div>
-        <a class="btn btn-red" type="submit" href="https://dev-xblynil1.us.auth0.com/authorize?response_type=code&client_id=4K2qQdcGmWJ6RcSzytxcAqFIdmhojv5r&state=toGenerateNewStateEveryTime&redirect_uri=http://localhost:8080/callback/oauth2Client">Login with auth0</a>
+        <a class="btn btn-red" type="submit" href="/oauth2/login">Login with auth0</a>
     </div>
     <div id="partner-logos" class="logos mx-auto mt-5">
       <a href="https://www.fjelltopp.org"><img src="public/images/fjelltopp_logo.png" class="small-logo"></a>

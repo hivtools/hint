@@ -38,6 +38,8 @@ interface AppProperties
     val oauth2ClientId: String
     val oauth2ClientSecret: String
     val oauth2ClientUrl: String
+    val oauth2ClientAdrUrl: String
+    val oauth2ClientAudience: String
 }
 
 //prevent auto-wiring of default Properties
@@ -76,6 +78,8 @@ class ConfiguredAppProperties(private val props: HintProperties = properties) : 
     override val oauth2ClientId: String = propString("oauth2_client_id")
     override val oauth2ClientSecret: String = propString("oauth2_client_secret")
     override val oauth2ClientUrl: String = propString("oauth2_client_url")
+    override val oauth2ClientAudience: String = propString("oauth2_client_audience")
+    override val oauth2ClientAdrUrl = propString("oauth2_client_adr_url")
 
     companion object
     {
