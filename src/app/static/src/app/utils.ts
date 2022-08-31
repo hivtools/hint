@@ -9,7 +9,7 @@ import {
     mapState,
     MutationMethod
 } from "vuex";
-import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
+import {ADRSchemas, DatasetResource, Dict, UploadFile, Version, Filter} from "./types";
 import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse, Response} from "./generated";
 import moment from 'moment';
 import {
@@ -128,14 +128,16 @@ export function stripNamespace(name: string) {
 
 const flattenToIdArray = (filterOption: NestedFilterOption): string[] => {
     let result: string[] = [];
-    result.push(filterOption.id);
-    if (filterOption.children) {
-        filterOption.children.forEach(o =>
-            result = [
-                ...result,
-                ...flattenToIdArray(o as NestedFilterOption)
-            ]);
+    if (filterOption?.id) {
+        result.push(filterOption.id);
+        if (filterOption.children) {
+            filterOption.children.forEach(o =>
+                result = [
+                    ...result,
+                    ...flattenToIdArray(o as NestedFilterOption)
+                ]);
 
+        }
     }
     return result;
 };

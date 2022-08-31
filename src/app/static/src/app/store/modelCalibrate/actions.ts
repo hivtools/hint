@@ -1,5 +1,5 @@
 import {ModelCalibrateState} from "./modelCalibrate";
-import {ActionContext, ActionTree} from "vuex";
+import {ActionContext, ActionTree, Commit} from "vuex";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {api} from "../../apiService";
 import {RootState} from "../../root";
@@ -8,6 +8,7 @@ import {FilterOption, ModelResultResponse, ModelStatusResponse, ModelSubmitRespo
 import {switches} from "../../featureSwitches";
 import {Dict} from "../../types";
 import {DownloadResultsMutation} from "../downloadResults/mutations";
+import {PlottingSelectionsMutations} from "../plottingSelections/mutations";
 
 export interface ModelCalibrateActions {
     fetchModelCalibrateOptions: (store: ActionContext<ModelCalibrateState, RootState>) => void
@@ -76,25 +77,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                 commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: data});
                 commit({type: ModelCalibrateMutation.WarningsFetched, payload: data.warnings});
 
-                if (data && data.plottingMetadata && data.plottingMetadata.barchart.defaults) {
-                    const defaults = data.plottingMetadata.barchart.defaults;
-                    const unfrozenDefaultOptions = Object.keys(defaults.selected_filter_options)
-                        .reduce((dict, key) => {
-                            dict[key] = [...defaults.selected_filter_options[key]];
-                            return dict;
-                        }, {} as Dict<FilterOption[]>);
-
-                    commit({
-                            type: "plottingSelections/updateBarchartSelections",
-                            payload: {
-                                indicatorId: defaults.indicator_id,
-                                xAxisId: defaults.x_axis_id,
-                                disaggregateById: defaults.disaggregate_by_id,
-                                selectedFilterOptions: unfrozenDefaultOptions
-                            }
-                        },
-                        {root: true});
-                }
+                selectFilterDefaults(data, commit, PlottingSelectionsMutations.updateBarchartSelections)
                 commit(ModelCalibrateMutation.Calibrated);
                 if (switches.modelCalibratePlot) {
                     dispatch("getCalibratePlot");
@@ -128,11 +111,18 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const calibrateId = state.calibrateId;
         commit(ModelCalibrateMutation.ComparisonPlotStarted);
 
-        await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
+        const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
             .withError(ModelCalibrateMutation.SetError)
-            .withSuccess(ModelCalibrateMutation.SetComparisonPlotData)
+            .ignoreSuccess()
             .freezeResponse()
             .get<ModelResultResponse>(`model/comparison/plot/${calibrateId}`);
+
+        if (response) {
+            if (response.data){
+                selectFilterDefaults(response.data, commit, PlottingSelectionsMutations.updateComparisonPlotSelections)
+            }
+            commit(ModelCalibrateMutation.SetComparisonPlotData, response.data);
+        }
     }
 };
 
@@ -149,3 +139,25 @@ export const getCalibrateStatus = async function (context: ActionContext<ModelCa
             }
         });
 };
+
+const selectFilterDefaults = (data: ModelResultResponse, commit: Commit, mutationName: string) => {
+    if (data?.plottingMetadata?.barchart?.defaults) {
+        const defaults = data.plottingMetadata.barchart.defaults;
+        const unfrozenDefaultOptions = Object.keys(defaults.selected_filter_options)
+            .reduce((dict, key) => {
+                dict[key] = [...defaults.selected_filter_options[key]];
+                return dict;
+            }, {} as Dict<FilterOption[]>);
+
+        commit({
+                type: `plottingSelections/${mutationName}`,
+                payload: {
+                    indicatorId: defaults.indicator_id,
+                    xAxisId: defaults.x_axis_id,
+                    disaggregateById: defaults.disaggregate_by_id,
+                    selectedFilterOptions: unfrozenDefaultOptions
+                }
+            },
+            {root: true});
+    }
+}
