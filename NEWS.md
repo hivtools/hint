@@ -1,3 +1,7 @@
+# hint 2.9.1
+
+* Bug: HINT login is broken on dev and staging
+
 # hint 2.9.0
 
 * Comparison barchart in review output step
