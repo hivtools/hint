@@ -162,7 +162,7 @@ describe("ModelCalibrate mutations", () => {
         const state = mockModelCalibrateState();
         const payload = {data: "TEST DATA"};
         mutations[ModelCalibrateMutation.SetComparisonPlotData](state, {payload});
-        expect(state.comparisonPlotResult).toStrictEqual(payload);
+        expect(state.comparisonPlotResult).toStrictEqual({payload});
     });
 
     it("sets and clears warnings", () => {
