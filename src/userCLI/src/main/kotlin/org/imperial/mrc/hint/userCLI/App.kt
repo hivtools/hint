@@ -40,6 +40,15 @@ fun main(args: Array<String>) {
     {
         try
         {
+   // When an exception is thrown in UserLogic with key userExists, userCLI 
+   // expects the key, which it then uses to get resource bundle. However,      
+   //  the UserException handler for UserLogic extends HintException where   
+   // additional text is appended: "HintException with key $key" so the resource
+   // would not be found in the bundle.
+   // After pac4j upgrade, this issue caused corruption of the profile if not dealt
+   // with gracefully, hence extracting final word here. See associated ticket 
+   // mrc-3549  
+
             val resources = ResourceBundle.getBundle("ErrorMessageBundle", Locale("en"))
             val message = resources.getString(msg.takeLastWhile { it.isLetter() })
             System.err.println(message)
