@@ -7,6 +7,7 @@ import {
     mockComparisonPlotResponse,
     mockModelCalibrateState,
     mockShapeResponse,
+    mockError
 } from "../../mocks";
 import {mutations as modelOutputMutations} from "../../../app/store/modelOutput/mutations";
 import {mutations as plottingSelectionMutations} from "../../../app/store/plottingSelections/mutations";
@@ -21,10 +22,11 @@ import {expectTranslated} from "../../testHelpers";
 import {BarchartIndicator, Filter} from "../../../app/types";
 import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
 import {switches} from "../../../app/featureSwitches";
+import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 
 const localVue = createLocalVue();
 
-function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"], comparisonPlotFilters: any = ["TEST COMPARISON FILTERS"]) {
+function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"], comparisonPlotFilters: any = ["TEST COMPARISON FILTERS"], comparisonPlotError: any = null) {
     const store = new Vuex.Store({
         state: emptyState(),
         modules: {
@@ -46,7 +48,8 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                 state: mockModelCalibrateState(
                     {
                         result: mockCalibrateResultResponse({data: ["TEST DATA"] as any}),
-                        comparisonPlotResult: mockComparisonPlotResponse({data: ["TEST COMPARISON DATA"] as any})
+                        comparisonPlotResult: mockComparisonPlotResponse({data: ["TEST COMPARISON DATA"] as any}),
+                        comparisonPlotError
                     }
                 )
             },
@@ -177,6 +180,14 @@ describe("ModelOutput component", () => {
         expect(comparisonPlot.props().formatFunction).toBe(vm.formatBarchartValue);
         expect(comparisonPlot.props().showRangesInTooltips).toBe(true);
         expect(comparisonPlot.props().disaggregateByConfig).toStrictEqual({fixed: true, hideFilter: true});
+    });
+
+    it("renders comparison plot error", () => {
+        const error = mockError("comparison plot error occurred")
+        const store = getStore({selectedTab: "comparison"}, {}, {}, [], [], error);
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        expect(wrapper.findAll(ErrorAlert).length).toBe(1);
+        expect(wrapper.find(ErrorAlert).props().error).toBe(error);
     });
 
     it("does not render comparison plot if no there are no comparison plot indicators", () => {
