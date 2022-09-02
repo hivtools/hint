@@ -19,6 +19,11 @@ class ProfileDefinition(
 
     override fun extractUserProfile(body: String?): CommonProfile
     {
+        /**
+         * Database user validation should be performed,
+         * checking if user exists before appending to user profile id
+         * or creating a new user before appending to profile id.
+         */
         return OAuth20Profile().apply {
             id = "test.user@example.com"
         }
