@@ -109,7 +109,7 @@
                                         :countryAreaFilterOption="countryAreaFilterOption"
                                         :indicators="filteredComparisonPlotIndicators"
                                         :selections="comparisonPlotSelections"
-
+                                        :translate-filter-labels="false"
                                         :selectedFilterOptions="comparisonPlotSelections.selectedFilterOptions"
                     ></area-indicators-table>
                 </div>
