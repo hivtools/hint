@@ -177,7 +177,7 @@
                 this.filtersToDisplay.forEach(value => {
                     const field: Dict<any> = {};
                     field.key = value.id
-                    field.label = this.translateFilterLabels ? i18next.t(value.label.toLowerCase(), {lng: this.currentLanguage}) : field.label
+                    field.label = this.translateFilterLabels ? i18next.t(value.label.toLowerCase(), {lng: this.currentLanguage}) : value.label
                     fields.push(field)
                 })
                 this.indicators.forEach(value => {
