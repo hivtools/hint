@@ -53,8 +53,8 @@ dependencies {
     implementation 'org.mindrot:jbcrypt:0.4'
     implementation 'com.github.spullara.mustache.java:compiler:0.9.5'
     implementation "org.simplejavamail:simple-java-mail:7.5.0"
-    implementation 'com.sun.mail:jakarta.mail:2.0.1'
-    implementation 'jakarta.activation:jakarta.activation-api:2.1.0'
+    implementation 'com.sun.mail:jakarta.mail:1.6.7'
+    implementation 'com.sun.activation:jakarta.activation:2.0.1'
 
     implementation project(":databaseInterface")
 
