@@ -100,7 +100,7 @@
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
                     @update="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
-                <error-alert v-if="hasComparisonPlotError" :error="comparisonPlotError"></error-alert>
+                <error-alert v-if="!!comparisonPlotError" :error="comparisonPlotError"></error-alert>
             </div>
         </div>
     </div>
@@ -195,7 +195,6 @@
         barchartFlattenedXAxisFilterOptionIds: string[]
         comparisonPlotFlattenedXAxisFilterOptionIds: string[]
         comparisonPlotError: Error | null
-        hasComparisonPlotError: boolean
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
@@ -241,8 +240,7 @@
                 }
             ),
             ...mapStateProps<ModelCalibrateState, keyof Computed>("modelCalibrate", {
-                comparisonPlotError: state => state.comparisonPlotError,
-                hasComparisonPlotError: state => !!state.comparisonPlotError,
+                comparisonPlotError: state => state.comparisonPlotError
             }),
             filteredChoroplethIndicators() {
                 return this.choroplethIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.choroplethSelections.indicatorId)
