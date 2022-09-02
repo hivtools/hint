@@ -1,3 +1,7 @@
+# hint 2.9.2
+
+* fix broken request password mailer
+
 # hint 2.9.1
 
 * Bug: HINT login is broken on dev and staging
