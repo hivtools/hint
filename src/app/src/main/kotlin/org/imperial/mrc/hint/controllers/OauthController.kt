@@ -30,6 +30,8 @@ class OauthController(
     @GetMapping("/authorisation")
     fun authorisation(): ResponseEntity<String>
     {
+        println("Getting to this point")
+   
         return oAuth2FuelClient.get("authorisation/dataset")
     }
 

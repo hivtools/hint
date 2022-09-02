@@ -23,7 +23,7 @@ class HintDbProfileService(dataSource: DataSource, passwordEncoder: PasswordEnco
 
         if (!CommonHelper.isBlank(credentials.username) && !CommonHelper.isBlank(credentials.password))
         {
-            super.validate(cred, context, sessionStore)
+            super.validate(credentials, context, sessionStore)
         }
         else
         {
