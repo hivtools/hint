@@ -22,8 +22,6 @@ abstract class FuelClient(protected val baseUrl: String)
 
     fun get(url: String): ResponseEntity<String>
     {
-        println("Print url oauth troubleshoot")
-        println("$baseUrl/$url")
         return "$baseUrl/$url".httpGet()
                 .header(standardHeaders())
                 .addTimeouts()
