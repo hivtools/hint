@@ -112,7 +112,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         commit(ModelCalibrateMutation.ComparisonPlotStarted);
 
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
-            .withError(ModelCalibrateMutation.SetError)
+            .withError(ModelCalibrateMutation.SetComparisonPlotError)
             .ignoreSuccess()
             .freezeResponse()
             .get<ModelResultResponse>(`model/comparison/plot/${calibrateId}`);

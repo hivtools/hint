@@ -104,6 +104,14 @@ describe("ModelCalibrate mutations", () => {
         expect(state.calibrating).toBe(false);
     });
 
+    it("sets comparisonPlotError", () => {
+        const state = mockModelCalibrateState();
+        const error = mockError("TEST ERROR");
+        mutations[ModelCalibrateMutation.SetComparisonPlotError](state, {payload: error});
+        expect(state.comparisonPlotError).toBe(error);
+        expect(state.calibrating).toBe(false);
+    });
+
     it("SetError stops polling", () => {
         const state = mockModelCalibrateState({statusPollId: 99});
         const error = mockError("TEST ERROR");
@@ -152,10 +160,10 @@ describe("ModelCalibrate mutations", () => {
     });
 
     it("sets comparison plot started and resets error and previous plot", () => {
-        const state = mockModelCalibrateState({error: mockError("TEST ERROR"), comparisonPlotResult: {} as ComparisonPlotResponse});
+        const state = mockModelCalibrateState({comparisonPlotError: mockError("TEST ERROR"), comparisonPlotResult: {} as ComparisonPlotResponse});
         mutations[ModelCalibrateMutation.ComparisonPlotStarted](state);
         expect(state.comparisonPlotResult).toBe(null);
-        expect(state.error).toBe(null);
+        expect(state.comparisonPlotError).toBe(null);
     });
 
     it("sets comparison plot data", () => {

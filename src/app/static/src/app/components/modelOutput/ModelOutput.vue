@@ -113,6 +113,7 @@
                                         :selectedFilterOptions="comparisonPlotSelections.selectedFilterOptions"
                     ></area-indicators-table>
                 </div>
+                <error-alert v-if="!!comparisonPlotError" :error="comparisonPlotError"></error-alert>
             </div>
         </div>
     </div>
@@ -125,6 +126,7 @@
     import AreaIndicatorsTable from "../plots/table/AreaIndicatorsTable.vue";
     import {BarchartIndicator, Filter, FilterConfig, FilterOption} from "@reside-ic/vue-charts/src/bar/types";
     import {BarChartWithFilters} from "@reside-ic/vue-charts";
+    import ErrorAlert from "../ErrorAlert.vue";
 
     import {
         mapGettersByNames,
@@ -206,6 +208,7 @@
         filteredComparisonPlotIndicators: BarchartIndicator[],
         barchartFlattenedXAxisFilterOptionIds: string[]
         comparisonPlotFlattenedXAxisFilterOptionIds: string[]
+        comparisonPlotError: Error | null
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
@@ -250,6 +253,9 @@
                     featureLevels: state => state.shape!.filters.level_labels || []
                 }
             ),
+            ...mapStateProps<ModelCalibrateState, keyof Computed>("modelCalibrate", {
+                comparisonPlotError: state => state.comparisonPlotError
+            }),
             filteredChoroplethIndicators() {
                 return this.choroplethIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.choroplethSelections.indicatorId)
             },
@@ -313,7 +319,8 @@
             BarChartWithFilters,
             BubblePlot,
             Choropleth,
-            AreaIndicatorsTable
+            AreaIndicatorsTable,
+            ErrorAlert
         }
     })
 </script>
