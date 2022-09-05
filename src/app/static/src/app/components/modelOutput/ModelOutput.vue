@@ -100,6 +100,19 @@
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
                     @update="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
+                <div class="row mt-2">
+                    <div class="col-md-3"></div>
+                    <area-indicators-table class="col-md-9"
+                                        :table-data="comparisonPlotData"
+                                        :area-filter-id="areaFilterId"
+                                        :filters="comparisonPlotFilters"
+                                        :countryAreaFilterOption="countryAreaFilterOption"
+                                        :indicators="filteredComparisonPlotIndicators"
+                                        :selections="comparisonPlotSelections"
+                                        :translate-filter-labels="false"
+                                        :selectedFilterOptions="comparisonPlotSelections.selectedFilterOptions"
+                    ></area-indicators-table>
+                </div>
                 <error-alert v-if="!!comparisonPlotError" :error="comparisonPlotError"></error-alert>
             </div>
         </div>
@@ -192,6 +205,7 @@
         filteredChoroplethIndicators: ChoroplethIndicatorMetadata[],
         filteredBarchartIndicators: BarchartIndicator[],
         filteredBubblePlotIndicators: ChoroplethIndicatorMetadata[],
+        filteredComparisonPlotIndicators: BarchartIndicator[],
         barchartFlattenedXAxisFilterOptionIds: string[]
         comparisonPlotFlattenedXAxisFilterOptionIds: string[]
         comparisonPlotError: Error | null
@@ -253,6 +267,9 @@
                     ...this.bubblePlotIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.bubblePlotSelections.colorIndicatorId),
                     ...this.bubblePlotIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.bubblePlotSelections.sizeIndicatorId)
                 ]
+            },
+            filteredComparisonPlotIndicators() {
+                return this.comparisonPlotIndicators.filter((val: BarchartIndicator) => val.indicator === this.comparisonPlotSelections.indicatorId)
             },
             selectedTab: mapStateProp<ModelOutputState, string>("modelOutput", state => state.selectedTab),
             chartdata: mapStateProp<ModelCalibrateState, any>("modelCalibrate", state => {

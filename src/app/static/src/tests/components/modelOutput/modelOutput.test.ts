@@ -724,7 +724,6 @@ describe("ModelOutput component", () => {
         expect(table.props().indicators).toStrictEqual(["TEST CHORO INDICATORS"]);
         expect(table.props().tableData).toStrictEqual(["TEST DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
-        expect(table.props().translateLabels).toBe(undefined);
     });
 
     it("renders choropleth table with correct indicator props", () => {
@@ -757,7 +756,6 @@ describe("ModelOutput component", () => {
         expect(table.props().indicators).toStrictEqual(["TEST BUBBLE INDICATORS", "TEST BUBBLE INDICATORS"]);
         expect(table.props().tableData).toStrictEqual(["TEST DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
-        expect(table.props().translateLabels).toBe(undefined);
     });
 
     it("renders bubble plot table with correct indicator props", () => {
@@ -816,7 +814,7 @@ describe("ModelOutput component", () => {
         });
         expect(table.props().tableData).toStrictEqual(["TEST DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
-        expect(table.props().translateLabels).toBe(undefined);
+        expect(table.props().translateFilterLabels).toBe(true);
     });
 
     it("renders barchart table with correct indicator props", () => {
@@ -834,6 +832,50 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
         const table = wrapper.find(AreaIndicatorsTable);
+        expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
+        expect(table.props().indicators).toStrictEqual(
+            [
+                {"indicator": "art_coverage", "indicator_value": "4"}
+            ]
+        );
+    });
+
+    it("renders comparison plot table", () => {
+        const store = getStore({selectedTab: "comparison"});
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const table = wrapper.findAll(AreaIndicatorsTable).at(1);
+        expect(table.props().areaFilterId).toBe("area");
+        expect(table.props().filters).toStrictEqual(["TEST COMPARISON FILTERS"]);
+        expect(table.props().selections).toStrictEqual({
+            indicatorId: "TestIndicator",
+            xAxisId: "age",
+            disaggregateById: "source",
+            selectedFilterOptions: {
+                region: [{id: "r1", label: "region 1"}],
+                age: [{id: "a1", label: "0-4"}]
+            }
+        });
+        expect(table.props().tableData).toStrictEqual(["TEST COMPARISON DATA"]);
+        expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
+        expect(table.props().translateFilterLabels).toBe(false);
+    });
+
+    it("renders comparison plot table with correct indicator props", () => {
+        const store = getStore({selectedTab: "comparison"}, {
+            comparisonPlotIndicators: jest.fn().mockReturnValue(
+                [
+                    {"indicator": "prevalence", "indicator_value": "2"},
+                    {"indicator": "art_coverage", "indicator_value": "4"}
+                ]
+            )
+        },
+            {
+                comparisonPlot: {indicatorId: "art_coverage"}
+            });
+        const wrapper = shallowMount(ModelOutput, {localVue, store});
+
+        const table = wrapper.findAll(AreaIndicatorsTable).at(1);
         expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
         expect(table.props().indicators).toStrictEqual(
             [

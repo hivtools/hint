@@ -1,3 +1,7 @@
+# hint 2.11.0
+
+* Table for comparison barchart
+
 # hint 2.10.0
 
 * Display comparison plot error message
