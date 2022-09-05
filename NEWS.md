@@ -1,6 +1,14 @@
-# hint 2.9.2
+# hint 2.11.1
 
 * fix broken request password mailer
+
+# hint 2.11.0
+
+* Table for comparison barchart
+
+# hint 2.10.0
+
+* Display comparison plot error message
 
 # hint 2.9.1
 

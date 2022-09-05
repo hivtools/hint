@@ -22,6 +22,7 @@ export interface ModelCalibrateState extends ReadyState, WarningsState {
     result: CalibrateResultResponse | null
     version: VersionInfo
     error: Error | null
+    comparisonPlotError: Error | null
 }
 
 export const initialModelCalibrateState = (): ModelCalibrateState => {
@@ -41,6 +42,7 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
         result: null,
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
         error: null,
+        comparisonPlotError: null,
         warnings: []
     }
 };
