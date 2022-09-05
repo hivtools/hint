@@ -1,3 +1,7 @@
+# hint 2.12.0
+
+* Update backend logging for new log structure
+
 # hint 2.11.0
 
 * Table for comparison barchart
