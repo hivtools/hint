@@ -1,7 +1,10 @@
 package org.imperial.mrc.hint.exceptions
 
-import org.apache.commons.logging.LogFactory
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.logging.ErrorMessage
+import org.imperial.mrc.hint.logging.GenericLogger
+import org.imperial.mrc.hint.logging.LogMetadata
+import org.imperial.mrc.hint.logging.Request
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.imperial.mrc.hint.models.ErrorDetail.Companion.defaultError
 import org.springframework.beans.TypeMismatchException
@@ -19,7 +22,6 @@ import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.ServletRequestBindingException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.context.request.WebRequest
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException
 import org.springframework.web.multipart.support.MissingServletRequestPartException
 import org.springframework.web.servlet.ModelAndView
@@ -28,25 +30,41 @@ import java.lang.reflect.UndeclaredThrowableException
 import java.net.BindException
 import java.text.MessageFormat
 import java.util.*
+import javax.servlet.http.HttpServletRequest
 
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
-                           private val appProperties: AppProperties)
+                           private val appProperties: AppProperties,
+                           private val logger: GenericLogger
+)
 {
-    private val logger = LogFactory.getLog(HintExceptionHandler::class.java)
 
     @ExceptionHandler(NoHandlerFoundException::class)
-    fun handleNoHandlerFoundException(error: Exception, request: WebRequest): Any
+    fun handleNoHandlerFoundException(error: Exception, request: HttpServletRequest): Any
     {
-        logger.error(error.message, error)
+        logger.error(
+            LogMetadata(
+                error = ErrorMessage(
+                    error,
+                    ErrorDetail(
+                        HttpStatus.NOT_FOUND,
+                        error.message.toString(),
+                        defaultError,
+                        listOf(error.message.toString())
+                    )
+                ),
+                request = Request(request),
+                username = request.remoteUser
+            )
+        )
 
         val page = "404"
         return handleErrorPage(page, error, request)
     }
 
     @ExceptionHandler(Exception::class)
-    fun handleException(e: Exception, request: WebRequest): ResponseEntity<Any>
+    fun handleException(e: Exception, request: HttpServletRequest): ResponseEntity<Any>
     {
         val error = if (e is UndeclaredThrowableException)
         {
@@ -68,19 +86,35 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     }
 
     @ExceptionHandler(HintException::class)
-    fun handleHintException(e: HintException, request: WebRequest): ResponseEntity<Any>
+    fun handleHintException(e: HintException, request: HttpServletRequest): ResponseEntity<Any>
     {
-        logger.error(e.message, e)
+        logger.error(
+            LogMetadata(
+                error = ErrorMessage(
+                    e.cause,
+                    ErrorDetail(
+                        e.httpStatus,
+                        e.message.toString(),
+                        defaultError,
+                        listOf(e.message.toString())
+                    ),
+                    e.key
+                ),
+                request = Request(request),
+                username = request.remoteUser
+            )
+        )
+
         return translatedError(e.key, e.httpStatus, request)
     }
 
-    private fun getBundle(request: WebRequest): ResourceBundle
+    private fun getBundle(request: HttpServletRequest): ResourceBundle
     {
         val language = request.getHeader("Accept-Language") ?: "en"
         return ResourceBundle.getBundle("ErrorMessageBundle", Locale(language))
     }
 
-    private fun translatedError(key: String, status: HttpStatus, request: WebRequest): ResponseEntity<Any>
+    private fun translatedError(key: String, status: HttpStatus, request: HttpServletRequest): ResponseEntity<Any>
     {
         val resourceBundle = getBundle(request)
         val message = if (resourceBundle.containsKey(key))
@@ -95,7 +129,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     }
 
     private fun unexpectedError(status: HttpStatus,
-                                request: WebRequest,
+                                request: HttpServletRequest,
                                 originalMessage: String? = null): ResponseEntity<Any>
     {
 
@@ -121,7 +155,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
                 .toResponseEntity()
     }
 
-    private fun handleErrorPage(page: String, e: Exception, request: WebRequest): Any
+    private fun handleErrorPage(page: String, e: Exception, request: HttpServletRequest): Any
     {
         val header = request.getHeader(HttpHeaders.ACCEPT)
         return if (header!!.contains("html"))
@@ -144,7 +178,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
                 .toString(Charsets.UTF_8)
     }
 
-    fun handleOtherExceptions(error: Throwable?, request: WebRequest): ResponseEntity<Any>
+    fun handleOtherExceptions(error: Throwable?, request: HttpServletRequest): ResponseEntity<Any>
     {
         val otherExceptions: ResponseEntity<Any>
 
@@ -196,7 +230,21 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
             }
             else
             -> {
-                logger.error(error?.message, error)
+                logger.error(
+                    LogMetadata(
+                        error = ErrorMessage(
+                            error,
+                            ErrorDetail(
+                                HttpStatus.INTERNAL_SERVER_ERROR,
+                                error?.message.toString(),
+                                defaultError,
+                                listOf(error?.message.toString())
+                            )
+                        ),
+                        request = Request(request),
+                        username = request.remoteUser
+                    )
+                )
 
                 // for security reasons we should not return arbitrary errors to the frontend
                 // so do not pass the original error message here

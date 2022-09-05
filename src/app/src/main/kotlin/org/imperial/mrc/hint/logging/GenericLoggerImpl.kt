@@ -14,4 +14,9 @@ class GenericLoggerImpl(
     {
         logger.info("{}", kv("hint", log))
     }
+
+    override fun error(log: LogMetadata)
+    {
+        logger.error("{}", kv("hint", log))
+    }
 }
