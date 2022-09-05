@@ -11,8 +11,8 @@ import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.emails.RealEmailManager
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.junit.jupiter.api.Test
-import org.simplejavamail.email.Email
-import org.simplejavamail.mailer.Mailer
+import org.simplejavamail.api.email.Email
+import org.simplejavamail.api.mailer.Mailer
 import org.slf4j.Logger
 
 class RealEmailManagerTests
@@ -59,10 +59,10 @@ class RealEmailManagerTests
 
             val emailObj = firstValue
             assertThat(emailObj.subject).isEqualTo("testSubject")
-            assertThat(emailObj.text).isEqualTo("testText")
-            assertThat(emailObj.textHTML).isEqualTo("testHtml")
-            assertThat(emailObj.fromRecipient.address).isEqualTo("test@sender.com")
-            assertThat(emailObj.fromRecipient.name).isEqualTo("testApp notifications")
+            assertThat(emailObj.plainText).isEqualTo("testText")
+            assertThat(emailObj.htmlText).isEqualTo("testHtml")
+            assertThat(emailObj.fromRecipient?.address).isEqualTo("test@sender.com")
+            assertThat(emailObj.fromRecipient?.name).isEqualTo("testApp notifications")
             assertThat(emailObj.recipients.count()).isEqualTo(1)
             assertThat(emailObj.recipients[0].address).isEqualTo("test@email.com")
         }
@@ -84,7 +84,7 @@ class RealEmailManagerTests
 
             val emailObj = firstValue
             assertThat(emailObj.subject).isEqualTo("Password change for testApp")
-            assertThat(emailObj.text).isEqualTo("""Hello,
+            assertThat(emailObj.plainText).isEqualTo("""Hello,
 
 This is an automated email from testApp. We have received a request to reset the password for the account with
 this email address (test.user@example.com).
@@ -116,7 +116,7 @@ Have a great day!""")
 
             val emailObj = firstValue
             assertThat(emailObj.subject).isEqualTo("Account creation for testApp")
-            assertThat(emailObj.text).isEqualTo("""Hello,
+            assertThat(emailObj.plainText).isEqualTo("""Hello,
 
 This is an automated email from testApp. We have received a request to create an account for
 this email address (test.user@example.com).
