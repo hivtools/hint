@@ -30,7 +30,7 @@ object KeyHelper
 
     fun loadKeyPair(): KeyPair
     {
-        logger.info(LogMetadata(action = "Loading token signing keypair from $KEY_PATH"))
+        logger.info("Loading token signing keypair from $KEY_PATH")
         return KeyPair(loadPublicKey(), loadPrivateKey())
     }
 
@@ -52,16 +52,16 @@ object KeyHelper
     // inject file manager wrapper to make unit testing possible
     fun generateKeyPair(fileManager: FileManager = KeyFileManager()): KeyPair
     {
-        logger.info(LogMetadata(action = "Unable to find a token keypair at $KEY_PATH. Generating a new"))
-        logger.info(LogMetadata(action = "RSA keypair for token signing. If other applications need to"))
-        logger.info(LogMetadata(action = "verify tokens they should use the following public key:"))
+        logger.info("Unable to find a token keypair at $KEY_PATH. Generating a new")
+        logger.info("RSA keypair for token signing. If other applications need to")
+        logger.info("verify tokens they should use the following public key:")
 
         val generator = KeyPairGenerator.getInstance("RSA").apply {
             initialize(KEY_SIZE)
         }
         val keypair = generator.generateKeyPair()
         val publicKey = Base64.getEncoder().encode(keypair.public.encoded)
-        logger.info(LogMetadata(action = "Public key for token verification: $publicKey"))
+        logger.info("Public key for token verification: $publicKey")
 
         if (fileManager.exists(KEY_PATH))
         {

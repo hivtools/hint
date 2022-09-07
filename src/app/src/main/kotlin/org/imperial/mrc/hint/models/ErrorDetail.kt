@@ -19,4 +19,9 @@ class ErrorDetail(private val httpStatus: HttpStatus,
             .status(this.httpStatus)
             .contentType(MediaType.APPLICATION_JSON)
             .body(ErrorResponse(listOf(this)).toJsonString() as T)
+
+    override fun toString(): String
+    {
+        return "ErrorDetail(httpStatus=$httpStatus, detail='$detail', error='$error', trace=$trace)"
+    }
 }

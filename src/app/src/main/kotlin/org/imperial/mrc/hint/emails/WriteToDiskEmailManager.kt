@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint.emails
 
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.logging.GenericLoggerImpl
 import org.imperial.mrc.hint.logging.LogMetadata
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
@@ -18,12 +19,12 @@ class WriteToDiskEmailManager(appProperties: AppProperties,
         outputDirectory.mkdirs()
         val file = File(outputDirectory, Instant.now().toString())
         file.writeText(text)
-        logger.info(LogMetadata(action = "Wrote email to ${file.absolutePath}"))
+        logger.info("Wrote email to ${file.absolutePath}")
     }
 
     companion object
     {
-        private val logger = GenericLoggerImpl(LoggerFactory.getLogger(WriteToDiskEmailManager::class.java))
+        private val logger: GenericLogger = GenericLoggerImpl(LoggerFactory.getLogger(WriteToDiskEmailManager::class.java))
         val outputDirectory = File("/tmp/hint_emails")
 
         fun cleanOutputDirectory()

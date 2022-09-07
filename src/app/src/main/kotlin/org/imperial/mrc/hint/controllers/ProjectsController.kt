@@ -4,8 +4,6 @@ import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.exceptions.UserException
 import org.imperial.mrc.hint.logging.GenericLogger
-import org.imperial.mrc.hint.logging.LogMetadata
-import org.imperial.mrc.hint.logging.Request
 import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.models.*
 import org.imperial.mrc.hint.security.Session
@@ -102,11 +100,7 @@ class ProjectsController(private val session: Session,
             @PathVariable("projectId") projectId: Int,
             @RequestParam("note") note: String): ResponseEntity<String>
     {
-        logger.info(LogMetadata(
-                tags = listOf("project", "notes"),
-                action = "Updating project note",
-                request = Request(request),
-                username = userId()))
+        logger.info("Updating project note", request, userId())
         projectRepository.updateProjectNote(projectId, userId(), note)
         return EmptySuccessResponse.asResponseEntity()
     }

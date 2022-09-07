@@ -1,10 +1,7 @@
 package org.imperial.mrc.hint.exceptions
 
 import org.imperial.mrc.hint.AppProperties
-import org.imperial.mrc.hint.logging.ErrorMessage
 import org.imperial.mrc.hint.logging.GenericLogger
-import org.imperial.mrc.hint.logging.LogMetadata
-import org.imperial.mrc.hint.logging.Request
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.imperial.mrc.hint.models.ErrorDetail.Companion.defaultError
 import org.springframework.beans.TypeMismatchException
@@ -43,21 +40,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     @ExceptionHandler(NoHandlerFoundException::class)
     fun handleNoHandlerFoundException(error: Exception, request: HttpServletRequest): Any
     {
-        logger.error(
-            LogMetadata(
-                error = ErrorMessage(
-                    error,
-                    ErrorDetail(
-                        HttpStatus.NOT_FOUND,
-                        error.message.toString(),
-                        defaultError,
-                        listOf(error.message.toString())
-                    )
-                ),
-                request = Request(request),
-                username = request.remoteUser
-            )
-        )
+        logger.error(request, error, HttpStatus.NOT_FOUND)
 
         val page = "404"
         return handleErrorPage(page, error, request)
@@ -86,26 +69,10 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     }
 
     @ExceptionHandler(HintException::class)
-    fun handleHintException(e: HintException, request: HttpServletRequest): ResponseEntity<Any>
+    fun handleHintException(error: HintException, request: HttpServletRequest): ResponseEntity<Any>
     {
-        logger.error(
-            LogMetadata(
-                error = ErrorMessage(
-                    e.cause,
-                    ErrorDetail(
-                        e.httpStatus,
-                        e.message.toString(),
-                        defaultError,
-                        listOf(e.message.toString())
-                    ),
-                    e.key
-                ),
-                request = Request(request),
-                username = request.remoteUser
-            )
-        )
-
-        return translatedError(e.key, e.httpStatus, request)
+        logger.error(request, error)
+        return translatedError(error.key, error.httpStatus, request)
     }
 
     private fun getBundle(request: HttpServletRequest): ResourceBundle
@@ -230,22 +197,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
             }
             else
             -> {
-                logger.error(
-                    LogMetadata(
-                        error = ErrorMessage(
-                            error,
-                            ErrorDetail(
-                                HttpStatus.INTERNAL_SERVER_ERROR,
-                                error?.message.toString(),
-                                defaultError,
-                                listOf(error?.message.toString())
-                            )
-                        ),
-                        request = Request(request),
-                        username = request.remoteUser
-                    )
-                )
-
+                logger.error(request, error,  HttpStatus.INTERNAL_SERVER_ERROR)
                 // for security reasons we should not return arbitrary errors to the frontend
                 // so do not pass the original error message here
                 otherExceptions = unexpectedError(HttpStatus.INTERNAL_SERVER_ERROR, request)

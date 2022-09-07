@@ -1,17 +1,18 @@
 package org.imperial.mrc.hint.emails
 
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.logging.GenericLogger
+import org.imperial.mrc.hint.logging.GenericLoggerImpl
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.simplejavamail.email.Email
 import org.simplejavamail.mailer.Mailer
 import org.simplejavamail.mailer.config.ServerConfig
 import org.simplejavamail.mailer.config.TransportStrategy
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class RealEmailManager(appProperties: AppProperties,
                        oneTimeTokenManager: OneTimeTokenManager,
-                       val logger: Logger = LoggerFactory.getLogger(RealEmailManager::class.java),
+                       val logger: GenericLogger = GenericLoggerImpl(LoggerFactory.getLogger(RealEmailManager::class.java)),
                        val mailer: Mailer = Mailer(
                                ServerConfig(appProperties.emailServer,
                                        appProperties.emailPort,
