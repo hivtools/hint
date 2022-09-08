@@ -226,7 +226,7 @@ describe("ModelCalibrate actions", () => {
         expect(spy).toHaveBeenCalledWith(mockResponse);
     });
 
-    it("getResult does not dispatch getCalibratePlot switches is off", async () => {
+    it("getResult does not dispatch getCalibratePlot if switch is off", async () => {
         switches.modelCalibratePlot = false;
         const testResult = {
             data: "TEST DATA",
