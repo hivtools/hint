@@ -41,16 +41,6 @@ class GenericLoggerImplTests
 
     private val appOrigin = AppOrigin("hint", "backend")
 
-    private val loggedData = LogMetadata(
-        "updated project notes",
-        null,
-        requestData,
-        null,
-        null,
-        appOrigin,
-        emptyList()
-    )
-
     private val mockResponse = mock<HttpServletResponse>{
         on { status } doReturn 500
     }
@@ -58,6 +48,16 @@ class GenericLoggerImplTests
     @Test
     fun `can log info with action text`()
     {
+        val loggedData = LogMetadata(
+            "updated project notes",
+            null,
+            null,
+            null,
+            null,
+            appOrigin,
+            emptyList()
+        )
+
         val sut = GenericLoggerImpl(mockLogger)
         sut.info("updated project notes")
         verify(mockLogger).info("{}", kv("hint", loggedData))
@@ -83,6 +83,15 @@ class GenericLoggerImplTests
     @Test
     fun `can log info with action text and HttpRequest`()
     {
+        val loggedData = LogMetadata(
+            "updated project notes",
+            null,
+            requestData,
+            null,
+            null,
+            appOrigin,
+            emptyList()
+        )
         val sut = GenericLoggerImpl(mockLogger)
         sut.info("updated project notes", mockRequest)
         verify(mockLogger).info("{}", kv("hint", loggedData))
