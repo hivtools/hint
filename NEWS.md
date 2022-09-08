@@ -2,6 +2,10 @@
 
 * Update backend logging for new log structure
 
+# hint 2.11.1
+
+* fix broken request password mailer
+
 # hint 2.11.0
 
 * Table for comparison barchart

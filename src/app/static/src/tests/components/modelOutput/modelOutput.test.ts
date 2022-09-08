@@ -21,7 +21,6 @@ import BubblePlot from "../../../app/components/plots/bubble/BubblePlot.vue";
 import {expectTranslated} from "../../testHelpers";
 import {BarchartIndicator, Filter} from "../../../app/types";
 import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
-import {switches} from "../../../app/featureSwitches";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 
 const localVue = createLocalVue();
@@ -213,8 +212,6 @@ describe("ModelOutput component", () => {
     });
 
     it("can change tabs", () => {
-        switches.comparisonPlot = true;
-
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         expect(wrapper.findAll(".nav-link").length).toBe(4);
@@ -266,17 +263,6 @@ describe("ModelOutput component", () => {
 
         expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
         expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
-    });
-
-    it("does not render comparison tab if feature switch is off", () => {
-        switches.comparisonPlot = false;
-
-        const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
-        expect(wrapper.findAll(".nav-link").length).toBe(3);
-        expect(wrapper.findAll(".nav-link").at(0).text()).toBe("Map");
-        expect(wrapper.findAll(".nav-link").at(1).text()).toBe("Bar");
-        expect(wrapper.findAll(".nav-link").at(2).text()).toBe("Bubble Plot");
     });
 
     it("computes chartdata", () => {
