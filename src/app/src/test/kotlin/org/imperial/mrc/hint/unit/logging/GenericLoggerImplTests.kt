@@ -41,29 +41,30 @@ class GenericLoggerImplTests
 
     private val appOrigin = AppOrigin("hint", "backend")
 
+    private val loggedData = LogMetadata(
+        "updated project notes",
+        null,
+        requestData,
+        null,
+        null,
+        appOrigin,
+        emptyList()
+    )
+
     private val mockResponse = mock<HttpServletResponse>{
         on { status } doReturn 500
     }
 
     @Test
-    fun `can log info action performed in key value format`()
+    fun `can log info with action text`()
     {
-        val log = LogMetadata(
-            "updated project notes",
-            null,
-            null,
-            null,
-            null,
-            appOrigin,
-            emptyList()
-        )
         val sut = GenericLoggerImpl(mockLogger)
         sut.info("updated project notes")
-        verify(mockLogger).info("{}", kv("hint", log))
+        verify(mockLogger).info("{}", kv("hint", loggedData))
     }
 
     @Test
-    fun `can log info with HttpRequest and username performed key value format`()
+    fun `can log info with action text, HttpRequest and username`()
     {
         val loggedData = LogMetadata(
             "updated project notes",
@@ -76,6 +77,14 @@ class GenericLoggerImplTests
         )
         val sut = GenericLoggerImpl(mockLogger)
         sut.info("updated project notes", mockRequest, "testUser")
+        verify(mockLogger).info("{}", kv("hint", loggedData))
+    }
+
+    @Test
+    fun `can log info with action text and HttpRequest`()
+    {
+        val sut = GenericLoggerImpl(mockLogger)
+        sut.info("updated project notes", mockRequest)
         verify(mockLogger).info("{}", kv("hint", loggedData))
     }
 
