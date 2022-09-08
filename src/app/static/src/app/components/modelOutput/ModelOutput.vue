@@ -224,10 +224,7 @@
             if (!inactiveFeatures.includes("BubblePlot")) {
                 tabs.push("bubble");
             }
-
-            if (switches.comparisonPlot) {
-                tabs.push("comparison");
-            }
+            tabs.push("comparison");
 
             return {
                 tabs: tabs,
