@@ -123,6 +123,32 @@ class GenericLoggerImplTests
         sut.error(mockRequest, mockResponse, "error message")
         verify(mockLogger).error("{}", kv("hint", loggedData))
     }
+    @Test
+    fun `can log error with HttpRequest, HttpResponse`()
+    {
+        val mockLogger = mock<Logger>()
+
+        val loggedData = LogMetadata(
+            null,
+            ErrorMessage(
+                null,
+                ErrorDetail(
+                    HttpStatus.valueOf(500),
+                    "",
+                    "OTHER_ERROR",
+                    null
+                )
+            ),
+            requestData,
+            null,
+            null,
+            appOrigin,
+            emptyList()
+        )
+        val sut = GenericLoggerImpl(mockLogger)
+        sut.error(mockRequest, mockResponse)
+        verify(mockLogger).error("{}", kv("hint", loggedData))
+    }
 
     @Test
     fun `can log error with HttpRequest, Throwable and HttpStatus`()

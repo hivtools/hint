@@ -37,7 +37,7 @@ class GenericLoggerImpl(
             error = ErrorMessage(
                 details = ErrorDetail(
                     HttpStatus.valueOf(response.status),
-                    message.toString(),
+                    message.orEmpty(),
                     ErrorDetail.defaultError
                 )
             ),
