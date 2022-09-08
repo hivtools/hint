@@ -28,7 +28,6 @@ import javax.servlet.http.HttpSession
 
 class ProjectsControllerTests
 {
-
     private val mockProfile = mock<CommonProfile> {
         on { id } doReturn "testUser"
     }
@@ -44,31 +43,16 @@ class ProjectsControllerTests
         on { id } doReturn "session1"
     }
 
-    private val mockRequest = mock<HttpServletRequest> {
+    private val mockRequest = mock<HttpServletRequest>{
         on { method } doReturn "POST"
         on { servletPath } doReturn "/project"
         on { serverName } doReturn "hint"
-        on { getHeader("User-Agent") } doReturn "Safari"
+        on { getHeader("User-Agent")} doReturn "Safari"
         on { remoteAddr } doReturn "127.0.0.1"
         on { session } doReturn mockHttpSession
     }
 
-    private val testLogData = LogMetadata(
-        "testUser",
-        AppOrigin("hint", "backend"),
-        Request(
-            "POST",
-            "/project",
-            "hint",
-            Client("Safari", "127.0.0.1", "session1")
-        ),
-        null,
-        null,
-        "Updating project note",
-            listOf("project", "notes")
-    )
-
-    private val mockLogger = mock<GenericLoggerImpl>()
+    private val mockLogger = mock<GenericLogger>()
 
     private val mockVersion = Version("testVersion", "createdTime", "updatedTime", 1, "version notes")
 
@@ -476,7 +460,7 @@ class ProjectsControllerTests
         val result = sut.updateProjectNote(1, "notes")
 
         verify(mockRepo).updateProjectNote(1, "testUser", "notes")
-        verify(mockLogger).info(testLogData)
+        verify(mockLogger).info("updated project notes", mockRequest, "testUser")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -492,7 +476,7 @@ class ProjectsControllerTests
         val result = sut.updateProjectNote(1, "updated project notes")
 
         verify(mockProjectRepo).updateProjectNote(1, "testUser", "updated project notes")
-        verify(mockLogger).info(testLogData)
+        verify(mockLogger).info("updated project notes", mockRequest, "testUser")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 

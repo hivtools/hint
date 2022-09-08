@@ -100,8 +100,8 @@ class ProjectsController(private val session: Session,
             @PathVariable("projectId") projectId: Int,
             @RequestParam("note") note: String): ResponseEntity<String>
     {
-        logger.info("Updating project note", request, userId())
         projectRepository.updateProjectNote(projectId, userId(), note)
+        logger.info("updated project notes", request, userId())
         return EmptySuccessResponse.asResponseEntity()
     }
 

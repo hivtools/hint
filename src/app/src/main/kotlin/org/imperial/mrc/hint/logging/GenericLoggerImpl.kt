@@ -28,7 +28,7 @@ class GenericLoggerImpl(
             request = Request(request),
             username = user
         )
-        logger.error("{}", kv("hint", log))
+        logger.info("{}", kv("hint", log))
     }
 
     override fun error(request: HttpServletRequest, response: HttpServletResponse, message: String?)
@@ -41,8 +41,7 @@ class GenericLoggerImpl(
                     ErrorDetail.defaultError
                 )
             ),
-            request = Request(request),
-            username = request.session.id
+            request = Request(request)
         )
         logger.error("{}", kv("hint", log))
     }
@@ -59,8 +58,7 @@ class GenericLoggerImpl(
                     listOf(error?.message.toString())
                 )
             ),
-            request = Request(request),
-            username = request.session.id
+            request = Request(request)
         )
 
         logger.error("{}", kv("hint", log))
@@ -79,8 +77,7 @@ class GenericLoggerImpl(
                 ),
                 error.key
             ),
-            request = Request(request),
-            username = request.session.id
+            request = Request(request)
         )
 
         logger.error("{}", kv("hint", log))
