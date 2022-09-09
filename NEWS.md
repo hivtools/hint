@@ -1,3 +1,7 @@
+# hint 2.13.0
+
+* Include system info in logs
+
 # hint 2.12.0
 
 * Update backend logging for new log structure

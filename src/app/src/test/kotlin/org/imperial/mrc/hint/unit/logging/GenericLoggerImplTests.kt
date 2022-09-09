@@ -39,7 +39,7 @@ class GenericLoggerImplTests
         Client("Safari", "127.0.0.1", "session1")
     )
 
-    private val appOrigin = AppOrigin("hint", "backend")
+    private val appOrigin = AppOrigin("hint", "https://app","backend")
 
     private val mockResponse = mock<HttpServletResponse>{
         on { status } doReturn 500
