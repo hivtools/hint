@@ -2,6 +2,10 @@
 
 * fix broken request password mailer
 
+# hint 2.11.1
+
+* Prevent comparison plot data being saved in local storage
+
 # hint 2.11.0
 
 * Table for comparison barchart
