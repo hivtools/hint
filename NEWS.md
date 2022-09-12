@@ -1,6 +1,6 @@
-# hint 2.12.0
+# hint 2.13.0
 
-* Update backend logging for new log structure
+* Log elapsed time for ADR responses
 
 # hint 2.11.1
 
