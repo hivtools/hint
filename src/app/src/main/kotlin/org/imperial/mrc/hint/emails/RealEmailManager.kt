@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory
 class RealEmailManager(
     appProperties: AppProperties,
     oneTimeTokenManager: OneTimeTokenManager,
-    val logger: GenericLogger = GenericLoggerImpl(LoggerFactory.getLogger(RealEmailManager::class.java)),
+    private val logger: GenericLogger,
     val mailer: Mailer = MailerBuilder
         .withSMTPServer(
             appProperties.emailServer,
