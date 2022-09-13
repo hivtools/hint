@@ -117,6 +117,7 @@ fun getUserLogic(dataSource: DataSource): UserLogic {
 
     val dslContext = DSL.using(dataSource.connection, SQLDialect.POSTGRES)
     val appProperties = ConfiguredAppProperties()
+    val logger: GenericLogger = GenericLoggerImpl()
 
     val userRepository = JooqUserRepository(dslContext)
     val tokenRepository = JooqTokenRepository(dslContext)
@@ -129,5 +130,5 @@ fun getUserLogic(dataSource: DataSource): UserLogic {
 
     return DbProfileServiceUserLogic(userRepository,
             profileService,
-            EmailConfig().getEmailManager(appProperties, oneTimeTokenManager))
+            EmailConfig().getEmailManager(appProperties, oneTimeTokenManager, logger))
 }
