@@ -19,6 +19,8 @@ import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
 import java.util.*
 import javax.sql.DataSource
 import kotlin.system.exitProcess
+import org.imperial.mrc.hint.logging.GenericLogger
+import org.imperial.mrc.hint.logging.GenericLoggerImpl
 
 const val doc = """
 Hint User CLI
