@@ -1,3 +1,7 @@
+# hint 2.11.2
+
+* Prevent comparison plot data being saved in local storage
+
 # hint 2.11.1
 
 * fix broken request password mailer
