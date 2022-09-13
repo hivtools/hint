@@ -99,6 +99,7 @@
                     :selections="comparisonPlotSelections"
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
+                    v-translate:no-data-message="'noChartData'"
                     @update="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
