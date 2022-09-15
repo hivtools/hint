@@ -28,7 +28,7 @@
     <h1 class="text-center"><strong>${appTitle}</strong></h1>
     <div id="app" class="card login-form mx-auto mt-3">
         <div class="card-body">
-            <form id="login-form" method="post" action="/callback" class="needs-validation" novalidate onsubmit="validate(event);">
+            <form id="login-form" method="post" action="/callback/formClient" class="needs-validation" novalidate onsubmit="validate(event);">
                 <div class="form-group">
                     <label for="user-id">Username (email address)</label>
                     <input type="text" size="20" class="form-control" name="username" id="user-id" value="${username}" required>
@@ -57,6 +57,10 @@
     <div id="continue-as-guest" class="text-center mt-3">
         <div class="mb-3">OR</div>
         <a class="btn btn-red" onclick="continueAsGuest()" type="submit" href="${continueTo}">Continue as guest</a>
+    </div>
+    <div id="sso" class="text-center mt-3">
+        <div class="mb-3">OR</div>
+        <a class="btn btn-red" type="submit" href="/oauth2/login">Login with auth0</a>
     </div>
     <div id="partner-logos" class="logos mx-auto mt-5">
       <a href="https://www.fjelltopp.org"><img src="public/images/fjelltopp_logo.png" class="small-logo"></a>

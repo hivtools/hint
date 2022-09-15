@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.unit.security
 
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.security.HintDbProfileService
 import org.imperial.mrc.hint.security.Pac4jConfig
@@ -8,7 +9,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.pac4j.core.client.BaseClient
 import org.pac4j.http.client.indirect.FormClient
+import org.pac4j.jee.context.JEEContext
 import org.pac4j.jee.context.session.JEESessionStore
+import org.pac4j.oauth.client.OAuth20Client
 import org.pac4j.sql.profile.service.DbProfileService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -30,20 +33,53 @@ class Pac4jConfigTests
     private lateinit var sut: Pac4jConfig
 
     @Test
-    fun `can get Pac4j Config`()
+    fun `can get Pac4j Config for FormLogin`()
+    {
+        val context = mock<JEEContext>()
+
+        val config = sut.getPac4jConfig(wiredDbProfileService)
+
+        assertThat(config.clients.callbackUrl).isEqualTo("/callback")
+
+        assertThat(config.clients.clients.count()).isEqualTo(2)
+
+        val client = config.clients.clients.first()
+
+        assertThat(client).isInstanceOf(FormClient::class.java)
+
+        val formClient = client as FormClient
+
+        assertThat(formClient.loginUrl).isEqualTo("/login")
+
+        assertThat(formClient.name).isEqualTo("FormClient")
+
+        val field = BaseClient::class.java.getDeclaredField("authenticator")
+
+        field.isAccessible = true
+
+        assertThat(field.get(client)).isInstanceOf(DbProfileService::class.java)
+
+        assertThat(config.sessionStore).isInstanceOf(JEESessionStore::class.java)
+    }
+
+    @Test
+    fun `can get Pac4j Config for OAuth2Login`()
     {
         val config = sut.getPac4jConfig(wiredDbProfileService)
 
         assertThat(config.clients.callbackUrl).isEqualTo("/callback")
-        assertThat(config.clients.clients.count()).isEqualTo(1)
 
-        val client = config.clients.clients.first()
-        assertThat(client).isInstanceOf(FormClient::class.java)
-        assertThat((client as FormClient).loginUrl).isEqualTo("/login")
+        assertThat(config.clients.clients.count()).isEqualTo(2)
 
-        val field = BaseClient::class.java.getDeclaredField("authenticator")
-        field.isAccessible = true
-        assertThat(field.get(client)).isInstanceOf(DbProfileService::class.java)
+        val client = config.clients.clients.last()
+
+        assertThat(client).isInstanceOf(OAuth20Client::class.java)
+
+        val oAuth2client = client as OAuth20Client
+
+        assertThat(oAuth2client.callbackUrl).isEqualTo("http://localhost:8080/callback/oauth2Client")
+
+        assertThat(oAuth2client.name).isEqualTo("oauth2Client")
 
         assertThat(config.sessionStore).isInstanceOf(JEESessionStore::class.java)
     }
