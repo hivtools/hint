@@ -11,9 +11,10 @@ class OAuth2StateTests
     @Test
     fun `can generate code`()
     {
+        val code = "generated123"
         val mockCode = mock<OAuth2State> {
-            on { generateCode() } doReturn "generated123"
+            on { generateCode() } doReturn code
         }
-        assertEquals(mockCode.generateCode(), "generated123")
+        assertEquals(mockCode.generateCode(), code)
     }
 }

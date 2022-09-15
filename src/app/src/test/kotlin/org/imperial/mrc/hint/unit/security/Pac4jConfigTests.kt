@@ -1,6 +1,5 @@
 package org.imperial.mrc.hint.unit.security
 
-import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.security.HintDbProfileService
 import org.imperial.mrc.hint.security.Pac4jConfig
@@ -9,7 +8,6 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.pac4j.core.client.BaseClient
 import org.pac4j.http.client.indirect.FormClient
-import org.pac4j.jee.context.JEEContext
 import org.pac4j.jee.context.session.JEESessionStore
 import org.pac4j.oauth.client.OAuth20Client
 import org.pac4j.sql.profile.service.DbProfileService
@@ -35,8 +33,6 @@ class Pac4jConfigTests
     @Test
     fun `can get Pac4j Config for FormLogin`()
     {
-        val context = mock<JEEContext>()
-
         val config = sut.getPac4jConfig(wiredDbProfileService)
 
         assertThat(config.clients.callbackUrl).isEqualTo("/callback")
