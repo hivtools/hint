@@ -75,7 +75,7 @@ class HintApplicationTests : SecureIntegrationTests()
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
 
-        val entity = testRestTemplate.postForEntity<String>("/callback/", HttpEntity(map, headers))
+        val entity = testRestTemplate.postForEntity<String>("/callback/formClient", HttpEntity(map, headers))
 
         //test get redirected back to login page
         assertThat(entity.statusCode).isEqualTo(HttpStatus.SEE_OTHER)
@@ -102,7 +102,7 @@ class HintApplicationTests : SecureIntegrationTests()
         headers.add("Cookie", "JSESSIONID=$sessionCookie")
 
         // login
-        val callbackEntity = testRestTemplate.postForEntity<String>("/callback/", HttpEntity(map, headers))
+        val callbackEntity = testRestTemplate.postForEntity<String>("/callback/formClient", HttpEntity(map, headers))
 
         // get redirected back to explore page
         assertThat(callbackEntity.statusCode).isEqualTo(HttpStatus.SEE_OTHER)

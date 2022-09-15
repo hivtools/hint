@@ -17,7 +17,7 @@ export const login = async (username = "test.user@example.com", password = "pass
     formData.append('username', username);
     formData.append('password', password);
 
-    const res = await axios.post(appUrl + "callback/",
+    const res = await axios.post(appUrl + "callback/formClient/",
         formData,
         {
             headers: formData.getHeaders(),
