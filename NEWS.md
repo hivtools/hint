@@ -1,3 +1,7 @@
+# hint 2.12.0
+
+* Add Auth0 login method
+
 # hint 2.11.2
 
 * Prevent comparison plot data being saved in local storage
