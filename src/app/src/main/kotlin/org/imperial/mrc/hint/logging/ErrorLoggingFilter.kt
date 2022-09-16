@@ -1,7 +1,5 @@
 package org.imperial.mrc.hint.logging
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.util.ContentCachingResponseWrapper
@@ -14,7 +12,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @Component
-class ErrorLoggingFilter(private val logger: Logger = LoggerFactory.getLogger(ErrorLoggingFilter::class.java))
+class ErrorLoggingFilter(private val logger: GenericLogger)
     : Filter
 {
 
@@ -41,14 +39,14 @@ class ErrorLoggingFilter(private val logger: Logger = LoggerFactory.getLogger(Er
         if (HttpStatus.valueOf(response.status) >= HttpStatus.NOT_FOUND)
         {
             val message = "ERROR: ${response.status} response for ${request.method} ${request.servletPath}"
-            logger.error(message)
+            logger.error(request, response, message)
 
             //log content
             if (!isDownload)
             {
                 val bytes = responseWrapper.contentAsByteArray
                 val content = String(bytes, Charset.forName(responseWrapper.characterEncoding))
-                logger.error(content)
+                logger.error(request, response, content)
             }
         }
 
