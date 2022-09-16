@@ -17,7 +17,8 @@ import {
     mockProjectsState,
     mockRelease,
     mockStepperState,
-    mockSurveyAndProgramState
+    mockSurveyAndProgramState,
+    mockComparisonPlotResponse
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
@@ -86,7 +87,8 @@ describe("LocalStorageManager", () => {
             modelOutput: mockModelOutputState(),
             modelCalibrate: mockModelCalibrateState({
                 result: mockCalibrateResultResponse(),
-                calibratePlotResult: {data: "test calibrate plot result"}
+                calibratePlotResult: {data: "test calibrate plot result"},
+                comparisonPlotResult: mockComparisonPlotResponse()
             }),
             stepper: mockStepperState(),
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),
