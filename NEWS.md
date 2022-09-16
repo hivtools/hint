@@ -2,6 +2,10 @@
 
 * Log elapsed time for ADR responses
 
+# hint 2.12.0
+
+* Update backend logging for new log structure
+
 # hint 2.11.2
 
 * Prevent comparison plot data being saved in local storage
