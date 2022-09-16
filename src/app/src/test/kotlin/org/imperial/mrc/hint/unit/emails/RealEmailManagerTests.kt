@@ -33,7 +33,7 @@ class RealEmailManagerTests
     @Test
     fun `initialises correctly`()
     {
-        val sut = RealEmailManager(mockAppProps, mock())
+        val sut = RealEmailManager(mockAppProps, mock(), mockLogger)
 
         assertThat(sut.sender).isEqualTo("test@sender.com")
         assertThat(sut.appTitle).isEqualTo("testApp")
