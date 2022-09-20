@@ -179,6 +179,7 @@ describe("ModelOutput component", () => {
         expect(comparisonPlot.props().formatFunction).toBe(vm.formatBarchartValue);
         expect(comparisonPlot.props().showRangesInTooltips).toBe(true);
         expect(comparisonPlot.props().disaggregateByConfig).toStrictEqual({fixed: true, hideFilter: true});
+        expect(comparisonPlot.props().noDataMessage).toBe("No data are available for the selected combination. Please review the combination of filter values selected.");
     });
 
     it("renders comparison plot error", () => {
