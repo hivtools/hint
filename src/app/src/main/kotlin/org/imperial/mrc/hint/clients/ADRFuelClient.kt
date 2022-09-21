@@ -1,10 +1,12 @@
 package org.imperial.mrc.hint.clients
 
-import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.*
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.UserException
 import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.logging.GenericLoggerImpl
+import org.imperial.mrc.hint.logging.logDurationOfResponseEntityRequests
+import org.imperial.mrc.hint.logging.logDurationOfStreamRequests
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.ResponseEntity
@@ -13,8 +15,6 @@ import java.io.BufferedInputStream
 import java.io.File
 import java.net.URL
 import java.net.URLConnection
-import java.time.Duration
-import java.time.Instant
 
 @Component
 class ADRClientBuilder(val appProperties: AppProperties,
@@ -47,32 +47,17 @@ class ADRFuelClient(appProperties: AppProperties,
 {
     override fun get(url: String): ResponseEntity<String>
     {
-        val start = Instant.now()
-        val response = super.get(url)
-        val end = Instant.now()
-        val timeElapsed = Duration.between(start, end).toMillis()
-        logger.info("ADR request time elapsed: $timeElapsed")
-        return response
+        return logDurationOfResponseEntityRequests({ super.get(url) }, logger)
     }
 
     override fun postFile(url: String, parameters: List<Pair<String, Any?>>, file: Pair<String, File>): ResponseEntity<String>
     {
-        val start = Instant.now()
-        val response = super.postFile(url, parameters, file)
-        val end = Instant.now()
-        val timeElapsed = Duration.between(start, end).toMillis()
-        logger.info("ADR request time elapsed: $timeElapsed")
-        return response
+        return logDurationOfResponseEntityRequests({ super.postFile(url, parameters, file) }, logger)
     }
 
     override fun postJson(urlPath: String?, json: String): ResponseEntity<String>
     {
-        val start = Instant.now()
-        val response = super.postJson(urlPath, json)
-        val end = Instant.now()
-        val timeElapsed = Duration.between(start, end).toMillis()
-        logger.info("ADR request time elapsed: $timeElapsed")
-        return response
+        return logDurationOfResponseEntityRequests({ super.postJson(urlPath, json) }, logger)
     }
 
     override fun standardHeaders(): Map<String, Any>
@@ -82,13 +67,8 @@ class ADRFuelClient(appProperties: AppProperties,
 
     override fun getInputStream(url: String): BufferedInputStream
     {
-        val start = Instant.now()
         val urlConn: URLConnection = URL(url).openConnection()
-        urlConn.setRequestProperty("Authorization", apiKey)
-        val response = BufferedInputStream(urlConn.getInputStream())
-        val end = Instant.now()
-        val timeElapsed = Duration.between(start, end).toMillis()
-        logger.info("ADR request time elapsed: $timeElapsed")
-        return response
+
+        return logDurationOfStreamRequests({ BufferedInputStream(urlConn.getInputStream()) }, logger)
     }
 }
