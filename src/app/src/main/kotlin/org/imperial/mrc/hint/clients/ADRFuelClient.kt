@@ -19,7 +19,8 @@ import java.net.URLConnection
 class ADRClientBuilder(val appProperties: AppProperties,
                        val encryption: Encryption,
                        val session: Session,
-                       val userRepository: UserRepository)
+                       val userRepository: UserRepository,
+                       val logger: GenericLogger)
 {
 
     fun build(): ADRClient
@@ -27,7 +28,7 @@ class ADRClientBuilder(val appProperties: AppProperties,
         val userId = this.session.getUserProfile().id
         val encryptedKey = this.userRepository.getADRKey(userId) ?: throw UserException("noADRKey")
         val apiKey = this.encryption.decrypt(encryptedKey)
-        return ADRFuelClient(this.appProperties, apiKey)
+        return ADRFuelClient(this.appProperties, apiKey, this.logger)
     }
 }
 
@@ -41,7 +42,7 @@ interface ADRClient
 
 class ADRFuelClient(appProperties: AppProperties,
                     private val apiKey: String,
-                    private val logger: GenericLogger = GenericLoggerImpl())
+                    private val logger: GenericLogger)
     : FuelClient(appProperties.adrUrl + "api/3/action"), ADRClient
 {
     override fun get(url: String): ResponseEntity<String>
@@ -67,7 +68,7 @@ class ADRFuelClient(appProperties: AppProperties,
     override fun getInputStream(url: String): BufferedInputStream
     {
         val urlConn: URLConnection = URL(url).openConnection()
-
+        urlConn.setRequestProperty("Authorization", apiKey)
         return logDurationOf({ BufferedInputStream(urlConn.getInputStream()) }, logger)
     }
 }

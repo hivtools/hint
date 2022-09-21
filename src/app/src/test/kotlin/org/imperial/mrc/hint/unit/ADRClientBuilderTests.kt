@@ -34,7 +34,7 @@ class ADRClientBuilderTests
     fun `throws error if user does not have a key`()
     {
         Assertions.assertThatThrownBy {
-            ADRClientBuilder(ConfiguredAppProperties(), encryption, mockSession, mock())
+            ADRClientBuilder(ConfiguredAppProperties(), encryption, mockSession, mock(), mock())
                     .build()
         }.isInstanceOf(UserException::class.java)
     }
@@ -42,7 +42,7 @@ class ADRClientBuilderTests
     @Test
     fun `creates client with correct auth header`()
     {
-        val sut = ADRClientBuilder(ConfiguredAppProperties(), encryption, mockSession, mockRepo)
+        val sut = ADRClientBuilder(ConfiguredAppProperties(), encryption, mockSession, mockRepo, mock())
         val result = sut.build() as ADRFuelClient
         val headers = result.standardHeaders()
         Assertions.assertThat(headers["Authorization"]).isEqualTo(TEST_KEY)
