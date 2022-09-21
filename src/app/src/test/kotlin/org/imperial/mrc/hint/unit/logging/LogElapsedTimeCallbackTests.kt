@@ -5,8 +5,7 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.imperial.mrc.hint.clients.FuelClient
 import org.imperial.mrc.hint.logging.GenericLogger
-import org.imperial.mrc.hint.logging.logDurationOfResponseEntityRequests
-import org.imperial.mrc.hint.logging.logDurationOfStreamRequests
+import org.imperial.mrc.hint.logging.logDurationOf
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
@@ -27,7 +26,7 @@ class LogElapsedTimeCallbackTests
         val mockFuelClient = mock<FuelClient> {
             on { get(anyString()) } doReturn mockResponse
         }
-        val result = logDurationOfResponseEntityRequests({ mockFuelClient.get("url") }, mockLogger)
+        val result = logDurationOf({ mockFuelClient.get("url") }, mockLogger)
         assertEquals(result.statusCode, HttpStatus.OK)
         assertEquals(result.body, "test")
         verify(mockLogger).info(contains("ADR request time elapsed: "))
@@ -37,7 +36,7 @@ class LogElapsedTimeCallbackTests
     fun `callback request can return BufferedStream`()
     {
         val anyInputStream = ByteArrayInputStream("test data".toByteArray())
-        val result = logDurationOfStreamRequests({ BufferedInputStream(anyInputStream) }, mockLogger)
+        val result = logDurationOf({ BufferedInputStream(anyInputStream) }, mockLogger)
         assertEquals(result.readAllBytes().decodeToString(), "test data")
         verify(mockLogger).info(contains("ADR request time elapsed: "))
     }

@@ -5,8 +5,7 @@ import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.UserException
 import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.logging.GenericLoggerImpl
-import org.imperial.mrc.hint.logging.logDurationOfResponseEntityRequests
-import org.imperial.mrc.hint.logging.logDurationOfStreamRequests
+import org.imperial.mrc.hint.logging.logDurationOf
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.ResponseEntity
@@ -47,17 +46,17 @@ class ADRFuelClient(appProperties: AppProperties,
 {
     override fun get(url: String): ResponseEntity<String>
     {
-        return logDurationOfResponseEntityRequests({ super.get(url) }, logger)
+        return logDurationOf({ super.get(url) }, logger)
     }
 
     override fun postFile(url: String, parameters: List<Pair<String, Any?>>, file: Pair<String, File>): ResponseEntity<String>
     {
-        return logDurationOfResponseEntityRequests({ super.postFile(url, parameters, file) }, logger)
+        return logDurationOf({ super.postFile(url, parameters, file) }, logger)
     }
 
     override fun postJson(urlPath: String?, json: String): ResponseEntity<String>
     {
-        return logDurationOfResponseEntityRequests({ super.postJson(urlPath, json) }, logger)
+        return logDurationOf({ super.postJson(urlPath, json) }, logger)
     }
 
     override fun standardHeaders(): Map<String, Any>
@@ -69,6 +68,6 @@ class ADRFuelClient(appProperties: AppProperties,
     {
         val urlConn: URLConnection = URL(url).openConnection()
 
-        return logDurationOfStreamRequests({ BufferedInputStream(urlConn.getInputStream()) }, logger)
+        return logDurationOf({ BufferedInputStream(urlConn.getInputStream()) }, logger)
     }
 }
