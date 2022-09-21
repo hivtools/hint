@@ -4,7 +4,6 @@ import org.imperial.mrc.hint.*
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.UserException
 import org.imperial.mrc.hint.logging.GenericLogger
-import org.imperial.mrc.hint.logging.GenericLoggerImpl
 import org.imperial.mrc.hint.logging.logDurationOf
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
