@@ -30,13 +30,12 @@ class PasswordTests(@Autowired val restTemplate: TestRestTemplate) : CleanDataba
             WriteToDiskEmailManager.cleanOutputDirectory()
         }
     }
-
-    private val expectedSuccessResponse = "{\"errors\":[],\"status\":\"success\",\"data\":true}"
+    private val expectedSuccessResponse = "{\"data\":true,\"errors\":[],\"status\":\"success\"}"
 
     private fun expectedErrorResponse(errorMessage: String): String
     {
-        return "{\"data\":{},\"status\":\"failure\"," +
-                "\"errors\":[{\"detail\":\"$errorMessage\",\"error\":\"OTHER_ERROR\"}]}"
+        return "{\"errors\":[{\"detail\":\"$errorMessage\",\"error\":\"OTHER_ERROR\"}]," +
+                "\"data\":{},\"status\":\"failure\"}"
     }
 
     @AfterEach

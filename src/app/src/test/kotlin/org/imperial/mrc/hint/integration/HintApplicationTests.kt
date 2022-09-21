@@ -18,6 +18,8 @@ import java.io.File
 class HintApplicationTests : SecureIntegrationTests()
 {
 
+    private val expectedSuccessResponse = "{\"data\":null,\"errors\":[],\"status\":\"success\"}"
+
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `all users can access index`(isAuthorized: IsAuthorized)
@@ -76,7 +78,7 @@ class HintApplicationTests : SecureIntegrationTests()
         val entity = testRestTemplate.postForEntity<String>("/callback/", HttpEntity(map, headers))
 
         //test get redirected back to login page
-        assertThat(entity.statusCode).isEqualTo(HttpStatus.FOUND)
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.SEE_OTHER)
         assertThat(entity.headers["Location"]!!.first())
                 .isEqualTo("/login?username=test.user%40example.com&error=BadCredentialsException")
     }
@@ -103,7 +105,7 @@ class HintApplicationTests : SecureIntegrationTests()
         val callbackEntity = testRestTemplate.postForEntity<String>("/callback/", HttpEntity(map, headers))
 
         // get redirected back to explore page
-        assertThat(callbackEntity.statusCode).isEqualTo(HttpStatus.FOUND)
+        assertThat(callbackEntity.statusCode).isEqualTo(HttpStatus.SEE_OTHER)
         assertThat(callbackEntity.headers["Location"]!!.first())
                 .isEqualTo("explore")
     }
@@ -116,12 +118,12 @@ class HintApplicationTests : SecureIntegrationTests()
         if (isAuthorized == IsAuthorized.TRUE)
         {
             assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-            assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":null}")
+            assertThat(entity.body!!).isEqualTo(expectedSuccessResponse)
         }
         else
         {
             assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-            assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":null}")
+            assertThat(entity.body!!).isEqualTo(expectedSuccessResponse)
         }
     }
 

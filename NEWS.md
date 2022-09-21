@@ -1,6 +1,62 @@
-# hint 2.5.0
+# hint 2.13.0
 
 * Add language toggle to login page
+
+# hint 2.12.0
+
+* Update backend logging for new log structure
+
+# hint 2.11.2
+
+* Prevent comparison plot data being saved in local storage
+
+# hint 2.11.1
+
+* fix broken request password mailer
+
+# hint 2.11.0
+
+* Table for comparison barchart
+
+# hint 2.10.0
+
+* Display comparison plot error message
+
+# hint 2.9.1
+
+* Bug: HINT login is broken on dev and staging
+
+# hint 2.9.0
+
+* Comparison barchart in review output step
+
+# hint 2.8.0
+
+* Populate model Run Id and calibrate options from project summary
+
+# hint 2.7.3
+
+* Fix guest login issue
+
+# hint 2.7.2
+
+* Change userCLI target to master
+
+# hint 2.7.1
+
+* Fix docker run entrypoint issue and update pac4j
+
+# hint 2.7.0
+
+* Endpoint for comparison barchart dataset
+
+# hint 2.6.0
+
+* Upgrade java, gradle and dependecies  
+
+# hint 2.5.0
+
+* Populate project input file data
 
 # hint 2.4.1
 

@@ -36,9 +36,9 @@
 
 <script lang="ts">
     import Modal from "../Modal.vue";
-    import {mapActionByName, mapMutationByName, mapStateProps} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProps} from "../../utils";
     import UploadProgress from "./UploadProgress.vue";
-    import {LoadingState, LoadState} from "../../store/load/load";
+    import {LoadingState, LoadState} from "../../store/load/state";
     import LoadErrorModal from "./LoadErrorModal.vue";
     import ProjectsMixin from "../projects/ProjectsMixin";
 
@@ -67,6 +67,7 @@
 
     interface Computed extends  LoadComputed{
         disableCreate: boolean
+        isGuest: boolean
     }
 
     export default ProjectsMixin.extend<Data, Methods, Computed, Props>({
@@ -95,7 +96,8 @@
             }),
             disableCreate() {
                 return !this.uploadProjectName || this.invalidName(this.uploadProjectName)
-            }
+            },
+            isGuest: mapGetterByName(null,"isGuest")
         },
         components: {
             Modal,
@@ -108,7 +110,9 @@
             }
         },
         mounted() {
-            this.getProjects();
+            if (!this.isGuest) {
+                this.getProjects();
+            }
         }
     })
 </script>

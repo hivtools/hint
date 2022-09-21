@@ -16,8 +16,13 @@ interface HintrAPIClient
 {
     fun validateBaselineIndividual(file: VersionFileWithPath, type: FileType): ResponseEntity<String>
     fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
-    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType, pjnzPath: String, strict: Boolean)
-            : ResponseEntity<String>
+    fun validateSurveyAndProgramme(
+        file: VersionFileWithPath,
+        shapePath: String?,
+        type: FileType,
+        pjnzPath: String?,
+        strict: Boolean
+    ): ResponseEntity<String>
 
     fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
@@ -29,13 +34,18 @@ interface HintrAPIClient
     fun getCalibrateStatus(id: String): ResponseEntity<String>
     fun getCalibrateResult(id: String): ResponseEntity<String>
     fun getCalibratePlot(id: String): ResponseEntity<String>
+    fun getComparisonPlot(id: String): ResponseEntity<String>
     fun cancelModelRun(id: String): ResponseEntity<String>
     fun getVersion(): ResponseEntity<String>
     fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions):
             ResponseEntity<String>
     fun getInputTimeSeriesChartData(type: String, files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
-    fun downloadOutputSubmit(type: String, id: String, projectPayload: Map<String, Any?>? = null): ResponseEntity<String>
+    fun downloadOutputSubmit(
+        type: String,
+        id: String,
+        projectPayload: Map<String, Any?>? = null
+    ): ResponseEntity<String>
     fun downloadOutputStatus(id: String): ResponseEntity<String>
     fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
     fun getUploadMetadata(id: String): ResponseEntity<String>
@@ -70,24 +80,24 @@ class HintrFuelAPIClient(
     {
 
         val json = objectMapper.writeValueAsString(
-                mapOf("type" to type.toString().toLowerCase(),
+                mapOf("type" to type.toString().lowercase(),
                         "file" to file))
 
         return postJson("validate/baseline-individual", json)
     }
 
     override fun validateSurveyAndProgramme(file: VersionFileWithPath,
-                                            shapePath: String,
+                                            shapePath: String?,
                                             type: FileType,
-                                            pjnzPath: String,
+                                            pjnzPath: String?,
                                             strict: Boolean): ResponseEntity<String>
     {
 
         val json = objectMapper.writeValueAsString(
-                mapOf("type" to type.toString().toLowerCase(),
-                        "pjnz" to pjnzPath,
+                mapOf("type" to type.toString().lowercase(),
+                        "pjnz" to pjnzPath.orEmpty(),
                         "file" to file,
-                        "shape" to shapePath))
+                        "shape" to shapePath.orEmpty()))
 
         return postJson("validate/survey-and-programme?strict=$strict", json)
     }
@@ -146,6 +156,11 @@ class HintrFuelAPIClient(
         return get("calibrate/plot/${id}")
     }
 
+    override fun getComparisonPlot(id: String): ResponseEntity<String>
+    {
+        return get("comparison/plot/${id}")
+    }
+
     override fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     {
         return get("meta/plotting/${iso3}")
@@ -200,7 +215,11 @@ class HintrFuelAPIClient(
         return get("rehydrate/result/${id}")
     }
 
-    override fun downloadOutputSubmit(type: String, id: String, projectPayload: Map<String, Any?>?): ResponseEntity<String>
+    override fun downloadOutputSubmit(
+        type: String,
+        id: String,
+        projectPayload: Map<String, Any?>?
+    ): ResponseEntity<String>
     {
         if (projectPayload.isNullOrEmpty())
         {

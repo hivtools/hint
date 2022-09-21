@@ -8,7 +8,7 @@
                       v-model="modelOptions"
                       :submit-text="validateText"
                       @confirm="confirmEditing"
-                      @submit="validate"
+                      @submit="handleValidation"
                       :required-text="requiredText"
                       :select-text="selectText"></dynamic-form>
         <error-alert v-if="hasOptionsError" :error="optionsError"></error-alert>
@@ -47,6 +47,7 @@
     interface Methods {
         fetchOptions: () => void
         validate: (data: DynamicFormData) => void
+        handleValidation: (data: DynamicFormData) => void
         unValidate: () => void
         update: (data: DynamicFormMeta) => void
         cancelEditing: () => void
@@ -127,7 +128,12 @@
             update: mapMutationByName(namespace, ModelOptionsMutation.Update),
             unValidate: mapMutationByName(namespace, ModelOptionsMutation.UnValidate),
             fetchOptions: mapActionByName(namespace, "fetchModelRunOptions"),
-            validate: mapActionByName(namespace, "validateModelOptions")
+            validate: mapActionByName(namespace, "validateModelOptions"),
+            handleValidation(options) {
+                if (options) {
+                    this.validate(options)
+                }
+            }
         },
         components: {
             DynamicForm,

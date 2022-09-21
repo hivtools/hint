@@ -19,6 +19,7 @@ import org.imperial.mrc.hint.models.VersionDetails
 import org.imperial.mrc.hint.models.VersionFile
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito.verifyNoInteractions
 import org.mockito.internal.verification.Times
 import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
@@ -27,7 +28,6 @@ import javax.servlet.http.HttpSession
 
 class ProjectsControllerTests
 {
-
     private val mockProfile = mock<CommonProfile> {
         on { id } doReturn "testUser"
     }
@@ -43,31 +43,16 @@ class ProjectsControllerTests
         on { id } doReturn "session1"
     }
 
-    private val mockRequest = mock<HttpServletRequest> {
+    private val mockRequest = mock<HttpServletRequest>{
         on { method } doReturn "POST"
         on { servletPath } doReturn "/project"
         on { serverName } doReturn "hint"
-        on { getHeader("User-Agent") } doReturn "Safari"
+        on { getHeader("User-Agent")} doReturn "Safari"
         on { remoteAddr } doReturn "127.0.0.1"
         on { session } doReturn mockHttpSession
     }
 
-    private val testLogData = LogMetadata(
-        "testUser",
-        AppOrigin("hint", "backend"),
-        Request(
-            "POST",
-            "/project",
-            "hint",
-            Client("Safari", "127.0.0.1", "session1")
-        ),
-        null,
-        null,
-        "Updating project note",
-            listOf("project", "notes")
-    )
-
-    private val mockLogger = mock<GenericLoggerImpl>()
+    private val mockLogger = mock<GenericLogger>()
 
     private val mockVersion = Version("testVersion", "createdTime", "updatedTime", 1, "version notes")
 
@@ -89,7 +74,7 @@ class ProjectsControllerTests
         val result = sut.newProject("testProject", null, false)
 
         verify(mockVersionRepo).saveVersion("testVersion", 99)
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
 
         val resultJson = parser.readTree(result.body)["data"]
 
@@ -117,7 +102,7 @@ class ProjectsControllerTests
         val result = sut.newProject("testProject", "notes", false)
         verify(mockProjectRepo).saveNewProject("testUser", "testProject",null, "notes", false)
         verify(mockVersionRepo).saveVersion("testVersion", 99, null)
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
 
         val resultJson = parser.readTree(result.body)["data"]
 
@@ -145,7 +130,7 @@ class ProjectsControllerTests
         val result = sut.newProject("testProject", "notes", true)
         verify(mockProjectRepo).saveNewProject("testUser", "testProject",null, "notes", true)
         verify(mockVersionRepo).saveVersion("testVersion", 99, null)
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
 
         val resultJson = parser.readTree(result.body)["data"]
 
@@ -167,7 +152,7 @@ class ProjectsControllerTests
         val result = sut.newVersion(99, "parentVersion", "version notes")
 
         verify(mockVersionRepo).copyVersion("parentVersion", "testVersion", 99, "testUser", "version notes")
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
         val resultJson = parser.readTree(result.body)["data"]
         assertExpectedVersion(resultJson)
     }
@@ -194,7 +179,7 @@ class ProjectsControllerTests
         val versions = projects[0]["versions"] as ArrayNode
         assertThat(versions.count()).isEqualTo(1)
         assertExpectedVersion(versions[0])
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
     }
 
     @Test
@@ -220,7 +205,7 @@ class ProjectsControllerTests
         assertThat(projectNode["name"].asText()).isEqualTo("testProject")
         assertThat(projectNode["sharedBy"].asText()).isEqualTo("shared@example.com")
         assertThat(versionNode["id"].asText()).isEqualTo("testVersion")
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
     }
 
     @Test
@@ -238,7 +223,7 @@ class ProjectsControllerTests
         val versionNode = resultJson["version"]
         assertThat(projectNode is NullNode).isEqualTo(true)
         assertThat(versionNode is NullNode).isEqualTo(true)
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
     }
 
     @Test
@@ -251,7 +236,7 @@ class ProjectsControllerTests
         val result = sut.getProjects()
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
     }
 
     @Test
@@ -263,7 +248,7 @@ class ProjectsControllerTests
         val result = sut.uploadState(99, "testVersion", "testState")
 
         verify(mockRepo).saveVersionState("testVersion", 99, "testUser", "testState")
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -283,8 +268,8 @@ class ProjectsControllerTests
         val filesJson = resultJson["files"]
         assertThat(filesJson["pjnz"]["hash"].asText()).isEqualTo("hash1")
         assertThat(filesJson["pjnz"]["filename"].asText()).isEqualTo("filename1")
-        assertThat(filesJson["pjnz"]["fromADR"].asBoolean()).isEqualTo(false)
-        verifyZeroInteractions(mockLogger)
+        assertThat(filesJson["pjnz"]["fromAdr"].asBoolean()).isEqualTo(false)
+        verifyNoInteractions(mockLogger)
         verify(mockSession).setVersionId("testVersion")
     }
 
@@ -306,7 +291,7 @@ class ProjectsControllerTests
         val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mockLogic, mock(), mockLogger)
         sut.cloneProjectToUser(1, listOf("new.user@email.com", "a.user@email.com"))
 
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
         verify(mockVersionRepo).cloneVersion("v1", "testVersion", 2)
         verify(mockVersionRepo).cloneVersion("v2", "testVersion", 2)
 
@@ -328,7 +313,7 @@ class ProjectsControllerTests
                 .isInstanceOf(UserException::class.java)
                 .hasMessageContaining("userDoesNotExist")
         verify(mockRepo, Times(0)).saveNewProject(any(), any(), any(), any(), any())
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
 
     }
 
@@ -340,7 +325,7 @@ class ProjectsControllerTests
         val result = sut.deleteVersion(1, "testVersion")
 
         verify(mockRepo).deleteVersion("testVersion", 1, "testUser")
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -357,7 +342,7 @@ class ProjectsControllerTests
 
         verify(mockRepo).deleteVersion("testVersion", 1, "testUser")
         verify(mockSession).setVersionId(null)
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -374,7 +359,7 @@ class ProjectsControllerTests
 
         verify(mockRepo).deleteVersion("anotherVersion", 1, "testUser")
         verify(mockSession, Times(0)).setVersionId(null)
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -388,7 +373,7 @@ class ProjectsControllerTests
         val result = sut.deleteProject(1)
 
         verify(mockRepo).deleteProject(1, "testUser")
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -408,7 +393,7 @@ class ProjectsControllerTests
 
         verify(mockRepo).deleteProject(123, "testUser")
         verify(mockSession).setVersionId(null)
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -428,7 +413,7 @@ class ProjectsControllerTests
 
         verify(mockRepo).deleteProject(123, "testUser")
         verify(mockSession, Times(0)).setVersionId(null)
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -447,7 +432,7 @@ class ProjectsControllerTests
         verify(mockProjectRepo).saveNewProject("testUser", "newProjectName")
         verify(mockVersionRepo).promoteVersion("testVersion", "testVersion", 0, "testUser", "test promoted note")
         verify(mockVersionRepo).getVersion("testVersion")
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
     }
 
     @Test
@@ -460,7 +445,7 @@ class ProjectsControllerTests
         val result = sut.renameProject(1, "renamedProject", "project notes")
 
         verify(mockRepo).renameProject(1, "testUser", "renamedProject", "project notes")
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -475,7 +460,7 @@ class ProjectsControllerTests
         val result = sut.updateProjectNote(1, "notes")
 
         verify(mockRepo).updateProjectNote(1, "testUser", "notes")
-        verify(mockLogger).info(testLogData)
+        verify(mockLogger).info("updated project notes", mockRequest, "testUser")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -491,7 +476,7 @@ class ProjectsControllerTests
         val result = sut.updateProjectNote(1, "updated project notes")
 
         verify(mockProjectRepo).updateProjectNote(1, "testUser", "updated project notes")
-        verify(mockLogger).info(testLogData)
+        verify(mockLogger).info("updated project notes", mockRequest, "testUser")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -512,7 +497,7 @@ class ProjectsControllerTests
         val sut = ProjectsController(mockSession, mockRepo, mockProjectRepo, mock(), mockRequest, mockLogger)
         val result = sut.updateVersionNote("testVersion", 1, "updated version notes")
         verify(mockRepo).updateVersionNote("testVersion", 1, "testUser", "updated version notes")
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 
@@ -529,7 +514,7 @@ class ProjectsControllerTests
         val result = sut.updateVersionNote("testVersion", 99, "notes")
 
         verify(mockRepo).updateVersionNote("testVersion", 99, "testUser", "notes")
-        verifyZeroInteractions(mockLogger)
+        verifyNoInteractions(mockLogger)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
     }
 

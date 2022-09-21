@@ -17,7 +17,8 @@ import {
     mockProjectsState,
     mockRelease,
     mockStepperState,
-    mockSurveyAndProgramState
+    mockSurveyAndProgramState,
+    mockComparisonPlotResponse
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
@@ -40,11 +41,13 @@ describe("LocalStorageManager", () => {
     const modelCalibrateResponse = {
         calibrateId: "",
         calibratePlotResult: null,
+        comparisonPlotError: null,
         calibrating: false,
         complete: false,
         error: null,
         fetching: false,
         generatingCalibrationPlot: false,
+        comparisonPlotResult: null,
         options: {},
         optionsFormMeta: {
             "controlSections": [],
@@ -84,7 +87,8 @@ describe("LocalStorageManager", () => {
             modelOutput: mockModelOutputState(),
             modelCalibrate: mockModelCalibrateState({
                 result: mockCalibrateResultResponse(),
-                calibratePlotResult: {data: "test calibrate plot result"}
+                calibratePlotResult: {data: "test calibrate plot result"},
+                comparisonPlotResult: mockComparisonPlotResponse()
             }),
             stepper: mockStepperState(),
             metadata: mockMetadataState({plottingMetadataError: mockError("metadataError")}),

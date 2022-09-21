@@ -15,7 +15,7 @@ import {
     mockSurveyAndProgramState,
     mockSurveyResponse
 } from "../../mocks";
-import {LoadingState} from "../../../app/store/load/load";
+import {LoadingState} from "../../../app/store/load/state";
 import FileMenu from "../../../app/components/header/FileMenu.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {Language} from "../../../app/store/translations/locales";
@@ -30,6 +30,10 @@ describe("File menu", () => {
 
     const testProjects = [{id: 2, name: "proj1", versions: []}];
     const mockGetProjects = jest.fn();
+
+    beforeEach(() => {
+        jest.clearAllMocks()
+    })
 
     const storeModules = {
         baseline: {
@@ -110,7 +114,7 @@ describe("File menu", () => {
             state: {
                 baseline: {selectedDataset: null, selectedRelease: null},
                 modelRun: mockModelRunState(),
-                modelCalibrate: {result: null, calibratePlotResult: null},
+                modelCalibrate: {result: null, calibratePlotResult: null, comparisonPlotResult: null},
                 metadata: mockMetadataState(),
                 surveyAndProgram: {selectedDataType: null, warnings: []},
                 language: Language.en
@@ -331,11 +335,22 @@ describe("File menu", () => {
         expect(projectModal.props().openModal).toBe(false)
         projectModal.find(".btn").trigger("click");
         expect(mockLoadAction.mock.calls.length).toBe(1);
-        expect(mockGetProjects).toHaveBeenCalled()
         expect(projectModal.props().openModal).toBe(false)
     });
 
-    it("can open upload project modal as guest when file is uploaded", () => {
+    it("can get projects when user is logged in when file is uploaded", () => {
+        const store = createStore({
+            load: {
+                namespaced: true,
+                state: mockLoadState()
+            }
+        }, false);
+        const projectModal = openUploadNewProject(store, "#upload-zip", "application/zip")
+        projectModal.find(".btn").trigger("click");
+        expect(mockGetProjects).toHaveBeenCalled()
+    });
+
+    it("can open upload project modal and does not get projects as guest when file is uploaded", () => {
         const mockPreparingRehydrate = jest.fn()
         const store = createStore({
             load: {
@@ -348,7 +363,7 @@ describe("File menu", () => {
         });
         const projectModal = openUploadNewProject(store, "#upload-zip", "application/zip")
         projectModal.find(".btn").trigger("click");
-        expect(mockGetProjects).toHaveBeenCalled()
+        expect(mockGetProjects).not.toHaveBeenCalled()
         expect(mockPreparingRehydrate.mock.calls.length).toBe(1);
         expect(projectModal.props().openModal).toBe(false)
     });

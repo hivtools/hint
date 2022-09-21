@@ -22,13 +22,13 @@ import {
     SurveyFilters,
     SurveyResponse,
     ValidateBaselineResponse,
-    Error, CalibrateResultResponse, Warning, DownloadSubmitRequest
+    Error, CalibrateResultResponse, Warning, DownloadSubmitRequest, ComparisonPlotResponse
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
 import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
 import {initialMetadataState, MetadataState} from "../app/store/metadata/metadata";
-import {initialLoadState, LoadState} from "../app/store/load/load";
+import {initialLoadState, LoadState} from "../app/store/load/state";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
 import {initialModelOutputState, ModelOutputState} from "../app/store/modelOutput/modelOutput";
 import {
@@ -384,6 +384,31 @@ export const mockCalibrateResultResponse = (props: Partial<CalibrateResultRespon
             upper: 0.5
         }],
         warnings: [],
+        ...props
+    }
+};
+
+export const mockComparisonPlotResponse = (props: Partial<ComparisonPlotResponse> = {}): ComparisonPlotResponse => {
+    return {
+        plottingMetadata: {
+            barchart: {
+                indicators: [], filters: []
+            }
+        },
+        data: [{
+            area_id: "MWI",
+            area_name: "Test area",
+            source: "Test Source",
+            sex: "both",
+            age_group: "1",
+            calendar_quarter: "1",
+            indicator_id: 1,
+            indicator: 'mock',
+            lower: 0.5,
+            mean: 0.5,
+            mode: 0.5,
+            upper: 0.5
+        }],
         ...props
     }
 };

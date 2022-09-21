@@ -1,12 +1,14 @@
 apply plugin: 'application'
 
-mainClassName = "org.imperial.mrc.hint.generateDatabaseInterface.AppKt"
+application {
+    mainClass.set("org.imperial.mrc.hint.generateDatabaseInterface.AppKt")
+}
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-    implementation "org.postgresql:postgresql:42.2.1"
-    implementation "org.jooq:jooq:3.10.5"
-    implementation "org.jooq:jooq-meta:3.10.5"
-    implementation "org.jooq:jooq-codegen:3.10.5"
+    implementation "org.postgresql:postgresql:42.3.3"
+    implementation "org.jooq:jooq:3.14.16"
+    implementation "org.jooq:jooq-meta:3.14.16"
+    implementation "org.jooq:jooq-codegen:3.14.16"
 }

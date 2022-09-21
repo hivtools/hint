@@ -1,8 +1,10 @@
 package org.imperial.mrc.hint.emails
 
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.logging.GenericLogger
+import org.imperial.mrc.hint.logging.GenericLoggerImpl
+import org.imperial.mrc.hint.logging.LogMetadata
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.time.Instant
@@ -22,7 +24,7 @@ class WriteToDiskEmailManager(appProperties: AppProperties,
 
     companion object
     {
-        private val logger: Logger = LoggerFactory.getLogger(WriteToDiskEmailManager::class.java)
+        private val logger: GenericLogger = GenericLoggerImpl(LoggerFactory.getLogger(WriteToDiskEmailManager::class.java))
         val outputDirectory = File("/tmp/hint_emails")
 
         fun cleanOutputDirectory()

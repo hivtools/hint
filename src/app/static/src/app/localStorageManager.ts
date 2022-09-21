@@ -49,7 +49,8 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
             modelCalibrate: {
                 ...rootState.modelCalibrate,
                 result: null,
-                calibratePlotResult: null
+                calibratePlotResult: null,
+                comparisonPlotResult: null
             },
             stepper: rootState.stepper,
             hintrVersion: state.hintrVersion,
@@ -69,7 +70,7 @@ export class LocalStorageManager {
 
     savePartialState = (partialState: Partial<RootState>, dataExplorationMode: boolean) => {
         const appStateKey = getAppStateKey(dataExplorationMode);
-        window.localStorage.setItem(appStateKey, JSON.stringify(partialState));
+            window.localStorage.setItem(appStateKey, JSON.stringify(partialState));
     };
 
     getState = (dataExplorationMode: boolean): Partial<RootState> | null => {

@@ -43,7 +43,7 @@
             <div id="barchart-container" :class="selectedTab==='bar' ? 'col-md-12' : 'd-none'">
                 <bar-chart-with-filters
                     :chart-data="chartdata"
-                    :filter-config="filterConfig"
+                    :filter-config="barchartFilterConfig"
                     :indicators="barchartIndicators"
                     :selections="barchartSelections"
                     :formatFunction="formatBarchartValue"
@@ -88,29 +88,53 @@
                     ></area-indicators-table>
                 </div>
             </div>
+
+            <div id="comparison-container" :class="selectedTab==='comparison' ? 'col-md-12' : 'd-none'">
+                <bar-chart-with-filters
+                    v-if="comparisonPlotIndicators.length"
+                    :chart-data="comparisonPlotData"
+                    :filter-config="comparisonPlotFilterConfig"
+                    :disaggregate-by-config="{ fixed: true, hideFilter: true }"
+                    :indicators="comparisonPlotIndicators"
+                    :selections="comparisonPlotSelections"
+                    :formatFunction="formatBarchartValue"
+                    :showRangesInTooltips="true"
+                    @update="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
+                <div class="row mt-2">
+                    <div class="col-md-3"></div>
+                    <area-indicators-table class="col-md-9"
+                                        :table-data="comparisonPlotData"
+                                        :area-filter-id="areaFilterId"
+                                        :filters="comparisonPlotFilters"
+                                        :countryAreaFilterOption="countryAreaFilterOption"
+                                        :indicators="filteredComparisonPlotIndicators"
+                                        :selections="comparisonPlotSelections"
+                                        :translate-filter-labels="false"
+                                        :selectedFilterOptions="comparisonPlotSelections.selectedFilterOptions"
+                    ></area-indicators-table>
+                </div>
+                <error-alert v-if="!!comparisonPlotError" :error="comparisonPlotError"></error-alert>
+            </div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import i18next from "i18next";
     import Vue from "vue";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import BubblePlot from "../plots/bubble/BubblePlot.vue";
     import AreaIndicatorsTable from "../plots/table/AreaIndicatorsTable.vue";
     import {BarchartIndicator, Filter, FilterConfig, FilterOption} from "@reside-ic/vue-charts/src/bar/types";
     import {BarChartWithFilters} from "@reside-ic/vue-charts";
+    import ErrorAlert from "../ErrorAlert.vue";
 
     import {
-        mapGetterByName,
         mapGettersByNames,
         mapMutationByName,
         mapMutationsByNames,
         mapStateProp,
-        mapStateProps,
-        flattenOptions, mapActionByName, flattenOptionsIdsByHierarchy
+        mapStateProps,mapActionByName
     } from "../../utils";
-
     import {
         BarchartSelections,
         BubblePlotSelections,
@@ -123,10 +147,16 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {Language, Translations} from "../../store/translations/locales";
     import {inactiveFeatures} from "../../main";
+    import {switches} from "../../featureSwitches";
     import {RootState} from "../../root";
-    import {LevelLabel, Dict} from "../../types";
-    import {ChoroplethIndicatorMetadata, NestedFilterOption} from "../../generated";
-    import {formatOutput} from "../plots/utils";
+    import {LevelLabel} from "../../types";
+    import {ChoroplethIndicatorMetadata,} from "../../generated";
+    import {
+        formatOutput, 
+        filterConfig,
+        flattenXAxisFilterOptionIds,
+        updateSelectionsAndXAxisOrder
+    } from "../plots/utils";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
 
     const namespace = 'filteredData';
@@ -138,29 +168,36 @@
     interface Methods {
         tabSelected: (tab: string) => void
         updateBarchartSelections: (data: { payload: BarchartSelections }) => void
+        updateComparisonPlotSelections: (data: { payload: BarchartSelections }) => void
         updateBubblePlotSelections: (data: BubblePlotSelections) => void
         updateOutputColourScales: (colourScales: ScaleSelections) => void
         updateOutputBubbleSizeScales: (colourScales: ScaleSelections) => void
         formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => string
         updateBarchartSelectionsAndXAxisOrder: (data: BarchartSelections) => void
+        updateComparisonPlotSelectionsAndXAxisOrder: (data: BarchartSelections) => void
         prepareOutputDownloads: () => void
     }
 
     interface Computed {
         barchartFilters: Filter[],
+        comparisonPlotFilters: Filter[],
         bubblePlotFilters: Filter[],
         choroplethFilters: Filter[],
         countryAreaFilterOption: FilterOption,
         barchartIndicators: BarchartIndicator[],
+        comparisonPlotIndicators: BarchartIndicator[],
         chartdata: any,
+        comparisonPlotData: any
         barchartSelections: BarchartSelections,
+        comparisonPlotSelections: BarchartSelections,
         bubblePlotSelections: BubblePlotSelections,
         choroplethSelections: ChoroplethSelections,
         selectedTab: string,
         features: Feature[],
         featureLevels: LevelLabel[]
         currentLanguage: Language,
-        filterConfig: FilterConfig,
+        barchartFilterConfig: FilterConfig,
+        comparisonPlotFilterConfig: FilterConfig
         colourScales: ScaleSelections,
         bubbleSizeScales: ScaleSelections,
         choroplethIndicators: ChoroplethIndicatorMetadata[],
@@ -168,7 +205,10 @@
         filteredChoroplethIndicators: ChoroplethIndicatorMetadata[],
         filteredBarchartIndicators: BarchartIndicator[],
         filteredBubblePlotIndicators: ChoroplethIndicatorMetadata[],
-        flattenedXAxisFilterOptionIds: string[]
+        filteredComparisonPlotIndicators: BarchartIndicator[],
+        barchartFlattenedXAxisFilterOptionIds: string[]
+        comparisonPlotFlattenedXAxisFilterOptionIds: string[]
+        comparisonPlotError: Error | null
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
@@ -184,6 +224,7 @@
             if (!inactiveFeatures.includes("BubblePlot")) {
                 tabs.push("bubble");
             }
+            tabs.push("comparison");
 
             return {
                 tabs: tabs,
@@ -194,9 +235,11 @@
             ...mapGettersByNames("modelOutput", [
                 "barchartFilters", "barchartIndicators",
                 "bubblePlotFilters", "bubblePlotIndicators",
-                "choroplethFilters", "choroplethIndicators", "countryAreaFilterOption"]),
+                "choroplethFilters", "choroplethIndicators",
+                "countryAreaFilterOption", "comparisonPlotIndicators", "comparisonPlotFilters"]),
             ...mapStateProps<PlottingSelectionsState, keyof Computed>("plottingSelections", {
                 barchartSelections: state => state.barchart,
+                comparisonPlotSelections: state => state.comparisonPlot,
                 bubblePlotSelections: state => state.bubble,
                 choroplethSelections: state => state.outputChoropleth,
                 colourScales: state => state.colourScales.output,
@@ -207,6 +250,9 @@
                     featureLevels: state => state.shape!.filters.level_labels || []
                 }
             ),
+            ...mapStateProps<ModelCalibrateState, keyof Computed>("modelCalibrate", {
+                comparisonPlotError: state => state.comparisonPlotError
+            }),
             filteredChoroplethIndicators() {
                 return this.choroplethIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.choroplethSelections.indicatorId)
             },
@@ -219,58 +265,47 @@
                     ...this.bubblePlotIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.bubblePlotSelections.sizeIndicatorId)
                 ]
             },
+            filteredComparisonPlotIndicators() {
+                return this.comparisonPlotIndicators.filter((val: BarchartIndicator) => val.indicator === this.comparisonPlotSelections.indicatorId)
+            },
             selectedTab: mapStateProp<ModelOutputState, string>("modelOutput", state => state.selectedTab),
             chartdata: mapStateProp<ModelCalibrateState, any>("modelCalibrate", state => {
                 return state.result ? state.result.data : [];
+            }),
+            comparisonPlotData: mapStateProp<ModelCalibrateState, any>("modelCalibrate", state => {
+                return state.comparisonPlotResult ? state.comparisonPlotResult.data : [];
             }),
             barchartSelections() {
                 return this.$store.state.plottingSelections.barchart
             },
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
-            filterConfig() {
-                return {
-                    filterLabel: i18next.t("filters", this.currentLanguage),
-                    indicatorLabel: i18next.t("indicator", this.currentLanguage),
-                    xAxisLabel: i18next.t("xAxis", this.currentLanguage),
-                    disaggLabel: i18next.t("disaggBy", this.currentLanguage),
-                    filters: this.barchartFilters
-                }
+            barchartFilterConfig() {
+                return filterConfig(this.currentLanguage, this.barchartFilters)
             },
-            flattenedXAxisFilterOptionIds() {
-                const xAxisId = this.barchartSelections?.xAxisId
-                let ids: string[] = []
-                if (xAxisId && this.barchartFilters?.length) {
-                    const filter = this.barchartFilters.find((f: Filter) => f.id === xAxisId)
-                    if (filter?.options.length){
-                        ids = flattenOptionsIdsByHierarchy(filter.options)
-                    }
-                }
-                return ids
+            comparisonPlotFilterConfig() {
+                return filterConfig(this.currentLanguage, this.comparisonPlotFilters)
+            },
+            barchartFlattenedXAxisFilterOptionIds() {
+                return flattenXAxisFilterOptionIds(this.barchartSelections, this.barchartFilters)
+            },
+            comparisonPlotFlattenedXAxisFilterOptionIds() {
+                return flattenXAxisFilterOptionIds(this.comparisonPlotSelections, this.comparisonPlotFilters)
             }
         },
         methods: {
             ...mapMutationsByNames<keyof Methods>("plottingSelections",
-                ["updateBarchartSelections", "updateBubblePlotSelections", "updateOutputChoroplethSelections",
-                    "updateOutputColourScales", "updateOutputBubbleSizeScales"]),
+                ["updateBarchartSelections", "updateComparisonPlotSelections", "updateBubblePlotSelections",
+                "updateOutputChoroplethSelections", "updateOutputColourScales", "updateOutputBubbleSizeScales"]),
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected),
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
             },
             updateBarchartSelectionsAndXAxisOrder(data) {
-                const payload = {...this.barchartSelections, ...data}
-                if (data.xAxisId && data.selectedFilterOptions) {
-                    const {xAxisId, selectedFilterOptions} = data
-                    if (selectedFilterOptions[xAxisId] && this.flattenedXAxisFilterOptionIds.length) {
-                        // Sort the selected filter values according to the order given the barchart filters
-                        const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
-                            return this.flattenedXAxisFilterOptionIds.indexOf(a.id) - this.flattenedXAxisFilterOptionIds.indexOf(b.id);
-                        });
-                        payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
-                    }
-                }
-                // if unable to do the above, just updates the barchart as normal
-                this.updateBarchartSelections({payload})
+                updateSelectionsAndXAxisOrder(data, this.barchartSelections, this.barchartFlattenedXAxisFilterOptionIds, this.updateBarchartSelections)
+            },
+            updateComparisonPlotSelectionsAndXAxisOrder(data) {
+                updateSelectionsAndXAxisOrder(data, this.comparisonPlotSelections, this.comparisonPlotFlattenedXAxisFilterOptionIds, this.updateComparisonPlotSelections)
             },
             prepareOutputDownloads: mapActionByName("downloadResults", "prepareOutputs")
         },
@@ -281,7 +316,8 @@
             BarChartWithFilters,
             BubblePlot,
             Choropleth,
-            AreaIndicatorsTable
+            AreaIndicatorsTable,
+            ErrorAlert
         }
     })
 </script>

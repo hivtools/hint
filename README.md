@@ -8,7 +8,12 @@
 Requirements:
 * Docker
 * npm
-* openjdk 8
+* openjdk 11
+  Mac users may find it easier to install adoptopenjdk-11k rather than openjdk-11:
+wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
+add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
+apt-get update
+apt-get install adoptopenjdk-11-hotspot -y
 * coreutils or [realpath](https://github.com/harto/realpath-osx) (Mac users only)
 
 

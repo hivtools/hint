@@ -1,5 +1,5 @@
 import {mount} from "@vue/test-utils";
-import {mockError, mockLoadState, mockProjectsState} from "../../mocks";
+import {mockError, mockLoadState, mockProjectsState, mockRootState} from "../../mocks";
 import Vue from "vue";
 import UploadNewProject from "../../../app/components/load/UploadNewProject.vue"
 import Vuex, {Store} from "vuex";
@@ -8,7 +8,7 @@ import RegisterTranslations from "../../../app/store/translations/registerTransl
 import {expectTranslated} from "../../testHelpers";
 import LoadErrorModal from "../../../app/components/load/LoadErrorModal.vue";
 import UploadProgress from "../../../app/components/load/UploadProgress.vue";
-import {LoadingState, LoadState} from "../../../app/store/load/load";
+import {LoadingState, LoadState} from "../../../app/store/load/state";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 
 describe("uploadNewProject", () => {
@@ -32,9 +32,12 @@ describe("uploadNewProject", () => {
 
     const testProjects = [{id: 2, name: "proj1", versions: []}];
 
-    const getStore = (loadState: Partial<LoadState> = {}) => {
+    const getStore = (loadState: Partial<LoadState> = {}, isGuest = false) => {
         const store = new Vuex.Store({
             state: emptyState,
+            getters: {
+                isGuest: () => isGuest
+            },
             modules: {
                 load: {
                     namespaced: true,
@@ -229,5 +232,19 @@ describe("uploadNewProject", () => {
         expect(wrapper.find(UploadProgress).props("openModal")).toBe(true)
         wrapper.find(UploadProgress).find("button").trigger("click")
         expect(mockMutations.RehydrateCancel.mock.calls.length).toBe(1)
+    })
+
+    it("does not get projects when user is not logged in", () => {
+        const store = getStore({}, true)
+        const wrapper = getWrapper({}, store)
+
+        expect(wrapper.find(".modal").exists()).toBe(true)
+        expect(wrapper.find(".modal").attributes()).toEqual({
+            "class": "modal",
+            "style": "display: none;"
+        })
+        const uploadProject = wrapper.find("#load-project-name");
+        expect(uploadProject.exists()).toBe(true)
+        expect(mockGetProjects).not.toHaveBeenCalled()
     })
 })
