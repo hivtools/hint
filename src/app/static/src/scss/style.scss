@@ -162,3 +162,13 @@ a.down::after {
   text-align: left !important;
   min-width: 32em;
 }
+
+.noDataMessage {
+  width: 60%;
+  position: absolute;
+  border: 1px solid #adb5bd;
+  bottom: 50%;
+  left: 25%;
+  background: #fff;
+  margin: auto;
+}
