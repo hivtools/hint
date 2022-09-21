@@ -19,7 +19,7 @@ class LoginController(
 ) : OAuth2AuthenticationRedirection(appProperties, oauth2State)
 {
     @GetMapping("/login")
-    fun login(model: Model): Any
+    fun login(model: Model): Any // Return type is string for formLogin, or ResponseEntity for OAuth2
     {
         if (appProperties.oauth2LoginMethod)
         {
