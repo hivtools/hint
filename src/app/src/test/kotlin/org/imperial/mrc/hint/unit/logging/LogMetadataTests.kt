@@ -17,7 +17,7 @@ class LogMetadataTests
         "errorTrace"
     )
 
-    private val app = AppOrigin("hint", "https://app", "backend")
+    private val app = AppOrigin("hint", "http://localhost:8080", "backend")
 
     private val response = Response("responseMessage", HttpStatus.NOT_FOUND)
 
@@ -42,7 +42,7 @@ class LogMetadataTests
     fun `can serialise log metadata`()
     {
         assertThat(logMetadata.username).isEqualTo("testUser")
-        assertThat(logMetadata.app).isEqualTo(AppOrigin("hint", "https://app", "backend"))
+        assertThat(logMetadata.app).isEqualTo(AppOrigin("hint", "http://localhost:8080", "backend"))
         assertThat(logMetadata.request).isEqualTo(Request(
                 method = "POST",
                 path = "/project",
