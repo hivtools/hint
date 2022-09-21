@@ -1,5 +1,7 @@
 package org.imperial.mrc.hint.logging
 
+import org.imperial.mrc.hint.models.ErrorDetail
+import org.springframework.http.HttpStatus
 import javax.servlet.http.HttpServletRequest
 
 data class Client(
@@ -28,16 +30,16 @@ data class Request(
         )
 }
 
-data class Response(val message: String? = null, val status: String? = null)
+data class Response(val message: String? = null, val status: HttpStatus? = null)
 
-data class ErrorMessage(val error: String? = null, val details: String? = null, val traceId: String? = null)
+data class ErrorMessage(val error: Throwable? = null, val details: ErrorDetail? = null, val key: String? = null)
 
 data class LogMetadata(
-        val username: String? = null,
-        val app: AppOrigin? = AppOrigin(),
+        val action: String? = null,
+        val error: ErrorMessage? = null,
         val request: Request? = null,
         val response: Response? = null,
-        val error: ErrorMessage? = null,
-        val action: String? = null,
+        val username: String? = null,
+        val app: AppOrigin? = AppOrigin(),
         val tags: List<String>? = emptyList()
 )
