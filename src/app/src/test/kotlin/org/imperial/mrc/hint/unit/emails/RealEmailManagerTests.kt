@@ -9,11 +9,11 @@ import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.emails.EmailData
 import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.emails.RealEmailManager
+import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.junit.jupiter.api.Test
 import org.simplejavamail.api.email.Email
 import org.simplejavamail.api.mailer.Mailer
-import org.slf4j.Logger
 
 class RealEmailManagerTests
 {
@@ -27,13 +27,13 @@ class RealEmailManagerTests
         on { emailUsername } doReturn "testUserName"
     }
 
-    val mockLogger = mock<Logger>()
+    val mockLogger = mock<GenericLogger>()
     val mockMailer = mock<Mailer>()
 
     @Test
     fun `initialises correctly`()
     {
-        val sut = RealEmailManager(mockAppProps, mock())
+        val sut = RealEmailManager(mockAppProps, mock(), mockLogger)
 
         assertThat(sut.sender).isEqualTo("test@sender.com")
         assertThat(sut.appTitle).isEqualTo("testApp")
@@ -42,10 +42,7 @@ class RealEmailManagerTests
         assertThat(sut.mailer.session.properties["mail.smtp.port"]).isEqualTo("100")
         assertThat(sut.mailer.session.properties["mail.smtp.username"]).isEqualTo("testUserName")
         assertThat(sut.mailer.session.properties["simplejavamail.transportstrategy"]).isEqualTo("SMTP_TLS")
-
-        assertThat(sut.logger.name).isEqualTo("org.imperial.mrc.hint.emails.RealEmailManager")
     }
-
 
     @Test
     fun `sends email`()

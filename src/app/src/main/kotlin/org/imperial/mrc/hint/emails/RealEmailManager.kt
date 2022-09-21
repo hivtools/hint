@@ -1,18 +1,17 @@
 package org.imperial.mrc.hint.emails
 
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.security.tokens.OneTimeTokenManager
 import org.simplejavamail.api.mailer.Mailer
 import org.simplejavamail.api.mailer.config.TransportStrategy
 import org.simplejavamail.email.EmailBuilder
 import org.simplejavamail.mailer.MailerBuilder
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 class RealEmailManager(
     appProperties: AppProperties,
     oneTimeTokenManager: OneTimeTokenManager,
-    val logger: Logger = LoggerFactory.getLogger(RealEmailManager::class.java),
+    private val logger: GenericLogger,
     val mailer: Mailer = MailerBuilder
         .withSMTPServer(
             appProperties.emailServer,
@@ -39,6 +38,5 @@ class RealEmailManager(
 
         mailer.sendMail(email)
         logger.info("mail sent to: $emailAddress")
-
     }
 }

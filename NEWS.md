@@ -1,6 +1,10 @@
-# hint 2.12.0
+# hint 2.13.0
 
 * Add Auth0 login method
+
+# hint 2.12.0
+
+* Update backend logging for new log structure
 
 # hint 2.11.2
 

@@ -2,9 +2,9 @@ package org.imperial.mrc.hint.unit.logging
 
 import com.nhaarman.mockito_kotlin.*
 import org.imperial.mrc.hint.logging.ErrorLoggingFilter
+import org.imperial.mrc.hint.logging.GenericLogger
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.verifyNoInteractions
-import org.slf4j.Logger
 import org.springframework.web.util.ContentCachingResponseWrapper
 import javax.servlet.FilterChain
 import javax.servlet.ServletOutputStream
@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse
 class ErrorLoggingFilterTests
 {
 
-    private val mockLogger = mock<Logger>()
+    private val mockLogger = mock<GenericLogger>()
 
     @Test
     fun `logs expected messages on error status`()
@@ -46,8 +46,8 @@ class ErrorLoggingFilterTests
         sut.doFilter(mockRequest, mockResponse, mockChain)
 
         //Assert expected messages logged
-        verify(mockLogger).error("ERROR: 500 response for POST /test")
-        verify(mockLogger).error("TEST BODY")
+        verify(mockLogger).error(mockRequest, mockResponse, "ERROR: 500 response for POST /test")
+        verify(mockLogger).error(mockRequest, mockResponse, "TEST BODY")
         verifyNoMoreInteractions(mockLogger)
 
         //Assert that write was called on our wrapped output stream (this happens as part of
@@ -91,7 +91,7 @@ class ErrorLoggingFilterTests
         val sut = ErrorLoggingFilter(mockLogger)
         sut.doFilter(mockRequest, mockResponse, mockChain)
 
-        verify(mockLogger).error("ERROR: 500 response for GET /download/test")
+        verify(mockLogger).error(mockRequest, mockResponse,"ERROR: 500 response for GET /download/test")
         verifyNoMoreInteractions(mockLogger)
 
         //verify doFilter was called with unwrapped response

@@ -1,6 +1,6 @@
 package org.imperial.mrc.hint.security.tokens
 
-import org.slf4j.Logger
+import org.imperial.mrc.hint.logging.*
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.security.*
@@ -15,7 +15,7 @@ object KeyHelper
     private const val KEY_SIZE = 4096
 
     private val keyFactory = KeyFactory.getInstance("RSA")
-    private val logger: Logger = LoggerFactory.getLogger(KeyHelper::class.java)
+    private val logger = GenericLoggerImpl(LoggerFactory.getLogger(KeyHelper::class.java))
 
     val keyPair by lazy {
         if (File(KEY_PATH, "private_key.der").exists())
@@ -55,12 +55,13 @@ object KeyHelper
         logger.info("Unable to find a token keypair at $KEY_PATH. Generating a new")
         logger.info("RSA keypair for token signing. If other applications need to")
         logger.info("verify tokens they should use the following public key:")
+
         val generator = KeyPairGenerator.getInstance("RSA").apply {
             initialize(KEY_SIZE)
         }
         val keypair = generator.generateKeyPair()
         val publicKey = Base64.getEncoder().encode(keypair.public.encoded)
-        logger.info("Public key for token verification: " + publicKey)
+        logger.info("Public key for token verification: $publicKey")
 
         if (fileManager.exists(KEY_PATH))
         {
