@@ -101,22 +101,6 @@ describe("Login component", () => {
         expect(wrapper.find("#error").text()).toBe("test error")
     });
 
-    it("renders form with translated session expired error", () => {
-        const store = createStore();
-
-        const wrapper = createSut(store, "Naomi", "/", "", "sessionExpiredLogin");
-        expectTranslatedWithStoreType<TranslatableState>(wrapper.find("#error"), "Your session has expired. Please log in again.",
-            "Votre session a expiré. Veuillez vous reconnecter.", "A sua sessão expirou. Por favor, inicie sessão novamente.", store);
-    });
-
-    it("renders form with translated bad username or password error", () => {
-        const store = createStore();
-
-        const wrapper = createSut(store, "Naomi", "/", "", "badUsernamePassword");
-        expectTranslatedWithStoreType<TranslatableState>(wrapper.find("#error"), "Username or password is incorrect",
-            "Le nom d'utilisateur ou le mot de passe est incorrect", "O nome de utilizador ou palavra-passe está incorreto.", store);
-    });
-
     it("renders correctly for data exploration", () => {
         const store = createStore();
 
