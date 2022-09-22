@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.security.oauth2.clients
 
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.security.oauth2.OAuth2LogoutActionBuilder
 import org.imperial.mrc.hint.security.oauth2.OAuth2State
 import org.imperial.mrc.hint.security.oauth2.ProfileDefinition
