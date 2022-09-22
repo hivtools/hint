@@ -29,11 +29,6 @@ import java.text.MessageFormat
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 
-// interface HintExceptionHandler2
-// {
-//     fun handleHintException(): ResponseEntity<Any>
-// }
-
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
 class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
