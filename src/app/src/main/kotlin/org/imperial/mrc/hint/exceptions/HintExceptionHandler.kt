@@ -86,11 +86,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         return ResourceBundle.getBundle("ErrorMessageBundle", Locale(language))
     }
 
-<<<<<<< HEAD
-    fun translatedError(key: String, status: HttpStatus, request: WebRequest): ResponseEntity<Any>
-=======
     private fun translatedError(key: String, status: HttpStatus, request: HttpServletRequest): ResponseEntity<Any>
->>>>>>> master
     {
         val resourceBundle = getBundle(request)
         val message = if (resourceBundle.containsKey(key))
