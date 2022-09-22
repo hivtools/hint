@@ -44,7 +44,39 @@ class LoginControllerTests
         Assertions.assertThat(result).isEqualTo("login")
         Assertions.assertThat(model["title"]).isEqualTo("Login")
         Assertions.assertThat(model["username"]).isEqualTo("testUser")
-        Assertions.assertThat(model["error"]).isEqualTo("badUsernamePassword")
+        Assertions.assertThat(model["error"]).isEqualTo("Username or password is incorrect")
+    }
+
+    @Test
+    fun `can get French translation for incorrect login error`()
+    {
+        val model = ConcurrentModel()
+        val mockRequest = mock<HttpServletRequest> {
+            on { this.getParameter("username") } doReturn "testUser"
+            on { this.getParameter("error") } doReturn "CredentialsException"
+            on { this.getHeader("Accept-Language") } doReturn "fr"
+        }
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
+
+        val result = sut.login(model)
+        
+        Assertions.assertThat(model["error"]).isEqualTo("Le nom d'utilisateur ou le mot de passe est incorrect")
+    }
+
+    @Test
+    fun `can get Portuguese translation for incorrect login error`()
+    {
+        val model = ConcurrentModel()
+        val mockRequest = mock<HttpServletRequest> {
+            on { this.getParameter("username") } doReturn "testUser"
+            on { this.getParameter("error") } doReturn "CredentialsException"
+            on { this.getHeader("Accept-Language") } doReturn "pt"
+        }
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
+
+        val result = sut.login(model)
+        
+        Assertions.assertThat(model["error"]).isEqualTo("O nome de utilizador ou palavra-passe está incorreto")
     }
 
     @Test
@@ -79,7 +111,37 @@ class LoginControllerTests
         Assertions.assertThat(result).isEqualTo("login")
         Assertions.assertThat(model["title"]).isEqualTo("Login")
         Assertions.assertThat(model["username"]).isEqualTo("")
-        Assertions.assertThat(model["error"]).isEqualTo("sessionExpiredLogin")
+        Assertions.assertThat(model["error"]).isEqualTo("Your session has expired. Please log in again.")
+    }
+
+    @Test
+    fun `can get French translation for session expired error`()
+    {
+        val model = ConcurrentModel()
+        val mockRequest = mock<HttpServletRequest> {
+            on { this.getParameter("error") } doReturn "SessionExpired"
+            on { this.getHeader("Accept-Language") } doReturn "fr"
+        }
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
+
+        val result = sut.login(model)
+        
+        Assertions.assertThat(model["error"]).isEqualTo("Votre session a expiré. Veuillez vous reconnecter.")
+    }
+
+    @Test
+    fun `can get Portuguese translation for session expired error`()
+    {
+        val model = ConcurrentModel()
+        val mockRequest = mock<HttpServletRequest> {
+            on { this.getParameter("error") } doReturn "SessionExpired"
+            on { this.getHeader("Accept-Language") } doReturn "pt"
+        }
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
+
+        val result = sut.login(model)
+        
+        Assertions.assertThat(model["error"]).isEqualTo("A sua sessão expirou. Por favor, inicie sessão novamente.")
     }
 
     @Test

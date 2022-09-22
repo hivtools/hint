@@ -40,7 +40,7 @@ class LoginController(private val request: HttpServletRequest,
         }
         else if (request.getParameter("error") == "SessionExpired")
         {
-            request.getParameter("message") ?: getErrorMessageTranslation("SessionExpiredLogin", request)
+            request.getParameter("message") ?: getErrorMessageTranslation("sessionExpiredLogin", request)
         }
         else
         {
