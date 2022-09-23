@@ -34,8 +34,8 @@ class LoginControllerTests
     {
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest> {
-            on { this.getParameter("username") } doReturn "testUser"
-            on { this.getParameter("error") } doReturn "CredentialsException"
+            on { getParameter("username") } doReturn "testUser"
+            on { getParameter("error") } doReturn "CredentialsException"
         }
         val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
@@ -52,9 +52,9 @@ class LoginControllerTests
     {
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest> {
-            on { this.getParameter("username") } doReturn "testUser"
-            on { this.getParameter("error") } doReturn "CredentialsException"
-            on { this.getHeader("Accept-Language") } doReturn "fr"
+            on { getParameter("username") } doReturn "testUser"
+            on { getParameter("error") } doReturn "CredentialsException"
+            on { getHeader("Accept-Language") } doReturn "fr"
         }
         val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
@@ -68,9 +68,9 @@ class LoginControllerTests
     {
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest> {
-            on { this.getParameter("username") } doReturn "testUser"
-            on { this.getParameter("error") } doReturn "CredentialsException"
-            on { this.getHeader("Accept-Language") } doReturn "pt"
+            on { getParameter("username") } doReturn "testUser"
+            on { getParameter("error") } doReturn "CredentialsException"
+            on { getHeader("Accept-Language") } doReturn "pt"
         }
         val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
@@ -84,8 +84,8 @@ class LoginControllerTests
     {
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest> {
-            on { this.getParameter("message") } doReturn "Some user message"
-            on { this.getParameter("error") } doReturn "SessionExpired"
+            on { getParameter("message") } doReturn "Some user message"
+            on { getParameter("error") } doReturn "SessionExpired"
         }
         val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
@@ -102,7 +102,7 @@ class LoginControllerTests
     {
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest> {
-            on { this.getParameter("error") } doReturn "SessionExpired"
+            on { getParameter("error") } doReturn "SessionExpired"
         }
         val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
@@ -119,8 +119,8 @@ class LoginControllerTests
     {
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest> {
-            on { this.getParameter("error") } doReturn "SessionExpired"
-            on { this.getHeader("Accept-Language") } doReturn "fr"
+            on { getParameter("error") } doReturn "SessionExpired"
+            on { getHeader("Accept-Language") } doReturn "fr"
         }
         val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
@@ -134,8 +134,8 @@ class LoginControllerTests
     {
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest> {
-            on { this.getParameter("error") } doReturn "SessionExpired"
-            on { this.getHeader("Accept-Language") } doReturn "pt"
+            on { getParameter("error") } doReturn "SessionExpired"
+            on { getHeader("Accept-Language") } doReturn "pt"
         }
         val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
@@ -149,7 +149,7 @@ class LoginControllerTests
     {
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest> {
-            on { this.getParameter("redirectTo") } doReturn "explore"
+            on { getParameter("redirectTo") } doReturn "explore"
         }
         val mockSession = mock<Session>()
         val sut = LoginController(mockRequest, mockSession, ConfiguredAppProperties())

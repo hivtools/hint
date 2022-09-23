@@ -7,26 +7,11 @@ import org.springframework.ui.set
 import org.springframework.web.bind.annotation.GetMapping
 import javax.servlet.http.HttpServletRequest
 import org.imperial.mrc.hint.AppProperties
-import java.util.*
-
-fun ResourceBundle.getUTF8String(key: String): String
-    {
-        return this.getString(key)
-                .toByteArray(Charsets.ISO_8859_1)
-                .toString(Charsets.UTF_8)
-    }
-
-fun getErrorMessageTranslation(key: String, request: HttpServletRequest): String
-{
-    val language = request.getHeader("Accept-Language") ?: "en"
-    val resourceBundle = ResourceBundle.getBundle("ErrorMessageBundle", Locale(language))
-    return resourceBundle.getUTF8String(key)
-}
 
 @Controller
-class LoginController(private val request: HttpServletRequest,
+class LoginController(request: HttpServletRequest,
                       private val session: Session,
-                      private val appProperties: AppProperties)
+                      private val appProperties: AppProperties): Controllers(request)
 {
 
     @GetMapping("/login")
@@ -40,11 +25,11 @@ class LoginController(private val request: HttpServletRequest,
         }
         else if (request.getParameter("error") == "SessionExpired")
         {
-            request.getParameter("message") ?: getErrorMessageTranslation("sessionExpiredLogin", request)
+            request.getParameter("message") ?: translateMessage("sessionExpiredLogin")
         }
         else
         {
-            getErrorMessageTranslation("badUsernamePassword", request)
+            translateMessage("badUsernamePassword")
         }
 
         val redirectTo = request.getParameter("redirectTo")
