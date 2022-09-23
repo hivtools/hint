@@ -3,9 +3,12 @@ package org.imperial.mrc.hint.database
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.db.Tables.ADR_KEY
 import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.exceptions.UserException
+import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.security.Encryption
 import org.jooq.DSLContext
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -95,5 +98,20 @@ class UserRepositoryTests
         userRepo.addUser(testEmail, "pw")
         val result = sut.getADRKey(testEmail)
         assertThat(result).isEqualTo(null)
+    }
+
+    @Test
+    fun `can add oauth2 user`()
+    {
+        val email = sut.addAuth0User(testEmail)
+        assertEquals(email, "test@test.com")
+    }
+
+    @Test
+    fun `add oauth2 user can throw UserException`()
+    {
+        TranslationAssert.assertThatThrownBy { sut.addAuth0User("email") }
+            .isInstanceOf(UserException::class.java)
+            .hasTranslatedMessage("Could not authenticate user using auth0 login method.")
     }
 }

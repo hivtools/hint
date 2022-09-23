@@ -1,6 +1,8 @@
 package org.imperial.mrc.hint.db
 
 import org.imperial.mrc.hint.db.Tables.ADR_KEY
+import org.imperial.mrc.hint.db.tables.Users.USERS
+import org.imperial.mrc.hint.exceptions.UserException
 import org.jooq.DSLContext
 import org.springframework.stereotype.Component
 
@@ -10,6 +12,8 @@ interface UserRepository
     fun saveADRKey(userId: String, encryptedKey: ByteArray)
     fun deleteADRKey(userId: String)
     fun getADRKey(userId: String): ByteArray?
+
+    fun addAuth0User(email: String): String
 }
 
 @Component
@@ -62,5 +66,16 @@ class JooqUserRepository(private val dsl: DSLContext) : UserRepository
                 .where(ADR_KEY.USER_ID.eq(userId))
                 .fetchAny()
                 ?.get(ADR_KEY.API_KEY)
+    }
+
+    override fun addAuth0User(email: String): String
+    {
+        val result = dsl.insertInto(USERS)
+            .set(USERS.ID, email)
+            .set(USERS.USERNAME, email)
+            .returning(USERS.USERNAME)
+            .fetchOne() ?: throw UserException("couldNotAuthenticateAuth0User")
+
+        return result[USERS.USERNAME]
     }
 }

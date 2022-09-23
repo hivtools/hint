@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.unit.security.oauth2
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.scribejava.core.model.OAuth2AccessToken
 import com.nhaarman.mockito_kotlin.mock
 import org.imperial.mrc.hint.ConfiguredAppProperties
@@ -33,11 +34,15 @@ class ProfileDefinitionTests
     @Test
     fun `can extract user profile attributes`()
     {
-        val sut = ProfileDefinition(ConfiguredAppProperties())
+        val objectMapper = ObjectMapper()
 
-        val userProfile = sut.extractUserProfile("")
+        val sut = ProfileDefinition(ConfiguredAppProperties(), objectMapper)
 
-        assertEquals(userProfile.id, "test.user@example.com")
+        val body = mapOf("email" to "james@example.com")
+
+        val userProfile = sut.extractUserProfile(objectMapper.writeValueAsString(body))
+
+        assertEquals(userProfile.id, "james@example.com")
     }
 }
 

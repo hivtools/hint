@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.logic
 
+import org.imperial.mrc.hint.caseInsensitiveEmail
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordEmailTemplate
@@ -75,10 +76,8 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
             throw UserException("invalidEmail")
         }
 
-        val caseInsensitiveEmail = Regex("(?i)${email}")
-
         val username = userRepository.getAllUserNames()
-                .find { caseInsensitiveEmail.matches(it) }
+                .find { caseInsensitiveEmail(email).matches(it) }
                 ?: return null
 
         return profileService.findById(username)
