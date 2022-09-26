@@ -18,7 +18,7 @@ class HintClientsContextTests
 
         val mockOAuth20Config = mock<OAuth20Configuration>()
 
-        val oauth2Client = OAuth2Client(ConfiguredAppProperties(), mockOAuth20Client, mockOAuth20Config, mock())
+        val oauth2Client = OAuth2Client(mock(), ConfiguredAppProperties(), mockOAuth20Client, mockOAuth20Config, mock())
 
         val sut = HintClientsContext(oauth2Client)
 

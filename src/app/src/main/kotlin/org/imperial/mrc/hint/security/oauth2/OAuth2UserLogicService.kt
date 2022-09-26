@@ -2,7 +2,6 @@ package org.imperial.mrc.hint.security.oauth2
 
 import org.imperial.mrc.hint.caseInsensitiveEmail
 import org.imperial.mrc.hint.db.UserRepository
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 interface OAuth2UserLogic
@@ -11,12 +10,8 @@ interface OAuth2UserLogic
 }
 
 @Component
-class OAuth2UserLogicService : OAuth2UserLogic
+class OAuth2UserLogicService(private val userRepository: UserRepository) : OAuth2UserLogic
 {
-
-    @Autowired
-    private lateinit var userRepository: UserRepository
-
     override fun validateUser(email: String)
     {
         userRepository.getAllUserNames()

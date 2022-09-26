@@ -22,7 +22,7 @@ class ProfileDefinitionTests
 
         val mockOAuthConfig = mock<OAuthConfiguration>()
 
-        val sut = ProfileDefinition(ConfiguredAppProperties())
+        val sut = ProfileDefinition(mock(), ConfiguredAppProperties())
 
         val userInfoUrl = sut.getProfileUrl(mockToken, mockOAuthConfig)
 
@@ -36,7 +36,7 @@ class ProfileDefinitionTests
     {
         val objectMapper = ObjectMapper()
 
-        val sut = ProfileDefinition(ConfiguredAppProperties(), objectMapper)
+        val sut = ProfileDefinition(mock(), ConfiguredAppProperties(), objectMapper)
 
         val body = mapOf("email" to "james@example.com")
 
