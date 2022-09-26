@@ -8,7 +8,12 @@ describe("model calibrate actions integration", () => {
     it("can get model calibrate options", async () => {
         const commit = jest.fn();
 
-        await actions.fetchModelCalibrateOptions({commit, rootState} as any);
+        const root = {
+            ...rootState,
+            baseline: {iso3: "MWI"}
+        }
+
+        await actions.fetchModelCalibrateOptions({commit, rootState:root} as any);
         expect(commit.mock.calls[1][0]["type"]).toBe("ModelCalibrateOptionsFetched");
         const payload = commit.mock.calls[1][0]["payload"];
         expect(isDynamicFormMeta(payload)).toBe(true);

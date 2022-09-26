@@ -1,6 +1,10 @@
-# hint 2.13.0
+# hint 2.14.0
 
 * Add Auth0 login method
+
+# hint 2.13.0
+
+* Update hint to work with options schema changes
 
 # hint 2.12.0
 
