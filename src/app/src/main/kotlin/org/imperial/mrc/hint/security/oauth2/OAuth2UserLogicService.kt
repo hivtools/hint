@@ -1,29 +1,26 @@
 package org.imperial.mrc.hint.security.oauth2
 
-import org.imperial.mrc.hint.db.JooqUserRepository
-import org.imperial.mrc.hint.exceptions.UserException
-import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic
-import org.jooq.DSLContext
 import org.imperial.mrc.hint.caseInsensitiveEmail
+import org.imperial.mrc.hint.db.UserRepository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 
 interface OAuth2UserLogic
 {
-    fun validateUser(email: String): String
+    fun validateUser(email: String)
 }
 
-class OAuth2UserLogicService(
-    dslContext: DSLContext,
-) : JooqUserRepository(dslContext), OAuth2UserLogic
+@Component
+class OAuth2UserLogicService : OAuth2UserLogic
 {
-    override fun validateUser(email: String): String
-    {
-        if (!email.contains("@") && email != DbProfileServiceUserLogic.GUEST_USER)
-        {
-            throw UserException("invalidEmail")
-        }
 
-        return getAllUserNames()
+    @Autowired
+    private lateinit var userRepository: UserRepository
+
+    override fun validateUser(email: String)
+    {
+        userRepository.getAllUserNames()
             .find { caseInsensitiveEmail(email).matches(it) }
-            ?: addAuth0User(email)
+            ?: userRepository.addAuth0User(email)
     }
 }

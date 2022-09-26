@@ -1,48 +1,67 @@
 package org.imperial.mrc.hint.unit.security.oauth2
 
-import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.caseInsensitiveEmail
-import org.imperial.mrc.hint.db.DbConfig
-import org.imperial.mrc.hint.security.oauth2.OAuth2UserLogicService
-import org.jooq.SQLDialect
-import org.jooq.impl.DSL
+import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.security.oauth2.OAuth2UserLogic
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.junit.jupiter.SpringExtension
+import org.springframework.transaction.annotation.Transactional
 
+@ActiveProfiles(profiles = ["test"])
+@SpringBootTest
+@ExtendWith(SpringExtension::class)
+@Transactional
 class OAuth2UserLogicServiceTests
 {
-    @Test
-    fun`can add new auth0 user to DB`() {
+    @Autowired
+    private lateinit var sut: UserRepository
 
-        val dataSource = DbConfig().dataSource(ConfiguredAppProperties())
+    @Autowired
+    private lateinit var loginService: OAuth2UserLogic
 
-        val dslContext = DSL.using(dataSource.connection, SQLDialect.POSTGRES)
+    private val testEmail = "oauth@test.com"
 
-        val sut = OAuth2UserLogicService(dslContext)
-
-        val results = sut.validateUser("new@example.com")
-
-        assertEquals(results, "new@example.com")
+    @BeforeEach
+    fun`add test user`()
+    {
+        sut.addAuth0User(testEmail)
     }
 
     @Test
-    fun`does not create new user, matches existing user with auth2 user`() {
+    fun `can add new auth0 user`()
+    {
+        val newUser = "newTestEmail@example.com"
 
-        val testEmail = "test@example.com"
+        loginService.validateUser(newUser)
 
-        val dataSource = DbConfig().dataSource(ConfiguredAppProperties())
+        val existingUsers = sut.getAllUserNames()
 
-        val dslContext = DSL.using(dataSource.connection, SQLDialect.POSTGRES)
+        val savedUser = existingUsers
+            .find { caseInsensitiveEmail(newUser).matches(it) }
 
-        val sut = OAuth2UserLogicService(dslContext)
+        assertEquals(existingUsers.size, 3)
 
-        val email = sut.getAllUserNames()
+        assertEquals(savedUser, newUser)
+    }
+
+    @Test
+    fun `does not add new user when matching existing user with auth2 user`()
+    {
+        loginService.validateUser(testEmail)
+
+        val existingUsers = sut.getAllUserNames()
+
+        val savedUser = existingUsers
             .find { caseInsensitiveEmail(testEmail).matches(it) }
 
-        assertEquals(email, testEmail)
+        assertEquals(existingUsers.size, 2)
 
-        val results = sut.validateUser(testEmail)
-
-        assertEquals(results, testEmail)
+        assertEquals(savedUser, testEmail)
     }
 }

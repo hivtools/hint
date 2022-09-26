@@ -1,9 +1,10 @@
 package org.imperial.mrc.hint.database
 
 import org.assertj.core.api.Assertions.assertThat
+import org.imperial.mrc.hint.caseInsensitiveEmail
 import org.imperial.mrc.hint.db.Tables.ADR_KEY
 import org.imperial.mrc.hint.db.UserRepository
-import org.imperial.mrc.hint.exceptions.UserException
+import org.imperial.mrc.hint.exceptions.HintException
 import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.security.Encryption
@@ -101,17 +102,20 @@ class UserRepositoryTests
     }
 
     @Test
-    fun `can add oauth2 user`()
+    fun `can add and get oauth2 user`()
     {
-        val email = sut.addAuth0User(testEmail)
-        assertEquals(email, "test@test.com")
+        sut.addAuth0User(testEmail)
+        sut.getAllUserNames()
+            .find { caseInsensitiveEmail(testEmail).matches(it) }
+
+        assertEquals(testEmail, "test@test.com")
     }
 
     @Test
-    fun `add oauth2 user can throw UserException`()
+    fun `throws user exception when adding invalid email`()
     {
-        TranslationAssert.assertThatThrownBy { sut.addAuth0User("email") }
-            .isInstanceOf(UserException::class.java)
-            .hasTranslatedMessage("Could not authenticate user using auth0 login method.")
+        TranslationAssert.assertThatThrownBy { sut.addAuth0User(("test.com")) }
+            .isInstanceOf(HintException::class.java)
+            .hasMessageContaining("HintException with key invalidEmail")
     }
 }
