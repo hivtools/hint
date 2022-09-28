@@ -1,3 +1,7 @@
+# hint 2.15.0
+
+* As a user when I login with Auth0 I can see my projects 
+
 # hint 2.14.0
 
 * Add Auth0 login method

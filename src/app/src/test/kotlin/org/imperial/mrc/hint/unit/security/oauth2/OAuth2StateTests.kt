@@ -1,20 +1,16 @@
 package org.imperial.mrc.hint.unit.security.oauth2
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
 import org.imperial.mrc.hint.security.oauth2.OAuth2State
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class OAuth2StateTests
 {
     @Test
-    fun `can generate code`()
+    fun `UUID can generate code`()
     {
-        val code = "generated123"
-        val mockCode = mock<OAuth2State> {
-            on { generateCode() } doReturn code
-        }
-        assertEquals(mockCode.generateCode(), code)
+        val sut = OAuth2State()
+
+        assertTrue(sut.generateCode().isNotEmpty())
     }
 }
