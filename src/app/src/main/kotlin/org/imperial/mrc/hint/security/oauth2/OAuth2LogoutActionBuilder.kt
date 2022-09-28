@@ -10,9 +10,8 @@ import org.pac4j.core.util.HttpActionHelper
 import java.util.*
 
 class OAuth2LogoutActionBuilder(
-    appProperties: AppProperties,
-    oauth2State: OAuth2State,
-) : LogoutActionBuilder, OAuth2AuthenticationRedirection(appProperties, oauth2State)
+    appProperties: AppProperties
+) : LogoutActionBuilder, OAuth2AuthenticationRedirection(appProperties)
 {
     override fun getLogoutAction(
         context: WebContext?,

@@ -10,8 +10,7 @@ import java.net.URI
 
 @Component
 class OAuth2AuthenticationRedirection(
-    protected val appProperties: AppProperties,
-    protected val oauth2State: OAuth2State
+    protected val appProperties: AppProperties
 )
 {
     fun oauth2LoginRedirect(): ResponseEntity<String>
@@ -21,7 +20,7 @@ class OAuth2AuthenticationRedirection(
             .path("/authorize")
             .queryParam("response_type", "code")
             .queryParam("client_id", appProperties.oauth2ClientId)
-            .queryParam("state", oauth2State.generateCode())
+            .queryParam("state", OAuth2StateGenerator.encodedState())
             .queryParam("scope", "openid+profile+email+read:dataset")
             .queryParam("audience", appProperties.oauth2ClientAudience)
             .queryParam("redirect_uri", "${appProperties.applicationUrl}/callback/oauth2Client")

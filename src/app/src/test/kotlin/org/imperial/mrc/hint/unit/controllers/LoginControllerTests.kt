@@ -11,7 +11,7 @@ import org.springframework.ui.ConcurrentModel
 import javax.servlet.http.HttpServletRequest
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.helpers.readPropsFromTempFile
-import org.imperial.mrc.hint.security.oauth2.OAuth2State
+import org.imperial.mrc.hint.security.oauth2.OAuth2StateGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -25,7 +25,7 @@ class LoginControllerTests
     {
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest>()
-        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), mock())
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -44,7 +44,7 @@ class LoginControllerTests
             on { this.getParameter("username") } doReturn "testUser"
             on { this.getParameter("error") } doReturn "CredentialsException"
         }
-        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), mock())
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -62,7 +62,7 @@ class LoginControllerTests
             on { this.getParameter("message") } doReturn "Some user message"
             on { this.getParameter("error") } doReturn "SessionExpired"
         }
-        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), mock())
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -79,7 +79,7 @@ class LoginControllerTests
         val mockRequest = mock<HttpServletRequest> {
             on { this.getParameter("error") } doReturn "SessionExpired"
         }
-        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), mock())
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -97,7 +97,7 @@ class LoginControllerTests
             on { this.getParameter("redirectTo") } doReturn "explore"
         }
         val mockSession = mock<Session>()
-        val sut = LoginController(mockRequest, mockSession, ConfiguredAppProperties(), mock())
+        val sut = LoginController(mockRequest, mockSession, ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -113,7 +113,7 @@ class LoginControllerTests
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest>()
         val mockSession = mock<Session>()
-        val sut = LoginController(mockRequest, mockSession, ConfiguredAppProperties(), mock())
+        val sut = LoginController(mockRequest, mockSession, ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -130,17 +130,15 @@ class LoginControllerTests
 
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest>()
-        val mockStateCode = mock<OAuth2State> {
-            on { generateCode() } doReturn "xyz"
-        }
-        val sut = LoginController(mockRequest, mock(), appProperties, mockStateCode)
+
+        val sut = LoginController(mockRequest, mock(), appProperties)
 
         val result = sut.login(model) as ResponseEntity<*>
 
         val httpHeader = HttpHeaders()
         httpHeader.location = URI(
             "https://fakeUrl/authorize?response_type=code&client_id=fakeId&" +
-                    "state=xyz&" +
+                    "state=${OAuth2StateGenerator.encodedState()}&" +
                     "scope=openid+profile+email+read:dataset&audience=naomi&" +
                     "redirect_uri=http://localhost:8080/callback/oauth2Client"
         )

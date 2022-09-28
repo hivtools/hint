@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.unit.security.oauth2.clients
 
+import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.security.oauth2.clients.HintClientsContext
@@ -14,11 +15,13 @@ class HintClientsContextTests
     @Test
     fun `Hint context class can return pac4j OAuth20  client`()
     {
-        val mockOAuth20Client = mock<OAuth20Client>()
-
         val mockOAuth20Config = mock<OAuth20Configuration>()
 
-        val oauth2Client = OAuth2Client(ConfiguredAppProperties(), mockOAuth20Client, mockOAuth20Config, mock())
+        val mockOAuth20Client = mock<OAuth20Client>{
+            on { configuration } doReturn mockOAuth20Config
+        }
+
+        val oauth2Client = OAuth2Client(ConfiguredAppProperties(), mockOAuth20Client)
 
         val sut = HintClientsContext(oauth2Client)
 

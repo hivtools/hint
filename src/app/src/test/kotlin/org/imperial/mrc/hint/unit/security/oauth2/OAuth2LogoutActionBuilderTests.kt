@@ -15,7 +15,7 @@ class OAuth2LogoutActionBuilderTests
     @Test
     fun `can logout and redirect to login page when login with auth0`()
     {
-        val sut = OAuth2LogoutActionBuilder(ConfiguredAppProperties(), mock())
+        val sut = OAuth2LogoutActionBuilder(ConfiguredAppProperties())
 
         assertEquals(sut.oauth2LogoutRedirect(), logoutUrl)
     }
@@ -23,7 +23,7 @@ class OAuth2LogoutActionBuilderTests
     @Test
     fun `can return redirect action when login with auth0`()
     {
-        val sut = OAuth2LogoutActionBuilder(ConfiguredAppProperties(), mock())
+        val sut = OAuth2LogoutActionBuilder(ConfiguredAppProperties())
 
         val context = mock<JEEContext>()
 
