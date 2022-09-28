@@ -22,12 +22,12 @@ export interface ModelCalibrateActions {
 export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrateActions = {
 
     async fetchModelCalibrateOptions(context) {
-        const {commit} = context;
+        const {commit, rootState} = context;
         commit(ModelCalibrateMutation.FetchingModelCalibrateOptions);
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
             .withSuccess(ModelCalibrateMutation.ModelCalibrateOptionsFetched)
             .ignoreErrors()
-            .get<DynamicFormMeta>("model/calibrate/options/");
+            .get<DynamicFormMeta>(`model/calibrate/options/${rootState.baseline.iso3}`);
 
         if (response) {
             commit({type: ModelCalibrateMutation.SetModelCalibrateOptionsVersion, payload: response.version});

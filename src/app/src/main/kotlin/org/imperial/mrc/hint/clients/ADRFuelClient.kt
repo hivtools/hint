@@ -4,7 +4,7 @@ import org.imperial.mrc.hint.*
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.UserException
 import org.imperial.mrc.hint.logging.GenericLogger
-import org.imperial.mrc.hint.logging.logDurationOf
+import org.imperial.mrc.hint.logging.logADRRequestDuration
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.ResponseEntity
@@ -46,17 +46,17 @@ class ADRFuelClient(appProperties: AppProperties,
 {
     override fun get(url: String): ResponseEntity<String>
     {
-        return logDurationOf({ super.get(url) }, logger)
+        return logADRRequestDuration({ super.get(url) }, logger)
     }
 
     override fun postFile(url: String, parameters: List<Pair<String, Any?>>, file: Pair<String, File>): ResponseEntity<String>
     {
-        return logDurationOf({ super.postFile(url, parameters, file) }, logger)
+        return logADRRequestDuration({ super.postFile(url, parameters, file) }, logger)
     }
 
     override fun postJson(urlPath: String?, json: String): ResponseEntity<String>
     {
-        return logDurationOf({ super.postJson(urlPath, json) }, logger)
+        return logADRRequestDuration({ super.postJson(urlPath, json) }, logger)
     }
 
     override fun standardHeaders(): Map<String, Any>
@@ -68,6 +68,6 @@ class ADRFuelClient(appProperties: AppProperties,
     {
         val urlConn: URLConnection = URL(url).openConnection()
         urlConn.setRequestProperty("Authorization", apiKey)
-        return logDurationOf({ BufferedInputStream(urlConn.getInputStream()) }, logger)
+        return logADRRequestDuration({ BufferedInputStream(urlConn.getInputStream()) }, logger)
     }
 }

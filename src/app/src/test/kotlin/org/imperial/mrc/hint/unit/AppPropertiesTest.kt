@@ -165,4 +165,52 @@ class AppPropertiesTests
         val sut = ConfiguredAppProperties(props)
         assertEquals(sut.issueReportUrl, "https://webhook.azure")
     }
+
+    @Test
+    fun `can read oauth2 client id`()
+    {
+        val props = readPropsFromTempFile(" oauth2_client_id=id")
+        val sut = ConfiguredAppProperties(props)
+        assertEquals(sut.oauth2ClientId, "id")
+    }
+
+    @Test
+    fun `can read oauth2 client secret`()
+    {
+        val props = readPropsFromTempFile("oauth2_client_secret=secret")
+        val sut = ConfiguredAppProperties(props)
+        assertEquals(sut.oauth2ClientSecret, "secret")
+    }
+
+    @Test
+    fun `can read oauth2 client url`()
+    {
+        val props = readPropsFromTempFile("oauth2_client_url=https://auth0.com")
+        val sut = ConfiguredAppProperties(props)
+        assertEquals(sut.oauth2ClientUrl, "https://auth0.com")
+    }
+
+    @Test
+    fun `can read oauth2 audience`()
+    {
+        val props = readPropsFromTempFile("oauth2_client_audience=audience")
+        val sut = ConfiguredAppProperties(props)
+        assertEquals(sut.oauth2ClientAudience, "audience")
+    }
+
+    @Test
+    fun `can read oauth2 client ADR url`()
+    {
+        val props = readPropsFromTempFile("oauth2_client_adr_url=http://flask.imperial")
+        val sut = ConfiguredAppProperties(props)
+        assertEquals(sut.oauth2ClientAdrUrl, "http://flask.imperial")
+    }
+
+    @Test
+    fun `can read oauth2 login method`()
+    {
+        val props = readPropsFromTempFile("oauth2_login_method=false")
+        val sut = ConfiguredAppProperties(props)
+        assertEquals(sut.oauth2LoginMethod, false)
+    }
 }

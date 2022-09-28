@@ -3,7 +3,7 @@ package org.imperial.mrc.hint.logging
 import java.time.Duration
 import java.time.Instant
 
-inline fun <T> logDurationOf(
+inline fun <T> logADRRequestDuration(
     callback: () -> T,
     logger: GenericLogger,
 ): T
