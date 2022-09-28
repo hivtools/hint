@@ -3,7 +3,6 @@ package org.imperial.mrc.hint.db
 import org.imperial.mrc.hint.db.Tables.ADR_KEY
 import org.imperial.mrc.hint.db.tables.Users.USERS
 import org.imperial.mrc.hint.exceptions.UserException
-import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic
 import org.jooq.DSLContext
 import org.springframework.stereotype.Component
 
@@ -71,7 +70,7 @@ class JooqUserRepository(private val dsl: DSLContext) : UserRepository
 
     override fun addAuth0User(email: String)
     {
-        if (!email.contains("@") && email != DbProfileServiceUserLogic.GUEST_USER)
+        if (!email.contains("@"))
         {
             throw UserException("invalidEmail")
         }
