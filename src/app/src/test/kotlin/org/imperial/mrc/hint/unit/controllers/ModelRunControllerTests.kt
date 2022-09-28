@@ -10,6 +10,7 @@ import org.imperial.mrc.hint.controllers.ModelRunController
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.anyString
 import org.springframework.http.ResponseEntity
 
 class ModelRunControllerTests
@@ -170,10 +171,10 @@ class ModelRunControllerTests
     fun `can get calibration options`()
     {
         val mockAPIClient = mock<HintrAPIClient> {
-            on { getModelCalibrationOptions() } doReturn mockResponse
+            on { getModelCalibrationOptions(anyString()) } doReturn mockResponse
         }
         val sut = ModelRunController(mock(), mockAPIClient)
-        val result = sut.calibrationOptions()
+        val result = sut.calibrationOptions("MWI")
         assertThat(result).isSameAs(mockResponse)
     }
 

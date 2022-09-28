@@ -139,7 +139,7 @@ class HintrApiClientTests
     fun `can get model calibration options`()
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val result = sut.getModelCalibrationOptions()
+        val result = sut.getModelCalibrationOptions("MWI")
         assertThat(result.statusCodeValue).isEqualTo(200)
         JSONValidator().validateSuccess(result.body!!, "ModelRunOptions")
     }

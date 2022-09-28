@@ -1,15 +1,18 @@
 package org.imperial.mrc.hint.security
 
 import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic.Companion.GUEST_USER
+import org.imperial.mrc.hint.security.oauth2.clients.HintClientsContext
+import org.imperial.mrc.hint.security.oauth2.clients.OAuth2Client
 import org.pac4j.core.client.Clients
 import org.pac4j.core.config.Config
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.context.session.SessionStore
-import org.pac4j.jee.context.session.JEESessionStore
+import org.pac4j.core.http.callback.PathParameterCallbackUrlResolver
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 import org.pac4j.core.util.Pac4jConstants
 import org.pac4j.http.client.indirect.FormClient
+import org.pac4j.jee.context.session.JEESessionStore
 import org.pac4j.sql.profile.service.DbProfileService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
@@ -18,6 +21,7 @@ import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy
 import org.springframework.stereotype.Component
 import java.util.*
 import javax.sql.DataSource
+
 
 @Configuration
 @ComponentScan(basePackages = ["org.pac4j.springframework.web", "org.pac4j.springframework.component"])
@@ -33,8 +37,11 @@ class Pac4jConfig
     @Bean
     fun getPac4jConfig(profileService: DbProfileService): Config
     {
+        val auth2Client = HintClientsContext(OAuth2Client())
         val formClient = FormClient("/login", profileService)
-        val clients = Clients("/callback", formClient)
+
+        formClient.callbackUrlResolver = PathParameterCallbackUrlResolver()
+        val clients = Clients("/callback", formClient, auth2Client.getIndirectClient())
         return Config(clients).apply {
             sessionStore = JEESessionStore.INSTANCE
         }
