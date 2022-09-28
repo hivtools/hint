@@ -1,3 +1,7 @@
+# hint.2.15.0
+
+* Verify auth0 state for protection against threat of cross-site request forgery 
+
 # hint 2.14.0
 
 * Add Auth0 login method
