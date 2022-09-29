@@ -1,6 +1,14 @@
-# hint 2.15.0
+# hint 2.17.0
 
 * As a user when I login with Auth0 I can see my projects 
+
+# hint 2.16.0
+
+* Include system info in logs
+
+# hint 2.15.0
+
+* Log elapsed time for ADR responses
 
 # hint 2.14.0
 
