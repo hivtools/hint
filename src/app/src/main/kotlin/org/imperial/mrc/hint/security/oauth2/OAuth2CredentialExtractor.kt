@@ -6,6 +6,7 @@ import org.pac4j.core.context.WebContext
 import org.pac4j.core.context.session.SessionStore
 import org.pac4j.core.credentials.Credentials
 import org.pac4j.oauth.config.OAuth20Configuration
+import org.pac4j.oauth.config.OAuth20Configuration.STATE_REQUEST_PARAMETER
 import org.pac4j.oauth.credentials.extractor.OAuth20CredentialsExtractor
 import java.util.*
 
@@ -14,9 +15,9 @@ class OAuth2CredentialExtractor(
     client: IndirectClient,
 ) : OAuth20CredentialsExtractor(config, client)
 {
-    override fun extract(context: WebContext, sessionStore: SessionStore?): Optional<Credentials>
+    override fun extract(context: WebContext, sessionStore: SessionStore): Optional<Credentials>
     {
-        val stateParam = OAuth20Configuration.STATE_REQUEST_PARAMETER
+        val stateParam = STATE_REQUEST_PARAMETER
 
         val stateParameter = context.getRequestParameter(stateParam)
 
@@ -24,12 +25,11 @@ class OAuth2CredentialExtractor(
         {
             throw UserException("Auth0 state parameter must be provided")
         }
+        val sessionStateParameter = sessionStore.get(context, stateParam).get()
 
-        val randomState = config.customParams[stateParam]
+        val decodedState = Base64.getDecoder().decode(stateParameter.get()).decodeToString()
 
-        val decodedState = OAuth2StateGenerator.decodedState(stateParameter.get())
-
-        if (!randomState.equals(decodedState))
+        if (sessionStateParameter != decodedState)
         {
             throw UserException("Auth0 State parameter mismatch possible threat of cross-site request forgery")
         }

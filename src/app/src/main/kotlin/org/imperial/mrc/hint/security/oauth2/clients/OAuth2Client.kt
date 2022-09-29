@@ -31,7 +31,6 @@ class OAuth2Client(
             responseType = OAuth20Configuration.OAUTH_CODE
             secret = appProperties.oauth2ClientSecret
             key = appProperties.oauth2ClientId
-            customParams = mapOf(OAuth20Configuration.STATE_REQUEST_PARAMETER to OAuth2StateGenerator.plaintextState())
             profileDefinition = ProfileDefinition()
             api = GenericApi20(
                 "https://${appProperties.oauth2ClientUrl}/authorize",

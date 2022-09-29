@@ -13,6 +13,7 @@ import org.pac4j.core.profile.ProfileManager
 import org.pac4j.core.util.Pac4jConstants
 import org.pac4j.http.client.indirect.FormClient
 import org.pac4j.jee.context.session.JEESessionStore
+import org.pac4j.oauth.config.OAuth20Configuration.STATE_REQUEST_PARAMETER
 import org.pac4j.sql.profile.service.DbProfileService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
@@ -59,6 +60,13 @@ class Session(
     {
         private const val VERSION_ID = "version_id"
         private const val MODE = "mode"
+    }
+
+    fun generateStateParameter(): String
+    {
+        val state = UUID.randomUUID().toString()
+        sessionStore.set(webContext, STATE_REQUEST_PARAMETER, state)
+        return state
     }
 
     fun getUserProfile(): CommonProfile

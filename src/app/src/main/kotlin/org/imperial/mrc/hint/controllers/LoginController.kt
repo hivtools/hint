@@ -21,7 +21,7 @@ class LoginController(
     {
         if (appProperties.oauth2LoginMethod)
         {
-            return oauth2LoginRedirect()
+            return oauth2LoginRedirect(session)
         }
 
         model["title"] = "Login"

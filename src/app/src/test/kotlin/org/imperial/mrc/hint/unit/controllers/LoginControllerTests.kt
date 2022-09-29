@@ -11,12 +11,12 @@ import org.springframework.ui.ConcurrentModel
 import javax.servlet.http.HttpServletRequest
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.helpers.readPropsFromTempFile
-import org.imperial.mrc.hint.security.oauth2.OAuth2StateGenerator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.net.URI
+import java.util.*
 
 class LoginControllerTests
 {
@@ -131,14 +131,22 @@ class LoginControllerTests
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest>()
 
-        val sut = LoginController(mockRequest, mock(), appProperties)
+        val stateParam = "stateCode"
+
+        val mockSession = mock<Session>{
+            on { generateStateParameter() } doReturn stateParam
+        }
+
+        val encodedState = Base64.getEncoder().encodeToString(stateParam.toByteArray())
+
+        val sut = LoginController(mockRequest, mockSession, appProperties)
 
         val result = sut.login(model) as ResponseEntity<*>
 
         val httpHeader = HttpHeaders()
         httpHeader.location = URI(
             "https://fakeUrl/authorize?response_type=code&client_id=fakeId&" +
-                    "state=${OAuth2StateGenerator.encodedState()}&" +
+                    "state=$encodedState&" +
                     "scope=openid+profile+email+read:dataset&audience=naomi&" +
                     "redirect_uri=http://localhost:8080/callback/oauth2Client"
         )
