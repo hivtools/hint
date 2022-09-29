@@ -7,6 +7,7 @@ import org.pac4j.core.config.Config
 import org.pac4j.core.context.session.SessionStore
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.mockito.ArgumentMatchers.anyString
 import org.pac4j.core.context.WebContext
 import java.util.*
 
@@ -135,5 +136,7 @@ class SessionTests
         val sut = Session(mockWebContext, mockConfig, mockSessionStore)
 
         assertTrue(sut.generateStateParameter().isNotEmpty())
+
+        verify(mockSessionStore).set(any(), anyString(), anyString())
     }
 }
