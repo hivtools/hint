@@ -30,7 +30,7 @@ class OAuth2UserLogicServiceTests
     @BeforeEach
     fun`add test user`()
     {
-        sut.addAuth0User(testEmail)
+        sut.addOAuth2User(testEmail)
     }
 
     @Test

@@ -104,7 +104,7 @@ class UserRepositoryTests
     @Test
     fun `can add and get oauth2 user`()
     {
-        sut.addAuth0User(testEmail)
+        sut.addOAuth2User(testEmail)
         sut.getAllUserNames()
             .find { caseInsensitiveEmail(testEmail).matches(it) }
 
@@ -114,7 +114,7 @@ class UserRepositoryTests
     @Test
     fun `throws user exception when adding invalid email`()
     {
-        TranslationAssert.assertThatThrownBy { sut.addAuth0User(("test.com")) }
+        TranslationAssert.assertThatThrownBy { sut.addOAuth2User(("test.com")) }
             .isInstanceOf(HintException::class.java)
             .hasMessageContaining("HintException with key invalidEmail")
     }

@@ -13,7 +13,7 @@ interface UserRepository
     fun deleteADRKey(userId: String)
     fun getADRKey(userId: String): ByteArray?
 
-    fun addAuth0User(email: String)
+    fun addOAuth2User(email: String)
 }
 
 @Component
@@ -68,7 +68,7 @@ class JooqUserRepository(private val dsl: DSLContext) : UserRepository
                 ?.get(ADR_KEY.API_KEY)
     }
 
-    override fun addAuth0User(email: String)
+    override fun addOAuth2User(email: String)
     {
         if (!email.contains("@"))
         {

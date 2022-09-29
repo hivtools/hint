@@ -16,6 +16,6 @@ class OAuth2UserLogicService(private val userRepository: UserRepository) : OAuth
     {
         userRepository.getAllUserNames()
             .find { caseInsensitiveEmail(email).matches(it) }
-            ?: userRepository.addAuth0User(email)
+            ?: userRepository.addOAuth2User(email)
     }
 }
