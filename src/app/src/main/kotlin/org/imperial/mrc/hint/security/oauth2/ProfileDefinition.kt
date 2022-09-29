@@ -27,6 +27,7 @@ class ProfileDefinition(
 
         val email = jsonBody["email"].asText()
 
+        // checks validity of email and adds user if it doesn't exist in db
         OAuth2UserLogicService(userRepository).run { validateUser(email) }
 
         return OAuth20Profile().apply {
