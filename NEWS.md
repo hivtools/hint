@@ -1,3 +1,7 @@
+# hint 2.16.0
+
+* Include system info in logs
+
 # hint 2.15.0
 
 * Log elapsed time for ADR responses
@@ -9,7 +13,6 @@
 # hint 2.13.0
 
 * Update hint to work with options schema changes
->>>>>>> master
 
 # hint 2.12.0
 
