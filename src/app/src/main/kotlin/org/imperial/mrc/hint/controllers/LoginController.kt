@@ -12,16 +12,16 @@ import org.imperial.mrc.hint.security.oauth2.OAuth2AuthenticationRedirection
 @Controller
 class LoginController(
     private val request: HttpServletRequest,
-    private val session: Session,
+    session: Session,
     appProperties: AppProperties,
-) : OAuth2AuthenticationRedirection(appProperties)
+) : OAuth2AuthenticationRedirection(appProperties, session)
 {
     @GetMapping("/login")
     fun login(model: Model): Any // Return type is string for formLogin, or ResponseEntity for OAuth2
     {
         if (appProperties.oauth2LoginMethod)
         {
-            return oauth2LoginRedirect(session)
+            return oauth2LoginRedirect()
         }
 
         model["title"] = "Login"
@@ -49,7 +49,7 @@ class LoginController(
             appProperties.applicationTitle
         }
         model["continueTo"] = redirectTo ?: "/"
-        session.setRequestedUrl(redirectTo)
+        session?.setRequestedUrl(redirectTo)
 
         return "login"
     }

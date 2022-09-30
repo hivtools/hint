@@ -66,7 +66,7 @@ class Session(
     {
         val state = UUID.randomUUID().toString()
         sessionStore.set(webContext, STATE_REQUEST_PARAMETER, state)
-        return state
+        return Base64.getEncoder().encodeToString(state.toByteArray())
     }
 
     fun getUserProfile(): CommonProfile

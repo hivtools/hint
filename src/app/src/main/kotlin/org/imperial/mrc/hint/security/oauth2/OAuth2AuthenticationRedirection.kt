@@ -8,25 +8,21 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
-import java.util.*
 
 @Component
 class OAuth2AuthenticationRedirection(
-    protected val appProperties: AppProperties
+    protected val appProperties: AppProperties,
+    protected val session: Session? = null,
 )
 {
-    fun oauth2LoginRedirect(session: Session): ResponseEntity<String>
+    fun oauth2LoginRedirect(): ResponseEntity<String>
     {
-        val stateParam = session.generateStateParameter()
-
-        val encodedStateParam = Base64.getEncoder().encodeToString(stateParam.toByteArray())
-
         val url = UriComponentsBuilder
             .fromHttpUrl("https://${appProperties.oauth2ClientUrl}")
             .path("/authorize")
             .queryParam("response_type", "code")
             .queryParam("client_id", appProperties.oauth2ClientId)
-            .queryParam("state", encodedStateParam)
+            .queryParam("state", session?.generateStateParameter())
             .queryParam("scope", "openid+profile+email+read:dataset")
             .queryParam("audience", appProperties.oauth2ClientAudience)
             .queryParam("redirect_uri", "${appProperties.applicationUrl}/callback/oauth2Client")

@@ -126,18 +126,18 @@ class LoginControllerTests
     fun `login can redirect to auth0 tenant`()
     {
         val props = readPropsFromTempFile("oauth2_login_method=true")
+
         val appProperties = ConfiguredAppProperties(props)
 
         val model = ConcurrentModel()
+
         val mockRequest = mock<HttpServletRequest>()
 
-        val stateParam = "stateCode"
+        val encodedState = "encodedStateCode"
 
         val mockSession = mock<Session>{
-            on { generateStateParameter() } doReturn stateParam
+            on { generateStateParameter() } doReturn encodedState
         }
-
-        val encodedState = Base64.getEncoder().encodeToString(stateParam.toByteArray())
 
         val sut = LoginController(mockRequest, mockSession, appProperties)
 
@@ -152,6 +152,7 @@ class LoginControllerTests
         )
 
         assertEquals(result.statusCode, HttpStatus.SEE_OTHER)
+
         assertEquals(result.headers.location, httpHeader.location)
     }
 }
