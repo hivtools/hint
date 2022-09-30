@@ -24,7 +24,7 @@ class OAuth2Client(
             configuration = getConfig(this.configuration)
             name = "oauth2Client"
             callbackUrl = "${appProperties.applicationUrl}/callback/oauth2Client"
-            logoutActionBuilder = OAuth2LogoutActionBuilder(appProperties)
+            logoutActionBuilder = OAuth2LogoutActionBuilder(OAuth2AuthenticationRedirection(appProperties))
             credentialsExtractor = OAuth2CredentialExtractor(this.configuration, this)
         }
     }

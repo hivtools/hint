@@ -4,19 +4,18 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
+import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.controllers.LoginController
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
 import org.springframework.ui.ConcurrentModel
 import javax.servlet.http.HttpServletRequest
 import org.imperial.mrc.hint.ConfiguredAppProperties
-import org.imperial.mrc.hint.helpers.readPropsFromTempFile
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.net.URI
-import java.util.*
 
 class LoginControllerTests
 {
@@ -125,9 +124,18 @@ class LoginControllerTests
     @Test
     fun `login can redirect to auth0 tenant`()
     {
-        val props = readPropsFromTempFile("oauth2_login_method=true")
+        val clientId = "fakeId"
+        val appUrl = "https://naomi.com"
+        val clientUrl = "oauth2tenant.com"
+        val audience = "naomi"
 
-        val appProperties = ConfiguredAppProperties(props)
+        val mockProperties = mock<AppProperties>{
+            on { oauth2ClientUrl } doReturn clientUrl
+            on { applicationUrl } doReturn appUrl
+            on { oauth2ClientId } doReturn clientId
+            on { oauth2ClientAudience } doReturn audience
+            on { oauth2LoginMethod } doReturn true
+        }
 
         val model = ConcurrentModel()
 
@@ -139,16 +147,17 @@ class LoginControllerTests
             on { generateStateParameter() } doReturn encodedState
         }
 
-        val sut = LoginController(mockRequest, mockSession, appProperties)
+        val sut = LoginController(mockRequest, mockSession, mockProperties)
 
         val result = sut.login(model) as ResponseEntity<*>
 
         val httpHeader = HttpHeaders()
+
         httpHeader.location = URI(
-            "https://fakeUrl/authorize?response_type=code&client_id=fakeId&" +
+            "https://$clientUrl/authorize?response_type=code&client_id=$clientId&" +
                     "state=$encodedState&" +
-                    "scope=openid+profile+email+read:dataset&audience=naomi&" +
-                    "redirect_uri=http://localhost:8080/callback/oauth2Client"
+                    "scope=openid+profile+email+read:dataset&audience=$audience&" +
+                    "redirect_uri=$appUrl/callback/oauth2Client"
         )
 
         assertEquals(result.statusCode, HttpStatus.SEE_OTHER)
