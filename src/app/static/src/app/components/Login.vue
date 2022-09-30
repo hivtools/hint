@@ -5,7 +5,7 @@
         <h1 class="text-center"><strong>{{appTitle}}</strong></h1>
         <div id="app" class="card login-form mx-auto mt-3">
             <div class="card-body">
-                <form id="login-form" ref="loginForm" method="post" action="/callback" class="needs-validation" novalidate>
+                <form id="login-form" ref="loginForm" method="post" action="/callback/formClient" class="needs-validation" novalidate>
                     <div class="form-group">
                         <label id="userid-label" for="user-id" v-translate="'usernameEmail'"></label>
                         <input type="text" size="20" class="form-control" name="username" id="user-id" v-model.trim="email" required>

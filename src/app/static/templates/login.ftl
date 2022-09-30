@@ -8,7 +8,7 @@
     <!-- endinject -->
 </head>
 <body>
-<div id="app" >
+<div id="app">
     <login title="${title}" app-title="${appTitle}" continue-to="${continueTo}" username="${username}" error="${error}"></login>
 </div>
 </body>

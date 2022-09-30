@@ -29,7 +29,7 @@ interface HintrAPIClient
     fun getResult(id: String): ResponseEntity<String>
     fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
-    fun getModelCalibrationOptions(): ResponseEntity<String>
+    fun getModelCalibrationOptions(iso3: String): ResponseEntity<String>
     fun calibrateSubmit(runId: String, calibrationOptions: ModelOptions): ResponseEntity<String>
     fun getCalibrateStatus(id: String): ResponseEntity<String>
     fun getCalibrateResult(id: String): ResponseEntity<String>
@@ -172,9 +172,9 @@ class HintrFuelAPIClient(
         return postJson("model/options", json)
     }
 
-    override fun getModelCalibrationOptions(): ResponseEntity<String>
+    override fun getModelCalibrationOptions(iso3: String): ResponseEntity<String>
     {
-        return postEmpty("calibrate/options")
+        return postEmpty("calibrate/options/${iso3}")
     }
 
     override fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>

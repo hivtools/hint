@@ -47,7 +47,7 @@ class ModelRunTests : SecureIntegrationTests()
     @Test
     fun `can get model calibration options`()
     {
-        val responseEntity = testRestTemplate.getForEntity<String>("/model/calibrate/options/")
+        val responseEntity = testRestTemplate.getForEntity<String>("/model/calibrate/options/MWI")
         assertSuccess(responseEntity, "ModelRunOptions")
     }
 

@@ -20,7 +20,7 @@ abstract class FuelClient(protected val baseUrl: String)
 
     abstract fun standardHeaders(): Map<String, Any>
 
-    fun get(url: String): ResponseEntity<String>
+    open fun get(url: String): ResponseEntity<String>
     {
         return "$baseUrl/$url".httpGet()
                 .header(standardHeaders())
@@ -77,7 +77,7 @@ abstract class FuelClient(protected val baseUrl: String)
                 .timeoutRead(TIMEOUT)
     }
 
-    fun postFile(url: String, parameters: Parameters, file: Pair<String, File>): ResponseEntity<String>
+    open fun postFile(url: String, parameters: Parameters, file: Pair<String, File>): ResponseEntity<String>
     {
         return "$baseUrl/$url".httpUpload(parameters)
                 .add(FileDataPart(file.second, file.first))

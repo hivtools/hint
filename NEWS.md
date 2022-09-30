@@ -1,6 +1,22 @@
-# hint 2.13.0
+# hint 2.17.0
 
 * Add language toggle to login page
+
+# hint 2.16.0
+
+* Include system info in logs
+
+# hint 2.15.0
+
+* Log elapsed time for ADR responses
+
+# hint 2.14.0
+
+* Add Auth0 login method
+
+# hint 2.13.0
+
+* Update hint to work with options schema changes
 
 # hint 2.12.0
 

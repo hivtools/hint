@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.logging
 
+import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.models.ErrorDetail
 import org.springframework.http.HttpStatus
 import javax.servlet.http.HttpServletRequest
@@ -12,6 +13,7 @@ data class Client(
 
 data class AppOrigin(
         val name: String? = "hint",
+        val profileUrl: String? = ConfiguredAppProperties().applicationUrl,
         val type: String? = "backend"
 )
 
