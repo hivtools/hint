@@ -55,7 +55,7 @@ class RehydrateTests: SecureIntegrationTests()
         val resultBody = ObjectMapper().readTree(responseEntity.body)
         val errors = resultBody["errors"] as ArrayNode
         assertThat(errors.count()).isEqualTo(1)
-        assertThat(errors[0]["detail"].asText()).isEqualTo("Cannot rehydrate from zip file," +
+        assertThat(errors[0]["detail"].asText()).isEqualTo("Cannot load from this zip file," +
                 " archive missing required information. Please regenerate output zip and try again.")
     }
 
