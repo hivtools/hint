@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.security.oauth2.clients
 
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.security.oauth2.OAuth2LogoutActionBuilder
 import org.imperial.mrc.hint.security.oauth2.OAuth2State
 import org.imperial.mrc.hint.security.oauth2.ProfileDefinition
@@ -11,6 +12,7 @@ import org.pac4j.oauth.config.OAuth20Configuration
 import org.pac4j.scribe.builder.api.GenericApi20
 
 class OAuth2Client(
+    private val userRepository: UserRepository,
     private val appProperties: AppProperties = ConfiguredAppProperties(),
     private val oAuth2Client: OAuth20Client = OAuth20Client(),
     private val config: OAuth20Configuration = OAuth20Configuration(),
@@ -34,7 +36,7 @@ class OAuth2Client(
             responseType = OAuth20Configuration.OAUTH_CODE
             secret = appProperties.oauth2ClientSecret
             key = appProperties.oauth2ClientId
-            profileDefinition = ProfileDefinition()
+            profileDefinition = ProfileDefinition(userRepository)
             api = GenericApi20(
                 "https://${appProperties.oauth2ClientUrl}/authorize",
                 "https://${appProperties.oauth2ClientUrl}/oauth/token"

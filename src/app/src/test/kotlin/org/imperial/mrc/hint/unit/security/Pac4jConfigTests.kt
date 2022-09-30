@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint.unit.security
 
 import org.assertj.core.api.Assertions.assertThat
+import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.security.HintDbProfileService
 import org.imperial.mrc.hint.security.Pac4jConfig
 import org.imperial.mrc.hint.security.SecurePasswordEncoder
@@ -30,10 +31,13 @@ class Pac4jConfigTests
     @Autowired
     private lateinit var sut: Pac4jConfig
 
+    @Autowired
+    private lateinit var userRepository: UserRepository
+
     @Test
     fun `can get Pac4j Config for FormLogin`()
     {
-        val config = sut.getPac4jConfig(wiredDbProfileService)
+        val config = sut.getPac4jConfig(wiredDbProfileService, userRepository)
 
         assertThat(config.clients.callbackUrl).isEqualTo("/callback")
 
@@ -61,7 +65,7 @@ class Pac4jConfigTests
     @Test
     fun `can get Pac4j Config for OAuth2Login`()
     {
-        val config = sut.getPac4jConfig(wiredDbProfileService)
+        val config = sut.getPac4jConfig(wiredDbProfileService, userRepository)
 
         assertThat(config.clients.callbackUrl).isEqualTo("/callback")
 
