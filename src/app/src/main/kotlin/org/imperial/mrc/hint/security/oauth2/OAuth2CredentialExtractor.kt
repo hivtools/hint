@@ -27,7 +27,7 @@ class OAuth2CredentialExtractor(
         }
         val sessionStateParameter = sessionStore.get(context, stateParam)
 
-        if (!sessionStateParameter.equals(stateParameter))
+        if (sessionStateParameter.get() != stateParameter.get())
         {
             throw UserException("Auth0 State parameter mismatch possible threat of cross-site request forgery")
         }
