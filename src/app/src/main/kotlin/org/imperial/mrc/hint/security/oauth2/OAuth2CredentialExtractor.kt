@@ -25,11 +25,9 @@ class OAuth2CredentialExtractor(
         {
             throw UserException("Auth0 state parameter must be provided")
         }
-        val sessionStateParameter = sessionStore.get(context, stateParam).get()
+        val sessionStateParameter = sessionStore.get(context, stateParam)
 
-        val decodedState = Base64.getDecoder().decode(stateParameter.get()).decodeToString()
-
-        if (sessionStateParameter != decodedState)
+        if (!sessionStateParameter.equals(stateParameter))
         {
             throw UserException("Auth0 State parameter mismatch possible threat of cross-site request forgery")
         }

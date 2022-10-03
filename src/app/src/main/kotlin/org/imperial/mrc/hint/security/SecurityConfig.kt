@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component
 import java.util.*
 import javax.sql.DataSource
 
-
 @Configuration
 @ComponentScan(basePackages = ["org.pac4j.springframework.web", "org.pac4j.springframework.component"])
 class Pac4jConfig
@@ -67,8 +66,9 @@ class Session(
     fun generateStateParameter(): String
     {
         val state = UUID.randomUUID().toString()
-        sessionStore.set(webContext, STATE_REQUEST_PARAMETER, state)
-        return Base64.getEncoder().encodeToString(state.toByteArray())
+        val encodedState = Base64.getEncoder().encodeToString(state.toByteArray())
+        sessionStore.set(webContext, STATE_REQUEST_PARAMETER, encodedState)
+        return encodedState
     }
 
     fun getUserProfile(): CommonProfile
