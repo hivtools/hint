@@ -1,6 +1,10 @@
-# hint 2.17.0
+# hint 2.18.0
 
 * Add language toggle to login page
+
+# hint 2.17.0
+
+* As a user when I login with Auth0 I can see my projects 
 
 # hint 2.16.0
 
