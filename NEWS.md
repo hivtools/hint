@@ -1,3 +1,7 @@
+# hint.18.0
+
+* Update naomi ADR integration to pull 2023 datasets
+
 # hint 2.17.0
 
 * As a user when I login with Auth0 I can see my projects 
