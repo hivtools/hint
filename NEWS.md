@@ -1,6 +1,10 @@
-# hint 2.18.0
+# hint 2.19.0
 
 * Add language toggle to login page
+
+# hint.18.0
+
+* Update naomi ADR integration to pull 2023 datasets
 
 # hint 2.17.0
 
