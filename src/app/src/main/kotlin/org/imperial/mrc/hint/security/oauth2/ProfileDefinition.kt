@@ -1,16 +1,20 @@
 package org.imperial.mrc.hint.security.oauth2
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.scribejava.core.model.OAuth2AccessToken
 import com.github.scribejava.core.model.Token
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.db.UserRepository
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.oauth.config.OAuthConfiguration
 import org.pac4j.oauth.profile.OAuth20Profile
 import org.pac4j.oauth.profile.definition.OAuthProfileDefinition
 
 class ProfileDefinition(
+    private val userRepository: UserRepository,
     private val appProperties: AppProperties = ConfiguredAppProperties(),
+    private val objectMapper: ObjectMapper = ObjectMapper()
 ) : OAuthProfileDefinition()
 {
     companion object {
@@ -19,13 +23,15 @@ class ProfileDefinition(
 
     override fun extractUserProfile(body: String?): CommonProfile
     {
-        /**
-         * Database user validation should be performed,
-         * checking if user exists before appending to user profile id
-         * or creating a new user before appending to profile id.
-         */
+        val jsonBody = objectMapper.readTree(body)
+
+        val email = jsonBody["email"].asText()
+
+        // checks validity of email and adds user if it doesn't exist in db
+        OAuth2UserLogicService(userRepository).run { validateUser(email) }
+
         return OAuth20Profile().apply {
-            id = "test.user@example.com"
+            id = email
         }
     }
 

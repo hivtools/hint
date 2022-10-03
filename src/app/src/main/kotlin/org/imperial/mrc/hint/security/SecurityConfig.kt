@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.security
 
+import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic.Companion.GUEST_USER
 import org.imperial.mrc.hint.security.oauth2.clients.HintClientsContext
 import org.imperial.mrc.hint.security.oauth2.clients.OAuth2Client
@@ -35,9 +36,10 @@ class Pac4jConfig
     }
 
     @Bean
-    fun getPac4jConfig(profileService: DbProfileService): Config
+    fun getPac4jConfig(profileService: DbProfileService, userRepository: UserRepository): Config
     {
-        val auth2Client = HintClientsContext(OAuth2Client())
+        val oAuthClient = OAuth2Client(userRepository)
+        val auth2Client = HintClientsContext(oAuthClient)
         val formClient = FormClient("/login", profileService)
 
         formClient.callbackUrlResolver = PathParameterCallbackUrlResolver()
