@@ -67,12 +67,10 @@ class OAuth2CredentialExtractorTests
     @Test
     fun `can validates auth0 credential`()
     {
-        val stateParam = "injectedState"
-
-        val encodedState =  Base64.getEncoder().encodeToString(stateParam.toByteArray())
+        val stateParam = "encodedState"
 
         val mockContext = mock<WebContext> {
-            on { getRequestParameter(anyString()) } doReturn Optional.of(encodedState)
+            on { getRequestParameter(anyString()) } doReturn Optional.of(stateParam)
         }
 
         val mockSession = mock<SessionStore>{
@@ -87,6 +85,6 @@ class OAuth2CredentialExtractorTests
 
         val extract = sut.extract(mockContext, mockSession)
 
-        assertEquals(extract, Optional.of(OAuth20Credentials(encodedState)))
+        assertEquals(extract, Optional.of(OAuth20Credentials(stateParam)))
     }
 }
