@@ -1,6 +1,10 @@
-# hint 2.19.0
+# hint 2.20.0
 
 * Add language toggle to login page
+
+# hint.2.19.0
+
+* Verify auth0 state for protection against threat of cross-site request forgery 
 
 # hint.18.0
 

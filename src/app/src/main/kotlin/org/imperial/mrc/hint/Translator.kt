@@ -14,7 +14,6 @@ class Translator(val request: HttpServletRequest) : Translate
 {
     override fun key(key: String): String
     {
-        println(request.getHeader("Accept-Language"))
         val language = request.getHeader("Accept-Language") ?: "en"
         val resourceBundle = ResourceBundle.getBundle("ErrorMessageBundle", Locale(language))
         return resourceBundle.getString(key)

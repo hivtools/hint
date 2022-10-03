@@ -9,16 +9,14 @@ import javax.servlet.http.HttpServletRequest
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.Translate
 import org.imperial.mrc.hint.security.oauth2.OAuth2AuthenticationRedirection
-import org.imperial.mrc.hint.security.oauth2.OAuth2State
 
 @Controller
 class LoginController(
     private val request: HttpServletRequest,
-    private val session: Session,
-    private val translate: Translate,
+    session: Session,
     appProperties: AppProperties,
-    oauth2State: OAuth2State
-) : OAuth2AuthenticationRedirection(appProperties, oauth2State)
+    val translate: Translate
+) : OAuth2AuthenticationRedirection(appProperties, session)
 {
     @GetMapping("/login")
     fun login(model: Model): Any // Return type is string for formLogin, or ResponseEntity for OAuth2
@@ -27,7 +25,7 @@ class LoginController(
         {
             return oauth2LoginRedirect()
         }
-        println(request.getHeader("Accept-Language"))
+
         model["title"] = "Login"
         model["username"] = request.getParameter("username") ?: ""
         model["error"] = if (request.getParameter("error") == null)
@@ -53,7 +51,7 @@ class LoginController(
             appProperties.applicationTitle
         }
         model["continueTo"] = redirectTo ?: "/"
-        session.setRequestedUrl(redirectTo)
+        session?.setRequestedUrl(redirectTo)
 
         return "login"
     }

@@ -4,14 +4,14 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
+import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.controllers.LoginController
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
 import org.springframework.ui.ConcurrentModel
 import javax.servlet.http.HttpServletRequest
 import org.imperial.mrc.hint.ConfiguredAppProperties
-import org.imperial.mrc.hint.helpers.readPropsFromTempFile
-import org.imperial.mrc.hint.security.oauth2.OAuth2State
+import org.imperial.mrc.hint.Translator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -44,7 +44,9 @@ class LoginControllerTests
             on { getParameter("username") } doReturn "testUser"
             on { getParameter("error") } doReturn "CredentialsException"
         }
-        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), mock())
+        val translate = Translator(mockRequest)
+
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), translate)
 
         val result = sut.login(model)
 
@@ -63,9 +65,11 @@ class LoginControllerTests
             on { getParameter("error") } doReturn "CredentialsException"
             on { getHeader("Accept-Language") } doReturn "fr"
         }
-        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
+        val translate = Translator(mockRequest)
 
-        val result = sut.login(model)
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), translate)
+
+        sut.login(model)
         
         Assertions.assertThat(model["error"]).isEqualTo("Le nom d'utilisateur ou le mot de passe est incorrect")
     }
@@ -79,10 +83,13 @@ class LoginControllerTests
             on { getParameter("error") } doReturn "CredentialsException"
             on { getHeader("Accept-Language") } doReturn "pt"
         }
-        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
-        val result = sut.login(model)
-        
+        val translate = Translator(mockRequest)
+
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), translate)
+
+        sut.login(model)
+
         Assertions.assertThat(model["error"]).isEqualTo("O nome de utilizador ou palavra-passe está incorreto")
     }
 
@@ -111,7 +118,9 @@ class LoginControllerTests
         val mockRequest = mock<HttpServletRequest> {
             on { getParameter("error") } doReturn "SessionExpired"
         }
-        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), mock())
+        val translate = Translator(mockRequest)
+
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), translate)
 
         val result = sut.login(model)
 
@@ -129,9 +138,11 @@ class LoginControllerTests
             on { getParameter("error") } doReturn "SessionExpired"
             on { getHeader("Accept-Language") } doReturn "fr"
         }
-        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
+        val translate = Translator(mockRequest)
 
-        val result = sut.login(model)
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), translate)
+
+        sut.login(model)
         
         Assertions.assertThat(model["error"]).isEqualTo("Votre session a expiré. Veuillez vous reconnecter.")
     }
@@ -144,9 +155,11 @@ class LoginControllerTests
             on { getParameter("error") } doReturn "SessionExpired"
             on { getHeader("Accept-Language") } doReturn "pt"
         }
-        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
+        val translate = Translator(mockRequest)
 
-        val result = sut.login(model)
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), translate)
+
+        sut.login(model)
         
         Assertions.assertThat(model["error"]).isEqualTo("A sua sessão expirou. Por favor, inicie sessão novamente.")
     }
@@ -187,27 +200,44 @@ class LoginControllerTests
     @Test
     fun `login can redirect to auth0 tenant`()
     {
-        val props = readPropsFromTempFile("oauth2_login_method=true")
-        val appProperties = ConfiguredAppProperties(props)
+        val clientId = "fakeId"
+        val appUrl = "https://naomi.com"
+        val clientUrl = "oauth2tenant.com"
+        val audience = "naomi"
+
+        val mockProperties = mock<AppProperties>{
+            on { oauth2ClientUrl } doReturn clientUrl
+            on { applicationUrl } doReturn appUrl
+            on { oauth2ClientId } doReturn clientId
+            on { oauth2ClientAudience } doReturn audience
+            on { oauth2LoginMethod } doReturn true
+        }
 
         val model = ConcurrentModel()
+
         val mockRequest = mock<HttpServletRequest>()
-        val mockStateCode = mock<OAuth2State> {
-            on { generateCode() } doReturn "xyz"
+
+        val encodedState = "encodedStateCode"
+
+        val mockSession = mock<Session>{
+            on { generateStateParameter() } doReturn encodedState
         }
-        val sut = LoginController(mockRequest, mock(), appProperties, mockStateCode)
+
+        val sut = LoginController(mockRequest, mockSession, mockProperties, mock())
 
         val result = sut.login(model) as ResponseEntity<*>
 
         val httpHeader = HttpHeaders()
+
         httpHeader.location = URI(
-            "https://fakeUrl/authorize?response_type=code&client_id=fakeId&" +
-                    "state=xyz&" +
-                    "scope=openid+profile+email+read:dataset&audience=naomi&" +
-                    "redirect_uri=http://localhost:8080/callback/oauth2Client"
+            "https://$clientUrl/authorize?response_type=code&client_id=$clientId&" +
+                    "state=$encodedState&" +
+                    "scope=openid+profile+email+read:dataset&audience=$audience&" +
+                    "redirect_uri=$appUrl/callback/oauth2Client"
         )
 
         assertEquals(result.statusCode, HttpStatus.SEE_OTHER)
+
         assertEquals(result.headers.location, httpHeader.location)
     }
 }
