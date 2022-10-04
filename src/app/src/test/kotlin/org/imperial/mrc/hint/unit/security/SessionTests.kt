@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test
 import org.pac4j.core.config.Config
 import org.pac4j.core.context.session.SessionStore
 import org.imperial.mrc.hint.security.Session
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.mockito.ArgumentMatchers.anyString
 import org.pac4j.core.context.WebContext
 import java.util.*
 
@@ -120,5 +122,21 @@ class SessionTests
         sut.setRequestedUrl(null)
 
         verify(mockSessionStore).set(mockWebContext, "pac4jRequestedUrl", null)
+    }
+
+    @Test
+    fun`can generate oauth2 state parameter`()
+    {
+        val mockWebContext = mock<WebContext>()
+
+        val mockSessionStore = mock<SessionStore>()
+
+        val mockConfig = mock<Config>()
+
+        val sut = Session(mockWebContext, mockConfig, mockSessionStore)
+
+        assertTrue(sut.generateStateParameter().isNotEmpty())
+
+        verify(mockSessionStore).set(any(), anyString(), anyString())
     }
 }

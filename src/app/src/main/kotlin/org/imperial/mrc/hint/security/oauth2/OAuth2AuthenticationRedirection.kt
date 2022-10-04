@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint.security.oauth2
 
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.security.Session
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -11,20 +12,34 @@ import java.net.URI
 @Component
 class OAuth2AuthenticationRedirection(
     protected val appProperties: AppProperties,
-    protected val oauth2State: OAuth2State
+    protected val session: Session? = null,
 )
 {
-    fun oauth2LoginRedirect(): ResponseEntity<String>
+    private fun urlComponent(): UriComponentsBuilder
     {
-        val url = UriComponentsBuilder
+        return UriComponentsBuilder
             .fromHttpUrl("https://${appProperties.oauth2ClientUrl}")
             .path("/authorize")
             .queryParam("response_type", "code")
             .queryParam("client_id", appProperties.oauth2ClientId)
-            .queryParam("state", oauth2State.generateCode())
+            .queryParam("state", session?.generateStateParameter())
             .queryParam("scope", "openid+profile+email+read:dataset")
             .queryParam("audience", appProperties.oauth2ClientAudience)
             .queryParam("redirect_uri", "${appProperties.applicationUrl}/callback/oauth2Client")
+    }
+
+    fun oauth2LoginRedirect(): ResponseEntity<String>
+    {
+        val url = urlComponent().build()
+        val httpHeader = HttpHeaders()
+        httpHeader.location = URI(url.toUriString())
+        return ResponseEntity(httpHeader, HttpStatus.SEE_OTHER)
+    }
+
+    fun oauth2RegisterRedirect(): ResponseEntity<String>
+    {
+        val url = urlComponent()
+            .queryParam("screen_hint", "signup")
             .build()
 
         val httpHeader = HttpHeaders()

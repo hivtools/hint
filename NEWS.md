@@ -1,3 +1,11 @@
+# hint.2.19.0
+
+* Verify auth0 state for protection against threat of cross-site request forgery 
+
+# hint.18.0
+
+* Update naomi ADR integration to pull 2023 datasets
+
 # hint 2.17.0
 
 * As a user when I login with Auth0 I can see my projects 

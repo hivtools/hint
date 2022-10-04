@@ -4,18 +4,16 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
+import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.controllers.LoginController
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
 import org.springframework.ui.ConcurrentModel
 import javax.servlet.http.HttpServletRequest
 import org.imperial.mrc.hint.ConfiguredAppProperties
-import org.imperial.mrc.hint.helpers.readPropsFromTempFile
-import org.imperial.mrc.hint.security.oauth2.OAuth2State
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import java.net.URI
 
 class LoginControllerTests
@@ -25,7 +23,7 @@ class LoginControllerTests
     {
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest>()
-        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), mock())
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -44,7 +42,7 @@ class LoginControllerTests
             on { this.getParameter("username") } doReturn "testUser"
             on { this.getParameter("error") } doReturn "CredentialsException"
         }
-        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), mock())
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -62,7 +60,7 @@ class LoginControllerTests
             on { this.getParameter("message") } doReturn "Some user message"
             on { this.getParameter("error") } doReturn "SessionExpired"
         }
-        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), mock())
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -79,7 +77,7 @@ class LoginControllerTests
         val mockRequest = mock<HttpServletRequest> {
             on { this.getParameter("error") } doReturn "SessionExpired"
         }
-        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties(), mock())
+        val sut = LoginController(mockRequest, mock(), ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -97,7 +95,7 @@ class LoginControllerTests
             on { this.getParameter("redirectTo") } doReturn "explore"
         }
         val mockSession = mock<Session>()
-        val sut = LoginController(mockRequest, mockSession, ConfiguredAppProperties(), mock())
+        val sut = LoginController(mockRequest, mockSession, ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -113,7 +111,7 @@ class LoginControllerTests
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest>()
         val mockSession = mock<Session>()
-        val sut = LoginController(mockRequest, mockSession, ConfiguredAppProperties(), mock())
+        val sut = LoginController(mockRequest, mockSession, ConfiguredAppProperties())
 
         val result = sut.login(model)
 
@@ -123,29 +121,86 @@ class LoginControllerTests
     }
 
     @Test
-    fun `login can redirect to auth0 tenant`()
+    fun `can redirect to auth0 login page`()
     {
-        val props = readPropsFromTempFile("oauth2_login_method=true")
-        val appProperties = ConfiguredAppProperties(props)
+        val clientId = "fakeId"
+        val appUrl = "https://naomi.com"
+        val clientUrl = "oauth2tenant.com"
+        val audience = "naomi"
 
-        val model = ConcurrentModel()
-        val mockRequest = mock<HttpServletRequest>()
-        val mockStateCode = mock<OAuth2State> {
-            on { generateCode() } doReturn "xyz"
+        val mockProperties = mock<AppProperties>{
+            on { oauth2ClientUrl } doReturn clientUrl
+            on { applicationUrl } doReturn appUrl
+            on { oauth2ClientId } doReturn clientId
+            on { oauth2ClientAudience } doReturn audience
+            on { oauth2LoginMethod } doReturn true
         }
-        val sut = LoginController(mockRequest, mock(), appProperties, mockStateCode)
 
-        val result = sut.login(model) as ResponseEntity<*>
+        val mockRequest = mock<HttpServletRequest>()
+
+        val encodedState = "encodedStateCode"
+
+        val mockSession = mock<Session>{
+            on { generateStateParameter() } doReturn encodedState
+        }
+
+        val sut = LoginController(mockRequest, mockSession, mockProperties)
+
+        val result = sut.loginRedirection()
 
         val httpHeader = HttpHeaders()
+
         httpHeader.location = URI(
-            "https://fakeUrl/authorize?response_type=code&client_id=fakeId&" +
-                    "state=xyz&" +
-                    "scope=openid+profile+email+read:dataset&audience=naomi&" +
-                    "redirect_uri=http://localhost:8080/callback/oauth2Client"
+            "https://$clientUrl/authorize?response_type=code&client_id=$clientId&" +
+                    "state=$encodedState&" +
+                    "scope=openid+profile+email+read:dataset&audience=$audience&" +
+                    "redirect_uri=$appUrl/callback/oauth2Client"
         )
 
         assertEquals(result.statusCode, HttpStatus.SEE_OTHER)
+
+        assertEquals(result.headers.location, httpHeader.location)
+    }
+
+    @Test
+    fun `can redirect to auth0 signup page`()
+    {
+        val clientId = "fakeId"
+        val appUrl = "https://naomi.com"
+        val clientUrl = "oauth2tenant.com"
+        val audience = "naomi"
+
+        val mockProperties = mock<AppProperties>{
+            on { oauth2ClientUrl } doReturn clientUrl
+            on { applicationUrl } doReturn appUrl
+            on { oauth2ClientId } doReturn clientId
+            on { oauth2ClientAudience } doReturn audience
+            on { oauth2LoginMethod } doReturn true
+        }
+
+        val mockRequest = mock<HttpServletRequest>()
+
+        val encodedState = "encodedStateCode"
+
+        val mockSession = mock<Session>{
+            on { generateStateParameter() } doReturn encodedState
+        }
+
+        val sut = LoginController(mockRequest, mockSession, mockProperties)
+
+        val result = sut.registerRedirection()
+
+        val httpHeader = HttpHeaders()
+
+        httpHeader.location = URI(
+            "https://$clientUrl/authorize?response_type=code&client_id=$clientId&" +
+                    "state=$encodedState&" +
+                    "scope=openid+profile+email+read:dataset&audience=$audience&" +
+                    "redirect_uri=$appUrl/callback/oauth2Client&screen_hint=signup"
+        )
+
+        assertEquals(result.statusCode, HttpStatus.SEE_OTHER)
+
         assertEquals(result.headers.location, httpHeader.location)
     }
 }
