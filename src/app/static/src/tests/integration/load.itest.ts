@@ -171,7 +171,7 @@ describe("load actions", () => {
         await actions.preparingRehydrate({commit, dispatch, state, rootState} as any, formData);
 
         setTimeout(() => {
-            expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
+            expect(commit.mock.calls[0][0].type).toBe("StartPreparingRehydrate");
             expect(commit.mock.calls[1][0].type).toBe("PreparingRehydrate");
             expect(commit.mock.calls[1][0].payload).not.toBeNull();
             done();

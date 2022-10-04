@@ -1,4 +1,8 @@
-# hint.2.19.0
+# hint 2.20.0
+
+* Speed up display of project rehydrate dialog
+
+# hint 2.19.0
 
 * Verify auth0 state for protection against threat of cross-site request forgery 
 

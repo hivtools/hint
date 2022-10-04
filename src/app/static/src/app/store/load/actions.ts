@@ -115,7 +115,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
     async preparingRehydrate(context, formData) {
         const {dispatch, commit} = context
-        commit({type: "SettingFiles", payload: null});
+        commit({type: "StartPreparingRehydrate", payload: true});
         const response = await api<LoadActionTypes, LoadErrorActionTypes>(context)
             .withSuccess("PreparingRehydrate")
             .withError("RehydrateResultError")
