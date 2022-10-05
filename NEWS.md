@@ -1,3 +1,7 @@
+# hint 2.20.0
+
+* Add a new login page for displaying Auth0 login button in hint
+
 # hint.2.19.0
 
 * Verify auth0 state for protection against threat of cross-site request forgery 

@@ -63,4 +63,31 @@ class OAuth2AuthenticationRedirectionTests
 
         assertEquals(result, logoutUrl)
     }
+
+    @Test
+    fun`can redirect to auth2 signup page`()
+    {
+        val encodedState = "encodedStateCode"
+
+        val mockSession = mock<Session>{
+            on { generateStateParameter() } doReturn encodedState
+        }
+
+        val sut = OAuth2AuthenticationRedirection(mockProperties, mockSession)
+
+        val result = sut.oauth2RegisterRedirect()
+
+        val httpHeader = HttpHeaders()
+
+        httpHeader.location = URI(
+            "https://$clientUrl/authorize?response_type=code&client_id=$clientId&" +
+                    "state=$encodedState&" +
+                    "scope=openid+profile+email+read:dataset&audience=$audience&" +
+                    "redirect_uri=$appUrl/callback/oauth2Client&screen_hint=signup"
+        )
+
+        assertEquals(result.statusCode, HttpStatus.SEE_OTHER)
+
+        assertEquals(result.headers.location, httpHeader.location)
+    }
 }
