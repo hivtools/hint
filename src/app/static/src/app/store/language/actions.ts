@@ -33,7 +33,7 @@ export const ChangeLanguageAction = async (context: ActionContext<DataExploratio
         actions.push(dispatch("metadata/getPlottingMetadata", rootState.baseline.iso3));
     }
 
-    if (isRoot(rootState) && rootState.modelCalibrate.status.done) {
+    if (isRoot(rootState) && rootState.modelCalibrate.status.done && rootState.stepper.activeStep != 7) {
         actions.push(dispatch("modelCalibrate/getResult"));
     }
 

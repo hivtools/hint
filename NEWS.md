@@ -1,3 +1,7 @@
+# hint 2.20.1
+
+* Bug: Fix download status errors
+
 # hint 2.20.0
 
 * Add a new login page for displaying Auth0 login button in hint
