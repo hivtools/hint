@@ -15,6 +15,7 @@ class LoginTests
     fun `renders login form correctly with error`()
     {
         val model = ConcurrentModel()
+        model["oauth2LoginMethod"] = false
         model["username"] = "test user"
         model["error"] = "test error"
         model["title"] = "test title"
@@ -54,6 +55,7 @@ class LoginTests
     fun `renders login form correctly without error`()
     {
         val model = ConcurrentModel()
+        model["oauth2LoginMethod"] = false
         model["username"] = ""
         model["error"] = ""
         model["title"] = "test title"
@@ -75,6 +77,7 @@ class LoginTests
     fun `renders title and partner logos without error`()
     {
         val model = ConcurrentModel()
+        model["oauth2LoginMethod"] = false
         model["username"] = ""
         model["error"] = ""
         model["title"] = "test title"
@@ -96,6 +99,7 @@ class LoginTests
     fun `renders correctly for data exploration`()
     {
         val model = ConcurrentModel()
+        model["oauth2LoginMethod"] = false
         model["username"] = ""
         model["error"] = ""
         model["title"] = "test title"
@@ -106,6 +110,29 @@ class LoginTests
         assertThat(doc.select("h1").count()).isEqualTo(1)
         assertThat(doc.select("h1").text()).isEqualTo("Naomi Data Exploration")
         assertThat(doc.select("#continue-as-guest a").attr("href")).isEqualTo("explore")
+    }
+
+    @Test
+    fun `renders oauth2 login page correctly`()
+    {
+        val model = ConcurrentModel()
+        model["oauth2LoginMethod"] = true
+        model["username"] = ""
+        model["error"] = ""
+        model["title"] = "test title"
+        model["appTitle"] = "Naomi"
+        model["continueTo"] = "/"
+        val doc = template.jsoupDocFor(model)
+
+        assertThat(doc.select("input[type='submit']").attr("value")).isEqualTo("Log in with Auth0")
+        assertThat(doc.select("input[type='submit']").attr("onclick")).isEqualTo("oauth2Callback()")
+        assertThat(doc.select("#error").count()).isEqualTo(0)
+        assertThat(doc.select("#register-oauth2-account").text()).isEqualTo("Don't have Auth0 account? Request an account")
+        assertThat(doc.select("#register-oauth2-account a").attr("href")).isEqualTo("/register")
+
+        assertThat(doc.select("#continue-as-guest").text()).isEqualTo("OR Continue as guest")
+        assertThat(doc.select("#continue-as-guest a").attr("href")).isEqualTo("/")
+        assertThat(doc.select("#continue-as-guest a").attr("onclick")).isEqualTo("continueAsGuest()")
     }
 
 }

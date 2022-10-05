@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import javax.servlet.http.HttpServletRequest
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.security.oauth2.OAuth2AuthenticationRedirection
+import org.springframework.http.ResponseEntity
 
 @Controller
 class LoginController(
@@ -17,13 +18,9 @@ class LoginController(
 ) : OAuth2AuthenticationRedirection(appProperties, session)
 {
     @GetMapping("/login")
-    fun login(model: Model): Any // Return type is string for formLogin, or ResponseEntity for OAuth2
+    fun login(model: Model): String
     {
-        if (appProperties.oauth2LoginMethod)
-        {
-            return oauth2LoginRedirect()
-        }
-
+        model["oauth2LoginMethod"] = appProperties.oauth2LoginMethod
         model["title"] = "Login"
         model["username"] = request.getParameter("username") ?: ""
         model["error"] = if (request.getParameter("error") == null)
@@ -52,5 +49,17 @@ class LoginController(
         session?.setRequestedUrl(redirectTo)
 
         return "login"
+    }
+
+    @GetMapping("/oauth2")
+    fun loginRedirection(): ResponseEntity<String>
+    {
+        return oauth2LoginRedirect()
+    }
+
+    @GetMapping("/register")
+    fun registerRedirection(): ResponseEntity<String>
+    {
+        return oauth2RegisterRedirect()
     }
 }
