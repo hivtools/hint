@@ -70,8 +70,8 @@ export const mutations: MutationTree<LoadState> & LoadMutations = {
         state.complete = false;
         state.loadError = null;
     },
-    StartPreparingRehydrate(state: LoadState, action: PayloadWithType<boolean>) {
-        state.preparing = action.payload;
+    StartPreparingRehydrate(state: LoadState) {
+        state.preparing = true;
         state.loadingState = LoadingState.SettingFiles;
     },
     RehydrateStatusUpdated(state: LoadState, action: PayloadWithType<ProjectRehydrateStatusResponse>) {
