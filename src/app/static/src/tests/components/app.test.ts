@@ -187,8 +187,9 @@ describe("App", () => {
         const spy = jest.spyOn(store, "commit");
         store.commit(prefixNamespace("modelCalibrate", ModelCalibrateMutation.Calibrated));
 
-        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetDownload);
-        expect(spy).toBeCalledTimes(2);
+        expect(spy.mock.calls[1][0].type).toBe("downloadResults/ResetIds");
+        expect(spy.mock.calls[2][0]).toBe(RootMutation.ResetDownload);
+        expect(spy).toBeCalledTimes(3);
     });
 
     it("resets outputs if modelRun ClearResult mutation is called and state is ready", () => {

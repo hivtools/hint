@@ -8,7 +8,7 @@ import {
     SurveyAndProgramState,
 } from "./store/surveyAndProgram/surveyAndProgram";
 import {initialModelRunState, modelRun, ModelRunState} from "./store/modelRun/modelRun";
-import {initialStepperState, stepper, StepperState} from "./store/stepper/stepper";
+import {initialStepperState, stepper} from "./store/stepper/stepper";
 import {initialLoadState, LoadState} from "./store/load/state";
 import {load} from "./store/load/load";
 import {initialModelOutputState, modelOutput, ModelOutputState} from "./store/modelOutput/modelOutput";
@@ -44,6 +44,7 @@ import {ModelCalibrateMutation, ModelCalibrateUpdates} from "./store/modelCalibr
 import {GenericChartState, initialGenericChartState, genericChart} from "./store/genericChart/genericChart";
 import {Warning} from "./generated";
 import {DataExplorationState} from "./store/dataExploration/dataExploration";
+import {DownloadResultsMutation} from "./store/downloadResults/mutations";
 
 export interface RootState extends DataExplorationState {
     version: string,
@@ -119,6 +120,9 @@ const resetState = (store: Store<RootState>): void => {
             }
 
             if (type[0] == "modelCalibrate" && ModelCalibrateUpdates.includes(type[1] as ModelCalibrateMutation)) {
+                store.commit(
+                    {type: `downloadResults/${DownloadResultsMutation.ResetIds}`},
+                    {root: true});
                 store.commit(RootMutation.ResetDownload);
             }
         }
