@@ -1,3 +1,7 @@
+# hint 2.21.0
+
+* Speed up display of project rehydrate dialog
+
 # hint 2.20.0
 
 * Add a new login page for displaying Auth0 login button in hint

@@ -87,4 +87,11 @@ describe("Load mutations", () => {
         expect(testState.statusPollId).toEqual(-1);
     });
 
+    it("StartPreparingRehydrate sets preparing state", () => {
+        const testState = mockLoadState();
+        mutations.StartPreparingRehydrate(testState, null);
+        expect(testState.loadingState).toBe(LoadingState.SettingFiles);
+        expect(testState.preparing).toBe(true);
+    });
+
 });
