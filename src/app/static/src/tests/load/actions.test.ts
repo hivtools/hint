@@ -581,7 +581,7 @@ describe("Load actions", () => {
             expect(mockAxios.history.post.length).toBe(1)
             expect(mockAxios.history.post[0]["url"]).toBe("rehydrate/submit")
             expect(commit.mock.calls.length).toBe(2)
-            expect(commit.mock.calls[0][0].type).toBe("SettingFiles")
+            expect(commit.mock.calls[0][0].type).toBe("StartPreparingRehydrate")
             expect(commit.mock.calls[1][0].type).toBe("PreparingRehydrate")
             expect(commit.mock.calls[1][0].payload).toBeTruthy()
             expect(dispatch.mock.calls.length).toBe(1)

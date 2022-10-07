@@ -1,6 +1,10 @@
-# hint 2.20.1
+# hint 2.22.0
 
 * Bug: Fix download status errors
+
+# hint 2.21.0
+
+* Speed up display of project rehydrate dialog
 
 # hint 2.20.0
 

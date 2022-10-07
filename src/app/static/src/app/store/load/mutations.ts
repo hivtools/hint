@@ -15,6 +15,7 @@ export interface LoadMutations {
     LoadFailed: LoadMutation,
     LoadStateCleared: LoadMutation,
     PreparingRehydrate: LoadMutation,
+    StartPreparingRehydrate: LoadMutation,
     RehydrateStatusUpdated: LoadMutation,
     RehydratePollingStarted: LoadMutation,
     RehydrateResult: LoadMutation,
@@ -66,9 +67,12 @@ export const mutations: MutationTree<LoadState> & LoadMutations = {
     },
     PreparingRehydrate(state: LoadState, action: PayloadWithType<ProjectRehydrateSubmitResponse>) {
         state.rehydrateId = action.payload.id;
-        state.preparing = true;
         state.complete = false;
         state.loadError = null;
+    },
+    StartPreparingRehydrate(state: LoadState) {
+        state.preparing = true;
+        state.loadingState = LoadingState.SettingFiles;
     },
     RehydrateStatusUpdated(state: LoadState, action: PayloadWithType<ProjectRehydrateStatusResponse>) {
         if (action.payload.done) {
