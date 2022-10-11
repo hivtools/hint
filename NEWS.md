@@ -1,3 +1,7 @@
+# hint 2.23.0
+
+* Barchart uncertainty ranges (error bars) are greyed out on first rendering
+
 # hint 2.22.0
 
 * Bug: Fix download status errors
