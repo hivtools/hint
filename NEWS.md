@@ -1,6 +1,46 @@
-# hint 2.13.0
+# hint 2.23.0
 
 * Implement no data message in comparison chart
+
+# hint 2.22.0
+
+* Bug: Fix download status errors
+
+# hint 2.21.0
+
+* Speed up display of project rehydrate dialog
+
+# hint 2.20.0
+
+* Add a new login page for displaying Auth0 login button in hint
+
+# hint.2.19.0
+
+* Verify auth0 state for protection against threat of cross-site request forgery 
+
+# hint.18.0
+
+* Update naomi ADR integration to pull 2023 datasets
+
+# hint 2.17.0
+
+* As a user when I login with Auth0 I can see my projects 
+
+# hint 2.16.0
+
+* Include system info in logs
+
+# hint 2.15.0
+
+* Log elapsed time for ADR responses
+
+# hint 2.14.0
+
+* Add Auth0 login method
+
+# hint 2.13.0
+
+* Update hint to work with options schema changes
 
 # hint 2.12.0
 

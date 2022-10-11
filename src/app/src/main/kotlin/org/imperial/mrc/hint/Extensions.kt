@@ -160,3 +160,8 @@ fun File.md5sum(): String
     }
     return DatatypeConverter.printHexBinary(md.digest())
 }
+
+fun caseInsensitiveEmail(email: String): Regex
+{
+    return Regex("(?i)${email}")
+}

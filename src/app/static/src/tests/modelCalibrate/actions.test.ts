@@ -1,5 +1,5 @@
 import {
-    mockAxios,
+    mockAxios, mockBaselineState,
     mockError,
     mockFailure,
     mockModelCalibrateState,
@@ -27,10 +27,14 @@ describe("ModelCalibrate actions", () => {
 
     it("fetchModelCalibrateOptions fetches options and commits mutations", async () => {
         const commit = jest.fn();
+        const root = {
+            ...rootState,
+            baseline: mockBaselineState({iso3: "MWI"})
+        }
         const state = mockModelCalibrateState();
-        mockAxios.onGet("/model/calibrate/options/").reply(200, mockSuccess("TEST", "v1"));
+        mockAxios.onGet("/model/calibrate/options/MWI").reply(200, mockSuccess("TEST", "v1"));
 
-        await actions.fetchModelCalibrateOptions({commit, state, rootState} as any);
+        await actions.fetchModelCalibrateOptions({commit, state, rootState: root} as any);
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toBe(ModelCalibrateMutation.FetchingModelCalibrateOptions);

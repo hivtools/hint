@@ -1,15 +1,20 @@
 package org.imperial.mrc.hint.security
 
+import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic.Companion.GUEST_USER
+import org.imperial.mrc.hint.security.oauth2.clients.HintClientsContext
+import org.imperial.mrc.hint.security.oauth2.clients.OAuth2Client
 import org.pac4j.core.client.Clients
 import org.pac4j.core.config.Config
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.context.session.SessionStore
-import org.pac4j.jee.context.session.JEESessionStore
+import org.pac4j.core.http.callback.PathParameterCallbackUrlResolver
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 import org.pac4j.core.util.Pac4jConstants
 import org.pac4j.http.client.indirect.FormClient
+import org.pac4j.jee.context.session.JEESessionStore
+import org.pac4j.oauth.config.OAuth20Configuration.STATE_REQUEST_PARAMETER
 import org.pac4j.sql.profile.service.DbProfileService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
@@ -31,10 +36,14 @@ class Pac4jConfig
     }
 
     @Bean
-    fun getPac4jConfig(profileService: DbProfileService): Config
+    fun getPac4jConfig(profileService: DbProfileService, userRepository: UserRepository): Config
     {
+        val oAuthClient = OAuth2Client(userRepository)
+        val auth2Client = HintClientsContext(oAuthClient)
         val formClient = FormClient("/login", profileService)
-        val clients = Clients("/callback", formClient)
+
+        formClient.callbackUrlResolver = PathParameterCallbackUrlResolver()
+        val clients = Clients("/callback", formClient, auth2Client.getIndirectClient())
         return Config(clients).apply {
             sessionStore = JEESessionStore.INSTANCE
         }
@@ -52,6 +61,14 @@ class Session(
     {
         private const val VERSION_ID = "version_id"
         private const val MODE = "mode"
+    }
+
+    fun generateStateParameter(): String
+    {
+        val state = UUID.randomUUID().toString()
+        val encodedState = Base64.getEncoder().encodeToString(state.toByteArray())
+        sessionStore.set(webContext, STATE_REQUEST_PARAMETER, encodedState)
+        return encodedState
     }
 
     fun getUserProfile(): CommonProfile
