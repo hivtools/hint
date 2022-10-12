@@ -5,9 +5,9 @@ import {
     mockBaselineState,
     mockCalibrateResultResponse,
     mockComparisonPlotResponse,
+    mockError,
     mockModelCalibrateState,
-    mockShapeResponse,
-    mockError
+    mockShapeResponse
 } from "../../mocks";
 import {mutations as modelOutputMutations} from "../../../app/store/modelOutput/mutations";
 import {mutations as plottingSelectionMutations} from "../../../app/store/plottingSelections/mutations";
@@ -163,6 +163,8 @@ describe("ModelOutput component", () => {
         expect(barchart.props().selections).toBe(vm.barchartSelections);
         expect(barchart.props().formatFunction).toBe(vm.formatBarchartValue);
         expect(barchart.props().showRangesInTooltips).toBe(true);
+        expect(barchart.props().noDataMessage).toBe("No data are available for the selected combination." +
+            " Please review the combination of filter values selected.");
     });
 
     it("renders comparison plot", () => {
@@ -179,7 +181,8 @@ describe("ModelOutput component", () => {
         expect(comparisonPlot.props().formatFunction).toBe(vm.formatBarchartValue);
         expect(comparisonPlot.props().showRangesInTooltips).toBe(true);
         expect(comparisonPlot.props().disaggregateByConfig).toStrictEqual({fixed: true, hideFilter: true});
-        expect(comparisonPlot.props().noDataMessage).toBe("No data are available for the selected combination. Please review the combination of filter values selected.");
+        expect(comparisonPlot.props().noDataMessage).toBe("No data are available for the selected combination." +
+            " Please review the combination of filter values selected.");
     });
 
     it("renders comparison plot error", () => {

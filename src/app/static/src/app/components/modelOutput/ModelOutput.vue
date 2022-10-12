@@ -48,6 +48,7 @@
                     :selections="barchartSelections"
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
+                    :no-data-message="noChartData"
                     @update="updateBarchartSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
