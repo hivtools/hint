@@ -1,3 +1,7 @@
+# hint 2.23.0
+
+* Login to data exploration throws an error on redirect
+
 # hint 2.22.0
 
 * Bug: Fix download status errors
