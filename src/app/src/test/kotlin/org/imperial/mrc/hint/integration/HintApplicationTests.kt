@@ -31,7 +31,7 @@ class HintApplicationTests : SecureIntegrationTests()
     @EnumSource(IsAuthorized::class)
     fun `all users can access explore`(isAuthorized: IsAuthorized)
     {
-        testAllUserAccess("/explore", isAuthorized)
+        testAllUserAccess("/callback/explore", isAuthorized)
     }
 
     @ParameterizedTest
@@ -87,7 +87,7 @@ class HintApplicationTests : SecureIntegrationTests()
     fun `redirects to requested url after login`()
     {
         // set requested url
-        val loginEntity = testRestTemplate.getForEntity<String>("/login?redirectTo=explore")
+        val loginEntity = testRestTemplate.getForEntity<String>("/login?redirectTo=/callback/explore")
 
         val map = LinkedMultiValueMap<String, String>()
         map.add("username", "test.user@example.com")
@@ -107,7 +107,7 @@ class HintApplicationTests : SecureIntegrationTests()
         // get redirected back to explore page
         assertThat(callbackEntity.statusCode).isEqualTo(HttpStatus.SEE_OTHER)
         assertThat(callbackEntity.headers["Location"]!!.first())
-                .isEqualTo("explore")
+                .isEqualTo("/callback/explore")
     }
 
     @ParameterizedTest

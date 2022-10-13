@@ -37,7 +37,7 @@ class LoginController(
         }
 
         val redirectTo = request.getParameter("redirectTo")
-        model["appTitle"] = if (redirectTo == "explore")
+        model["appTitle"] = if (redirectTo == "/callback/explore")
         {
             appProperties.exploreApplicationTitle
         }

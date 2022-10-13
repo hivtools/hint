@@ -92,7 +92,7 @@ class LoginControllerTests
     {
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest> {
-            on { this.getParameter("redirectTo") } doReturn "explore"
+            on { this.getParameter("redirectTo") } doReturn "/callback/explore"
         }
         val mockSession = mock<Session>()
         val sut = LoginController(mockRequest, mockSession, ConfiguredAppProperties())
@@ -101,8 +101,8 @@ class LoginControllerTests
 
         Assertions.assertThat(result).isEqualTo("login")
         Assertions.assertThat(model["appTitle"]).isEqualTo("Naomi Data Exploration")
-        Assertions.assertThat(model["continueTo"]).isEqualTo("explore")
-        verify(mockSession).setRequestedUrl("explore")
+        Assertions.assertThat(model["continueTo"]).isEqualTo("/callback/explore")
+        verify(mockSession).setRequestedUrl("/callback/explore")
     }
 
     @Test

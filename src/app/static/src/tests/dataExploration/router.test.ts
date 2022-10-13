@@ -41,7 +41,7 @@ describe("Router", () => {
     it("has expected properties", () => {
         expect(dataExplorationApp.$router).toBe(router);
         expect(router.mode).toBe("history");
-        expect(router.getMatchedComponents("/explore")).toStrictEqual([DataExploration])
+        expect(router.getMatchedComponents("/callback/explore")).toStrictEqual([DataExploration])
         expect(router.getMatchedComponents("/accessibility")).toStrictEqual([Accessibility]);
     });
 
@@ -75,7 +75,7 @@ describe("Router", () => {
         beforeEnter({} as Route, {} as Route, next);
 
         expect(window.location.assign).toHaveBeenCalledTimes(1);
-        expect(window.location.assign).toHaveBeenCalledWith("/login?redirectTo=explore");
+        expect(window.location.assign).toHaveBeenCalledWith("/login?redirectTo=/callback/explore");
         expect(next).not.toBeCalled();
 
         window.location = realLocation

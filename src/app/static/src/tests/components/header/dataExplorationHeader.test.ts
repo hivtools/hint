@@ -53,7 +53,7 @@ describe(`Data Exploration header`, () => {
         const store = createStore({currentUser});
         const wrapper = getWrapper(currentUser, store);
         const logoutLink = wrapper.find("a[href='/logout']");
-        const loginLink = wrapper.findAll("a[href='/login?redirectTo=explore']");
+        const loginLink = wrapper.findAll("a[href='/login?redirectTo=/callback/explore']");
         expectTranslatedWithStoreType(logoutLink, "Logout", "Fermer une session", "Sair", store);
         expect(loginLink.length).toBe(0);
     });
