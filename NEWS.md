@@ -1,3 +1,7 @@
+# hint 2.23.0
+
+* Persist user selections for comparison barchart
+
 # hint 2.22.0
 
 * Bug: Fix download status errors

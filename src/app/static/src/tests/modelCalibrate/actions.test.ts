@@ -196,7 +196,12 @@ describe("ModelCalibrate actions", () => {
             } as any
         });
 
-        await actions.getResult({commit, state, rootState, dispatch} as any);
+        const root = {
+            ...rootState,
+            plottingSelections: {}
+        }
+
+        await actions.getResult({commit, state, rootState: root, dispatch} as any);
 
         expect(commit.mock.calls.length).toBe(5);
         expect(commit.mock.calls[0][0]).toStrictEqual({
@@ -224,6 +229,66 @@ describe("ModelCalibrate actions", () => {
 
         expect(commit.mock.calls[3][0]).toBe("Calibrated");
         expect(commit.mock.calls[4][0]).toBe("Ready");
+        expect(dispatch.mock.calls[0][0]).toBe("getCalibratePlot");
+        expect(dispatch.mock.calls[1][0]).toBe("getComparisonPlot");
+
+        expect(spy).toHaveBeenCalledWith(mockResponse);
+    });
+
+    it("does not set default plotting selections when selections already exists in session store", async () => {
+        switches.modelCalibratePlot = true;
+        const testResult = {
+            data: "TEST DATA",
+            uploadMetadata: {
+                outputZip: {description: "spectrum output info"},
+                outputSummary: {description: "summary output info"}
+            },
+            warnings: []
+        };
+        const mockResponse = mockSuccess(testResult);
+        mockAxios.onGet(`/model/calibrate/result/1234`)
+            .reply(200, mockResponse);
+
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const spy = jest.spyOn(freezer, "deepFreeze");
+        const state = mockModelCalibrateState({
+            calibrateId: "1234",
+            status: {
+                success: true,
+                done: true
+            } as any
+        });
+
+        const root = {
+            ...rootState,
+            plottingSelections: {
+                barchart: {
+                    indicatorId: "TestIndicator",
+                    xAxisId: "age",
+                    disaggregateById: "source",
+                    selectedFilterOptions: {
+                        region: [{id: "r1", label: "region 1"}],
+                        age: [{id: "a1", label: "0-4"}]
+                    }
+                },
+            }
+        }
+
+        await actions.getResult({commit, state, rootState: root, dispatch} as any);
+
+        expect(commit.mock.calls.length).toBe(4);
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "CalibrateResultFetched",
+            payload: testResult
+        });
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: ModelCalibrateMutation.WarningsFetched,
+            payload: testResult.warnings
+        });
+
+        expect(commit.mock.calls[2][0]).toBe("Calibrated");
+        expect(commit.mock.calls[3][0]).toBe("Ready");
         expect(dispatch.mock.calls[0][0]).toBe("getCalibratePlot");
         expect(dispatch.mock.calls[1][0]).toBe("getComparisonPlot");
 
@@ -386,7 +451,12 @@ describe("ModelCalibrate actions", () => {
             } as any
         });
 
-        await actions.getComparisonPlot({commit, state, rootState} as any);
+        const root = {
+            ...rootState,
+            plottingSelections: {}
+        }
+
+        await actions.getComparisonPlot({commit, state, rootState: root} as any);
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toStrictEqual("ComparisonPlotStarted");
@@ -399,6 +469,47 @@ describe("ModelCalibrate actions", () => {
         });
         expect(commit.mock.calls[2][0]).toBe("SetComparisonPlotData");
         expect(commit.mock.calls[2][1]).toStrictEqual(testResult);
+        expect(mockAxios.history.get.length).toBe(1);
+    });
+
+    it("does not fetches default comparison plot data when selections exists in session store", async () => {
+        const testResult = {
+            data: "TEST DATA",
+            plottingMetadata: {}
+        };
+        mockAxios.onGet(`/model/comparison/plot/1234`)
+            .reply(200, mockSuccess(testResult));
+
+        const commit = jest.fn();
+        const state = mockModelCalibrateState({
+            calibrateId: "1234",
+            status: {
+                success: true,
+                done: true
+            } as any
+        });
+
+        const root = {
+            ...rootState,
+            plottingSelections: {
+                comparisonPlot: {
+                    indicatorId: "TestIndicator",
+                    xAxisId: "age",
+                    disaggregateById: "source",
+                    selectedFilterOptions: {
+                        region: [{id: "r1", label: "region 1"}],
+                        age: [{id: "a1", label: "0-4"}]
+                    }
+                }
+            }
+        }
+
+        await actions.getComparisonPlot({commit, state, rootState: root} as any);
+
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]).toStrictEqual("ComparisonPlotStarted");
+        expect(commit.mock.calls[1][0]).toBe("SetComparisonPlotData");
+        expect(commit.mock.calls[1][1]).toStrictEqual(testResult);
         expect(mockAxios.history.get.length).toBe(1);
     });
 

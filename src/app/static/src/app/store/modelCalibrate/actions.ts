@@ -77,7 +77,11 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                 commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: data});
                 commit({type: ModelCalibrateMutation.WarningsFetched, payload: data.warnings});
 
-                selectFilterDefaults(data, commit, PlottingSelectionsMutations.updateBarchartSelections)
+                const barChartPlotSelections = context.rootState.plottingSelections.barchart
+                // barchart reverts to default selections if selection does not exist in the state.
+                if (!barChartPlotSelections) {
+                    selectFilterDefaults(data, commit, PlottingSelectionsMutations.updateBarchartSelections)
+                }
                 commit(ModelCalibrateMutation.Calibrated);
                 if (switches.modelCalibratePlot) {
                     dispatch("getCalibratePlot");
@@ -116,7 +120,9 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             .get<ModelResultResponse>(`model/comparison/plot/${calibrateId}`);
 
         if (response) {
-            if (response.data){
+            const comparisonPlotSelections = context.rootState.plottingSelections.comparisonPlot
+            // comparison bar chart revert to default selections if selection does not exist in the state.
+            if (response.data && !comparisonPlotSelections) {
                 selectFilterDefaults(response.data, commit, PlottingSelectionsMutations.updateComparisonPlotSelections)
             }
             commit(ModelCalibrateMutation.SetComparisonPlotData, response.data);
