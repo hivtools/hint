@@ -75,7 +75,7 @@ describe("Router", () => {
         beforeEnter({} as Route, {} as Route, next);
 
         expect(window.location.assign).toHaveBeenCalledTimes(1);
-        expect(window.location.assign).toHaveBeenCalledWith("/login?redirectTo=/callback/explore");
+        expect(window.location.assign).toHaveBeenCalledWith("/login?redirectTo=explore");
         expect(next).not.toBeCalled();
 
         window.location = realLocation

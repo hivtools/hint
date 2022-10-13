@@ -19,7 +19,7 @@ registerTranslations(store);
 
 export const beforeEnter = (to: Route, from: Route, next: NavigationGuardNext) => {
     if (store.state.currentUser === "guest" && !sessionStorage.getItem("asGuest")) {
-        window.location.assign("/login?redirectTo=/callback/explore");
+        window.location.assign("/login?redirectTo=explore");
     } else {
         next();
     }

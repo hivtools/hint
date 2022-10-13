@@ -92,7 +92,7 @@ class LoginControllerTests
     {
         val model = ConcurrentModel()
         val mockRequest = mock<HttpServletRequest> {
-            on { this.getParameter("redirectTo") } doReturn "/callback/explore"
+            on { this.getParameter("redirectTo") } doReturn "explore"
         }
         val mockSession = mock<Session>()
         val sut = LoginController(mockRequest, mockSession, ConfiguredAppProperties())

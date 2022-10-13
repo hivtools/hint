@@ -87,7 +87,7 @@ class HintApplicationTests : SecureIntegrationTests()
     fun `redirects to requested url after login`()
     {
         // set requested url
-        val loginEntity = testRestTemplate.getForEntity<String>("/login?redirectTo=/callback/explore")
+        val loginEntity = testRestTemplate.getForEntity<String>("/login?redirectTo=explore")
 
         val map = LinkedMultiValueMap<String, String>()
         map.add("username", "test.user@example.com")
