@@ -110,6 +110,14 @@ class HintApplicationTests : SecureIntegrationTests()
                 .isEqualTo("/callback/explore")
     }
 
+    @Test
+    fun `redirects from explore uri callback slash explore endpoint`()
+    {
+        val redirectRequest = testRestTemplate.getForEntity<String>("/explore")
+        assertThat(redirectRequest.statusCode).isEqualTo(HttpStatus.FOUND)
+        assertThat(redirectRequest.headers["location"]!!.first()).contains("/callback/explore")
+    }
+
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `authorized users and guest user can access REST endpoints`(isAuthorized: IsAuthorized)

@@ -33,6 +33,12 @@ class HomeController(
         return loadApp("explore", appProperties.exploreApplicationTitle, "data-exploration", model)
     }
 
+    @GetMapping(value = ["explore"])
+    fun exploreRedirect(): String
+    {
+        return "redirect:/callback/explore"
+    }
+
     private fun loadApp(mode: String, applicationTitle: String, template: String, model: Model): String
     {
         val userProfile = session.getUserProfile()
