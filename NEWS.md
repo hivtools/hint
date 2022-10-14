@@ -1,3 +1,7 @@
+# hint 2.23.0
+
+* Implement no data message in comparison chart
+
 # hint 2.22.0
 
 * Bug: Fix download status errors
