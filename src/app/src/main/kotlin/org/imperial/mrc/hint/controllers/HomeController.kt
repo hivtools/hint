@@ -33,7 +33,7 @@ class HomeController(
         return loadApp("explore", appProperties.exploreApplicationTitle, "data-exploration", model)
     }
 
-    @GetMapping("explore")
+    @GetMapping("/explore")
     fun exploreRedirect(): String
     {
         return "redirect:/callback/explore"
