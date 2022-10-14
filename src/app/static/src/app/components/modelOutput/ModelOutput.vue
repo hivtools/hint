@@ -48,6 +48,7 @@
                     :selections="barchartSelections"
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
+                    :no-data-message="noChartData"
                     @update="updateBarchartSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
@@ -97,6 +98,7 @@
                     :selections="comparisonPlotSelections"
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
+                    :no-data-message="noChartData"
                     @update="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
@@ -155,6 +157,7 @@
         updateSelectionsAndXAxisOrder
     } from "../plots/utils";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
+    import i18next from "i18next";
 
     const namespace = 'filteredData';
 
@@ -206,6 +209,7 @@
         barchartFlattenedXAxisFilterOptionIds: string[]
         comparisonPlotFlattenedXAxisFilterOptionIds: string[]
         comparisonPlotError: Error | null
+        noChartData: string
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
@@ -288,7 +292,10 @@
             },
             comparisonPlotFlattenedXAxisFilterOptionIds() {
                 return flattenXAxisFilterOptionIds(this.comparisonPlotSelections, this.comparisonPlotFilters)
-            }
+            },
+            noChartData() {
+                return i18next.t("noChartData", this.currentLanguage)
+            },
         },
         methods: {
             ...mapMutationsByNames<keyof Methods>("plottingSelections",
