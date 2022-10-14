@@ -1,3 +1,7 @@
+# hint 2.24.0
+
+* Barchart uncertainty ranges (error bars) are greyed out on first rendering
+
 # hint 2.23.0
 
 * Implement no data message in comparison chart

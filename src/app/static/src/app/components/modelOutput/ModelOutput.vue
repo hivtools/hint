@@ -40,7 +40,7 @@
                 </div>
             </div>
 
-            <div id="barchart-container" :class="selectedTab==='bar' ? 'col-md-12' : 'd-none'">
+            <div v-if="selectedTab==='bar'" id="barchart-container" class="col-md-12">
                 <bar-chart-with-filters
                     :chart-data="chartdata"
                     :filter-config="barchartFilterConfig"
@@ -84,15 +84,13 @@
                                            :countryAreaFilterOption="countryAreaFilterOption"
                                            :indicators="filteredBubblePlotIndicators"
                                            :selections="bubblePlotSelections"
-
                                            :selectedFilterOptions="bubblePlotSelections.selectedFilterOptions"
                     ></area-indicators-table>
                 </div>
             </div>
 
-            <div id="comparison-container" :class="selectedTab==='comparison' ? 'col-md-12' : 'd-none'">
+            <div v-if="selectedTab==='comparison'" id="comparison-container" class="col-md-12">
                 <bar-chart-with-filters
-                    v-if="comparisonPlotIndicators.length"
                     :chart-data="comparisonPlotData"
                     :filter-config="comparisonPlotFilterConfig"
                     :disaggregate-by-config="{ fixed: true, hideFilter: true }"
@@ -149,7 +147,6 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {Language, Translations} from "../../store/translations/locales";
     import {inactiveFeatures} from "../../main";
-    import {switches} from "../../featureSwitches";
     import {RootState} from "../../root";
     import {LevelLabel} from "../../types";
     import {ChoroplethIndicatorMetadata,} from "../../generated";
