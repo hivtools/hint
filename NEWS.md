@@ -1,3 +1,7 @@
+# hint 2.23.0 
+
+* Remove fixed disaggregate value from xAxis options in vue-charts 
+
 # hint 2.22.0
 
 * Bug: Fix download status errors
