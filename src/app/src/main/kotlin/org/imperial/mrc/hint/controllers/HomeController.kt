@@ -33,6 +33,7 @@ class HomeController(
         return loadApp("explore", appProperties.exploreApplicationTitle, "data-exploration", model)
     }
 
+    @Suppress("FunctionOnlyReturningConstant")
     @GetMapping("/explore")
     fun exploreRedirect(): String
     {
