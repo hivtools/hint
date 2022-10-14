@@ -27,13 +27,13 @@ class HomeController(
         return loadApp("naomi", appProperties.applicationTitle, "index", model)
     }
 
-    @GetMapping(value = ["/callback/explore"])
+    @GetMapping("/callback/explore")
     fun explore(model: Model): String
     {
         return loadApp("explore", appProperties.exploreApplicationTitle, "data-exploration", model)
     }
 
-    @GetMapping(value = ["explore"])
+    @GetMapping("explore")
     fun exploreRedirect(): String
     {
         return "redirect:/callback/explore"
