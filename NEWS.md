@@ -1,3 +1,7 @@
+# hint 2.25.0
+
+* Login to data exploration throws an error on redirect
+
 # hint 2.24.0
 
 * Barchart uncertainty ranges (error bars) are greyed out on first rendering

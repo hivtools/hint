@@ -2,9 +2,7 @@ package org.imperial.mrc.hint.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.imperial.mrc.hint.AppProperties
-import org.imperial.mrc.hint.asResponseEntity
 import org.imperial.mrc.hint.clients.HintrAPIClient
-import org.imperial.mrc.hint.clients.HintrFuelAPIClient
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.HttpStatus
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.ui.set
 import org.springframework.web.bind.annotation.GetMapping
-import java.io.IOException
 
 @Controller
 class HomeController(
@@ -30,10 +27,17 @@ class HomeController(
         return loadApp("naomi", appProperties.applicationTitle, "index", model)
     }
 
-    @GetMapping(value = ["/explore"])
+    @GetMapping("/callback/explore")
     fun explore(model: Model): String
     {
         return loadApp("explore", appProperties.exploreApplicationTitle, "data-exploration", model)
+    }
+
+    @Suppress("FunctionOnlyReturningConstant")
+    @GetMapping("/explore")
+    fun exploreRedirect(): String
+    {
+        return "redirect:/callback/explore"
     }
 
     private fun loadApp(mode: String, applicationTitle: String, template: String, model: Model): String

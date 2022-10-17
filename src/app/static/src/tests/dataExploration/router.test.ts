@@ -41,7 +41,7 @@ describe("Router", () => {
     it("has expected properties", () => {
         expect(dataExplorationApp.$router).toBe(router);
         expect(router.mode).toBe("history");
-        expect(router.getMatchedComponents("/explore")).toStrictEqual([DataExploration])
+        expect(router.getMatchedComponents("/callback/explore")).toStrictEqual([DataExploration])
         expect(router.getMatchedComponents("/accessibility")).toStrictEqual([Accessibility]);
     });
 
