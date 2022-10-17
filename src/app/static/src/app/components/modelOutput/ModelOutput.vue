@@ -40,7 +40,7 @@
                 </div>
             </div>
 
-            <div id="barchart-container" :class="selectedTab==='bar' ? 'col-md-12' : 'd-none'">
+            <div v-if="selectedTab==='bar'" id="barchart-container" class="col-md-12">
                 <bar-chart-with-filters
                     :chart-data="chartdata"
                     :filter-config="barchartFilterConfig"
@@ -48,6 +48,7 @@
                     :selections="barchartSelections"
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
+                    :no-data-message="noChartData"
                     @update="updateBarchartSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
@@ -83,15 +84,13 @@
                                            :countryAreaFilterOption="countryAreaFilterOption"
                                            :indicators="filteredBubblePlotIndicators"
                                            :selections="bubblePlotSelections"
-
                                            :selectedFilterOptions="bubblePlotSelections.selectedFilterOptions"
                     ></area-indicators-table>
                 </div>
             </div>
 
-            <div id="comparison-container" :class="selectedTab==='comparison' ? 'col-md-12' : 'd-none'">
+            <div v-if="selectedTab==='comparison'" id="comparison-container" class="col-md-12">
                 <bar-chart-with-filters
-                    v-if="comparisonPlotIndicators.length"
                     :chart-data="comparisonPlotData"
                     :filter-config="comparisonPlotFilterConfig"
                     :disaggregate-by-config="{ fixed: true, hideFilter: true }"
@@ -99,6 +98,7 @@
                     :selections="comparisonPlotSelections"
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
+                    :no-data-message="noChartData"
                     @update="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
@@ -147,7 +147,6 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {Language, Translations} from "../../store/translations/locales";
     import {inactiveFeatures} from "../../main";
-    import {switches} from "../../featureSwitches";
     import {RootState} from "../../root";
     import {LevelLabel} from "../../types";
     import {ChoroplethIndicatorMetadata,} from "../../generated";
@@ -158,6 +157,7 @@
         updateSelectionsAndXAxisOrder
     } from "../plots/utils";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
+    import i18next from "i18next";
 
     const namespace = 'filteredData';
 
@@ -209,6 +209,7 @@
         barchartFlattenedXAxisFilterOptionIds: string[]
         comparisonPlotFlattenedXAxisFilterOptionIds: string[]
         comparisonPlotError: Error | null
+        noChartData: string
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
@@ -291,7 +292,10 @@
             },
             comparisonPlotFlattenedXAxisFilterOptionIds() {
                 return flattenXAxisFilterOptionIds(this.comparisonPlotSelections, this.comparisonPlotFilters)
-            }
+            },
+            noChartData() {
+                return i18next.t("noChartData", this.currentLanguage)
+            },
         },
         methods: {
             ...mapMutationsByNames<keyof Methods>("plottingSelections",
