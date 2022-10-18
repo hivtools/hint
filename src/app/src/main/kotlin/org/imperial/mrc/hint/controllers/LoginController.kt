@@ -36,9 +36,10 @@ class LoginController(
             "Username or password is incorrect"
         }
 
-        val redirectTo = request.getParameter("redirectTo")
+        var redirectTo = request.getParameter("redirectTo")
         model["appTitle"] = if (redirectTo == "explore")
         {
+            redirectTo = "/callback/explore"
             appProperties.exploreApplicationTitle
         }
         else

@@ -13,7 +13,11 @@ import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl
+import org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup
 import org.springframework.ui.Model
+
 
 class HomeControllerTests
 {
@@ -89,5 +93,13 @@ class HomeControllerTests
         assertThat(result.body)
                 .isEqualTo("running 1\nbusy_workers 1\nidle_workers 2" +
                         "\npaused_workers 1\nexited_workers 1\nlost_workers 0\nlive_workers 4")
+    }
+
+    @Test
+    fun`can redirect from explore to callback slash explore endpoint`()
+    {
+        val mockMvc = standaloneSetup(HomeController(mock(), mock(), mock(), mock())).build()
+
+        mockMvc.perform(get("/explore")).andExpect(redirectedUrl("/callback/explore"))
     }
 }

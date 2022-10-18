@@ -5,9 +5,9 @@ import {
     mockBaselineState,
     mockCalibrateResultResponse,
     mockComparisonPlotResponse,
+    mockError,
     mockModelCalibrateState,
-    mockShapeResponse,
-    mockError
+    mockShapeResponse
 } from "../../mocks";
 import {mutations as modelOutputMutations} from "../../../app/store/modelOutput/mutations";
 import {mutations as plottingSelectionMutations} from "../../../app/store/plottingSelections/mutations";
@@ -163,6 +163,8 @@ describe("ModelOutput component", () => {
         expect(barchart.props().selections).toBe(vm.barchartSelections);
         expect(barchart.props().formatFunction).toBe(vm.formatBarchartValue);
         expect(barchart.props().showRangesInTooltips).toBe(true);
+        expect(barchart.props().noDataMessage).toBe("No data are available for the selected combination." +
+            " Please review the combination of filter values selected.");
     });
 
     it("renders comparison plot", () => {
@@ -170,8 +172,8 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {localVue, store});
         const vm = wrapper.vm as any;
 
-        expect(wrapper.findAll(BarChartWithFilters).length).toBe(2);
-        const comparisonPlot = wrapper.findAll(BarChartWithFilters).at(1);
+        expect(wrapper.findAll(BarChartWithFilters).length).toBe(1);
+        const comparisonPlot = wrapper.find(BarChartWithFilters);
         expect(comparisonPlot.props().chartData).toStrictEqual(["TEST COMPARISON DATA"]);
         expect(comparisonPlot.props().filterConfig).toBe(vm.comparisonPlotFilterConfig);
         expect(comparisonPlot.props().indicators).toStrictEqual(["TEST COMPARISON INDICATORS"]);
@@ -179,6 +181,8 @@ describe("ModelOutput component", () => {
         expect(comparisonPlot.props().formatFunction).toBe(vm.formatBarchartValue);
         expect(comparisonPlot.props().showRangesInTooltips).toBe(true);
         expect(comparisonPlot.props().disaggregateByConfig).toStrictEqual({fixed: true, hideFilter: true});
+        expect(comparisonPlot.props().noDataMessage).toBe("No data are available for the selected combination." +
+            " Please review the combination of filter values selected.");
     });
 
     it("renders comparison plot error", () => {
@@ -219,8 +223,8 @@ describe("ModelOutput component", () => {
         expect(wrapper.find(".nav-link.active").text()).toBe("Map");
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
 
-        expect(wrapper.find("#barchart-container").classes()).toEqual(["d-none"]);
-        expect(wrapper.find("#comparison-container").classes()).toEqual(["d-none"]);
+        expect(wrapper.find("#barchart-container").exists()).toBe(false);
+        expect(wrapper.find("#comparison-container").exists()).toBe(false);
 
         expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
         expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
@@ -233,8 +237,8 @@ describe("ModelOutput component", () => {
         expect(wrapper.findAll("choropleth-stub").length).toBe(0);
 
         expect(wrapper.find("#barchart-container").classes()).toEqual(["col-md-12"]);
-        expect(wrapper.findAll(BarChartWithFilters).length).toBe(2);
-        expect(wrapper.find("#comparison-container").classes()).toEqual(["d-none"]);
+        expect(wrapper.findAll(BarChartWithFilters).length).toBe(1);
+        expect(wrapper.find("#comparison-container").exists()).toBe(false);
 
         expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
         expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
@@ -245,8 +249,8 @@ describe("ModelOutput component", () => {
         expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
         expect(wrapper.findAll("choropleth-stub").length).toBe(0);
 
-        expect(wrapper.find("#barchart-container").classes()).toEqual(["d-none"]);
-        expect(wrapper.find("#comparison-container").classes()).toEqual(["d-none"]);
+        expect(wrapper.find("#barchart-container").exists()).toBe(false);
+        expect(wrapper.find("#comparison-container").exists()).toBe(false);
 
         expect(wrapper.findAll("#bubble-plot-container").length).toBe(1);
         expect(wrapper.findAll("bubble-plot-stub").length).toBe(1);
@@ -257,9 +261,9 @@ describe("ModelOutput component", () => {
         expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
         expect(wrapper.findAll("choropleth-stub").length).toBe(0);
 
-        expect(wrapper.find("#barchart-container").classes()).toEqual(["d-none"]);
+        expect(wrapper.find("#barchart-container").exists()).toBe(false);
         expect(wrapper.find("#comparison-container").classes()).toEqual(["col-md-12"]);
-        expect(wrapper.findAll(BarChartWithFilters).length).toBe(2);
+        expect(wrapper.findAll(BarChartWithFilters).length).toBe(1);
 
         expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
         expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
@@ -455,7 +459,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
 
-        const comparisonPlot = wrapper.findAll(BarChartWithFilters).at(1);
+        const comparisonPlot = wrapper.find(BarChartWithFilters);
         const comparisonPlotSelections = {
             selectedFilterOptions: {
                 region: [
@@ -735,7 +739,7 @@ describe("ModelOutput component", () => {
         const store = getStore({selectedTab: "bubble"});
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.findAll(AreaIndicatorsTable).at(1);
+        const table = wrapper.find(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
         expect(table.props().filters).toStrictEqual(["TEST BUBBLE FILTERS"]);
         expect(table.props().selections).toStrictEqual({test: "TEST BUBBLE SELECTIONS"});
@@ -763,7 +767,7 @@ describe("ModelOutput component", () => {
             });
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.findAll(AreaIndicatorsTable).at(1);
+        const table = wrapper.find(AreaIndicatorsTable);
         expect(table.props().selections).toStrictEqual({
             colorIndicatorId: "art_coverage",
             sizeIndicatorId: "current_art"
@@ -830,7 +834,7 @@ describe("ModelOutput component", () => {
         const store = getStore({selectedTab: "comparison"});
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.findAll(AreaIndicatorsTable).at(1);
+        const table = wrapper.find(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
         expect(table.props().filters).toStrictEqual(["TEST COMPARISON FILTERS"]);
         expect(table.props().selections).toStrictEqual({
@@ -861,7 +865,7 @@ describe("ModelOutput component", () => {
             });
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.findAll(AreaIndicatorsTable).at(1);
+        const table = wrapper.find(AreaIndicatorsTable)
         expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
         expect(table.props().indicators).toStrictEqual(
             [
