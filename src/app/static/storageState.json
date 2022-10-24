@@ -1,0 +1,39 @@
+{
+  "cookies": [
+    {
+      "name": "JSESSIONID",
+      "value": "075DDE6D7A6EB66A987BC2F2B309A5CD",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "pac4jCsrfToken",
+      "value": "7b27285a1ff245748c83f35dbe31555a",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:8080",
+      "localStorage": [
+        {
+          "name": "hintAppState_v2.25.0",
+          "value": "{\"version\":\"2.25.0\",\"baseline\":{\"selectedDataset\":null,\"selectedRelease\":null},\"metadata\":{\"plottingMetadataError\":null,\"plottingMetadata\":null,\"adrUploadMetadataError\":null,\"adrUploadMetadata\":[]},\"plottingSelections\":{\"calibratePlot\":{\"indicatorId\":\"\",\"xAxisId\":\"\",\"disaggregateById\":\"\",\"selectedFilterOptions\":{}},\"comparisonPlot\":{\"indicatorId\":\"\",\"xAxisId\":\"\",\"disaggregateById\":\"\",\"selectedFilterOptions\":{}},\"barchart\":{\"indicatorId\":\"\",\"xAxisId\":\"\",\"disaggregateById\":\"\",\"selectedFilterOptions\":{}},\"bubble\":{\"colorIndicatorId\":\"\",\"sizeIndicatorId\":\"\",\"selectedFilterOptions\":{},\"detail\":-1},\"sapChoropleth\":{\"indicatorId\":\"\",\"selectedFilterOptions\":{},\"detail\":-1},\"outputChoropleth\":{\"indicatorId\":\"\",\"selectedFilterOptions\":{},\"detail\":-1},\"colourScales\":{\"survey\":{},\"anc\":{},\"program\":{},\"output\":{}},\"bubbleSizeScales\":{\"output\":{}}},\"surveyAndProgram\":{\"selectedDataType\":null,\"warnings\":[]},\"modelRun\":{\"modelRunId\":\"\",\"errors\":[],\"status\":{},\"statusPollId\":-1,\"result\":null,\"ready\":true,\"pollingCounter\":0,\"warnings\":[]},\"modelOptions\":{\"optionsFormMeta\":{\"controlSections\":[]},\"options\":{},\"changes\":false,\"valid\":false,\"validating\":false,\"fetching\":false,\"version\":{\"hintr\":\"unknown\",\"naomi\":\"unknown\",\"rrq\":\"unknown\"},\"validateError\":null,\"optionsError\":null,\"warnings\":[]},\"modelOutput\":{\"selectedTab\":\"\"},\"modelCalibrate\":{\"ready\":true,\"optionsFormMeta\":{\"controlSections\":[]},\"options\":{},\"fetching\":false,\"calibrateId\":\"\",\"statusPollId\":-1,\"status\":{},\"calibrating\":false,\"complete\":false,\"generatingCalibrationPlot\":false,\"calibratePlotResult\":null,\"comparisonPlotResult\":null,\"result\":null,\"version\":{\"hintr\":\"unknown\",\"naomi\":\"unknown\",\"rrq\":\"unknown\"},\"error\":null,\"comparisonPlotError\":null,\"warnings\":[]},\"stepper\":{\"activeStep\":1,\"steps\":[{\"number\":1,\"textKey\":\"uploadInputs\"},{\"number\":2,\"textKey\":\"reviewInputs\"},{\"number\":3,\"textKey\":\"modelOptions\"},{\"number\":4,\"textKey\":\"fitModel\"},{\"number\":5,\"textKey\":\"calibrateModel\"},{\"number\":6,\"textKey\":\"reviewOutput\"},{\"number\":7,\"textKey\":\"downloadResults\"}]},\"hintrVersion\":{\"hintrVersion\":{\"hintr\":\"1.0.42\",\"naomi\":\"2.7.13\",\"rrq\":\"0.5.7\",\"traduire\":\"0.0.6\"}},\"language\":\"en\"}"
+        },
+        {
+          "name": "user",
+          "value": "test.user@example.com"
+        }
+      ]
+    }
+  ]
+}

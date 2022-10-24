@@ -12,6 +12,7 @@
     "adr-integration-test": "jest --testPathPattern adr-dataset -c jest.integration.adr.config.js",
     "integration-test-docker": "jest --testPathIgnorePatterns adr-dataset -c jest.integration.docker.config.js",
     "adr-integration-test-docker": "jest --testPathPattern adr-dataset -c jest.integration.docker.adr.config.js",
+    "browser-test": "npx playwright test",
     "lint": "npx eslint src --ext .js,.jsx,.ts,.tsx,vue"
   },
   "author": "",
@@ -80,7 +81,8 @@
     "vuex": "^3.1.1",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10",
-    "webpack-node-externals": "^1.7.2"
+    "webpack-node-externals": "^1.7.2",
+    "@playwright/test": "^1.27.1"
   },
   "dependencies": {
     "@reside-ic/vue-dynamic-form": "^0.5.7",
