@@ -5,6 +5,6 @@ app/static/coverage/**
 app/static/public/js/**
 app/static/public/css/**
 .DS_Store
-app/static/playwright-report/
-app/static/playwright/.cache/
-static/storageState.json
+src/app/static/playwright-report/
+src/app/static/playwright/.cache/
+src/app/static/storageState.json
