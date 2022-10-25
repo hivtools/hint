@@ -3,10 +3,9 @@ ARG NODE_VERSION=16
 FROM mrcide/hint-shared-build-env:$GIT_ID
 
 RUN apt-get update -y && \
-    DEBIAN_FRONTEND=noninteractive -y && \
+    DEBIAN_FRONTEND=noninteractive && \
     apt-get upgrade -y && \
     apt-get install -y && \
-    curl && \
     curl -sL https://deb.nodesource.com/setup_$NODE_VERSION.x | bash - && \
     apt-get install -y nodejs
 
