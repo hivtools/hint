@@ -1,4 +1,7 @@
 ARG GIT_ID="UNKNOWN"
 FROM mrcide/hint-shared-build-env:$GIT_ID
 
-CMD npx playwright install && npm run browser-test --prefix=app/static
+RUN npx playwright install
+RUN npm install
+
+CMD npm run browser-test --prefix=app/static
