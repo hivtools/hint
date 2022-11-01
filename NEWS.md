@@ -1,3 +1,7 @@
+# hint 2.26.0 
+
+* Remove fixed disaggregate value from xAxis options in vue-charts 
+
 # hint 2.25.0
 
 * Login to data exploration throws an error on redirect
