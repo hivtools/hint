@@ -18,7 +18,7 @@ RUN apt-get install -y \
      libwayland-client0
 
 RUN npm install @playwright/test
-RUN npx playwright install \
-    playwright install-deps
+RUN npx playwright install
+RUN npx playwright install-deps
 
 CMD npm run browser-test --prefix=app/static
