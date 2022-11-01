@@ -18,10 +18,8 @@ docker build --tag hint-test-browser-e2e \
   -f $HERE/test-browser-e2e.dockerfile \
   .
 
-while [  "$( docker ps -a | grep -c -l hint )" -eq 0 ];
-do
-  echo "Waiting for app to start running"
-done
+# Wait for HINT to become responsive
+sleep 10
 
 # Run the created image
 docker run --rm \
