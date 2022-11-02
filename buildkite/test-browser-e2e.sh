@@ -19,7 +19,7 @@ docker build --tag hint-test-browser-e2e \
   .
 
 # Wait for HINT to become responsive
-sleep 10
+sleep 50
 
 # Run the created image
 docker run --rm \
