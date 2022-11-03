@@ -15,7 +15,8 @@ export enum ModelRunMutation {
     Ready = "Ready",
     ClearResult = "ClearResult",
     WarningsFetched = "WarningsFetched",
-    ClearWarnings = "ClearWarnings"
+    ClearWarnings = "ClearWarnings",
+    ResetIds = "ResetIds"
 }
 
 export const ModelRunUpdates = [
@@ -88,6 +89,10 @@ export const mutations: MutationTree<ModelRunState> = {
     [ModelRunMutation.ClearWarnings](state: ModelRunState) {
         state.warnings = [];
     },
+
+    [ModelRunMutation.ResetIds](state: ModelRunState) {
+        stopPolling(state)
+    }
 };
 
 const stopPolling = (state: ModelRunState) => {

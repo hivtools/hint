@@ -1,7 +1,15 @@
 import {ModelRunMutation, mutations} from "../../app/store/modelRun/mutations";
-import {mockError, mockModelResultResponse, mockModelRunState, mockModelStatusResponse, mockWarning} from "../mocks";
+import {
+    mockError,
+    mockModelCalibrateState,
+    mockModelResultResponse,
+    mockModelRunState,
+    mockModelStatusResponse,
+    mockWarning
+} from "../mocks";
 import {expectAllMutationsDefined} from "../testHelpers";
 import {ModelStatusResponse} from "../../app/generated";
+import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 
 describe("Model run mutations", () => {
 
@@ -135,5 +143,11 @@ describe("Model run mutations", () => {
         });
         mutations.ClearResult(testState);
         expect(testState.result).toBeNull();
+    });
+
+    it("resets polling id", () => {
+        const state = mockModelRunState({statusPollId: 1000});
+        mutations[ModelRunMutation.ResetIds](state);
+        expect(state.statusPollId).toEqual(-1);
     });
 });
