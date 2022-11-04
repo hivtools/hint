@@ -5,3 +5,4 @@ app/static/coverage/**
 app/static/public/js/**
 app/static/public/css/**
 .DS_Store
+app/static/.nvmrc

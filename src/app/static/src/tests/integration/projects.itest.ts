@@ -105,7 +105,7 @@ describe("Projects actions", () => {
             expect(commit.mock.calls[7][0]["payload"]).toBe(false);
             expect(commit.mock.calls[8][0]["type"]).toBe(ProjectsMutations.VersionCreated);
 
-            const newVersion = commit.mock.calls[6][0]["payload"];
+            const newVersion = commit.mock.calls[8][0]["payload"];
             expect(newVersion.id).toBeTruthy();
             expect(newVersion.id).not.toEqual(createdProject.versions[0].id);
 
@@ -120,7 +120,7 @@ describe("Projects actions", () => {
         const dispatch = jest.fn();
         await actions.createProject({commit, dispatch, rootState, state} as any, projectPayload);
 
-        const createdProject = commit.mock.calls[2][0]["payload"];
+        const createdProject = commit.mock.calls[4][0]["payload"];
         expect(dispatch.mock.calls[0][0]).toBe("getProjects");
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
@@ -155,8 +155,8 @@ describe("Projects actions", () => {
 
         await actions.deleteProject({commit, dispatch, state, rootState} as any, state.currentProject!.id);
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(5);
-            expect(commit.mock.calls[3][0]).toStrictEqual({type: ProjectsMutations.ClearCurrentVersion});
+            expect(commit.mock.calls.length).toBe(6);
+            expect(commit.mock.calls[5][0]).toStrictEqual({type: ProjectsMutations.ClearCurrentVersion});
             expect(dispatch.mock.calls[1][0]).toBe("getProjects");
             done();
         });
@@ -177,8 +177,8 @@ describe("Projects actions", () => {
         const ids = {projectId: state.currentProject!.id, versionId: state.currentVersion!.id};
         await actions.deleteVersion({commit, dispatch, state, rootState} as any, ids);
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(5);
-            expect(commit.mock.calls[4][0]).toStrictEqual({type: ProjectsMutations.ClearCurrentVersion});
+            expect(commit.mock.calls.length).toBe(6);
+            expect(commit.mock.calls[5][0]).toStrictEqual({type: ProjectsMutations.ClearCurrentVersion});
             expect(dispatch.mock.calls[1][0]).toBe("getProjects");
             done();
         });
@@ -190,10 +190,10 @@ describe("Projects actions", () => {
         const dispatch = jest.fn();
 
         await actions.createProject({commit, dispatch, rootState, state} as any, projectPayload);
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(5);
         expect(dispatch.mock.calls[0][0]).toBe("getProjects");
 
-        const createdProject = commit.mock.calls[2][0]["payload"];
+        const createdProject = commit.mock.calls[4][0]["payload"];
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
         const versionPayload = {
@@ -217,10 +217,10 @@ describe("Projects actions", () => {
         const dispatch = jest.fn();
 
         await actions.createProject({commit, dispatch, rootState, state} as any, projectPayload);
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(5);
         expect(dispatch.mock.calls[0][0]).toBe("getProjects");
 
-        const createdProject = commit.mock.calls[2][0]["payload"];
+        const createdProject = commit.mock.calls[4][0]["payload"];
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
         const versionPayload = {
@@ -242,10 +242,10 @@ describe("Projects actions", () => {
         const dispatch = jest.fn();
 
         await actions.createProject({commit, dispatch, rootState, state} as any, projectPayload);
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(5);
         expect(dispatch.mock.calls[0][0]).toBe("getProjects");
 
-        const createdProject = commit.mock.calls[2][0]["payload"];
+        const createdProject = commit.mock.calls[4][0]["payload"];
         state.currentProject = createdProject;
         const projectPayloadLocal = {
             projectId: state.currentProject!.id,
@@ -266,10 +266,10 @@ describe("Projects actions", () => {
         const dispatch = jest.fn();
 
         await actions.createProject({commit, dispatch, rootState, state} as any, projectPayload);
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(5);
         expect(dispatch.mock.calls[0][0]).toBe("getProjects");
 
-        const createdProject = commit.mock.calls[2][0]["payload"];
+        const createdProject = commit.mock.calls[4][0]["payload"];
         state.currentProject = createdProject;
         state.currentVersion = createdProject.versions[0];
         const projectPayloadLocal = {
@@ -280,7 +280,7 @@ describe("Projects actions", () => {
 
         await actions.renameProject({commit, dispatch, state, rootState} as any, projectPayloadLocal);
         setTimeout(() => {
-            expect(commit.mock.calls.length).toBe(3);
+            expect(commit.mock.calls.length).toBe(5);
             expect(dispatch.mock.calls.length).toBe(3);
             expect(dispatch.mock.calls[1][0]).toBe("getCurrentProject");
             expect(dispatch.mock.calls[2][0]).toBe("getProjects");
