@@ -89,10 +89,12 @@ describe("Projects actions", () => {
         setTimeout(() => {
             expect(dispatch).toHaveBeenCalledTimes(1)
             expect(commit.mock.calls[0][0]).toStrictEqual({type: "downloadResults/ResetIds"});
-            expect(commit.mock.calls[1][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
+            expect(commit.mock.calls[1][0]).toStrictEqual({type: "modelCalibrate/ResetIds"});
+            expect(commit.mock.calls[2][0]).toStrictEqual({type: "modelRun/ResetIds"});
+            expect(commit.mock.calls[3][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
 
             const expectedError = {error: "OTHER_ERROR", detail: "TestError"};
-            expect(commit.mock.calls[2][0]).toStrictEqual({
+            expect(commit.mock.calls[4][0]).toStrictEqual({
                 type: ProjectsMutations.ProjectError,
                 payload: expectedError
             });
@@ -113,12 +115,14 @@ describe("Projects actions", () => {
         setTimeout(() => {
             expect(dispatch).toHaveBeenCalledTimes(1)
             expect(commit.mock.calls[0][0]).toStrictEqual({type: "downloadResults/ResetIds"});
-            expect(commit.mock.calls[1][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
+            expect(commit.mock.calls[1][0]).toStrictEqual({type: "modelCalibrate/ResetIds"});
+            expect(commit.mock.calls[2][0]).toStrictEqual({type: "modelRun/ResetIds"});
+            expect(commit.mock.calls[3][0]).toStrictEqual({type: ProjectsMutations.SetLoading, payload: true});
 
             const posted = mockAxios.history.post[0].data;
             expect(posted).toEqual("name=newProject");
-            expect(commit.mock.calls[2][0]).toStrictEqual({type: RootMutation.SetProject, payload: "TestProject"});
-            expect(commit.mock.calls[2][1]).toStrictEqual({root: true});
+            expect(commit.mock.calls[4][0]).toStrictEqual({type: RootMutation.SetProject, payload: "TestProject"});
+            expect(commit.mock.calls[4][1]).toStrictEqual({root: true});
             done();
         });
     });

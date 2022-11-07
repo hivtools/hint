@@ -9,6 +9,9 @@ import {ProjectsMutations} from "./mutations";
 import {serialiseState} from "../../localStorageManager";
 import qs from "qs";
 import {CurrentProject, Project, VersionDetails, VersionIds} from "../../types";
+import {ModelCalibrateMutation} from "../modelCalibrate/mutations";
+import ModelRun from "../../components/modelRun/ModelRun.vue";
+import {ModelRunMutation} from "../modelRun/mutations";
 
 export interface versionPayload {
     version: VersionIds,
@@ -87,7 +90,11 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             immediateUploadVersionState(context);
         }
 
+        //Stop polling for results when action in progress
         commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
+        commit({type: `modelCalibrate/${ModelCalibrateMutation.ResetIds}`}, {root: true});
+        commit({type: `modelRun/${ModelRunMutation.ResetIds}`}, {root: true});
+
         commit({type: ProjectsMutations.SetLoading, payload: true});
         await api<RootMutation, ProjectsMutations>(context)
             .withSuccess(RootMutation.SetProject, true)
