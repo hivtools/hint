@@ -61,6 +61,16 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
     }
 
+    private createErrorWithStatusCode(detail: string, statusCode: number | undefined) {
+        return {
+            error: "MALFORMED_RESPONSE",
+            detail: i18next.t(detail, {
+                statusCode,
+                lng: this._headers["Accept-Language"]
+            })
+        }
+    }
+
     private _onError: ((failure: Response) => void) | null = null;
 
     private _onSuccess: ((success: Response) => void) | null = null;
@@ -128,7 +138,8 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
         const failure = e.response && e.response.data;
         if (!isHINTResponse(failure)) {
-            this._commitError(APIService.createError("apiCouldNotParseError"));
+            console.warn(e.toJSON)
+            this._commitError(this.createErrorWithStatusCode("apiCouldNotParseError", e.response && e.response.status));
         } else if (this._onError) {
             this._onError(failure);
         } else {

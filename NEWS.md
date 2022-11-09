@@ -1,3 +1,7 @@
+# hint 2.26.2
+
+* Return more information from "Could not parse API response" errors
+
 # hint 2.26.1
 
 * Bug: prevent spamming when creating a new project during model 
