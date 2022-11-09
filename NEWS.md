@@ -1,3 +1,7 @@
+# hint 2.17.0
+
+* Enable comparison download report
+
 # hint 2.26.1
 
 * Bug: prevent spamming when creating a new project during model 
