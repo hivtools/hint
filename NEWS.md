@@ -1,3 +1,7 @@
+# hint 2.27.0
+
+* yaxis scale is not automatically generating the correct range at low values for some indicators
+
 # hint 2.26.1
 
 * Bug: prevent spamming when creating a new project during model 
