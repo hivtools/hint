@@ -188,4 +188,10 @@ describe("ModelCalibrate mutations", () => {
         mutations[ModelCalibrateMutation.CalibrateResultFetched](testState, {payload: result});
         expect(testState.result).toEqual(result);
     });
+
+    it("resets polling id", () => {
+        const state = mockModelCalibrateState({statusPollId: 1000});
+        mutations[ModelCalibrateMutation.ResetIds](state);
+        expect(state.statusPollId).toEqual(-1);
+    });
 });

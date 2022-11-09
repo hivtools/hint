@@ -1,6 +1,8 @@
 import {actions} from "../../app/store/load/actions";
 import {actions as projectActions} from "../../app/store/projects/actions";
 import {mutations as projectMutations} from "../../app/store/projects/mutations";
+import {mutations as modelCalibrateMutations} from "../../app/store/modelCalibrate/mutations";
+import {mutations as modelRunMutations} from "../../app/store/modelRun/mutations";
 import {mutations as rootMutations} from "../../app/store/root/mutations";
 import {mutations as downloadResultsMutations} from "../../app/store/downloadResults/mutations";
 import {initialDownloadResultsState} from "../../app/store/downloadResults/downloadResults";
@@ -131,6 +133,14 @@ describe("load actions", () => {
                     namespaced: true,
                     state: initialDownloadResultsState(),
                     mutations: downloadResultsMutations
+                },
+                modelCalibrate: {
+                    namespaced: true,
+                    mutations: modelCalibrateMutations
+                },
+                modelRun: {
+                    namespaced: true,
+                    mutations: modelRunMutations
                 }
             }
         });
