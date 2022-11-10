@@ -977,7 +977,7 @@ const pt: Partial<Translations> = {
     "                   <li>Algumas páginas poderão não ter a opção de ignorar um passo e saltar para outro conteúdo</li>",
     axeWhatHeading: "O que fazemos relativamente aos problemas conhecidos",
     axeWhatContent: "Tentamos atingir e manter o padrão das <a href=\"https://www.w3.org/TR/WCAG21/\" target='_blank' rel='noopener noreferrer'> WCAG 2.1 AA </a>,\n" +
-        "                mas nem sempre é possível que todos os nossos\n" +
+    "                mas nem sempre é possível que todos os nossos\n" +
     "                conteúdos estejam acessíveis. Sempre que um conteúdo não está acessível, indicamos a razão, avisamos os\n"+
     "                utilizadores e oferecemos alternativas.",
     axeTechnicalHeading: "Informações técnicas sobre a acessibilidade deste sítio web",
