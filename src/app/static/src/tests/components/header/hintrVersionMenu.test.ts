@@ -2,6 +2,7 @@ import {shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
 import HintrVersionMenu from "../../../app/components/header/HintrVersionMenu.vue";
 import DropDown from "../../../app/components/header/DropDown.vue";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
 import { mockHintrVersionState } from "../../mocks";
 import { emptyState } from "../../../app/root";
 import {currentHintVersion} from "../../../app/hintVersion";
@@ -22,6 +23,7 @@ describe("Hintr Menu Version", () => {
                 }
             }
         });
+        registerTranslations(store);
         return store;
     }
 
@@ -32,6 +34,19 @@ describe("Hintr Menu Version", () => {
         });
 
         expect(wrapper.findAll("span").length).toBe(5);
+    });
+
+    it("hintr version menu displays link to news site", async() => {
+        const store = createStore();
+        const wrapper = shallowMount(HintrVersionMenu, {
+            store
+        });
+
+        const links = wrapper.findAll("a");
+        expect(links.length).toBe(1);
+        const link = links.at(0);
+        expect(link.attributes("href")).toBe("https://naomi.unaids.org/news");
+        expect(link.attributes("target")).toBe("_blank");
     });
 
     it("hintr version menu displays current hint version", async() => {

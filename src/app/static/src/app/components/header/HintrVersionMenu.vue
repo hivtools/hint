@@ -1,10 +1,16 @@
 <template>
     <drop-down :text="`v${hintrVersions.naomi}`" :right="true" style="flex: none">
-        <span class="dropdown-item" style="cursor: default;"> naomi    : v{{ hintrVersions.naomi }} </span>
-        <span class="dropdown-item" style="cursor: default;"> hintr    : v{{ hintrVersions.hintr }} </span>
-        <span class="dropdown-item" style="cursor: default;"> rrq      : v{{ hintrVersions.rrq }} </span>
-        <span class="dropdown-item" style="cursor: default;"> traduire : v{{ hintrVersions.traduire }}</span>
-        <span class="dropdown-item" style="cursor: default;"> hint : v{{ hintVersion }}</span>
+        <a class="dropdown-item"
+           href="https://naomi.unaids.org/news"
+           target="_blank"
+           v-translate="'newsSite'">
+        </a>
+        <hr class="dropdown-divider">
+        <span class="dropdown-item dropdown-item-inactive"> naomi    : v{{ hintrVersions.naomi }} </span>
+        <span class="dropdown-item dropdown-item-inactive"> hintr    : v{{ hintrVersions.hintr }} </span>
+        <span class="dropdown-item dropdown-item-inactive"> rrq      : v{{ hintrVersions.rrq }} </span>
+        <span class="dropdown-item dropdown-item-inactive"> traduire : v{{ hintrVersions.traduire }}</span>
+        <span class="dropdown-item dropdown-item-inactive"> hint : v{{ hintVersion }}</span>
     </drop-down>
 </template>
 

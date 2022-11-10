@@ -11,7 +11,7 @@
                    style="display: none;" ref="loadZip"
                    @change="loadZip" accept=".zip">
 
-            <a class="dropdown-item" v-on:mousedown="save">
+            <a class="dropdown-item" tabindex="0" v-on:mousedown="save">
                 <span><span class="pr-1" v-translate="'save'"></span>JSON</span>
                 <download-icon size="20" class="icon"></download-icon>
             </a>

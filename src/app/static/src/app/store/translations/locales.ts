@@ -172,6 +172,7 @@ export interface Translations {
     missingError: string,
     modelOptions: string,
     newPassword: string,
+    newsSite: string,
     nextPage: string,
     noData: string,
     noChartData: string,
@@ -489,6 +490,7 @@ const en: Translations = {
     missingError: "API response failed but did not contain any error information. Please contact support.",
     modelOptions: "Model options",
     newPassword: "New password",
+    newsSite: "News",
     nextPage: "Next page",
     noData: "No data are available for these selections.",
     noChartData: "No data are available for the selected combination. Please review the combination of filter values selected.",
@@ -811,6 +813,7 @@ const fr: Partial<Translations> = {
     missingError: "La réponse de l'API a échoué mais ne contenait aucune information d'erreur. Veuillez contacter le support.",
     modelOptions: "Options des modèles",
     newPassword: "Nouveau mot de passe",
+    newsSite: "Nouvelles",
     nextPage: "Page suivante",
     noData: "Aucune donnée n'est disponible pour ces sélections.",
     noChartData: "Aucune donnée n'est disponible pour la combinaison sélectionnée. Veuillez examiner la combinaison de valeurs de filtre sélectionnée.",
@@ -974,7 +977,7 @@ const pt: Partial<Translations> = {
     "                   <li>Algumas páginas poderão não ter a opção de ignorar um passo e saltar para outro conteúdo</li>",
     axeWhatHeading: "O que fazemos relativamente aos problemas conhecidos",
     axeWhatContent: "Tentamos atingir e manter o padrão das <a href=\"https://www.w3.org/TR/WCAG21/\" target='_blank' rel='noopener noreferrer'> WCAG 2.1 AA </a>,\n" +
-    "                mas nem sempre é possível que todos os nossos\n" +
+        "                mas nem sempre é possível que todos os nossos\n" +
     "                conteúdos estejam acessíveis. Sempre que um conteúdo não está acessível, indicamos a razão, avisamos os\n"+
     "                utilizadores e oferecemos alternativas.",
     axeTechnicalHeading: "Informações técnicas sobre a acessibilidade deste sítio web",
@@ -1132,6 +1135,7 @@ const pt: Partial<Translations> = {
     missingError: "A resposta da API falhou mas não continha qualquer informação de erro. Por favor, contacte o apoio.",
     modelOptions: "Opções de modelos",
     newPassword: "Nova palavra-passe",
+    newsSite: "Notícias",
     nextPage: "Próxima página",
     noData: "Não existem dados disponíveis para estas seleções.",
     noChartData: "Não existem dados disponíveis para a combinação selecionada. Por favor, reveja a combinação dos valores de filtro selecionados.",
