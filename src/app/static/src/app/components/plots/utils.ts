@@ -197,8 +197,9 @@ export const formatOutput = function (value: number | string, format: string, sc
          * When accuracy is set to 100 and selected value is less than 200
          * barchart disarranges YAxis. Code below checks if value is greater
          * than 200 before apply 100 scale range. Otherwise, chartJS will
-         * automatically use numeric algorithm to calculate scale range. However, if accuracy is less than
-         * 100, we simply apply scale ranges from given metadata.
+         * automatically use numeric algorithm to calculate scale range. 
+         * However, if accuracy is less than 100, we simply apply scale range
+         * from a given indicator metadata.
          */
 
         if (accuracy === 100) {
