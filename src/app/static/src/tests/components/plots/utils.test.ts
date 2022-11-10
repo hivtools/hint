@@ -543,8 +543,8 @@ describe("plot utils", () => {
     expect(formatOutput('0.01', '0.00%', 10, null)).toStrictEqual('1.00%');
     expect(formatOutput('1', '', 1, 1)).toStrictEqual(1);
     expect(formatOutput(1, '', 1, 1)).toStrictEqual(1);
-    expect(formatOutput(190.98, '', 1, 100)).toStrictEqual(190.98);
-      expect(formatOutput(201.98, '', 1, 100)).toStrictEqual(200);
+    expect(formatOutput(489.98, '', 1, 100)).toStrictEqual(489.98);
+      expect(formatOutput(501.98, '', 1, 100)).toStrictEqual(500);
   });
 
 it("it can formatLegend correctly", () => {
