@@ -196,13 +196,13 @@ export const formatOutput = function (value: number | string, format: string, sc
         /**
          * When accuracy is set to 100 and selected value is less than 200
          * barchart disarranges YAxis. Code below checks if value is greater
-         * than 200 before apply 100 scale range. Otherwise, vueChart will
+         * than 500 before apply 100 scale range. Otherwise, vueChart will
          * automatically apply calculated scale range. However, if accuracy is less than
          * 100, we simply apply scale ranges from given metadata.
          */
 
         if (accuracy === 100) {
-            if (ans > 200) {
+            if (ans > 500) {
                 ans = Math.round(ans / accuracy) * accuracy
             }
         } else {
