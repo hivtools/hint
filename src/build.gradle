@@ -51,6 +51,7 @@ subprojects {
 
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+        implementation 'org.springframework.boot:spring-boot-starter-actuator:2.7.3'
     }
 
     jacoco {
