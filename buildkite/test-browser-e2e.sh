@@ -13,7 +13,7 @@ trap cleardocker EXIT
 $HERE/run-dependencies-for-integration-tests.sh
 
 # Wait for HINT to become responsive
-sleep 100
+sleep 10
 
 # Create an image based on the shared build env that compiles and tests the front-end ADR integration
 docker build --tag hint-test-browser-e2e \

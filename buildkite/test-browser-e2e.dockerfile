@@ -21,4 +21,4 @@ RUN npm install @playwright/test
 RUN npx playwright install
 RUN npx playwright install-deps
 
-CMD npm run browser-test-docker --prefix=app/static
+CMD npm run browser-test --prefix=app/static
