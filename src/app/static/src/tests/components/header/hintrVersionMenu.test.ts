@@ -45,6 +45,7 @@ describe("Hintr Menu Version", () => {
         const links = wrapper.findAll("a");
         expect(links.length).toBe(1);
         const link = links.at(0);
+        expectTranslated(link, "News", "Nouvelles", "Notícias", store);
         expect(link.attributes("href")).toBe("https://naomi.unaids.org/news");
         expect(link.attributes("target")).toBe("_blank");
     });
