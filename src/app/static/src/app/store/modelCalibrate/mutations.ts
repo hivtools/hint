@@ -31,7 +31,8 @@ export enum ModelCalibrateMutation {
     SetComparisonPlotData = "SetComparisonPlotData",
     WarningsFetched = "WarningsFetched",
     CalibrateResultFetched = "CalibrateResultFetched",
-    ClearWarnings = "ClearWarnings"
+    ClearWarnings = "ClearWarnings",
+    ResetIds = "ResetIds"
 }
 
 export const ModelCalibrateUpdates = [
@@ -138,6 +139,10 @@ export const mutations: MutationTree<ModelCalibrateState> = {
 
     [ModelCalibrateMutation.CalibrateResultFetched](state: ModelCalibrateState, action: PayloadWithType<CalibrateResultResponse>) {
         state.result = action.payload
+    },
+
+    [ModelCalibrateMutation.ResetIds](state: ModelCalibrateState) {
+        stopPolling(state)
     }
 };
 
