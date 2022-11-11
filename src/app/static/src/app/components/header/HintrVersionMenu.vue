@@ -6,11 +6,11 @@
            v-translate="'newsSite'">
         </a>
         <hr class="dropdown-divider">
-        <span class="dropdown-item dropdown-item-inactive"> naomi    : v{{ hintrVersions.naomi }} </span>
-        <span class="dropdown-item dropdown-item-inactive"> hintr    : v{{ hintrVersions.hintr }} </span>
-        <span class="dropdown-item dropdown-item-inactive"> rrq      : v{{ hintrVersions.rrq }} </span>
-        <span class="dropdown-item dropdown-item-inactive"> traduire : v{{ hintrVersions.traduire }}</span>
-        <span class="dropdown-item dropdown-item-inactive"> hint : v{{ hintVersion }}</span>
+        <span class="dropdown-item disabled"> naomi    : v{{ hintrVersions.naomi }} </span>
+        <span class="dropdown-item disabled"> hintr    : v{{ hintrVersions.hintr }} </span>
+        <span class="dropdown-item disabled"> rrq      : v{{ hintrVersions.rrq }} </span>
+        <span class="dropdown-item disabled"> traduire : v{{ hintrVersions.traduire }}</span>
+        <span class="dropdown-item disabled"> hint : v{{ hintVersion }}</span>
     </drop-down>
 </template>
 
