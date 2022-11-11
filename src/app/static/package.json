@@ -12,7 +12,8 @@
     "adr-integration-test": "jest --testPathPattern adr-dataset -c jest.integration.adr.config.js",
     "integration-test-docker": "jest --testPathIgnorePatterns adr-dataset -c jest.integration.docker.config.js",
     "adr-integration-test-docker": "jest --testPathPattern adr-dataset -c jest.integration.docker.adr.config.js",
-    "browser-test": "npx playwright test",
+    "browser-test": "npx playwright test --project=local",
+    "browser-test-docker": "npx playwright test --project=docker",
     "lint": "npx eslint src --ext .js,.jsx,.ts,.tsx,vue"
   },
   "author": "",

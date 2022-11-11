@@ -16,10 +16,23 @@ const config: PlaywrightTestConfig = {
     workers: process.env.CI ? 1 : undefined,
     use: {
         actionTimeout: 0,
-        baseURL: 'http://localhost:8080',
         trace: 'on-first-retry',
         storageState: 'storageState.json'
-    }
+    },
+    projects: [
+        {
+            name: 'local',
+            use: {
+                baseURL: 'http://localhost:8080',
+            }
+        },
+        {
+            name: 'docker',
+            use: {
+                baseURL: 'http://hint:8080',
+            }
+        },
+    ]
 };
 
 export default config;
