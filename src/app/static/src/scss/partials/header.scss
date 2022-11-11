@@ -53,20 +53,6 @@ header {
   }
 }
 
-.dropdown-item-inactive {
-  color: $gray-600;
-  cursor: default;
-
-  &:focus {
-    outline: unset;
-  }
-
-  &:hover, &.active, :active {
-    background-color: unset;
-    color: $gray-600;
-  }
-}
-
 .navbar-header-secondary {
  @include navbar-header-mixin($theme-green)
 }
