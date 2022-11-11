@@ -1,5 +1,6 @@
 import {shallowMount } from "@vue/test-utils";
 import Vuex from "vuex";
+import {expectTranslated} from "../testHelpers";
 import HintrVersionMenu from "../../../app/components/header/HintrVersionMenu.vue";
 import DropDown from "../../../app/components/header/DropDown.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
