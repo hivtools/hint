@@ -16,7 +16,7 @@ const config: PlaywrightTestConfig = {
     workers: process.env.CI ? 1 : undefined,
     use: {
         actionTimeout: 0,
-        baseURL: process.env.CI ? 'http://hint:8080' : 'http://localhost:8080',
+        baseURL: process.env.BUILDKITE ==='1' ? 'http://hint:8080' : 'http://localhost:8080',
         trace: 'on-first-retry',
         storageState: 'storageState.json'
     }
