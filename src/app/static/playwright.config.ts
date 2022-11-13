@@ -1,4 +1,8 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
+import dotenv from 'dotenv';
+
+// Read from default ".env" file.
+dotenv.config();
 
 const config: PlaywrightTestConfig = {
     globalSetup: require.resolve("./src/tests/e2e/loginSetup"),
@@ -16,7 +20,7 @@ const config: PlaywrightTestConfig = {
     workers: process.env.CI ? 1 : undefined,
     use: {
         actionTimeout: 0,
-        baseURL: process.env.BUILDKITE ==='true' ? 'http://hint:8080' : 'http://localhost:8080',
+        baseURL: process.env.CI ? 'http://hint:8080' : 'http://localhost:8080',
         trace: 'on-first-retry',
         storageState: 'storageState.json'
     }
