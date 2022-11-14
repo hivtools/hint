@@ -1,3 +1,7 @@
+# hint 2.27.0
+
+* Setup Playwright and add Browser test for data exploration login
+
 # hint 2.26.2
 
 * Bug: Comparison barchart error bars display incorrectly
