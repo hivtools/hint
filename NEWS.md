@@ -1,6 +1,10 @@
-# hint 2.17.0
+# hint 2.27.0
 
 * Enable comparison download report
+
+# hint 2.26.2
+
+* Bug: Comparison barchart error bars display incorrectly
 
 # hint 2.26.1
 

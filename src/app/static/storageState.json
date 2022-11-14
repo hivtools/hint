@@ -1,0 +1,25 @@
+{
+  "cookies": [
+    {
+      "name": "JSESSIONID",
+      "value": "8BFF09E0E85D40F28071377E73925D99",
+      "domain": "localhost",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:8080",
+      "localStorage": [
+        {
+          "name": "user",
+          "value": "test.user@example.com"
+        }
+      ]
+    }
+  ]
+}
