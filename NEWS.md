@@ -1,14 +1,18 @@
+# hint 2.26.3
+
+* Add link to news site from version number drop down and update styling of version drop down
+
 # hint 2.26.2
 
 * Bug: Comparison barchart error bars display incorrectly
 
 # hint 2.26.1
 
-* Bug: prevent spamming when creating a new project during model 
+* Bug: prevent spamming when creating a new project during model
 
-# hint 2.26.0 
+# hint 2.26.0
 
-* Remove fixed disaggregate value from xAxis options in vue-charts 
+* Remove fixed disaggregate value from xAxis options in vue-charts
 
 # hint 2.25.0
 
