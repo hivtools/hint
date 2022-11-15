@@ -1,7 +1,7 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 import dotenv from 'dotenv';
 
-// Read from default ".env" file.
+// Dotenv reads from default ".env".
 dotenv.config();
 
 const config: PlaywrightTestConfig = {
@@ -22,6 +22,12 @@ const config: PlaywrightTestConfig = {
         actionTimeout: 0,
         baseURL: process.env.CI ? 'http://hint:8080' : 'http://localhost:8080',
         trace: 'on-first-retry',
+        /**
+         *  StorageState.json stores signed-in state as configured in tests/e2e/loginSetup.ts.
+         *  This ensures test suites can reuse the login state and not having to re-login
+         *  for each test.
+         *
+         */
         storageState: 'storageState.json'
     }
 };

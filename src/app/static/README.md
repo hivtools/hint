@@ -12,12 +12,14 @@ from this directory
 
 ### Testing
 Tests are run with jest. Files with the suffix `.test.ts` are treated as unit tests, files 
-with the suffix `.itest.ts` treated as integration tests. Config for each can be found in 
+with the suffix `.itest.ts` treated as integration tests and files with suffix `.etest.ts` 
+as browser tests. Config for each can be found in 
 `jest.config.js` and `jest.integration.config.js`, respectively.
 - run unit tests with `npm test` 
 - run integration tests with `npm run integration-test` having first started the app and 
 all dependencies by running `./scripts/run-dev-dependencies-for-integration-tests.sh` from this
 directory
+- run browser tests with `npm run browser-test`
 
 ## Linting
 On CI we run `eslint` and the build will fail if there are any errors. To check your code locally,
