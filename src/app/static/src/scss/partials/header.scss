@@ -41,11 +41,11 @@ header {
 }
 
 .dropdown-item {
-  color: $theme-red !important;
+  color: $theme-red;
   cursor: pointer;
 
   &:focus {
-    outline: none !important;
+    outline: none;
   }
 
   &:hover, &.active, :active {
