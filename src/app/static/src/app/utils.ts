@@ -471,3 +471,12 @@ export const constructOptionsFormMetaFromData = (state: ModelOptionsState, meta:
 export const flatMapControlSections = (sections: DynamicControlSection[]): DynamicControlGroup[] => {
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }
+
+export const readStreamAs = (data: any, filename: string) => {
+    const fileUrl = window.URL.createObjectURL(new Blob([data]));
+    const fileLink = document.createElement('a');
+    fileLink.href = fileUrl;
+    fileLink.setAttribute('download', filename);
+    document.body.appendChild(fileLink);
+    fileLink.click()
+}

@@ -191,6 +191,49 @@ describe("ApiService", () => {
         expect(committedOptions).toStrictEqual({root: true});
     });
 
+    it("commits download error response with the specified type", async () => {
+        mockAxios.onGet(`/download/result/123/`)
+            .reply(400, mockFailure("Missing some results"));
+
+        let committedType: any = false;
+        let committedPayload: any = false;
+        let committedOptions: any = null;
+        const commit = ({type, payload}: any, options?: any) => {
+            committedType = type;
+            committedPayload = payload;
+            committedOptions = options;
+        };
+
+        await api({commit, rootState} as any)
+            .withError("TEST_TYPE")
+            .download("/download/result/123/");
+
+        expect(committedType).toBe("TEST_TYPE");
+        expect(committedPayload.detail).toBe("Missing some results");
+    });
+
+    it("can return download response", async () => {
+        mockAxios.onGet(`/download/result/123/`)
+            .reply(200, mockSuccess("parts"));
+
+        let committedType: any = false;
+        let committedPayload: any = false;
+        let committedOptions: any = null;
+        const commit = ({type, payload}: any, options?: any) => {
+            committedType = type;
+            committedPayload = payload;
+            committedOptions = options;
+        };
+
+        const response = await api({commit, rootState} as any)
+            .withError("TEST_TYPE")
+            .download("/download/result/123/");
+
+        expect(response).toStrictEqual({data: "parts", errors: [], status: "success"});
+        expect(committedType).toBe(false);
+        expect(committedPayload.detail).toBeUndefined()
+    });
+
     it("commits the error response with the specified type with root options", async () => {
         mockAxios.onGet(`/baseline/`)
             .reply(500, mockFailure("TEST"));

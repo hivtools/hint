@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 import {
     mockADRState,
     mockADRUploadState, mockDownloadResultsDependency,
-    mockDownloadResultsState,
+    mockDownloadResultsState, mockError,
     mockModelCalibrateState
 } from "../../mocks";
 import DownloadResults from "../../../app/components/downloadResults/DownloadResults.vue";
@@ -15,12 +15,14 @@ import {DownloadResultsState} from "../../../app/store/downloadResults/downloadR
 import Download from "../../../app/components/downloadResults/Download.vue";
 import {ADRState} from "../../../app/store/adr/adr";
 import {ADRUploadState} from "../../../app/store/adrUpload/adrUpload";
+import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 
 const localVue = createLocalVue();
 
 describe("Download Results component", () => {
 
     const mockPrepareOutputs = jest.fn();
+    const mockDownloadComparisonReport = jest.fn()
 
     afterEach(() => {
         jest.useRealTimers();
@@ -64,7 +66,8 @@ describe("Download Results component", () => {
                     namespaced: true,
                     state: mockDownloadResultsState(downloadResults),
                     actions: {
-                        prepareOutputs: mockPrepareOutputs
+                        prepareOutputs: mockPrepareOutputs,
+                        downloadComparisonReport: mockDownloadComparisonReport
                     }
                 }
             }
@@ -404,7 +407,7 @@ describe("Download Results component", () => {
         expect(button.attributes().disabled).toBe("disabled");
     });
 
-    it("can download comparison file once prepared", () => {
+    it("can download comparison file once prepared", async () => {
         const store = createStore({}, jest.fn(), {}, {
             comparison: mockDownloadResultsDependency({
                 preparing: false,
@@ -424,7 +427,33 @@ describe("Download Results component", () => {
             });
         const button = wrapper.find("#comparison-download").find("button");
         expect(button.attributes().disabled).toBeUndefined();
-        downloadFile(button);
+        await button.trigger("click")
+        expect(mockDownloadComparisonReport).toHaveBeenCalledTimes(1)
+    });
+
+    it("can display error message for comparison download file when errored", async () => {
+        const error = {error: "ERR", detail: "comparison error"}
+        const store = createStore({}, jest.fn(), {}, {
+            comparison: mockDownloadResultsDependency({
+                preparing: false,
+                complete: true,
+                error,
+                downloadId: "123"
+            })
+        });
+        const wrapper = mount(DownloadResults,
+            {
+                store, stubs: ["upload-modal"],
+                data() {
+                    return {
+                        comparisonSwitch: true
+                    }
+                }
+            });
+        const comparisonWrapper = wrapper.find("#comparison-download");
+        const button = comparisonWrapper.find("#comparison-download").find("button");
+        expect(button.attributes().disabled).toBeUndefined();
+        expect(comparisonWrapper.find(ErrorAlert).props("error")).toEqual(error)
     });
 
     it("calls clear status mutation before mount", () => {

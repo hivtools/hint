@@ -6,6 +6,7 @@ import {DownloadResultsMutation} from "./mutations";
 import {ModelStatusResponse} from "../../generated";
 import {DOWNLOAD_TYPE} from "../../types";
 import {switches} from "../../featureSwitches"
+import {readStreamAs} from "../../utils";
 
 export interface DownloadResultsActions {
     prepareSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => void
@@ -14,6 +15,7 @@ export interface DownloadResultsActions {
     prepareComparisonOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareOutputs: (store: ActionContext<DownloadResultsState, RootState>) => void
     poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: string) => void
+    downloadComparisonReport: (store: ActionContext<DownloadResultsState, RootState>) => Promise<any>
 }
 
 export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResultsActions = {
@@ -26,6 +28,19 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             dispatch("prepareSpectrumOutput"),
             dispatch("prepareComparisonOutput")
         ]);
+    },
+
+    async downloadComparisonReport(context) {
+        const filename = `MWI_comparison-report_${Date.now()}.html`
+        await api(context)
+            .ignoreSuccess()
+            .withError(DownloadResultsMutation.ComparisonError)
+            .download(`/download/result/${context.state.comparison.downloadId}`)
+            .then((data) => {
+                if (data) {
+                    readStreamAs(data, filename)
+                }
+            })
     },
 
     async prepareCoarseOutput(context) {
