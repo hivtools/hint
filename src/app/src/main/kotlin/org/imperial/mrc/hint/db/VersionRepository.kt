@@ -10,6 +10,8 @@ import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.impl.DSL
 import org.jooq.impl.DSL.`val`
+import org.springframework.cache.annotation.CachePut
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Component
 
@@ -162,6 +164,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
                 .associate { it[VERSION_FILE.TYPE] to it[VERSION_FILE.HASH] }
     }
 
+    @Cacheable("versionFiles")
     override fun getVersionFiles(versionId: String): Map<String, VersionFile>
     {
         return dsl.select(VERSION_FILE.HASH, VERSION_FILE.FILENAME, VERSION_FILE.TYPE, VERSION_FILE.FROM_ADR)
@@ -173,6 +176,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
                 }
     }
 
+    @CachePut("versionFiles")
     override fun setFilesForVersion(versionId: String, files: Map<String, VersionFile?>)
     {
         try

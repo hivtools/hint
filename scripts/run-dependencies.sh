@@ -27,7 +27,12 @@ docker run --rm -d \
   -p 5432:5432 \
   $DB_IMAGE
 
-docker run --rm -d --network=$NETWORK --name $REDIS --network-alias=redis redis
+docker run --rm -d \
+  --network=$NETWORK \
+  --name $REDIS \
+  -p 6379:6379 \
+  --network-alias=redis \
+  redis
 
 mkdir -p $HERE/../src/app/uploads
 

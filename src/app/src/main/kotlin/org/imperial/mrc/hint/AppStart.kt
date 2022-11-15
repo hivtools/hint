@@ -1,11 +1,21 @@
 package org.imperial.mrc.hint
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.KotlinModule
 import org.imperial.mrc.hint.security.SecurePaths
 import org.pac4j.core.config.Config
 import org.pac4j.springframework.web.SecurityInterceptor
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.cache.annotation.EnableCaching
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.data.redis.cache.RedisCacheConfiguration
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
+import org.springframework.data.redis.serializer.RedisSerializationContext
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.web.servlet.config.annotation.*
 import org.springframework.web.servlet.resource.EncodedResourceResolver
@@ -21,8 +31,27 @@ fun main(args: Array<String>)
 
 @Configuration
 @EnableWebMvc
+@EnableCaching
 class MvcConfig(val config: Config) : WebMvcConfigurer
 {
+    @Bean
+    fun redisCacheConfiguration(): RedisCacheConfiguration
+    {
+        val objectMapper = ObjectMapper()
+            .registerModule(KotlinModule())
+            .registerModule(JavaTimeModule())
+            .activateDefaultTyping(
+                BasicPolymorphicTypeValidator.builder()
+                    .allowIfBaseType(Any::class.java)
+                    .build(), ObjectMapper.DefaultTyping.EVERYTHING
+            )
+
+        val serializer = GenericJackson2JsonRedisSerializer(objectMapper)
+
+        return RedisCacheConfiguration
+            .defaultCacheConfig()
+            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer))
+    }
     override fun addResourceHandlers(registry: ResourceHandlerRegistry)
     {
         registry.addResourceHandler("/public/**")

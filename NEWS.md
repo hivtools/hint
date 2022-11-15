@@ -1,3 +1,7 @@
+# hint 2.27.0
+
+* Implement redis caching for model options
+
 # hint 2.26.2
 
 * Bug: Comparison barchart error bars display incorrectly
