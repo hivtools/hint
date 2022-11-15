@@ -1,8 +1,5 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
-import dotenv from 'dotenv';
-
-// Dotenv reads from default ".env".
-dotenv.config();
+import {baseURL} from "./src/tests/e2e/loginSetup";
 
 const config: PlaywrightTestConfig = {
     globalSetup: require.resolve("./src/tests/e2e/loginSetup"),
@@ -20,7 +17,7 @@ const config: PlaywrightTestConfig = {
     workers: process.env.CI ? 1 : undefined,
     use: {
         actionTimeout: 0,
-        baseURL: process.env.CI ? 'http://hint:8080' : 'http://localhost:8080',
+        baseURL,
         trace: 'on-first-retry',
         /**
          *  StorageState.json stores signed-in state as configured in tests/e2e/loginSetup.ts.
