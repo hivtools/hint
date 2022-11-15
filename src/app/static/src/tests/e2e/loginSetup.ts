@@ -1,10 +1,5 @@
 import { chromium, FullConfig } from '@playwright/test';
-import dotenv from 'dotenv';
-
-// Dotenv reads from default ".env" file.
-dotenv.config();
-
-export const baseURL =  process.env.CI ? 'http://hint:8080' : 'http://localhost:8080'
+import {baseURL} from "../../../playwright.config";
 
 async function loginSetup(config: FullConfig) {
     const browser = await chromium.launch();
