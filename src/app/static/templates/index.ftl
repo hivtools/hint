@@ -6,12 +6,18 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <!-- inject:css -->
     <!-- endinject -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JPYDD02750"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-JPYDD02750');
+    var host = window.location.hostname;
+    if(host != "localhost")
+    {
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-JPYDD02750"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-JPYDD02750');
+        </script>
+    }
     </script>
 </head>
 <body>
