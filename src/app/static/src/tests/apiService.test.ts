@@ -229,7 +229,7 @@ describe("ApiService", () => {
             .withError("TEST_TYPE")
             .download("/download/result/123/");
 
-        expect(response).toStrictEqual({data: "parts", errors: [], status: "success"});
+        expect(response.data).toStrictEqual({data: "parts", errors: [], status: "success"});
         expect(committedType).toBe(false);
         expect(committedPayload.detail).toBeUndefined()
     });
