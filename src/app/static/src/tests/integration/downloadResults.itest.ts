@@ -5,6 +5,10 @@ import {formatToLocalISODateTime} from "../../app/utils";
 
 describe(`download results actions integration`, () => {
 
+    beforeEach(() => {
+        jest.clearAllMocks()
+    })
+
     it(`can download comparison output report`, async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
