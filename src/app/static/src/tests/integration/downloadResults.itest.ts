@@ -5,10 +5,6 @@ import {formatToLocalISODateTime} from "../../app/utils";
 
 describe(`download results actions integration`, () => {
 
-    beforeEach(() => {
-        jest.clearAllMocks()
-    })
-
     it(`can download comparison output report`, async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -19,9 +15,7 @@ describe(`download results actions integration`, () => {
 
         const state = {comparison: {downloadId: 123, error: null}}
 
-        await actions.downloadComparisonReport({
-            commit, dispatch, state, rootState: root
-        } as any);
+        await actions.downloadComparisonReport({commit, dispatch, state, rootState: root} as any);
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0]["type"]).toBe("ComparisonError");
