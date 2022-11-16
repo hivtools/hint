@@ -127,6 +127,8 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         }
 
         const failure = e.response && e.response.data;
+        console.log("This is not hint error")
+        console.log(failure)
         if (!isHINTResponse(failure)) {
             this._commitError(APIService.createError("apiCouldNotParseError"));
         } else if (this._onError) {
