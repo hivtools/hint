@@ -202,8 +202,8 @@ export const formatOutput = function (value: number | string, format: string, sc
          * rounding using the given accuracy value.
          */
 
-        if (accuracy === 100) {
-            if (ans > 500) {
+        if (accuracy > 1) {
+            if (ans > 5 * accuracy) {
                 ans = Math.round(ans / accuracy) * accuracy
             }
         } else {
