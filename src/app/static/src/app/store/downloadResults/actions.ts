@@ -34,7 +34,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         await api(context)
             .ignoreSuccess()
             .withError(DownloadResultsMutation.ComparisonError)
-            .download(`/download/result/${context.state.comparison.downloadId}`)
+            .download(`download/result/${context.state.comparison.downloadId}`)
             .then((response) => {
                 if (response) {
                     const filename = extractFilenameFrom(response.headers["content-disposition"])
