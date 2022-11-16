@@ -472,11 +472,20 @@ export const flatMapControlSections = (sections: DynamicControlSection[]): Dynam
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }
 
-export const readStreamAs = (data: any, filename: string) => {
-    const fileUrl = window.URL.createObjectURL(new Blob([data]));
+export const readStream = (data: Blob, filename: string): void => {
+    const fileUrl = URL.createObjectURL(data);
     const fileLink = document.createElement('a');
     fileLink.href = fileUrl;
     fileLink.setAttribute('download', filename);
     document.body.appendChild(fileLink);
     fileLink.click()
+    URL.revokeObjectURL(fileUrl)
+}
+
+export const extractFilenameFrom = (contentDisposition: string): string => {
+    return contentDisposition
+        .split(';')[1]
+        .split('filename=')[1]
+        .replace(/"/g, '')
+        .trim();
 }
