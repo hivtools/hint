@@ -13,7 +13,7 @@ describe(`download results actions integration`, () => {
             modelCalibrate: {calibrateId: "calibrate123"}
         };
 
-        const state = {comparison: {downloadId: 123, error: null}}
+        const state = {comparison: {downloadId: 123, error: null, complete: true}}
 
         await actions.downloadComparisonReport({commit, dispatch, state, rootState: root} as any);
 

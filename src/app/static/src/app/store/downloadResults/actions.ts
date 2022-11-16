@@ -31,16 +31,19 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
     },
 
     async downloadComparisonReport(context) {
-        await api(context)
-            .ignoreSuccess()
-            .withError(DownloadResultsMutation.ComparisonError)
-            .download(`download/result/${context.state.comparison.downloadId}`)
-            .then((response) => {
-                if (response) {
-                    const filename = extractFilenameFrom(response.headers["content-disposition"])
-                    readStream(response.data, `${filename}`)
-                }
-            })
+        const {state} = context
+        if (state.comparison.complete) {
+            await api(context)
+                .ignoreSuccess()
+                .withError(DownloadResultsMutation.ComparisonError)
+                .download(`download/result/${state.comparison.downloadId}`)
+                .then((response) => {
+                    if (response) {
+                        const filename = extractFilenameFrom(response.headers["content-disposition"])
+                        readStream(response.data, `${filename}`)
+                    }
+                })
+        }
     },
 
     async prepareCoarseOutput(context) {

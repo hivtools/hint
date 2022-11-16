@@ -127,9 +127,11 @@ export const mutations: MutationTree<DownloadResultsState> = {
         state.comparison.error = action.payload;
         state.comparison.preparing = false;
         state.comparison.fetchingDownloadId = false;
-        window.clearInterval(state.comparison.statusPollId);
-        state.comparison.statusPollId = -1;
 
+        if (state.comparison.statusPollId > -1) {
+            window.clearInterval(state.comparison.statusPollId);
+            state.comparison.statusPollId = -1;
+        }
     },
     [DownloadResultsMutation.SetFetchingDownloadId](state: DownloadResultsState, action: PayloadWithType<string>) {
         switch (action.payload) {
