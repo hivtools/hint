@@ -24,13 +24,13 @@ class HomeController(
     @GetMapping(value = ["/", "/projects", "accessibility"])
     fun index(model: Model): String
     {
-        return loadApp("naomi", appProperties.applicationTitle, "index", model)
+        return loadApp("naomi", appProperties.applicationTitle, appProperties.applicationUrl, "index", model)
     }
 
     @GetMapping("/callback/explore")
     fun explore(model: Model): String
     {
-        return loadApp("explore", appProperties.exploreApplicationTitle, "data-exploration", model)
+        return loadApp("explore", appProperties.exploreApplicationTitle, appProperties.applicationUrl, "data-exploration", model)
     }
 
     @Suppress("FunctionOnlyReturningConstant")
@@ -40,13 +40,15 @@ class HomeController(
         return "redirect:/callback/explore"
     }
 
-    private fun loadApp(mode: String, applicationTitle: String, template: String, model: Model): String
+    private fun loadApp(mode: String, applicationTitle: String, applicateionUrl: String, template: String, model: Model): String
     {
         val userProfile = session.getUserProfile()
         session.setMode(mode)
         versionRepository.saveVersion(session.getVersionId(), null)
         model["title"] = applicationTitle
         model["user"] = userProfile.id
+        // Don't include analytics for local dev
+        model["useAnalytics"] = !applicateionUrl.startsWith("http://localhost")
         return template
     }
 
