@@ -51,8 +51,6 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         if (failure.errors.length == 0) {
             return APIService.createError("apiMissingError");
         }
-        console.log(failure.errors[0])
-        failure.errors[0].trace?.forEach(d => console.log(d))
         return failure.errors[0];
     };
 

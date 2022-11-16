@@ -243,7 +243,8 @@ describe(`download results actions integration`, () => {
         }, 3100)
     })
 
-    it(`can download comparison output report`, async () => {
+
+    it.skip(`can download comparison output report`, async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const root = {
