@@ -1,6 +1,8 @@
 ARG GIT_ID="UNKNOWN"
 FROM mrcide/hint-shared-build-env:$GIT_ID
 
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
 RUN apt-get install -y \
     libnss3\
      libnspr4\
