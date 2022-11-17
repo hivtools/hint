@@ -193,7 +193,22 @@ export const formatOutput = function (value: number | string, format: string, sc
     }
 
     if (!format.includes('%') && accuracy) {
-        ans = Math.round(ans / accuracy) * accuracy
+        /**
+         * When accuracy is set to 100 and selected value is less than 200
+         * barchart disarranges YAxis. Code below checks if value is greater
+         * than 500 before apply 100 scale range. Otherwise, chartJS will
+         * automatically use numeric algorithm to calculate scale range. 
+         * However, if accuracy is less than 100, we simply apply scale range
+         * rounding using the given accuracy value.
+         */
+
+        if (accuracy > 1) {
+            if (ans > 5 * accuracy) {
+                ans = Math.round(ans / accuracy) * accuracy
+            }
+        } else {
+            ans = Math.round(ans / accuracy) * accuracy
+        }
     }
 
     if (format) {
