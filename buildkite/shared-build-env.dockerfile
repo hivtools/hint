@@ -1,4 +1,4 @@
-FROM vimc/node-docker:mrc-3682
+FROM mrcide/node-docker:mrc-3682
 
 RUN apt-get install wget
 
