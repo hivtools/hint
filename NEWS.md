@@ -1,3 +1,7 @@
+# hint 2.26.4
+
+* yaxis scale is not automatically generating the correct range at low values for some indicators
+
 # hint 2.26.3
 
 * Add link to news site from version number drop down and update styling of version drop down
