@@ -763,6 +763,31 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(0);
     });
 
+    it("download comparison report", async () => {
+        const commit = jest.fn();
+
+        const root = mockRootState({
+            modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
+        });
+
+        const state = mockDownloadResultsState({
+            comparison: mockDownloadResultsDependency({downloadId: "1"})
+        });
+
+        await actions.downloadComparisonReport({commit, state, rootState: root} as any,);
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe("errors/ErrorAdded")
+        expect(commit.mock.calls[0][0]["payload"]).toEqual(
+            {
+                detail: "Could not parse API response. Please contact support.",
+                error: "MALFORMED_RESPONSE"
+            }
+        )
+        expect(mockAxios.history.get.length).toBe(1);
+
+        expect(mockAxios.history.get[0]["url"]).toBe("download/result/1");
+    });
+
     it("prepare comparison does not do anything if fetchingDownloadId is set", async () => {
         const commit = jest.fn();
         const state = mockDownloadResultsState({

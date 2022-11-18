@@ -33,7 +33,7 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         const {state} = context
             await api(context)
                 .ignoreSuccess()
-                .withError(DownloadResultsMutation.ComparisonError)
+                .withError(DownloadResultsMutation.ComparisonDownloadError)
                 .download(`download/result/${state.comparison.downloadId}`)
     },
 

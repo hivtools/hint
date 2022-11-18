@@ -25,7 +25,7 @@
                               @click="downloadComparisonReport"
                               :disabled="!comparison.downloadId || comparison.preparing"
                               :file="comparison"/>
-                    <error-alert v-if="comparison.error" :error="comparison.error"></error-alert>
+                    <error-alert v-if="comparison.downloadError" :error="comparison.downloadError"></error-alert>
                 </div>
             </div>
             <div id="upload" v-if="hasUploadPermission" class="col-sm">

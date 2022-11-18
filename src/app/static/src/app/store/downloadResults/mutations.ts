@@ -15,6 +15,7 @@ export enum DownloadResultsMutation {
     SummaryError = "SummaryError",
     PreparingComparisonOutput = "PreparingComparisonOutput",
     ComparisonOutputStatusUpdated = "ComparisonOutputStatusUpdated",
+    ComparisonDownloadError = "ComparisonDownloadError",
     ComparisonError = "ComparisonError",
     SetFetchingDownloadId = "SetFetchingDownloadId",
     PollingStatusStarted = "PollingStatusStarted",
@@ -156,6 +157,10 @@ export const mutations: MutationTree<DownloadResultsState> = {
 
     [DownloadResultsMutation.ComparisonOutputMetadataError](state: DownloadResultsState, action: PayloadWithType<Error>) {
         state.comparison.metadataError = action.payload;
+    },
+
+    [DownloadResultsMutation.ComparisonDownloadError](state: DownloadResultsState, action: PayloadWithType<Error>) {
+        state.comparison.downloadError = action.payload;
     },
 
     [DownloadResultsMutation.PollingStatusStarted](state: DownloadResultsState, action: PayloadWithType<PollingStarted>) {
