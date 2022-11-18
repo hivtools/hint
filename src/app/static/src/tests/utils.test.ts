@@ -12,11 +12,12 @@ import {
     constructUploadFile,
     constructUploadFileWithResourceName,
     getFilenameFromImportUrl,
-    updateForm, formatToLocalISODateTime, readStream, extractFilenameFrom
+    updateForm, formatToLocalISODateTime, readStream, extractFilenameFrom, commitDownloadError
 } from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
 import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {AxiosResponse} from "axios";
+import {DownloadResultsMutation} from "../app/store/downloadResults/mutations";
 
 describe("utils", () => {
 
@@ -71,7 +72,7 @@ describe("utils", () => {
         })
 
         //trigger download
-        readStream(mockAxiosResponse, mockCommit)
+        readStream(mockAxiosResponse, mockCommit, DownloadResultsMutation.ComparisonDownloadError)
 
         expect(document.body.appendChild).toBeCalledTimes(1)
         expect(window.URL.createObjectURL).toBeCalledTimes(1)
@@ -104,12 +105,40 @@ describe("utils", () => {
         const mockCommit = jest.fn()
 
         //trigger download
-        readStream(mockAxiosResponse, mockCommit)
+        readStream(mockAxiosResponse, mockCommit, DownloadResultsMutation.ComparisonDownloadError)
 
         //download link has been called
         expect(mockCommit).toBeCalledTimes(1)
-        expect(mockCommit.mock.calls[0][0].type).toBe("errors/ErrorAdded")
-        expect(mockCommit.mock.calls[0][0].payload).toBe("Cannot set property 'href' of undefined")
+        expect(mockCommit.mock.calls[0][0].type).toBe("ComparisonDownloadError")
+        expect(mockCommit.mock.calls[0][0].payload).toEqual(
+            {
+                detail: "Cannot set property 'href' of undefined",
+                error: "INVALID_BLOB"
+            }
+        )
+    })
+
+    it("can commit clear download error", () => {
+        const commit = jest.fn()
+        const commitType = DownloadResultsMutation.ComparisonDownloadError
+
+        commitDownloadError(commit, commitType)
+
+        expect(commit.mock.calls[0][0]).toEqual({payload: null, type: "ComparisonDownloadError"})
+    })
+
+    it("can commit error when reading blob", () => {
+        const commit = jest.fn()
+        const commitType = DownloadResultsMutation.ComparisonDownloadError
+        const payload = {error: "INVALID_BLOB", detail: "Can not read blob"}
+        commitDownloadError(commit, commitType, payload)
+
+        expect(commit.mock.calls[0][0].payload).toEqual(
+            {
+                error: "INVALID_BLOB",
+                detail: "Can not read blob"
+            })
+        expect(commit.mock.calls[0][0].type).toBe("ComparisonDownloadError")
     })
 
     it("can extract file name from content-disposition", () => {

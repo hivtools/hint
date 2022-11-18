@@ -31,6 +31,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
     private readonly _commit: Commit;
     private readonly _headers: any;
+    private _commitType: any;
 
     constructor(context: ActionContext<any, TranslatableState>) {
         this._commit = context.commit;
@@ -72,6 +73,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     };
 
     withError = (type: E, root = false) => {
+        this._commitType = type
         this._onError = (failure: Response) => {
             this._commit({type: type, payload: APIService.getFirstErrorFromFailure(failure)}, {root});
         };
@@ -189,7 +191,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     }
 
     private _handleDownloadResponse = (response: AxiosResponse) => {
-        readStream(response, this._commit)
+        readStream(response, this._commit, this._commitType)
     }
 
     //Initiates a download. NB any withSuccess mutation will be ignored for downloads.

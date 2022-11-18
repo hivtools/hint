@@ -475,7 +475,7 @@ export const flatMapControlSections = (sections: DynamicControlSection[]): Dynam
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }
 
-export const readStream = (response: AxiosResponse, commit: Commit): void => {
+export const readStream = (response: AxiosResponse, commit: Commit, commitType: string): void => {
     try {
         const filename = extractFilenameFrom(response.headers["content-disposition"])
         const fileUrl = URL.createObjectURL(response.data);
@@ -486,11 +486,19 @@ export const readStream = (response: AxiosResponse, commit: Commit): void => {
         fileLink.click()
         URL.revokeObjectURL(fileUrl)
         //clear download error
-        commit({type: DownloadResultsMutation.ComparisonDownloadError, payload: null}, {root: true});
+        commitDownloadError(commit, commitType)
     } catch (e) {
         //Commit fallback error when reading blob
-        commit({type: `errors/${ErrorsMutation.ErrorAdded}`, payload: e.message}, {root: true});
+        const payload = {error: "INVALID_BLOB", detail: e.message}
+        commitDownloadError(commit, commitType, payload)
     }
+}
+
+export const commitDownloadError = (commit: Commit, commitType: string, payload?: Error) => {
+    commit({
+        type: commitType,
+        payload: payload || null
+    });
 }
 
 export const extractFilenameFrom = (contentDisposition: string): string => {
