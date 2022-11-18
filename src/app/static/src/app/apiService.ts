@@ -5,6 +5,7 @@ import {extractFilenameFrom, freezer, isHINTResponse, readStream} from "./utils"
 import {Error, Response} from "./generated";
 import i18next from "i18next";
 import {TranslatableState} from "./types";
+import {DownloadResultsMutation} from "./store/downloadResults/mutations";
 
 declare let appUrl: string;
 
@@ -188,6 +189,9 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     }
 
     private _handleDownloadResponse = (response: AxiosResponse) => {
+
+        //clear download error on success
+        this._commit({type: DownloadResultsMutation.ComparisonDownloadError, payload: null}, {root: true});
 
         const filename = extractFilenameFrom(response.headers["content-disposition"])
 

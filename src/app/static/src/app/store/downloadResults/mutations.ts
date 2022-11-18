@@ -160,7 +160,7 @@ export const mutations: MutationTree<DownloadResultsState> = {
         state.comparison.metadataError = action.payload;
     },
 
-    [DownloadResultsMutation.ComparisonDownloadError](state: DownloadResultsState, action: PayloadWithType<Error>) {
+    [DownloadResultsMutation.ComparisonDownloadError](state: DownloadResultsState, action: PayloadWithType<Error | null>) {
         state.comparison.downloadError = action.payload;
     },
 
