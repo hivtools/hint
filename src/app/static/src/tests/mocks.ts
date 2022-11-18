@@ -1,5 +1,5 @@
 import MockAdapter from "axios-mock-adapter";
-import axios from "axios";
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {BaselineState, initialBaselineState} from "../app/store/baseline/baseline";
 import {initialPasswordState, PasswordState} from "../app/store/password/password";
 import {
@@ -211,6 +211,24 @@ export const mockSuccess = (data: any, version?: any): Response => {
         errors: [],
         version
     }
+};
+
+const mockDownloadErrorResponse = () => {
+    const errorResponse = [
+        {
+            error: "FAILED_TO_RETRIEVE_RESULT",
+            detail: "Missing some results",
+            key: "rofah-volil-kivup"
+        }
+    ]
+    const str = JSON.stringify(errorResponse);
+    return new Blob([str], {
+        type: "application/json"
+    });
+}
+
+export const mockDownloadFailure = (errorMessage = mockDownloadErrorResponse) => {
+    return errorMessage
 };
 
 export const mockFailure = (errorMessage: string): Response => {

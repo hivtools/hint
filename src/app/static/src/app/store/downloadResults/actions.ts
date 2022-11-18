@@ -6,7 +6,6 @@ import {DownloadResultsMutation} from "./mutations";
 import {ModelStatusResponse} from "../../generated";
 import {DOWNLOAD_TYPE} from "../../types";
 import {switches} from "../../featureSwitches"
-import {extractFilenameFrom, readStream} from "../../utils";
 
 export interface DownloadResultsActions {
     prepareSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => void
@@ -32,18 +31,10 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async downloadComparisonReport(context) {
         const {state} = context
-        if (state.comparison.complete) {
             await api(context)
                 .ignoreSuccess()
                 .withError(DownloadResultsMutation.ComparisonError)
                 .download(`download/result/${state.comparison.downloadId}`)
-                .then((response) => {
-                    if (response) {
-                        const filename = extractFilenameFrom(response.headers["content-disposition"])
-                        readStream(response.data, `${filename}`)
-                    }
-                })
-        }
     },
 
     async prepareCoarseOutput(context) {

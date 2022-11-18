@@ -85,7 +85,7 @@ export const verifyCheckSum = (content: string): false | any => {
 
 function isHINTError(object: any): object is Error {
     return typeof object.error == "string"
-        && object.details == undefined || typeof object.details == "string"
+        && object.detail == undefined || typeof object.detail == "string"
 }
 
 export function isHINTResponse(object: any): object is Response {
