@@ -59,7 +59,6 @@ describe("Hintr Menu Version", () => {
         expectTranslated(link, "News", "Nouvelles", "Notícias", store);
         expect(link.attributes("href")).toBe("https://naomi.unaids.org/news");
         expect(link.attributes("target")).toBe("_blank");
-        expect(link.attributes("href")).toBe("https://naomi.unaids.org/news");
     });
 
     it("hintr version menu displays current hint version", async() => {
