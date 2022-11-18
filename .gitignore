@@ -8,3 +8,4 @@ app/static/public/css/**
 src/app/static/playwright-report/
 src/app/static/playwright/.cache/
 src/app/static/storageState.json
+.vscode
