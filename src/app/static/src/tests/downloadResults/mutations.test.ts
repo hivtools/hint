@@ -295,7 +295,7 @@ describe(`download results mutations`, () => {
                 error: mockError(),
                 statusPollId: 123,
                 downloadId: "111",
-                downloadError: null,
+                downloadError: mockError("test"),
                 fetchingDownloadId: false,
                 metadataError: null
             }
@@ -303,6 +303,7 @@ describe(`download results mutations`, () => {
         mutations[DownloadResultsMutation.ComparisonOutputStatusUpdated](state, {payload: CompleteStatusResponse});
         expect(state.comparison.complete).toBe(true);
         expect(state.comparison.preparing).toBe(false);
+        expect(state.comparison.error).toBe(null);
         expect(state.comparison.error).toBe(null);
         expect(state.comparison.metadataError).toBe(null);
         expect(state.comparison.statusPollId).toBe(-1);

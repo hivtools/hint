@@ -122,6 +122,7 @@ export const mutations: MutationTree<DownloadResultsState> = {
             state.comparison.statusPollId = -1;
         }
         state.comparison.error = null;
+        state.comparison.downloadError = null;
     },
 
     [DownloadResultsMutation.ComparisonError](state: DownloadResultsState, action: PayloadWithType<Error>) {
