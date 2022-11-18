@@ -1,5 +1,5 @@
 <template>
-    <drop-down :text="`v${hintrVersions.naomi}`" :right="true" style="flex: none">
+    <drop-down :text="`v${hintrVersions.naomi}`" :right="true" :delay="true" style="flex: none">
         <a class="dropdown-item"
            href="https://naomi.unaids.org/news"
            target="_blank"
