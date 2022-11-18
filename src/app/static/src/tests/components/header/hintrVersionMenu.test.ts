@@ -37,6 +37,16 @@ describe("Hintr Menu Version", () => {
         expect(wrapper.findAll("span").length).toBe(5);
     });
 
+    it("renders drop down with delay property true", () => {
+        const store = createStore();
+        const wrapper = shallowMount(HintrVersionMenu, {
+            store
+        });
+
+        const dropDown = wrapper.find(DropDown);
+        expect(dropDown.props("delay")).toBe(true);
+    });
+
     it("hintr version menu displays link to news site", async() => {
         const store = createStore();
         const wrapper = shallowMount(HintrVersionMenu, {
