@@ -1,7 +1,7 @@
 import * as CryptoJS from 'crypto-js';
 import {
     ActionContext,
-    ActionMethod,
+    ActionMethod, Commit,
     CustomVue,
     mapActions,
     mapGetters,
@@ -24,6 +24,8 @@ import {initialStepperState} from "./store/stepper/stepper";
 import {LoadState} from "./store/load/state";
 import {initialModelRunState} from "./store/modelRun/modelRun";
 import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
+import {DownloadResultsMutation} from "./store/downloadResults/mutations";
+import {ErrorsMutation} from "./store/errors/mutations";
 
 export type ComputedWithType<T> = () => T;
 
@@ -472,14 +474,22 @@ export const flatMapControlSections = (sections: DynamicControlSection[]): Dynam
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }
 
-export const readStream = (data: Blob, filename: string): void => {
-    const fileUrl = URL.createObjectURL(data);
-    const fileLink = document.createElement('a');
-    fileLink.href = fileUrl;
-    fileLink.setAttribute('download', filename);
-    document.body.appendChild(fileLink);
-    fileLink.click()
-    URL.revokeObjectURL(fileUrl)
+export const readStream = (data: Blob, filename: string, commit: Commit): void => {
+    try {
+        const fileUrl = URL.createObjectURL(data);
+        const fileLink = document.createElement('a');
+        fileLink.href = fileUrl;
+        fileLink.setAttribute('download', filename);
+        document.body.appendChild(fileLink);
+        fileLink.click()
+        URL.revokeObjectURL(fileUrl)
+        //clear download error
+        commit({type: DownloadResultsMutation.ComparisonDownloadError, payload: null}, {root: true});
+    } catch (e) {
+        //Commit fallback error when reading blob
+        commit({type: `errors/${ErrorsMutation.ErrorAdded}`, payload: e.message}, {root: true});
+    }
+
 }
 
 export const extractFilenameFrom = (contentDisposition: string): string => {

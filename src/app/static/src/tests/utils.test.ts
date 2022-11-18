@@ -49,6 +49,7 @@ describe("utils", () => {
         const mockClick = jest.fn()
         const mockHref = jest.fn()
         const mockAttr = jest.fn()
+        const mockCommit = jest.fn()
 
         document.createElement = jest.fn().mockImplementation(() => {
             return {
@@ -61,7 +62,7 @@ describe("utils", () => {
         const file = new Blob(["data"], {type: "application/octet-stream"});
 
         //trigger download
-        readStream(file, "test.html")
+        readStream(file, "test.html", mockCommit)
 
         expect(document.body.appendChild).toBeCalledTimes(1)
         expect(window.URL.createObjectURL).toBeCalledTimes(1)
@@ -79,6 +80,29 @@ describe("utils", () => {
 
         //download link has been called
         expect(mockClick).toBeCalledTimes(1)
+
+        //can clear downloadError
+        expect(mockCommit).toBeCalledTimes(1)
+        expect(mockCommit.mock.calls[0][0].type).toBe("ComparisonDownloadError")
+        expect(mockCommit.mock.calls[0][0].payload).toBeNull()
+    })
+
+    it("can commit fallback error when reading blob content", () => {
+        window.URL.createObjectURL = jest.fn();
+        window.URL.revokeObjectURL = jest.fn();
+        document.body.appendChild = jest.fn()
+        document.createElement = jest.fn()
+        const mockCommit = jest.fn()
+
+        const file = new Blob(["data"]);
+
+        //trigger download
+        readStream(file, "test.html", mockCommit)
+
+        //download link has been called
+        expect(mockCommit).toBeCalledTimes(1)
+        expect(mockCommit.mock.calls[0][0].type).toBe("errors/ErrorAdded")
+        expect(mockCommit.mock.calls[0][0].payload).toBe("Cannot set property 'href' of undefined")
     })
 
     it("can extract file name from content-disposition", () => {
