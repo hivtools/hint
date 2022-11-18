@@ -16,12 +16,23 @@ import {
 } from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
 import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {AxiosResponse} from "axios";
 
 describe("utils", () => {
 
     beforeEach(() => {
         jest.clearAllMocks()
     })
+
+    const file = new Blob(["data"], {type: "application/octet-stream"});
+
+    const mockAxiosResponse: AxiosResponse = {
+        data: file,
+        headers: {"content-disposition": "attachment; filename=test.html"},
+        status: 200,
+        config: {},
+        statusText: ""
+    }
 
     it("can make and verify downloadable content", () => {
         const test = {
@@ -59,10 +70,8 @@ describe("utils", () => {
             }
         })
 
-        const file = new Blob(["data"], {type: "application/octet-stream"});
-
         //trigger download
-        readStream(file, "test.html", mockCommit)
+        readStream(mockAxiosResponse, mockCommit)
 
         expect(document.body.appendChild).toBeCalledTimes(1)
         expect(window.URL.createObjectURL).toBeCalledTimes(1)
@@ -94,10 +103,8 @@ describe("utils", () => {
         document.createElement = jest.fn()
         const mockCommit = jest.fn()
 
-        const file = new Blob(["data"]);
-
         //trigger download
-        readStream(file, "test.html", mockCommit)
+        readStream(mockAxiosResponse, mockCommit)
 
         //download link has been called
         expect(mockCommit).toBeCalledTimes(1)

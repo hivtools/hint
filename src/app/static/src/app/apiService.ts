@@ -189,13 +189,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     }
 
     private _handleDownloadResponse = (response: AxiosResponse) => {
-
-        //clear download error on success
-        this._commit({type: DownloadResultsMutation.ComparisonDownloadError, payload: null}, {root: true});
-
-        const filename = extractFilenameFrom(response.headers["content-disposition"])
-
-        readStream(response.data, `${filename}`, this._commit)
+        readStream(response.data, this._commit)
     }
 
     //Initiates a download. NB any withSuccess mutation will be ignored for downloads.

@@ -26,6 +26,7 @@ import {initialModelRunState} from "./store/modelRun/modelRun";
 import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
 import {DownloadResultsMutation} from "./store/downloadResults/mutations";
 import {ErrorsMutation} from "./store/errors/mutations";
+import {AxiosResponse} from "axios";
 
 export type ComputedWithType<T> = () => T;
 
@@ -474,9 +475,10 @@ export const flatMapControlSections = (sections: DynamicControlSection[]): Dynam
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }
 
-export const readStream = (data: Blob, filename: string, commit: Commit): void => {
+export const readStream = (response: AxiosResponse, commit: Commit): void => {
     try {
-        const fileUrl = URL.createObjectURL(data);
+        const filename = extractFilenameFrom(response.headers["content-disposition"])
+        const fileUrl = URL.createObjectURL(response.data);
         const fileLink = document.createElement('a');
         fileLink.href = fileUrl;
         fileLink.setAttribute('download', filename);
@@ -489,7 +491,6 @@ export const readStream = (data: Blob, filename: string, commit: Commit): void =
         //Commit fallback error when reading blob
         commit({type: `errors/${ErrorsMutation.ErrorAdded}`, payload: e.message}, {root: true});
     }
-
 }
 
 export const extractFilenameFrom = (contentDisposition: string): string => {
