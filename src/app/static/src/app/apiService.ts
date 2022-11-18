@@ -189,7 +189,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     }
 
     private _handleDownloadResponse = (response: AxiosResponse) => {
-        readStream(response.data, this._commit)
+        readStream(response, this._commit)
     }
 
     //Initiates a download. NB any withSuccess mutation will be ignored for downloads.
