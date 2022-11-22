@@ -49,6 +49,7 @@ export const mutations: MutationTree<ModelRunState> = {
 
     [ModelRunMutation.RunResultError](state: ModelRunState, action: PayloadWithType<Error>) {
         state.errors.push(action.payload);
+        state.startedRunning = false
     },
 
     [ModelRunMutation.Ready](state: ModelRunState) {
@@ -57,7 +58,6 @@ export const mutations: MutationTree<ModelRunState> = {
 
     [ModelRunMutation.ModelRunError](state: ModelRunState, action: PayloadWithType<Error>) {
         state.errors.push(action.payload);
-        state.startedRunning = false;
     },
 
     [ModelRunMutation.RunStatusError](state: ModelRunState) {

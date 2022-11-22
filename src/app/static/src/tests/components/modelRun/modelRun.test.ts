@@ -25,7 +25,6 @@ import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ProgressBar from "../../../app/components/progress/ProgressBar.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
-import {actions as rootActions} from "../../../app/store/root/actions";
 
 const localVue = createLocalVue();
 

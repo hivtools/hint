@@ -222,6 +222,7 @@ describe("Model run actions", () => {
 
         await actions.getResult({commit, state, rootState} as any);
 
+        expect(commit.mock.calls.length).toBe(3)
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "RunResultError",
             payload: mockError("Test Error")
