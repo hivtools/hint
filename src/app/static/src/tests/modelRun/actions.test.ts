@@ -63,6 +63,10 @@ describe("Model run actions", () => {
         const commit = jest.fn();
         await actions.run({commit, rootState, state} as any);
         expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "StartedRunning",
+            payload: true
+        });
+        expect(commit.mock.calls[1][0]).toStrictEqual({
             type: "ModelRunStarted",
             payload: {id: "12345"}
         });
@@ -78,8 +82,12 @@ describe("Model run actions", () => {
 
         const commit = jest.fn();
         await actions.run({commit, rootState, state} as any);
-        expect(commit.mock.calls[0][0]).toBe("RunCancelled");
-        expect(commit.mock.calls[1][0]).toStrictEqual({
+        expect(commit.mock.calls[0][0]).toStrictEqual({
+            type: "StartedRunning",
+            payload: true
+        });
+        expect(commit.mock.calls[1][0]).toBe("RunCancelled");
+        expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "ModelRunStarted",
             payload: {id: "12345"}
         });
@@ -195,6 +203,10 @@ describe("Model run actions", () => {
             payload: mockResponse.data
         });
         expect(commit.mock.calls[2][0]).toStrictEqual({
+            type: "StartedRunning",
+            payload: false
+        });
+        expect(commit.mock.calls[3][0]).toStrictEqual({
             type: "Ready",
             payload: true
         });
@@ -215,6 +227,10 @@ describe("Model run actions", () => {
             payload: mockError("Test Error")
         });
         expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "StartedRunning",
+            payload: false
+        });
+        expect(commit.mock.calls[2][0]).toStrictEqual({
             type: "Ready",
             payload: true
         });
