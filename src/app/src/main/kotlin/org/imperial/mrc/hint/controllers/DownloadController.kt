@@ -30,7 +30,6 @@ class DownloadController(val apiClient: HintrAPIClient)
     @ResponseBody
     fun getDownloadOutputResult(@PathVariable("id") id: String): ResponseEntity<StreamingResponseBody>
     {
-        println(apiClient.downloadOutputResult(id))
         return apiClient.downloadOutputResult(id)
     }
 }
