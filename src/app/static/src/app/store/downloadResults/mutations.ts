@@ -15,6 +15,7 @@ export enum DownloadResultsMutation {
     SummaryError = "SummaryError",
     PreparingComparisonOutput = "PreparingComparisonOutput",
     ComparisonOutputStatusUpdated = "ComparisonOutputStatusUpdated",
+    ComparisonDownloadError = "ComparisonDownloadError",
     ComparisonError = "ComparisonError",
     SetFetchingDownloadId = "SetFetchingDownloadId",
     PollingStatusStarted = "PollingStatusStarted",
@@ -121,16 +122,19 @@ export const mutations: MutationTree<DownloadResultsState> = {
             state.comparison.statusPollId = -1;
         }
         state.comparison.error = null;
+        state.comparison.downloadError = null;
     },
 
     [DownloadResultsMutation.ComparisonError](state: DownloadResultsState, action: PayloadWithType<Error>) {
         state.comparison.error = action.payload;
         state.comparison.preparing = false;
         state.comparison.fetchingDownloadId = false;
-        window.clearInterval(state.comparison.statusPollId);
-        state.comparison.statusPollId = -1;
-    },
 
+        if (state.comparison.statusPollId > -1) {
+            window.clearInterval(state.comparison.statusPollId);
+            state.comparison.statusPollId = -1;
+        }
+    },
     [DownloadResultsMutation.SetFetchingDownloadId](state: DownloadResultsState, action: PayloadWithType<string>) {
         switch (action.payload) {
             case DOWNLOAD_TYPE.SPECTRUM: {
@@ -154,6 +158,10 @@ export const mutations: MutationTree<DownloadResultsState> = {
 
     [DownloadResultsMutation.ComparisonOutputMetadataError](state: DownloadResultsState, action: PayloadWithType<Error>) {
         state.comparison.metadataError = action.payload;
+    },
+
+    [DownloadResultsMutation.ComparisonDownloadError](state: DownloadResultsState, action: PayloadWithType<Error | null>) {
+        state.comparison.downloadError = action.payload;
     },
 
     [DownloadResultsMutation.PollingStatusStarted](state: DownloadResultsState, action: PayloadWithType<PollingStarted>) {

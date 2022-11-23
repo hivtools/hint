@@ -171,6 +171,7 @@ export interface DownloadResultsDependency {
     preparing: boolean
     statusPollId: number
     complete: boolean
+    downloadError: Error | null
     error: Error | null
     metadataError: Error | null
 }

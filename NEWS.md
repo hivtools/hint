@@ -1,3 +1,7 @@
+# hint 2.27.0
+
+* Enable comparison download report
+
 # hint 2.26.4
 
 * yaxis scale is not automatically generating the correct range at low values for some indicators
