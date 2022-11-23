@@ -47,21 +47,17 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     private _ignoreSuccess = false;
     private _freezeResponse = false;
 
-    private getFirstErrorFromFailure = (failure: Response) => {
+    static getFirstErrorFromFailure = (failure: Response) => {
         if (failure.errors.length == 0) {
-            return this.createError("apiMissingError");
+            return APIService.createError("apiMissingError");
         }
         return failure.errors[0];
     };
 
-    private createError(detail: string, statusCode: number | null = null) {
-        const detailFormatter = statusCode
-            ? i18next.t(detail, {statusCode, lng: this._headers["Accept-Language"]})
-            : i18next.t(detail)
-
+    static createError(detail: string) {
         return {
             error: "MALFORMED_RESPONSE",
-            detail: detailFormatter
+            detail: i18next.t(detail)
         }
     }
 
@@ -76,7 +72,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
     withError = (type: E, root = false) => {
         this._onError = (failure: Response) => {
-            this._commit({type: type, payload: this.getFirstErrorFromFailure(failure)}, {root});
+            this._commit({type: type, payload: APIService.getFirstErrorFromFailure(failure)}, {root});
         };
         return this;
     };
@@ -132,12 +128,11 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
         const failure = e.response && e.response.data;
         if (!isHINTResponse(failure)) {
-            console.warn(e.toJSON)
-            this._commitError(this.createError("apiCouldNotParseError", e.response && e.response.status));
+            this._commitError(APIService.createError("apiCouldNotParseError"));
         } else if (this._onError) {
             this._onError(failure);
         } else {
-            this._commitError(this.getFirstErrorFromFailure(failure));
+            this._commitError(APIService.getFirstErrorFromFailure(failure));
         }
     };
 
