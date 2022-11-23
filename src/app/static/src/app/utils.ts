@@ -1,7 +1,7 @@
 import * as CryptoJS from 'crypto-js';
 import {
     ActionContext,
-    ActionMethod, Commit,
+    ActionMethod,
     CustomVue,
     mapActions,
     mapGetters,
@@ -9,7 +9,7 @@ import {
     mapState,
     MutationMethod
 } from "vuex";
-import {ADRSchemas, DatasetResource, Dict, UploadFile, Version, Filter} from "./types";
+import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse, Response} from "./generated";
 import moment from 'moment';
 import {
@@ -24,8 +24,6 @@ import {initialStepperState} from "./store/stepper/stepper";
 import {LoadState} from "./store/load/state";
 import {initialModelRunState} from "./store/modelRun/modelRun";
 import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
-import {DownloadResultsMutation} from "./store/downloadResults/mutations";
-import {ErrorsMutation} from "./store/errors/mutations";
 import {AxiosResponse} from "axios";
 
 export type ComputedWithType<T> = () => T;
@@ -475,30 +473,16 @@ export const flatMapControlSections = (sections: DynamicControlSection[]): Dynam
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }
 
-export const readStream = (response: AxiosResponse, commit: Commit, commitType: string): void => {
-    try {
-        const filename = extractFilenameFrom(response.headers["content-disposition"])
-        const fileUrl = URL.createObjectURL(response.data);
-        const fileLink = document.createElement('a');
-        fileLink.href = fileUrl;
-        fileLink.setAttribute('download', filename);
-        document.body.appendChild(fileLink);
-        fileLink.click()
-        URL.revokeObjectURL(fileUrl)
-        //clear download error
-        commitDownloadError(commit, commitType)
-    } catch (e) {
-        //Commit fallback error when reading blob
-        const payload = {error: "INVALID_BLOB", detail: e.message}
-        commitDownloadError(commit, commitType, payload)
-    }
-}
+export const readStream = (response: AxiosResponse): void => {
+    const filename = extractFilenameFrom(response.headers["content-disposition"])
+    const fileUrl = URL.createObjectURL(response.data);
+    const fileLink = document.createElement('a');
+    fileLink.href = fileUrl;
+    fileLink.setAttribute('download', filename);
+    document.body.appendChild(fileLink);
+    fileLink.click()
+    URL.revokeObjectURL(fileUrl)
 
-export const commitDownloadError = (commit: Commit, commitType: string, payload?: Error) => {
-    commit({
-        type: commitType,
-        payload: payload || null
-    });
 }
 
 export const extractFilenameFrom = (contentDisposition: string): string => {

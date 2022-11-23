@@ -1,6 +1,7 @@
 import {
     mockDownloadResultsDependency,
-    mockDownloadResultsState, mockError, mockMetadataState, mockRootState
+    mockDownloadResultsState,
+    mockError
 } from "../mocks";
 import {mutations} from "../../app/store/downloadResults/mutations";
 import {DownloadResultsMutation} from "../../app/store/downloadResults/mutations";

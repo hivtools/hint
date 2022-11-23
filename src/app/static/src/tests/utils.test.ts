@@ -12,12 +12,14 @@ import {
     constructUploadFile,
     constructUploadFileWithResourceName,
     getFilenameFromImportUrl,
-    updateForm, formatToLocalISODateTime, readStream, extractFilenameFrom, commitDownloadError
+    updateForm,
+    formatToLocalISODateTime,
+    readStream,
+    extractFilenameFrom
 } from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
 import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {AxiosResponse} from "axios";
-import {DownloadResultsMutation} from "../app/store/downloadResults/mutations";
 
 describe("utils", () => {
 
@@ -61,7 +63,6 @@ describe("utils", () => {
         const mockClick = jest.fn()
         const mockHref = jest.fn()
         const mockAttr = jest.fn()
-        const mockCommit = jest.fn()
 
         document.createElement = jest.fn().mockImplementation(() => {
             return {
@@ -72,7 +73,7 @@ describe("utils", () => {
         })
 
         //trigger download
-        readStream(mockAxiosResponse, mockCommit, DownloadResultsMutation.ComparisonDownloadError)
+        readStream(mockAxiosResponse)
 
         expect(document.body.appendChild).toBeCalledTimes(1)
         expect(window.URL.createObjectURL).toBeCalledTimes(1)
@@ -90,55 +91,6 @@ describe("utils", () => {
 
         //download link has been called
         expect(mockClick).toBeCalledTimes(1)
-
-        //can clear downloadError
-        expect(mockCommit).toBeCalledTimes(1)
-        expect(mockCommit.mock.calls[0][0].type).toBe("ComparisonDownloadError")
-        expect(mockCommit.mock.calls[0][0].payload).toBeNull()
-    })
-
-    it("can commit fallback error when reading blob content", () => {
-        window.URL.createObjectURL = jest.fn();
-        window.URL.revokeObjectURL = jest.fn();
-        document.body.appendChild = jest.fn()
-        document.createElement = jest.fn()
-        const mockCommit = jest.fn()
-
-        //trigger download
-        readStream(mockAxiosResponse, mockCommit, DownloadResultsMutation.ComparisonDownloadError)
-
-        //download link has been called
-        expect(mockCommit).toBeCalledTimes(1)
-        expect(mockCommit.mock.calls[0][0].type).toBe("ComparisonDownloadError")
-        expect(mockCommit.mock.calls[0][0].payload).toEqual(
-            {
-                detail: "Cannot set property 'href' of undefined",
-                error: "INVALID_BLOB"
-            }
-        )
-    })
-
-    it("can commit clear download error", () => {
-        const commit = jest.fn()
-        const commitType = DownloadResultsMutation.ComparisonDownloadError
-
-        commitDownloadError(commit, commitType)
-
-        expect(commit.mock.calls[0][0]).toEqual({payload: null, type: "ComparisonDownloadError"})
-    })
-
-    it("can commit error when reading blob", () => {
-        const commit = jest.fn()
-        const commitType = DownloadResultsMutation.ComparisonDownloadError
-        const payload = {error: "INVALID_BLOB", detail: "Can not read blob"}
-        commitDownloadError(commit, commitType, payload)
-
-        expect(commit.mock.calls[0][0].payload).toEqual(
-            {
-                error: "INVALID_BLOB",
-                detail: "Can not read blob"
-            })
-        expect(commit.mock.calls[0][0].type).toBe("ComparisonDownloadError")
     })
 
     it("can extract file name from content-disposition", () => {
