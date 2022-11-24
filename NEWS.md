@@ -1,3 +1,7 @@
+# hint 2.28.0
+
+* Implement spring actuator for built in metrics
+
 # hint 2.27.0
 
 * Enable comparison download report

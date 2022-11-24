@@ -15,9 +15,23 @@ class ActuatorTests: SecureIntegrationTests()
     }
 
     @Test
-    fun `can see app metrics`()
+    fun `can see app health metrics`()
     {
-        val responseEntity = testRestTemplate.postForEntity<String>("/actuator/submit")
+        val responseEntity = testRestTemplate.postForEntity<String>("/actuator/health")
+        assertSuccess(responseEntity)
+    }
+
+    @Test
+    fun `can see app http trace metrics`()
+    {
+        val responseEntity = testRestTemplate.postForEntity<String>("/actuator/httptrace")
+        assertSuccess(responseEntity)
+    }
+
+    @Test
+    fun `can see app info metrics`()
+    {
+        val responseEntity = testRestTemplate.postForEntity<String>("/actuator/info")
         assertSuccess(responseEntity)
     }
 }
