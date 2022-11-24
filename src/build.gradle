@@ -1,30 +1,31 @@
 buildscript {
-    ext.kotlin_version = '1.4.10'
+    ext.kotlin_version = '1.6.10'
 
     repositories {
         mavenCentral()
-        maven { // required for detekt < v1.17.0
-            url "https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven"
+        maven {
+            url "https://plugins.gradle.org/m2/"
         }
     }
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
+        classpath 'io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.19.0'
     }
 }
 
 plugins {
-    id 'org.springframework.boot' version '2.1.6.RELEASE' apply false
-    id 'io.gitlab.arturbosch.detekt' version "1.14.0"
+    id 'org.springframework.boot' version '2.7.3' apply false
+    id 'io.gitlab.arturbosch.detekt' version "1.19.0"
 }
 
 subprojects {
 
     repositories {
         mavenCentral()
-        maven { // required for detekt < v1.17.0
-            url "https://maven.pkg.jetbrains.space/public/p/kotlinx-html/maven"
+        maven {
+            url "https://plugins.gradle.org/m2/"
         }
     }
 
@@ -37,28 +38,30 @@ subprojects {
 
     detekt {
         config = files("$rootDir/config/detekt/detekt.yml")
+        baseline = file("$rootDir/config/detekt/baseline.xml")
         buildUponDefaultConfig = true
+        autoCorrect = true
         reports {
             // these reports are generated in the build/reports/detekt directory
-            txt.enabled = true
+            txt.required.set(true)
         }
     }
 
-    tasks.detekt.jvmTarget = "1.8"
+    tasks.detekt.jvmTarget = JavaVersion.VERSION_11
 
     dependencies {
         implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     }
 
     jacoco {
-        toolVersion = "0.8.3"
-        reportsDir = file("$projectDir/coverage")
+        toolVersion = "0.8.8"
+        reportsDirectory.set(layout.buildDirectory.dir("$projectDir/coverage"))
     }
 
-    jacocoTestReport {
+    tasks.jacocoTestReport {
         reports {
-            xml.enabled = true
-            csv.enabled = false
+            xml.required.set(true)
+            csv.required.set(false)
         }
     }
 
@@ -66,7 +69,7 @@ subprojects {
         enabled true
     }
 
-    test {
+    tasks.test {
         useJUnitPlatform()
         testLogging {
             exceptionFormat = 'full'
@@ -76,11 +79,6 @@ subprojects {
         }
     }
 
-
-    configurations {
-        all*.exclude module : 'spring-boot-starter-logging'
-    }
-
     group = 'org.imperial.mrc'
-    sourceCompatibility = '1.8'
+    sourceCompatibility = JavaVersion.VERSION_11
 }

@@ -1,11 +1,15 @@
 package org.imperial.mrc.hint.database
 
 import org.assertj.core.api.Assertions.assertThat
+import org.imperial.mrc.hint.caseInsensitiveEmail
 import org.imperial.mrc.hint.db.Tables.ADR_KEY
 import org.imperial.mrc.hint.db.UserRepository
+import org.imperial.mrc.hint.exceptions.HintException
+import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.security.Encryption
 import org.jooq.DSLContext
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -95,5 +99,23 @@ class UserRepositoryTests
         userRepo.addUser(testEmail, "pw")
         val result = sut.getADRKey(testEmail)
         assertThat(result).isEqualTo(null)
+    }
+
+    @Test
+    fun `can add and get oauth2 user`()
+    {
+        sut.addOAuth2User(testEmail)
+        sut.getAllUserNames()
+            .find { caseInsensitiveEmail(testEmail).matches(it) }
+
+        assertEquals(testEmail, "test@test.com")
+    }
+
+    @Test
+    fun `throws user exception when adding invalid email`()
+    {
+        TranslationAssert.assertThatThrownBy { sut.addOAuth2User(("test.com")) }
+            .isInstanceOf(HintException::class.java)
+            .hasMessageContaining("HintException with key invalidEmail")
     }
 }

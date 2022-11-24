@@ -1,5 +1,11 @@
 import {ModelRunMutation, mutations} from "../../app/store/modelRun/mutations";
-import {mockError, mockModelResultResponse, mockModelRunState, mockModelStatusResponse, mockWarning} from "../mocks";
+import {
+    mockError,
+    mockModelResultResponse,
+    mockModelRunState,
+    mockModelStatusResponse,
+    mockWarning
+} from "../mocks";
 import {expectAllMutationsDefined} from "../testHelpers";
 import {ModelStatusResponse} from "../../app/generated";
 
@@ -14,11 +20,19 @@ describe("Model run mutations", () => {
     });
 
     it("sets status and clears errors when started", () => {
-        const testState = mockModelRunState({errors: [mockError("1"), mockError("2"), mockError("3")]});
+        const testState = mockModelRunState(
+            {
+                errors: [
+                    mockError("1"),
+                    mockError("2"),
+                    mockError("3")],
+                startedRunning: true
+            });
         mutations.ModelRunStarted(testState, {payload: {id: "1234"}});
         expect(testState.modelRunId).toBe("1234");
         expect(testState.status).toStrictEqual({id: "1234"});
         expect(testState.errors).toStrictEqual([]);
+        expect(testState.startedRunning).toEqual(true);
     });
 
     it("sets run status, success and poll id when done", () => {
@@ -27,6 +41,7 @@ describe("Model run mutations", () => {
         expect(testState.status.success).toBe(true);
         expect(testState.status).toStrictEqual({id: "1234", done: true, success: true});
         expect(testState.statusPollId).toBe(-1);
+        expect(testState.startedRunning).toEqual(false);
     });
 
     it("successful run status update clears errors", () => {
@@ -66,9 +81,10 @@ describe("Model run mutations", () => {
     });
 
     it("sets result error", () => {
-        const testState = mockModelRunState();
+        const testState = mockModelRunState({startedRunning: true});
         mutations.RunResultError(testState, {payload: "Test Error"});
         expect(testState.errors).toStrictEqual(["Test Error"]);
+        expect(testState.startedRunning).toEqual(false);
     });
 
     it("sets run error", () => {
@@ -83,7 +99,8 @@ describe("Model run mutations", () => {
             statusPollId: 999,
             status: {done: false} as ModelStatusResponse,
             modelRunId: "123",
-            pollingCounter: 150
+            pollingCounter: 150,
+            startedRunning: true
         });
         mutations.RunStatusError(testState, {payload: "1"});
         expect(testState.errors).toStrictEqual([
@@ -95,6 +112,7 @@ describe("Model run mutations", () => {
         expect(testState.statusPollId).toEqual(-1);
         expect(testState.status).toStrictEqual({});
         expect(testState.modelRunId).toStrictEqual("");
+        expect(testState.startedRunning).toEqual(false);
     });
 
     it("run status error and does not stop polling if maxPollErrors not exceeded", () => {
@@ -103,19 +121,22 @@ describe("Model run mutations", () => {
             statusPollId: 999,
             status: {done: false} as ModelStatusResponse,
             modelRunId: "123",
-            pollingCounter: 9
+            pollingCounter: 9,
+            startedRunning: true
         });
         mutations.RunStatusError(testState, {payload: "1"});
         expect(testState.errors).toStrictEqual([]);
         expect(testState.statusPollId).toEqual(999);
         expect(testState.status).toStrictEqual({done: false});
         expect(testState.modelRunId).toStrictEqual("123");
+        expect(testState.startedRunning).toEqual(true);
     });
 
     it("cancel run resets state", () => {
         const testState = mockModelRunState({
             modelRunId: "123",
             statusPollId: 1,
+            startedRunning: true,
             status: mockModelStatusResponse(),
             errors: [mockError("testError")],
             result: mockModelResultResponse()
@@ -127,6 +148,7 @@ describe("Model run mutations", () => {
         expect(testState.status).toStrictEqual({});
         expect(testState.errors).toStrictEqual([]);
         expect(testState.result).toBeNull();
+        expect(testState.startedRunning).toEqual(false);
     });
 
     it("clears result", () => {
@@ -135,5 +157,17 @@ describe("Model run mutations", () => {
         });
         mutations.ClearResult(testState);
         expect(testState.result).toBeNull();
+    });
+
+    it("resets polling id", () => {
+        const state = mockModelRunState({statusPollId: 1000});
+        mutations[ModelRunMutation.ResetIds](state);
+        expect(state.statusPollId).toEqual(-1);
+    });
+
+    it("sets StartedRunning", () => {
+        const state = mockModelRunState();
+        mutations[ModelRunMutation.StartedRunning](state, {payload: true});
+        expect(state.startedRunning).toEqual(true);
     });
 });

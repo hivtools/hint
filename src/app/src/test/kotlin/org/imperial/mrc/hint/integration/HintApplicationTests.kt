@@ -18,6 +18,8 @@ import java.io.File
 class HintApplicationTests : SecureIntegrationTests()
 {
 
+    private val expectedSuccessResponse = "{\"data\":null,\"errors\":[],\"status\":\"success\"}"
+
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
     fun `all users can access index`(isAuthorized: IsAuthorized)
@@ -29,7 +31,7 @@ class HintApplicationTests : SecureIntegrationTests()
     @EnumSource(IsAuthorized::class)
     fun `all users can access explore`(isAuthorized: IsAuthorized)
     {
-        testAllUserAccess("/explore", isAuthorized)
+        testAllUserAccess("/callback/explore", isAuthorized)
     }
 
     @ParameterizedTest
@@ -73,10 +75,10 @@ class HintApplicationTests : SecureIntegrationTests()
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
 
-        val entity = testRestTemplate.postForEntity<String>("/callback/", HttpEntity(map, headers))
+        val entity = testRestTemplate.postForEntity<String>("/callback/formClient", HttpEntity(map, headers))
 
         //test get redirected back to login page
-        assertThat(entity.statusCode).isEqualTo(HttpStatus.FOUND)
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.SEE_OTHER)
         assertThat(entity.headers["Location"]!!.first())
                 .isEqualTo("/login?username=test.user%40example.com&error=BadCredentialsException")
     }
@@ -100,12 +102,20 @@ class HintApplicationTests : SecureIntegrationTests()
         headers.add("Cookie", "JSESSIONID=$sessionCookie")
 
         // login
-        val callbackEntity = testRestTemplate.postForEntity<String>("/callback/", HttpEntity(map, headers))
+        val callbackEntity = testRestTemplate.postForEntity<String>("/callback/formClient", HttpEntity(map, headers))
 
         // get redirected back to explore page
-        assertThat(callbackEntity.statusCode).isEqualTo(HttpStatus.FOUND)
+        assertThat(callbackEntity.statusCode).isEqualTo(HttpStatus.SEE_OTHER)
         assertThat(callbackEntity.headers["Location"]!!.first())
-                .isEqualTo("explore")
+                .isEqualTo("/callback/explore")
+    }
+
+    @Test
+    fun `redirects from explore uri callback slash explore endpoint`()
+    {
+        val redirectRequest = testRestTemplate.getForEntity<String>("/explore")
+        assertThat(redirectRequest.statusCode).isEqualTo(HttpStatus.FOUND)
+        assertThat(redirectRequest.headers["location"]!!.first()).contains("/callback/explore")
     }
 
     @ParameterizedTest
@@ -116,12 +126,12 @@ class HintApplicationTests : SecureIntegrationTests()
         if (isAuthorized == IsAuthorized.TRUE)
         {
             assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-            assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":null}")
+            assertThat(entity.body!!).isEqualTo(expectedSuccessResponse)
         }
         else
         {
             assertThat(entity.statusCode).isEqualTo(HttpStatus.OK)
-            assertThat(entity.body!!).isEqualTo("{\"errors\":[],\"status\":\"success\",\"data\":null}")
+            assertThat(entity.body!!).isEqualTo(expectedSuccessResponse)
         }
     }
 

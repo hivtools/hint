@@ -2,6 +2,10 @@ import * as d3ScaleChromatic from "d3-scale-chromatic";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {Dict, Filter, NumericRange} from "../../types";
 import numeral from 'numeral';
+import i18next from "i18next";
+import {Language} from "../../store/translations/locales";
+import {BarchartSelections} from "../../store/plottingSelections/plottingSelections";
+import {flattenOptionsIdsByHierarchy} from "../../utils"
 
 export const getColor = (value: number,
                          metadata: ChoroplethIndicatorMetadata,
@@ -189,7 +193,22 @@ export const formatOutput = function (value: number | string, format: string, sc
     }
 
     if (!format.includes('%') && accuracy) {
-        ans = Math.round(ans / accuracy) * accuracy
+        /**
+         * When accuracy is set to 100 and selected value is less than 200
+         * barchart disarranges YAxis. Code below checks if value is greater
+         * than 500 before apply 100 scale range. Otherwise, chartJS will
+         * automatically use numeric algorithm to calculate scale range. 
+         * However, if accuracy is less than 100, we simply apply scale range
+         * rounding using the given accuracy value.
+         */
+
+        if (accuracy > 1) {
+            if (ans > 5 * accuracy) {
+                ans = Math.round(ans / accuracy) * accuracy
+            }
+        } else {
+            ans = Math.round(ans / accuracy) * accuracy
+        }
     }
 
     if (format) {
@@ -214,4 +233,43 @@ export const formatLegend = function (text: string | number, format: string, sca
         } else text = text.toString()
     }
     return text
+}
+
+export const flattenXAxisFilterOptionIds = (selections: BarchartSelections, filters: Filter[]) => {
+    const xAxisId = selections?.xAxisId
+    let ids: string[] = []
+    if (xAxisId && filters?.length) {
+        const filter = filters.find((f: Filter) => f.id === xAxisId)
+        if (filter?.options.length) {
+            ids = flattenOptionsIdsByHierarchy(filter.options)
+        }
+    }
+    return ids
+}
+
+
+export const updateSelectionsAndXAxisOrder = (data: BarchartSelections, selections: BarchartSelections, flattenedXAxisFilterOptionIds: string[], updateSelections: (data: {payload: BarchartSelections}) => void) => {
+    const payload = {...selections, ...data}
+    if (data.xAxisId && data.selectedFilterOptions) {
+        const {xAxisId, selectedFilterOptions} = data
+        if (selectedFilterOptions[xAxisId] && flattenedXAxisFilterOptionIds.length) {
+            // Sort the selected filter values according to the order given the barchart filters
+            const updatedFilterOptions = [...selectedFilterOptions[xAxisId]].sort((a: FilterOption, b: FilterOption) => {
+                return flattenedXAxisFilterOptionIds.indexOf(a.id) - flattenedXAxisFilterOptionIds.indexOf(b.id);
+            });
+            payload.selectedFilterOptions[xAxisId] = updatedFilterOptions
+        }
+    }
+    // if unable to do the above, just updates the barchart as normal
+    updateSelections({payload})
+}
+
+export const filterConfig = (currentLanguage: Language, filters: Filter[]) => {
+    return {
+        filterLabel: i18next.t("filters", currentLanguage),
+        indicatorLabel: i18next.t("indicator", currentLanguage),
+        xAxisLabel: i18next.t("xAxis", currentLanguage),
+        disaggLabel: i18next.t("disaggBy", currentLanguage),
+        filters
+    }
 }

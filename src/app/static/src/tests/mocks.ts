@@ -21,13 +21,13 @@ import {
     SurveyFilters,
     SurveyResponse,
     ValidateBaselineResponse,
-    Error, CalibrateResultResponse, Warning
+    Error, CalibrateResultResponse, Warning, DownloadSubmitRequest, ComparisonPlotResponse
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
 import {initialStepperState, StepperState} from "../app/store/stepper/stepper";
 import {initialMetadataState, MetadataState} from "../app/store/metadata/metadata";
-import {initialLoadState, LoadState} from "../app/store/load/load";
+import {initialLoadState, LoadState} from "../app/store/load/state";
 import {initialModelOptionsState, ModelOptionsState} from "../app/store/modelOptions/modelOptions";
 import {initialModelOutputState, ModelOutputState} from "../app/store/modelOutput/modelOutput";
 import {
@@ -45,6 +45,7 @@ import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrU
 import {DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
 import {GenericChartState, initialGenericChartState} from "../app/store/genericChart/genericChart";
 import {DataExplorationState, initialDataExplorationState} from "../app/store/dataExploration/dataExploration";
+import {DynamicControlType, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 
 export const mockAxios = new MockAdapter(axios);
 
@@ -210,6 +211,24 @@ export const mockSuccess = (data: any, version?: any): Response => {
         errors: [],
         version
     }
+};
+
+const mockDownloadErrorResponse = () => {
+    const errorResponse = [
+        {
+            error: "FAILED_TO_RETRIEVE_RESULT",
+            detail: "Missing some results",
+            key: "rofah-volil-kivup"
+        }
+    ]
+    const str = JSON.stringify(errorResponse);
+    return new Blob([str], {
+        type: "application/json"
+    });
+}
+
+export const mockDownloadFailure = (errorMessage = mockDownloadErrorResponse) => {
+    return errorMessage
 };
 
 export const mockFailure = (errorMessage: string): Response => {
@@ -378,6 +397,31 @@ export const mockCalibrateResultResponse = (props: Partial<CalibrateResultRespon
     }
 };
 
+export const mockComparisonPlotResponse = (props: Partial<ComparisonPlotResponse> = {}): ComparisonPlotResponse => {
+    return {
+        plottingMetadata: {
+            barchart: {
+                indicators: [], filters: []
+            }
+        },
+        data: [{
+            area_id: "MWI",
+            area_name: "Test area",
+            source: "Test Source",
+            sex: "both",
+            age_group: "1",
+            calendar_quarter: "1",
+            indicator_id: 1,
+            indicator: 'mock',
+            lower: 0.5,
+            mean: 0.5,
+            mode: 0.5,
+            upper: 0.5
+        }],
+        ...props
+    }
+};
+
 
 
 export const mockPlottingMetadataResponse = (props: Partial<PlottingMetadataResponse> = {}): PlottingMetadataResponse => {
@@ -451,10 +495,61 @@ export const mockWarning = (props: Partial<Warning> = {}): Warning => {
 export const mockDownloadResultsDependency = (props: Partial<DownloadResultsDependency> = {}): DownloadResultsDependency => {
     return {
         downloadId: "",
+        fetchingDownloadId: false,
         preparing: false,
         statusPollId: -1,
         complete: false,
         error: null,
+        downloadError: null,
+        metadataError: null,
         ...props
     }
 }
+
+
+export const mockProjectOutputState = (props: Partial<DownloadSubmitRequest> = {}): DownloadSubmitRequest => {
+    return {
+        state: {
+            datasets: {
+                anc: {"filename": "anc", "path": "uploads/ancHash"},
+                pjnz: {"filename": "pjnz", "path": "uploads/pjnzHash"},
+                population: {"filename": "population", "path": "uploads/populationHash"},
+                programme: {"filename": "program", "path": "uploads/programHash"},
+                shape: {"filename": "shape", "path": "uploads/shapeHash"},
+                survey: {"filename": "survey", "path": "uploads/surveyHash"}
+            },
+            model_fit: {"id": "modelRunId", "options": {"test": "options"}},
+            calibrate: {"id": "calibrateId", "options": {"test": "options"}},
+            version: {"hintr": "1.0.0", "naomi": "2.0.0", "rrq": "1.1.1"},
+        },
+        notes: {
+            project_notes: {
+                name: "My project 123",
+                updated: "2022/06/09 14:56:19",
+                note: "These are my project notes"
+            },
+            version_notes: []
+        },
+        ...props
+    }
+}
+
+export const mockOptionsFormMeta = (props: Partial<DynamicFormMeta> = {}) => {
+    return {
+        controlSections: [{
+            label: "Test Section",
+            description: "Just a test section",
+            controlGroups: [{
+                controls: [{
+                    name: "TestValue",
+                    type: "number" as DynamicControlType,
+                    required: false,
+                    min: 0,
+                    max: 10,
+                    value: 5
+                }]
+            }]
+        }],
+        ...props
+    }
+};

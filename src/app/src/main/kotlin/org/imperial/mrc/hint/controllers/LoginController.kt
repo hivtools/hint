@@ -7,16 +7,20 @@ import org.springframework.ui.set
 import org.springframework.web.bind.annotation.GetMapping
 import javax.servlet.http.HttpServletRequest
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.security.oauth2.OAuth2AuthenticationRedirection
+import org.springframework.http.ResponseEntity
 
 @Controller
-class LoginController(private val request: HttpServletRequest,
-                      private val session: Session,
-                      private val appProperties: AppProperties)
+class LoginController(
+    private val request: HttpServletRequest,
+    session: Session,
+    appProperties: AppProperties,
+) : OAuth2AuthenticationRedirection(appProperties, session)
 {
-
     @GetMapping("/login")
     fun login(model: Model): String
     {
+        model["oauth2LoginMethod"] = appProperties.oauth2LoginMethod
         model["title"] = "Login"
         model["username"] = request.getParameter("username") ?: ""
         model["error"] = if (request.getParameter("error") == null)
@@ -25,7 +29,6 @@ class LoginController(private val request: HttpServletRequest,
         }
         else if (request.getParameter("error") == "SessionExpired")
         {
-
             request.getParameter("message") ?: "Your session expired. Please log in again"
         }
         else
@@ -33,9 +36,10 @@ class LoginController(private val request: HttpServletRequest,
             "Username or password is incorrect"
         }
 
-        val redirectTo = request.getParameter("redirectTo")
+        var redirectTo = request.getParameter("redirectTo")
         model["appTitle"] = if (redirectTo == "explore")
         {
+            redirectTo = "/callback/explore"
             appProperties.exploreApplicationTitle
         }
         else
@@ -43,8 +47,20 @@ class LoginController(private val request: HttpServletRequest,
             appProperties.applicationTitle
         }
         model["continueTo"] = redirectTo ?: "/"
-        session.setRequestedUrl(redirectTo)
+        session?.setRequestedUrl(redirectTo)
 
         return "login"
+    }
+
+    @GetMapping("/oauth2")
+    fun loginRedirection(): ResponseEntity<String>
+    {
+        return oauth2LoginRedirect()
+    }
+
+    @GetMapping("/register")
+    fun registerRedirection(): ResponseEntity<String>
+    {
+        return oauth2RegisterRedirect()
     }
 }

@@ -7,6 +7,7 @@ import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface PlottingSelectionsState {
     calibratePlot: BarchartSelections,
+    comparisonPlot: BarchartSelections,
     barchart: BarchartSelections,
     bubble: BubblePlotSelections,
     sapChoropleth: ChoroplethSelections,
@@ -73,6 +74,15 @@ export const initialCalibratePlotSelections = (): BarchartSelections => {
     }
 };
 
+export const initialComparisonPlotSelections = (): BarchartSelections => {
+    return {
+        indicatorId: "",
+        xAxisId: "",
+        disaggregateById: "",
+        selectedFilterOptions: {}
+    }
+};
+
 export const initialBarchartSelections = (): BarchartSelections => {
     return {
         indicatorId: "",
@@ -127,6 +137,7 @@ export const initialBubbleSizeScalesState = (): BubbleSizeScalesState => {
 export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
     return {
         calibratePlot: initialCalibratePlotSelections(),
+        comparisonPlot: initialComparisonPlotSelections(),
         barchart: initialBarchartSelections(),
         bubble: initialBubblePlotSelections(),
         sapChoropleth: initialChorplethSelections(),

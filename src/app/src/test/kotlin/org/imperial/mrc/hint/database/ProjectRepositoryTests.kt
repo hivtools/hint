@@ -15,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.transaction.annotation.Transactional
-import java.sql.Timestamp
 import java.time.Instant
-import java.time.Instant.now
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -60,17 +58,18 @@ class ProjectRepositoryTests
     }
 
     @Test
-    fun `can get project notes`()
+    fun `can get project and version notes`()
     {
         val uid = setupUser()
 
         val projectId = sut.saveNewProject(uid, "testProjectRepo", note = "test project notes")
-        versionRepo.saveVersion("v11", projectId)
+        versionRepo.saveVersion("v11", projectId, "version note")
         val project = sut.getProject(projectId, uid)
         assertThat(project.name).isEqualTo("testProjectRepo")
         assertThat(project.note).isEqualTo("test project notes")
         assertThat(project.id).isEqualTo(projectId)
         assertThat(project.versions[0].id).isEqualTo("v11")
+        assertThat(project.versions[0].note).isEqualTo("version note")
     }
 
     @Test
@@ -164,8 +163,8 @@ class ProjectRepositoryTests
                 .where(PROJECT.ID.eq(projectId))
                 .fetchOne()
 
-        assertThat(project[PROJECT.USER_ID]).isEqualTo(uid)
-        assertThat(project[PROJECT.NAME]).isEqualTo("testProjectRepo")
+        assertThat(project?.get(PROJECT.USER_ID)).isEqualTo(uid)
+        assertThat(project?.get(PROJECT.NAME)).isEqualTo("testProjectRepo")
     }
 
     @Test
@@ -179,10 +178,10 @@ class ProjectRepositoryTests
                 .where(PROJECT.ID.eq(projectId))
                 .fetchOne()
 
-        assertThat(project[PROJECT.USER_ID]).isEqualTo(uid)
-        assertThat(project[PROJECT.NAME]).isEqualTo("testProjectRepo")
-        assertThat(project[PROJECT.SHARED_BY]).isEqualTo(uid)
-        assertThat(project[PROJECT.NOTE]).isEqualTo("test note")
+        assertThat(project?.get(PROJECT.USER_ID)).isEqualTo(uid)
+        assertThat(project?.get(PROJECT.NAME)).isEqualTo("testProjectRepo")
+        assertThat(project?.get(PROJECT.SHARED_BY)).isEqualTo(uid)
+        assertThat(project?.get(PROJECT.NOTE)).isEqualTo("test note")
     }
 
     @Test
@@ -212,14 +211,14 @@ class ProjectRepositoryTests
                 .where(PROJECT_VERSION.ID.eq(versionId1))
                 .and(PROJECT_VERSION.PROJECT_ID.eq(projectId))
                 .fetchOne()
-        assertThat(savedVersion1[PROJECT_VERSION.DELETED]).isTrue()
+        assertThat(savedVersion1?.get(PROJECT_VERSION.DELETED)).isTrue
 
         val savedVersion2 = dsl.select(PROJECT_VERSION.DELETED)
                 .from(PROJECT_VERSION)
                 .where(PROJECT_VERSION.ID.eq(versionId2))
                 .and(PROJECT_VERSION.PROJECT_ID.eq(projectId))
                 .fetchOne()
-        assertThat(savedVersion2[PROJECT_VERSION.DELETED]).isTrue()
+        assertThat(savedVersion2?.get(PROJECT_VERSION.DELETED)).isTrue
     }
 
     @Test
@@ -237,8 +236,8 @@ class ProjectRepositoryTests
                 .where(PROJECT.ID.eq(projectId))
                 .and(PROJECT.USER_ID.eq(uid))
                 .fetchOne()
-        assertThat(renamedProject[PROJECT.NAME]).isEqualTo("renamedProject")
-        assertThat(renamedProject[PROJECT.NOTE]).isEqualTo("project notes")
+        assertThat(renamedProject?.get(PROJECT.NAME)).isEqualTo("renamedProject")
+        assertThat(renamedProject?.get(PROJECT.NOTE)).isEqualTo("project notes")
     }
 
     @Test
@@ -256,8 +255,8 @@ class ProjectRepositoryTests
                 .where(PROJECT.ID.eq(projectId))
                 .and(PROJECT.USER_ID.eq(uid))
                 .fetchOne()
-        assertThat(renamedProject[PROJECT.NAME]).isEqualTo("renamedProject")
-        assertThat(renamedProject[PROJECT.NOTE]).isEqualTo(null)
+        assertThat(renamedProject?.get(PROJECT.NAME)).isEqualTo("renamedProject")
+        assertThat(renamedProject?.get(PROJECT.NOTE)).isEqualTo(null)
     }
 
     @Test
@@ -272,7 +271,7 @@ class ProjectRepositoryTests
                 .where(PROJECT.ID.eq(projectId))
                 .and(PROJECT.USER_ID.eq(uid))
                 .fetchOne()
-        assertThat(project[PROJECT.NOTE]).isEqualTo("test project notes")
+        assertThat(project?.get(PROJECT.NOTE)).isEqualTo("test project notes")
     }
 
     @Test
@@ -283,10 +282,10 @@ class ProjectRepositoryTests
         userRepo.addUser("another.user@example.com", "pw")
         val anotherUserId = userRepo.getUser("another.user@example.com")!!.id
 
-        val ago_1h = now().minus(1, ChronoUnit.HOURS)
-        val ago_2h = now().minus(2, ChronoUnit.HOURS)
-        val ago_3h = now().minus(3, ChronoUnit.HOURS)
-        val ago_4h = now().minus(4, ChronoUnit.HOURS)
+        val ago_1h = LocalDateTime.now().minus(1, ChronoUnit.HOURS)
+        val ago_2h = LocalDateTime.now().minus(2, ChronoUnit.HOURS)
+        val ago_3h = LocalDateTime.now().minus(3, ChronoUnit.HOURS)
+        val ago_4h = LocalDateTime.now().minus(4, ChronoUnit.HOURS)
 
 
         val v1Id = insertProject("v1", userId, "another.user@example.com", "test project note")
@@ -296,7 +295,7 @@ class ProjectRepositoryTests
         insertVersion("v1s1", v1Id, ago_4h, ago_3h, false, 1)
         insertVersion("v1s2", v1Id, ago_2h, ago_2h, false, 2)
 
-        insertVersion("deletedVersion", v2Id, ago_1h, now(), true, 2) //should not be returned
+        insertVersion("deletedVersion", v2Id, ago_1h, LocalDateTime.now(), true, 2) //should not be returned
         insertVersion("v2s1", v2Id, ago_3h, ago_1h, false, 1)
 
         insertVersion("anotherVersion", anotherProject, ago_1h, ago_1h, false, 3)
@@ -336,10 +335,10 @@ class ProjectRepositoryTests
         return userRepo.getUser(email)!!.id
     }
 
-    private fun format(time: Instant): String
+    private fun format(time: LocalDateTime): String
     {
         val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
-        return formatter.format(LocalDateTime.ofInstant(time, ZoneId.systemDefault()))
+        return formatter.format(time)
     }
 
     private fun insertProject(name: String, userId: String, sharedBy: String? = null, note: String? = null): Int
@@ -349,20 +348,29 @@ class ProjectRepositoryTests
                 .returning(PROJECT.ID)
                 .fetchOne()
 
-        return saved[PROJECT.ID]
+        return saved!![PROJECT.ID]
     }
 
-    private fun insertVersion(versionId: String, projectId: Int, created: Instant, updated: Instant, deleted: Boolean,
+    private fun insertVersion(versionId: String, projectId: Int, created: LocalDateTime, updated: LocalDateTime, deleted: Boolean,
                               versionNumber: Int)
     {
-        dsl.insertInto(PROJECT_VERSION,
-                PROJECT_VERSION.ID,
-                PROJECT_VERSION.PROJECT_ID,
-                PROJECT_VERSION.CREATED,
-                PROJECT_VERSION.UPDATED,
-                PROJECT_VERSION.DELETED,
-                PROJECT_VERSION.VERSION_NUMBER)
-                .values(versionId, projectId, Timestamp.from(created), Timestamp.from(updated), deleted, versionNumber)
-                .execute()
+        dsl.insertInto(
+            PROJECT_VERSION,
+            PROJECT_VERSION.ID,
+            PROJECT_VERSION.PROJECT_ID,
+            PROJECT_VERSION.CREATED,
+            PROJECT_VERSION.UPDATED,
+            PROJECT_VERSION.DELETED,
+            PROJECT_VERSION.VERSION_NUMBER
+        )
+            .values(
+                versionId,
+                projectId,
+                created,
+                updated,
+                deleted,
+                versionNumber
+            )
+            .execute()
     }
 }

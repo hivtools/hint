@@ -27,7 +27,7 @@ export const beforeEnter = (to: Route, from: Route, next: NavigationGuardNext) =
 
 router.addRoutes([
     {
-        path: "/explore",
+        path: "/callback/explore",
         component: DataExploration,
         beforeEnter
     },

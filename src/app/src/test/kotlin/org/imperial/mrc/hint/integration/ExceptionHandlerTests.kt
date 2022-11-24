@@ -13,6 +13,7 @@ import org.imperial.mrc.hint.exceptions.RandomErrorCodeGenerator
 import org.imperial.mrc.hint.helpers.JSONValidator
 import org.imperial.mrc.hint.helpers.tmpUploadDirectory
 import org.imperial.mrc.hint.helpers.unexpectedErrorRegex
+import org.imperial.mrc.hint.logging.GenericLogger
 import org.junit.jupiter.api.Test
 import org.postgresql.util.PSQLException
 import org.springframework.boot.test.web.client.postForEntity
@@ -20,17 +21,17 @@ import org.springframework.core.io.FileSystemResource
 import org.springframework.http.*
 import org.springframework.http.converter.HttpMessageNotWritableException
 import org.springframework.util.LinkedMultiValueMap
-import org.springframework.web.client.RestTemplate
-import org.springframework.web.context.request.WebRequest
-import org.springframework.web.servlet.NoHandlerFoundException
 import java.io.File
 import java.lang.reflect.UndeclaredThrowableException
 import java.util.*
+import javax.servlet.http.HttpServletRequest
 
 class ExceptionHandlerTests : SecureIntegrationTests()
 {
 
     private val mockException = mock<HttpMessageNotWritableException>()
+
+    private val mockLogger = mock<GenericLogger>()
 
     @Test
     fun `route not found errors are correctly formatted`()
@@ -88,7 +89,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
             on { applicationTitle } doReturn "AppTitle"
             on { supportEmail } doReturn "support@email.com"
         }
-        val sut = HintExceptionHandler(mockErrorCodeGenerator, mockProperties)
+        val sut = HintExceptionHandler(mockErrorCodeGenerator, mockProperties, mockLogger)
         val result = sut.handleException(mockException, mock())
         JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
@@ -108,10 +109,10 @@ class ExceptionHandlerTests : SecureIntegrationTests()
             on { applicationTitle } doReturn "AppTitle"
             on { supportEmail } doReturn "support@email.com"
         }
-        val mockRequest = mock<WebRequest> {
+        val mockRequest = mock<HttpServletRequest> {
             on { getHeader("Accept-Language") } doReturn "fr"
         }
-        val sut = HintExceptionHandler(mockErrorCodeGenerator, mockProperties)
+        val sut = HintExceptionHandler(mockErrorCodeGenerator, mockProperties, mockLogger)
         val result = sut.handleException(mockException, mockRequest)
         JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
@@ -131,10 +132,10 @@ class ExceptionHandlerTests : SecureIntegrationTests()
             on { applicationTitle } doReturn "AppTitle"
             on { supportEmail } doReturn "support@email.com"
         }
-        val mockRequest = mock<WebRequest> {
+        val mockRequest = mock<HttpServletRequest> {
             on { getHeader("Accept-Language") } doReturn "de"
         }
-        val sut = HintExceptionHandler(mockErrorCodeGenerator, mockProperties)
+        val sut = HintExceptionHandler(mockErrorCodeGenerator, mockProperties, mockLogger)
         val result = sut.handleException(mockException, mockRequest)
         JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
@@ -147,7 +148,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     @Test
     fun `translated error message falls back to key if no value is present`()
     {
-        val sut = HintExceptionHandler(mock(), mock())
+        val sut = HintExceptionHandler(mock(), mock(), mock())
         val result = sut.handleHintException(HintException("badKey"), mock())
         JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
@@ -157,8 +158,8 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     @Test
     fun `does not include original message from handle exceptions`()
     {
-        val sut = HintExceptionHandler(RandomErrorCodeGenerator(), ConfiguredAppProperties())
-        val result = sut.handleException(PSQLException("some message", mock()), mock())
+        val sut = HintExceptionHandler(RandomErrorCodeGenerator(), ConfiguredAppProperties(), mockLogger)
+        val result = sut.handleException(PSQLException("some message", null), mock())
         JSONValidator().validateError(result.body!!.toString(),
                 "OTHER_ERROR",
                 unexpectedErrorRegex)
@@ -168,7 +169,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     @Test
     fun `handles HintExceptions thrown inside UndeclaredThrowableException`()
     {
-        val sut = HintExceptionHandler(RandomErrorCodeGenerator(), ConfiguredAppProperties())
+        val sut = HintExceptionHandler(RandomErrorCodeGenerator(), ConfiguredAppProperties(), mockLogger)
         val fakeError = UndeclaredThrowableException(HintException("some message", HttpStatus.BAD_REQUEST))
         val result = sut.handleException(fakeError, mock())
         JSONValidator().validateError(result.body!!.toString(),

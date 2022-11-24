@@ -96,6 +96,7 @@
     import TreeSelect from "@riophae/vue-treeselect";
     import {
         mapActionByName,
+        mapGetterByName,
         mapMutationByName,
         mapStateProp,
     } from "../../utils";
@@ -106,6 +107,7 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {
         Dataset,
+        DatasetResource,
         DatasetResourceSet,
         Release
     } from "../../types";
@@ -161,6 +163,7 @@
         disableImport: boolean;
         hasPjnzFile: boolean;
         hasPopulationFile: boolean;
+        selectedDatasetAvailableResources: { [k in keyof DatasetResourceSet]?: DatasetResource | null }
     }
 
     interface Data {
@@ -238,6 +241,7 @@
                 namespace,
                 (state: ADRState) => state.adrError
             ),
+            selectedDatasetAvailableResources: mapGetterByName("baseline", "selectedDatasetAvailableResources"),
             releaseName() {
                 return this.selectedRelease?.name || null;
             },
@@ -326,7 +330,6 @@
                 }
 
                 await this.getDataset({id: this.newDatasetId!, release: this.newDatasetRelease});
-
                 const {
                     pjnz,
                     pop,
@@ -334,7 +337,7 @@
                     survey,
                     program,
                     anc,
-                } = this.selectedDataset!.resources;
+                } = this.selectedDatasetAvailableResources;
 
                 await Promise.all([
                     pjnz && this.importPJNZ(pjnz.url),

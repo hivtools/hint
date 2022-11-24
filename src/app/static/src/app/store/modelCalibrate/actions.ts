@@ -1,5 +1,5 @@
 import {ModelCalibrateState} from "./modelCalibrate";
-import {ActionContext, ActionTree} from "vuex";
+import {ActionContext, ActionTree, Commit} from "vuex";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {api} from "../../apiService";
 import {RootState} from "../../root";
@@ -8,6 +8,7 @@ import {FilterOption, ModelResultResponse, ModelStatusResponse, ModelSubmitRespo
 import {switches} from "../../featureSwitches";
 import {Dict} from "../../types";
 import {DownloadResultsMutation} from "../downloadResults/mutations";
+import {PlottingSelectionsMutations} from "../plottingSelections/mutations";
 
 export interface ModelCalibrateActions {
     fetchModelCalibrateOptions: (store: ActionContext<ModelCalibrateState, RootState>) => void
@@ -15,17 +16,18 @@ export interface ModelCalibrateActions {
     poll: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getResult: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getCalibratePlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
+    getComparisonPlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
 }
 
 export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrateActions = {
 
     async fetchModelCalibrateOptions(context) {
-        const {commit} = context;
+        const {commit, rootState} = context;
         commit(ModelCalibrateMutation.FetchingModelCalibrateOptions);
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
             .withSuccess(ModelCalibrateMutation.ModelCalibrateOptionsFetched)
             .ignoreErrors()
-            .get<DynamicFormMeta>("model/calibrate/options/");
+            .get<DynamicFormMeta>(`model/calibrate/options/${rootState.baseline.iso3}`);
 
         if (response) {
             commit({type: ModelCalibrateMutation.SetModelCalibrateOptionsVersion, payload: response.version});
@@ -37,7 +39,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const modelRunId = rootState.modelRun.modelRunId;
         const version = state.version;
 
-        commit(ModelCalibrateMutation.SetOptionsData, options);
+        commit({type: ModelCalibrateMutation.SetOptionsData, payload: options});
 
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
             .withSuccess(ModelCalibrateMutation.CalibrateStarted)
@@ -75,29 +77,12 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                 commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: data});
                 commit({type: ModelCalibrateMutation.WarningsFetched, payload: data.warnings});
 
-                if (data && data.plottingMetadata && data.plottingMetadata.barchart.defaults) {
-                    const defaults = data.plottingMetadata.barchart.defaults;
-                    const unfrozenDefaultOptions = Object.keys(defaults.selected_filter_options)
-                        .reduce((dict, key) => {
-                            dict[key] = [...defaults.selected_filter_options[key]];
-                            return dict;
-                        }, {} as Dict<FilterOption[]>);
-
-                    commit({
-                            type: "plottingSelections/updateBarchartSelections",
-                            payload: {
-                                indicatorId: defaults.indicator_id,
-                                xAxisId: defaults.x_axis_id,
-                                disaggregateById: defaults.disaggregate_by_id,
-                                selectedFilterOptions: unfrozenDefaultOptions
-                            }
-                        },
-                        {root: true});
-                }
+                selectFilterDefaults(data, commit, PlottingSelectionsMutations.updateBarchartSelections)
                 commit(ModelCalibrateMutation.Calibrated);
                 if (switches.modelCalibratePlot) {
                     dispatch("getCalibratePlot");
                 }
+                await dispatch("getComparisonPlot");
             }
         }
         commit(ModelCalibrateMutation.Ready);
@@ -117,6 +102,25 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         if (response) {
             commit(ModelCalibrateMutation.SetPlotData, response.data);
         }
+    },
+
+    async getComparisonPlot(context) {
+        const {commit, state} = context;
+        const calibrateId = state.calibrateId;
+        commit(ModelCalibrateMutation.ComparisonPlotStarted);
+
+        const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
+            .withError(ModelCalibrateMutation.SetComparisonPlotError)
+            .ignoreSuccess()
+            .freezeResponse()
+            .get<ModelResultResponse>(`model/comparison/plot/${calibrateId}`);
+
+        if (response) {
+            if (response.data){
+                selectFilterDefaults(response.data, commit, PlottingSelectionsMutations.updateComparisonPlotSelections)
+            }
+            commit(ModelCalibrateMutation.SetComparisonPlotData, response.data);
+        }
     }
 };
 
@@ -133,3 +137,25 @@ export const getCalibrateStatus = async function (context: ActionContext<ModelCa
             }
         });
 };
+
+const selectFilterDefaults = (data: ModelResultResponse, commit: Commit, mutationName: string) => {
+    if (data?.plottingMetadata?.barchart?.defaults) {
+        const defaults = data.plottingMetadata.barchart.defaults;
+        const unfrozenDefaultOptions = Object.keys(defaults.selected_filter_options)
+            .reduce((dict, key) => {
+                dict[key] = [...defaults.selected_filter_options[key]];
+                return dict;
+            }, {} as Dict<FilterOption[]>);
+
+        commit({
+                type: `plottingSelections/${mutationName}`,
+                payload: {
+                    indicatorId: defaults.indicator_id,
+                    xAxisId: defaults.x_axis_id,
+                    disaggregateById: defaults.disaggregate_by_id,
+                    selectedFilterOptions: unfrozenDefaultOptions
+                }
+            },
+            {root: true});
+    }
+}

@@ -23,9 +23,9 @@ class AuthInterceptor(restTemplate: TestRestTemplate, password: String = "passwo
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
 
-        val entity = restTemplate.postForEntity<String>("/callback/", HttpEntity(map, headers))
+        val entity = restTemplate.postForEntity<String>("/callback/formClient", HttpEntity(map, headers))
 
-        assertThat(entity.statusCode).isEqualTo(HttpStatus.FOUND)
+        assertThat(entity.statusCode).isEqualTo(HttpStatus.SEE_OTHER)
         assertThat(entity.headers.location!!.toString()).isEqualTo("/")
 
         val cookies = entity.headers["Set-Cookie"]!!.first().split(";")

@@ -57,11 +57,11 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
         return apiClient.getModelRunOptions(allFiles)
     }
 
-    @GetMapping("/calibrate/options/")
+    @GetMapping("/calibrate/options/{iso3}")
     @ResponseBody
-    fun calibrationOptions(): ResponseEntity<String>
+    fun calibrationOptions(@PathVariable("iso3") iso3: String): ResponseEntity<String>
     {
-        return apiClient.getModelCalibrationOptions()
+        return apiClient.getModelCalibrationOptions(iso3)
     }
 
     @PostMapping("/calibrate/submit/{id}")
@@ -91,5 +91,12 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
     fun calibratePlot(@PathVariable("id") id: String): ResponseEntity<String>
     {
         return apiClient.getCalibratePlot(id)
+    }
+
+    @GetMapping("/comparison/plot/{id}")
+    @ResponseBody
+    fun comparisonPlot(@PathVariable("id") id: String): ResponseEntity<String>
+    {
+        return apiClient.getComparisonPlot(id)
     }
 }

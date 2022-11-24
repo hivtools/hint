@@ -1,7 +1,7 @@
 import {modelOutputGetters} from "../../app/store/modelOutput/modelOutput";
 import {
     mockBaselineState, mockCalibrateResultResponse, mockModelCalibrateState, mockModelOutputState,
-    mockRootState,
+    mockRootState, mockComparisonPlotResponse,
     mockShapeResponse
 } from "../mocks";
 import {Filter} from "../../app/types";
@@ -54,6 +54,41 @@ describe("modelOutput module", () => {
         }
     });
 
+    const comparisonPlotResponse = mockComparisonPlotResponse({
+        plottingMetadata: {
+            barchart: {
+                filters,
+                indicators: [
+                    {
+                        error_high_column: "upper",
+                        error_low_column: "lower",
+                        indicator: "prevalence",
+                        indicator_column: "indicator_id",
+                        indicator_value: "2",
+                        name: "Prevalence",
+                        value_column: "mean",
+                        format: "0.00%",
+                        scale: 1,
+                        accuracy: null
+                    },
+                    {
+                        error_high_column: "upper",
+                        error_low_column: "lower",
+                        indicator: "art_coverage",
+                        indicator_column: "indicator_id",
+                        indicator_value: "4",
+                        name: "ART coverage",
+                        value_column: "mean",
+                        format: "0.00%",
+                        scale: 1,
+                        accuracy: null
+                    }
+                ]
+            }
+
+        }
+    });
+
     const rootState = mockRootState({
         baseline: mockBaselineState({
             shape: mockShapeResponse({
@@ -68,7 +103,8 @@ describe("modelOutput module", () => {
         }),
         modelOutput: mockModelOutputState(),
         modelCalibrate: mockModelCalibrateState({
-            result: modelCalibrateResponse
+            result: modelCalibrateResponse,
+            comparisonPlotResult: comparisonPlotResponse
         })
     });
 
@@ -81,6 +117,18 @@ describe("modelOutput module", () => {
 
     it("gets barchart filters", async () => {
         const result = modelOutputGetters.barchartFilters(mockModelOutputState(), null, rootState);
+        expectOutputPlotFilters(result);
+    });
+
+    it("gets comparison plot indicators", async () => {
+        const result = modelOutputGetters.comparisonPlotIndicators(mockModelOutputState(), null, rootState);
+        expect(result.length).toEqual(2);
+        expect(result).toBe(comparisonPlotResponse.plottingMetadata.barchart.indicators);
+    });
+
+
+    it("gets comparison plot filters", async () => {
+        const result = modelOutputGetters.comparisonPlotFilters(mockModelOutputState(), null, rootState);
         expectOutputPlotFilters(result);
     });
 

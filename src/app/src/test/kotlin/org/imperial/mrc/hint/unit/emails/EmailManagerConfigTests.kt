@@ -8,10 +8,13 @@ import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.emails.EmailConfig
 import org.imperial.mrc.hint.emails.RealEmailManager
 import org.imperial.mrc.hint.emails.WriteToDiskEmailManager
+import org.imperial.mrc.hint.logging.GenericLogger
 import org.junit.jupiter.api.Test
 
 class EmailManagerConfigTests
 {
+    private val mockLogger = mock<GenericLogger>()
+
     val sut = EmailConfig()
 
     @Test
@@ -21,7 +24,7 @@ class EmailManagerConfigTests
             on { emailMode } doReturn "disk"
         }
 
-        val result = sut.getEmailManager(mockAppProperties, mock())
+        val result = sut.getEmailManager(mockAppProperties, mock(), mockLogger)
         assertThat(result).isInstanceOf(WriteToDiskEmailManager::class.java)
     }
 
@@ -37,7 +40,7 @@ class EmailManagerConfigTests
             on { emailPassword } doReturn "testpassword"
         }
 
-        val result = sut.getEmailManager(mockAppProperties, mock())
+        val result = sut.getEmailManager(mockAppProperties, mock(), mockLogger)
         assertThat(result).isInstanceOf(RealEmailManager::class.java)
     }
 
@@ -48,6 +51,6 @@ class EmailManagerConfigTests
             on { emailMode } doReturn "unsupported"
         }
 
-        assertThatThrownBy { sut.getEmailManager(mockAppProperties, mock()) }.hasMessage("Unknown email mode 'unsupported'")
+        assertThatThrownBy { sut.getEmailManager(mockAppProperties, mock(), mockLogger) }.hasMessage("Unknown email mode 'unsupported'")
     }
 }

@@ -2,7 +2,7 @@
 
 package org.imperial.mrc.hint.generateDatabaseInterface
 
-import org.jooq.util.GenerationTool
+import org.jooq.codegen.GenerationTool
 
 fun main(args: Array<String>)
 {

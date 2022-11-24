@@ -12,7 +12,10 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
         selectedDataset: state.baseline.selectedDataset,
         selectedRelease: state.baseline.selectedRelease
     } as any;
-    const surveyAndProgram = {selectedDataType: state.surveyAndProgram.selectedDataType} as any;
+    const surveyAndProgram = {
+        selectedDataType: state.surveyAndProgram.selectedDataType,
+        warnings: state.surveyAndProgram.warnings
+    } as any;
     const metadata =  {...state.metadata, plottingMetadataError: null};
     const plottingSelections = state.plottingSelections;
     if (state.dataExplorationMode) {
@@ -46,7 +49,8 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
             modelCalibrate: {
                 ...rootState.modelCalibrate,
                 result: null,
-                calibratePlotResult: null
+                calibratePlotResult: null,
+                comparisonPlotResult: null
             },
             stepper: rootState.stepper,
             hintrVersion: state.hintrVersion,
@@ -66,7 +70,7 @@ export class LocalStorageManager {
 
     savePartialState = (partialState: Partial<RootState>, dataExplorationMode: boolean) => {
         const appStateKey = getAppStateKey(dataExplorationMode);
-        window.localStorage.setItem(appStateKey, JSON.stringify(partialState));
+            window.localStorage.setItem(appStateKey, JSON.stringify(partialState));
     };
 
     getState = (dataExplorationMode: boolean): Partial<RootState> | null => {

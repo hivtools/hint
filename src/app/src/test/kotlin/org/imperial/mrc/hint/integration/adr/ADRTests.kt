@@ -376,7 +376,7 @@ class ADRTests : SecureIntegrationTests()
             testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
             val resultWithResources = testRestTemplate.getForEntity<String>("/adr/datasets?showInaccessible=false")
             val data = ObjectMapper().readTree(resultWithResources.body!!)["data"]
-            val dataset = data.find { it["name"].textValue() == "antarctica-country-estimates-2022-1" }
+            val dataset = data.find { it["name"].textValue() == "antarctica-country-estimates-2023" }
             val resource = dataset!!["resources"].find { it["resource_type"].textValue() == type }
             resource!!["url"].textValue()
         }

@@ -7,19 +7,22 @@ const service = new Service(axios);
 
 declare let appUrl: string; // configured by jest
 
-export const rootState = {language: Language.en};
+export const rootState = {
+    language: Language.en,
+    metadata: {plottingMetadata: null}
+};
 
 export const login = async (username = "test.user@example.com", password = "password") => {
     const formData = new FormData();
     formData.append('username', username);
     formData.append('password', password);
 
-    const res = await axios.post(appUrl + "callback/",
+    const res = await axios.post(appUrl + "callback/formClient",
         formData,
         {
             headers: formData.getHeaders(),
             maxRedirects: 0,
-            validateStatus: (status) => status == 302
+            validateStatus: (status) => status == 303
         });
 
     const cookie = res.headers["set-cookie"][0].split(";")[0];

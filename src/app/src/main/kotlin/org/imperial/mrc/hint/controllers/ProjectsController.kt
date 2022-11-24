@@ -3,25 +3,30 @@ package org.imperial.mrc.hint.controllers
 import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.exceptions.UserException
+import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.logic.UserLogic
 import org.imperial.mrc.hint.models.*
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import javax.servlet.http.HttpServletRequest
 
 @RestController
 class ProjectsController(private val session: Session,
                          private val versionRepository: VersionRepository,
                          private val projectRepository: ProjectRepository,
-                         private val userLogic: UserLogic)
+                         private val userLogic: UserLogic,
+                         private val request: HttpServletRequest,
+                         private val logger: GenericLogger)
 {
     @PostMapping("/project/")
     @ResponseBody
     fun newProject(@RequestParam("name") name: String,
-                   @RequestParam("note") note: String?): ResponseEntity<String>
+                   @RequestParam("note") note: String?,
+                   @RequestParam("isUploaded") isUploaded: Boolean?): ResponseEntity<String>
     {
-        val projectId = projectRepository.saveNewProject(userId(), name, note = note)
+        val projectId = projectRepository.saveNewProject(userId(), name, note = note, isUploaded = isUploaded)
 
         //Generate new version id and set it as the session variable, and save new version to db
         val newVersionId = session.generateVersionId()
@@ -29,7 +34,7 @@ class ProjectsController(private val session: Session,
         versionRepository.saveVersion(newVersionId, projectId)
 
         val version = versionRepository.getVersion(newVersionId)
-        val project = Project(projectId, name, listOf(version))
+        val project = Project(projectId, name, listOf(version), isUploaded = isUploaded)
         return SuccessResponse(project).asResponseEntity()
     }
 
@@ -96,6 +101,7 @@ class ProjectsController(private val session: Session,
             @RequestParam("note") note: String): ResponseEntity<String>
     {
         projectRepository.updateProjectNote(projectId, userId(), note)
+        logger.info("updated project notes", request, userId())
         return EmptySuccessResponse.asResponseEntity()
     }
 

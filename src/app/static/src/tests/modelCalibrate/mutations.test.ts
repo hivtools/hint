@@ -1,7 +1,7 @@
 import {expectAllMutationsDefined} from "../testHelpers";
 import {ModelCalibrateMutation, mutations} from "../../app/store/modelCalibrate/mutations";
 import {mockCalibrateResultResponse, mockError, mockModelCalibrateState, mockWarning,} from "../mocks";
-import {VersionInfo} from "../../app/generated";
+import {VersionInfo, ComparisonPlotResponse} from "../../app/generated";
 
 describe("ModelCalibrate mutations", () => {
     afterEach(() => {
@@ -56,6 +56,7 @@ describe("ModelCalibrate mutations", () => {
         expect(state.status).toStrictEqual({});
         expect(state.generatingCalibrationPlot).toBe(false);
         expect(state.calibratePlotResult).toBe(null);
+        expect(state.comparisonPlotResult).toBe(null);
     });
 
     it("CalibrateStatusUpdate sets status, resets error", () => {
@@ -100,6 +101,14 @@ describe("ModelCalibrate mutations", () => {
         const error = mockError("TEST ERROR");
         mutations[ModelCalibrateMutation.SetError](state, {payload: error});
         expect(state.error).toBe(error);
+        expect(state.calibrating).toBe(false);
+    });
+
+    it("sets comparisonPlotError", () => {
+        const state = mockModelCalibrateState();
+        const error = mockError("TEST ERROR");
+        mutations[ModelCalibrateMutation.SetComparisonPlotError](state, {payload: error});
+        expect(state.comparisonPlotError).toBe(error);
         expect(state.calibrating).toBe(false);
     });
 
@@ -150,6 +159,20 @@ describe("ModelCalibrate mutations", () => {
         expect(state.generatingCalibrationPlot).toBe(false);
     });
 
+    it("sets comparison plot started and resets error and previous plot", () => {
+        const state = mockModelCalibrateState({comparisonPlotError: mockError("TEST ERROR"), comparisonPlotResult: {} as ComparisonPlotResponse});
+        mutations[ModelCalibrateMutation.ComparisonPlotStarted](state);
+        expect(state.comparisonPlotResult).toBe(null);
+        expect(state.comparisonPlotError).toBe(null);
+    });
+
+    it("sets comparison plot data", () => {
+        const state = mockModelCalibrateState();
+        const payload = {data: "TEST DATA"};
+        mutations[ModelCalibrateMutation.SetComparisonPlotData](state, {payload});
+        expect(state.comparisonPlotResult).toStrictEqual({payload});
+    });
+
     it("sets and clears warnings", () => {
         const testState = mockModelCalibrateState();
         const warnings = [mockWarning()]
@@ -164,5 +187,11 @@ describe("ModelCalibrate mutations", () => {
         const result = mockCalibrateResultResponse()
         mutations[ModelCalibrateMutation.CalibrateResultFetched](testState, {payload: result});
         expect(testState.result).toEqual(result);
+    });
+
+    it("resets polling id", () => {
+        const state = mockModelCalibrateState({statusPollId: 1000});
+        mutations[ModelCalibrateMutation.ResetIds](state);
+        expect(state.statusPollId).toEqual(-1);
     });
 });

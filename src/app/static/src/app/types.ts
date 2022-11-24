@@ -85,7 +85,8 @@ export interface Project {
     name: string
     versions: Version[]
     sharedBy?: string
-    note?: string
+    note?: string,
+    uploaded?: boolean
 }
 
 export interface CurrentProject {
@@ -166,11 +167,14 @@ export interface UploadFile {
 }
 
 export interface DownloadResultsDependency {
+    fetchingDownloadId: boolean
     downloadId: string
     preparing: boolean
     statusPollId: number
     complete: boolean
+    downloadError: Error | null
     error: Error | null
+    metadataError: Error | null
 }
 
 export interface PollingStarted {

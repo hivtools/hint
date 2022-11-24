@@ -64,7 +64,7 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT.ID.eq(projectId))
                     .fetchOne()
 
-            assertThat(savedProject[PROJECT_VERSION.NOTE]).isEqualTo("notes")
+            assertThat(savedProject?.get(PROJECT_VERSION.NOTE)).isEqualTo("notes")
         }
     }
 
@@ -102,7 +102,7 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT_VERSION.ID.eq(newVersionId))
                     .fetchOne()
 
-            assertThat(version[PROJECT_VERSION.NOTE]).isEqualTo("test version note")
+            assertThat(version?.get(PROJECT_VERSION.NOTE)).isEqualTo("test version note")
         }
     }
 
@@ -129,7 +129,7 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT.ID.eq(projectId))
                     .fetchOne()
 
-            assertThat(savedProject[PROJECT_VERSION.NOTE]).isEqualTo("test note")
+            assertThat(savedProject?.get(PROJECT_VERSION.NOTE)).isEqualTo("test note")
         }
     }
 
@@ -169,7 +169,7 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT_VERSION.ID.eq(promoteProjId))
                     .fetchOne()
 
-            assertThat(savedProjectVersion[PROJECT_VERSION.NOTE]).isEqualTo("test promote project note")
+            assertThat(savedProjectVersion?.get(PROJECT_VERSION.NOTE)).isEqualTo("test promote project note")
         }
     }
 
@@ -197,7 +197,7 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT_VERSION.ID.eq(versionId))
                     .fetchOne()
 
-            assertThat(savedVersion[PROJECT_VERSION.NOTE]).isEqualTo("test note")
+            assertThat(savedVersion?.get(PROJECT_VERSION.NOTE)).isEqualTo("test note")
         }
     }
 
@@ -232,8 +232,8 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT_VERSION.ID.eq(newVersionId))
                     .fetchOne()
 
-            assertThat(savedProject[PROJECT_VERSION.STATE]).isEqualTo(testState)
-            assertThat(savedProject[PROJECT_VERSION.UPDATED]).isEqualTo(savedProject[PROJECT_VERSION.CREATED])
+            assertThat(savedProject?.get(PROJECT_VERSION.STATE)).isEqualTo(testState)
+            assertThat(savedProject?.get(PROJECT_VERSION.UPDATED)).isEqualTo(savedProject?.get(PROJECT_VERSION.CREATED))
         }
     }
 
@@ -301,8 +301,8 @@ class ProjectTests : VersionFileTests()
                     .where(PROJECT_VERSION.ID.eq(versionId))
                     .fetchOne()
 
-            assertThat(savedProject[PROJECT_VERSION.STATE]).isEqualTo(testState)
-            assertThat(savedProject[PROJECT_VERSION.UPDATED]).isAfter(savedProject[PROJECT_VERSION.CREATED])
+            assertThat(savedProject?.get(PROJECT_VERSION.STATE)).isEqualTo(testState)
+            assertThat(savedProject?.get(PROJECT_VERSION.UPDATED)).isAfter(savedProject?.get(PROJECT_VERSION.CREATED))
         }
     }
 
@@ -378,15 +378,37 @@ class ProjectTests : VersionFileTests()
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
-    fun `can get current project`(isAuthorized: IsAuthorized)
+    fun `can get current project with versions`(isAuthorized: IsAuthorized)
     {
         val createResult = createProject()
-        val result = testRestTemplate.getForEntity<String>("/project/current")
         assertSecureWithSuccess(isAuthorized,createResult,null)
+
         if(isAuthorized == IsAuthorized.TRUE)
         {
-            val data = getResponseData(result)
-            assertThat(data["project"]["name"].asText()).isEqualTo("testProject")
+            val data = getResponseData(createResult)
+            val projectId = data["id"].asInt()
+            val versions = data["versions"] as ArrayNode
+            val versionId = versions[0]["id"].asText()
+
+            val map = LinkedMultiValueMap<String, String>()
+            map.add("note", "test note for v2")
+            map.add("parent", versionId)
+
+            val headers = HttpHeaders()
+            headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
+            val httpEntity = HttpEntity(map, headers)
+
+            val versionResult = testRestTemplate.postForEntity<String>("/project/${projectId}/version/", httpEntity)
+            assertThat(versionResult.statusCode).isEqualTo(HttpStatus.OK)
+
+            val result = testRestTemplate.getForEntity<String>("/project/current")
+
+            val currentProject = getResponseData(result)
+            assertThat(currentProject["project"]["name"].asText()).isEqualTo("testProject")
+            val currentProjectVersions = currentProject["project"]["versions"] as ArrayNode
+            assertThat(currentProjectVersions.count()).isEqualTo(2)
+            assertThat(currentProjectVersions[0]["note"].isNull).isTrue
+            assertThat(currentProjectVersions[1]["note"].asText()).isEqualTo("test note for v2")
         }
 
     }
@@ -490,7 +512,7 @@ class ProjectTests : VersionFileTests()
 
             testRestTemplate.delete("/project/$projectId")
 
-            result = testRestTemplate.getForEntity<String>("/projects/")
+            result = testRestTemplate.getForEntity("/projects/")
             data = getResponseData(result) as ArrayNode
             assertThat(data.count()).isEqualTo(0)
         }
@@ -522,7 +544,7 @@ class ProjectTests : VersionFileTests()
 
             testRestTemplate.postForEntity<String>("/project/$projectId/rename", httpEntity)
 
-            result = testRestTemplate.getForEntity<String>("/projects/")
+            result = testRestTemplate.getForEntity("/projects/")
             data = getResponseData(result) as ArrayNode
             assertThat(data.count()).isEqualTo(1)
             assertThat(data[0]["name"].asText()).isEqualTo("renamedProject")
@@ -649,13 +671,15 @@ class ProjectTests : VersionFileTests()
 
             val newProject = dsl.select(PROJECT_VERSION.STATE,
                     PROJECT_VERSION.CREATED,
+                    PROJECT_VERSION.NOTE,
                     PROJECT_VERSION.UPDATED)
                     .from(PROJECT_VERSION)
                     .where(PROJECT_VERSION.ID.eq(newVersionId))
                     .fetchOne()
 
-            assertThat(newProject[PROJECT_VERSION.STATE]).isEqualTo(testState)
-            assertThat(newProject[PROJECT_VERSION.UPDATED]).isEqualTo(newProject[PROJECT_VERSION.CREATED])
+            assertThat(newProject?.get(PROJECT_VERSION.STATE)).isEqualTo(testState)
+            assertThat(newProject?.get(PROJECT_VERSION.UPDATED)).isEqualTo(newProject?.get(PROJECT_VERSION.CREATED))
+            assertThat(newProject?.get(PROJECT_VERSION.NOTE)).isEqualTo(newProject?.get(PROJECT_VERSION.NOTE))
         }
     }
 
@@ -761,6 +785,7 @@ class ProjectTests : VersionFileTests()
                 assertThat(newVersions[0].versionNumber).isEqualTo(oldVersions[0].versionNumber)
                 assertThat(newVersions[0].created).isEqualTo(oldVersions[0].created)
                 assertThat(newVersions[0].updated).isEqualTo(oldVersions[0].updated)
+                assertThat(newVersions[0].note).isEqualTo(oldVersions[0].note)
                 assertThat(newVersions[0].deleted).isEqualTo(oldVersions[0].deleted)
             }
         }
@@ -774,7 +799,7 @@ class ProjectTests : VersionFileTests()
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_FORM_URLENCODED
         val httpEntity = HttpEntity(map, headers)
-        return testRestTemplate.postForEntity<String>("/project/", httpEntity)
+        return testRestTemplate.postForEntity("/project/", httpEntity)
     }
 
     private fun getCloneProjectEntity(emails: List<String>): HttpEntity<Any>
@@ -793,7 +818,7 @@ class ProjectTests : VersionFileTests()
 
         val httpEntity = HttpEntity(state, headers)
         val url = "/project/$projectId/version/$versionId/state/"
-        return testRestTemplate.postForEntity<String>(url, httpEntity)
+        return testRestTemplate.postForEntity(url, httpEntity)
     }
 
     private fun saveProjectNote(projectId: Int): ResponseEntity<String>
@@ -804,7 +829,7 @@ class ProjectTests : VersionFileTests()
 
         val httpEntity = HttpEntity(map, headers)
         val url = "/project/$projectId/note"
-        return testRestTemplate.postForEntity<String>(url, httpEntity)
+        return testRestTemplate.postForEntity(url, httpEntity)
     }
 
     private fun saveVersionNote(projectId: Int, versionId: String): ResponseEntity<String>
@@ -817,7 +842,7 @@ class ProjectTests : VersionFileTests()
 
         val httpEntity = HttpEntity(map, headers)
         val url = "/project/$projectId/version/$versionId/note"
-        return testRestTemplate.postForEntity<String>(url, httpEntity)
+        return testRestTemplate.postForEntity(url, httpEntity)
     }
 
     private fun getNewVersionResult(projectId: Int, versionId: String, language: String? = null): ResponseEntity<String>
@@ -825,7 +850,7 @@ class ProjectTests : VersionFileTests()
         val headers = getStandardHeaders(language)
         val httpEntity = HttpEntity(null, headers)
         val url = "/project/$projectId/version/?parent=$versionId"
-        return testRestTemplate.postForEntity<String>(url, httpEntity)
+        return testRestTemplate.postForEntity(url, httpEntity)
     }
 
     private fun getStandardHeaders(language: String?): HttpHeaders

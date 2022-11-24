@@ -4,12 +4,17 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
+import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.controllers.LoginController
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
 import org.springframework.ui.ConcurrentModel
 import javax.servlet.http.HttpServletRequest
 import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import java.net.URI
 
 class LoginControllerTests
 {
@@ -96,8 +101,8 @@ class LoginControllerTests
 
         Assertions.assertThat(result).isEqualTo("login")
         Assertions.assertThat(model["appTitle"]).isEqualTo("Naomi Data Exploration")
-        Assertions.assertThat(model["continueTo"]).isEqualTo("explore")
-        verify(mockSession).setRequestedUrl("explore")
+        Assertions.assertThat(model["continueTo"]).isEqualTo("/callback/explore")
+        verify(mockSession).setRequestedUrl("/callback/explore")
     }
 
     @Test
@@ -113,5 +118,89 @@ class LoginControllerTests
         Assertions.assertThat(result).isEqualTo("login")
         Assertions.assertThat(model["appTitle"]).isEqualTo("Naomi")
         verify(mockSession).setRequestedUrl(null)
+    }
+
+    @Test
+    fun `can redirect to auth0 login page`()
+    {
+        val clientId = "fakeId"
+        val appUrl = "https://naomi.com"
+        val clientUrl = "oauth2tenant.com"
+        val audience = "naomi"
+
+        val mockProperties = mock<AppProperties>{
+            on { oauth2ClientUrl } doReturn clientUrl
+            on { applicationUrl } doReturn appUrl
+            on { oauth2ClientId } doReturn clientId
+            on { oauth2ClientAudience } doReturn audience
+            on { oauth2LoginMethod } doReturn true
+        }
+
+        val mockRequest = mock<HttpServletRequest>()
+
+        val encodedState = "encodedStateCode"
+
+        val mockSession = mock<Session>{
+            on { generateStateParameter() } doReturn encodedState
+        }
+
+        val sut = LoginController(mockRequest, mockSession, mockProperties)
+
+        val result = sut.loginRedirection()
+
+        val httpHeader = HttpHeaders()
+
+        httpHeader.location = URI(
+            "https://$clientUrl/authorize?response_type=code&client_id=$clientId&" +
+                    "state=$encodedState&" +
+                    "scope=openid+profile+email+read:dataset&audience=$audience&" +
+                    "redirect_uri=$appUrl/callback/oauth2Client"
+        )
+
+        assertEquals(result.statusCode, HttpStatus.SEE_OTHER)
+
+        assertEquals(result.headers.location, httpHeader.location)
+    }
+
+    @Test
+    fun `can redirect to auth0 signup page`()
+    {
+        val clientId = "fakeId"
+        val appUrl = "https://naomi.com"
+        val clientUrl = "oauth2tenant.com"
+        val audience = "naomi"
+
+        val mockProperties = mock<AppProperties>{
+            on { oauth2ClientUrl } doReturn clientUrl
+            on { applicationUrl } doReturn appUrl
+            on { oauth2ClientId } doReturn clientId
+            on { oauth2ClientAudience } doReturn audience
+            on { oauth2LoginMethod } doReturn true
+        }
+
+        val mockRequest = mock<HttpServletRequest>()
+
+        val encodedState = "encodedStateCode"
+
+        val mockSession = mock<Session>{
+            on { generateStateParameter() } doReturn encodedState
+        }
+
+        val sut = LoginController(mockRequest, mockSession, mockProperties)
+
+        val result = sut.registerRedirection()
+
+        val httpHeader = HttpHeaders()
+
+        httpHeader.location = URI(
+            "https://$clientUrl/authorize?response_type=code&client_id=$clientId&" +
+                    "state=$encodedState&" +
+                    "scope=openid+profile+email+read:dataset&audience=$audience&" +
+                    "redirect_uri=$appUrl/callback/oauth2Client&screen_hint=signup"
+        )
+
+        assertEquals(result.statusCode, HttpStatus.SEE_OTHER)
+
+        assertEquals(result.headers.location, httpHeader.location)
     }
 }

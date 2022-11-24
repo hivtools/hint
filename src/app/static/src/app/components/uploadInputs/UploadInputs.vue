@@ -163,7 +163,8 @@
                 uploadANC: 'surveyAndProgram/uploadANC',
                 deleteSurvey: 'surveyAndProgram/deleteSurvey',
                 deleteProgram: 'surveyAndProgram/deleteProgram',
-                deleteANC: 'surveyAndProgram/deleteANC'
+                deleteANC: 'surveyAndProgram/deleteANC',
+                getPlottingMetadata: 'metadata/getPlottingMetadata'
             })
         },
         components: {

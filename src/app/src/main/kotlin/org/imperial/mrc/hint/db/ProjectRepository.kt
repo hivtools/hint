@@ -11,7 +11,13 @@ import org.springframework.stereotype.Component
 
 interface ProjectRepository
 {
-    fun saveNewProject(userId: String, projectName: String, sharedBy: String? = null, note: String? = null): Int
+    fun saveNewProject(
+            userId: String,
+            projectName: String,
+            sharedBy: String? = null,
+            note: String? = null,
+            isUploaded: Boolean? = false
+    ): Int
     fun getProjects(userId: String): List<Project>
     fun deleteProject(projectId: Int, userId: String)
     fun getProject(projectId: Int, userId: String): Project
@@ -31,9 +37,11 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                 PROJECT.NAME,
                 PROJECT.SHARED_BY,
                 PROJECT.NOTE,
+                PROJECT.IS_UPLOADED,
                 PROJECT_VERSION.ID,
                 PROJECT_VERSION.CREATED,
                 PROJECT_VERSION.UPDATED,
+                PROJECT_VERSION.NOTE,
                 PROJECT_VERSION.VERSION_NUMBER)
                 .from(PROJECT)
                 .join(PROJECT_VERSION)
@@ -63,12 +71,24 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
         return getProject(projectId[PROJECT_VERSION.PROJECT_ID], userId)
     }
 
-    override fun saveNewProject(userId: String, projectName: String, sharedBy: String?, note: String?): Int
+    override fun saveNewProject(
+            userId: String,
+            projectName: String,
+            sharedBy: String?,
+            note: String?,
+            isUploaded: Boolean?
+    ): Int
     {
-        val result = dsl.insertInto(PROJECT, PROJECT.USER_ID, PROJECT.NAME, PROJECT.SHARED_BY, PROJECT.NOTE)
-                .values(userId, projectName, sharedBy, note)
+        val result = dsl.insertInto(
+                PROJECT,
+                PROJECT.USER_ID,
+                PROJECT.NAME,
+                PROJECT.SHARED_BY,
+                PROJECT.NOTE,
+                PROJECT.IS_UPLOADED)
+                .values(userId, projectName, sharedBy, note, isUploaded)
                 .returning(PROJECT.ID)
-                .fetchOne()
+                .fetchOne() ?: throw ProjectException("projectDoesNotExist")
 
         return result[PROJECT.ID]
     }
@@ -79,6 +99,7 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
                 dsl.select(
                         PROJECT.ID,
                         PROJECT.NAME,
+                        PROJECT.IS_UPLOADED,
                         PROJECT.SHARED_BY,
                         PROJECT.NOTE,
                         PROJECT_VERSION.ID,
@@ -140,8 +161,13 @@ class JooqProjectRepository(private val dsl: DSLContext) : ProjectRepository
 
     private fun mapProject(versions: List<Record>): Project
     {
-        return Project(versions[0][PROJECT.ID], versions[0][PROJECT.NAME],
-                     mapVersion(versions), versions[0][PROJECT.SHARED_BY], versions[0][PROJECT.NOTE])
+        return Project(
+                versions[0][PROJECT.ID],
+                versions[0][PROJECT.NAME],
+                mapVersion(versions),
+                versions[0][PROJECT.SHARED_BY],
+                versions[0][PROJECT.NOTE],
+                versions[0][PROJECT.IS_UPLOADED])
     }
 
     private fun mapVersion(records: List<Record>): List<Version>

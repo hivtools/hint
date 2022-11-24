@@ -15,15 +15,15 @@
                        id="new-project"
                        class="form-control"
                        v-translate:placeholder="'projectName'"
-                       @keyup.enter="createProject(newProjectName)"
+                       @keyup.enter="createProject({name: newProjectName})"
                        v-model="newProjectName">
                 <div class="invalid-feedback d-inline"
                      v-translate="'uniqueProjectName'"
-                     v-if="invalidName"></div>
+                     v-if="invalidName(newProjectName)"></div>
                 <button type="button"
                         class="btn btn-red mt-2 float-right"
                         :disabled="disableCreate"
-                        @click="createProject(newProjectName)"
+                        @click="createProject({name: newProjectName})"
                         v-translate="'createProject'">
                 </button>
             </div>
@@ -40,19 +40,17 @@
 </template>
 
 <script lang="ts">
-    import {mapActionByName, mapGetterByName, mapStateProps} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapStatePropByName, mapStateProps} from "../../utils";
     import {ProjectsState} from "../../store/projects/projects";
     import {Error} from "../../generated";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {Project} from "../../types";
     import ProjectHistory from "./ProjectHistory.vue";
+    import ProjectsMixin from "./ProjectsMixin";
+    import {CreateProjectPayload} from "../../store/projects/actions";
 
     const namespace = "projects";
-
-    interface Data {
-        newProjectName: string
-    }
 
     interface Computed {
         currentProject: Project | null,
@@ -61,17 +59,16 @@
         isGuest: boolean,
         disableCreate: boolean,
         loading: boolean
+        uploadProjectName: string
     }
 
     interface Methods {
-        createProject: (name: string) => void,
+        createProject: (name: CreateProjectPayload) => void,
         getProjects: () => void,
         handleCurrentProjectClick: (e: Event) => void
     }
 
-    import ProjectsMixin from "./ProjectsMixin";
-
-    export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
+    export default ProjectsMixin.extend<unknown, Methods, Computed, unknown>({
         computed: {
             ...mapStateProps<ProjectsState, keyof Computed>(namespace, {
                 currentProject: state => state.currentProject,
@@ -79,9 +76,10 @@
                 hasError: state => !!state.error,
                 loading: state => state.loading
             }),
+            uploadProjectName: mapStatePropByName<string>("load", "projectName"),
             isGuest: mapGetterByName(null, "isGuest"),
             disableCreate: function () {
-                return !this.newProjectName || this.invalidName;
+                return !this.newProjectName || this.invalidName(this.newProjectName);
             }
         },
         methods: {

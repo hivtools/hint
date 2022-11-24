@@ -1,5 +1,6 @@
 import * as CryptoJS from 'crypto-js';
 import {
+    ActionContext,
     ActionMethod,
     CustomVue,
     mapActions,
@@ -9,9 +10,21 @@ import {
     MutationMethod
 } from "vuex";
 import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
-import {Error, FilterOption, NestedFilterOption, Response} from "./generated";
+import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse, Response} from "./generated";
 import moment from 'moment';
-import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {
+    DynamicControlGroup,
+    DynamicControlSection,
+    DynamicFormMeta
+} from "@reside-ic/vue-dynamic-form";
+import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
+import {ModelOptionsState} from "./store/modelOptions/modelOptions";
+import {RootState} from "./root";
+import {initialStepperState} from "./store/stepper/stepper";
+import {LoadState} from "./store/load/state";
+import {initialModelRunState} from "./store/modelRun/modelRun";
+import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
+import {AxiosResponse} from "axios";
 
 export type ComputedWithType<T> = () => T;
 
@@ -25,8 +38,8 @@ export const mapStatePropByName = <T>(namespace: string | null, name: string): C
 };
 
 export const mapStateProps = <S, K extends string>(namespace: string,
-                                                   map: Dict<(this: CustomVue, state: S) => any>) => {
-    type R = { [key in K]: any }
+    map: Dict<(this: CustomVue, state: S) => any>) => {
+    type R = {[key in K]: any}
     return mapState<S>(namespace, map) as R
 };
 
@@ -35,7 +48,7 @@ export const mapGetterByName = <T>(namespace: string | null, name: string): Comp
 }
 
 export const mapGettersByNames = <K extends string>(namespace: string, names: string[]) => {
-    type R = { [key in K]: any }
+    type R = {[key in K]: any}
     return mapGetters(namespace, names) as R
 };
 
@@ -44,12 +57,12 @@ export const mapActionByName = <T>(namespace: string | null, name: string): Acti
 };
 
 export const mapActionsByNames = <K extends string>(namespace: string | null, names: string[]) => {
-    type R = { [key in K]: any }
+    type R = {[key in K]: any}
     return (!!namespace && mapActions(namespace, names) || mapActions(names)) as R
 };
 
 export const mapMutationsByNames = <K extends string>(namespace: string, names: string[]) => {
-    type R = { [key in K]: any }
+    type R = {[key in K]: any}
     return mapMutations(namespace, names) as R
 };
 
@@ -73,7 +86,7 @@ export const verifyCheckSum = (content: string): false | any => {
 
 function isHINTError(object: any): object is Error {
     return typeof object.error == "string"
-        && object.details == undefined || typeof object.details == "string"
+        && object.detail == undefined || typeof object.detail == "string"
 }
 
 export function isHINTResponse(object: any): object is Response {
@@ -116,14 +129,15 @@ export function stripNamespace(name: string) {
 
 const flattenToIdArray = (filterOption: NestedFilterOption): string[] => {
     let result: string[] = [];
-    result.push(filterOption.id);
-    if (filterOption.children) {
-        filterOption.children.forEach(o =>
-            result = [
-                ...result,
-                ...flattenToIdArray(o as NestedFilterOption)
-            ]);
-
+    if (filterOption?.id) {
+        result.push(filterOption.id);
+        if (filterOption.children) {
+            filterOption.children.forEach(o =>
+                result = [
+                    ...result,
+                    ...flattenToIdArray(o as NestedFilterOption)
+                ]);
+        }
     }
     return result;
 };
@@ -138,7 +152,7 @@ export const flattenToIdSet = (ids: string[], lookup: Dict<NestedFilterOption>):
     return new Set(result);
 };
 
-export const flattenOptions = (filterOptions: NestedFilterOption[]): { [k: string]: NestedFilterOption } => {
+export const flattenOptions = (filterOptions: NestedFilterOption[]): {[k: string]: NestedFilterOption} => {
     let result = {};
     filterOptions.forEach(r =>
         result = {
@@ -191,6 +205,10 @@ export const formatDateTime = (isoUTCString: string) => {
     return moment.utc(isoUTCString).local().format('DD/MM/YYYY HH:mm:ss');
 };
 
+export const formatToLocalISODateTime = (isoUTCString: string) => {
+    return moment.utc(isoUTCString).local().format('YYYY/MM/DD HH:mm:ss');
+};
+
 export const findResource = (datasetWithResources: any, resourceType: string, resourceName?: string | null): DatasetResource | null => {
     let resources = datasetWithResources.resources;
 
@@ -204,7 +222,8 @@ export const findResource = (datasetWithResources: any, resourceType: string, re
         url: metadata.url,
         lastModified: metadata.last_modified,
         metadataModified: metadata.metadata_modified,
-        outOfDate: false} : null
+        outOfDate: false
+    } : null
 };
 
 export const datasetFromMetadata = (fullMetaData: any, schemas: ADRSchemas, release?: string) => {
@@ -228,7 +247,7 @@ export const datasetFromMetadata = (fullMetaData: any, schemas: ADRSchemas, rele
 };
 
 export const constructUploadFile = (datasetWithResources: any, index: number, resourceType: string,
-                                 resourceFilename: string, displayName: string): UploadFile | null => {
+    resourceFilename: string, displayName: string): UploadFile | null => {
     const resource = findResource(datasetWithResources, resourceType, null);
     // We expect to find resource name on the resource - return null if not found - file should
     // not be uploadable.
@@ -248,8 +267,7 @@ export const constructUploadFileWithResourceName = (datasetWithResources: any, i
 };
 
 function getUploadFileFromResource(resource: DatasetResource | null, resourceName: string, index: number,
-                                resourceType: string, resourceFilename: string, displayName: string): UploadFile
-{
+    resourceType: string, resourceFilename: string, displayName: string): UploadFile {
     const resourceId = resource ? resource.id : null;
     const lastModified = resource ? ([resource.lastModified, resource.metadataModified].sort()[1]) : null;
     const resourceUrl = resource ? resource.url : null;
@@ -329,3 +347,148 @@ const extractErrorsRecursively = (state: any, errors: Error[]) => {
         keys.forEach(key => extractErrorsRecursively(state[key], errors));
     }
 };
+
+export const resourceTypes = {
+    pjnz: "inputs-unaids-spectrum-file",
+    pop: "inputs-unaids-population",
+    shape: "inputs-unaids-geographic",
+    survey: "inputs-unaids-survey",
+    program: "inputs-unaids-art",
+    anc: "inputs-unaids-anc"
+}
+
+export const getFormData = (file: File) => {
+    const formData = new FormData()
+    formData.append("file", file)
+    return formData
+}
+
+const transformPathToHash = (dataset: any) => {
+    Object.keys(dataset).map((key: string) => {
+        dataset[key] = {
+            hash: dataset[key].path.split("/")[1] || "",
+            filename: dataset[key].filename
+        }
+    })
+    return dataset
+}
+
+export const constructRehydrateProjectState = async (context: ActionContext<LoadState, RootState>, data: ProjectRehydrateResultResponse) => {
+    const files = transformPathToHash({...data.state.datasets});
+
+    const modelOptions = {
+        options: data.state.model_fit.options,
+        valid: true
+    } as any
+
+    const modelRun = {
+        ...initialModelRunState(),
+        modelRunId: data.state.model_fit.id,
+        status: {success: true, done: true}
+    } as any
+
+    const modelCalibrate = {
+        ...initialModelCalibrateState(),
+        calibrateId: data.state.calibrate.id,
+        options: data.state.calibrate.options,
+        status: {success: true, done: true}
+    } as any
+
+    const surveyAndProgram = {
+        survey: {
+            hash: files.survey.hash,
+            filename: files.survey.filename
+        },
+        program: {
+            hash: files.programme.hash,
+            filename: files.programme.filename
+        },
+        anc: {
+            hash: files.anc.hash,
+            filename: files.anc.filename
+        },
+        selectedDataType: DataType.Survey,
+    } as any
+
+    const baseline = {
+        pjnz: {
+            hash: files.pjnz.hash,
+            filename: files.pjnz.filename
+        },
+        shape: {
+            hash: files.shape.hash,
+            filename: files.shape.filename
+        },
+        population: {
+            hash: files.population.hash,
+            filename: files.population.filename
+        },
+    } as any
+
+    const stepper = {
+        steps: initialStepperState().steps,
+        activeStep: 6
+    }
+
+    const projects = {
+        currentProject: null,
+        currentVersion: null,
+        previousProjects: []
+    } as any
+
+    const savedState: Partial<RootState> = {
+        projects,
+        baseline,
+        surveyAndProgram,
+        modelOptions,
+        modelCalibrate,
+        modelRun,
+        stepper,
+        hintrVersion: {
+            hintrVersion: data.state.version
+        }
+    }
+
+    return {files, savedState}
+}
+
+export const constructOptionsFormMetaFromData = (state: ModelOptionsState, meta: DynamicFormMeta): DynamicFormMeta => {
+    const stateContainsOptions = Object.keys(state.options).length > 0
+    if (stateContainsOptions) {
+        meta.controlSections.forEach(newSection => {
+            newSection.controlGroups.forEach(newGroup => {
+                newGroup.controls.forEach(newControl => {
+                    if (newControl.name in state.options) {
+                        newControl.value = state.options[newControl.name];
+                    }
+                });
+            });
+        });
+    }
+
+    return meta
+}
+
+export const flatMapControlSections = (sections: DynamicControlSection[]): DynamicControlGroup[] => {
+    return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
+}
+
+export const readStream = (response: AxiosResponse): void => {
+    const filename = extractFilenameFrom(response.headers["content-disposition"])
+    const fileUrl = URL.createObjectURL(response.data);
+    const fileLink = document.createElement('a');
+    fileLink.href = fileUrl;
+    fileLink.setAttribute('download', filename);
+    document.body.appendChild(fileLink);
+    fileLink.click()
+    URL.revokeObjectURL(fileUrl)
+
+}
+
+export const extractFilenameFrom = (contentDisposition: string): string => {
+    return contentDisposition
+        .split(';')[1]
+        .split('filename=')[1]
+        .replace(/"/g, '')
+        .trim();
+}

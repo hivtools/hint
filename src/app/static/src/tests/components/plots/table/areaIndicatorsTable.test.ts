@@ -87,6 +87,37 @@ describe("areaIndicatorsTable", () => {
         expect(table.props("fields")).toStrictEqual(expectedFields);
     });
 
+
+    it('renders Table with correct fields when translateFilterLabels is false', () => {
+        const wrapper = getWrapper({
+            translateFilterLabels: false,
+            filters: [
+                testData.filters[0],
+                {
+                    id: "age",
+                    label: "Age (already translated)",
+                    column_id: "age",
+                    options: [{id: "0:15", label: "0-15"}, {id: "15:30", label: "15-30"}]
+                },
+                {
+                    id: "sex",
+                    label: "Sex (already translated)",
+                    column_id: "sex",
+                    options: [{id: "female", label: "Female"}, {id: "male", label: "Male"}]
+                }
+            ]
+        });
+        const table = wrapper.find(Table);
+
+        const expectedFields = [
+            {key: "areaLabel", label: "Area", sortable: true, sortByFormatted: true},
+            {key: "age", label: "Age (already translated)", sortable: true, sortByFormatted: true},
+            {key: "sex", label: "Sex (already translated)", sortable: true, sortByFormatted: true},
+            {key: "prevalence", label: "HIV prevalence", sortable: true, sortByFormatted: true}
+        ];
+        expect(table.props("fields")).toStrictEqual(expectedFields);
+    });
+
     it('renders Table with correct data', () => {
         const wrapper = getWrapper();
         const table = wrapper.find(Table);

@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.unit.controllers
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.controllers.DownloadController
@@ -14,13 +15,15 @@ class DownloadControllerTests
     @Test
     fun `submit spectrum download`()
     {
+        val json = mapOf("state" to mapOf("test" to "test"))
         val mockResponse = mock<ResponseEntity<String>>()
         val mockAPIClient = mock<HintrAPIClient> {
-            on { downloadOutputSubmit("spectrum", "id1") } doReturn mockResponse
+            on { downloadOutputSubmit("spectrum", "id1", json) } doReturn mockResponse
         }
 
         val sut = DownloadController(mockAPIClient)
-        val result = sut.getDownloadOutput("spectrum", "id1")
+        val result = sut.getDownloadOutput("spectrum", "id1", json)
+        verify(mockAPIClient).downloadOutputSubmit("spectrum", "id1", json)
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
 
@@ -29,11 +32,12 @@ class DownloadControllerTests
     {
         val mockResponse = mock<ResponseEntity<String>>()
         val mockAPIClient = mock<HintrAPIClient> {
-            on { downloadOutputSubmit("summary", "id1") } doReturn mockResponse
+            on { downloadOutputSubmit("summary", "id1", emptyMap()) } doReturn mockResponse
         }
 
         val sut = DownloadController(mockAPIClient)
-        val result = sut.getDownloadOutput("summary", "id1")
+        val result = sut.getDownloadOutput("summary", "id1", emptyMap())
+        verify(mockAPIClient).downloadOutputSubmit("summary", "id1", emptyMap())
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
 
@@ -47,6 +51,7 @@ class DownloadControllerTests
 
         val sut = DownloadController(mockAPIClient)
         val result = sut.getDownloadOutput("coarse-output", "id1")
+        verify(mockAPIClient).downloadOutputSubmit("coarse-output", "id1", null)
         Assertions.assertThat(result).isSameAs(mockResponse)
     }
 

@@ -369,6 +369,83 @@ export type ColumnValues = {
   format?: string;
   accuracy?: number | null;
 }[];
+export type ComparisonPlotData = {
+  area_id: string;
+  area_name: string;
+  sex: string;
+  age_group: string;
+  calendar_quarter: string;
+  indicator: string;
+  source: string;
+  mean: number | null;
+  lower: number | null;
+  upper: number | null;
+  [k: string]: any;
+}[];
+export interface ComparisonPlotResponse {
+  data: {
+    area_id: string;
+    area_name: string;
+    sex: string;
+    age_group: string;
+    calendar_quarter: string;
+    indicator: string;
+    source: string;
+    mean: number | null;
+    lower: number | null;
+    upper: number | null;
+    [k: string]: any;
+  }[];
+  plottingMetadata: {
+    barchart: {
+      indicators: {
+        indicator: string;
+        value_column: string;
+        indicator_column: string;
+        indicator_value: string;
+        indicator_sort_order?: number;
+        name: string;
+        error_low_column: string;
+        error_high_column: string;
+        scale: number;
+        accuracy: number | null;
+        format: string;
+      }[];
+      filters: {
+        id: string;
+        column_id: string;
+        label: string;
+        options: {
+          label: string;
+          id: string;
+          description?: string;
+        }[];
+        use_shape_regions?: boolean | null;
+      }[];
+      defaults?: {
+        indicator_id: string;
+        x_axis_id: string;
+        disaggregate_by_id: string;
+        selected_filter_options: {
+          [k: string]: any;
+        };
+      };
+    };
+  };
+}
+export interface ComparisonPlotRow {
+  area_id: string;
+  area_name: string;
+  sex: string;
+  age_group: string;
+  calendar_quarter: string;
+  indicator: string;
+  source: string;
+  mean: number | null;
+  lower: number | null;
+  upper: number | null;
+  [k: string]: any;
+}
 export interface DownloadStatusResponse {
   id: string;
   done: boolean | null;
@@ -385,9 +462,70 @@ export interface DownloadStatusResponse {
       }
     | string)[];
 }
+export interface DownloadSubmitRequest {
+  notes?: {
+    project_notes?: {
+      name?: string;
+      updated?: string;
+      note: string;
+    };
+    version_notes?: {
+      name?: string;
+      updated?: string;
+      note: string;
+    }[];
+  };
+  state?: {
+    datasets: {
+      pjnz: {
+        path: string;
+        filename: string;
+      };
+      population: {
+        path: string;
+        filename: string;
+      };
+      shape: {
+        path: string;
+        filename: string;
+      };
+      survey: {
+        path: string;
+        filename: string;
+      };
+      programme?: {
+        path: string;
+        filename: string;
+      };
+      anc?: {
+        path: string;
+        filename: string;
+      };
+    };
+    model_fit: {
+      options: {
+        [k: string]: any;
+      };
+      id: string;
+    };
+    calibrate: {
+      options: {
+        [k: string]: any;
+      };
+      id: string;
+    };
+    version: {
+      hintr: string;
+      naomi: string;
+      rrq: string;
+      [k: string]: any;
+    };
+  };
+}
 export interface DownloadSubmitResponse {
   id: string;
 }
+export type ErrorCode = string;
 export interface Error {
   error: string;
   detail: string | null;
@@ -395,7 +533,6 @@ export interface Error {
   trace?: string[];
   [k: string]: any;
 }
-export type ErrorCode = string;
 export type FileName = string;
 export type FilePath = string | null;
 export interface Filter {
@@ -566,37 +703,37 @@ export interface ModelOptionsValidateRequest {
       path: string | null;
       hash: string;
       filename: string;
-      fromADR: boolean;
+      fromADR?: boolean;
     };
     shape: {
       path: string | null;
       hash: string;
       filename: string;
-      fromADR: boolean;
+      fromADR?: boolean;
     };
     population: {
       path: string | null;
       hash: string;
       filename: string;
-      fromADR: boolean;
+      fromADR?: boolean;
     };
     survey: {
       path: string | null;
       hash: string;
       filename: string;
-      fromADR: boolean;
+      fromADR?: boolean;
     };
     programme?: {
       path: string | null;
       hash: string;
       filename: string;
-      fromADR: boolean;
+      fromADR?: boolean;
     };
     anc?: {
       path: string | null;
       hash: string;
       filename: string;
-      fromADR: boolean;
+      fromADR?: boolean;
     };
   };
   options: {
@@ -686,25 +823,25 @@ export interface ModelRunOptionsRequest {
     path: string | null;
     hash: string;
     filename: string;
-    fromADR: boolean;
+    fromADR?: boolean;
   };
   survey: {
     path: string | null;
     hash: string;
     filename: string;
-    fromADR: boolean;
+    fromADR?: boolean;
   };
   programme?: {
     path: string | null;
     hash: string;
     filename: string;
-    fromADR: boolean;
+    fromADR?: boolean;
   };
   anc?: {
     path: string | null;
     hash: string;
     filename: string;
-    fromADR: boolean;
+    fromADR?: boolean;
   };
 }
 export interface ModelStatusResponse {
@@ -726,37 +863,37 @@ export interface ModelSubmitData {
     path: string | null;
     hash: string;
     filename: string;
-    fromADR: boolean;
+    fromADR?: boolean;
   };
   shape: {
     path: string | null;
     hash: string;
     filename: string;
-    fromADR: boolean;
+    fromADR?: boolean;
   };
   population: {
     path: string | null;
     hash: string;
     filename: string;
-    fromADR: boolean;
+    fromADR?: boolean;
   };
   survey: {
     path: string | null;
     hash: string;
     filename: string;
-    fromADR: boolean;
+    fromADR?: boolean;
   };
   programme?: {
     path: string | null;
     hash: string;
     filename: string;
-    fromADR: boolean;
+    fromADR?: boolean;
   };
   anc?: {
     path: string | null;
     hash: string;
     filename: string;
-    fromADR: boolean;
+    fromADR?: boolean;
   };
 }
 export interface ModelSubmitRequest {
@@ -765,37 +902,37 @@ export interface ModelSubmitRequest {
       path: string | null;
       hash: string;
       filename: string;
-      fromADR: boolean;
+      fromADR?: boolean;
     };
     shape: {
       path: string | null;
       hash: string;
       filename: string;
-      fromADR: boolean;
+      fromADR?: boolean;
     };
     population: {
       path: string | null;
       hash: string;
       filename: string;
-      fromADR: boolean;
+      fromADR?: boolean;
     };
     survey: {
       path: string | null;
       hash: string;
       filename: string;
-      fromADR: boolean;
+      fromADR?: boolean;
     };
     programme?: {
       path: string | null;
       hash: string;
       filename: string;
-      fromADR: boolean;
+      fromADR?: boolean;
     };
     anc?: {
       path: string | null;
       hash: string;
       filename: string;
-      fromADR: boolean;
+      fromADR?: boolean;
     };
   };
   options: {
@@ -824,6 +961,15 @@ export interface NestedFilterOption {
   children?: {
     [k: string]: any;
   }[];
+}
+export interface Notes {
+  project_notes?: Note;
+  version_notes?: Note[];
+}
+export interface Note {
+  name?: string;
+  updated?: string;
+  note: string;
 }
 export interface PjnzResponseData {
   country: string;
@@ -899,6 +1045,110 @@ export interface ProgressPhase {
   name: string;
   helpText?: string;
 }
+export interface ProjectRehydrateResultResponse {
+  notes: string | null;
+  state: {
+    datasets: {
+      pjnz: {
+        path: string;
+        filename: string;
+      };
+      population: {
+        path: string;
+        filename: string;
+      };
+      shape: {
+        path: string;
+        filename: string;
+      };
+      survey: {
+        path: string;
+        filename: string;
+      };
+      programme?: {
+        path: string;
+        filename: string;
+      };
+      anc?: {
+        path: string;
+        filename: string;
+      };
+    };
+    model_fit: {
+      options: {
+        [k: string]: any;
+      };
+      id: string;
+    };
+    calibrate: {
+      options: {
+        [k: string]: any;
+      };
+      id: string;
+    };
+    version: {
+      hintr: string;
+      naomi: string;
+      rrq: string;
+      [k: string]: any;
+    };
+  };
+}
+export interface ProjectRehydrateStatusResponse {
+  id: string;
+  done: boolean | null;
+  status: string;
+  success: boolean | null;
+  queue: number;
+  progress: (
+    | {
+        started: boolean;
+        complete: boolean;
+        value?: number;
+        name: string;
+        helpText?: string;
+      }
+    | string)[];
+}
+export interface ProjectRehydrateSubmitRequest {
+  file: {
+    path: string | null;
+    hash: string;
+    filename: string;
+    fromADR?: boolean;
+  };
+}
+export interface ProjectRehydrateSubmitResponse {
+  id: string;
+}
+export interface ProjectState {
+  datasets: {
+    pjnz: File;
+    population: File;
+    shape: File;
+    survey: File;
+    programme?: File;
+    anc?: File;
+  };
+  model_fit: AsyncRunOptions;
+  calibrate: AsyncRunOptions;
+  version: {
+    hintr: string;
+    naomi: string;
+    rrq: string;
+    [k: string]: any;
+  };
+}
+export interface File {
+  path: string;
+  filename: string;
+}
+export interface AsyncRunOptions {
+  options: {
+    [k: string]: any;
+  };
+  id: string;
+}
 export interface Response {
   status: "success" | "failure";
   data: {
@@ -922,7 +1172,7 @@ export interface SessionFile {
   path: string | null;
   hash: string;
   filename: string;
-  fromADR: boolean;
+  fromADR?: boolean;
 }
 /**
  * TODO: Validate against a URL e.g. https://geojson.org/schema/FeatureCollection.json
@@ -1002,7 +1252,7 @@ export interface ValidateInputRequest {
     path: string | null;
     hash: string;
     filename: string;
-    fromADR: boolean;
+    fromADR?: boolean;
   };
 }
 export type ValidateInputResponse =
@@ -1206,7 +1456,7 @@ export interface ValidateSurveyAndProgrammeRequest {
     path: string | null;
     hash: string;
     filename: string;
-    fromADR: boolean;
+    fromADR?: boolean;
   };
   shape: string | null;
   pjnz: string | null;

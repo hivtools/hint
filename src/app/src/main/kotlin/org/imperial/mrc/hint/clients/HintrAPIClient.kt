@@ -3,7 +3,6 @@ package org.imperial.mrc.hint.clients
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.kittinunf.fuel.Fuel.head
 import com.github.kittinunf.fuel.httpDownload
-import com.github.kittinunf.fuel.httpPost
 import org.imperial.mrc.hint.*
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
@@ -17,29 +16,42 @@ interface HintrAPIClient
 {
     fun validateBaselineIndividual(file: VersionFileWithPath, type: FileType): ResponseEntity<String>
     fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
-    fun validateSurveyAndProgramme(file: VersionFileWithPath, shapePath: String, type: FileType, pjnzPath: String, strict: Boolean)
-            : ResponseEntity<String>
+    fun validateSurveyAndProgramme(
+        file: VersionFileWithPath,
+        shapePath: String?,
+        type: FileType,
+        pjnzPath: String?,
+        strict: Boolean
+    ): ResponseEntity<String>
 
     fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
     fun getResult(id: String): ResponseEntity<String>
     fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
-    fun getModelCalibrationOptions(): ResponseEntity<String>
+    fun getModelCalibrationOptions(iso3: String): ResponseEntity<String>
     fun calibrateSubmit(runId: String, calibrationOptions: ModelOptions): ResponseEntity<String>
     fun getCalibrateStatus(id: String): ResponseEntity<String>
     fun getCalibrateResult(id: String): ResponseEntity<String>
     fun getCalibratePlot(id: String): ResponseEntity<String>
+    fun getComparisonPlot(id: String): ResponseEntity<String>
     fun cancelModelRun(id: String): ResponseEntity<String>
     fun getVersion(): ResponseEntity<String>
     fun validateModelOptions(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions):
             ResponseEntity<String>
     fun getInputTimeSeriesChartData(type: String, files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun get(url: String): ResponseEntity<String>
-    fun downloadOutputSubmit(type: String, id: String): ResponseEntity<String>
+    fun downloadOutputSubmit(
+        type: String,
+        id: String,
+        projectPayload: Map<String, Any?>? = null
+    ): ResponseEntity<String>
     fun downloadOutputStatus(id: String): ResponseEntity<String>
     fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
     fun getUploadMetadata(id: String): ResponseEntity<String>
+    fun submitRehydrate(outputZip: VersionFileWithPath): ResponseEntity<String>
+    fun rehydrateStatus(id: String): ResponseEntity<String>
+    fun rehydrateResult(id: String): ResponseEntity<String>
 }
 
 @Component
@@ -68,24 +80,24 @@ class HintrFuelAPIClient(
     {
 
         val json = objectMapper.writeValueAsString(
-                mapOf("type" to type.toString().toLowerCase(),
+                mapOf("type" to type.toString().lowercase(),
                         "file" to file))
 
         return postJson("validate/baseline-individual", json)
     }
 
     override fun validateSurveyAndProgramme(file: VersionFileWithPath,
-                                            shapePath: String,
+                                            shapePath: String?,
                                             type: FileType,
-                                            pjnzPath: String,
+                                            pjnzPath: String?,
                                             strict: Boolean): ResponseEntity<String>
     {
 
         val json = objectMapper.writeValueAsString(
-                mapOf("type" to type.toString().toLowerCase(),
-                        "pjnz" to pjnzPath,
+                mapOf("type" to type.toString().lowercase(),
+                        "pjnz" to pjnzPath.orEmpty(),
                         "file" to file,
-                        "shape" to shapePath))
+                        "shape" to shapePath.orEmpty()))
 
         return postJson("validate/survey-and-programme?strict=$strict", json)
     }
@@ -144,6 +156,11 @@ class HintrFuelAPIClient(
         return get("calibrate/plot/${id}")
     }
 
+    override fun getComparisonPlot(id: String): ResponseEntity<String>
+    {
+        return get("comparison/plot/${id}")
+    }
+
     override fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     {
         return get("meta/plotting/${iso3}")
@@ -155,9 +172,9 @@ class HintrFuelAPIClient(
         return postJson("model/options", json)
     }
 
-    override fun getModelCalibrationOptions(): ResponseEntity<String>
+    override fun getModelCalibrationOptions(iso3: String): ResponseEntity<String>
     {
-        return postEmpty("calibrate/options")
+        return postEmpty("calibrate/options/${iso3}")
     }
 
     override fun validateBaselineCombined(files: Map<String, VersionFileWithPath?>): ResponseEntity<String>
@@ -170,11 +187,7 @@ class HintrFuelAPIClient(
 
     override fun cancelModelRun(id: String): ResponseEntity<String>
     {
-        return "$baseUrl/model/cancel/${id}".httpPost()
-                .addTimeouts()
-                .response()
-                .second
-                .asResponseEntity()
+        return postEmpty("model/cancel/${id}")
     }
 
     override fun getVersion(): ResponseEntity<String>
@@ -182,9 +195,40 @@ class HintrFuelAPIClient(
         return get("hintr/version")
     }
 
-    override fun downloadOutputSubmit(type:String, id: String): ResponseEntity<String>
+    override fun submitRehydrate(outputZip: VersionFileWithPath): ResponseEntity<String>
     {
-        return get("download/submit/${type}/${id}")
+        val payload = mapOf(
+                "filename" to outputZip.filename,
+                "hash" to outputZip.hash,
+                "path" to outputZip.path
+        )
+        return postJson("rehydrate/submit", objectMapper.writeValueAsString(mapOf("file" to payload)))
+    }
+
+    override fun rehydrateStatus(id: String): ResponseEntity<String>
+    {
+        return get("rehydrate/status/${id}")
+    }
+
+    override fun rehydrateResult(id: String): ResponseEntity<String>
+    {
+        return get("rehydrate/result/${id}")
+    }
+
+    override fun downloadOutputSubmit(
+        type: String,
+        id: String,
+        projectPayload: Map<String, Any?>?
+    ): ResponseEntity<String>
+    {
+        if (projectPayload.isNullOrEmpty())
+        {
+            return postEmpty("download/submit/${type}/${id}")
+        }
+
+        val json = objectMapper.writeValueAsString(projectPayload)
+
+        return postJson("download/submit/${type}/${id}", json)
     }
 
     override fun downloadOutputStatus(id: String): ResponseEntity<String>

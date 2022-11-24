@@ -1,10 +1,12 @@
 package org.imperial.mrc.hint.logic
 
+import org.imperial.mrc.hint.caseInsensitiveEmail
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.exceptions.UserException
 import org.pac4j.core.profile.CommonProfile
+import org.pac4j.core.profile.UserProfile
 import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
 import org.springframework.stereotype.Component
@@ -16,7 +18,7 @@ interface UserLogic
     fun addUser(email: String, password: String?)
     fun removeUser(email: String)
     fun getUser(email: String): CommonProfile?
-    fun updateUserPassword(user: CommonProfile, password: String)
+    fun updateUserPassword(user: UserProfile, password: String)
 }
 
 @Component
@@ -74,16 +76,14 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
             throw UserException("invalidEmail")
         }
 
-        val caseInsensitiveEmail = Regex("(?i)${email}")
-
         val username = userRepository.getAllUserNames()
-                .find { caseInsensitiveEmail.matches(it) }
+                .find { caseInsensitiveEmail(email).matches(it) }
                 ?: return null
 
         return profileService.findById(username)
     }
 
-    override fun updateUserPassword(user: CommonProfile, password: String)
+    override fun updateUserPassword(user: UserProfile, password: String)
     {
         val dbUser: DbProfile = getUser(user.id) as DbProfile
         profileService.update(dbUser, password)

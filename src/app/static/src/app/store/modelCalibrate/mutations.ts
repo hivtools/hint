@@ -7,6 +7,7 @@ import {
     CalibrateResultResponse,
     CalibrateStatusResponse,
     CalibrateSubmitResponse,
+    ComparisonPlotResponse,
     Error,
     VersionInfo, Warning
 } from "../../generated";
@@ -21,13 +22,17 @@ export enum ModelCalibrateMutation {
     Calibrated = "Calibrated",
     SetOptionsData = "SetOptionsData",
     SetError = "SetError",
+    SetComparisonPlotError = "SetComparisonPlotError",
     PollingForStatusStarted = "PollingForStatusStarted",
     Ready = "Ready",
     CalibrationPlotStarted = "CalibrationPlotStarted",
+    ComparisonPlotStarted = "ComparisonPlotStarted",
     SetPlotData = "SetPlotData",
+    SetComparisonPlotData = "SetComparisonPlotData",
     WarningsFetched = "WarningsFetched",
     CalibrateResultFetched = "CalibrateResultFetched",
-    ClearWarnings = "ClearWarnings"
+    ClearWarnings = "ClearWarnings",
+    ResetIds = "ResetIds"
 }
 
 export const ModelCalibrateUpdates = [
@@ -61,6 +66,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.complete = false;
         state.generatingCalibrationPlot = false;
         state.calibratePlotResult = null;
+        state.comparisonPlotResult = null;
         state.error = null;
         state.status = {} as CalibrateStatusResponse;
     },
@@ -84,9 +90,18 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.error = null;
     },
 
+    [ModelCalibrateMutation.ComparisonPlotStarted](state: ModelCalibrateState) {
+        state.comparisonPlotResult = null;
+        state.comparisonPlotError = null;
+    },
+
     [ModelCalibrateMutation.SetPlotData](state: ModelCalibrateState, action: PayloadWithType<any>) {
         state.generatingCalibrationPlot = false;
         state.calibratePlotResult = action;
+    },
+
+    [ModelCalibrateMutation.SetComparisonPlotData](state: ModelCalibrateState, action: ComparisonPlotResponse) {
+        state.comparisonPlotResult = action;
     },
 
     [ModelCalibrateMutation.SetModelCalibrateOptionsVersion](state: ModelCalibrateState, action: PayloadWithType<VersionInfo>) {
@@ -106,6 +121,10 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         }
     },
 
+    [ModelCalibrateMutation.SetComparisonPlotError](state: ModelCalibrateState, action: PayloadWithType<Error>) {
+        state.comparisonPlotError = action.payload;
+    },
+
     [ModelCalibrateMutation.PollingForStatusStarted](state: ModelCalibrateState, action: PayloadWithType<number>) {
         state.statusPollId = action.payload;
     },
@@ -120,6 +139,10 @@ export const mutations: MutationTree<ModelCalibrateState> = {
 
     [ModelCalibrateMutation.CalibrateResultFetched](state: ModelCalibrateState, action: PayloadWithType<CalibrateResultResponse>) {
         state.result = action.payload
+    },
+
+    [ModelCalibrateMutation.ResetIds](state: ModelCalibrateState) {
+        stopPolling(state)
     }
 };
 

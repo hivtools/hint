@@ -1,6 +1,194 @@
-# hint 2.0.0
+# hint 2.28.0
 
 * Upload Comparison report to ADR
+
+# hint 2.27.0
+
+* As a user I cannot start multiple model fits in the same session
+
+# hint 2.26.5
+
+* Enable comparison download report
+
+# hint 2.26.4
+
+* yaxis scale is not automatically generating the correct range at low values for some indicators
+
+# hint 2.26.3
+
+* Add link to news site from version number drop down and update styling of version drop down
+
+# hint 2.26.2
+
+* Bug: Comparison barchart error bars display incorrectly
+
+# hint 2.26.1
+
+* Bug: prevent spamming when creating a new project during model
+
+# hint 2.26.0
+
+* Remove fixed disaggregate value from xAxis options in vue-charts
+
+# hint 2.25.0
+
+* Login to data exploration throws an error on redirect
+
+# hint 2.24.0
+
+* Barchart uncertainty ranges (error bars) are greyed out on first rendering
+
+# hint 2.23.0
+
+* Implement no data message in comparison chart
+
+# hint 2.22.0
+
+* Bug: Fix download status errors
+
+# hint 2.21.0
+
+* Speed up display of project rehydrate dialog
+
+# hint 2.20.0
+
+* Add a new login page for displaying Auth0 login button in hint
+
+# hint.2.19.0
+
+* Verify auth0 state for protection against threat of cross-site request forgery 
+
+# hint.18.0
+
+* Update naomi ADR integration to pull 2023 datasets
+
+# hint 2.17.0
+
+* As a user when I login with Auth0 I can see my projects 
+
+# hint 2.16.0
+
+* Include system info in logs
+
+# hint 2.15.0
+
+* Log elapsed time for ADR responses
+
+# hint 2.14.0
+
+* Add Auth0 login method
+
+# hint 2.13.0
+
+* Update hint to work with options schema changes
+
+# hint 2.12.0
+
+* Update backend logging for new log structure
+
+# hint 2.11.2
+
+* Prevent comparison plot data being saved in local storage
+
+# hint 2.11.1
+
+* fix broken request password mailer
+
+# hint 2.11.0
+
+* Table for comparison barchart
+
+# hint 2.10.0
+
+* Display comparison plot error message
+
+# hint 2.9.1
+
+* Bug: HINT login is broken on dev and staging
+
+# hint 2.9.0
+
+* Comparison barchart in review output step
+
+# hint 2.8.0
+
+* Populate model Run Id and calibrate options from project summary
+
+# hint 2.7.3
+
+* Fix guest login issue
+
+# hint 2.7.2
+
+* Change userCLI target to master
+
+# hint 2.7.1
+
+* Fix docker run entrypoint issue and update pac4j
+
+# hint 2.7.0
+
+* Endpoint for comparison barchart dataset
+
+# hint 2.6.0
+
+* Upgrade java, gradle and dependecies  
+
+# hint 2.5.0
+
+* Populate project input file data
+
+# hint 2.4.1
+
+* Rename frontend translation text for enterProjectName and uploadFromZip keys
+
+# hint 2.4.0
+
+* Implement upload output zip UI
+
+# hint 2.3.1
+
+* Remove 'Parsing ADR Response' log messages
+
+# hint 2.3.0
+
+* Upload output zip action which calls hintr endpoint via backend
+
+# hint 2.2.1
+
+* Bug: Fix bug backwards compatibility calibrate options
+
+# hint 2.2.0
+
+* Include project notes in output zip
+
+# hint 2.1.1
+
+* Bug: hint tries to pull resources it does not have access to
+
+# hint 2.1.0
+
+* Use commas as thousands separators for plain numbers in the input time series table
+
+# hint 2.0.0
+
+* HINT to send project state to hintr with generate output zip request
+
+# hint 1.99.4
+
+* Prevent spamming download and meta endpoints after download generate completes
+
+# hint 1.99.3
+
+* Bug fixes- Display and upload output files to ADR if they are available for Upload
+
+# hint 1.99.2
+
+* Input data warnings are not persisted/displayed
+
+# hint 1.99.1
+
+* Bug fix - app timeout when using large dataset before completing a request.
 
 # hint 1.99.0
 

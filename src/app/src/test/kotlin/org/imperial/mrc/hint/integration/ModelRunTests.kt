@@ -47,7 +47,7 @@ class ModelRunTests : SecureIntegrationTests()
     @Test
     fun `can get model calibration options`()
     {
-        val responseEntity = testRestTemplate.getForEntity<String>("/model/calibrate/options/")
+        val responseEntity = testRestTemplate.getForEntity<String>("/model/calibrate/options/MWI")
         assertSuccess(responseEntity, "ModelRunOptions")
     }
 
@@ -107,6 +107,15 @@ class ModelRunTests : SecureIntegrationTests()
 
         val responseEntity = testRestTemplate.postForEntity<String>("/model/cancel/$modelRunId")
         assertSuccess(responseEntity, "ModelCancelResponse")
+    }
+
+    @Test
+    fun `can get comparison plot`()
+    {
+        val responseEntity = testRestTemplate.getForEntity<String>("/model/comparison/plot/1234")
+        assertError(responseEntity,
+                HttpStatus.BAD_REQUEST,
+                "FAILED_TO_RETRIEVE_RESULT", "Failed to fetch result")
     }
 
 }

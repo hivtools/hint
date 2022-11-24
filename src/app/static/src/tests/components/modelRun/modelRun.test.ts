@@ -25,7 +25,6 @@ import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ProgressBar from "../../../app/components/progress/ProgressBar.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
-import {actions as rootActions} from "../../../app/store/root/actions";
 
 const localVue = createLocalVue();
 
@@ -139,6 +138,7 @@ describe("Model run component", () => {
                 success: null,
                 errors: null
             } as any,
+            startedRunning: true,
             result: null
         });
         const wrapper = shallowMount(ModelRun, {store, localVue});
@@ -238,7 +238,8 @@ describe("Model run component", () => {
     it("button is disabled and modal shown if status is started", () => {
 
         const store = createStore({
-            status: {id: "1234", done: false} as ModelStatusResponse
+            status: {done: false} as ModelStatusResponse,
+            startedRunning: true
         });
 
         const wrapper = shallowMount(ModelRun, {store, localVue});
@@ -249,7 +250,8 @@ describe("Model run component", () => {
     it("loading spinner is shown until progress bars appear", () => {
 
         const store = createStore({
-            status: {id: "1234", done: false} as ModelStatusResponse
+            status: {done: false} as ModelStatusResponse,
+            startedRunning: true
         });
 
         const wrapper = mount(ModelRun, {store, localVue});
@@ -268,7 +270,8 @@ describe("Model run component", () => {
                 id: "1234",
                 done: false,
                 progress: [{started: true, complete: false, name: "phase 1"}]
-            } as ModelStatusResponse
+            } as ModelStatusResponse,
+            startedRunning: true
         });
 
         const wrapper = mount(ModelRun, {store, localVue});
@@ -286,7 +289,8 @@ describe("Model run component", () => {
                 done: false,
                 progress: [{started: true, complete: false, name: "phase 1"},
                     {started: true, complete: false, name: "phase 2"}]
-            } as ModelStatusResponse
+            } as ModelStatusResponse,
+            startedRunning: true
         });
 
         const wrapper = mount(ModelRun, {store, localVue});
@@ -305,7 +309,8 @@ describe("Model run component", () => {
     it("on success button is not enabled until result exists", () => {
 
         const store = createStore({
-            status: {id: "1234", success: true, done: true} as ModelStatusResponse
+            status: {success: true, done: true} as ModelStatusResponse,
+            startedRunning: true
         });
 
         const wrapper = shallowMount(ModelRun, {store, localVue});
@@ -316,7 +321,8 @@ describe("Model run component", () => {
     it("button is enabled once status is success and result exists", () => {
         const store = createStore({
             result: mockModelResultResponse(),
-            status: {id: "1234", success: true, done: true} as ModelStatusResponse
+            status: {success: true, done: true} as ModelStatusResponse,
+            startedRunning: false
         });
 
         const wrapper = shallowMount(ModelRun, {store, localVue});
@@ -327,7 +333,8 @@ describe("Model run component", () => {
     it("button is enabled once status is done without success", () => {
         const store = createStore({
             result: mockModelResultResponse(),
-            status: {id: "1234", success: false, done: true} as ModelStatusResponse
+            status: {success: false, done: true} as ModelStatusResponse,
+            startedRunning: false
         });
 
         const wrapper = shallowMount(ModelRun, {store, localVue});

@@ -1,13 +1,14 @@
 import {RootState} from "../../root";
 import {Getter, GetterTree} from "vuex";
-import {Error} from "../../generated"
+import {DownloadSubmitRequest, Error, Note, VersionInfo} from "../../generated"
 import {Warning} from "../../generated";
-import {Dict, StepWarnings} from "../../types";
-import {extractErrors} from "../../utils";
+import {Dict, StepWarnings, Version} from "../../types";
+import {extractErrors, formatToLocalISODateTime} from "../../utils";
 
 interface RootGetters {
     isGuest: Getter<RootState, RootState>
     warnings: Getter<RootState, RootState>
+    projectState: Getter<RootState, RootState>
 }
 
 const warningStepLocationMapping: Dict<string> = {
@@ -22,6 +23,59 @@ const warningStepLocationMapping: Dict<string> = {
 export const getters: RootGetters & GetterTree<RootState, RootState> = {
     isGuest: (state: RootState) => {
         return state.currentUser == "guest";
+    },
+
+    projectState: (rootState: RootState): DownloadSubmitRequest => {
+        const versions = rootState.projects.currentProject?.versions || []
+        const name = rootState.projects.currentProject?.name || ""
+
+        return {
+            state: {
+                datasets: {
+                    pjnz: {
+                        path: `uploads/${rootState.baseline.pjnz?.hash}`,
+                        filename: rootState.baseline.pjnz?.filename || ""
+                    },
+                    population: {
+                        path: `uploads/${rootState.baseline.population?.hash}`,
+                        filename: rootState.baseline.population?.filename || ""
+                    },
+                    shape: {
+                        path: `uploads/${rootState.baseline.shape?.hash}`,
+                        filename: rootState.baseline.shape?.filename || ""
+                    },
+                    survey: {
+                        path: `uploads/${rootState.surveyAndProgram.survey?.hash}`,
+                        filename: rootState.surveyAndProgram.survey?.filename || ""
+                    },
+                    programme: {
+                        path: `uploads/${rootState.surveyAndProgram.program?.hash}`,
+                        filename: rootState.surveyAndProgram.program?.filename || ""
+                    },
+                    anc: {
+                        path: `uploads/${rootState.surveyAndProgram.anc?.hash}`,
+                        filename: rootState.surveyAndProgram.anc?.filename || ""
+                    }
+                },
+                model_fit: {
+                    options: rootState.modelOptions.options || {},
+                    id: rootState.modelRun.modelRunId
+                },
+                calibrate: {
+                    options: rootState.modelCalibrate.options || {},
+                    id: rootState.modelCalibrate.calibrateId
+                },
+                version: rootState.hintrVersion.hintrVersion as VersionInfo
+            },
+            notes: {
+                project_notes: {
+                    name: name,
+                    updated: versions && formatToLocalISODateTime(versions[0].updated),
+                    note: rootState.projects.currentProject?.note || ""
+                },
+                version_notes: getVersionNotes(versions, name)
+            }
+        }
     },
 
     errors: (state: RootState) => {
@@ -78,3 +132,11 @@ const allReviewInputsWarnings = (state: RootState) => {
     return [...sapWarnings, ...genericChartWarnings]
 }
 
+const getVersionNotes = (versions: Version[], projectName: string) => {
+    return versions.reduce((result: Note[], versionNote) => {
+        const note = versionNote.note || ""
+        const updated = versions && formatToLocalISODateTime(versionNote.updated)
+
+        return result.concat({note, updated, name: `${projectName}-v${versionNote.versionNumber}`})
+    }, [])
+}

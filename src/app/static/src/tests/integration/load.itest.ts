@@ -1,7 +1,11 @@
 import {actions} from "../../app/store/load/actions";
 import {actions as projectActions} from "../../app/store/projects/actions";
 import {mutations as projectMutations} from "../../app/store/projects/mutations";
+import {mutations as modelCalibrateMutations} from "../../app/store/modelCalibrate/mutations";
+import {mutations as modelRunMutations} from "../../app/store/modelRun/mutations";
 import {mutations as rootMutations} from "../../app/store/root/mutations";
+import {mutations as downloadResultsMutations} from "../../app/store/downloadResults/mutations";
+import {initialDownloadResultsState} from "../../app/store/downloadResults/downloadResults";
 import {addCheckSum} from "../../app/utils";
 import {login, rootState} from "./integrationTest";
 import {actions as baselineActions} from "../../app/store/baseline/actions";
@@ -11,9 +15,6 @@ import {emptyState} from "../../app/root";
 import {localStorageManager} from "../../app/localStorageManager";
 import {currentHintVersion} from "../../app/hintVersion";
 import {getFormData} from "./helpers";
-
-const fs = require("fs");
-const FormData = require("form-data");
 
 describe("load actions", () => {
 
@@ -50,7 +51,7 @@ describe("load actions", () => {
         const fakeFileContents = addCheckSum(fakeState);
         const rootGetters = {isGuest: true};
         await actions.setFiles({commit, dispatch, state: {}, rootState, rootGetters} as any,
-            {savedFileContents: fakeFileContents, projectName: "new project"});
+            {savedFileContents: fakeFileContents});
 
         setTimeout(() => {
             expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
@@ -59,7 +60,7 @@ describe("load actions", () => {
                 shape: {
                     hash: shape.hash,
                     filename: shape.filename,
-                    fromADR: false
+                    fromAdr: false
                 }
             });
             expect(dispatch.mock.calls[0][1]).toStrictEqual({
@@ -101,7 +102,7 @@ describe("load actions", () => {
         });
     });
 
-    it("can create project and set files as logged in user", async (done) => {
+    it("can create project and set files as logged in user when uploading JSON file", async (done) => {
         const commit = jest.fn();
         const fakeState = JSON.stringify({
             files: {"shape": shape},
@@ -127,6 +128,19 @@ describe("load actions", () => {
                 load: {
                     namespaced: true,
                     actions
+                },
+                downloadResults: {
+                    namespaced: true,
+                    state: initialDownloadResultsState(),
+                    mutations: downloadResultsMutations
+                },
+                modelCalibrate: {
+                    namespaced: true,
+                    mutations: modelCalibrateMutations
+                },
+                modelRun: {
+                    namespaced: true,
+                    mutations: modelRunMutations
                 }
             }
         });
@@ -137,7 +151,7 @@ describe("load actions", () => {
         const dispatch = ((store as any)._modulesNamespaceMap["load/"] as any).context.dispatch;
 
         await actions.setFiles({commit, dispatch, state: {}, rootState: store.state, rootGetters} as any,
-            {savedFileContents: fakeFileContents, projectName: "new project"});
+            {savedFileContents: fakeFileContents});
 
         setTimeout(() => {
             //we expect the non-mocked dispatch to have created a project, and to have invoked the local store manager to
@@ -150,7 +164,7 @@ describe("load actions", () => {
                         {
                             hash: shape.hash,
                             filename: shape.filename,
-                            fromADR: false
+                            fromAdr: false
                         }
                 });
             expect(mockSaveToLocalStorage.mock.calls[0][0].baseline).toBe("TEST BASELINE");
@@ -158,4 +172,36 @@ describe("load actions", () => {
         })
     });
 
+    it("can submit model output ZIP file", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn()
+        const formData = getFormData("output.zip");
+        const state = {rehydrateId: "1"}
+
+        await actions.preparingRehydrate({commit, dispatch, state, rootState} as any, formData);
+
+        setTimeout(() => {
+            expect(commit.mock.calls[0][0].type).toBe("StartPreparingRehydrate");
+            expect(commit.mock.calls[1][0].type).toBe("PreparingRehydrate");
+            expect(commit.mock.calls[1][0].payload).not.toBeNull();
+            done();
+        })
+    });
+
+    it("can poll model output ZIP status", async (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn()
+        const state = {rehydrateId: "1"}
+
+        await actions.pollRehydrate({commit, dispatch, state, rootState} as any);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(2)
+            expect(commit.mock.calls[0][0].type).toBe("RehydratePollingStarted");
+            expect(commit.mock.calls[0][0].payload).toBeGreaterThan(-1);
+            expect(commit.mock.calls[1][0].type).toBe("RehydrateStatusUpdated");
+            expect(commit.mock.calls[1][0]["payload"].status).toBe("MISSING");
+            done();
+        }, 3100)
+    });
 });
