@@ -39,8 +39,11 @@ describe("Model run actions", () => {
         } as ModelRunState;
         await actions.run({commit, rootState: mockRootState, state: mockState} as any);
 
-        expect(commit.mock.calls[0][0]["type"]).toBe("ModelRunError");
-        expect(commit.mock.calls[0][0]["payload"]["error"]).toBe("INVALID_INPUT");
+        expect(commit.mock.calls.length).toBe(2)
+        expect(commit.mock.calls[0][0]["type"]).toBe("StartedRunning");
+        expect(commit.mock.calls[0][0]["payload"]).toBe(true);
+        expect(commit.mock.calls[1][0]["type"]).toBe("ModelRunError");
+        expect(commit.mock.calls[1][0]["payload"]["error"]).toBe("INVALID_INPUT");
     });
 
     it("can get model run status", (done) => {
@@ -76,8 +79,13 @@ describe("Model run actions", () => {
         // passing an invalid run id so this will return an error
         // but the expected error message confirms
         // that we're hitting the correct endpoint
+        expect(commit.mock.calls.length).toBe(3)
         expect(commit.mock.calls[0][0]["type"]).toBe("RunResultError");
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
+        expect(commit.mock.calls[1][0]["type"]).toBe("StartedRunning");
+        expect(commit.mock.calls[1][0]["payload"]).toBe(false);
+        expect(commit.mock.calls[2][0]["type"]).toBe("Ready");
+        expect(commit.mock.calls[2][0]["payload"]).toBe(true);
     });
 
     it("makeCancelRunRequest makes call to API", async () => {

@@ -1,5 +1,9 @@
 # hint 2.27.0
 
+* As a user I cannot start multiple model fits in the same session
+
+# hint 2.26.5
+
 * Enable comparison download report
 
 # hint 2.26.4
