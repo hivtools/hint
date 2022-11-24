@@ -31,3 +31,7 @@ is as simple as running IntelliJ's auto-formatting command (<kbd>ctrl + alt + l<
 - js is bundled using webpack - this task can be triggered by running `npm run js`
 
 Or to compile both at once, `npm run build`
+
+### Management
+
+- `/actuator/health` to see running status of apps
