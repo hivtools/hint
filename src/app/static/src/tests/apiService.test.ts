@@ -1,7 +1,13 @@
 import {api} from "../app/apiService";
-import {mockAxios, mockError, mockFailure, mockRootState, mockSuccess} from "./mocks";
+import {
+    mockAxios,
+    mockDownloadFailure,
+    mockError,
+    mockFailure,
+    mockRootState,
+    mockSuccess
+} from "./mocks";
 import {freezer} from '../app/utils';
-import {Language} from "../app/store/translations/locales";
 
 const rootState = mockRootState();
 
@@ -18,8 +24,6 @@ describe("ApiService", () => {
         (console.warn as jest.Mock).mockClear();
         jest.clearAllMocks();
     });
-
-    const detail = "HTTP error 500, there was a problem processing your request. Please contact support."
 
     it("console logs error", async () => {
         mockAxios.onGet(`/baseline/`)
@@ -194,6 +198,70 @@ describe("ApiService", () => {
         expect(committedOptions).toStrictEqual({root: true});
     });
 
+    it.skip("commits download error response with the specified type", async () => {
+        mockAxios.onGet(`/download/result/123/`)
+            .reply(400, mockDownloadFailure());
+
+        let committedType: any = false;
+        let committedPayload: any = false;
+        let committedOptions: any = null;
+        const commit = ({type, payload}: any, options?: any) => {
+            committedType = type;
+            committedPayload = payload;
+            committedOptions = options;
+        };
+
+        await api({commit, rootState} as any)
+            .withError("TEST_TYPE")
+            .download("/download/result/123/");
+
+        expect(committedType).toBe("TEST_TYPE");
+        expect(committedPayload.detail).toBe("Missing some results");
+    });
+
+    it.skip("can return download response", async () => {
+        mockAxios.onGet(`/download/result/123/`)
+            .reply(200, mockSuccess("parts"));
+
+        let committedType: any = false;
+        let committedPayload: any = false;
+        let committedOptions: any = null;
+        const commit = ({type, payload}: any, options?: any) => {
+            committedType = type;
+            committedPayload = payload;
+            committedOptions = options;
+        };
+
+        const response = await api({commit, rootState} as any)
+            .withError("TEST_TYPE")
+            .download("/download/result/123/");
+
+        expect(response.data).toStrictEqual({data: "parts", errors: [], status: "success"});
+        expect(committedType).toBe(false);
+        expect(committedPayload.detail).toBeUndefined()
+    });
+
+    it("commits download error when response is not blob", async () => {
+        mockAxios.onGet(`/download/result/123/`)
+            .reply(400, mockDownloadFailure());
+
+        let committedType: any = false;
+        let committedPayload: any = false;
+        let committedOptions: any = null;
+        const commit = ({type, payload}: any, options?: any) => {
+            committedType = type;
+            committedPayload = payload;
+            committedOptions = options;
+        };
+
+        await api({commit, rootState} as any)
+            .withError("TEST_TYPE")
+            .download("/download/result/123/");
+
+        expect(committedType).toBe("errors/ErrorAdded");
+        expect(committedPayload.detail).toBe("Could not parse API response. Please contact support.");
+    });
+
     it("commits the error response with the specified type with root options", async () => {
         mockAxios.onGet(`/baseline/`)
             .reply(500, mockFailure("TEST"));
@@ -284,27 +352,7 @@ describe("ApiService", () => {
         mockAxios.onGet(`/baseline/`)
             .reply(500);
 
-        await expectCouldNotParseAPIResponseError(detail);
-    });
-
-    it("can commit error in french if API response is malformed", async () => {
-
-        mockAxios.onGet(`/baseline/`)
-            .reply(500, {data: {}, errors: []});
-
-        const detail = "Erreur HTTP 500, il y a eu un problème lors du traitement de votre demande. Veuillez contacter l'assistance."
-
-        await expectCouldNotParseAPIResponseError(detail, Language.fr);
-    });
-
-    it("can commit error in Portuguese if API response is malformed", async () => {
-
-        mockAxios.onGet(`/baseline/`)
-            .reply(500, {data: {}, errors: []});
-
-        const detail = "Erro HTTP 500, ocorreu um problema ao processar sua solicitação. Entre em contato com o suporte."
-
-        await expectCouldNotParseAPIResponseError(detail, Language.pt);
+        await expectCouldNotParseAPIResponseError();
     });
 
     it("throws error if API response status is missing", async () => {
@@ -312,7 +360,7 @@ describe("ApiService", () => {
         mockAxios.onGet(`/baseline/`)
             .reply(500, {data: {}, errors: []});
 
-        await expectCouldNotParseAPIResponseError(detail);
+        await expectCouldNotParseAPIResponseError();
     });
 
     it("throws error if API response errors are missing", async () => {
@@ -320,7 +368,7 @@ describe("ApiService", () => {
         mockAxios.onGet(`/baseline/`)
             .reply(500, {data: {}, status: "failure"});
 
-        await expectCouldNotParseAPIResponseError(detail);
+        await expectCouldNotParseAPIResponseError();
     });
 
     it("does nothing on error if ignoreErrors is true", async () => {
@@ -383,9 +431,9 @@ describe("ApiService", () => {
         })
     });
 
-    async function expectCouldNotParseAPIResponseError(detail: string, lang: Language = Language.en) {
+    async function expectCouldNotParseAPIResponseError() {
         const commit = jest.fn();
-        await api({commit, rootState: {language: lang}} as any)
+        await api({commit, rootState} as any)
             .get("/baseline/");
 
         expect(commit.mock.calls.length).toBe(1);
@@ -393,7 +441,7 @@ describe("ApiService", () => {
             type: `errors/ErrorAdded`,
             payload: {
                 error: "MALFORMED_RESPONSE",
-                detail: detail
+                detail: "Could not parse API response. Please contact support."
             }
         });
         expect(commit.mock.calls[0][1]).toStrictEqual({root: true});

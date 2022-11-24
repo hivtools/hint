@@ -12,12 +12,30 @@ import {
     constructUploadFile,
     constructUploadFileWithResourceName,
     getFilenameFromImportUrl,
-    updateForm, formatToLocalISODateTime
+    updateForm,
+    formatToLocalISODateTime,
+    readStream,
+    extractFilenameFrom
 } from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
 import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {AxiosResponse} from "axios";
 
 describe("utils", () => {
+
+    beforeEach(() => {
+        jest.clearAllMocks()
+    })
+
+    const file = new Blob(["data"], {type: "application/octet-stream"});
+
+    const mockAxiosResponse: AxiosResponse = {
+        data: file,
+        headers: {"content-disposition": "attachment; filename=test.html"},
+        status: 200,
+        config: {},
+        statusText: ""
+    }
 
     it("can make and verify downloadable content", () => {
         const test = {
@@ -35,6 +53,51 @@ describe("utils", () => {
         const result = verifyCheckSum(content);
         expect(result).toStrictEqual(test);
     });
+
+    it("it can read and download blob content", () => {
+        const mObjectURL = "blob:https://naomi.unaids.org/download/test";
+        window.URL.createObjectURL = jest.fn().mockReturnValueOnce(mObjectURL);
+        window.URL.revokeObjectURL = jest.fn();
+        document.body.appendChild = jest.fn()
+
+        const mockClick = jest.fn()
+        const mockHref = jest.fn()
+        const mockAttr = jest.fn()
+
+        document.createElement = jest.fn().mockImplementation(() => {
+            return {
+                setAttribute: mockAttr,
+                href: mockHref,
+                click: mockClick
+            }
+        })
+
+        //trigger download
+        readStream(mockAxiosResponse)
+
+        expect(document.body.appendChild).toBeCalledTimes(1)
+        expect(window.URL.createObjectURL).toBeCalledTimes(1)
+        expect(window.URL.createObjectURL).toBeCalledWith(new Blob(["data"]))
+
+        //releases object Url from memory
+        expect(window.URL.revokeObjectURL).toBeCalledTimes(1)
+        expect(window.URL.revokeObjectURL).toBeCalledWith(mObjectURL)
+
+        expect(document.createElement).toBeCalledTimes(1)
+
+        //download link contains correct attributes
+        expect(mockAttr).toBeCalledTimes(1)
+        expect(mockAttr).toHaveBeenCalledWith("download", "test.html")
+
+        //download link has been called
+        expect(mockClick).toBeCalledTimes(1)
+    })
+
+    it("can extract file name from content-disposition", () => {
+        const contentDisposition = 'attachment; filename="MWI_comparison-report_20221116-1328.html"'
+        const filename = extractFilenameFrom(contentDisposition)
+        expect(filename).toBe("MWI_comparison-report_20221116-1328.html")
+    })
 
     it("does not verify corrupted downloadable content", () => {
         const test = "test";

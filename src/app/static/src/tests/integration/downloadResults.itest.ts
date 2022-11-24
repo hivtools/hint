@@ -1,10 +1,27 @@
 import {actions} from "../../app/store/downloadResults/actions";
 import {rootState} from "./integrationTest";
 import {DOWNLOAD_TYPE} from "../../app/types";
-import {switches} from "../../app/featureSwitches";
 import {formatToLocalISODateTime} from "../../app/utils";
 
 describe(`download results actions integration`, () => {
+
+    it.skip(`can download comparison output report`, async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const root = {
+            ...rootState,
+            modelCalibrate: {calibrateId: "calibrate123"}
+        };
+
+        const state = {comparison: {downloadId: 123, error: null, complete: true}}
+
+        await actions.downloadComparisonReport({commit, dispatch, state, rootState: root} as any);
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ComparisonError");
+        expect(commit.mock.calls[0][0]["payload"].detail).toEqual("Missing some results")
+        expect(commit.mock.calls[0][0]["payload"].error).toEqual("FAILED_TO_RETRIEVE_RESULT")
+    })
 
     it(`can prepare summary report for download`, async () => {
         const commit = jest.fn();
@@ -178,7 +195,6 @@ describe(`download results actions integration`, () => {
     })
 
     it(`can prepare comparison output for download`, async () => {
-        switches.comparisonOutput = true;
         const commit = jest.fn();
         const dispatch = jest.fn();
         const root = {

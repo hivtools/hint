@@ -1,6 +1,7 @@
 import {
     mockDownloadResultsDependency,
-    mockDownloadResultsState, mockError, mockMetadataState, mockRootState
+    mockDownloadResultsState,
+    mockError
 } from "../mocks";
 import {mutations} from "../../app/store/downloadResults/mutations";
 import {DownloadResultsMutation} from "../../app/store/downloadResults/mutations";
@@ -78,6 +79,7 @@ describe(`download results mutations`, () => {
                 preparing: true,
                 complete: false,
                 error: mockError(),
+                downloadError: null,
                 statusPollId: 123,
                 downloadId: "111",
                 fetchingDownloadId: false,
@@ -146,6 +148,7 @@ describe(`download results mutations`, () => {
                 preparing: true,
                 complete: false,
                 error: mockError(),
+                downloadError: null,
                 statusPollId: 123,
                 downloadId: "111",
                 fetchingDownloadId: false,
@@ -216,6 +219,7 @@ describe(`download results mutations`, () => {
                 preparing: true,
                 complete: false,
                 error: mockError(),
+                downloadError: null,
                 statusPollId: 123,
                 downloadId: "111",
                 fetchingDownloadId: false,
@@ -262,6 +266,12 @@ describe(`download results mutations`, () => {
         expect(state.comparison.metadataError).toEqual(errorMsg);
     });
 
+    it("sets comparison download error", () => {
+        const state = mockDownloadResultsState();
+        mutations[DownloadResultsMutation.ComparisonDownloadError](state, {payload: error});
+        expect(state.comparison.downloadError).toEqual(errorMsg);
+    });
+
     it("sets poll started for comparison download on PollingStatusStarted", () => {
         const state = mockDownloadResultsState();
         const payload = {pollId: 123, downloadType: DOWNLOAD_TYPE.COMPARISON}
@@ -286,6 +296,7 @@ describe(`download results mutations`, () => {
                 error: mockError(),
                 statusPollId: 123,
                 downloadId: "111",
+                downloadError: mockError("test"),
                 fetchingDownloadId: false,
                 metadataError: null
             }
@@ -293,6 +304,7 @@ describe(`download results mutations`, () => {
         mutations[DownloadResultsMutation.ComparisonOutputStatusUpdated](state, {payload: CompleteStatusResponse});
         expect(state.comparison.complete).toBe(true);
         expect(state.comparison.preparing).toBe(false);
+        expect(state.comparison.error).toBe(null);
         expect(state.comparison.error).toBe(null);
         expect(state.comparison.metadataError).toBe(null);
         expect(state.comparison.statusPollId).toBe(-1);

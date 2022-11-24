@@ -1,7 +1,7 @@
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {ErrorsMutation} from "./store/errors/mutations";
 import {ActionContext, Commit} from "vuex";
-import {freezer, isHINTResponse} from "./utils";
+import {freezer, isHINTResponse, readStream} from "./utils";
 import {Error, Response} from "./generated";
 import i18next from "i18next";
 import {TranslatableState} from "./types";
@@ -47,21 +47,17 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     private _ignoreSuccess = false;
     private _freezeResponse = false;
 
-    private getFirstErrorFromFailure = (failure: Response) => {
+    static getFirstErrorFromFailure = (failure: Response) => {
         if (failure.errors.length == 0) {
-            return this.createError("apiMissingError");
+            return APIService.createError("apiMissingError");
         }
         return failure.errors[0];
     };
 
-    private createError(detail: string, statusCode: number | null = null) {
-        const detailFormatter = statusCode
-            ? i18next.t(detail, {statusCode, lng: this._headers["Accept-Language"]})
-            : i18next.t(detail)
-
+    static createError(detail: string) {
         return {
             error: "MALFORMED_RESPONSE",
-            detail: detailFormatter
+            detail: i18next.t(detail)
         }
     }
 
@@ -76,7 +72,7 @@ export class APIService<S extends string, E extends string> implements API<S, E>
 
     withError = (type: E, root = false) => {
         this._onError = (failure: Response) => {
-            this._commit({type: type, payload: this.getFirstErrorFromFailure(failure)}, {root});
+            this._commit({type: type, payload: APIService.getFirstErrorFromFailure(failure)}, {root});
         };
         return this;
     };
@@ -123,22 +119,9 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         if (this._ignoreErrors) {
             return
         }
+        this._handle401Error(e)
 
-        if (e.response && e.response.status == 401) {
-            const messenger = i18next.t("sessionExpiredLogin")
-            const message = encodeURIComponent(messenger)
-            window.location.assign("/login?error=SessionExpired&message=" + message)
-        }
-
-        const failure = e.response && e.response.data;
-        if (!isHINTResponse(failure)) {
-            console.warn(e.toJSON)
-            this._commitError(this.createError("apiCouldNotParseError", e.response && e.response.status));
-        } else if (this._onError) {
-            this._onError(failure);
-        } else {
-            this._commitError(this.getFirstErrorFromFailure(failure));
-        }
+        this._handleCommitError(e.response && e.response.data)
     };
 
     private _commitError = (error: Error) => {
@@ -158,6 +141,64 @@ export class APIService<S extends string, E extends string> implements API<S, E>
         this._verifyHandlers(url);
         const fullUrl = this._buildFullUrl(url);
         return this._handleAxiosResponse(axios.get(fullUrl, {headers: this._headers}));
+    }
+
+    private _handleDownloadError = async (e: AxiosError) => {
+        console.log(e)
+
+        this._handle401Error(e)
+
+        const response = e.response && e.response.data;
+
+        if (response instanceof Blob) {
+
+            const fileReader = new FileReader()
+
+            const data = await response.text()
+
+            fileReader.onload = () => {
+                this._handleCommitError(JSON.parse(data))
+            }
+
+            fileReader.readAsText(response);
+        } else {
+            this._handleCommitError(response)
+        }
+    }
+
+    private _handle401Error = (e: AxiosError) => {
+        if (e.response && e.response.status == 401) {
+
+            const messenger = i18next.t("sessionExpiredLogin")
+
+            const message = encodeURIComponent(messenger)
+
+            window.location.assign("/login?error=SessionExpired&message=" + message)
+        }
+    }
+
+    private _handleCommitError = (error: any) => {
+        if (!isHINTResponse(error)) {
+            this._commitError(APIService.createError("apiCouldNotParseError"));
+        } else if (this._onError) {
+            this._onError(error);
+        } else {
+            this._commitError(APIService.getFirstErrorFromFailure(error));
+        }
+    }
+
+    private _handleDownloadResponse = (response: AxiosResponse) => {
+        readStream(response)
+    }
+
+    //Initiates a download. NB any withSuccess mutation will be ignored for downloads.
+    async download(url: string): Promise<any> {
+        this._verifyHandlers(url);
+        const fullUrl = this._buildFullUrl(url);
+
+        return axios.get(fullUrl, {headers: this._headers, responseType: "blob"})
+            .then((response: AxiosResponse) => this._handleDownloadResponse(response))
+            .catch((e: AxiosError) => this._handleDownloadError(e));
     }
 
     async postAndReturn<T>(url: string, data?: any): Promise<void | ResponseWithType<T>> {

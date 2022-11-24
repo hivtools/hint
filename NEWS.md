@@ -4,7 +4,7 @@
 
 # hint 2.26.5
 
-* Return more information from "Could not parse API response" errors
+* Enable comparison download report
 
 # hint 2.26.4
 
