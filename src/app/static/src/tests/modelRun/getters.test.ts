@@ -4,10 +4,11 @@ import {modelRunGetters} from "../../app/store/modelRun/modelRun";
 
 describe("model run getters", () => {
 
-    it("is running if the run id exists and the status is not done", () => {
+    it("is running if the startedRunning is true and the status is not done", () => {
 
         const state = mockModelRunState({
-            status: {id: "1234", done: false} as ModelStatusResponse
+            status: {done: false} as ModelStatusResponse,
+            startedRunning: true
         });
 
         expect(modelRunGetters.running(state)).toBe(true);
@@ -16,7 +17,8 @@ describe("model run getters", () => {
     it("is not running if the status is done and not successful", () => {
 
         const state = mockModelRunState({
-            status: {id: "1234", done: true, success: false} as ModelStatusResponse
+            status: {done: true, success: false} as ModelStatusResponse,
+            startedRunning: false
         });
 
         expect(modelRunGetters.running(state)).toBe(false);
@@ -25,7 +27,8 @@ describe("model run getters", () => {
     it("is running if the status is successful but the result is not fetched", () => {
 
         const state = mockModelRunState({
-            status: {id: "1234", done: true, success: true} as ModelStatusResponse
+            status: {done: true, success: true} as ModelStatusResponse,
+            startedRunning: true
         });
 
         expect(modelRunGetters.running(state)).toBe(true);
@@ -35,7 +38,8 @@ describe("model run getters", () => {
 
         const state = mockModelRunState({
             result: mockModelResultResponse(),
-            status: {id: "1234", done: true, success: true} as ModelStatusResponse
+            status: {done: true, success: true} as ModelStatusResponse,
+            startedRunning: true
         });
 
         expect(modelRunGetters.running(state)).toBe(false);
