@@ -14,7 +14,7 @@
                               @click="add"
                               v-translate="'add'"></a>
                               <span>/</span>
-                            <a :href="'https://adr.unaids.org/me/'"
+                            <a :href="adrProfileUrl"
                                target="_blank"
                                v-translate="'getAccessKey'"
                                v-tooltip="tooltipContent"></a>
@@ -85,7 +85,8 @@
         currentLanguage: Language
         keyText: string
         error: Error | null
-        tooltipContent: string
+        tooltipContent: string,
+        adrProfileUrl: string
     }
 
     const namespace = "adr";
@@ -100,6 +101,8 @@
         computed: {
             key: mapStateProp<ADRState, string | null>(namespace,
                 (state: ADRState) => state.key),
+            adrProfileUrl: mapStateProp<ADRState, string>(namespace,
+                (state: ADRState) => `${state.schemas?.baseUrl}/me`),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
             error: mapStateProp<ADRState, Error | null>(namespace,

@@ -1,3 +1,7 @@
+# hint 2.28.0
+
+* Link AdrProfileUrl from schema
+
 # hint 2.27.0
 
 * As a user I cannot start multiple model fits in the same session
