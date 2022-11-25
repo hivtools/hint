@@ -124,10 +124,10 @@ class LoginTests
         model["continueTo"] = "/"
         val doc = template.jsoupDocFor(model)
 
-        assertThat(doc.select("input[type='submit']").attr("value")).isEqualTo("Log in with Auth0")
+        assertThat(doc.select("input[type='submit']").attr("value")).isEqualTo("Log in with your HIV Tools Single Sign-On account")
         assertThat(doc.select("input[type='submit']").attr("onclick")).isEqualTo("oauth2Callback()")
         assertThat(doc.select("#error").count()).isEqualTo(0)
-        assertThat(doc.select("#register-oauth2-account").text()).isEqualTo("Don't have Auth0 account? Request an account")
+        assertThat(doc.select("#register-oauth2-account").text()).isEqualTo("Don't have an account? Request an account")
         assertThat(doc.select("#register-oauth2-account a").attr("href")).isEqualTo("/register")
 
         assertThat(doc.select("#continue-as-guest").text()).isEqualTo("OR Continue as guest")
