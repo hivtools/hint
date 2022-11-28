@@ -64,7 +64,7 @@
                     <div id="error" class="alert alert-danger mt-3">${error}</div>
                 </#if>
                 <div id="register-an-account" class="text-center mt-4">
-                    Don't have an account? <br><a href="https://forms.office.com/r/7S9EMigGr4" target="_blank">Request an account</a>
+                    Don't have an account? <br><a href="https://forms.office.com/r/7S9EMigGr4" target="_blank">Create an account</a>
                 </div>
             </#if>
         </div>
