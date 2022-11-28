@@ -1,6 +1,10 @@
-# hint 2.28.1
+# hint 2.28.2
 
 * Put load and save json behind feature switch
+
+# hint 2.28.1
+
+* Modify landing page text
 
 # hint 2.28.0
 
