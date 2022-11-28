@@ -486,7 +486,8 @@ describe(`uploadModal `, () => {
     it(`does not render output files and headers when not available for upload`, () => {
         const downloadResults = {
             summary: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()}),
-            spectrum: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()})
+            spectrum: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()}),
+            comparison: mockDownloadResultsDependency({complete: true, preparing: false, error: mockError()})
         }
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
@@ -513,6 +514,12 @@ describe(`uploadModal `, () => {
                 }),
 
             spectrum: mockDownloadResultsDependency(
+                {
+                    complete: true,
+                    preparing: false,
+                    metadataError: mockError("META FAILED")
+                }),
+            comparison: mockDownloadResultsDependency(
                 {
                     complete: true,
                     preparing: false,
@@ -557,20 +564,28 @@ describe(`uploadModal `, () => {
                 {
                     complete: true,
                     preparing: false,
+                }),
+            comparison: mockDownloadResultsDependency(
+                {
+                    complete: true,
+                    preparing: false
                 })
         }
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
 
         const inputs = wrapper.findAll("input[type='checkbox']")
-        expect(inputs.length).toBe(2)
+        expect(inputs.length).toBe(3)
         expect(inputs.at(0).attributes("disabled")).toBeUndefined()
 
         expect(inputs.at(0).attributes("id")).toBe("id-0-0");
         expect(inputs.at(0).attributes("value")).toBe("outputZip");
 
-        expect(inputs.at(1).attributes("id")).toBe("id-1-0");
-        expect(inputs.at(1).attributes("value")).toBe("population");
+        expect(inputs.at(1).attributes("id")).toBe("id-0-1");
+        expect(inputs.at(1).attributes("value")).toBe("outputComparison");
+
+        expect(inputs.at(2).attributes("id")).toBe("id-1-0");
+        expect(inputs.at(2).attributes("value")).toBe("population");
 
         const headers = wrapper.findAll("h5");
 
@@ -585,7 +600,7 @@ describe(`uploadModal `, () => {
             store)
     })
 
-    it(`does not render summary report when summary metadata request failed`, () => {
+    it(`does not render spectrum report when spectrum metadata request failed`, () => {
         const downloadResults = {
             summary: mockDownloadResultsDependency(
                 {
@@ -598,20 +613,28 @@ describe(`uploadModal `, () => {
                     complete: true,
                     preparing: false,
                     metadataError: mockError("META FAILED")
+                }),
+            comparison: mockDownloadResultsDependency(
+                {
+                    complete: true,
+                    preparing: false
                 })
         }
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
 
         const inputs = wrapper.findAll("input[type='checkbox']")
-        expect(inputs.length).toBe(2)
+        expect(inputs.length).toBe(3)
         expect(inputs.at(0).attributes("disabled")).toBeUndefined()
 
         expect(inputs.at(0).attributes("id")).toBe("id-0-0");
         expect(inputs.at(0).attributes("value")).toBe("outputSummary");
 
-        expect(inputs.at(1).attributes("id")).toBe("id-1-0");
-        expect(inputs.at(1).attributes("value")).toBe("population");
+        expect(inputs.at(1).attributes("id")).toBe("id-0-1");
+        expect(inputs.at(1).attributes("value")).toBe("outputComparison");
+
+        expect(inputs.at(2).attributes("id")).toBe("id-1-0");
+        expect(inputs.at(2).attributes("value")).toBe("population");
 
         const headers = wrapper.findAll("h5");
 
@@ -623,6 +646,55 @@ describe(`uploadModal `, () => {
             "Spectrum output file is not available for upload.",
             "Le fichier de sortie spectre n'est pas disponible pour le téléchargement",
             "O arquivo de saída do espectro não está disponível para upload",
+            store)
+    })
+
+    it(`does not render comparison report when comparison metadata request failed`, () => {
+        const downloadResults = {
+            summary: mockDownloadResultsDependency(
+                {
+                    complete: true,
+                    preparing: false
+                }),
+
+            spectrum: mockDownloadResultsDependency(
+                {
+                    complete: true,
+                    preparing: false,
+                }),
+            comparison: mockDownloadResultsDependency(
+                {
+                    complete: true,
+                    preparing: false,
+                    metadataError: mockError("META FAILED")
+                })
+        }
+        const store = createStore(metadataWithInput, downloadResults)
+        const wrapper = mount(UploadModal, {store})
+
+        const inputs = wrapper.findAll("input[type='checkbox']")
+        expect(inputs.length).toBe(3)
+        expect(inputs.at(0).attributes("disabled")).toBeUndefined()
+
+        expect(inputs.at(0).attributes("id")).toBe("id-0-0");
+        expect(inputs.at(0).attributes("value")).toBe("outputZip");
+
+        expect(inputs.at(1).attributes("id")).toBe("id-0-1");
+        expect(inputs.at(1).attributes("value")).toBe("outputSummary");
+
+        expect(inputs.at(2).attributes("id")).toBe("id-1-0");
+        expect(inputs.at(2).attributes("value")).toBe("population");
+
+        const headers = wrapper.findAll("h5");
+
+        expect(headers.length).toBe(2);
+        expect(headers.at(0).text()).toBe("Output Files")
+        expect(headers.at(1).text()).toBe("Input Files")
+
+        expectTranslated(wrapper.find("#output-file-error"),
+            "Comparison output file is not available for upload.",
+            "Le fichier de sortie Comparaison n'est pas disponible pour le téléchargement",
+            "O arquivo de saída do Comparação não está disponível para upload",
             store)
     })
 

@@ -105,7 +105,8 @@
 
     interface ComputedFromDownloadResults {
         summary: DownloadResultsDependency,
-        spectrum: DownloadResultsDependency
+        spectrum: DownloadResultsDependency,
+        comparison: DownloadResultsDependency
     }
 
     interface Computed extends ComputedFromDownloadResults{
@@ -166,7 +167,10 @@
                     return true
                 } else if (key === "outputSummary" && !(this.summary.error || this.summary.metadataError)) {
                     return true
+                } else if (key === "outputComparison" && !(this.comparison.error || this.comparison.metadataError)) {
+                    return true
                 }
+
                 return false
             },
             getSectionHeading: function (sectionIndex) {
@@ -174,7 +178,7 @@
                 return sectionIndex === 0 ? (hasOutputFile ? 'outputFiles' : '') : 'inputFiles';
             },
             translatedOutputFileError: function (key) {
-                return i18next.t("downloadSpectrumOrSummaryError", {
+                return i18next.t("downloadOutputsError", {
                     outputFileType: this.translate(key),
                     lng: this.currentLanguage,
                 });
@@ -183,7 +187,8 @@
         computed: {
             ...mapStateProps<DownloadResultsState, keyof ComputedFromDownloadResults>("downloadResults", {
                 summary: (state => state.summary),
-                spectrum: (state => state.spectrum)
+                spectrum: (state => state.spectrum),
+                comparison: (state => state.comparison)
             }),
             outputFileError() {
                 if ((this.summary.error || this.summary.metadataError) &&
@@ -195,6 +200,8 @@
 
                 } else if (this.spectrum.error || this.spectrum.metadataError) {
                     return this.translatedOutputFileError("downloadSpectrum")
+                }else if (this.comparison.error || this.comparison.metadataError) {
+                    return this.translatedOutputFileError("downloadComparison")
                 }
 
                 return null
