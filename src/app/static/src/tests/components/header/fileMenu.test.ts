@@ -21,6 +21,7 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {Language} from "../../../app/store/translations/locales";
 import UploadNewProject from "../../../app/components/load/UploadNewProject.vue";
 import {expectTranslated} from "../../testHelpers";
+import {switches} from "../../../app/featureSwitches";
 
 // jsdom has only implemented navigate up to hashes, hence appending a hash here to the base url
 const mockCreateObjectUrl = jest.fn(() => "http://localhost#1234");
@@ -92,6 +93,7 @@ describe("File menu", () => {
     };
 
     it("downloads JSON file", (done) => {
+        switches.loadJson = true
         const store = createStore();
         const wrapper = mount(FileMenu,
             {
@@ -142,6 +144,7 @@ describe("File menu", () => {
     });
 
     it("aria-label and link text are translated for Json load", () => {
+        switches.loadJson = true
         const store = createStore();
         const wrapper = mount(FileMenu, {store});
         const link = wrapper.findAll(".dropdown-item").at(2);
@@ -173,6 +176,7 @@ describe("File menu", () => {
     });
 
     it("opens file dialog on click load JSON", (done) => {
+        switches.loadJson = true
         const store = createStore();
         const wrapper = mount(FileMenu, {store});
 
@@ -191,6 +195,7 @@ describe("File menu", () => {
     });
 
     it("invokes load JSON action when file selected from dialog, when user is guest", () => {
+        switches.loadJson = true
         const mockLoadAction = jest.fn();
         const clearLoadJsonInput = jest.fn()
         const wrapper = mount(FileMenu,
@@ -216,6 +221,7 @@ describe("File menu", () => {
     });
 
     it("does not invoke load JSON action when file selected from dialog, when user is guest", () => {
+        switches.loadJson = true
         const mockLoadAction = jest.fn();
         const clearLoadJsonInput = jest.fn();
         const wrapper = mount(FileMenu,
@@ -321,6 +327,7 @@ describe("File menu", () => {
     });
 
     it("can open upload project modal when load JSON is triggered as non-guest", () => {
+        switches.loadJson = true
         const mockLoadAction = jest.fn()
         const store = createStore({
             load: {
@@ -402,6 +409,7 @@ describe("File menu", () => {
     });
 
     it("triggers load action as non-guest when JSON file is uploaded", () => {
+        switches.loadJson = true
         const mockLoadAction = jest.fn()
         const mockProjectName = jest.fn()
         const store = createStore({
@@ -452,6 +460,7 @@ describe("File menu", () => {
     });
 
     it("upload JSON shows project name modal when file selected from dialog, when user is not guest", () => {
+        switches.loadJson = true
         const wrapper = mount(FileMenu, {store: createStore({}, false)});
         const testFile = mockFile("filename.json", "test file contents", "application/json");
         triggerSelectFile(wrapper, testFile, "#upload-file");
