@@ -538,6 +538,16 @@ describe("File menu", () => {
         projectZip.find("#project-name-input").setValue("new uploaded project")
         expect(confirmLoad.attributes("disabled")).toBeUndefined()
     });
+
+    it("does not render load and save Json project", () => {
+        switches.loadJson = false
+        const store = createStore();
+        const wrapper = mount(FileMenu, {store});
+        const link = wrapper.findAll(".dropdown-item");
+
+        expect(link.length).toBe(1)
+        expect(link.at(0).text()).toBe("Load Model Outputs")
+    });
 });
 
 const openUploadNewProject = (store: Store<any>, inputId= "#upload-file", fileType = "application/json") => {
