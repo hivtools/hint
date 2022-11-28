@@ -34,10 +34,10 @@
         <div class="card-body">
             <#if oauth2LoginMethod>
                 <div class="text-center mt-2">
-                    <input class="btn btn-red" type="submit" onclick="oauth2Callback()" value="Log in with Auth0">
+                    <input class="btn btn-red" type="submit" onclick="oauth2Callback()" value="Log in with your HIV Tools Single Sign-On account">
                 </div>
                 <div id="register-oauth2-account" class="text-center mt-4">
-                    Don't have Auth0 account? <br><a href="/register" target="_blank">Request an account</a>
+                    Don't have an account? <br><a href="/register" target="_blank">Request an account</a>
                 </div>
             <#else>
                 <form id="login-form" method="post" action="/callback/formClient" class="needs-validation" novalidate
@@ -64,7 +64,7 @@
                     <div id="error" class="alert alert-danger mt-3">${error}</div>
                 </#if>
                 <div id="register-an-account" class="text-center mt-4">
-                    Don't have an account? <br><a href="https://forms.office.com/r/7S9EMigGr4" target="_blank">Request an account</a>
+                    Don't have an account? <br><a href="https://forms.office.com/r/7S9EMigGr4" target="_blank">Create an account</a>
                 </div>
             </#if>
         </div>

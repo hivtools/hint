@@ -1,3 +1,7 @@
+# hint 2.28.1
+
+* Modify landing page text
+
 # hint 2.28.0
 
 * Link AdrProfileUrl from schema
