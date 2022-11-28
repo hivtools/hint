@@ -1,6 +1,14 @@
-# hint 2.28.0
+# hint 2.29.0
 
 * Upload Comparison report to ADR
+
+# hint 2.28.1
+
+* Modify landing page text
+
+# hint 2.28.0
+
+* Link AdrProfileUrl from schema
 
 # hint 2.27.0
 
