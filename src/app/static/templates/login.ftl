@@ -37,7 +37,7 @@
                     <input class="btn btn-red" type="submit" onclick="oauth2Callback()" value="Log in with your HIV Tools Single Sign-On account">
                 </div>
                 <div id="register-oauth2-account" class="text-center mt-4">
-                    Don't have an account? <br><a href="/register" target="_blank">Request an account</a>
+                    Don't have an account? <br><a href="/register" target="_blank">Create an account</a>
                 </div>
             <#else>
                 <form id="login-form" method="post" action="/callback/formClient" class="needs-validation" novalidate
