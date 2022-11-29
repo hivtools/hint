@@ -1,3 +1,7 @@
+# hint 2.29.0
+
+* Upload Comparison report to ADR
+
 # hint 2.28.1
 
 * Modify landing page text

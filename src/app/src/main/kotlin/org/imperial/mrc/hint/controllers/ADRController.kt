@@ -137,7 +137,8 @@ class ADRController(private val encryption: Encryption,
                         "shape" to appProperties.adrShapeSchema,
                         "survey" to appProperties.adrSurveySchema,
                         "outputZip" to appProperties.adrOutputZipSchema,
-                        "outputSummary" to appProperties.adrOutputSummarySchema)).asResponseEntity()
+                        "outputSummary" to appProperties.adrOutputSummarySchema,
+                        "outputComparison" to appProperties.adrOutputComparisonSchema)).asResponseEntity()
     }
 
     @GetMapping("/orgs")
@@ -223,6 +224,7 @@ class ADRController(private val encryption: Encryption,
         return when (resourceType)
         {
             appProperties.adrOutputSummarySchema,
+            appProperties.adrOutputComparisonSchema,
             appProperties.adrOutputZipSchema ->
                 pushOutputFileToADR(id, resourceType, downloadId, resourceFileName, resourceId, resourceName,
                         description)
@@ -256,6 +258,7 @@ class ADRController(private val encryption: Encryption,
         {
             appProperties.adrOutputZipSchema -> apiClient.downloadOutputResult(downloadId)
             appProperties.adrOutputSummarySchema -> apiClient.downloadOutputResult(downloadId)
+            appProperties.adrOutputComparisonSchema -> apiClient.downloadOutputResult(downloadId)
             else -> throw IllegalArgumentException("$resourceType is not an output resource type")
         }
 
