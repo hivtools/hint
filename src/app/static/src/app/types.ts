@@ -152,6 +152,7 @@ export interface ADRSchemas {
     survey: string
     outputZip: string
     outputSummary: string
+    outputComparison: string
 }
 
 export interface UploadFile {

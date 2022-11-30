@@ -1,6 +1,10 @@
-# hint 2.28.2
+# hint 2.29.1
 
 * Put load and save json behind feature switch
+
+# hint 2.29.0
+
+* Upload Comparison report to ADR
 
 # hint 2.28.1
 

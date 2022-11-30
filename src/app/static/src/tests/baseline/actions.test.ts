@@ -30,7 +30,8 @@ const adrSchemas: ADRSchemas = {
     programme: "program",
     anc: "anc",
     outputZip: "zip",
-    outputSummary: "summary"
+    outputSummary: "summary",
+    outputComparison: "comparison"
 };
 
 const rootState = mockRootState({
