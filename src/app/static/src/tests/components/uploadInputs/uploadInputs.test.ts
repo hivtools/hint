@@ -92,7 +92,7 @@ describe("UploadInputs upload component", () => {
 
     it("does not show required text in front of pjnz upload label when on data exploration mode", () => {
         const store = createSut();
-        expectFileIsNotRequired(store, 0)
+        expectFileIsRequired(store, 0)
     });
 
     it("shows required text in front of pjnz upload label when not on data exploration mode", () => {
