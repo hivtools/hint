@@ -11,18 +11,20 @@
                    style="display: none;" ref="loadZip"
                    @change="loadZip" accept=".zip">
 
-            <a class="dropdown-item" tabindex="0" v-on:mousedown="save">
-                <span><span class="pr-1" v-translate="'save'"></span>JSON</span>
-                <download-icon size="20" class="icon"></download-icon>
-            </a>
-            <a style="display:none" ref="save"></a>
-            <a class="dropdown-item" ref="load" href="#" v-on:mousedown="$refs.loadJson.click()">
-                <span><span class="pr-1" v-translate="'load'"></span>JSON</span>
-                <upload-icon size="20" class="icon"></upload-icon>
-            </a>
-            <input id="upload-file" v-translate:aria-label="'selectFile'"
-                   type="file"
-                   style="display: none;" ref="loadJson" v-on:change="loadJson" accept=".json">
+            <span v-if="loadJsonFeatureSwitch">
+                <a class="dropdown-item" tabindex="0" v-on:mousedown="save">
+                    <span><span class="pr-1" v-translate="'save'"></span>JSON</span>
+                    <download-icon size="20" class="icon"></download-icon>
+                </a>
+                <a style="display:none" ref="save"></a>
+                <a class="dropdown-item" ref="load" href="#" v-on:mousedown="$refs.loadJson.click()">
+                    <span><span class="pr-1" v-translate="'load'"></span>JSON</span>
+                    <upload-icon size="20" class="icon"></upload-icon>
+                </a>
+                <input id="upload-file" v-translate:aria-label="'selectFile'"
+                       type="file"
+                       style="display: none;" ref="loadJson" v-on:change="loadJson" accept=".json">
+            </span>
         </drop-down>
 
         <div id="project-zip">
@@ -52,11 +54,13 @@
     import DropDown from "./DropDown.vue";
     import {mapGetterByName} from "../../utils";
     import UploadNewProject from "../load/UploadNewProject.vue";
+    import {switches} from "../../featureSwitches"
 
     interface Data {
         projectNameJson: boolean,
         projectNameZip: boolean,
         fileToLoad: File | null
+        loadJsonFeatureSwitch: boolean
     }
 
     interface Methods {
@@ -101,7 +105,8 @@
             return {
                 projectNameJson: false,
                 projectNameZip: false,
-                fileToLoad: null
+                fileToLoad: null,
+                loadJsonFeatureSwitch: switches.loadJson
             }
         },
         computed: {
