@@ -122,7 +122,7 @@ describe("UploadInputs upload component", () => {
 
     it("does not show required text in front of survey upload label when on data exploration mode", () => {
         const store = createSut();
-        expectFileIsNotRequired(store, 3)
+        expectFileIsRequired(store, 3)
     });
 
     it("shows required text in front of survey upload label when not on data exploration mode", () => {

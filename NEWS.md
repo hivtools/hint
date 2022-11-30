@@ -1,3 +1,7 @@
+# hint 2.29.2
+
+* Fix data exploration mode required files
+
 # hint 2.29.1
 
 * Put load and save json behind feature switch

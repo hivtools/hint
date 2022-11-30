@@ -39,7 +39,7 @@
                                  name="population">
                     </manage-file>
                     <manage-file label="survey"
-                                 :required="!dataExplorationMode"
+                                 :required="true"
                                  :valid="survey.valid"
                                  :fromADR="survey.fromADR"
                                  :error="survey.error"
