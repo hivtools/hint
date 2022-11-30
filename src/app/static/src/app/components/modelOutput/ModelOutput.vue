@@ -139,7 +139,7 @@
         BarchartSelections,
         BubblePlotSelections,
         ChoroplethSelections, ScaleSelections,
-        PlottingSelectionsState
+        PlottingSelectionsState, UnadjustedBarchartSelections
     } from "../../store/plottingSelections/plottingSelections";
     import {ModelOutputState} from "../../store/modelOutput/modelOutput";
     import {ModelOutputMutation} from "../../store/modelOutput/mutations";
@@ -210,6 +210,7 @@
         comparisonPlotFlattenedXAxisFilterOptionIds: string[]
         comparisonPlotError: Error | null
         noChartData: string
+        comparisonPlotDefaultSelections: UnadjustedBarchartSelections[]
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
@@ -237,7 +238,8 @@
                 "barchartFilters", "barchartIndicators",
                 "bubblePlotFilters", "bubblePlotIndicators",
                 "choroplethFilters", "choroplethIndicators",
-                "countryAreaFilterOption", "comparisonPlotIndicators", "comparisonPlotFilters"]),
+                "countryAreaFilterOption", "comparisonPlotIndicators",
+                "comparisonPlotFilters", "comparisonPlotDefaultSelections"]),
             ...mapStateProps<PlottingSelectionsState, keyof Computed>("plottingSelections", {
                 barchartSelections: state => state.barchart,
                 comparisonPlotSelections: state => state.comparisonPlot,
@@ -309,7 +311,37 @@
                 updateSelectionsAndXAxisOrder(data, this.barchartSelections, this.barchartFlattenedXAxisFilterOptionIds, this.updateBarchartSelections)
             },
             updateComparisonPlotSelectionsAndXAxisOrder(data) {
-                updateSelectionsAndXAxisOrder(data, this.comparisonPlotSelections, this.comparisonPlotFlattenedXAxisFilterOptionIds, this.updateComparisonPlotSelections)
+                /**
+                 * If indicator changes, xaxis, disaggregate and filter
+                 * options should update with default selections
+                 */
+                const newSelection: Partial<BarchartSelections> = data
+
+                if (newSelection.indicatorId && newSelection.indicatorId !== this.comparisonPlotSelections.indicatorId) {
+                    const selections = this.comparisonPlotDefaultSelections
+                        .find(selection => selection.indicator_id === newSelection.indicatorId)
+
+                    if (selections) {
+                        const comparisonSelections = {
+                            indicatorId: selections.indicator_id,
+                            xAxisId: selections.x_axis_id,
+                            disaggregateById: selections.disaggregate_by_id,
+                            selectedFilterOptions: selections.selected_filter_options
+                        }
+                        updateSelectionsAndXAxisOrder(
+                            data,
+                            comparisonSelections,
+                            this.comparisonPlotFlattenedXAxisFilterOptionIds,
+                            this.updateComparisonPlotSelections)
+                    }
+
+                } else {
+                    updateSelectionsAndXAxisOrder(
+                        data,
+                        this.comparisonPlotSelections,
+                        this.comparisonPlotFlattenedXAxisFilterOptionIds,
+                        this.updateComparisonPlotSelections)
+                }
             },
             prepareOutputDownloads: mapActionByName("downloadResults", "prepareOutputs")
         },

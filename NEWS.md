@@ -1,3 +1,7 @@
+# hint 2.30.0
+
+* Improve comparison plot usability
+
 # hint 2.29.0
 
 * Upload Comparison report to ADR
