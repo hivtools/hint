@@ -19,7 +19,7 @@ apt-get install adoptopenjdk-11-hotspot -y
 
 1. Clone this repo
 1. Run `npm install` from `src/app/static`
-1. Run `./scripts/run-development-dependencies.sh` to start docker instances of [hint-db](https://github.com/mrc-ide/hint-db/) 
+1. Run `./scripts/run-development-dependencies.sh` to start docker instances of [hint-db](https://github.com/mrc-ide/hint-db/)
 and [hintr](https://github.com/mrc-ide/hintr) and add a test user with username `test.user@example.com`
  and password `password`.
 1. Run `npm run build` from `src/app/static` to compile front-end dependencies.
@@ -61,14 +61,22 @@ Versions should follow the [semantic versioning](https://semver.org/) format, so
 - PATCH version when you make backwards compatible bug fixes.
 
 This may cause relatively frequently conflicts since more than one person is likely to be working on a new version at a
-time. In this case, you should give your branch its own new version number, rather than rolling your changes into the same 
-version number as changes from another branch. 
+time. In this case, you should give your branch its own new version number, rather than rolling your changes into the same
+version number as changes from another branch.
 
 ### Distribution
 A docker image containing the app is created as part of the BuildKite build. To create such an image locally,
-run `./buildkite/make-build-env.sh` followed by `./buildkite/build.sh`. A CLI image is also created as part of 
+run `./buildkite/make-build-env.sh` followed by `./buildkite/build.sh`. A CLI image is also created as part of
 the BuildKite build, using `./buildkite/build-cli.sh`.
 
-Run `docker run -p 8080:8080 --name hint mrcide/hint:branch_name` to run a built image. The app will not start until 
-config is provided at `/etc/hint/config.properties`. This config is added during deployment with 
+Run `docker run -p 8080:8080 --name hint mrcide/hint:branch_name` to run a built image. The app will not start until
+config is provided at `/etc/hint/config.properties`. This config is added during deployment with
 [hint-deploy](https://github.com/mrc-ide/hint-deploy)
+
+### Generate types
+Types are generated automatically from JSON schema in hintr. To regenerate types
+
+```
+cd src/app/static
+./scripts/generate-types.sh
+```

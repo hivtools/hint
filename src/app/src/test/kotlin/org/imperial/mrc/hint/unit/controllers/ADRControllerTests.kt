@@ -414,7 +414,7 @@ class ADRControllerTests : HintrControllerTests()
         verify(mockApiClient)
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.Survey, "pjnz-path", true)
+                        "shape-path", FileType.Survey, true)
     }
 
     @Test
@@ -430,7 +430,7 @@ class ADRControllerTests : HintrControllerTests()
         verify(mockApiClient)
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.Survey, "pjnz-path",false)
+                        "shape-path", FileType.Survey, false)
     }
 
     @Test
@@ -446,7 +446,7 @@ class ADRControllerTests : HintrControllerTests()
         verify(mockApiClient)
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.Survey, "pjnz-path", true)
+                        "shape-path", FileType.Survey, true)
     }
 
     @Test
