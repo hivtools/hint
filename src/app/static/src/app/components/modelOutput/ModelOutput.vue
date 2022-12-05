@@ -99,6 +99,7 @@
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
                     :no-data-message="noChartData"
+                    :default-selections="true"
                     @update="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
