@@ -52,7 +52,7 @@ async function uploadOrImportPJNZ(context: ActionContext<BaselineState, DataExpl
                 dispatch('validate');
             } else {
                 commit({type: BaselineMutation.PJNZErroredFile, payload: filename});
-            };
+            }
         });
 }
 
