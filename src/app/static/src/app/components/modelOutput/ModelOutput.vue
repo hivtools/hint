@@ -99,7 +99,6 @@
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
                     :no-data-message="noChartData"
-                    :default-selections="true"
                     @update="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
@@ -312,15 +311,9 @@
                 updateSelectionsAndXAxisOrder(data, this.barchartSelections, this.barchartFlattenedXAxisFilterOptionIds, this.updateBarchartSelections)
             },
             updateComparisonPlotSelectionsAndXAxisOrder(data) {
-                /**
-                 * If indicator changes, xaxis, disaggregate and filter
-                 * options should update with default selections
-                 */
-                const newSelection: Partial<BarchartSelections> = data
-
-                if (newSelection.indicatorId && newSelection.indicatorId !== this.comparisonPlotSelections.indicatorId) {
+                if (data.indicatorId && data.indicatorId !== this.comparisonPlotSelections.indicatorId) {
                     const selections = this.comparisonPlotDefaultSelections
-                        .find(selection => selection.indicator_id === newSelection.indicatorId)
+                        .find(selection => selection.indicator_id === data.indicatorId)
 
                     if (selections) {
                         const comparisonSelections = {
@@ -329,11 +322,7 @@
                             disaggregateById: selections.disaggregate_by_id,
                             selectedFilterOptions: selections.selected_filter_options
                         }
-                        updateSelectionsAndXAxisOrder(
-                            data,
-                            comparisonSelections,
-                            this.comparisonPlotFlattenedXAxisFilterOptionIds,
-                            this.updateComparisonPlotSelections)
+                        this.updateComparisonPlotSelections({payload: comparisonSelections})
                     }
 
                 } else {
