@@ -791,14 +791,29 @@ export interface ControlSection {
 }
 export interface ControlGroup {
   label?: string;
-  controls: (SelectControl | NumberControl)[];
+  controls: (SelectControl | MultiselectControl | NumberControl)[];
 }
 export interface SelectControl {
   name: string;
   label?: string;
-  type: "select" | "multiselect";
+  type: "select";
   required: boolean;
   value?: string;
+  helpText?: string;
+  options?: {
+    id: string;
+    label: string;
+    children?: {
+      [k: string]: any;
+    }[];
+  }[];
+}
+export interface MultiselectControl {
+  name: string;
+  label?: string;
+  type: "multiselect";
+  required: boolean;
+  value?: string[] | string;
   helpText?: string;
   options?: {
     id: string;
@@ -1459,7 +1474,6 @@ export interface ValidateSurveyAndProgrammeRequest {
     fromADR?: boolean;
   };
   shape: string | null;
-  pjnz: string | null;
 }
 export interface VersionInfo {
   hintr: string;
