@@ -493,9 +493,13 @@ describe("utils", () => {
                                 },
                                 {
                                     name: "control-5",
-                                    type: "select",
+                                    type: "multiselect",
                                     required: false,
-                                    value: 50
+                                    options: [
+                                        {id: "50", label: "50"},
+                                        {id: "60", label: "60"}
+                                    ],
+                                    value: ["50", "60"]
                                 }
                             ]
                         }
@@ -551,9 +555,13 @@ describe("utils", () => {
                                 },
                                 {
                                     name: "control-5",
-                                    type: "select",
+                                    type: "multiselect",
                                     required: false,
-                                    value: 50
+                                    options: [
+                                        {id: "50", label: "50"},
+                                        {id: "60", label: "60"}
+                                    ],
+                                    value: ["50", "60"]
                                 }
                             ]
                         }
