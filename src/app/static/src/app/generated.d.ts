@@ -1524,7 +1524,6 @@ export interface ValidateSurveyAndProgrammeRequest {
     fromADR?: boolean;
   };
   shape: string | null;
-  pjnz: string | null;
 }
 export interface VersionInfo {
   hintr: string;

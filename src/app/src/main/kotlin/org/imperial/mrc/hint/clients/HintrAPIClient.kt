@@ -20,7 +20,6 @@ interface HintrAPIClient
         file: VersionFileWithPath,
         shapePath: String?,
         type: FileType,
-        pjnzPath: String?,
         strict: Boolean
     ): ResponseEntity<String>
 
@@ -89,13 +88,11 @@ class HintrFuelAPIClient(
     override fun validateSurveyAndProgramme(file: VersionFileWithPath,
                                             shapePath: String?,
                                             type: FileType,
-                                            pjnzPath: String?,
                                             strict: Boolean): ResponseEntity<String>
     {
 
         val json = objectMapper.writeValueAsString(
                 mapOf("type" to type.toString().lowercase(),
-                        "pjnz" to pjnzPath.orEmpty(),
                         "file" to file,
                         "shape" to shapePath.orEmpty()))
 

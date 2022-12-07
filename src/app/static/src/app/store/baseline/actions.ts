@@ -53,7 +53,6 @@ async function uploadOrImportPJNZ(context: ActionContext<BaselineState, DataExpl
             } else {
                 commit({type: BaselineMutation.PJNZErroredFile, payload: filename});
             }
-            dispatch('surveyAndProgram/validateSurveyAndProgramData', {}, {root: true});
         });
 }
 
