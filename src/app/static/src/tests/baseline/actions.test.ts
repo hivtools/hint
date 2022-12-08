@@ -7,7 +7,6 @@ import {
     mockError,
     mockFailure,
     mockMetadataState,
-    mockPlottingMetadataResponse,
     mockPopulationResponse,
     mockRootState,
     mockShapeResponse,
@@ -193,20 +192,19 @@ describe("Baseline actions", () => {
     const checkPJNZImportUpload = (commit: Mock, dispatch: Mock) => {
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: BaselineMutation.PJNZUpdated, payload: null});
-
         expectEqualsFrozen(commit.mock.calls[1][0], {
             type: BaselineMutation.PJNZUpdated,
             payload: {data: {country: "Malawi", iso3: "MWI"}}
         });
 
-        expect(dispatch.mock.calls.length).toBe(2);
+        expect(dispatch.mock.calls.length).toBe(3);
 
-        expect(dispatch.mock.calls[0][0]).toBe("metadata/getPlottingMetadata");
-        expect(dispatch.mock.calls[0][1]).toBe("MWI");
-        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
-
-        expect(dispatch.mock.calls[1].length).toBe(1);
-        expect(dispatch.mock.calls[1][0]).toBe("validate");
+        expect(dispatch.mock.calls[1].length).toBe(3);
+        expect(dispatch.mock.calls[0][0]).toBe("validate");
+        expect(dispatch.mock.calls[1][0]).toBe("metadata/getPlottingMetadata");
+        expect(dispatch.mock.calls[1][1]).toBe("MWI");
+        expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
+        expect(dispatch.mock.calls[2][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
     }
 
     it("upload PJNZ does not fetch plotting metadata or validate if error occurs", async () => {
@@ -218,7 +216,8 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.uploadPJNZ({commit, state, dispatch, rootState} as any, mockFormData as any);
 
-        expect(dispatch.mock.calls.length).toBe(0);
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData")
     });
 
     it("import PJNZ does not fetch plotting metadata or validate if error occurs", async () => {
@@ -230,7 +229,8 @@ describe("Baseline actions", () => {
         const dispatch = jest.fn();
         await actions.importPJNZ({commit, state, dispatch, rootState} as any, "some-url/some-file.txt");
 
-        expect(dispatch.mock.calls.length).toBe(0);
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData")
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUpdated", payload: null});

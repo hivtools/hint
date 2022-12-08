@@ -47,9 +47,9 @@ async function uploadOrImportPJNZ(context: ActionContext<BaselineState, DataExpl
         .freezeResponse()
         .postAndReturn<PjnzResponse>(options.url, options.payload)
         .then((response) => {
+            uploadCallback(dispatch, response);
             if (response) {
                 dispatch('metadata/getPlottingMetadata', state.iso3, {root: true});
-                dispatch('validate');
             } else {
                 commit({type: BaselineMutation.PJNZErroredFile, payload: filename});
             }
