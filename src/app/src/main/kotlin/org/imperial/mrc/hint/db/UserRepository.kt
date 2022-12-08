@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.db
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.imperial.mrc.hint.db.Tables.ADR_KEY
 import org.imperial.mrc.hint.db.tables.Users.USERS
 import org.imperial.mrc.hint.exceptions.UserException
@@ -78,6 +79,24 @@ class JooqUserRepository(private val dsl: DSLContext) : UserRepository
         dsl.insertInto(USERS)
             .set(USERS.ID, email)
             .set(USERS.USERNAME, email)
+            .set(USERS.SERIALIZEDPROFILE, getOAuth2UserSerializedProfile(email))
             .execute()
+    }
+
+    private fun getOAuth2UserSerializedProfile(email: String): String
+    {
+        return ObjectMapper().writeValueAsString(
+            mapOf(
+                "id" to email,
+                "attributes" to mapOf("username" to email),
+                "authenticationAttributes" to mapOf<String, Any>(),
+                "isRemembered" to false,
+                "roles" to arrayOf<Any>(),
+                "permissions" to arrayOf<Any>(),
+                "clientName" to null,
+                "linkedId" to null,
+                "canAttributesBeMerged" to true
+            )
+        )
     }
 }
