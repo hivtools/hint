@@ -7,6 +7,7 @@ import org.imperial.mrc.hint.emails.PasswordEmailTemplate
 import org.imperial.mrc.hint.exceptions.UserException
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.UserProfile
+import org.pac4j.oauth.profile.OAuth20Profile
 import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
 import org.springframework.stereotype.Component
@@ -17,7 +18,7 @@ interface UserLogic
 {
     fun addUser(email: String, password: String?)
     fun removeUser(email: String)
-    fun getUser(email: String): CommonProfile?
+    fun getUser(email: String, oauthLogin: Boolean = false): CommonProfile?
     fun updateUserPassword(user: UserProfile, password: String)
 }
 
@@ -62,7 +63,7 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
         profileService.removeById(user.id)
     }
 
-    override fun getUser(email: String): CommonProfile?
+    override fun getUser(email: String, oauthLogin: Boolean): CommonProfile?
     {
 
         if (email == GUEST_USER)
@@ -79,6 +80,13 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
         val username = userRepository.getAllUserNames()
                 .find { caseInsensitiveEmail(email).matches(it) }
                 ?: return null
+
+        if (oauthLogin)
+        {
+            return OAuth20Profile().apply {
+                id = username
+            }
+        }
 
         return profileService.findById(username)
     }
