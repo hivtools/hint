@@ -1,6 +1,5 @@
 package org.imperial.mrc.hint.unit.controllers
 
-import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
@@ -21,33 +20,35 @@ class UserControllerTests
     {
 
         val userLogic = mock<UserLogic> {
-            on { getUser(any()) } doReturn CommonProfile()
+            on { getUser("email@email.com", false) } doReturn CommonProfile()
         }
 
         val sut = UserController(userLogic, mockAppProps)
         val result = sut.userExists("email@email.com")
-        assertThat(result.data as Boolean).isTrue()
+        assertThat(result.data as Boolean).isTrue
     }
 
     @Test
     fun `userExists returns false if user does not exist`()
     {
-
         val userLogic = mock<UserLogic> {
-            on { getUser(any()) } doReturn null as CommonProfile?
+            on { getUser("email@email.com", false) } doReturn null as CommonProfile?
         }
 
         val sut = UserController(userLogic, mockAppProps)
         val result = sut.userExists("email@email.com")
-        assertThat(result.data as Boolean).isFalse()
+        assertThat(result.data as Boolean).isFalse
     }
 
     @Test
     fun `oauth2 userExists returns true if user exist`()
     {
+        val commonProfile = mock<CommonProfile> {
+            on { id } doReturn "email@email.com"
+        }
 
         val userLogic = mock<UserLogic> {
-            on { getUser(any()) } doReturn null as CommonProfile?
+            on { getUser("email@email.com", true) } doReturn commonProfile
         }
 
         val mockAppProps = mock<AppProperties> {
