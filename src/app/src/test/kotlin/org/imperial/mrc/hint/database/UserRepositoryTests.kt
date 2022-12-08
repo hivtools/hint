@@ -119,7 +119,7 @@ class UserRepositoryTests
         val user = dsl.selectFrom(USERS)
                 .fetchOne()
         assertThat(user?.get(USERS.ID)).isEqualTo(testEmail)
-        assertThat(user?.get(USERS.USERNAME).isEqualTo(testEmail)
+        assertThat(user?.get(USERS.USERNAME)).isEqualTo(testEmail)
         val expectedProfile = """{"id":"james@example.com","attributes":{"username":"james@example.com"},"authenticationAttributes":{},"isRemembered":false,"roles":[],"permissions":[],"clientName":null,"linkedId":null,"canAttributesBeMerged":true}""";
         assertThat(user?.get(USERS.SERIALIZEDPROFILE)).isEqualTo(expectedProfile)
     }
