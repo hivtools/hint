@@ -401,7 +401,10 @@ export const mockComparisonPlotResponse = (props: Partial<ComparisonPlotResponse
     return {
         plottingMetadata: {
             barchart: {
-                indicators: [], filters: []
+                indicators: [],
+                filters: [],
+                defaults: {} as any,
+                selections: []
             }
         },
         data: [{
