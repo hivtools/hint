@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.database
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.caseInsensitiveEmail
 import org.imperial.mrc.hint.db.Tables.ADR_KEY
+import org.imperial.mrc.hint.db.Tables.USERS
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.HintException
 import org.imperial.mrc.hint.helpers.TranslationAssert
@@ -109,6 +110,18 @@ class UserRepositoryTests
             .find { caseInsensitiveEmail(testEmail).matches(it) }
 
         assertEquals(testEmail, "test@test.com")
+    }
+
+    @Test
+    fun `can save serialized profile for oauth2 user`()
+    {
+        sut.addOAuth2User(testEmail)
+        val user = dsl.selectFrom(USERS)
+                .fetchOne()
+        assertThat(user?.get(USERS.ID)).isEqualTo(testEmail)
+        assertThat(user?.get(USERS.USERNAME).isEqualTo(testEmail)
+        val expectedProfile = """{"id":"james@example.com","attributes":{"username":"james@example.com"},"authenticationAttributes":{},"isRemembered":false,"roles":[],"permissions":[],"clientName":null,"linkedId":null,"canAttributesBeMerged":true}""";
+        assertThat(user?.get(USERS.SERIALIZEDPROFILE)).isEqualTo(expectedProfile)
     }
 
     @Test
