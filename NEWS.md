@@ -1,3 +1,7 @@
+# hint 2.30.1
+
+* Save profiles for new OAuth2 users
+
 # hint 2.30.0
 
 * Improve comparison plot usability
