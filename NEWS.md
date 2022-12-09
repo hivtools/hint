@@ -1,3 +1,7 @@
+# hint 2.30.2
+
+* Fix oauth login method querying existing users
+
 # hint 2.30.1
 
 * Fix spectrum file validation issue.

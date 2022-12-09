@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.unit.db
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatObject
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordEmailTemplate
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.verifyNoInteractions
 import org.pac4j.core.profile.CommonProfile
+import org.pac4j.oauth.profile.OAuth20Profile
 import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
 import java.util.*
@@ -143,6 +145,20 @@ class UserLogicTests
         sut.updateUserPassword(mockCommonProfile, "testPassword")
 
         verify(mockProfileService).update(mockDbProfile, "testPassword")
+    }
+
+    @Test
+    fun `oauthLogin user calls OAuth20Profile on profile services`()
+    {
+        val oAuth2Profile = OAuth20Profile().apply {
+            id = TEST_EMAIL
+        }
+
+        val sut = DbProfileServiceUserLogic(mockUserRepo, mock(), mock())
+
+        val result = sut.getUser(TEST_EMAIL, true)
+
+        assertThat(result.toString()).isEqualTo(oAuth2Profile.toString())
     }
 
 }
