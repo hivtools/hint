@@ -49,7 +49,11 @@ class ADRFuelClient(appProperties: AppProperties,
         return logADRRequestDuration({ super.get(url) }, logger)
     }
 
-    override fun postFile(url: String, parameters: List<Pair<String, Any?>>, file: Pair<String, File>): ResponseEntity<String>
+    override fun postFile(
+        url: String,
+        parameters: List<Pair<String, Any?>>,
+        file: Pair<String, File>,
+    ): ResponseEntity<String>
     {
         return logADRRequestDuration({ super.postFile(url, parameters, file) }, logger)
     }

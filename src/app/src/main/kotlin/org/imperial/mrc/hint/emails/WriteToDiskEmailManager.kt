@@ -24,7 +24,8 @@ class WriteToDiskEmailManager(appProperties: AppProperties,
 
     companion object
     {
-        private val logger: GenericLogger = GenericLoggerImpl(LoggerFactory.getLogger(WriteToDiskEmailManager::class.java))
+        private val logger: GenericLogger =
+            GenericLoggerImpl(LoggerFactory.getLogger(WriteToDiskEmailManager::class.java))
         val outputDirectory = File("/tmp/hint_emails")
 
         fun cleanOutputDirectory()

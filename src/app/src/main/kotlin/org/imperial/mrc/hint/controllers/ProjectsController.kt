@@ -47,7 +47,9 @@ class ProjectsController(private val session: Session,
                            @RequestParam("emails") emails: List<String>): ResponseEntity<String>
     {
 
-        val userIds = emails.map { userLogic.getUser(it, properties.oauth2LoginMethod)?.id ?: throw UserException("userDoesNotExist") }
+        val userIds = emails.map {
+            userLogic.getUser(it, properties.oauth2LoginMethod)?.id ?: throw UserException("userDoesNotExist")
+        }
         val currentProject = projectRepository.getProject(projectId, userId())
         userIds.forEach {
             val newProjectId = projectRepository.saveNewProject(it, currentProject.name, userId())
