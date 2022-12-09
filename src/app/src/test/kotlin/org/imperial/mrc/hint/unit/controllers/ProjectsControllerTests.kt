@@ -521,7 +521,7 @@ class ProjectsControllerTests
         assertThat(node["note"].asText()).isEqualTo("version notes")
     }
 
-    private fun assertUserCanCloneProjectWith(appsProps: AppProperties)
+    private fun assertUserCanCloneProjectWith(loginMethod: AppProperties)
     {
         val mockVersionRepo = mock<VersionRepository>()
 
@@ -533,10 +533,10 @@ class ProjectsControllerTests
             on { saveNewProject("uid2", "p1","testUser") } doReturn 3
         }
         val mockLogic = mock<UserLogic> {
-            on { getUser("new.user@email.com") } doReturn CommonProfile().apply { id = "uid1" }
-            on { getUser("a.user@email.com") } doReturn CommonProfile().apply { id = "uid2" }
+            on { getUser("new.user@email.com", loginMethod.oauth2LoginMethod) } doReturn CommonProfile().apply { id = "uid1" }
+            on { getUser("a.user@email.com", loginMethod.oauth2LoginMethod) } doReturn CommonProfile().apply { id = "uid2" }
         }
-        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mockLogic, mock(), mockLogger, appsProps)
+        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mockLogic, mock(), mockLogger, loginMethod)
         sut.cloneProjectToUser(1, listOf("new.user@email.com", "a.user@email.com"))
 
         verifyNoInteractions(mockLogger)
