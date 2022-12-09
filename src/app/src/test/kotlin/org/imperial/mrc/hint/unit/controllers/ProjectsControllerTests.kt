@@ -33,7 +33,7 @@ class ProjectsControllerTests
         on { id } doReturn "testUser"
     }
 
-    private val dbLogin = mock<AppProperties> {
+    private val mockAppProperties = mock<AppProperties> {
         on { oauth2LoginMethod } doReturn false
     }
 
@@ -74,7 +74,7 @@ class ProjectsControllerTests
             on { saveNewProject("testUser", "testProject") } doReturn 99
         }
 
-        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock(), mock(), mockLogger, mockAppProperties)
 
         val result = sut.newProject("testProject", null, false)
 
@@ -102,7 +102,7 @@ class ProjectsControllerTests
             on { saveNewProject("testUser", "testProject", null, "notes", false) } doReturn 99
         }
 
-        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock(), mock(), mockLogger, mockAppProperties)
 
         val result = sut.newProject("testProject", "notes", false)
         verify(mockProjectRepo).saveNewProject("testUser", "testProject",null, "notes", false)
@@ -130,7 +130,7 @@ class ProjectsControllerTests
             on { saveNewProject("testUser", "testProject", null, "notes", true) } doReturn 99
         }
 
-        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock(), mock(), mockLogger, mockAppProperties)
 
         val result = sut.newProject("testProject", "notes", true)
         verify(mockProjectRepo).saveNewProject("testUser", "testProject",null, "notes", true)
@@ -153,7 +153,7 @@ class ProjectsControllerTests
         val mockVersionRepo = mock<VersionRepository> {
             on { getVersion("testVersion") } doReturn mockVersion
         }
-        val sut = ProjectsController(mockSession, mockVersionRepo, mock(), mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mockVersionRepo, mock(), mock(), mock(), mockLogger, mockAppProperties)
         val result = sut.newVersion(99, "parentVersion", "version notes")
 
         verify(mockVersionRepo).copyVersion("parentVersion", "testVersion", 99, "testUser", "version notes")
@@ -171,7 +171,7 @@ class ProjectsControllerTests
             on { getProjects("testUser") } doReturn mockProjects
         }
 
-        val sut = ProjectsController(mockSession, mock(), mockProjectRepo, mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mock(), mockProjectRepo, mock(), mock(), mockLogger, mockAppProperties)
         val result = sut.getProjects()
 
         val resultJson = parser.readTree(result.body)["data"]
@@ -200,7 +200,7 @@ class ProjectsControllerTests
             on { getVersion("testVersion") } doReturn mockVersion
         }
 
-        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock(), mock(), mockLogger, mockAppProperties)
         val result = sut.getCurrentProject()
 
         val resultJson = parser.readTree(result.body)["data"]
@@ -220,7 +220,7 @@ class ProjectsControllerTests
             on { versionExists("testVersion", "testUser") } doReturn false
         }
 
-        val sut = ProjectsController(mockSession, mockVersionRepo, mock(), mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mockVersionRepo, mock(), mock(), mock(), mockLogger, mockAppProperties)
         val result = sut.getCurrentProject()
 
         val resultJson = parser.readTree(result.body)["data"]
@@ -237,7 +237,7 @@ class ProjectsControllerTests
         val guestSession = mock<Session> {
             on { userIsGuest() } doReturn true
         }
-        val sut = ProjectsController(guestSession, mock(), mock(), mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(guestSession, mock(), mock(), mock(), mock(), mockLogger, mockAppProperties)
         val result = sut.getProjects()
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.UNAUTHORIZED)
@@ -248,7 +248,7 @@ class ProjectsControllerTests
     fun `can upload state`()
     {
         val mockRepo = mock<VersionRepository>();
-        val sut = ProjectsController(mockSession, mockRepo, mock(), mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mockRepo, mock(), mock(), mock(), mockLogger, mockAppProperties)
 
         val result = sut.uploadState(99, "testVersion", "testState")
 
@@ -265,7 +265,7 @@ class ProjectsControllerTests
             on { getVersionDetails("testVersion", 99, "testUser") } doReturn mockDetails
         };
 
-        val sut = ProjectsController(mockSession, mockRepo, mock(), mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mockRepo, mock(), mock(), mock(), mockLogger, mockAppProperties)
         val result = sut.loadVersionDetails(99, "testVersion")
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         val resultJson = parser.readTree(result.body)["data"]
@@ -281,7 +281,7 @@ class ProjectsControllerTests
     @Test
     fun `can clone project to user`()
     {
-        assertUserCanCloneProjectWith(dbLogin)
+        assertUserCanCloneProjectWith(mockAppProperties)
     }
 
     @Test
@@ -302,7 +302,7 @@ class ProjectsControllerTests
             on { getUser("new.user@email.com") } doReturn null as CommonProfile?
         }
         val mockRepo = mock<ProjectRepository>()
-        val sut = ProjectsController(mockSession, mock(), mockRepo, mockLogic, mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mock(), mockRepo, mockLogic, mock(), mockLogger, mockAppProperties)
         val userList = listOf("a.user@email.com", "new.user@email.com")
         assertThatThrownBy { sut.cloneProjectToUser(1, userList) }
                 .isInstanceOf(UserException::class.java)
@@ -316,7 +316,7 @@ class ProjectsControllerTests
     fun `can delete version`()
     {
         val mockRepo = mock<VersionRepository>()
-        val sut = ProjectsController(mockSession, mockRepo, mock(), mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mockRepo, mock(), mock(), mock(), mockLogger, mockAppProperties)
         val result = sut.deleteVersion(1, "testVersion")
 
         verify(mockRepo).deleteVersion("testVersion", 1, "testUser")
@@ -332,7 +332,7 @@ class ProjectsControllerTests
             on { getUserProfile() } doReturn mockProfile
             on { getVersionId() } doReturn "testVersion"
         }
-        val sut = ProjectsController(mockSession, mockRepo, mock(), mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mockRepo, mock(), mock(), mock(), mockLogger, mockAppProperties)
         val result = sut.deleteVersion(1, "testVersion")
 
         verify(mockRepo).deleteVersion("testVersion", 1, "testUser")
@@ -349,7 +349,7 @@ class ProjectsControllerTests
             on { getUserProfile() } doReturn mockProfile
             on { getVersionId() } doReturn "testVersion"
         }
-        val sut = ProjectsController(mockSession, mockRepo, mock(), mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mockRepo, mock(), mock(), mock(), mockLogger, mockAppProperties)
         val result = sut.deleteVersion(1, "anotherVersion")
 
         verify(mockRepo).deleteVersion("anotherVersion", 1, "testUser")
@@ -364,7 +364,7 @@ class ProjectsControllerTests
         val mockRepo = mock<ProjectRepository>() {
             on { getProjectFromVersionId("testVersion", "testUser") } doReturn Project(123, "project", listOf())
         }
-        val sut = ProjectsController(mockSession, mock(), mockRepo, mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mock(), mockRepo, mock(), mock(), mockLogger, mockAppProperties)
         val result = sut.deleteProject(1)
 
         verify(mockRepo).deleteProject(1, "testUser")
@@ -383,7 +383,7 @@ class ProjectsControllerTests
             on { getVersionId() } doReturn "testVersion"
         }
 
-        val sut = ProjectsController(mockSession, mock(), mockRepo, mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mock(), mockRepo, mock(), mock(), mockLogger, mockAppProperties)
         val result = sut.deleteProject(123)
 
         verify(mockRepo).deleteProject(123, "testUser")
@@ -403,7 +403,7 @@ class ProjectsControllerTests
             on { getVersionId() } doReturn "testVersion"
         }
 
-        val sut = ProjectsController(mockSession, mock(), mockRepo, mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mock(), mockRepo, mock(), mock(), mockLogger, mockAppProperties)
         val result = sut.deleteProject(123)
 
         verify(mockRepo).deleteProject(123, "testUser")
@@ -420,7 +420,7 @@ class ProjectsControllerTests
             on { getProject(1, "testUser") } doReturn Project(1, "p1", listOf(Version("v1", "createdTime", "updatedTime", 1),
                     Version("v2", "createdTime", "updatedTime", 1)))
         }
-        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mockVersionRepo, mockProjectRepo, mock(), mock(), mockLogger, mockAppProperties)
         val result = sut.promoteVersion(1, "testVersion", "newProjectName", "test promoted note")
 
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
@@ -436,7 +436,7 @@ class ProjectsControllerTests
         val mockRepo = mock<ProjectRepository>() {
             on { getProjectFromVersionId("testVersion", "testUser") } doReturn Project(123, "project", listOf())
         }
-        val sut = ProjectsController(mockSession, mock(), mockRepo, mock(), mock(), mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mock(), mockRepo, mock(), mock(), mockLogger, mockAppProperties)
         val result = sut.renameProject(1, "renamedProject", "project notes")
 
         verify(mockRepo).renameProject(1, "testUser", "renamedProject", "project notes")
@@ -451,7 +451,7 @@ class ProjectsControllerTests
             on { getProjectFromVersionId("testVersion", "testUser") } doReturn Project(123, "project", listOf())
         }
 
-        val sut = ProjectsController(mockSession, mock(), mockRepo, mock(), mockRequest, mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mock(), mockRepo, mock(), mockRequest, mockLogger, mockAppProperties)
         val result = sut.updateProjectNote(1, "notes")
 
         verify(mockRepo).updateProjectNote(1, "testUser", "notes")
@@ -467,7 +467,7 @@ class ProjectsControllerTests
         val mockProjectRepo = mock<ProjectRepository> {
             on { getProjects("testUser") } doReturn mockProjects
         }
-        val sut = ProjectsController(mockSession, mock(), mockProjectRepo, mock(), mockRequest, mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mock(), mockProjectRepo, mock(), mockRequest, mockLogger, mockAppProperties)
         val result = sut.updateProjectNote(1, "updated project notes")
 
         verify(mockProjectRepo).updateProjectNote(1, "testUser", "updated project notes")
@@ -489,7 +489,7 @@ class ProjectsControllerTests
             on { getVersionDetails("testVersion", 1, "testUser") } doReturn mockDetails
         }
 
-        val sut = ProjectsController(mockSession, mockRepo, mockProjectRepo, mock(), mockRequest, mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mockRepo, mockProjectRepo, mock(), mockRequest, mockLogger, mockAppProperties)
         val result = sut.updateVersionNote("testVersion", 1, "updated version notes")
         verify(mockRepo).updateVersionNote("testVersion", 1, "testUser", "updated version notes")
         verifyNoInteractions(mockLogger)
@@ -505,7 +505,7 @@ class ProjectsControllerTests
             on { getVersionDetails("testVersion", 99, "testUser") } doReturn mockDetails
         }
 
-        val sut = ProjectsController(mockSession, mockRepo, mockProjectRepo, mock(), mockRequest, mockLogger, dbLogin)
+        val sut = ProjectsController(mockSession, mockRepo, mockProjectRepo, mock(), mockRequest, mockLogger, mockAppProperties)
         val result = sut.updateVersionNote("testVersion", 99, "notes")
 
         verify(mockRepo).updateVersionNote("testVersion", 99, "testUser", "notes")
