@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.verifyNoInteractions
 import org.pac4j.core.profile.CommonProfile
+import org.pac4j.oauth.profile.OAuth20Profile
 import org.pac4j.sql.profile.DbProfile
 import org.pac4j.sql.profile.service.DbProfileService
 import java.util.*
@@ -143,6 +144,20 @@ class UserLogicTests
         sut.updateUserPassword(mockCommonProfile, "testPassword")
 
         verify(mockProfileService).update(mockDbProfile, "testPassword")
+    }
+
+    @Test
+    fun `oauthLogin user calls OAuth20Profile on profile services`()
+    {
+        val oAuth2Profile = OAuth20Profile().apply {
+            id = TEST_EMAIL
+        }
+
+        val sut = DbProfileServiceUserLogic(mockUserRepo, mock(), mock())
+
+        val result = sut.getUser(TEST_EMAIL, true)
+
+        assertThat(result?.id).isEqualTo(oAuth2Profile.id)
     }
 
 }
