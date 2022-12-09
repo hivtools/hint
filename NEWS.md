@@ -1,3 +1,7 @@
+# hint 2.30.1
+
+* Fix spectrum file validation issue.
+
 # hint 2.30.0
 
 * Improve comparison plot usability
