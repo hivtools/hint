@@ -78,8 +78,8 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
         }
 
         val username = userRepository.getAllUserNames()
-                .find { caseInsensitiveEmail(email).matches(it) }
-                ?: return null
+            .find { caseInsensitiveEmail(email).matches(it) }
+            ?: return null
 
         if (oauthLogin)
         {
@@ -87,7 +87,6 @@ class DbProfileServiceUserLogic(private val userRepository: UserRepository,
                 id = username
             }
         }
-
         return profileService.findById(username)
     }
 

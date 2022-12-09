@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.controllers
 
+import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.db.ProjectRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.exceptions.UserException
@@ -18,7 +19,9 @@ class ProjectsController(private val session: Session,
                          private val projectRepository: ProjectRepository,
                          private val userLogic: UserLogic,
                          private val request: HttpServletRequest,
-                         private val logger: GenericLogger)
+                         private val logger: GenericLogger,
+                         private val properties: AppProperties
+)
 {
     @PostMapping("/project/")
     @ResponseBody
@@ -44,7 +47,7 @@ class ProjectsController(private val session: Session,
                            @RequestParam("emails") emails: List<String>): ResponseEntity<String>
     {
 
-        val userIds = emails.map { userLogic.getUser(it)?.id ?: throw UserException("userDoesNotExist") }
+        val userIds = emails.map { userLogic.getUser(it, properties.oauth2LoginMethod)?.id ?: throw UserException("userDoesNotExist") }
         val currentProject = projectRepository.getProject(projectId, userId())
         userIds.forEach {
             val newProjectId = projectRepository.saveNewProject(it, currentProject.name, userId())

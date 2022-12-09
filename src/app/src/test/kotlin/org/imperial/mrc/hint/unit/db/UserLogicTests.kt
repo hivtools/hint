@@ -158,8 +158,6 @@ class UserLogicTests
 
         val result = sut.getUser(TEST_EMAIL, true)
 
-        assertThat(result?.id).isEqualTo(oAuth2Profile.id)
-
         assertThat(result.toString()).isEqualTo(oAuth2Profile.toString())
     }
 
