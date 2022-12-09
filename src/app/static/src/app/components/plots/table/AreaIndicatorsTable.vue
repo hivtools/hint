@@ -40,7 +40,8 @@
         filters: Filter[],
         countryAreaFilterOption: NestedFilterOption,
         areaFilterId: string
-        translateFilterLabels: boolean
+        translateFilterLabels: boolean,
+        roundFormatOutput: boolean
     }
 
     interface DisplayRow {
@@ -83,6 +84,10 @@
             type: Object
         },
         translateFilterLabels: {
+            type: Boolean,
+            default: true
+        },
+        roundFormatOutput: {
             type: Boolean,
             default: true
         }
@@ -161,10 +166,10 @@
                         }
                     }
                     const {value, upper, lower} = current
-                    const { indicator, format, scale, accuracy } = current.indicatorMeta
-                    displayRows[key][indicator] = formatOutput(value, format, scale, accuracy);
-                    displayRows[key][`${indicator}_lower`] = lower ? formatOutput(lower, format, scale, accuracy): '';
-                    displayRows[key][`${indicator}_upper`] = upper ? formatOutput(upper, format, scale, accuracy): '';
+                    const {indicator, format, scale, accuracy} = current.indicatorMeta
+                    displayRows[key][indicator] = formatOutput(value, format, scale, accuracy, this.roundFormatOutput);
+                    displayRows[key][`${indicator}_lower`] = lower ? formatOutput(lower, format, scale, accuracy, this.roundFormatOutput) : '';
+                    displayRows[key][`${indicator}_upper`] = upper ? formatOutput(upper, format, scale, accuracy, this.roundFormatOutput) : '';
                 });
                 return Object.values(displayRows);
             },

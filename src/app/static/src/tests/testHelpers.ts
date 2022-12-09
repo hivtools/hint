@@ -8,6 +8,7 @@ import registerTranslations from "../app/store/translations/registerTranslations
 import {LanguageMutation} from "../app/store/language/mutations";
 import Mock = jest.Mock;
 import ErrorReport from "../app/components/ErrorReport.vue";
+import {DataExplorationState} from "../app/store/dataExploration/dataExploration";
 
 export function expectEqualsFrozen(args: PayloadWithType<any>, expected: PayloadWithType<any>) {
     expect(Object.isFrozen(args["payload"])).toBe(true);
@@ -91,9 +92,9 @@ export const expectTranslated = (element: Wrapper<any>,
                                  englishText: string,
                                  frenchText: string,
                                  portugueseText: string,
-                                 store: Store<RootState>,
+                                 store: Store<DataExplorationState>,
                                  attribute?: string) =>
-    expectTranslatedWithStoreType<RootState>(element, englishText, frenchText, portugueseText, store, attribute);
+    expectTranslatedWithStoreType<DataExplorationState>(element, englishText, frenchText, portugueseText, store, attribute);
 
 export const expectChangeLanguageMutations = (commit: Mock) => {
     expect(commit.mock.calls[0][0]).toStrictEqual({
