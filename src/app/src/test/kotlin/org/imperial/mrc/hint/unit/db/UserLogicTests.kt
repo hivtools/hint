@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.unit.db
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatObject
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.emails.EmailManager
 import org.imperial.mrc.hint.emails.PasswordEmailTemplate
@@ -158,6 +159,8 @@ class UserLogicTests
         val result = sut.getUser(TEST_EMAIL, true)
 
         assertThat(result?.id).isEqualTo(oAuth2Profile.id)
+
+        assertThat(result.toString()).isEqualTo(oAuth2Profile.toString())
     }
 
 }
