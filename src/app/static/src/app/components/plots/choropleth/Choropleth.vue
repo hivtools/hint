@@ -64,6 +64,7 @@
         colourScales: ScaleSelections,
         areaFilterId: string,
         includeFilters: boolean
+        roundFormatOutput: boolean
     }
 
     interface Data {
@@ -133,6 +134,10 @@
         },
         includeFilters: {
             type: Boolean
+        },
+        roundFormatOutput: {
+            type: Boolean,
+            default: true
         }
     };
 
@@ -244,7 +249,6 @@
             },
             maxLevel() {
                 const levelNums: number[] = Object.keys(this.featuresByLevel).map(k => parseInt(k));
-
                 return Math.max(...levelNums);
             },
             currentFeatures() {
@@ -302,7 +306,7 @@
                     accuracy = this.colorIndicator.accuracy;
                 }
                 return {
-                    onEachFeature: function onEachFeature(feature: Feature, layer: Layer) {
+                    onEachFeature: (feature: Feature, layer: Layer) => {
                         const area_id = feature.properties && feature.properties["area_id"];
                         const area_name = feature.properties && feature.properties["area_name"];
 
@@ -318,14 +322,14 @@
                         if (stringVal && stringLower) {
                             layer.bindTooltip(`<div>
                                 <strong>${area_name}</strong>
-                                <br/>${formatOutput(stringVal, format, scale, accuracy)}
-                                <br/>(${formatOutput(stringLower, format, scale, accuracy) + " - " +
-                            formatOutput(stringUpper, format, scale, accuracy)})
+                                <br/>${ formatOutput(stringVal, format, scale, accuracy, this.roundFormatOutput)}
+                                <br/>(${formatOutput(stringLower, format, scale, accuracy, this.roundFormatOutput) + " - " +
+                            formatOutput(stringUpper, format, scale, accuracy, this.roundFormatOutput)})
                             </div>`);
                         } else {
                             layer.bindTooltip(`<div>
                                 <strong>${area_name}</strong>
-                                <br/>${formatOutput(stringVal, format, scale, accuracy)}
+                                <br/>${formatOutput(stringVal, format, scale, accuracy, this.roundFormatOutput)}
                             </div>`);
                         }
                     }

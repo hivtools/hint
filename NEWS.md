@@ -1,3 +1,7 @@
+# hint 2.31.0
+
+* turn off rounding in review inputs
+
 # hint 2.30.2
 
 * Fix oauth login method querying existing users

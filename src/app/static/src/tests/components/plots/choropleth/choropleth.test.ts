@@ -576,4 +576,16 @@ describe("Choropleth component", () => {
 
     });
 
+    it('render round format output props correctly', () => {
+        const wrapper = getWrapper({
+            roundFormatOutput: false
+        });
+        expect(wrapper.props("roundFormatOutput")).toBe(false)
+    });
+
+    it('render round format output props correctly when prop is not specified', () => {
+        const wrapper = getWrapper();
+        expect(wrapper.props("roundFormatOutput")).toBe(true)
+    });
+
 });

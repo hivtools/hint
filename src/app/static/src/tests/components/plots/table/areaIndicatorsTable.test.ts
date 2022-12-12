@@ -502,4 +502,16 @@ describe("areaIndicatorsTable", () => {
         expect(wrapper.findAll('td').at(3).find(".value").text()).toBe('1.00%');
         expect(wrapper.findAll('td').at(3).find(".small").text()).toBe('(1.00% – 10.00%)');
     })
+
+    it('render format output props correctly', () => {
+        const wrapper = getWrapper({
+            roundFormatOutput: false
+        });
+        expect(wrapper.props("roundFormatOutput")).toBe(false)
+    });
+
+    it('render format output props correctly when prop is not specified', () => {
+        const wrapper = getWrapper();
+        expect(wrapper.props("roundFormatOutput")).toBe(true)
+    });
 });

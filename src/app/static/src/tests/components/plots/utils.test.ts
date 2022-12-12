@@ -547,6 +547,8 @@ describe("plot utils", () => {
     expect(formatOutput(501.98, '', 1, 100)).toStrictEqual(500);
     expect(formatOutput(501.98, '', 1, 1000)).toStrictEqual(501.98);
     expect(formatOutput(5001.98, '', 1, 1000)).toStrictEqual(5000);
+    expect(formatOutput(501.98, '', 1, 100, false)).toStrictEqual(501.98);
+    expect(formatOutput(501.98, '', 1, 100, true)).toStrictEqual(500);
   });
 
 it("it can formatLegend correctly", () => {
