@@ -75,7 +75,7 @@ describe("ADR Key", function () {
         const links = rendered.findAll("a");
         expect(links.length).toBe(2);
         expect(links.at(1).text()).toBe("get access key from ADR");
-        expect(links.at(1).attributes("href")).toBe("https://adr.unaids.org/me/");
+        expect(links.at(1).attributes("href")).toBe("www.adr.com/me");
         expect(mockTooltipDirective.mock.calls[0][0].innerHTML)
             .toBe("get access key from ADR");
         expect(mockTooltipDirective.mock.calls[0][1].value)

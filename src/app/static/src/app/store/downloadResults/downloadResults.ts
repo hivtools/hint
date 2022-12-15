@@ -18,6 +18,7 @@ export const initialDownloadResults = {
     statusPollId: -1,
     complete: false,
     error: null,
+    downloadError: null,
     metadataError: null
 }
 

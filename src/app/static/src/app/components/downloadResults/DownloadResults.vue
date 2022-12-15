@@ -25,6 +25,7 @@
                               @click="downloadComparisonReport"
                               :disabled="!comparison.downloadId || comparison.preparing"
                               :file="comparison"/>
+                    <error-alert v-if="comparison.downloadError" :error="comparison.downloadError"></error-alert>
                 </div>
             </div>
             <div id="upload" v-if="hasUploadPermission" class="col-sm">
@@ -197,13 +198,11 @@
             downloadCoarseOutput() {
                 this.handleDownloadResult(this.coarseOutput)
             },
-            downloadComparisonReport() {
-                this.handleDownloadResult(this.comparison)
-            },
             clearStatus: mapMutationByName("adrUpload", "ClearStatus"),
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
             getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
-            prepareOutputs: mapActionByName("downloadResults", "prepareOutputs")
+            prepareOutputs: mapActionByName("downloadResults", "prepareOutputs"),
+            downloadComparisonReport: mapActionByName("downloadResults", "downloadComparisonReport")
         },
         mounted() {
             this.getUserCanUpload();

@@ -9,7 +9,7 @@ import {
     mapState,
     MutationMethod
 } from "vuex";
-import {ADRSchemas, DatasetResource, Dict, UploadFile, Version, Filter} from "./types";
+import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse, Response} from "./generated";
 import moment from 'moment';
 import {
@@ -24,6 +24,7 @@ import {initialStepperState} from "./store/stepper/stepper";
 import {LoadState} from "./store/load/state";
 import {initialModelRunState} from "./store/modelRun/modelRun";
 import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
+import {AxiosResponse} from "axios";
 
 export type ComputedWithType<T> = () => T;
 
@@ -85,7 +86,7 @@ export const verifyCheckSum = (content: string): false | any => {
 
 function isHINTError(object: any): object is Error {
     return typeof object.error == "string"
-        && object.details == undefined || typeof object.details == "string"
+        && object.detail == undefined || typeof object.detail == "string"
 }
 
 export function isHINTResponse(object: any): object is Response {
@@ -470,4 +471,24 @@ export const constructOptionsFormMetaFromData = (state: ModelOptionsState, meta:
 
 export const flatMapControlSections = (sections: DynamicControlSection[]): DynamicControlGroup[] => {
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
+}
+
+export const readStream = (response: AxiosResponse): void => {
+    const filename = extractFilenameFrom(response.headers["content-disposition"])
+    const fileUrl = URL.createObjectURL(response.data);
+    const fileLink = document.createElement('a');
+    fileLink.href = fileUrl;
+    fileLink.setAttribute('download', filename);
+    document.body.appendChild(fileLink);
+    fileLink.click()
+    URL.revokeObjectURL(fileUrl)
+
+}
+
+export const extractFilenameFrom = (contentDisposition: string): string => {
+    return contentDisposition
+        .split(';')[1]
+        .split('filename=')[1]
+        .replace(/"/g, '')
+        .trim();
 }

@@ -57,6 +57,13 @@ describe("modelOutput module", () => {
     const comparisonPlotResponse = mockComparisonPlotResponse({
         plottingMetadata: {
             barchart: {
+                selections: [{
+                    disaggregate_by_id: "source",
+                    indicator_id: "art_coverage",
+                    selected_filter_options : {},
+                    x_axis_id:"age"
+                }],
+                defaults: {} as any,
                 filters,
                 indicators: [
                     {
@@ -181,6 +188,12 @@ describe("modelOutput module", () => {
             id: "id1",
             label: "label 1"
         });
+    });
+
+    it("gets default comparison barchart selections", async () => {
+        const result = modelOutputGetters.comparisonPlotDefaultSelections(mockModelOutputState(), null, rootState);
+        expect(result.length).toEqual(1);
+        expect(result).toBe(comparisonPlotResponse.plottingMetadata.barchart.selections);
     });
 
     const expectOutputPlotFilters = (filters: Filter[]) => {

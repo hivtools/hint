@@ -1,7 +1,51 @@
+# hint 2.31.1
+
+* Setup Playwright and add Browser test for data exploration login
+
+# hint 2.31.0
+
+* turn off rounding in review inputs
+
+# hint 2.30.2
+
+* Fix oauth login method querying existing users
+
+# hint 2.30.1
+
+* Fix spectrum file validation issue.
+
+# hint 2.30.0
+
+* Improve comparison plot usability
+
+# hint 2.29.2
+
+* Fix data exploration mode required files
+
+# hint 2.29.1
+
+* Put load and save json behind feature switch
+
+# hint 2.29.0
+
+* Upload Comparison report to ADR
+
+# hint 2.28.1
+
+* Modify landing page text
+
+# hint 2.28.0
+
+* Link AdrProfileUrl from schema
 
 # hint 2.27.0
 
-* Setup Playwright and add Browser test for data exploration login
+* As a user I cannot start multiple model fits in the same session
+
+# hint 2.26.5
+
+* Enable comparison download report
+>>>>>>> master
 
 # hint 2.26.4
 

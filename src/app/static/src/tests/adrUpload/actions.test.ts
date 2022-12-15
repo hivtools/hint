@@ -62,7 +62,13 @@ describe("ADR upload actions", () => {
             .reply(500, mockFailure("test error"));
 
         const root = mockRootState({
-            adr: mockADRState({schemas: {outputZip: "output-zip", outputSummary: "output-summary"} as any}),
+            adr: mockADRState({
+                schemas: {
+                    outputZip: "output-zip",
+                    outputSummary: "output-summary",
+                    outputComparison: "output-comparison"
+                } as any
+            }),
             baseline: mockBaselineState({selectedDataset: {id: "test-dataset"} as any}),
             projects: mockProjectsState({currentProject: {name: "project1"} as any})
         });
@@ -125,8 +131,9 @@ describe("ADR upload actions", () => {
         const root = mockRootState({
             adr: mockADRState({
                 schemas: {
-                outputZip: "output-zip",
+                    outputZip: "output-zip",
                     outputSummary: "output-summary",
+                    outputComparison: "output-comparison",
                     pjnz: "adr-pjnz",
                     shape: "adr-shape",
                     population: "adr-population",
@@ -174,8 +181,18 @@ describe("ADR upload actions", () => {
                 lastModified: "2021-03-02",
                 resourceUrl: "http://test"
             },
-            shape: {
+            outputComparison: {
                 index: 2,
+                displayName: "uploadFileOutputComparison",
+                resourceType: "output-comparison",
+                resourceFilename: "naomi_comparison.html",
+                resourceName: "Naomi Comparison Report",
+                resourceId: null,
+                lastModified: null,
+                resourceUrl: null
+            },
+            shape: {
+                index: 3,
                 displayName: "shape",
                 resourceType: "adr-shape",
                 resourceFilename: "test-shape.geojson",
@@ -185,7 +202,7 @@ describe("ADR upload actions", () => {
                 resourceUrl: "http://adr/test-shape"
             },
             programme: {
-                index: 3,
+                index: 4,
                 displayName: "ART",
                 resourceType: "adr-art",
                 resourceFilename: "test-program.csv",
@@ -212,13 +229,15 @@ describe("ADR upload actions", () => {
                 schemas: {
                     baseUrl: "http://test",
                     outputZip: "inputs-unaids-naomi-output-zip",
-                    outputSummary: "inputs-unaids-naomi-report"
+                    outputSummary: "inputs-unaids-naomi-report",
+                    outputComparison: "inputs-unaids-naomi-comparison"
                 } as any
             }),
 
             downloadResults: mockDownloadResultsState({
                 summary: {downloadId: 1},
-                spectrum: {downloadId: 2}
+                spectrum: {downloadId: 2},
+                comparison: {downloadId: 3}
             } as any),
 
             metadata: mockMetadataState({
@@ -230,6 +249,10 @@ describe("ADR upload actions", () => {
                         {
                             type: "summary",
                             description: "summary"
+                        },
+                        {
+                            type: "comparison",
+                            description: "comparison"
                         }
                     ]
             } as any),
@@ -241,17 +264,23 @@ describe("ADR upload actions", () => {
             } as any)
         });
 
-        const uploadFilesPayload = {createRelease: false, uploadFiles: [
-            {
-                resourceType: "inputs-unaids-naomi-output-zip",
-                resourceFilename: "file1",
-                resourceId: "id1"
-            },
-            {
-                resourceType: "inputs-unaids-naomi-report",
-                resourceFilename: "file2"
-            }
-        ] as UploadFile[]}
+        const uploadFilesPayload = {
+            createRelease: false, uploadFiles: [
+                {
+                    resourceType: "inputs-unaids-naomi-output-zip",
+                    resourceFilename: "file1",
+                    resourceId: "id1"
+                },
+                {
+                    resourceType: "inputs-unaids-naomi-report",
+                    resourceFilename: "file2"
+                },
+                {
+                    resourceType: "inputs-unaids-naomi-comparison",
+                    resourceFilename: "file3"
+                }
+            ] as UploadFile[]
+        }
 
         const success = {response: "success"}
 
@@ -259,26 +288,32 @@ describe("ADR upload actions", () => {
             .reply(200, mockSuccess(null));
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-report/1`)
             .reply(200, mockSuccess(success));
+        mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-comparison/3`)
+            .reply(200, mockSuccess(null));
         mockAxios.onGet(`adr/datasets/datasetId`)
             .reply(200, mockSuccess(null));
 
         await actions.uploadFilesToADR({commit, dispatch, rootState: root} as any, uploadFilesPayload);
-        expect(commit.mock.calls.length).toBe(4);
+        expect(commit.mock.calls.length).toBe(5);
         expect(commit.mock.calls[0][0]["type"]).toBe("ADRUploadStarted");
-        expect(commit.mock.calls[0][0]["payload"]).toBe(2);
+        expect(commit.mock.calls[0][0]["payload"]).toBe(3);
         expect(commit.mock.calls[1][0]["type"]).toBe("ADRUploadProgress");
         expect(commit.mock.calls[1][0]["payload"]).toBe(1);
         expect(commit.mock.calls[2][0]["type"]).toBe("ADRUploadProgress");
         expect(commit.mock.calls[2][0]["payload"]).toBe(2);
-        expect(commit.mock.calls[3][0]["type"]).toBe("ADRUploadCompleted");
-        expect(commit.mock.calls[3][0]["payload"]).toEqual(success);
+        expect(commit.mock.calls[3][0]["type"]).toBe("ADRUploadProgress");
+        expect(commit.mock.calls[3][0]["payload"]).toBe(3);
+        expect(commit.mock.calls[4][0]["type"]).toBe("ADRUploadCompleted");
+        expect(commit.mock.calls[4][0]["payload"]).toEqual(null);
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("getUploadFiles");
-        expect(mockAxios.history.post.length).toBe(2);
+        expect(mockAxios.history.post.length).toBe(3);
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=zip");
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/2");
         expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&description=summary");
         expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-report/1");
+        expect(mockAxios.history.post[2]["data"]).toBe("resourceFileName=file3&description=comparison");
+        expect(mockAxios.history.post[2]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-comparison/3");
     });
 
     it("uploadFilesToADR dispatches createRelease on upload of final file if instructed to", async () => {
@@ -290,7 +325,8 @@ describe("ADR upload actions", () => {
                 schemas: {
                     baseUrl: "http://test",
                     outputZip: "inputs-unaids-naomi-output-zip",
-                    outputSummary: "inputs-unaids-naomi-report"
+                    outputSummary: "inputs-unaids-naomi-report",
+                    outputComparison: "inputs-unaids-naomi-comparison"
                 } as any
             }),
             modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
@@ -299,7 +335,8 @@ describe("ADR upload actions", () => {
                     result: mockModelResultResponse({
                         uploadMetadata: {
                             outputSummary: {description: "summary"},
-                            outputZip: {description: "zip"}
+                            outputZip: {description: "zip"},
+                            outputComparison: {description: "comparison"}
                         }
                     })
                 }),
@@ -313,23 +350,31 @@ describe("ADR upload actions", () => {
             })
         });
 
-        const uploadFilesPayload = {createRelease: true, uploadFiles: [
-            {
-                resourceType: "inputs-unaids-naomi-output-zip",
-                resourceFilename: "file1",
-                resourceId: "id1"
-            },
-            {
-                resourceType: "inputs-unaids-naomi-report",
-                resourceFilename: "file2"
-            }
-        ] as UploadFile[]}
+        const uploadFilesPayload = {
+            createRelease: true, uploadFiles: [
+                {
+                    resourceType: "inputs-unaids-naomi-output-zip",
+                    resourceFilename: "file1",
+                    resourceId: "id1"
+                },
+                {
+                    resourceType: "inputs-unaids-naomi-report",
+                    resourceFilename: "file2"
+                },
+                {
+                    resourceType: "inputs-unaids-naomi-comparison",
+                    resourceFilename: "file3"
+                }
+            ] as UploadFile[]
+        }
 
         const success = {response: "success"}
 
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/calId`)
             .reply(200, mockSuccess(null));
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-report/calId`)
+            .reply(200, mockSuccess(success));
+        mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-comparison/calId`)
             .reply(200, mockSuccess(success));
         mockAxios.onGet(`adr/datasets/datasetId`)
             .reply(200, mockSuccess(null));
@@ -350,7 +395,8 @@ describe("ADR upload actions", () => {
                 schemas: {
                     baseUrl: "http://test",
                     outputZip: "inputs-unaids-naomi-output-zip",
-                    outputSummary: "inputs-unaids-naomi-report"
+                    outputSummary: "inputs-unaids-naomi-report",
+                    outputComparison: "inputs-unaids-naomi-comparison"
                 } as any
             }),
             modelCalibrate: mockModelCalibrateState({calibrateId: "calId"}),
@@ -359,7 +405,8 @@ describe("ADR upload actions", () => {
                     result: mockModelResultResponse({
                         uploadMetadata: {
                             outputSummary: {description: "summary"},
-                            outputZip: {description: "zip"}
+                            outputZip: {description: "zip"},
+                            outputComparison: {description: "comparison"}
                         }
                     })
                 }),
@@ -373,17 +420,23 @@ describe("ADR upload actions", () => {
             })
         });
 
-        const uploadFilesPayload = {createRelease: true, uploadFiles: [
-            {
-                resourceType: "inputs-unaids-naomi-output-zip",
-                resourceFilename: "file1",
-                resourceId: "id1"
-            },
-            {
-                resourceType: "inputs-unaids-naomi-report",
-                resourceFilename: "file2"
-            }
-        ] as UploadFile[]}
+        const uploadFilesPayload = {
+            createRelease: true, uploadFiles: [
+                {
+                    resourceType: "inputs-unaids-naomi-output-zip",
+                    resourceFilename: "file1",
+                    resourceId: "id1"
+                },
+                {
+                    resourceType: "inputs-unaids-naomi-report",
+                    resourceFilename: "file2"
+                },
+                {
+                    resourceType: "inputs-unaids-naomi-comparison",
+                    resourceFilename: "file3"
+                }
+            ] as UploadFile[]
+        }
 
         await actions.uploadFilesToADR({commit, dispatch, rootState: root} as any, uploadFilesPayload);
         expect(dispatch.mock.calls.length).toBe(1);
@@ -400,7 +453,8 @@ describe("ADR upload actions", () => {
                 schemas: {
                     baseUrl: "http://test",
                     outputZip: "inputs-unaids-naomi-output-zip",
-                    outputSummary: "inputs-unaids-naomi-report"
+                    outputSummary: "inputs-unaids-naomi-report",
+                    outputComparison: "inputs-unaids-naomi-comparison"
                 } as any
             }),
 
@@ -429,18 +483,20 @@ describe("ADR upload actions", () => {
             } as any)
         });
 
-        const uploadFilesPayload = {createRelease: false, uploadFiles: [
-            {
-                resourceType: "inputs-unaids-naomi-report",
-                resourceFilename: "file1",
-                resourceId: "id1"
-            },
-            {
-                resourceType: "type2",
-                resourceFilename: "file2",
-                resourceId: "id2"
-            }
-        ] as UploadFile[]}
+        const uploadFilesPayload = {
+            createRelease: false, uploadFiles: [
+                {
+                    resourceType: "inputs-unaids-naomi-report",
+                    resourceFilename: "file1",
+                    resourceId: "id1"
+                },
+                {
+                    resourceType: "type2",
+                    resourceFilename: "file2",
+                    resourceId: "id2"
+                }
+            ] as UploadFile[]
+        }
 
         const success2 = {response: "success2"}
 
@@ -474,13 +530,15 @@ describe("ADR upload actions", () => {
                 schemas: {
                     baseUrl: "http://test",
                     outputZip: "inputs-unaids-naomi-output-zip",
-                    outputSummary: "inputs-unaids-naomi-report"
+                    outputSummary: "inputs-unaids-naomi-report",
+                    outputComparison: "inputs-unaids-naomi-comparison"
                 } as any
             }),
 
             downloadResults: mockDownloadResultsState({
                 summary: {downloadId: 1},
-                spectrum: {downloadId: 2}
+                spectrum: {downloadId: 2},
+                comparison: {downloadId: 3}
             } as any),
 
             metadata: mockMetadataState({
@@ -494,44 +552,61 @@ describe("ADR upload actions", () => {
             } as any)
         });
 
-        const uploadFilesPayload = {createRelease: false, uploadFiles: [
-            {
-                resourceType: "inputs-unaids-naomi-output-zip",
-                resourceFilename: "file1",
-                resourceId: "id1"
-            },
-            {
-                resourceType: "inputs-unaids-naomi-report",
-                resourceFilename: "file2"
-            }
-        ] as UploadFile[]}
+        const uploadFilesPayload = {
+            createRelease: false, uploadFiles: [
+                {
+                    resourceType: "inputs-unaids-naomi-output-zip",
+                    resourceFilename: "file1",
+                    resourceId: "id1"
+                },
+                {
+                    resourceType: "inputs-unaids-naomi-report",
+                    resourceFilename: "file2"
+                },
+                {
+                    resourceType: "inputs-unaids-naomi-comparison",
+                    resourceFilename: "file3"
+                }
+            ] as UploadFile[]
+        }
 
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/2`)
             .reply(200, mockSuccess("success"));
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-report/1`)
             .reply(200, mockSuccess("success2"));
+        mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-comparison/3`)
+            .reply(200, mockSuccess("success3"));
 
         await actions.uploadFilesToADR({commit, dispatch, rootState: root} as any, uploadFilesPayload);
-        expect(mockAxios.history.post.length).toBe(2);
+        expect(mockAxios.history.post.length).toBe(3);
         expect(mockAxios.history.post[0]["data"]).toBe("resourceFileName=file1&resourceId=id1&description=Naomi%20output%20uploaded%20from%20Naomi%20web%20app");
         expect(mockAxios.history.post[0]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/2");
         expect(mockAxios.history.post[1]["data"]).toBe("resourceFileName=file2&description=Naomi%20summary%20report%20uploaded%20from%20Naomi%20web%20app");
         expect(mockAxios.history.post[1]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-report/1");
+        expect(mockAxios.history.post[2]["data"]).toBe("resourceFileName=file3&description=Naomi%20comparison%20report%20uploaded%20from%20Naomi%20web%20app");
+        expect(mockAxios.history.post[2]["url"]).toBe("/adr/datasets/datasetId/resource/inputs-unaids-naomi-comparison/3");
     });
 
     it("uploadFilesToADR invokes actions to update datasets on upload success", async () => {
-        const uploadFilesPayload = {createRelease: false, uploadFiles: [
-            {
-                resourceType: "inputs-unaids-naomi-output-zip"
-            },
-            {
-                resourceType: "inputs-unaids-naomi-report"
-            }
-        ] as UploadFile[]}
+        const uploadFilesPayload = {
+            createRelease: false, uploadFiles: [
+                {
+                    resourceType: "inputs-unaids-naomi-output-zip"
+                },
+                {
+                    resourceType: "inputs-unaids-naomi-report"
+                },
+                {
+                    resourceType: "inputs-unaids-naomi-comparison"
+                }
+            ] as UploadFile[]
+        }
 
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-output-zip/2`)
             .reply(200, mockSuccess(null));
         mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-report/1`)
+            .reply(200, mockSuccess(null));
+        mockAxios.onPost(`adr/datasets/datasetId/resource/inputs-unaids-naomi-comparison/3`)
             .reply(200, mockSuccess(null));
         mockAxios.onGet(`adr/datasets/datasetId`)
             .reply(200, mockSuccess({id: "datasetId", resources: [], organization: {id: null}, title: "datasetTitle"}));
@@ -557,15 +632,18 @@ describe("ADR upload actions", () => {
                     namespaced: true,
                     state: mockDownloadResultsState({
                         summary: {downloadId: 1},
-                        spectrum: {downloadId: 2}
+                        spectrum: {downloadId: 2},
+                        comparison: {downloadId: 3}
                     } as any) as any
                 },
                 metadata: {
                     namespaced: true,
                     state: mockMetadataState({
                         adrUploadMetadata:
-                            [{type: "spectrum", description: "zip"},
-                                {type: "summary", description: "summary"}
+                            [
+                                {type: "spectrum", description: "zip"},
+                                {type: "summary", description: "summary"},
+                                {type: "comparison", description: "comparison"}
                             ]
                     } as any) as any,
                 },
@@ -576,7 +654,8 @@ describe("ADR upload actions", () => {
                         schemas: {
                             baseUrl: "whatever",
                             outputZip: "inputs-unaids-naomi-output-zip",
-                            outputSummary: "inputs-unaids-naomi-report"
+                            outputSummary: "inputs-unaids-naomi-report",
+                            outputComparison: "inputs-unaids-naomi-comparison"
                         } as any
                     })
                 },

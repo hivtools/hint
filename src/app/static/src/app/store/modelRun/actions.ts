@@ -16,6 +16,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
 
     async run(context) {
         const {commit, rootState, state} = context;
+        commit({type: ModelRunMutation.StartedRunning, payload: true})
         const options = rootState.modelOptions.options;
         const version = rootState.modelOptions.version;
 
@@ -59,6 +60,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
                 commit({type: ModelRunMutation.WarningsFetched, payload: response.data.warnings});
                 commit({type: ModelRunMutation.RunResultFetched, payload: response.data});
             }
+            commit({type: ModelRunMutation.StartedRunning, payload: false})
         }
         commit({type: "Ready", payload: true});
     },

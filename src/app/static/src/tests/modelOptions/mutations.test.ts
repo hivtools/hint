@@ -1,6 +1,6 @@
 import {mockError, mockModelOptionsState, mockWarning} from "../mocks";
 import {ModelOptionsMutation, mutations} from "../../app/store/modelOptions/mutations";
-import {DynamicFormMeta, NumberControl} from "@reside-ic/vue-dynamic-form";
+import {DynamicFormMeta, MultiSelectControl, NumberControl} from "@reside-ic/vue-dynamic-form";
 import {VersionInfo} from "../../app/generated";
 
 describe("Model run options mutations", () => {
@@ -89,6 +89,16 @@ describe("Model run options mutations", () => {
         required: true
     };
 
+    const mockMultiSelectControl: MultiSelectControl = {
+        name: "control",
+        type: "multiselect",
+        required: true,
+        options: [
+            { id: "10", label: "10" },
+            { id: "20", label: "20" }
+        ]
+    };
+
     it("updates form without overwriting existing form control values and sets fetching to false", () => {
 
         const state = mockModelOptionsState({
@@ -105,7 +115,8 @@ describe("Model run options mutations", () => {
                             label: "g1",
                             controls: [
                                 {...mockControl, name: "n1", value: 20},
-                                {...mockControl, name: "new_control"}
+                                {...mockControl, name: "new_control"},
+                                {...mockMultiSelectControl, name: "multiselect", value: ["10", "20"]}
                             ]
                         }, {
                             label: "new_group",
@@ -144,10 +155,10 @@ describe("Model run options mutations", () => {
         const state = mockModelOptionsState({
             valid: true,
             optionsFormMeta: {controlSections: []},
-            options: {"n1": 200}
+            options: {"n1": 200, "multiselect": ["30", "40"]}
         });
 
-        mutations.ModelOptionsFetched(state, {payload: newForm});
+        mutations.ModelOptionsFetched(state, { payload: newForm });
         expect(state.valid).toBe(false);
         expect(state.optionsFormMeta).toEqual({
             "controlSections":
@@ -168,31 +179,41 @@ describe("Model run options mutations", () => {
                                                 "name": "new_control",
                                                 "required": true,
                                                 "type": "number"
+                                            },
+                                            {
+                                                "name": "multiselect",
+                                                "required": true,
+                                                "type": "multiselect",
+                                                "options": [
+                                                    {id: "10", label: "10"},
+                                                    {id: "20", label: "20"}
+                                                ],
+                                                "value": ["30", "40"]
                                             }
                                         ], "label": "g1"
                                 }, {
-                                "controls":
-                                    [
-                                        {
-                                            "name": "i1",
-                                            "required": true,
-                                            "type": "number"
-                                        }
-                                    ],
-                                "label": "new_group"
-                            }
+                                    "controls":
+                                        [
+                                            {
+                                                "name": "i1",
+                                                "required": true,
+                                                "type": "number"
+                                            }
+                                        ],
+                                    "label": "new_group"
+                                }
                             ],
                         "label": "general"
                     }, {
-                    "controlGroups":
-                        [
-                            {
-                                "controls": [],
-                                "label": "g2"
-                            }
-                        ],
-                    "label": "survey"
-                }]
+                        "controlGroups":
+                            [
+                                {
+                                    "controls": [],
+                                    "label": "g2"
+                                }
+                            ],
+                        "label": "survey"
+                    }]
         })
     });
 
@@ -251,7 +272,8 @@ describe("Model run options mutations", () => {
                         label: "g1",
                         controls: [
                             {...mockControl, name: "n1", value: 2},
-                            {...mockControl, name: "new_control"}
+                            {...mockControl, name: "new_control"},
+                            {...mockMultiSelectControl, name: "multiselect", value: ["10", "20"]}
                         ]
                     },
                     {

@@ -16,7 +16,8 @@ export enum ModelRunMutation {
     ClearResult = "ClearResult",
     WarningsFetched = "WarningsFetched",
     ClearWarnings = "ClearWarnings",
-    ResetIds = "ResetIds"
+    ResetIds = "ResetIds",
+    StartedRunning = "StartedRunning"
 }
 
 export const ModelRunUpdates = [
@@ -48,6 +49,7 @@ export const mutations: MutationTree<ModelRunState> = {
 
     [ModelRunMutation.RunResultError](state: ModelRunState, action: PayloadWithType<Error>) {
         state.errors.push(action.payload);
+        state.startedRunning = false
     },
 
     [ModelRunMutation.Ready](state: ModelRunState) {
@@ -62,6 +64,7 @@ export const mutations: MutationTree<ModelRunState> = {
         state.pollingCounter += 1
         if (state.pollingCounter >= maxPollErrors) {
             stopPolling(state);
+            state.startedRunning = false;
             state.status = {} as ModelStatusResponse;
             state.modelRunId = "";
             state.errors.push({
@@ -92,6 +95,10 @@ export const mutations: MutationTree<ModelRunState> = {
 
     [ModelRunMutation.ResetIds](state: ModelRunState) {
         stopPolling(state)
+    },
+
+    [ModelRunMutation.StartedRunning](state: ModelRunState, action: PayloadWithType<boolean>) {
+        state.startedRunning = action.payload
     }
 };
 

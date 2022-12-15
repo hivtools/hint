@@ -69,6 +69,7 @@ class ADRControllerTests : HintrControllerTests()
         on { adrSurveySchema } doReturn "adr-survey"
         on { adrOutputZipSchema } doReturn "adr-output-zip"
         on { adrOutputSummarySchema } doReturn "adr-output-summary"
+        on { adrOutputComparisonSchema } doReturn "adr-output-comparison"
     }
 
     private val objectMapper = ObjectMapper()
@@ -332,6 +333,7 @@ class ADRControllerTests : HintrControllerTests()
         assertThat(data["outputZip"].textValue()).isEqualTo("adr-output-zip")
         assertThat(data["outputSummary"].textValue()).isEqualTo("adr-output-summary")
         assertThat(data["baseUrl"].textValue()).isEqualTo("adr-url")
+        assertThat(data["outputComparison"].textValue()).isEqualTo("adr-output-comparison")
     }
 
     // used for the import{FileType} tests below
@@ -412,7 +414,7 @@ class ADRControllerTests : HintrControllerTests()
         verify(mockApiClient)
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.Survey, "pjnz-path", true)
+                        "shape-path", FileType.Survey, true)
     }
 
     @Test
@@ -428,7 +430,7 @@ class ADRControllerTests : HintrControllerTests()
         verify(mockApiClient)
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.Survey, "pjnz-path",false)
+                        "shape-path", FileType.Survey, false)
     }
 
     @Test
@@ -444,7 +446,7 @@ class ADRControllerTests : HintrControllerTests()
         verify(mockApiClient)
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.Survey, "pjnz-path", true)
+                        "shape-path", FileType.Survey, true)
     }
 
     @Test
@@ -507,6 +509,46 @@ class ADRControllerTests : HintrControllerTests()
         val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties, mock(), mockAPIClient,
                 mock(), mock(), mock())
         val result = sut.pushFileToADR("dataset1", "adr-output-summary", "downloadId", "output1.html", null, "Output summary", "Naomi summary report")
+        verify(mockClient).postFile(any(), any(), argForWhich { first == "upload" && second.name == "output1.html" })
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(result.body!!).isEqualTo("whatever")
+    }
+
+    @Test
+    fun `pushes output comparison to ADR`()
+    {
+        val id = mapOf("id" to "downloadId")
+        val data = mapOf("data" to id)
+        val mockAPIClient: HintrAPIClient = mock {
+            on { downloadOutputSubmit("comparison", "model1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
+            on { downloadOutputResult("downloadId") } doReturn ResponseEntity.ok().body(StreamingResponseBody { it.write("".toByteArray()) })
+        }
+        val mockClient: ADRClient = mock {
+            on {
+                postFile(eq("resource_create"),
+                        eq(listOf("name" to "Output comparison",
+                                "hash" to "D41D8CD98F00B204E9800998ECF8427E",
+                                "resource_type" to "adr-output-comparison",
+                                "description" to "Naomi comparison report",
+                                "restricted" to "{\"allowed_organizations\":\"unaids\",\"allowed_users\":\"\",\"level\":\"restricted\"}",
+                                "package_id" to "dataset1")),
+                        any())
+            } doReturn ResponseEntity.ok().body("whatever")
+        }
+        val mockBuilder: ADRClientBuilder = mock {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties, mock(), mockAPIClient,
+                mock(), mock(), mock())
+        val result = sut.pushFileToADR(
+                "dataset1",
+                "adr-output-comparison",
+                "downloadId",
+                "output1.html",
+                null,
+                "Output comparison",
+                "Naomi comparison report")
+
         verify(mockClient).postFile(any(), any(), argForWhich { first == "upload" && second.name == "output1.html" })
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body!!).isEqualTo("whatever")

@@ -14,6 +14,7 @@ export interface DownloadResultsActions {
     prepareComparisonOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareOutputs: (store: ActionContext<DownloadResultsState, RootState>) => void
     poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: string) => void
+    downloadComparisonReport: (store: ActionContext<DownloadResultsState, RootState>) => Promise<any>
 }
 
 export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResultsActions = {
@@ -26,6 +27,18 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             dispatch("prepareSpectrumOutput"),
             dispatch("prepareComparisonOutput")
         ]);
+    },
+
+    async downloadComparisonReport(context) {
+        const {state, commit} = context
+        const response = await api(context)
+            .ignoreSuccess()
+            .withError(DownloadResultsMutation.ComparisonDownloadError)
+            .download(`download/result/${state.comparison.downloadId}`)
+
+        if (response) {
+            commit({type: DownloadResultsMutation.ComparisonDownloadError, payload: null})
+        }
     },
 
     async prepareCoarseOutput(context) {

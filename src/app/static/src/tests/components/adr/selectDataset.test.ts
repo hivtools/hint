@@ -41,7 +41,8 @@ describe("select dataset", () => {
         shape: "shape",
         survey: "survey",
         outputZip: "zip",
-        outputSummary: "summary"
+        outputSummary: "summary",
+        outputComparison: "comparison"
     }
 
     const pjnz = {

@@ -5,12 +5,13 @@ import {mutations} from "./mutations";
 import {ModelResultResponse, ModelStatusResponse, Error} from "../../generated";
 
 export interface ModelRunState extends ReadyState, WarningsState {
-    modelRunId: string
+    modelRunId: string,
     statusPollId: number,
-    status: ModelStatusResponse
+    status: ModelStatusResponse,
     errors: Error[],
-    result: ModelResultResponse | null
-    pollingCounter: number
+    result: ModelResultResponse | null,
+    pollingCounter: number,
+    startedRunning: boolean
 }
 
 export const maxPollErrors = 150;
@@ -24,7 +25,8 @@ export const initialModelRunState = (): ModelRunState => {
         result: null,
         ready: false,
         pollingCounter : 0,
-        warnings: []
+        warnings: [],
+        startedRunning: false
     }
 };
 
@@ -33,7 +35,7 @@ export const modelRunGetters = {
         return !!state.status.success && state.errors.length == 0 && !!state.result
     },
     running: (state: ModelRunState) => {
-        const started = !!state.status.id;
+        const started = state.startedRunning;
         const finished = state.status.done && (!state.status.success || !!state.result);
         return started && !finished
     }

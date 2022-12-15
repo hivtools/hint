@@ -152,6 +152,7 @@ export interface ADRSchemas {
     survey: string
     outputZip: string
     outputSummary: string
+    outputComparison: string
 }
 
 export interface UploadFile {
@@ -171,6 +172,7 @@ export interface DownloadResultsDependency {
     preparing: boolean
     statusPollId: number
     complete: boolean
+    downloadError: Error | null
     error: Error | null
     metadataError: Error | null
 }

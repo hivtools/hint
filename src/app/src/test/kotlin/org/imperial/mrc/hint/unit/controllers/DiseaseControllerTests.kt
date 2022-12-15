@@ -167,7 +167,7 @@ class DiseaseControllerTests : HintrControllerTests()
         verify(mockApiClient, Times(2))
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.ANC, "pjnz-path", true)
+                        "shape-path", FileType.ANC, true)
     }
 
     @Test
@@ -185,7 +185,7 @@ class DiseaseControllerTests : HintrControllerTests()
         verify(mockApiClient, Times(2))
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.ANC, "pjnz-path", false)
+                        "shape-path", FileType.ANC, false)
     }
 
     @Test
@@ -203,6 +203,6 @@ class DiseaseControllerTests : HintrControllerTests()
         verify(mockApiClient, Times(2))
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
-                        "shape-path", FileType.ANC, "pjnz-path", true)
+                        "shape-path", FileType.ANC, true)
     }
 }
