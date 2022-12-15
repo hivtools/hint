@@ -45,7 +45,6 @@
 # hint 2.26.5
 
 * Enable comparison download report
->>>>>>> master
 
 # hint 2.26.4
 
