@@ -24,5 +24,6 @@ docker build --tag hint-test-browser-e2e \
 # Run the created image
 docker run --rm \
   -e CI=$CI \
+  -e baseURL=http://hint:8080 \
   --network=hint_nw \
   hint-test-browser-e2e

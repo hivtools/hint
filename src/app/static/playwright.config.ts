@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 // Dotenv reads from default ".env" file.
 dotenv.config();
 
-export const baseURL =  process.env.CI ? 'http://hint:8080' : 'http://localhost:8080'
+export const baseURL =  process.env.baseURL ? process.env.baseURL : 'http://localhost:8080'
 
 const config: PlaywrightTestConfig = {
     globalSetup: require.resolve("./src/tests/e2e/loginSetup"),

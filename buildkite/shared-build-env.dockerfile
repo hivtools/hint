@@ -1,4 +1,4 @@
-FROM mrcide/node-docker:mrc-3682
+FROM mrcide/node-docker:master
 
 RUN apt-get install wget
 
