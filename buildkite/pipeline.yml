@@ -19,11 +19,6 @@ steps:
   - label: ":mag: Test front-end"
     command: buildkite/test-front-end.sh
 
-  - label: ":mag: Test browser e2e"
-    command: buildkite/test-browser-e2e.sh
-    agents:
-      queue: "browser-test"
-
   - label: ":mag: Test front-end ADR Dataset integration"
     command: buildkite/test-adr-front-end-integration.sh
 
