@@ -5,4 +5,7 @@ app/static/coverage/**
 app/static/public/js/**
 app/static/public/css/**
 .DS_Store
+src/app/static/playwright-report/
+src/app/static/playwright/.cache/
+src/app/static/storageState.json
 .vscode
