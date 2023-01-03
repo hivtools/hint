@@ -1,3 +1,7 @@
+# hint 2.31.1
+
+* Setup Playwright and add Browser test for data exploration login
+
 # hint 2.31.0
 
 * turn off rounding in review inputs

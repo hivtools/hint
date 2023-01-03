@@ -10,7 +10,7 @@
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingData'"></h2>
         </div>
-        <div class="pt-4" v-if="!loading">
+        <div id="data-exploration" class="pt-4" v-if="!loading">
             <adr-integration v-if="isUploadStep"></adr-integration>
             <upload-inputs v-if="isUploadStep"></upload-inputs>
             <review-inputs v-if="isReviewStep"></review-inputs>
