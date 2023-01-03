@@ -4,7 +4,7 @@ FROM mrcide/hint-shared-build-env:$GIT_ID
 ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
 RUN apt-get install -y \
-    libnss3\
+     libnss3\
      libnspr4\
      libatk1.0-0\
      libatk-bridge2.0-0\
@@ -19,8 +19,10 @@ RUN apt-get install -y \
      libxkbcommon0\
      libwayland-client0
 
-RUN npm install @playwright/test
-RUN npx playwright install
-RUN npx playwright install-deps
+## Use the same version of playwright as is installed in package.json
+## otherwise when tests run it will fail to locate chromium executable
+RUN npm install @playwright/test@1.28.1
+RUN npx playwright@1.28.1 install chromium
+RUN npx playwright@1.28.1 install-deps chromium
 
 CMD npm run browser-test --prefix=app/static
