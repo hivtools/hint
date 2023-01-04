@@ -1,3 +1,7 @@
+# hint 2.31.2
+
+* As a user I can see ADR source URL in output zip for input data so I know the source of the files
+
 # hint 2.31.1
 
 * Setup Playwright and add Browser test for data exploration login
