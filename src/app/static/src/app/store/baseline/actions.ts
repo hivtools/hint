@@ -4,11 +4,10 @@ import {api} from "../../apiService";
 import {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineResponse} from "../../generated";
 import {BaselineMutation} from "./mutations";
 import qs from "qs";
-import {datasetFromMetadata, findResource, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
+import {findResource, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
 import { DatasetResourceSet, DatasetResource, ADRSchemas } from "../../types";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 import {initialChorplethSelections} from "../plottingSelections/plottingSelections";
-import {ADRMutation} from "../adr/mutations";
 
 export interface BaselineActions {
     refreshDatasetMetadata: (store: ActionContext<BaselineState, DataExplorationState>) => void
