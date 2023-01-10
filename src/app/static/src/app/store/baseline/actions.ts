@@ -111,14 +111,14 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
                 .then((response) => {
                     if (response) {
                         const metadata = response.data;
-                        const availableResource = rootGetters ? rootGetters["baseline/selectedDatasetAvailableResources"] : {}
+                        const availableResources = rootGetters ? rootGetters["baseline/selectedDatasetAvailableResources"] : {}
                         const exceptions = { // where DatasetResource keys do not match ADRSchemas keys
                             pop: "population",
                             program: "programme"
                         }
                         const resources: { [k in keyof DatasetResourceSet]?: DatasetResource | null } = {}
 
-                        Object.entries(availableResource).forEach(([key, value]) => {
+                        Object.entries(availableResources).forEach(([key, value]) => {
                             // If an available resource has a value, find the resource (using the alternate schema key where needed)
                             // and add it to the committed object under the original key
                             const schemaKey = key in exceptions ? exceptions[key as "pop" || "program"] : key
