@@ -21,7 +21,14 @@ interface VersionRepository
     // returns true if a new hash is saved, false if it already exists
     fun saveNewHash(hash: String): Boolean
 
-    fun saveVersionFile(versionId: String, type: FileType, hash: String, fileName: String, fromADR: Boolean)
+    fun saveVersionFile(
+        versionId: String,
+        type: FileType,
+        hash: String,
+        fileName: String,
+        fromADR: Boolean,
+        resourceUrl: String?,
+    )
     fun removeVersionFile(versionId: String, type: FileType)
     fun getVersionFile(versionId: String, type: FileType): VersionFile?
     fun getHashesForVersion(versionId: String): Map<String, String>
@@ -115,28 +122,36 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
         }
     }
 
-    override fun saveVersionFile(versionId: String, type: FileType, hash: String, fileName: String, fromADR: Boolean)
+    override fun saveVersionFile(
+        versionId: String,
+        type: FileType,
+        hash: String,
+        fileName: String,
+        fromADR: Boolean,
+        resourceUrl: String?,
+    )
     {
 
         if (getVersionFileRecord(versionId, type) == null)
         {
             dsl.insertInto(VERSION_FILE)
-                    .set(VERSION_FILE.HASH, hash)
-                    .set(VERSION_FILE.TYPE, type.toString())
-                    .set(VERSION_FILE.VERSION, versionId)
-                    .set(VERSION_FILE.FILENAME, fileName)
-                    .set(VERSION_FILE.FROM_ADR, fromADR)
-                    .execute()
-        }
-        else
+                .set(VERSION_FILE.HASH, hash)
+                .set(VERSION_FILE.TYPE, type.toString())
+                .set(VERSION_FILE.VERSION, versionId)
+                .set(VERSION_FILE.FILENAME, fileName)
+                .set(VERSION_FILE.FROM_ADR, fromADR)
+                .set(VERSION_FILE.RESOURCE_URL, resourceUrl)
+                .execute()
+        } else
         {
             dsl.update(VERSION_FILE)
-                    .set(VERSION_FILE.HASH, hash)
-                    .set(VERSION_FILE.FILENAME, fileName)
-                    .set(VERSION_FILE.FROM_ADR, fromADR)
-                    .where(VERSION_FILE.VERSION.eq(versionId))
-                    .and(VERSION_FILE.TYPE.eq(type.toString()))
-                    .execute()
+                .set(VERSION_FILE.HASH, hash)
+                .set(VERSION_FILE.FILENAME, fileName)
+                .set(VERSION_FILE.FROM_ADR, fromADR)
+                .set(VERSION_FILE.RESOURCE_URL, resourceUrl)
+                .where(VERSION_FILE.VERSION.eq(versionId))
+                .and(VERSION_FILE.TYPE.eq(type.toString()))
+                .execute()
         }
 
     }

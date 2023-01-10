@@ -1,6 +1,6 @@
 package org.imperial.mrc.hint.models
 
-data class VersionFile(val hash: String, val filename: String, val fromAdr: Boolean, val resource_url: String)
+data class VersionFile(val hash: String, val filename: String, val fromAdr: Boolean, val resource_url: String? = "")
 {
     fun toVersionFileWithPath(pathDirectory: String): VersionFileWithPath
     {
@@ -13,5 +13,5 @@ data class VersionFileWithPath(
     val hash: String,
     val filename: String,
     val fromADR: Boolean,
-    val resource_url: String
+    val resource_url: String? = ""
 )
