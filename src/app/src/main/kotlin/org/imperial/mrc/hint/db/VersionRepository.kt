@@ -179,13 +179,24 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
 
     override fun getVersionFiles(versionId: String): Map<String, VersionFile>
     {
-        return dsl.select(VERSION_FILE.HASH, VERSION_FILE.FILENAME, VERSION_FILE.TYPE, VERSION_FILE.FROM_ADR)
-                .from(VERSION_FILE)
-                .where(VERSION_FILE.VERSION.eq(versionId))
-                .associate {
-                    it[VERSION_FILE.TYPE] to
-                            VersionFile(it[VERSION_FILE.HASH], it[VERSION_FILE.FILENAME], it[VERSION_FILE.FROM_ADR])
-                }
+        return dsl.select(
+            VERSION_FILE.HASH,
+            VERSION_FILE.FILENAME,
+            VERSION_FILE.TYPE,
+            VERSION_FILE.FROM_ADR,
+            VERSION_FILE.RESOURCE_URL
+        )
+            .from(VERSION_FILE)
+            .where(VERSION_FILE.VERSION.eq(versionId))
+            .associate {
+                it[VERSION_FILE.TYPE] to
+                        VersionFile(
+                            it[VERSION_FILE.HASH],
+                            it[VERSION_FILE.FILENAME],
+                            it[VERSION_FILE.FROM_ADR],
+                            it[VERSION_FILE.RESOURCE_URL]
+                        )
+            }
     }
 
     override fun setFilesForVersion(versionId: String, files: Map<String, VersionFile?>)
@@ -208,6 +219,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
                                 .set(VERSION_FILE.VERSION, versionId)
                                 .set(VERSION_FILE.FILENAME, versionFile.filename)
                                 .set(VERSION_FILE.FROM_ADR, versionFile.fromAdr)
+                                .set(VERSION_FILE.RESOURCE_URL, versionFile.resource_url)
                                 .execute()
                     }
                 }
@@ -342,7 +354,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
 
     private fun getVersionFileRecord(versionId: String, type: FileType): Record?
     {
-        return dsl.select(VERSION_FILE.HASH, VERSION_FILE.FILENAME, VERSION_FILE.FROM_ADR)
+        return dsl.select(VERSION_FILE.HASH, VERSION_FILE.FILENAME, VERSION_FILE.FROM_ADR, VERSION_FILE.RESOURCE_URL)
                 .from(VERSION_FILE)
                 .where(VERSION_FILE.VERSION.eq(versionId))
                 .and(VERSION_FILE.TYPE.eq(type.toString()))

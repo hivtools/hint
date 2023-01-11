@@ -14,7 +14,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row5;
+import org.jooq.Row6;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -70,6 +70,11 @@ public class VersionFile extends TableImpl<VersionFileRecord> {
      * The column <code>public.version_file.from_adr</code>.
      */
     public final TableField<VersionFileRecord, Boolean> FROM_ADR = createField(DSL.name("from_adr"), SQLDataType.BOOLEAN.defaultValue(DSL.field("false", SQLDataType.BOOLEAN)), this, "");
+
+    /**
+     * The column <code>public.version_file.resource_url</code>.
+     */
+    public final TableField<VersionFileRecord, String> RESOURCE_URL = createField(DSL.name("resource_url"), SQLDataType.CLOB, this, "");
 
     private VersionFile(Name alias, Table<VersionFileRecord> aliased) {
         this(alias, aliased, null);
@@ -168,11 +173,11 @@ public class VersionFile extends TableImpl<VersionFileRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row5 type methods
+    // Row6 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<String, String, String, String, Boolean> fieldsRow() {
-        return (Row5) super.fieldsRow();
+    public Row6<String, String, String, String, Boolean, String> fieldsRow() {
+        return (Row6) super.fieldsRow();
     }
 }
