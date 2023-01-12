@@ -60,6 +60,8 @@
                 </div>
                 <div v-for="dataSource in chartConfigValues.dataSourceConfigValues.filter(ds => ds.tableConfig)"
                      :key="dataSource.config.id">
+                    <download-plot-data :filtered-data="chartData[dataSource.config.id]"
+                                        :unfiltered-data="unfilteredData[dataSource.config.id]"></download-plot-data>
                     <generic-chart-table :table-config="dataSource.tableConfig"
                                          :filtered-data="chartData[dataSource.config.id]"
                                          :columns="dataSource.columns"
@@ -86,7 +88,6 @@
     import Vue from "vue";
     import {ChevronLeftIcon, ChevronRightIcon} from "vue-feather-icons";
     import {
-        DatasetConfig,
         DataSourceConfig,
         Dict, DisplayFilter, GenericChartColumn, GenericChartColumnValue,
         GenericChartDataset,
@@ -106,6 +107,7 @@
     import GenericChartTable from "./GenericChartTable.vue";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
+    import DownloadPlotData from "../plots/download/DownloadPlotData.vue";
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections
@@ -157,6 +159,7 @@
         pageNumberText: string
         prevPageEnabled: boolean
         nextPageEnabled: boolean
+        unfilteredData: Dict<unknown[]> | null
     }
 
     interface Methods {
@@ -179,6 +182,7 @@
             availableDatasetIds: Array
         },
         components: {
+            DownloadPlotData,
             ChevronLeftIcon,
             ChevronRightIcon,
             DataSource,
@@ -296,6 +300,20 @@
                     chartConfig,
                     description
                 };
+            },
+            unfilteredData() {
+                const result = {} as Dict<unknown[]>;
+
+                for (const dataSource of this.chartMetadata.dataSelectors.dataSources) {
+                    const dataSourceId = dataSource.id;
+                    const dataSourceSelections = this.dataSourceSelections[dataSourceId];
+                    const datasetId = dataSourceSelections.datasetId;
+                    const unfilteredData = this.datasets[datasetId]?.data;
+
+                    result[dataSourceId] = unfilteredData || null
+                }
+
+                return result
             },
             chartData() {
                 const result = {} as Dict<unknown[]>;

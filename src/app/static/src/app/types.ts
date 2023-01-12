@@ -317,3 +317,8 @@ interface DownloadIds {
     summary: string,
     coarse_output: string
 }
+
+export interface DownloadPlotData {
+    filteredData: unknown[],
+    unfilteredData: unknown[]
+}
