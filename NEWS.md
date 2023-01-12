@@ -1,3 +1,7 @@
+# hint 2.3.0
+
+* As a user I can download input time series data
+
 # hint 2.31.1
 
 * Setup Playwright and add Browser test for data exploration login
