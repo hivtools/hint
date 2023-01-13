@@ -146,37 +146,37 @@ class ADRController(private val encryption: Encryption,
     }
 
     @PostMapping("/pjnz")
-    fun importPJNZ(@RequestBody data: AdrImportPayload): ResponseEntity<String>
+    fun importPJNZ(@RequestBody data: AdrResource): ResponseEntity<String>
     {
         return saveAndValidate(data, FileType.PJNZ)
     }
 
     @PostMapping("/shape")
-    fun importShape(@RequestBody data: AdrImportPayload): ResponseEntity<String>
+    fun importShape(@RequestBody data: AdrResource): ResponseEntity<String>
     {
         return saveAndValidate(data, FileType.Shape)
     }
 
     @PostMapping("/population")
-    fun importPopulation(@RequestBody data: AdrImportPayload): ResponseEntity<String>
+    fun importPopulation(@RequestBody data: AdrResource): ResponseEntity<String>
     {
         return saveAndValidate(data, FileType.Population)
     }
 
     @PostMapping("/survey")
-    fun importSurvey(@RequestBody data: AdrImportPayload): ResponseEntity<String>
+    fun importSurvey(@RequestBody data: AdrResource): ResponseEntity<String>
     {
         return saveAndValidate(data, FileType.Survey)
     }
 
     @PostMapping("/programme")
-    fun importProgramme(@RequestBody data: AdrImportPayload): ResponseEntity<String>
+    fun importProgramme(@RequestBody data: AdrResource): ResponseEntity<String>
     {
         return saveAndValidate(data, FileType.Programme)
     }
 
     @PostMapping("/anc")
-    fun importANC(@RequestBody data: AdrImportPayload): ResponseEntity<String>
+    fun importANC(@RequestBody data: AdrResource): ResponseEntity<String>
     {
         return saveAndValidate(data, FileType.ANC)
     }

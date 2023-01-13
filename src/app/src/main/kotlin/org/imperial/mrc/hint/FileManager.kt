@@ -34,7 +34,7 @@ enum class FileType
 interface FileManager
 {
     fun saveFile(file: MultipartFile, type: FileType): VersionFileWithPath
-    fun saveFile(data: AdrImportPayload, type: FileType): VersionFileWithPath
+    fun saveFile(data: AdrResource, type: FileType): VersionFileWithPath
     fun getFile(type: FileType): VersionFileWithPath?
     fun getAllHashes(): Map<String, String>
     fun getFiles(vararg include: FileType): Map<String, VersionFileWithPath>
@@ -57,13 +57,17 @@ class LocalFileManager(
         return saveFile(file.inputStream, file.originalFilename!!, type, false)
     }
 
-    override fun saveFile(data: AdrImportPayload, type: FileType): VersionFileWithPath
+    override fun saveFile(data: AdrResource, type: FileType): VersionFileWithPath
     {
         val originalFilename = data.url.split("/").last().split("?").first()
 
         val adr = adrClientBuilder.build()
 
-        return saveFile(adr.getInputStream(data.url), originalFilename, type, true, getResourceUrl(data, originalFilename))
+        val resourceUrl = getResourceUrl(data, originalFilename)
+
+        val inputStream = adr.getInputStream(data.url)
+
+        return saveFile(inputStream, originalFilename, type, true, resourceUrl)
     }
 
     private fun saveFile(
@@ -146,16 +150,23 @@ class LocalFileManager(
         localFile.writeBytes(bytes)
     }
 
-    private fun getResourceUrl(data: AdrImportPayload, filename: String ): String
+    private fun getResourceUrl(data: AdrResource, filename: String ): String
     {
         val adr = adrClientBuilder.build()
+
         val response = adr.get("package_activity_list?id=${data.id}")
-        val activityId = objectMapper.readTree(response.body)["data"][0]["id"].asText() ?: null
+
+        val responseData = objectMapper.readTree(response.body)["data"]
+
+        if (responseData.isEmpty)
+        {
+            return ""
+        }
 
         return UriComponentsBuilder
             .fromHttpUrl(appProperties.adrUrl)
             .path("/dataset/${data.id}/resource/${data.resourceId}/download/${filename}")
-            .queryParam("activity_id", activityId)
+            .queryParam("activity_id", responseData[0]["id"].asText() ?: "")
             .encode()
             .build()
             .toUriString()

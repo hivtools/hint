@@ -5,7 +5,7 @@ import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.exceptions.HintException
-import org.imperial.mrc.hint.models.AdrImportPayload
+import org.imperial.mrc.hint.models.AdrResource
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.imperial.mrc.hint.models.asResponseEntity
@@ -29,7 +29,7 @@ open class HintrController(protected val fileManager: FileManager,
         return validate(sessionFile, type, strict)
     }
 
-    protected fun saveAndValidate(data: AdrImportPayload, type: FileType): ResponseEntity<String>
+    protected fun saveAndValidate(data: AdrResource, type: FileType): ResponseEntity<String>
     {
         val strict = request.getParameter("strict") != "false"
         val sessionFile = fileManager.saveFile(data, type)
