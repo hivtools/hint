@@ -9,38 +9,21 @@
     import Vue from "vue";
     import {Error} from "../generated";
 
-    interface Data {
-        showTrace: boolean
-    }
-
     interface Props {
         error: Error
     }
 
     interface Computed {
-        message: string,
-        cssClass: string
+        message: string
     }
 
-    interface Methods {
-        toggleTrace: () => void
-    }
-
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default Vue.extend<unknown, unknown, Computed, Props>({
         props: {
             "error": Object
-        },
-        data(): Data {
-            return {
-                showTrace: false
-            }
         },
         computed: {
             message: function () {
                 return this.error.detail ? this.error.detail : this.error.error
-            },
-            cssClass: function () {
-                return this.showTrace ? "up" : "down";
             }
         }
     });
