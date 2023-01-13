@@ -4,6 +4,7 @@ import {mockError} from "../mocks";
 import Vuex from "vuex";
 import {Language} from "../../app/store/translations/locales";
 import registerTranslations from "../../app/store/translations/registerTranslations";
+import {expectTranslated} from "../testHelpers";
 
 describe("Error alert component", () => {
 
@@ -59,5 +60,8 @@ describe("Error alert component", () => {
         expect(wrapper.find(".error-message").text()).toBe("Error text");
         expect(wrapper.find("div").classes()).toStrictEqual(["pt-1", "text-danger"]);
         expect(wrapper.find(".error-job-id").text()).toBe("Job ID: 12345abc");
+        const jobId = wrapper.find(".error-job-id").find("span");
+        expectTranslated(jobId, "Job ID", "ID du job",
+            "ID de job", store as any);
     });
 });
