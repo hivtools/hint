@@ -607,7 +607,7 @@ describe("Baseline actions", () => {
         });
     });
 
-    it("refreshDatasetMetadata does not attempt to retrieve resources not found in selectedDatasetAvailableResources getter", async () => {
+    it("refreshDatasetMetadata attempts to retrieve all available resources", async () => {
 
         mockAxios.onGet("/adr/datasets/1234")
             .reply(200, mockSuccess({
@@ -623,6 +623,15 @@ describe("Baseline actions", () => {
             anc: null
         }
 
+        const expectResources = {
+            shape: availableResources.shape,
+            pjnz: availableResources.pjnz,
+            pop: availableResources.pop,
+            survey: availableResources.survey,
+            program: availableResources.program,
+            anc: availableResources.anc
+        }
+
         const commit = jest.fn();
         const state = mockBaselineState({
             selectedDataset: mockDataset({ id: "1234" })
@@ -635,7 +644,7 @@ describe("Baseline actions", () => {
         await actions.refreshDatasetMetadata({ commit, rootState, state, rootGetters } as any);
 
         expect(commit.mock.calls[0][0]).toBe(BaselineMutation.UpdateDatasetResources);
-        expect(commit.mock.calls[0][1]).toEqual(resources);
+        expect(commit.mock.calls[0][1]).toEqual(expectResources);
     });
 
     it("refreshDatasetMetadata takes release into account", async () => {

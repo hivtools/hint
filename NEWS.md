@@ -1,3 +1,7 @@
+# hint 2.31.2
+
+* Make refresh button realtime
+
 # hint 2.31.1
 
 * Setup Playwright and add Browser test for data exploration login
