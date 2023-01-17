@@ -75,7 +75,7 @@ class LocalFileManager(
         originalFilename: String,
         type: FileType,
         fromADR: Boolean,
-        resourceUrl: String? = null,
+        resourceUrl: String? = "",
     ): VersionFileWithPath
     {
         val md = MessageDigest.getInstance("MD5")
@@ -150,23 +150,23 @@ class LocalFileManager(
         localFile.writeBytes(bytes)
     }
 
-    private fun getResourceUrl(data: AdrResource, filename: String ): String
+    private fun getResourceUrl(adrResource: AdrResource, filename: String ): String
     {
         val adr = adrClientBuilder.build()
 
-        val response = adr.get("package_activity_list?id=${data.id}")
+        val response = adr.get("package_activity_list?id=${adrResource.id}")
 
-        val responseData = objectMapper.readTree(response.body)["data"]
+        val data = objectMapper.readTree(response.body)["data"]
 
-        if (responseData.isEmpty)
+        if (data.isEmpty || adrResource.resourceId.isNullOrEmpty() || filename.isEmpty())
         {
             return ""
         }
 
         return UriComponentsBuilder
             .fromHttpUrl(appProperties.adrUrl)
-            .path("/dataset/${data.id}/resource/${data.resourceId}/download/${filename}")
-            .queryParam("activity_id", responseData[0]["id"].asText() ?: "")
+            .path("/dataset/${adrResource.id}/resource/${adrResource.resourceId}/download/${filename}")
+            .queryParam("activity_id", data[0]["id"].asText() ?: "")
             .encode()
             .build()
             .toUriString()

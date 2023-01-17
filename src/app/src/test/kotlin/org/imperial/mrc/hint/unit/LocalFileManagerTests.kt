@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.unit
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -11,10 +12,13 @@ import org.imperial.mrc.hint.LocalFileManager
 import org.imperial.mrc.hint.clients.ADRClient
 import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.models.AdrResource
 import org.imperial.mrc.hint.models.VersionFile
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.anyString
+import org.springframework.http.ResponseEntity
 import org.springframework.mock.web.MockMultipartFile
 import java.io.BufferedInputStream
 import java.io.File
@@ -36,6 +40,12 @@ class LocalFileManagerTests
         it.toString() to VersionFile("${it}hash", "${it}filename", false)
     }
 
+    private val mockEmptyResponse = mock<ResponseEntity<String>>{
+        on { body } doReturn """{"data": ""}"""
+    }
+
+    private val objectMapper = ObjectMapper()
+
     @AfterEach
     fun tearDown()
     {
@@ -50,7 +60,7 @@ class LocalFileManagerTests
             on { saveNewHash(any()) } doReturn true
         }
 
-        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mock())
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mock(), objectMapper)
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
 
@@ -71,7 +81,7 @@ class LocalFileManagerTests
             on { saveNewHash(any()) } doReturn false
         }
 
-        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mock())
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mock(), mock())
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
 
@@ -92,13 +102,14 @@ class LocalFileManagerTests
         }
         val mockClient = mock<ADRClient> {
             on { getInputStream(any()) } doReturn BufferedInputStream("test content".byteInputStream())
+            on { get(anyString()) } doReturn mockEmptyResponse
         }
         val mockBuilder = mock<ADRClientBuilder> {
             on { build() } doReturn mockClient
         }
-        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mockBuilder)
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mockBuilder, objectMapper)
 
-        val file = sut.saveFile("some-url/name.csv", FileType.Survey)
+        val file = sut.saveFile(AdrResource("some-url/name.csv"), FileType.Survey)
         val savedFile = File(file.path)
         assertThat(savedFile.readLines().first()).isEqualTo("test content")
         assertThat(file.path).isEqualTo("tmp/9473FDD0D880A43C21B7778D34872157.csv")
@@ -110,14 +121,17 @@ class LocalFileManagerTests
     @Test
     fun `saves file from ADR if URL has query string`()
     {
+
         val mockClient = mock<ADRClient> {
             on { getInputStream(any()) } doReturn BufferedInputStream("test content".byteInputStream())
+            on { get(anyString()) } doReturn mockEmptyResponse
         }
         val mockBuilder = mock<ADRClientBuilder> {
             on { build() } doReturn mockClient
         }
-        val sut = LocalFileManager(mock(), mock(), mock(), mockBuilder)
-        val file = sut.saveFile("some-url/name.csv?version=1.0", FileType.Survey)
+
+        val sut = LocalFileManager(mock(), mock(), mock(), mockBuilder, objectMapper)
+        val file = sut.saveFile(AdrResource("some-url/name.csv?version=1.0"), FileType.Survey)
         assertThat(file.filename).isEqualTo("name.csv")
     }
 
@@ -130,13 +144,14 @@ class LocalFileManagerTests
         }
         val mockClient = mock<ADRClient> {
             on { getInputStream(any()) } doReturn BufferedInputStream("test content".byteInputStream())
+            on { get(anyString()) } doReturn mockEmptyResponse
         }
         val mockBuilder = mock<ADRClientBuilder> {
             on { build() } doReturn mockClient
         }
-        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mockBuilder)
-        val file = sut.saveFile("some-url/name.csv", FileType.Survey)
-        assertThat(File(file.path).exists()).isFalse() // shouldn't have actually saved the file
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mockBuilder, objectMapper)
+        val file = sut.saveFile(AdrResource("some-url/name.csv"), FileType.Survey)
+        assertThat(File(file.path).exists()).isFalse // shouldn't have actually saved the file
         assertThat(file.path).isEqualTo("tmp/9473FDD0D880A43C21B7778D34872157.csv")
         assertThat(file.filename).isEqualTo("name.csv")
         assertThat(file.hash).isEqualTo("9473FDD0D880A43C21B7778D34872157.csv")
@@ -152,7 +167,7 @@ class LocalFileManagerTests
             on { getVersionFile(any(), any()) } doReturn VersionFile("test", "filename", false)
         }
 
-        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mock())
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mock(), mock())
         val mockFile = MockMultipartFile("data", "some-file-name.pjnz",
                 "application/zip", "pjnz content".toByteArray())
 
@@ -164,7 +179,7 @@ class LocalFileManagerTests
     fun `returns null if no file exists`()
     {
 
-        val sut = LocalFileManager(mockSession, mock(), mockProperties, mock())
+        val sut = LocalFileManager(mockSession, mock(), mockProperties, mock(), mock())
         assertThat(sut.getFile(FileType.Survey))
                 .isNull()
     }
@@ -177,7 +192,7 @@ class LocalFileManagerTests
             on { getHashesForVersion("fake-id") } doReturn mapOf("survey" to "hash.csv")
         }
 
-        val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock())
+        val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock(), mock())
         val result = sut.getAllHashes()
 
         assertThat(result["survey"]).isEqualTo("$tmpUploadDirectory/hash.csv")
@@ -192,7 +207,7 @@ class LocalFileManagerTests
             on { getVersionFiles("fake-id") } doReturn allFilesMap
         }
 
-        val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock())
+        val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock(), mock())
         val result = sut.getFiles()
 
         assertThat(result["survey"]!!.path).isEqualTo("$tmpUploadDirectory/surveyhash")
@@ -212,7 +227,7 @@ class LocalFileManagerTests
             on { getVersionFiles("fake-id") } doReturn allFilesMap
         }
 
-        val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock())
+        val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock(), mock())
         val result = sut.getFiles(FileType.ANC, FileType.Programme)
 
         assertThat(result.count()).isEqualTo(2)
@@ -225,7 +240,7 @@ class LocalFileManagerTests
 
         val stateRepo = mock<VersionRepository>()
 
-        val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock())
+        val sut = LocalFileManager(mockSession, stateRepo, mockProperties, mock(), mock())
         val files = mapOf("pjnz" to VersionFile("hash1", "file1", false))
         sut.setAllFiles(files)
 

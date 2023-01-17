@@ -27,7 +27,7 @@ interface VersionRepository
         hash: String,
         fileName: String,
         fromADR: Boolean,
-        resourceUrl: String?,
+        resourceUrl: String? = "",
     )
     fun removeVersionFile(versionId: String, type: FileType)
     fun getVersionFile(versionId: String, type: FileType): VersionFile?

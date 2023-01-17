@@ -8,6 +8,7 @@ import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.controllers.HintrController
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.models.AdrResource
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
@@ -23,7 +24,7 @@ abstract class HintrControllerTests
 
     protected val tmpUploadDirectory = "tmp"
     protected val sessionId = "sid"
-    protected val fakeUrl = "test-url"
+    protected val adrResource = AdrResource("test-url", "123")
 
     @AfterEach
     fun tearDown()
@@ -47,7 +48,7 @@ abstract class HintrControllerTests
             } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv", false)
 
             on {
-                saveFile(any<String>(), eq(type))
+                saveFile(any<AdrResource>(), eq(type))
             } doReturn VersionFileWithPath("test-path", "hash", "some-file-name.csv", false)
 
             on {
@@ -110,7 +111,7 @@ abstract class HintrControllerTests
         val result = uploadAction(sut)
         assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(result.body).isEqualTo("VALIDATION_RESPONSE")
-        verify(mockFileManager).saveFile(fakeUrl, fileType)
+        verify(mockFileManager).saveFile(adrResource, fileType)
 
         when (fileType)
         {
