@@ -283,9 +283,11 @@ describe("Baseline actions", () => {
         mockAxios.onPost(`/adr/shape/`)
             .reply(200, mockSuccess(mockShape));
 
+        const state = mockBaselineState({selectedDataset: {id: "1", resources: {shape: {id: "123"}}}} as any)
+
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.importShape({commit, dispatch, rootState} as any, "some-url");
+        await actions.importShape({commit, dispatch, state, rootState} as any, "some-url");
 
         checkShapeImportUpload(commit, dispatch, mockShape);
     });
@@ -344,9 +346,11 @@ describe("Baseline actions", () => {
         mockAxios.onPost(`/adr/population/`)
             .reply(200, mockSuccess(mockPop));
 
+        const state = mockBaselineState({selectedDataset: {id: "1", resources: {shape: {id: "123"}}}} as any)
+
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.importPopulation({commit, dispatch, rootState} as any, "some-url");
+        await actions.importPopulation({commit, dispatch, state, rootState} as any, "some-url");
 
         checkPopulationImportUpload(commit, dispatch, mockPop);
     });
