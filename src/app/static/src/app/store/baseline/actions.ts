@@ -136,7 +136,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
             const data = {
                 url,
                 id: context.state.selectedDataset?.id || "",
-                resourceId: context.state.selectedDataset?.resources.pjnz?.id || ""
+                resourceId: context.state.selectedDataset?.resources?.pjnz?.id || ""
             }
             await uploadOrImportPJNZ(context, {url: "/adr/pjnz/", payload: data},
                 getFilenameFromImportUrl(url));
@@ -148,7 +148,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
             const data = {
                 url,
                 id: context.state.selectedDataset?.id || "",
-                resourceId: context.state.selectedDataset?.resources.pop?.id || ""
+                resourceId: context.state.selectedDataset?.resources?.pop?.id || ""
             }
             await uploadOrImportPopulation(context, {url: "/adr/population/", payload: data},
                 getFilenameFromImportUrl(url));
@@ -160,7 +160,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
             const data = {
                 url,
                 id: context.state.selectedDataset?.id || "",
-                resourceId: context.state.selectedDataset?.resources.shape?.id || ""
+                resourceId: context.state.selectedDataset?.resources?.shape?.id || ""
             }
             await uploadOrImportShape(context, {url: "/adr/shape/", payload: data},
                 getFilenameFromImportUrl(url));
