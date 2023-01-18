@@ -1,6 +1,10 @@
-# hint 2.3.0
+# hint 2.32.0
 
 * As a user I can download input time series data
+
+# hint 2.31.2
+
+* Make refresh button realtime
 
 # hint 2.31.1
 
