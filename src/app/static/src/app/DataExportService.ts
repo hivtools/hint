@@ -34,4 +34,4 @@ export class DataExportService implements ExportService {
     }
 }
 
-export const exportService = (data: DownloadPlotData): unknown => new DataExportService(data);
+export const exportService = (data: DownloadPlotData) => new DataExportService(data);

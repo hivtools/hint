@@ -1,9 +1,9 @@
 <template>
     <div>
         <download-button
-            :name="`download data`"
+            :name="'downloadPlotData'"
             :disabled="false"
-            @click="download()"></download-button>
+            @click="download"></download-button>
     </div>
 </template>
 
