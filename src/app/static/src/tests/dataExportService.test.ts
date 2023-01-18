@@ -1,4 +1,4 @@
-import {exportService} from "../app/DataExportService";
+import {DataExportService, exportService} from "../app/DataExportService";
 import {mockDownloadPlotData} from "./mocks";
 
 const mockJsonToSheet = jest.fn().mockImplementation((data) => ({ data, type: "json" }));
@@ -80,7 +80,7 @@ describe("data export service", () => {
     it('can download only filtered data', () => {
         const data = mockDownloadPlotData()
 
-        exportService(data)
+        new DataExportService(data)
             .addFilteredData()
             .download()
 
@@ -90,7 +90,7 @@ describe("data export service", () => {
     it('can download only unfiltered data', () => {
         const data = mockDownloadPlotData()
 
-        exportService(data)
+        new DataExportService(data)
             .addUnfilteredData()
             .download()
 
