@@ -30,6 +30,7 @@ class LocalFileManagerTests
 
     private val mockProperties = mock<AppProperties> {
         on { uploadDirectory } doReturn tmpUploadDirectory
+        on { adrUrl } doReturn "https://adr.org"
     }
 
     private val mockSession = mock<Session> {
@@ -41,7 +42,7 @@ class LocalFileManagerTests
     }
 
     private val mockEmptyResponse = mock<ResponseEntity<String>>{
-        on { body } doReturn """{"data": ""}"""
+        on { body } doReturn """{"data": [{"id": "3"}]}"""
     }
 
     private val objectMapper = ObjectMapper()
@@ -109,13 +110,14 @@ class LocalFileManagerTests
         }
         val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mockBuilder, objectMapper)
 
-        val file = sut.saveFile(AdrResource("some-url/name.csv"), FileType.Survey)
+        val file = sut.saveFile(AdrResource("some-url/name.csv", "1", "2"), FileType.Survey)
         val savedFile = File(file.path)
         assertThat(savedFile.readLines().first()).isEqualTo("test content")
         assertThat(file.path).isEqualTo("tmp/9473FDD0D880A43C21B7778D34872157.csv")
         assertThat(file.filename).isEqualTo("name.csv")
         assertThat(file.hash).isEqualTo("9473FDD0D880A43C21B7778D34872157.csv")
         assertThat(file.fromADR).isEqualTo(true)
+        assertThat(file.resource_url).isEqualTo("https://adr.org/dataset/1/resource/2/download/name.csv?activity_id=3")
     }
 
     @Test
@@ -150,12 +152,13 @@ class LocalFileManagerTests
             on { build() } doReturn mockClient
         }
         val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mockBuilder, objectMapper)
-        val file = sut.saveFile(AdrResource("some-url/name.csv"), FileType.Survey)
+        val file = sut.saveFile(AdrResource("some-url/name.csv", "1", "2"), FileType.Survey)
         assertThat(File(file.path).exists()).isFalse // shouldn't have actually saved the file
         assertThat(file.path).isEqualTo("tmp/9473FDD0D880A43C21B7778D34872157.csv")
         assertThat(file.filename).isEqualTo("name.csv")
         assertThat(file.hash).isEqualTo("9473FDD0D880A43C21B7778D34872157.csv")
         assertThat(file.fromADR).isEqualTo(true)
+        assertThat(file.resource_url).isEqualTo("https://adr.org/dataset/1/resource/2/download/name.csv?activity_id=3")
     }
 
     @Test
