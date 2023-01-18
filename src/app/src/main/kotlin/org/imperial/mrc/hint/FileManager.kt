@@ -166,7 +166,7 @@ class LocalFileManager(
         return UriComponentsBuilder
             .fromHttpUrl(appProperties.adrUrl)
             .path("/dataset/${adrResource.id}/resource/${adrResource.resourceId}/download/${filename}")
-            .queryParam("activity_id", data[0]["id"].asText() ?: "")
+            .queryParam("activity_id", data[0]["id"].asText())
             .encode()
             .build()
             .toUriString()

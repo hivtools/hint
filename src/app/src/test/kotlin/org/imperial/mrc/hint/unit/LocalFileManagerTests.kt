@@ -41,7 +41,7 @@ class LocalFileManagerTests
         it.toString() to VersionFile("${it}hash", "${it}filename", false)
     }
 
-    private val mockEmptyResponse = mock<ResponseEntity<String>>{
+    private val mockAdrActivityResponse = mock<ResponseEntity<String>>{
         on { body } doReturn """{"data": [{"id": "3"}]}"""
     }
 
@@ -103,7 +103,7 @@ class LocalFileManagerTests
         }
         val mockClient = mock<ADRClient> {
             on { getInputStream(any()) } doReturn BufferedInputStream("test content".byteInputStream())
-            on { get(anyString()) } doReturn mockEmptyResponse
+            on { get(anyString()) } doReturn mockAdrActivityResponse
         }
         val mockBuilder = mock<ADRClientBuilder> {
             on { build() } doReturn mockClient
@@ -121,12 +121,43 @@ class LocalFileManagerTests
     }
 
     @Test
+    fun `returns empty resourceUrl when activity list is empty`()
+    {
+        val mockEmptyResponse = mock<ResponseEntity<String>> {
+            on { body } doReturn """{"data": []}"""
+        }
+
+        assertEmptyResourceUrl(
+            AdrResource("some-url/name.csv", "1", "2"),
+            mockEmptyResponse
+        )
+    }
+
+    @Test
+    fun `returns empty resourceUrl when resourceId is null`()
+    {
+        assertEmptyResourceUrl(
+            AdrResource("some-url/name.csv", "1", null),
+            mockAdrActivityResponse
+        )
+    }
+
+    @Test
+    fun `returns empty resourceUrl when filename is blank`()
+    {
+        assertEmptyResourceUrl(
+            AdrResource("", "1", "123"),
+            mockAdrActivityResponse
+        )
+    }
+
+    @Test
     fun `saves file from ADR if URL has query string`()
     {
 
         val mockClient = mock<ADRClient> {
             on { getInputStream(any()) } doReturn BufferedInputStream("test content".byteInputStream())
-            on { get(anyString()) } doReturn mockEmptyResponse
+            on { get(anyString()) } doReturn mockAdrActivityResponse
         }
         val mockBuilder = mock<ADRClientBuilder> {
             on { build() } doReturn mockClient
@@ -135,6 +166,7 @@ class LocalFileManagerTests
         val sut = LocalFileManager(mock(), mock(), mock(), mockBuilder, objectMapper)
         val file = sut.saveFile(AdrResource("some-url/name.csv?version=1.0"), FileType.Survey)
         assertThat(file.filename).isEqualTo("name.csv")
+        assertThat(file.resource_url).isEqualTo("")
     }
 
     @Test
@@ -146,7 +178,7 @@ class LocalFileManagerTests
         }
         val mockClient = mock<ADRClient> {
             on { getInputStream(any()) } doReturn BufferedInputStream("test content".byteInputStream())
-            on { get(anyString()) } doReturn mockEmptyResponse
+            on { get(anyString()) } doReturn mockAdrActivityResponse
         }
         val mockBuilder = mock<ADRClientBuilder> {
             on { build() } doReturn mockClient
@@ -248,6 +280,25 @@ class LocalFileManagerTests
         sut.setAllFiles(files)
 
         verify(stateRepo).setFilesForVersion("fake-id", files)
+    }
+
+    private fun assertEmptyResourceUrl(adrResource: AdrResource, activityResponse: ResponseEntity<String>)
+    {
+        val mockStateRepository = mock<VersionRepository> {
+            on { saveNewHash(any()) } doReturn true
+        }
+
+        val mockClient = mock<ADRClient> {
+            on { getInputStream(any()) } doReturn BufferedInputStream("test content".byteInputStream())
+            on { get(anyString()) } doReturn activityResponse
+        }
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mockBuilder, objectMapper)
+
+        val file = sut.saveFile(adrResource, FileType.Survey)
+        assertThat(file.resource_url).isEqualTo("")
     }
 
 }
