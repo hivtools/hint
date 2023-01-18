@@ -1,6 +1,10 @@
-# hint 2.31.2
+# hint 2.31.3
 
 * As a user I can see ADR source URL in output zip for input data so I know the source of the files
+
+# hint 2.31.2
+
+* Make refresh button realtime
 
 # hint 2.31.1
 
