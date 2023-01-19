@@ -4,6 +4,7 @@ import {BarchartIndicator, DisplayFilter, Filter} from "../../types";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {mutations} from "./mutations";
 import {rootOptionChildren} from "../../utils";
+import {UnadjustedBarchartSelections} from "../plottingSelections/plottingSelections";
 
 const namespaced = true;
 
@@ -17,6 +18,9 @@ export const modelOutputGetters = {
     },
     comparisonPlotIndicators: (state: ModelOutputState, getters: any, rootState: RootState): BarchartIndicator[] => {
         return rootState.modelCalibrate.comparisonPlotResult?.plottingMetadata.barchart.indicators || [];
+    },
+    comparisonPlotDefaultSelections: (state: ModelOutputState, getters: any, rootState: RootState): UnadjustedBarchartSelections[] => {
+        return rootState.modelCalibrate.comparisonPlotResult?.plottingMetadata.barchart.selections || [];
     },
     barchartFilters: (state: ModelOutputState, getters: any, rootState: RootState): Filter[] => {
         return outputPlotFilters(rootState);

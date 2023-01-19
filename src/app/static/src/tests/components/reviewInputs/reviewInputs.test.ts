@@ -150,6 +150,7 @@ describe("Survey and programme component", () => {
         expect(choro.props().includeFilters).toBe(false);
         expect(choro.props().areaFilterId).toBe("area");
         expect(choro.props().chartdata).toBe("TEST DATA");
+        expect(choro.props().roundFormatOutput).toBe(false);
         expect(choro.props().filters[0]).toStrictEqual({
             id: "area",
             column_id: "area_id",
@@ -394,6 +395,7 @@ describe("Survey and programme component", () => {
         const table = wrapper.find(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
         expect(table.props().tableData).toBe("TEST DATA");
+        expect(table.props().roundFormatOutput).toBe(false);
         expect(table.props().filters[0]).toStrictEqual({
             id: "area",
             column_id: "area_id",

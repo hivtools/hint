@@ -181,7 +181,7 @@ export const findPath = function (id: string, obj: any): any {
     }
 };
 
-export const formatOutput = function (value: number | string, format: string, scale: number | null, accuracy: number | null) {
+export const formatOutput = function (value: number | string, format: string, scale: number | null, accuracy: number | null, roundValue = true) {
     let ans: number
 
     if (typeof (value) === 'string') {
@@ -192,7 +192,7 @@ export const formatOutput = function (value: number | string, format: string, sc
         ans = ans * scale
     }
 
-    if (!format.includes('%') && accuracy) {
+    if (!format.includes('%') && accuracy && roundValue) {
         /**
          * When accuracy is set to 100 and selected value is less than 200
          * barchart disarranges YAxis. Code below checks if value is greater

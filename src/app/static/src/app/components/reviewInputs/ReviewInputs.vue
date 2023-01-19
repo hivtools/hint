@@ -40,19 +40,22 @@
                             :feature-levels="featureLevels"
                             :indicators="sapIndicatorsMetadata"
                             :selections="plottingSelections"
+                            @format="handleFormatOutput($event)"
                             :include-filters="false"
+                            :round-format-output="false"
                             :area-filter-id="areaFilterId"
                             :colour-scales="selectedSAPColourScales"
                             @update="updateChoroplethSelections({payload: $event})"
                             @update-colour-scales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
                 <div>
                     <area-indicators-table :table-data="data"
-                                :area-filter-id="areaFilterId"
-                                :filters="filters"
-                                :countryAreaFilterOption="countryAreaFilterOption"
-                                :indicators="filterTableIndicators"
-                                :selections="plottingSelections"
-                                :selectedFilterOptions="plottingSelections.selectedFilterOptions"
+                                           :area-filter-id="areaFilterId"
+                                           :filters="filters"
+                                           :countryAreaFilterOption="countryAreaFilterOption"
+                                           :indicators="filterTableIndicators"
+                                           :selections="plottingSelections"
+                                           :round-format-output="false"
+                                           :selectedFilterOptions="plottingSelections.selectedFilterOptions"
                     ></area-indicators-table>
                 </div>
             </div>

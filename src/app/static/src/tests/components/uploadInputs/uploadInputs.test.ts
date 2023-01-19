@@ -92,7 +92,7 @@ describe("UploadInputs upload component", () => {
 
     it("does not show required text in front of pjnz upload label when on data exploration mode", () => {
         const store = createSut();
-        expectFileIsRequired(store, 0)
+        expectFileIsNotRequired(store, 0)
     });
 
     it("shows required text in front of pjnz upload label when not on data exploration mode", () => {
@@ -122,7 +122,7 @@ describe("UploadInputs upload component", () => {
 
     it("does not show required text in front of survey upload label when on data exploration mode", () => {
         const store = createSut();
-        expectFileIsRequired(store, 3)
+        expectFileIsNotRequired(store, 3)
     });
 
     it("shows required text in front of survey upload label when not on data exploration mode", () => {
@@ -318,7 +318,7 @@ describe("UploadInputs upload component", () => {
         expectDeleteToDispatchAction(2, () => actions.deletePopulation, done);
     });
 
-    it("can return true when fromADR", async () => { 
+    it("can return true when fromADR", async () => {
         const store = createSut({
             pjnz: {
                 "fromADR": true,
@@ -344,10 +344,10 @@ describe("UploadInputs upload component", () => {
         expect(wrapper.findAll("manage-file-stub").at(0).props().fromADR).toBe(true);
         expect(wrapper.findAll("manage-file-stub").at(1).props().fromADR).toBe(true);
         expect(wrapper.findAll("manage-file-stub").at(2).props().fromADR).toBe(true);
-        
+
     });
 
-    it("can return false when not fromADR", async () => { 
+    it("can return false when not fromADR", async () => {
         const store = createSut({
             pjnz: {
                 "fromADR": "",
@@ -373,7 +373,7 @@ describe("UploadInputs upload component", () => {
         expect(wrapper.findAll("manage-file-stub").at(0).props().fromADR).toBe(false);
         expect(wrapper.findAll("manage-file-stub").at(1).props().fromADR).toBe(false);
         expect(wrapper.findAll("manage-file-stub").at(2).props().fromADR).toBe(false);
-        
+
     });
 
     it("passes survey response existing file name to manage file", () => {

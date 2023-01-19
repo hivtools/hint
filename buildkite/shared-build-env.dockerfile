@@ -1,6 +1,8 @@
-FROM vimc/node-docker:master
+FROM mrcide/node-docker:master
 
-RUN wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | sudo apt-key add -
+RUN apt-get install wget
+
+RUN wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add -
 RUN add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
 RUN apt-get update
 RUN apt-get install adoptopenjdk-11-hotspot -y

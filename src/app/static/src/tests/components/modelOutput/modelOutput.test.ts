@@ -68,6 +68,7 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                     choroplethFilters: jest.fn().mockReturnValue(["TEST CHORO FILTERS"]),
                     choroplethIndicators: jest.fn().mockReturnValue(["TEST CHORO INDICATORS"]),
                     countryAreaFilterOption: jest.fn().mockReturnValue({TEST: "TEST countryAreaFilterOption"}),
+                    comparisonPlotDefaultSelections: jest.fn().mockReturnValue(["TEST comparisonPlotDefaultSelections"]),
                     ...partialGetters
                 },
                 mutations: modelOutputMutations
@@ -361,6 +362,15 @@ describe("ModelOutput component", () => {
         expect(vm.bubblePlotFilters).toStrictEqual(["TEST BUBBLE FILTERS"]);
     });
 
+
+    it("computes default comparison selections", () => {
+        const store = getStore();
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const vm = (wrapper as any).vm;
+
+        expect(vm.comparisonPlotDefaultSelections).toStrictEqual(["TEST comparisonPlotDefaultSelections"]);
+    });
+
     it("computes features", () => {
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {store, localVue});
@@ -607,6 +617,71 @@ describe("ModelOutput component", () => {
 
         comparisonPlot.vm.$emit("update", comparisonPlotSelections);
         expect(store.state.plottingSelections.comparisonPlot).toStrictEqual(expectedComparisonPlotSelections);
+    });
+
+    it("commits default selections from comparison plot when indicator changes", () => {
+
+        const comparisonDefaultSelections = [
+            {
+                "indicator_id": "prevalence",
+                "selected_filter_options": {},
+                "x_axis_id": "sex",
+                "disaggregate_by_id": "source"
+            },
+            {
+                "indicator_id": "art_coverage",
+                "selected_filter_options": {},
+                "x_axis_id": "sex",
+                "disaggregate_by_id": "source"
+            }
+        ]
+
+        const store = getStore({selectedTab: "comparison"}, {
+            comparisonPlotDefaultSelections: jest.fn().mockReturnValue(comparisonDefaultSelections)
+        }, {});
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
+
+        const comparisonPlot = wrapper.find(BarChartWithFilters);
+        const comparisonPlotSelections = {
+            indicatorId: "prevalence"
+        };
+
+        comparisonPlot.vm.$emit("update", comparisonPlotSelections);
+        expect(currentComparisonPlotSelections.xAxisId).toBe("age")
+        expect(store.state.plottingSelections.comparisonPlot)
+            .toStrictEqual({
+                disaggregateById: "source",
+                indicatorId: "prevalence",
+                selectedFilterOptions: {},
+                xAxisId: "sex"
+            });
+    });
+
+    it("does not commits default selections from comparison plot when indicator is re-selected", () => {
+
+        const comparisonDefaultSelections = [
+            {
+                "indicator_id": "TestIndicator",
+                "selected_filter_options": {},
+                "x_axis_id": "age",
+                "disaggregate_by_id": "source"
+            }
+        ]
+
+        const store = getStore({selectedTab: "comparison"}, {
+            comparisonPlotDefaultSelections: jest.fn().mockReturnValue(comparisonDefaultSelections)
+        }, {});
+        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
+
+        const comparisonPlot = wrapper.find(BarChartWithFilters);
+        const comparisonPlotSelections = {
+            indicatorId: "TestIndicator"
+        };
+
+        comparisonPlot.vm.$emit("update", comparisonPlotSelections);
+        expect(store.state.plottingSelections.comparisonPlot).toStrictEqual(currentComparisonPlotSelections);
     });
 
     it("commits updated selections from barchart and orders them according to nested filter", () => {

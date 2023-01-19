@@ -4,7 +4,13 @@ import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {api} from "../../apiService";
 import {RootState} from "../../root";
 import {ModelCalibrateMutation} from "./mutations";
-import {FilterOption, ModelResultResponse, ModelStatusResponse, ModelSubmitResponse} from "../../generated";
+import {
+    CalibrateResultResponse,
+    FilterOption,
+    ModelResultResponse,
+    ModelStatusResponse,
+    ModelSubmitResponse
+} from "../../generated";
 import {switches} from "../../featureSwitches";
 import {Dict} from "../../types";
 import {DownloadResultsMutation} from "../downloadResults/mutations";
@@ -70,7 +76,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                 .ignoreSuccess()
                 .withError(ModelCalibrateMutation.SetError)
                 .freezeResponse()
-                .get<ModelResultResponse>(`model/calibrate/result/${calibrateId}`);
+                .get<CalibrateResultResponse>(`model/calibrate/result/${calibrateId}`);
 
             if (response) {
                 const data = response.data;
@@ -113,10 +119,10 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             .withError(ModelCalibrateMutation.SetComparisonPlotError)
             .ignoreSuccess()
             .freezeResponse()
-            .get<ModelResultResponse>(`model/comparison/plot/${calibrateId}`);
+            .get<CalibrateResultResponse>(`model/comparison/plot/${calibrateId}`);
 
         if (response) {
-            if (response.data){
+            if (response.data) {
                 selectFilterDefaults(response.data, commit, PlottingSelectionsMutations.updateComparisonPlotSelections)
             }
             commit(ModelCalibrateMutation.SetComparisonPlotData, response.data);
@@ -138,7 +144,7 @@ export const getCalibrateStatus = async function (context: ActionContext<ModelCa
         });
 };
 
-const selectFilterDefaults = (data: ModelResultResponse, commit: Commit, mutationName: string) => {
+const selectFilterDefaults = (data: CalibrateResultResponse, commit: Commit, mutationName: string) => {
     if (data?.plottingMetadata?.barchart?.defaults) {
         const defaults = data.plottingMetadata.barchart.defaults;
         const unfrozenDefaultOptions = Object.keys(defaults.selected_filter_options)

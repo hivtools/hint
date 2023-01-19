@@ -7,7 +7,6 @@ import {
     mockError,
     mockFailure,
     mockMetadataState,
-    mockPlottingMetadataResponse,
     mockPopulationResponse,
     mockRootState,
     mockShapeResponse,
@@ -193,7 +192,6 @@ describe("Baseline actions", () => {
     const checkPJNZImportUpload = (commit: Mock, dispatch: Mock) => {
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: BaselineMutation.PJNZUpdated, payload: null});
-
         expectEqualsFrozen(commit.mock.calls[1][0], {
             type: BaselineMutation.PJNZUpdated,
             payload: {data: {country: "Malawi", iso3: "MWI"}}
@@ -201,16 +199,12 @@ describe("Baseline actions", () => {
 
         expect(dispatch.mock.calls.length).toBe(3);
 
-        expect(dispatch.mock.calls[0][0]).toBe("metadata/getPlottingMetadata");
-        expect(dispatch.mock.calls[0][1]).toBe("MWI");
-        expect(dispatch.mock.calls[0][2]).toStrictEqual({root: true});
-
-        expect(dispatch.mock.calls[1].length).toBe(1);
-        expect(dispatch.mock.calls[1][0]).toBe("validate");
-
+        expect(dispatch.mock.calls[1].length).toBe(3);
+        expect(dispatch.mock.calls[0][0]).toBe("validate");
+        expect(dispatch.mock.calls[1][0]).toBe("metadata/getPlottingMetadata");
+        expect(dispatch.mock.calls[1][1]).toBe("MWI");
+        expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
         expect(dispatch.mock.calls[2][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
-        expect(dispatch.mock.calls[2][2]).toStrictEqual({root: true});
-
     }
 
     it("upload PJNZ does not fetch plotting metadata or validate if error occurs", async () => {
@@ -223,7 +217,7 @@ describe("Baseline actions", () => {
         await actions.uploadPJNZ({commit, state, dispatch, rootState} as any, mockFormData as any);
 
         expect(dispatch.mock.calls.length).toBe(1);
-        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData")
     });
 
     it("import PJNZ does not fetch plotting metadata or validate if error occurs", async () => {
@@ -236,7 +230,7 @@ describe("Baseline actions", () => {
         await actions.importPJNZ({commit, state, dispatch, rootState} as any, "some-url/some-file.txt");
 
         expect(dispatch.mock.calls.length).toBe(1);
-        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
+        expect(dispatch.mock.calls[0][0]).toBe("surveyAndProgram/validateSurveyAndProgramData")
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "PJNZUpdated", payload: null});
@@ -613,7 +607,7 @@ describe("Baseline actions", () => {
         });
     });
 
-    it("refreshDatasetMetadata does not attempt to retrieve resources not found in selectedDatasetAvailableResources getter", async () => {
+    it("refreshDatasetMetadata attempts to retrieve all available resources", async () => {
 
         mockAxios.onGet("/adr/datasets/1234")
             .reply(200, mockSuccess({
@@ -629,6 +623,15 @@ describe("Baseline actions", () => {
             anc: null
         }
 
+        const expectResources = {
+            shape: availableResources.shape,
+            pjnz: availableResources.pjnz,
+            pop: availableResources.pop,
+            survey: availableResources.survey,
+            program: availableResources.program,
+            anc: availableResources.anc
+        }
+
         const commit = jest.fn();
         const state = mockBaselineState({
             selectedDataset: mockDataset({ id: "1234" })
@@ -641,7 +644,7 @@ describe("Baseline actions", () => {
         await actions.refreshDatasetMetadata({ commit, rootState, state, rootGetters } as any);
 
         expect(commit.mock.calls[0][0]).toBe(BaselineMutation.UpdateDatasetResources);
-        expect(commit.mock.calls[0][1]).toEqual(resources);
+        expect(commit.mock.calls[0][1]).toEqual(expectResources);
     });
 
     it("refreshDatasetMetadata takes release into account", async () => {

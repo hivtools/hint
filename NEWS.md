@@ -1,3 +1,27 @@
+# hint 2.31.2
+
+* Make refresh button realtime
+
+# hint 2.31.1
+
+* Setup Playwright and add Browser test for data exploration login
+
+# hint 2.31.0
+
+* turn off rounding in review inputs
+
+# hint 2.30.2
+
+* Fix oauth login method querying existing users
+
+# hint 2.30.1
+
+* Fix spectrum file validation issue.
+
+# hint 2.30.0
+
+* Improve comparison plot usability
+
 # hint 2.29.2
 
 * Fix data exploration mode required files

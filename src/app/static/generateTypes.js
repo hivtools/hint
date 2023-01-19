@@ -1,5 +1,5 @@
 'use strict';
-// This file is executed by ./generate-types.sh
+// This file is executed by ./scripts/generate-types.sh
 
 const schemaToTs = require('json-schema-to-typescript');
 const fs = require('fs');
