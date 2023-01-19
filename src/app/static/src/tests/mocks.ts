@@ -557,7 +557,7 @@ export const mockOptionsFormMeta = (props: Partial<DynamicFormMeta> = {}) => {
     }
 };
 
-export const mockDownloadPlotData = (props: Partial<DownloadPlotData> = {}): DownloadPlotData => {
+export const mockDownloadIndicatorData = (props: Partial<DownloadPlotData> = {}): DownloadPlotData => {
     return {
         unfilteredData: [
             {

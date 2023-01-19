@@ -322,3 +322,8 @@ export interface DownloadPlotData {
     filteredData: unknown[],
     unfilteredData: unknown[]
 }
+
+export interface DownloadIndicatorPayload {
+    data: DownloadPlotData,
+    filename: string
+}

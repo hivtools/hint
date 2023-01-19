@@ -1,8 +1,6 @@
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
 import {ScaleSelections, PlottingSelectionsState} from "./plottingSelections";
 import {DataExplorationState} from "../dataExploration/dataExploration";
-import {DownloadPlotData} from "../../types";
-import {exportService} from "../../DataExportService";
 
 export const getters = {
     selectedSAPColourScales: (state: PlottingSelectionsState, getters: any, rootState: DataExplorationState): ScaleSelections => {
@@ -17,12 +15,5 @@ export const getters = {
             default:
                 return {}
         }
-    },
-
-    downloadFile: () => (data: DownloadPlotData): void => {
-        exportService(data)
-            .addUnfilteredData()
-            .addFilteredData()
-            .download()
     }
 };

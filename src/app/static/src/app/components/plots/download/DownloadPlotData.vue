@@ -1,7 +1,7 @@
 <template>
     <div>
         <download-button
-            :name="'downloadPlotData'"
+            :name="'downloadIndicator'"
             :disabled="false"
             @click="download"></download-button>
     </div>
@@ -10,11 +10,14 @@
 <script lang="ts">
     import Vue from "vue";
     import DownloadButton from "./downloadButton.vue";
-    import {DownloadPlotData} from "../../../types";
-    import {mapGettersByNames} from "../../../utils";
+    import {DownloadIndicatorPayload} from "../../../types";
+    import {mapActionByName, mapStateProps} from "../../../utils";
+    import {BaselineState} from "../../../store/baseline/baseline";
+    import {utc} from "moment/moment";
 
     interface Methods {
         download: () => void
+        downloadFile: (data: DownloadIndicatorPayload) => void
     }
 
     interface Props {
@@ -22,11 +25,12 @@
         unfilteredData: unknown[]
     }
 
-    interface ComputedGetters {
-        downloadFile: (data: DownloadPlotData) => void
+    interface Computed {
+        iso3: string
+        country: string
     }
 
-    export default Vue.extend<unknown, Methods, ComputedGetters, Props>({
+    export default Vue.extend<unknown, Methods, Computed, Props>({
         name: "DownloadPlotData",
         components: {
             DownloadButton
@@ -36,13 +40,20 @@
             filteredData: Array
         },
         computed: {
-            ...mapGettersByNames<keyof ComputedGetters>("plottingSelections", ['downloadFile'])
+            ...mapStateProps<BaselineState, keyof Computed>("baseline", {
+                iso3: state => state.iso3,
+                country: state => state.country
+            })
         },
         methods: {
             download() {
+                const prefix = this.iso3 || this.country
+                const timestamp = utc().local().format("YMMDD-HHmmss");
+                const filename = `${prefix}_naomi_data-review_${timestamp}.xlsx`
                 const data = {filteredData: this.filteredData, unfilteredData: this.unfilteredData}
-                this.downloadFile(data)
-            }
+                this.downloadFile({data, filename})
+            },
+            downloadFile: mapActionByName("downloadIndicator", "downloadFile"),
         }
     })
 </script>

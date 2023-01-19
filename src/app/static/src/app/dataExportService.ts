@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx";
-import {DownloadPlotData} from "./types";
+import {DownloadIndicatorPayload, DownloadPlotData} from "./types";
 
 interface ExportService {
     download: () => void
@@ -9,11 +9,13 @@ interface ExportService {
 
 export class DataExportService implements ExportService {
     private readonly _data: DownloadPlotData
+    private readonly _filename: string
 
     private readonly _workbook: XLSX.WorkBook;
 
-    constructor(data: DownloadPlotData) {
-        this._data = data
+    constructor(payload: DownloadIndicatorPayload) {
+        this._filename = payload.filename
+        this._data = payload.data
         this._workbook = XLSX.utils.book_new();
     }
 
@@ -25,13 +27,13 @@ export class DataExportService implements ExportService {
 
     addUnfilteredData = (): ExportService => {
         const worksheet = XLSX.utils.json_to_sheet(this._data.unfilteredData);
-        XLSX.utils.book_append_sheet(this._workbook, worksheet, "aggregate data");
+        XLSX.utils.book_append_sheet(this._workbook, worksheet, "all data");
         return this;
     }
 
     download = (): void => {
-        XLSX.writeFile(this._workbook, `chart-data-${new Date().toISOString()}.xlsx`);
+        XLSX.writeFile(this._workbook, this._filename);
     }
 }
 
-export const exportService = (data: DownloadPlotData) => new DataExportService(data);
+export const exportService = (payload: DownloadIndicatorPayload) => new DataExportService(payload);

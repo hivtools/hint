@@ -1,5 +1,5 @@
 import {DataExportService, exportService} from "../app/DataExportService";
-import {mockDownloadPlotData} from "./mocks";
+import {mockDownloadIndicatorData} from "./mocks";
 
 const mockJsonToSheet = jest.fn().mockImplementation((data) => ({ data, type: "json" }));
 const mockBookNew = jest.fn().mockImplementation(() => ({ sheets: [] } as any));
@@ -48,15 +48,15 @@ describe("data export service", () => {
                 "value": 20
             }
         ],
-        name: "aggregate data",
+        name: "all data",
         type: "json"
     }
 
 
     it('can download filtered and unfiltered data', () => {
-        const data = mockDownloadPlotData()
+        const data = mockDownloadIndicatorData()
 
-        exportService(data)
+        exportService({data, filename: "MWI_naomi_data.xlsx"})
             .addUnfilteredData()
             .addFilteredData()
             .download()
@@ -72,15 +72,16 @@ describe("data export service", () => {
             ]
         });
         const filename = mockWriteFile.mock.calls[0][1]
-        expect(filename.split(".")[0]).toContain("chart-data");
-        expect(filename.split(".")[2]).toBe("xlsx");
+        console.log(mockWriteFile.mock.calls[0][1])
+        expect(filename.split(".")[0]).toContain("MWI_naomi_data");
+        expect(filename.split(".")[1]).toBe("xlsx");
 
     });
 
     it('can download only filtered data', () => {
-        const data = mockDownloadPlotData()
+        const data = mockDownloadIndicatorData()
 
-        new DataExportService(data)
+        new DataExportService({data, filename: "MWI_naomi_data.xlsx"})
             .addFilteredData()
             .download()
 
@@ -88,9 +89,9 @@ describe("data export service", () => {
     });
 
     it('can download only unfiltered data', () => {
-        const data = mockDownloadPlotData()
+        const data = mockDownloadIndicatorData()
 
-        new DataExportService(data)
+        new DataExportService({data, filename: "MWI_naomi_data.xlsx"})
             .addUnfilteredData()
             .download()
 

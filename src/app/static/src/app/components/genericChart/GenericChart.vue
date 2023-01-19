@@ -60,7 +60,7 @@
                 </div>
                 <div v-for="dataSource in chartConfigValues.dataSourceConfigValues.filter(ds => ds.tableConfig)"
                      :key="dataSource.config.id">
-                    <download-plot-data :filtered-data="chartData[dataSource.config.id]"
+                    <download-plot-data :filtered-data="filteredDataWithoutPageNum[dataSource.config.id]"
                                         :unfiltered-data="unfilteredData[dataSource.config.id]"></download-plot-data>
                     <generic-chart-table :table-config="dataSource.tableConfig"
                                          :filtered-data="chartData[dataSource.config.id]"
@@ -136,6 +136,7 @@
         currentPage: number
         totalPages: number
         finalPagePlotCount: number
+        filteredDataWithoutPageNum: Dict<unknown[]> | null
     }
 
     interface Props {
@@ -169,6 +170,7 @@
         updateDataSource: (dataSourceId: string, datasetId: string) => void,
         updateSelectedFilterOptions: (dataSourceId: string, options: Dict<FilterOption[]> | null) => void
         addPageNumbersToData: (data: unknown[]) => unknown[]
+        addFilteredDataWithoutPageNumber: (data: Dict<unknown[]> | null) => void
     }
 
     const namespace = "genericChart";
@@ -207,7 +209,8 @@
                 dataSourceSelections,
                 currentPage: 1,
                 totalPages: 1,
-                finalPagePlotCount: 0
+                finalPagePlotCount: 0,
+                filteredDataWithoutPageNum: null
             }
         },
         computed: {
@@ -334,6 +337,8 @@
                     result[dataSourceId] = filterData(unfilteredData, filters, selectedFilterOptions);
                 }
 
+                this.addFilteredDataWithoutPageNumber(result)
+
                 if (result["data"]) {
                     const dataWithPages = this.addPageNumbersToData(result["data"])
                     return {...result, data: dataWithPages};
@@ -382,6 +387,9 @@
                 this.updateSelectedFilterOptions(dataSourceId, null);
                 await this.ensureDataset(datasetId);
                 this.setDataSourceDefaultFilterSelections(dataSourceId, datasetId);
+            },
+            addFilteredDataWithoutPageNumber(data) {
+                this.filteredDataWithoutPageNum = data
             },
             setDataSourceDefaultFilterSelections(dataSourceId: string, datasetId: string) {
                 const selectedFilterOptions = this.datasets[datasetId].metadata.defaults.selected_filter_options;
