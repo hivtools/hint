@@ -6,7 +6,6 @@ docker network prune -f
 HERE=$(realpath "$(dirname $0)")
 NETWORK=hint_nw
 DB=hint_db
-DB_USER=postgres
 DB_PASSWORD=
 API=hintr
 REDIS=hintr_redis
@@ -26,7 +25,6 @@ docker run --rm -d \
   --network=$NETWORK \
   --name $DB \
   --network-alias db \
-  -e POSTGRES_USER=$DB_USER \
   -e POSTGRES_PASSWORD=$DB_PASSWORD \
   -p 5432:5432 \
   $DB_IMAGE
