@@ -1,3 +1,7 @@
+# hint 2.31.3
+
+* Set secure password for hint database
+
 # hint 2.31.2
 
 * Make refresh button realtime
