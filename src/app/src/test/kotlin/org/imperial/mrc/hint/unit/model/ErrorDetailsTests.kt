@@ -13,15 +13,13 @@ class ErrorDetailsTests
         val compareErrorDetailsOne = ErrorDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
             "test",
-            "OTHER_ERROR",
-            emptyList()
+            "OTHER_ERROR"
         )
 
         val compareErrorDetailsTwo = ErrorDetail(
             HttpStatus.INTERNAL_SERVER_ERROR,
             "test",
-            "OTHER_ERROR",
-            emptyList()
+            "OTHER_ERROR"
         )
 
         assertNotSame(compareErrorDetailsOne, compareErrorDetailsTwo)

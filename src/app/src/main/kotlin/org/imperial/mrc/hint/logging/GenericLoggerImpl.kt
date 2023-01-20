@@ -54,8 +54,7 @@ class GenericLoggerImpl(
                 ErrorDetail(
                     status,
                     error?.message.toString(),
-                    ErrorDetail.defaultError,
-                    listOf(error?.message.toString())
+                    ErrorDetail.defaultError
                 )
             ),
             request = Request(request)
@@ -72,8 +71,7 @@ class GenericLoggerImpl(
                 ErrorDetail(
                     error.httpStatus,
                     error.message.toString(),
-                    ErrorDetail.defaultError,
-                    listOf(error.message.toString())
+                    ErrorDetail.defaultError
                 ),
                 error.key
             ),
