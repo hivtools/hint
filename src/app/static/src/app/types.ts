@@ -320,6 +320,6 @@ interface DownloadIds {
 
 export interface UploadImportPayload {
     url: string,
-    id: string,
+    datasetId: string,
     resourceId: string
 }

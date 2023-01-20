@@ -135,7 +135,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
         if (url) {
             const data = {
                 url,
-                id: context.state.selectedDataset?.id || "",
+                datasetId: context.state.selectedDataset?.id || "",
                 resourceId: context.state.selectedDataset?.resources?.pjnz?.id || ""
             }
             await uploadOrImportPJNZ(context, {url: "/adr/pjnz/", payload: data},
@@ -147,7 +147,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
         if (url) {
             const data = {
                 url,
-                id: context.state.selectedDataset?.id || "",
+                datasetId: context.state.selectedDataset?.id || "",
                 resourceId: context.state.selectedDataset?.resources?.pop?.id || ""
             }
             await uploadOrImportPopulation(context, {url: "/adr/population/", payload: data},
@@ -159,7 +159,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
         if (url) {
             const data = {
                 url,
-                id: context.state.selectedDataset?.id || "",
+                datasetId: context.state.selectedDataset?.id || "",
                 resourceId: context.state.selectedDataset?.resources?.shape?.id || ""
             }
             await uploadOrImportShape(context, {url: "/adr/shape/", payload: data},

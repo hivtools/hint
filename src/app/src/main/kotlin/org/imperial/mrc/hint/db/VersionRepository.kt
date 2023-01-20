@@ -219,7 +219,7 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
                                 .set(VERSION_FILE.VERSION, versionId)
                                 .set(VERSION_FILE.FILENAME, versionFile.filename)
                                 .set(VERSION_FILE.FROM_ADR, versionFile.fromAdr)
-                                .set(VERSION_FILE.RESOURCE_URL, versionFile.resource_url)
+                                .set(VERSION_FILE.RESOURCE_URL, versionFile.resourceUrl)
                                 .execute()
                     }
                 }

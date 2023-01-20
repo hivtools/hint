@@ -117,7 +117,7 @@ class LocalFileManagerTests
         assertThat(file.filename).isEqualTo("name.csv")
         assertThat(file.hash).isEqualTo("9473FDD0D880A43C21B7778D34872157.csv")
         assertThat(file.fromADR).isEqualTo(true)
-        assertThat(file.resource_url).isEqualTo("https://adr.org/dataset/1/resource/2/download/name.csv?activity_id=3")
+        assertThat(file.resourceUrl).isEqualTo("https://adr.org/dataset/1/resource/2/download/name.csv?activity_id=3")
     }
 
     @Test
@@ -166,7 +166,7 @@ class LocalFileManagerTests
         val sut = LocalFileManager(mock(), mock(), mock(), mockBuilder, objectMapper)
         val file = sut.saveFile(AdrResource("some-url/name.csv?version=1.0"), FileType.Survey)
         assertThat(file.filename).isEqualTo("name.csv")
-        assertThat(file.resource_url).isEqualTo("")
+        assertThat(file.resourceUrl).isEqualTo("")
     }
 
     @Test
@@ -190,7 +190,7 @@ class LocalFileManagerTests
         assertThat(file.filename).isEqualTo("name.csv")
         assertThat(file.hash).isEqualTo("9473FDD0D880A43C21B7778D34872157.csv")
         assertThat(file.fromADR).isEqualTo(true)
-        assertThat(file.resource_url).isEqualTo("https://adr.org/dataset/1/resource/2/download/name.csv?activity_id=3")
+        assertThat(file.resourceUrl).isEqualTo("https://adr.org/dataset/1/resource/2/download/name.csv?activity_id=3")
     }
 
     @Test
@@ -298,7 +298,7 @@ class LocalFileManagerTests
         val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mockBuilder, objectMapper)
 
         val file = sut.saveFile(adrResource, FileType.Survey)
-        assertThat(file.resource_url).isEqualTo("")
+        assertThat(file.resourceUrl).isEqualTo("")
     }
 
 }

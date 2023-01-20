@@ -512,7 +512,7 @@ class VersionRepositoryTests
         assertThat(result.hash).isEqualTo("newhash")
         assertThat(result.filename).isEqualTo("original.pjnz")
         assertThat(result.fromAdr).isEqualTo(true)
-        assertThat(result.resource_url).isEqualTo("https://test")
+        assertThat(result.resourceUrl).isEqualTo("https://test")
     }
 
     @Test
@@ -553,12 +553,12 @@ class VersionRepositoryTests
         assertThat(result["survey"]!!.filename).isEqualTo("original.csv")
         assertThat(result["survey"]!!.hash).isEqualTo("surveyhash")
         assertThat(result["survey"]!!.fromAdr).isEqualTo(true)
-        assertThat(result["survey"]!!.resource_url).isEqualTo("https://adr")
+        assertThat(result["survey"]!!.resourceUrl).isEqualTo("https://adr")
 
         assertThat(result["pjnz"]!!.filename).isEqualTo("original.pjnz")
         assertThat(result["pjnz"]!!.hash).isEqualTo("pjnzhash")
         assertThat(result["pjnz"]!!.fromAdr).isEqualTo(false)
-        assertThat(result["pjnz"]!!.resource_url).isEqualTo("https://adr")
+        assertThat(result["pjnz"]!!.resourceUrl).isEqualTo("https://adr")
     }
 
     @Test

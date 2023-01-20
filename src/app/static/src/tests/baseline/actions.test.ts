@@ -176,15 +176,16 @@ describe("Baseline actions", () => {
     });
 
     it("sets country and iso3 after PJNZ import, and fetches plotting metadata, and validates", async () => {
-
-        mockAxios.onPost(`/adr/pjnz/`)
+        const url = "/adr/pjnz/"
+        mockAxios.onPost(url)
             .reply(200, mockSuccess({data: {country: "Malawi", iso3: "MWI"}}));
 
         const commit = jest.fn();
-        const state = mockBaselineState({iso3: "MWI"});
+        const state = mockBaselineState({iso3: "MWI", selectedDataset: {id: "1", resources: {pjnz: {id: "123"}}}} as any);
         const dispatch = jest.fn();
-
         await actions.importPJNZ({commit, state, dispatch, rootState} as any, "some-url");
+
+        expectValidAdrImportPayload(url)
 
         checkPJNZImportUpload(commit, dispatch)
     });
@@ -278,9 +279,9 @@ describe("Baseline actions", () => {
     });
 
     it("commits response and validates after shape file import", async () => {
-
+        const url = "/adr/shape/"
         const mockShape = mockShapeResponse();
-        mockAxios.onPost(`/adr/shape/`)
+        mockAxios.onPost(url)
             .reply(200, mockSuccess(mockShape));
 
         const state = mockBaselineState({selectedDataset: {id: "1", resources: {shape: {id: "123"}}}} as any)
@@ -288,6 +289,8 @@ describe("Baseline actions", () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         await actions.importShape({commit, dispatch, state, rootState} as any, "some-url");
+
+        expectValidAdrImportPayload(url)
 
         checkShapeImportUpload(commit, dispatch, mockShape);
     });
@@ -341,16 +344,19 @@ describe("Baseline actions", () => {
     });
 
     it("commits response and validates after population file import", async () => {
+        const url = "/adr/population/"
 
         const mockPop = mockPopulationResponse();
-        mockAxios.onPost(`/adr/population/`)
+        mockAxios.onPost(url)
             .reply(200, mockSuccess(mockPop));
 
-        const state = mockBaselineState({selectedDataset: {id: "1", resources: {shape: {id: "123"}}}} as any)
+        const state = mockBaselineState({selectedDataset: {id: "1", resources: {pop: {id: "123"}}}} as any)
 
         const commit = jest.fn();
         const dispatch = jest.fn();
         await actions.importPopulation({commit, dispatch, state, rootState} as any, "some-url");
+
+        expectValidAdrImportPayload(url)
 
         checkPopulationImportUpload(commit, dispatch, mockPop);
     });
@@ -707,4 +713,14 @@ const expectValidationActionsDispatched = (dispatch: Mock) => {
     expect(dispatch.mock.calls[0][0]).toBe("validate");
     expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
     expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
+}
+
+export const expectValidAdrImportPayload = (url: string) => {
+    expect(mockAxios.history.post.length).toBe(1)
+    expect(mockAxios.history.post[0].url).toBe(url)
+    expect(JSON.parse(mockAxios.history.post[0].data)).toEqual({
+        url: "some-url",
+        datasetId: "1",
+        resourceId: "123"
+    })
 }

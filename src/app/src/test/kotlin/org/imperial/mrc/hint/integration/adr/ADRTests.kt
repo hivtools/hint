@@ -376,7 +376,7 @@ class ADRTests : SecureIntegrationTests()
     {
         val map = mapOf(
             "url" to adrResource.url,
-            "id" to adrResource.id,
+            "datasetId" to adrResource.datasetId,
             "resourceId" to adrResource.resourceId
         )
         val headers = HttpHeaders()

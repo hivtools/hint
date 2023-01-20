@@ -14,6 +14,7 @@ import {SurveyAndProgramMutation} from "../../app/store/surveyAndProgram/mutatio
 import {expectEqualsFrozen} from "../testHelpers";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import Mock = jest.Mock;
+import {expectValidAdrImportPayload} from "../baseline/actions.test";
 
 const rootState = mockRootState();
 const mockFormData = {
@@ -21,6 +22,10 @@ const mockFormData = {
         return key == "file" ? {name: "file.txt"} : null;
     }
 };
+
+const root = (resource: object) => {
+    return mockRootState({baseline: ({selectedDataset: {id: "1", resources: resource}} as any)})
+}
 
 describe("Survey and programme actions", () => {
 
@@ -46,11 +51,14 @@ describe("Survey and programme actions", () => {
     });
 
     it("sets data after surveys file import", async () => {
-        mockAxios.onPost(`/adr/survey/?strict=true`)
+        const url = "/adr/survey/?strict=true"
+        mockAxios.onPost(url)
             .reply(200, mockSuccess({data: "SOME DATA", warnings: "TEST WARNINGS"}));
 
         const commit = jest.fn();
-        await actions.importSurvey({commit, rootState} as any, "some-url");
+        await actions.importSurvey({commit, rootState: root({survey: {id: "123"}})} as any, "some-url");
+
+        expectValidAdrImportPayload(url)
 
         checkSurveyImportUpload(commit);
     });
@@ -137,12 +145,14 @@ describe("Survey and programme actions", () => {
     });
 
     it("sets data after programme file import", async () => {
-
-        mockAxios.onPost(`/adr/programme/?strict=true`)
+        const url = "/adr/programme/?strict=true"
+        mockAxios.onPost(url)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
         const commit = jest.fn();
-        await actions.importProgram({commit, rootState} as any, "some-url");
+        await actions.importProgram({commit, rootState: root({program: {id: "123"}})} as any, "some-url");
+
+        expectValidAdrImportPayload(url)
 
         checkProgrammeImportUpload(commit)
     });
@@ -267,12 +277,15 @@ describe("Survey and programme actions", () => {
     });
 
     it("sets data after anc file import", async () => {
-
-        mockAxios.onPost(`/adr/anc/?strict=true`)
+        const url = "/adr/anc/?strict=true"
+        mockAxios.onPost(url)
             .reply(200, mockSuccess({data: "TEST", warnings: "TEST WARNINGS"}));
 
         const commit = jest.fn();
-        await actions.importANC({commit, rootState} as any, "some-url");
+
+        await actions.importANC({commit, rootState: root({anc: {id: "123"}})} as any, "some-url");
+
+        expectValidAdrImportPayload(url)
 
         checkANCImportUpload(commit);
     });

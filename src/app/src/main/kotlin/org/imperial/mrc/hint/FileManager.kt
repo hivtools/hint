@@ -154,7 +154,7 @@ class LocalFileManager(
     {
         val adr = adrClientBuilder.build()
 
-        val response = adr.get("package_activity_list?id=${adrResource.id}")
+        val response = adr.get("package_activity_list?id=${adrResource.datasetId}")
 
         val data = objectMapper.readTree(response.body)["data"]
 
@@ -165,7 +165,7 @@ class LocalFileManager(
 
         return UriComponentsBuilder
             .fromHttpUrl(appProperties.adrUrl)
-            .path("/dataset/${adrResource.id}/resource/${adrResource.resourceId}/download/${filename}")
+            .path("/dataset/${adrResource.datasetId}/resource/${adrResource.resourceId}/download/${filename}")
             .queryParam("activity_id", data[0]["id"].asText())
             .encode()
             .build()

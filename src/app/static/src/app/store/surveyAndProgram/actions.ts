@@ -128,8 +128,8 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
         if (url) {
             const data = {
                 url,
-                id: context.rootState.baseline?.selectedDataset?.id || "",
-                resourceId: context.rootState.baseline?.selectedDataset?.resources?.pop?.id || ""
+                datasetId: context.rootState.baseline?.selectedDataset?.id || "",
+                resourceId: context.rootState.baseline?.selectedDataset?.resources?.survey?.id || ""
             }
             await uploadOrImportSurvey(context, {url: "/adr/survey/", payload: data},
                 getFilenameFromImportUrl(url));
@@ -140,8 +140,8 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
         if (url) {
             const data = {
                 url,
-                id: context.rootState.baseline?.selectedDataset?.id || "",
-                resourceId: context.rootState.baseline?.selectedDataset?.resources?.pop?.id || ""
+                datasetId: context.rootState.baseline?.selectedDataset?.id || "",
+                resourceId: context.rootState.baseline?.selectedDataset?.resources?.program?.id || ""
             }
             await uploadOrImportProgram(context, {url: "/adr/programme/", payload: data},
                 getFilenameFromImportUrl(url));
@@ -152,8 +152,8 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
         if (url) {
             const data = {
                 url,
-                id: context.rootState.baseline?.selectedDataset?.id || "",
-                resourceId: context.rootState.baseline?.selectedDataset?.resources?.pop?.id || ""
+                datasetId: context.rootState.baseline?.selectedDataset?.id || "",
+                resourceId: context.rootState.baseline?.selectedDataset?.resources?.anc?.id || ""
             }
             await uploadOrImportANC(context, {url: "/adr/anc/", payload: data},
                 getFilenameFromImportUrl(url))
