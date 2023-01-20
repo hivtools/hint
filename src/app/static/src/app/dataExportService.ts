@@ -1,7 +1,7 @@
 import * as XLSX from "xlsx";
 import {DownloadIndicatorPayload, DownloadIndicatorDataset} from "./types";
 
-interface ExportService {
+export interface ExportService {
     download: () => void
     addFilteredData: () => ExportService
     addUnfilteredData: () => ExportService

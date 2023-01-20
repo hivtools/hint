@@ -1,5 +1,5 @@
-import {exportService} from "../app/DataExportService";
 import {mockDownloadIndicatorData} from "./mocks";
+import {exportService} from "../app/dataExportService";
 
 const mockJsonToSheet = jest.fn().mockImplementation((data) => ({ data, type: "json" }));
 const mockBookNew = jest.fn().mockImplementation(() => ({ sheets: [] } as any));
