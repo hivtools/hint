@@ -60,8 +60,8 @@
                 </div>
                 <div v-for="dataSource in chartConfigValues.dataSourceConfigValues.filter(ds => ds.tableConfig)"
                      :key="dataSource.config.id">
-                    <download-plot-data :filtered-data="filteredDataWithoutPageNum[dataSource.config.id]"
-                                        :unfiltered-data="unfilteredData[dataSource.config.id]"></download-plot-data>
+                    <download-indicator :filtered-data="filteredDataWithoutPageNum[dataSource.config.id]"
+                                        :unfiltered-data="unfilteredData[dataSource.config.id]"></download-indicator>
                     <generic-chart-table :table-config="dataSource.tableConfig"
                                          :filtered-data="chartData[dataSource.config.id]"
                                          :columns="dataSource.columns"
@@ -107,7 +107,7 @@
     import GenericChartTable from "./GenericChartTable.vue";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
-    import DownloadPlotData from "../plots/download/DownloadPlotData.vue";
+    import DownloadIndicator from "../downloadIndicator/DownloadIndicator.vue";
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections
@@ -184,7 +184,7 @@
             availableDatasetIds: Array
         },
         components: {
-            DownloadPlotData,
+            DownloadIndicator,
             ChevronLeftIcon,
             ChevronRightIcon,
             DataSource,

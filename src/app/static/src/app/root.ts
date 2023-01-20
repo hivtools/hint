@@ -45,6 +45,11 @@ import {GenericChartState, initialGenericChartState, genericChart} from "./store
 import {Warning} from "./generated";
 import {DataExplorationState} from "./store/dataExploration/dataExploration";
 import {DownloadResultsMutation} from "./store/downloadResults/mutations";
+import {
+    downloadIndicator,
+    DownloadIndicatorState,
+    initialDownloadIndicatorState
+} from "./store/downloadIndicator/downloadIndicator";
 
 export interface RootState extends DataExplorationState {
     version: string,
@@ -64,7 +69,8 @@ export interface RootState extends DataExplorationState {
     errors: ErrorsState,
     projects: ProjectsState
     currentUser: string,
-    downloadResults: DownloadResultsState
+    downloadResults: DownloadResultsState,
+    downloadIndicator: DownloadIndicatorState
 }
 
 export interface ReadyState {
@@ -154,7 +160,8 @@ export const emptyState = (): RootState => {
         projects: initialProjectsState(),
         currentUser: currentUser,
         downloadResults: initialDownloadResultsState(),
-        dataExplorationMode: false
+        dataExplorationMode: false,
+        downloadIndicator: initialDownloadIndicatorState()
     }
 };
 
@@ -180,7 +187,8 @@ export const storeOptions: StoreOptions<RootState> = {
         errors,
         projects,
         hintrVersion: hintrVersion(existingState),
-        downloadResults
+        downloadResults,
+        downloadIndicator
     },
     actions: actions,
     mutations: mutations,

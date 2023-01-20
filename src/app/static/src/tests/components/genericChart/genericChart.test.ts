@@ -20,7 +20,7 @@ import {actions} from "../../../app/store/genericChart/actions";
 import {mutations} from "../../../app/store/genericChart/mutations";
 import {mockAxios} from "../../mocks";
 import GenericChartTable from "../../../app/components/genericChart/GenericChartTable.vue";
-import DownloadPlotData from "../../../app/components/plots/download/DownloadPlotData.vue";
+import DownloadIndicator from "../../../app/components/downloadIndicator/DownloadIndicator.vue";
 
 describe("GenericChart component", () => {
 
@@ -619,7 +619,7 @@ describe("GenericChart component", () => {
                 yAxisFormat: ".1%"
             });
             expect(wrapper.find(GenericChartTable).props("valueFormat")).toBe(".1%");
-            expect(wrapper.find(DownloadPlotData).props()).toEqual(
+            expect(wrapper.find(DownloadIndicator).props()).toEqual(
                 {
                     unfilteredData: [
                         {

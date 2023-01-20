@@ -1,14 +1,14 @@
 import {mount} from "@vue/test-utils";
-import DownloadPlotData from "../../../../app/components/plots/download/DownloadPlotData.vue"
+import DownloadIndicator from "../../../app/components/downloadIndicator/DownloadIndicator.vue"
 import Vuex from "vuex";
-import {emptyState} from "../../../../app/root";
-import {mockBaselineState, mockDownloadIndicatorData} from "../../../mocks";
-import DownloadButton from "../../../../app/components/plots/download/downloadButton.vue";
-import registerTranslations from "../../../../app/store/translations/registerTranslations";
-import {expectTranslated} from "../../../testHelpers";
-import {BaselineState} from "../../../../app/store/baseline/baseline";
+import {emptyState} from "../../../app/root";
+import {mockBaselineState, mockDownloadIndicatorData} from "../../mocks";
+import DownloadButton from "../../../app/components/downloadIndicator/DownloadButton.vue";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {expectTranslated} from "../../testHelpers";
+import {BaselineState} from "../../../app/store/baseline/baseline";
 
-describe("download plot data", () => {
+describe("download indicator", () => {
 
     afterEach(() => {
         jest.clearAllMocks()
@@ -20,7 +20,7 @@ describe("download plot data", () => {
 
     const {filteredData, unfilteredData} = mockDownloadIndicatorData()
 
-    const createSut = (props: Partial<BaselineState> = stateData) => {
+    const createSut = (props: Partial<BaselineState> = stateData, downloadIndicatorState = {downloadingIndicator: false}) => {
         const store = new Vuex.Store({
             state: emptyState(),
             modules: {
@@ -30,6 +30,7 @@ describe("download plot data", () => {
                 },
                 downloadIndicator: {
                     namespaced: true,
+                    state: downloadIndicatorState,
                     actions: {
                         downloadFile: mockDownloadFileActions
                     }
@@ -41,7 +42,7 @@ describe("download plot data", () => {
     }
 
     const getWrapper = (store = createSut()) => {
-        return mount(DownloadPlotData, {
+        return mount(DownloadIndicator, {
             store,
             propsData: {
                 unfilteredData,
@@ -78,12 +79,17 @@ describe("download plot data", () => {
         expect(mockDownloadFileActions.mock.calls[0][1].data).toStrictEqual(mockDownloadIndicatorData())
     });
 
-    it('can use country prefix when iso3 data is empty', async () => {
+    it('can use country prefix when iso3 data is empty', () => {
         const wrapper = getWrapper(createSut({iso3: "", country: "Malawi"}));
-        await wrapper.find(DownloadButton).vm.$emit("click")
-        await expect(mockDownloadFileActions).toHaveBeenCalledTimes(1)
+        wrapper.find(DownloadButton).vm.$emit("click")
+        expect(mockDownloadFileActions).toHaveBeenCalledTimes(1)
 
         const filename = mockDownloadFileActions.mock.calls[0][1].filename
         expect(filename.split(".")[0]).toContain("Malawi_naomi_data-review_")
+    });
+
+    it('download button is disabled when file download is in progress', async () => {
+        const wrapper = getWrapper(createSut({iso3: "", country: "Malawi"}, {downloadingIndicator: true}));
+        expect(wrapper.find(DownloadButton).props("disabled")).toBe(true)
     });
 })

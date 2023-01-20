@@ -11,11 +11,12 @@ export interface DownloadIndicatorActions {
 
 export const actions: ActionTree<DownloadIndicatorState, DataExplorationState> & DownloadIndicatorActions = {
     downloadFile(context, payload) {
-        context.commit({type: DownloadIndicatorMutation.DownloadingIndicator, payload: true})
+        const {commit} = context
+        commit({type: DownloadIndicatorMutation.DownloadingIndicator, payload: true})
         exportService(payload)
             .addUnfilteredData()
             .addFilteredData()
             .download()
-        context.commit({type: DownloadIndicatorMutation.DownloadingIndicator, payload: false})
+        commit({type: DownloadIndicatorMutation.DownloadingIndicator, payload: false})
     }
 }

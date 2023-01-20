@@ -1,11 +1,11 @@
 import {shallowMount} from "@vue/test-utils";
-import DownloadButton from "../../../../app/components/plots/download/downloadButton.vue"
+import DownloadButton from "../../../app/components/downloadIndicator/DownloadButton.vue"
 import {DownloadIcon} from "vue-feather-icons";
 
 describe("download button", () => {
 
     const downloadProps = {
-        name: "downloadPlotData",
+        name: "downloadIndicator",
         disabled: false
     }
     const mockTranslate = jest.fn()
@@ -22,15 +22,15 @@ describe("download button", () => {
         const wrapper = getWrapper()
         expect(wrapper.props()).toEqual({
             disabled: false,
-            name: "downloadPlotData"
+            name: "downloadIndicator"
         })
         expect(wrapper.find(".btn").attributes("disabled")).toBeUndefined()
         expect(mockTranslate.mock.calls.length).toBe(1)
-        expect(mockTranslate.mock.calls[0][1].value).toBe("downloadPlotData")
+        expect(mockTranslate.mock.calls[0][1].value).toBe("downloadIndicator")
     });
 
     it('it does not render button when disabled prop is true ', () => {
-        const wrapper = getWrapper({disabled: true, name: "downloadPlotData"})
+        const wrapper = getWrapper({disabled: true, name: "downloadIndicator"})
         expect(wrapper.find(".btn").attributes("disabled")).toBe("disabled")
     });
 

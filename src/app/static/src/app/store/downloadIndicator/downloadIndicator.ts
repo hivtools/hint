@@ -15,11 +15,9 @@ export const initialDownloadIndicatorState = (): DownloadIndicatorState => {
 
 const namespaced = true
 
-export const downloadIndicator = (): Module<DownloadIndicatorState, DataExplorationState> => {
-    return {
-        namespaced,
-        state: {...initialDownloadIndicatorState()},
-        actions,
-        mutations
-    }
+export const downloadIndicator: Module<DownloadIndicatorState, DataExplorationState> = {
+    namespaced,
+    state: {...initialDownloadIndicatorState()},
+    actions,
+    mutations
 }
