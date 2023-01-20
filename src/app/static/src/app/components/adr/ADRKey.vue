@@ -10,19 +10,23 @@
                     <div v-if="!editing">
                         <span class="pr-2">{{ keyText }}</span>
                         <span v-if="!key">
-                           <a href="#"
-                              @click="add"
-                              v-translate="'add'"></a>
-                              <span>/</span>
+                            <button class="btn btn-red"
+                                    type="button"
+                                    @click="add"
+                                    v-translate="'add'">
+                            </button>
                             <a :href="adrProfileUrl"
+                               class="btn btn-red"
                                target="_blank"
                                v-translate="'getAccessKey'"
                                v-tooltip="tooltipContent"></a>
                         </span>
                         <span v-if="key">
-                            <a href="#"
-                               @click="remove"
-                               v-translate="'remove'"></a>
+                             <button class="btn btn-red"
+                                     type="button"
+                                     @click="remove"
+                                     v-translate="'remove'">
+                            </button>
                          </span>
                     </div>
                     <div class="input-group"
@@ -35,20 +39,19 @@
                                type="text"
                                v-translate:placeholder="'enterKey'"/>
                         <div class="input-group-append">
-                            <button class="btn btn-red"
+                            <button class="btn btn-red mr-2"
                                     type="button"
                                     v-translate="'save'"
                                     :disabled="!editableKey"
                                     @click="save">
                             </button>
+                            <button class="btn btn-red"
+                                    type="button"
+                                    @click="cancel"
+                                    v-translate="'cancel'">
+                            </button>
                         </div>
                     </div>
-                </div>
-                <div class="align-self-stretch pl-2">
-                    <a href="#"
-                       v-if="editing"
-                       @click="cancel"
-                       v-translate.lowercase="'cancel'"></a>
                 </div>
             </div>
             <error-alert v-if="error" :error="error"></error-alert>
