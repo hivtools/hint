@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx";
-import {DownloadIndicatorPayload, DownloadPlotData} from "./types";
+import {DownloadIndicatorPayload, DownloadIndicatorDataset} from "./types";
 
 interface ExportService {
     download: () => void
@@ -8,7 +8,7 @@ interface ExportService {
 }
 
 export class DataExportService implements ExportService {
-    private readonly _data: DownloadPlotData
+    private readonly _data: DownloadIndicatorDataset
     private readonly _filename: string
 
     private readonly _workbook: XLSX.WorkBook;

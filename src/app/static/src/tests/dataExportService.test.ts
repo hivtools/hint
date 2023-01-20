@@ -1,4 +1,4 @@
-import {DataExportService, exportService} from "../app/DataExportService";
+import {exportService} from "../app/DataExportService";
 import {mockDownloadIndicatorData} from "./mocks";
 
 const mockJsonToSheet = jest.fn().mockImplementation((data) => ({ data, type: "json" }));
@@ -81,7 +81,7 @@ describe("data export service", () => {
     it('can download only filtered data', () => {
         const data = mockDownloadIndicatorData()
 
-        new DataExportService({data, filename: "MWI_naomi_data.xlsx"})
+        exportService({data, filename: "MWI_naomi_data.xlsx"})
             .addFilteredData()
             .download()
 
@@ -91,7 +91,7 @@ describe("data export service", () => {
     it('can download only unfiltered data', () => {
         const data = mockDownloadIndicatorData()
 
-        new DataExportService({data, filename: "MWI_naomi_data.xlsx"})
+        exportService({data, filename: "MWI_naomi_data.xlsx"})
             .addUnfilteredData()
             .download()
 

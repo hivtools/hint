@@ -318,12 +318,12 @@ interface DownloadIds {
     coarse_output: string
 }
 
-export interface DownloadPlotData {
+export interface DownloadIndicatorDataset {
     filteredData: unknown[],
     unfilteredData: unknown[]
 }
 
 export interface DownloadIndicatorPayload {
-    data: DownloadPlotData,
+    data: DownloadIndicatorDataset,
     filename: string
 }
