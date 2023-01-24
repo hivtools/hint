@@ -3,7 +3,7 @@ import {DataType, SurveyAndProgramState} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
-import {getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
+import {buildData, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
 import {GenericChartMutation} from "../genericChart/mutations";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 import {UploadImportPayload} from "../../types";
@@ -126,11 +126,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
 
     async importSurvey(context, url) {
         if (url) {
-            const data = {
-                url,
-                datasetId: context.rootState.baseline?.selectedDataset?.id || "",
-                resourceId: context.rootState.baseline?.selectedDataset?.resources?.survey?.id || ""
-            }
+            const data = buildData (context.rootState.baseline.selectedDataset, url, "survey")
             await uploadOrImportSurvey(context, {url: "/adr/survey/", payload: data},
                 getFilenameFromImportUrl(url));
         }
@@ -138,11 +134,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
 
     async importProgram(context, url) {
         if (url) {
-            const data = {
-                url,
-                datasetId: context.rootState.baseline?.selectedDataset?.id || "",
-                resourceId: context.rootState.baseline?.selectedDataset?.resources?.program?.id || ""
-            }
+            const data = buildData (context.rootState.baseline.selectedDataset, url, "program")
             await uploadOrImportProgram(context, {url: "/adr/programme/", payload: data},
                 getFilenameFromImportUrl(url));
         }
@@ -150,11 +142,7 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
 
     async importANC(context, url) {
         if (url) {
-            const data = {
-                url,
-                datasetId: context.rootState.baseline?.selectedDataset?.id || "",
-                resourceId: context.rootState.baseline?.selectedDataset?.resources?.anc?.id || ""
-            }
+            const data = buildData (context.rootState.baseline.selectedDataset, url, "anc")
             await uploadOrImportANC(context, {url: "/adr/anc/", payload: data},
                 getFilenameFromImportUrl(url))
         }

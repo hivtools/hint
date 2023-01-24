@@ -9,7 +9,7 @@ import {
     mapState,
     MutationMethod
 } from "vuex";
-import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
+import {ADRSchemas, Dataset, DatasetResource, DatasetResourceType, Dict, UploadFile, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse, Response} from "./generated";
 import moment from 'moment';
 import {
@@ -25,6 +25,8 @@ import {LoadState} from "./store/load/state";
 import {initialModelRunState} from "./store/modelRun/modelRun";
 import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
 import {AxiosResponse} from "axios";
+import {BaselineState} from "./store/baseline/baseline";
+import {DataExplorationState} from "./store/dataExploration/dataExploration";
 
 export type ComputedWithType<T> = () => T;
 
@@ -492,3 +494,9 @@ export const extractFilenameFrom = (contentDisposition: string): string => {
         .replace(/"/g, '')
         .trim();
 }
+
+export const buildData = (selectedDataset: Dataset | null, url: string, resourceType: DatasetResourceType) => ({
+    url,
+    datasetId: selectedDataset?.id || "",
+    resourceId: selectedDataset?.resources?.[resourceType]?.id || ""
+});

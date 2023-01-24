@@ -323,3 +323,4 @@ export interface UploadImportPayload {
     datasetId: string,
     resourceId: string
 }
+export type DatasetResourceType = "pjnz" | "pop"  | "program" | "anc" | "shape" | "survey";

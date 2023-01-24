@@ -3,8 +3,8 @@ import {BaselineState} from "./baseline";
 import {api} from "../../apiService";
 import {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineResponse} from "../../generated";
 import {BaselineMutation} from "./mutations";
-import {findResource, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
-import {DatasetResourceSet, DatasetResource, ADRSchemas, UploadImportPayload} from "../../types";
+import {buildData, findResource, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
+import {DatasetResourceSet, DatasetResource, ADRSchemas, UploadImportPayload, DatasetResourceType} from "../../types";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 import {initialChorplethSelections} from "../plottingSelections/plottingSelections";
 
@@ -133,11 +133,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
 
     async importPJNZ(context, url) {
         if (url) {
-            const data = {
-                url,
-                datasetId: context.state.selectedDataset?.id || "",
-                resourceId: context.state.selectedDataset?.resources?.pjnz?.id || ""
-            }
+            const data = buildData (context.state.selectedDataset, url, "pjnz")
             await uploadOrImportPJNZ(context, {url: "/adr/pjnz/", payload: data},
                 getFilenameFromImportUrl(url));
         }
@@ -145,11 +141,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
 
     async importPopulation(context, url) {
         if (url) {
-            const data = {
-                url,
-                datasetId: context.state.selectedDataset?.id || "",
-                resourceId: context.state.selectedDataset?.resources?.pop?.id || ""
-            }
+            const data = buildData (context.state.selectedDataset, url, "pop")
             await uploadOrImportPopulation(context, {url: "/adr/population/", payload: data},
                 getFilenameFromImportUrl(url));
         }
@@ -157,11 +149,7 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
 
     async importShape(context, url) {
         if (url) {
-            const data = {
-                url,
-                datasetId: context.state.selectedDataset?.id || "",
-                resourceId: context.state.selectedDataset?.resources?.shape?.id || ""
-            }
+            const data = buildData (context.state.selectedDataset, url, "shape")
             await uploadOrImportShape(context, {url: "/adr/shape/", payload: data},
                 getFilenameFromImportUrl(url));
         }
