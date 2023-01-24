@@ -1,12 +1,12 @@
 <template>
     <div class="row mb-2">
         <div class="col-8">
-            <div class="d-flex">
+            <div class="d-flex d-inline-block">
                 <label for="key"
-                       class="font-weight-bold align-self-stretch"
+                       class="font-weight-bold align-self-center col-form-label"
                        v-translate="'adrKey'">
                 </label>
-                <div class="align-self-stretch pl-2">
+                <div class="align-self-center pl-2">
                     <div v-if="!editing">
                         <span class="pr-2">{{ keyText }}</span>
                         <span v-if="!key">
