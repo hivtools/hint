@@ -25,8 +25,6 @@ import {LoadState} from "./store/load/state";
 import {initialModelRunState} from "./store/modelRun/modelRun";
 import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
 import {AxiosResponse} from "axios";
-import {BaselineState} from "./store/baseline/baseline";
-import {DataExplorationState} from "./store/dataExploration/dataExploration";
 
 export type ComputedWithType<T> = () => T;
 

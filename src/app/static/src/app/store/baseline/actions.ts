@@ -4,7 +4,7 @@ import {api} from "../../apiService";
 import {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineResponse} from "../../generated";
 import {BaselineMutation} from "./mutations";
 import {buildData, findResource, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
-import {DatasetResourceSet, DatasetResource, ADRSchemas, UploadImportPayload, DatasetResourceType} from "../../types";
+import {DatasetResourceSet, DatasetResource, ADRSchemas, UploadImportPayload} from "../../types";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 import {initialChorplethSelections} from "../plottingSelections/plottingSelections";
 
