@@ -23,7 +23,7 @@
     }
 
     interface Props {
-        filteredData: unknown[]
+        filteredData: unknown[] | null
         unfilteredData: unknown[]
     }
 
@@ -55,8 +55,10 @@
             download() {
                 const prefix = this.iso3 || this.country
                 const filename = `${prefix}_naomi_data-review_${appendCurrentDateTime()}.xlsx`
-                const data = {filteredData: this.filteredData, unfilteredData: this.unfilteredData}
-                this.downloadFile({data, filename})
+                if (this.filteredData) {
+                    const data = {filteredData: this.filteredData, unfilteredData: this.unfilteredData}
+                    this.downloadFile({data, filename})
+                }
             },
             downloadFile: mapActionByName(namespace, "downloadFile"),
         }

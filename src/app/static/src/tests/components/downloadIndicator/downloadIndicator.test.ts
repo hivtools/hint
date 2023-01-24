@@ -41,12 +41,13 @@ describe("download indicator", () => {
         return store
     }
 
-    const getWrapper = (store = createSut()) => {
+    const getWrapper = (store = createSut(), props = {}) => {
         return mount(DownloadIndicator, {
             store,
             propsData: {
                 unfilteredData,
-                filteredData
+                filteredData,
+                ...props
             }
         })
     }
@@ -91,5 +92,13 @@ describe("download indicator", () => {
     it('download button is disabled when file download is in progress', async () => {
         const wrapper = getWrapper(createSut({iso3: "", country: "Malawi"}, {downloadingIndicator: true}));
         expect(wrapper.find(DownloadButton).props("disabled")).toBe(true)
+    });
+
+    it('does not download file when indicator data is empty', async() => {
+        const wrapper = getWrapper(createSut(), {filteredData: null});
+
+        await wrapper.find(DownloadButton).vm.$emit("click")
+
+        await expect(mockDownloadFileActions).toHaveBeenCalledTimes(0)
     });
 })

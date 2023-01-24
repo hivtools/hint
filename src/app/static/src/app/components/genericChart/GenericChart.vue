@@ -60,7 +60,7 @@
                 </div>
                 <div v-for="dataSource in chartConfigValues.dataSourceConfigValues.filter(ds => ds.tableConfig)"
                      :key="dataSource.config.id">
-                    <download-indicator :filtered-data="filteredDataWithoutPageNum[dataSource.config.id]"
+                    <download-indicator :filtered-data="filteredDataWithoutPages[dataSource.config.id]"
                                         :unfiltered-data="unfilteredData[dataSource.config.id]"></download-indicator>
                     <generic-chart-table :table-config="dataSource.tableConfig"
                                          :filtered-data="chartData[dataSource.config.id]"
@@ -136,7 +136,6 @@
         currentPage: number
         totalPages: number
         finalPagePlotCount: number
-        filteredDataWithoutPageNum: Dict<unknown[]> | null
     }
 
     interface Props {
@@ -161,6 +160,7 @@
         prevPageEnabled: boolean
         nextPageEnabled: boolean
         unfilteredData: Dict<unknown[]> | null
+        filteredDataWithoutPages: Dict<unknown[]> | null
     }
 
     interface Methods {
@@ -170,7 +170,6 @@
         updateDataSource: (dataSourceId: string, datasetId: string) => void,
         updateSelectedFilterOptions: (dataSourceId: string, options: Dict<FilterOption[]> | null) => void
         addPageNumbersToData: (data: unknown[]) => unknown[]
-        addFilteredDataWithoutPageNumber: (data: Dict<unknown[]> | null) => void
     }
 
     const namespace = "genericChart";
@@ -209,8 +208,7 @@
                 dataSourceSelections,
                 currentPage: 1,
                 totalPages: 1,
-                finalPagePlotCount: 0,
-                filteredDataWithoutPageNum: null
+                finalPagePlotCount: 0
             }
         },
         computed: {
@@ -318,7 +316,7 @@
 
                 return result
             },
-            chartData() {
+            filteredDataWithoutPages() {
                 const result = {} as Dict<unknown[]>;
 
                 for (const dataSource of this.chartMetadata.dataSelectors.dataSources) {
@@ -337,9 +335,12 @@
                     result[dataSourceId] = filterData(unfilteredData, filters, selectedFilterOptions);
                 }
 
-                this.addFilteredDataWithoutPageNumber(result)
+                return result
+            },
+            chartData() {
+                const result = this.filteredDataWithoutPages
 
-                if (result["data"]) {
+                if (result && result["data"]) {
                     const dataWithPages = this.addPageNumbersToData(result["data"])
                     return {...result, data: dataWithPages};
                 } else {
@@ -387,9 +388,6 @@
                 this.updateSelectedFilterOptions(dataSourceId, null);
                 await this.ensureDataset(datasetId);
                 this.setDataSourceDefaultFilterSelections(dataSourceId, datasetId);
-            },
-            addFilteredDataWithoutPageNumber(data) {
-                this.filteredDataWithoutPageNum = data
             },
             setDataSourceDefaultFilterSelections(dataSourceId: string, datasetId: string) {
                 const selectedFilterOptions = this.datasets[datasetId].metadata.defaults.selected_filter_options;
