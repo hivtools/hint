@@ -139,7 +139,7 @@ describe("ApiService", () => {
 
         mockAxios.onGet("/baseline/")
             .reply(401, null);
-        expect(window.location.assign).not.toHaveBeenCalled()
+        expect(window.location.assign).toHaveBeenCalledTimes(0)
 
         const commit = jest.fn();
         await api({commit, rootState} as any)

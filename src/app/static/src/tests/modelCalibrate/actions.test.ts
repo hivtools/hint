@@ -93,7 +93,7 @@ describe("ModelCalibrate actions", () => {
         expect(dispatch.mock.calls.length).toBe(0);
     });
 
-    it("poll commits status when successfully fetched", async (done) => {
+    it("poll commits status when successfully fetched",  (done) => {
         mockAxios.onGet(`/model/calibrate/status/1234`)
             .reply(200, mockSuccess("TEST DATA"));
 
@@ -139,7 +139,7 @@ describe("ModelCalibrate actions", () => {
         }, 2100);
     });
 
-    it("poll dispatches getResult when status done", async (done) => {
+    it("poll dispatches getResult when status done",  (done) => {
         mockAxios.onGet(`/model/calibrate/status/1234`)
             .reply(200, mockSuccess("TEST DATA"));
 

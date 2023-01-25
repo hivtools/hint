@@ -142,7 +142,7 @@ module.exports = [appConfig, forgotPasswordAppConfig, resetPasswordAppConfig, da
 if (process.env.NODE_ENV === 'production') {
     module.exports.forEach((moduleExport) =>
     {
-        moduleExport.devtool = '#source-map';
+        moduleExport.devtool = 'source-map';
         // http://vue-loader.vuejs.org/en/workflow/production.html
         moduleExport.plugins = (moduleExport.plugins || []).concat([
             new webpack.DefinePlugin({
