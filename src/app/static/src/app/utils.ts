@@ -9,7 +9,7 @@ import {
     mapState,
     MutationMethod
 } from "vuex";
-import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
+import {ADRSchemas, Dataset, DatasetResource, DatasetResourceType, Dict, UploadFile, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse, Response} from "./generated";
 import moment, {utc} from 'moment';
 import {
@@ -496,3 +496,9 @@ export const extractFilenameFrom = (contentDisposition: string): string => {
         .replace(/"/g, '')
         .trim();
 }
+
+export const buildData = (selectedDataset: Dataset | null, url: string, resourceType: DatasetResourceType) => ({
+    url,
+    datasetId: selectedDataset?.id || "",
+    resourceId: selectedDataset?.resources?.[resourceType]?.id || ""
+});
