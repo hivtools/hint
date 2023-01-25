@@ -55,27 +55,27 @@ describe("ADR Key", function () {
         expect(rendered.find("span").text()).toBe("none provided");
     });
 
-    it("shows remove links if key exists", () => {
+    it("shows remove button if key exists", () => {
         const rendered = shallowMount(ADRKey, {store: createStore("123-abc")});
-        const links = rendered.findAll("a")
+        const links = rendered.findAll(".btn")
         expect(links.length).toBe(1);
         expect(links.at(0).text()).toBe("remove");
     });
 
-    it("shows add link if key does not exist", () => {
+    it("shows add button if key does not exist", () => {
         const rendered = shallowMount(ADRKey, {store: createStore()});
-        const links = rendered.findAll("a");
+        const links = rendered.findAll(".btn");
         expect(links.length).toBe(2);
         expect(links.at(0).text()).toBe("add");
     });
 
-    it("shows link to ADR with tooltip if key does not exist", () => {
+    it("shows button to ADR with tooltip if key does not exist", () => {
         const mockTooltipDirective = jest.fn();
         const rendered = shallowMount(ADRKey, {store: createStore(), directives: {"tooltip": mockTooltipDirective}});
         const links = rendered.findAll("a");
-        expect(links.length).toBe(2);
-        expect(links.at(1).text()).toBe("get access key from ADR");
-        expect(links.at(1).attributes("href")).toBe("www.adr.com/me");
+        expect(links.length).toBe(1);
+        expect(links.at(0).text()).toBe("get access key from ADR");
+        expect(links.at(0).attributes("href")).toBe("www.adr.com/me");
         expect(mockTooltipDirective.mock.calls[0][0].innerHTML)
             .toBe("get access key from ADR");
         expect(mockTooltipDirective.mock.calls[0][1].value)
@@ -91,7 +91,7 @@ describe("ADR Key", function () {
                 stubs: ["tree-select"]
             });
         expect(rendered.findAll(".input-group").length).toBe(0);
-        const links = rendered.findAll("a")
+        const links = rendered.findAll(".btn")
         links.at(0).trigger("click");
 
         await Vue.nextTick();
@@ -110,7 +110,7 @@ describe("ADR Key", function () {
     it("cannot save empty key", async () => {
         const rendered = shallowMount(ADRKey, {store: createStore()});
         expect(rendered.findAll(".input-group").length).toBe(0);
-        const links = rendered.findAll("a")
+        const links = rendered.findAll(".btn")
         links.at(0).trigger("click");
 
         await Vue.nextTick();
@@ -130,15 +130,16 @@ describe("ADR Key", function () {
     it("can cancel editing", async () => {
         const rendered = shallowMount(ADRKey, {store: createStore()});
         expect(rendered.findAll(".input-group").length).toBe(0);
-        const links = rendered.findAll("a")
+        const links = rendered.findAll(".btn")
         links.at(0).trigger("click");
 
         await Vue.nextTick();
 
         expect(rendered.findAll(".input-group").length).toBe(1);
 
-        expect(rendered.find("a").text()).toBe("cancel");
-        rendered.find("a").trigger("click");
+        const buttons = rendered.findAll(".btn")
+        expect(buttons.at(1).text()).toBe("Cancel");
+        buttons.at(1).trigger("click");
 
         await Vue.nextTick();
 
@@ -148,7 +149,7 @@ describe("ADR Key", function () {
     it("can remove key", async () => {
         const rendered = shallowMount(ADRKey, {store: createStore("123-abc")});
         expect(rendered.findAll(".input-group").length).toBe(0);
-        const links = rendered.findAll("a")
+        const links = rendered.findAll(".btn")
         links.at(0).trigger("click");
 
         await Vue.nextTick();
@@ -159,7 +160,7 @@ describe("ADR Key", function () {
     it("can add key", async () => {
         const rendered = shallowMount(ADRKey, {store: createStore()});
         expect(rendered.findAll(".input-group").length).toBe(0);
-        rendered.find("a").trigger("click");
+        rendered.find(".btn").trigger("click");
 
         await Vue.nextTick();
 
