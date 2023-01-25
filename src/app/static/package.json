@@ -56,7 +56,7 @@
     "gulp-hash-filename": "^2.0.1",
     "gulp-inject": "^5.0.4",
     "gulp-rename": "^1.4.0",
-    "gulp-sass": "^4.0.2",
+    "gulp-sass": "^5.1.0",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
     "i18next": "^19.0.1",
