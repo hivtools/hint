@@ -19,15 +19,9 @@
 <script lang="ts">
 
     import Vue from "vue";
+    import {StepperNavigationProps} from "../types";
 
-    export interface Props {
-        back: () => void
-        backDisabled: boolean
-        next: () => void
-        nextDisabled: boolean
-    }
-
-    export default Vue.extend<void, void, void, Props>({
+    export default Vue.extend<void, void, void, StepperNavigationProps>({
         props: {
             back: Function,
             backDisabled: Boolean,

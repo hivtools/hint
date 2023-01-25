@@ -102,14 +102,14 @@ describe("Load actions", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({type: "LoadStateCleared", payload: null});
     });
 
-    it("loadVersion sets files and updates store state", async (done) => {
+    it("loadVersion sets files and updates store state",  (done) => {
         mockAxios.onPost(`/session/files/`)
             .reply(200, mockSuccess({}));
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
 
-        await actions.loadFromVersion({commit, dispatch, state, rootState} as any, {
+        actions.loadFromVersion({commit, dispatch, state, rootState} as any, {
             files: "files",
             state: JSON.stringify({stepper: {}})
         });
@@ -439,7 +439,6 @@ describe("Load actions", () => {
         localStorageManager.savePartialState = mockSaveToLocalStorage;
 
         const mockLocationReload = jest.fn();
-        delete window.location;
         window.location = {reload: mockLocationReload} as any;
 
         const testState = mockRootState();
@@ -454,7 +453,6 @@ describe("Load actions", () => {
         localStorageManager.savePartialState = mockSaveToLocalStorage;
 
         const mockLocationReload = jest.fn();
-        delete window.location;
         window.location = {reload: mockLocationReload} as any;
 
         const testState = mockRootState({
@@ -501,7 +499,6 @@ describe("Load actions", () => {
         localStorageManager.savePartialState = mockSaveToLocalStorage;
 
         const mockLocationReload = jest.fn();
-        delete window.location;
         window.location = {reload: mockLocationReload} as any;
 
         const testState = mockRootState({
@@ -547,7 +544,6 @@ describe("Load actions", () => {
         localStorageManager.savePartialState = mockSaveToLocalStorage;
 
         const mockLocationReload = jest.fn();
-        delete window.location;
         window.location = {reload: mockLocationReload} as any;
 
         const testState = mockRootState({
@@ -591,7 +587,7 @@ describe("Load actions", () => {
         });
     });
 
-    it("can pollRehydrate status and dispatches PollingStatusStarted action", async (done) => {
+    it("can pollRehydrate status and dispatches PollingStatusStarted action",  (done) => {
         mockAxios.onGet(`rehydrate/status/1`)
             .reply(200, mockSuccess(RunningStatusResponse));
 
@@ -632,7 +628,7 @@ describe("Load actions", () => {
         const dispatch = jest.fn()
         const rootGetters = {isGuest: false}
         const state = mockLoadState({rehydrateId: "1", projectName: "testProject"} as any)
-        await actions.pollRehydrate({commit, dispatch, rootState, state, rootGetters} as any);
+        actions.pollRehydrate({commit, dispatch, rootState, state, rootGetters} as any);
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2)
@@ -697,7 +693,7 @@ describe("Load actions", () => {
         }, 2100);
     });
 
-    it("Update store states and does not dispatch create project action when user is guest", async (done) => {
+    it("Update store states and does not dispatch create project action when user is guest",  (done) => {
         mockAxios.onGet(`rehydrate/status/1`)
             .reply(200, mockSuccess(RunningStatusResponse));
 
@@ -711,7 +707,7 @@ describe("Load actions", () => {
         const dispatch = jest.fn()
         const rootGetters = {isGuest: true}
         const state = mockLoadState({rehydrateId: "1"} as any)
-        await actions.pollRehydrate({commit, dispatch, rootState, state, rootGetters} as any);
+        actions.pollRehydrate({commit, dispatch, rootState, state, rootGetters} as any);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(4)
@@ -725,14 +721,14 @@ describe("Load actions", () => {
         }, 2100);
     });
 
-    it("calls RehydrateResultError when polling errored", async (done) => {
+    it("calls RehydrateResultError when polling errored",  (done) => {
         mockAxios.onGet(`rehydrate/status/1`)
             .reply(500, mockFailure("ERROR"));
 
         const commit = jest.fn();
         const dispatch = jest.fn()
         const state = mockLoadState({rehydrateId: "1"} as any)
-        await actions.pollRehydrate({commit, rootState, state, dispatch} as any);
+        actions.pollRehydrate({commit, rootState, state, dispatch} as any);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2)

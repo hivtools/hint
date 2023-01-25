@@ -4,11 +4,11 @@ import {ActionContext, Commit} from "vuex";
 import {freezer, isHINTResponse, readStream} from "./utils";
 import {Error, Response} from "./generated";
 import i18next from "i18next";
-import {TranslatableState} from "./types";
+import {GenericResponse, TranslatableState} from "./types";
 
 declare let appUrl: string;
 
-export interface ResponseWithType<T> extends Response {
+export interface ResponseWithType<T> extends GenericResponse<T> {
     data: T
 }
 

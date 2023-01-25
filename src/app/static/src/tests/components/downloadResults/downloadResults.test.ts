@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 import {
     mockADRState,
     mockADRUploadState, mockDownloadResultsDependency,
-    mockDownloadResultsState, mockError,
+    mockDownloadResultsState,
     mockModelCalibrateState
 } from "../../mocks";
 import DownloadResults from "../../../app/components/downloadResults/DownloadResults.vue";
@@ -466,7 +466,6 @@ describe("Download Results component", () => {
 
 const downloadFile = (button: Wrapper<any>) => {
     const realLocation = window.location
-    delete window.location;
     window.location = {...window.location, assign: jest.fn()};
     button.trigger("click");
     expect(window.location.assign).toHaveBeenCalledTimes(1)

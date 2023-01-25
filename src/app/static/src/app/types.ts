@@ -336,3 +336,35 @@ export interface DownloadIndicatorPayload {
     filename: string
 }
 
+export interface Field {
+    key: string,
+    label?: string
+    sortable: boolean,
+    sortByFormatted: boolean
+}
+
+export interface GenericResponse<T> {
+    status: "success" | "failure";
+    data: T | null;
+    errors: {
+        error: string;
+        detail: string | null;
+        key?: string;
+        trace?: string[];
+        [k: string]: any;
+    }[];
+    version?: {
+        hintr: string;
+        naomi: string;
+        rrq: string;
+        [k: string]: any;
+    };
+}
+
+export interface StepperNavigationProps {
+    back: () => void
+    backDisabled: boolean
+    next: () => void
+    nextDisabled: boolean
+}
+
