@@ -317,3 +317,13 @@ interface DownloadIds {
     summary: string,
     coarse_output: string
 }
+
+export interface DownloadIndicatorDataset {
+    filteredData: unknown[],
+    unfilteredData: unknown[]
+}
+
+export interface DownloadIndicatorPayload {
+    data: DownloadIndicatorDataset,
+    filename: string
+}

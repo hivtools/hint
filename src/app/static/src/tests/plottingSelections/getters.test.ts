@@ -1,5 +1,11 @@
 import {getters} from "../../app/store/plottingSelections/getters";
-import {mockColourScales, mockPlottingSelections, mockRootState, mockModelCalibrateState} from "../mocks";
+import {
+    mockColourScales,
+    mockPlottingSelections,
+    mockRootState,
+    mockModelCalibrateState,
+    mockDownloadIndicatorData
+} from "../mocks";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 
 const rootState = mockRootState({
