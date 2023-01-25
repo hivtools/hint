@@ -3,10 +3,10 @@ import {DataType, SurveyAndProgramState} from "./surveyAndProgram";
 import {api} from "../../apiService";
 import {AncResponse, ProgrammeResponse, SurveyResponse} from "../../generated";
 import {SurveyAndProgramMutation} from "./mutations";
-import qs from 'qs';
-import {getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
+import {buildData, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
 import {GenericChartMutation} from "../genericChart/mutations";
 import {DataExplorationState} from "../dataExploration/dataExploration";
+import {UploadImportPayload} from "../../types";
 
 export interface SurveyAndProgramActions {
     importSurvey: (store: ActionContext<SurveyAndProgramState, DataExplorationState>, url: string) => void,
@@ -40,7 +40,7 @@ function commitClearGenericChartDataset(commit: Commit, dataType: string) {
 
 interface UploadImportOptions {
     url: string
-    payload: FormData | string
+    payload: FormData | UploadImportPayload
 }
 
 async function uploadOrImportANC(context: ActionContext<SurveyAndProgramState, DataExplorationState>, options: UploadImportOptions,
@@ -126,21 +126,24 @@ export const actions: ActionTree<SurveyAndProgramState, DataExplorationState> & 
 
     async importSurvey(context, url) {
         if (url) {
-            await uploadOrImportSurvey(context, {url: "/adr/survey/", payload: qs.stringify({url})},
+            const data = buildData (context.rootState.baseline?.selectedDataset, url, "survey")
+            await uploadOrImportSurvey(context, {url: "/adr/survey/", payload: data},
                 getFilenameFromImportUrl(url));
         }
     },
 
     async importProgram(context, url) {
         if (url) {
-            await uploadOrImportProgram(context, {url: "/adr/programme/", payload: qs.stringify({url})},
+            const data = buildData (context.rootState.baseline?.selectedDataset, url, "program")
+            await uploadOrImportProgram(context, {url: "/adr/programme/", payload: data},
                 getFilenameFromImportUrl(url));
         }
     },
 
     async importANC(context, url) {
         if (url) {
-            await uploadOrImportANC(context, {url: "/adr/anc/", payload: qs.stringify({url})},
+            const data = buildData (context.rootState.baseline?.selectedDataset, url, "anc")
+            await uploadOrImportANC(context, {url: "/adr/anc/", payload: data},
                 getFilenameFromImportUrl(url))
         }
     },

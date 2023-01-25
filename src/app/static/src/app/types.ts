@@ -318,6 +318,14 @@ interface DownloadIds {
     coarse_output: string
 }
 
+export interface UploadImportPayload {
+    url: string,
+    datasetId: string,
+    resourceId: string
+}
+
+export type DatasetResourceType = "pjnz" | "pop"  | "program" | "anc" | "shape" | "survey";
+
 export interface DownloadIndicatorDataset {
     filteredData: unknown[],
     unfilteredData: unknown[]
@@ -327,3 +335,4 @@ export interface DownloadIndicatorPayload {
     data: DownloadIndicatorDataset,
     filename: string
 }
+

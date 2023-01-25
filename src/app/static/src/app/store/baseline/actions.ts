@@ -3,9 +3,8 @@ import {BaselineState} from "./baseline";
 import {api} from "../../apiService";
 import {PjnzResponse, PopulationResponse, ShapeResponse, ValidateBaselineResponse} from "../../generated";
 import {BaselineMutation} from "./mutations";
-import qs from "qs";
-import {findResource, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
-import { DatasetResourceSet, DatasetResource, ADRSchemas } from "../../types";
+import {buildData, findResource, getFilenameFromImportUrl, getFilenameFromUploadFormData} from "../../utils";
+import {DatasetResourceSet, DatasetResource, ADRSchemas, UploadImportPayload} from "../../types";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 import {initialChorplethSelections} from "../plottingSelections/plottingSelections";
 
@@ -34,7 +33,7 @@ const uploadCallback = async (dispatch: Dispatch, response: any) => {
 
 interface UploadImportOptions {
     url: string
-    payload: FormData | string
+    payload: FormData | UploadImportPayload
 }
 
 
@@ -134,21 +133,24 @@ export const actions: ActionTree<BaselineState, DataExplorationState> & Baseline
 
     async importPJNZ(context, url) {
         if (url) {
-            await uploadOrImportPJNZ(context, {url: "/adr/pjnz/", payload: qs.stringify({url})},
+            const data = buildData (context.state.selectedDataset, url, "pjnz")
+            await uploadOrImportPJNZ(context, {url: "/adr/pjnz/", payload: data},
                 getFilenameFromImportUrl(url));
         }
     },
 
     async importPopulation(context, url) {
         if (url) {
-            await uploadOrImportPopulation(context, {url: "/adr/population/", payload: qs.stringify({url})},
+            const data = buildData (context.state.selectedDataset, url, "pop")
+            await uploadOrImportPopulation(context, {url: "/adr/population/", payload: data},
                 getFilenameFromImportUrl(url));
         }
     },
 
     async importShape(context, url) {
         if (url) {
-            await uploadOrImportShape(context, {url: "/adr/shape/", payload: qs.stringify({url})},
+            const data = buildData (context.state.selectedDataset, url, "shape")
+            await uploadOrImportShape(context, {url: "/adr/shape/", payload: data},
                 getFilenameFromImportUrl(url));
         }
     },
