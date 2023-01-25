@@ -1,5 +1,5 @@
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
-import {ScaleSelections, PlottingSelectionsState, BarchartSelections} from "./plottingSelections";
+import {ScaleSelections, PlottingSelectionsState} from "./plottingSelections";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export const getters = {

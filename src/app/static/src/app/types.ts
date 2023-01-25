@@ -323,4 +323,16 @@ export interface UploadImportPayload {
     datasetId: string,
     resourceId: string
 }
+
 export type DatasetResourceType = "pjnz" | "pop"  | "program" | "anc" | "shape" | "survey";
+
+export interface DownloadIndicatorDataset {
+    filteredData: unknown[],
+    unfilteredData: unknown[]
+}
+
+export interface DownloadIndicatorPayload {
+    data: DownloadIndicatorDataset,
+    filename: string
+}
+
