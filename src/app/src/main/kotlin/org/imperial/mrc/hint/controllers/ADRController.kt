@@ -9,10 +9,7 @@ import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.md5sum
-import org.imperial.mrc.hint.models.EmptySuccessResponse
-import org.imperial.mrc.hint.models.ErrorDetail
-import org.imperial.mrc.hint.models.SuccessResponse
-import org.imperial.mrc.hint.models.asResponseEntity
+import org.imperial.mrc.hint.models.*
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.HttpStatus
@@ -149,39 +146,39 @@ class ADRController(private val encryption: Encryption,
     }
 
     @PostMapping("/pjnz")
-    fun importPJNZ(@RequestParam url: String): ResponseEntity<String>
+    fun importPJNZ(@RequestBody data: AdrResource): ResponseEntity<String>
     {
-        return saveAndValidate(url, FileType.PJNZ)
+        return saveAndValidate(data, FileType.PJNZ)
     }
 
     @PostMapping("/shape")
-    fun importShape(@RequestParam url: String): ResponseEntity<String>
+    fun importShape(@RequestBody data: AdrResource): ResponseEntity<String>
     {
-        return saveAndValidate(url, FileType.Shape)
+        return saveAndValidate(data, FileType.Shape)
     }
 
     @PostMapping("/population")
-    fun importPopulation(@RequestParam url: String): ResponseEntity<String>
+    fun importPopulation(@RequestBody data: AdrResource): ResponseEntity<String>
     {
-        return saveAndValidate(url, FileType.Population)
+        return saveAndValidate(data, FileType.Population)
     }
 
     @PostMapping("/survey")
-    fun importSurvey(@RequestParam url: String): ResponseEntity<String>
+    fun importSurvey(@RequestBody data: AdrResource): ResponseEntity<String>
     {
-        return saveAndValidate(url, FileType.Survey)
+        return saveAndValidate(data, FileType.Survey)
     }
 
     @PostMapping("/programme")
-    fun importProgramme(@RequestParam url: String): ResponseEntity<String>
+    fun importProgramme(@RequestBody data: AdrResource): ResponseEntity<String>
     {
-        return saveAndValidate(url, FileType.Programme)
+        return saveAndValidate(data, FileType.Programme)
     }
 
     @PostMapping("/anc")
-    fun importANC(@RequestParam url: String): ResponseEntity<String>
+    fun importANC(@RequestBody data: AdrResource): ResponseEntity<String>
     {
-        return saveAndValidate(url, FileType.ANC)
+        return saveAndValidate(data, FileType.ANC)
     }
 
 

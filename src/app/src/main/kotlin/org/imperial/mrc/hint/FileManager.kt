@@ -1,10 +1,9 @@
 package org.imperial.mrc.hint
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.tomcat.util.http.fileupload.FileUtils
 import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.db.VersionRepository
-import org.imperial.mrc.hint.models.VersionFile
-import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.imperial.mrc.hint.security.Session
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
@@ -13,6 +12,8 @@ import java.io.InputStream
 import java.security.DigestInputStream
 import java.security.MessageDigest
 import jakarta.xml.bind.DatatypeConverter
+import org.imperial.mrc.hint.models.*
+import org.springframework.web.util.UriComponentsBuilder
 
 enum class FileType
 {
@@ -33,7 +34,7 @@ enum class FileType
 interface FileManager
 {
     fun saveFile(file: MultipartFile, type: FileType): VersionFileWithPath
-    fun saveFile(url: String, type: FileType): VersionFileWithPath
+    fun saveFile(data: AdrResource, type: FileType): VersionFileWithPath
     fun getFile(type: FileType): VersionFileWithPath?
     fun getAllHashes(): Map<String, String>
     fun getFiles(vararg include: FileType): Map<String, VersionFileWithPath>
@@ -46,9 +47,9 @@ class LocalFileManager(
         private val session: Session,
         private val versionRepository: VersionRepository,
         private val appProperties: AppProperties,
-        private val adrClientBuilder: ADRClientBuilder) : FileManager
+        private val adrClientBuilder: ADRClientBuilder,
+        private val objectMapper: ObjectMapper) : FileManager
 {
-
     private val uploadPath = appProperties.uploadDirectory
 
     override fun saveFile(file: MultipartFile, type: FileType): VersionFileWithPath
@@ -56,17 +57,26 @@ class LocalFileManager(
         return saveFile(file.inputStream, file.originalFilename!!, type, false)
     }
 
-    override fun saveFile(url: String, type: FileType): VersionFileWithPath
+    override fun saveFile(data: AdrResource, type: FileType): VersionFileWithPath
     {
-        val originalFilename = url.split("/").last().split("?").first()
+        val originalFilename = data.url.split("/").last().split("?").first()
+
         val adr = adrClientBuilder.build()
-        return saveFile(adr.getInputStream(url), originalFilename, type, true)
+
+        val resourceUrl = getResourceUrl(data, originalFilename)
+
+        val inputStream = adr.getInputStream(data.url)
+
+        return saveFile(inputStream, originalFilename, type, true, resourceUrl)
     }
 
-    private fun saveFile(inputStream: InputStream,
-                         originalFilename: String,
-                         type: FileType,
-                         fromADR: Boolean): VersionFileWithPath
+    private fun saveFile(
+        inputStream: InputStream,
+        originalFilename: String,
+        type: FileType,
+        fromADR: Boolean,
+        resourceUrl: String? = "",
+    ): VersionFileWithPath
     {
         val md = MessageDigest.getInstance("MD5")
         val bytes = readFileBytes(inputStream, md)
@@ -77,8 +87,9 @@ class LocalFileManager(
             writeFileBytes(path, bytes)
         }
 
-        versionRepository.saveVersionFile(session.getVersionId(), type, hash, originalFilename, fromADR)
-        return VersionFileWithPath(path, hash, originalFilename, fromADR)
+        versionRepository.saveVersionFile(session.getVersionId(), type, hash, originalFilename, fromADR, resourceUrl)
+
+        return VersionFileWithPath(path, hash, originalFilename, fromADR, resourceUrl)
     }
 
     override fun saveOutputZip(file: MultipartFile): VersionFileWithPath
@@ -137,5 +148,27 @@ class LocalFileManager(
         val localFile = File(path)
         FileUtils.forceMkdirParent(localFile)
         localFile.writeBytes(bytes)
+    }
+
+    private fun getResourceUrl(adrResource: AdrResource, filename: String ): String
+    {
+        val adr = adrClientBuilder.build()
+
+        val response = adr.get("package_activity_list?id=${adrResource.datasetId}")
+
+        val data = objectMapper.readTree(response.body)["data"]
+
+        if (data.isEmpty || adrResource.resourceId.isNullOrEmpty() || filename.isEmpty())
+        {
+            return ""
+        }
+
+        return UriComponentsBuilder
+            .fromHttpUrl(appProperties.adrUrl)
+            .path("/dataset/${adrResource.datasetId}/resource/${adrResource.resourceId}/download/${filename}")
+            .queryParam("activity_id", data[0]["id"].asText())
+            .encode()
+            .build()
+            .toUriString()
     }
 }

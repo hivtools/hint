@@ -359,7 +359,7 @@ class ADRControllerTests : HintrControllerTests()
     fun `imports anc`()
     {
         assertSavesAndValidatesUrl(FileType.ANC) { sut ->
-            (sut as ADRController).importANC(fakeUrl)
+            (sut as ADRController).importANC(adrResource)
         }
     }
 
@@ -367,7 +367,7 @@ class ADRControllerTests : HintrControllerTests()
     fun `imports pjnz`()
     {
         assertSavesAndValidatesUrl(FileType.PJNZ) { sut ->
-            (sut as ADRController).importPJNZ(fakeUrl)
+            (sut as ADRController).importPJNZ(adrResource)
         }
     }
 
@@ -375,7 +375,7 @@ class ADRControllerTests : HintrControllerTests()
     fun `imports programme`()
     {
         assertSavesAndValidatesUrl(FileType.Programme) { sut ->
-            (sut as ADRController).importProgramme(fakeUrl)
+            (sut as ADRController).importProgramme(adrResource)
         }
     }
 
@@ -383,7 +383,7 @@ class ADRControllerTests : HintrControllerTests()
     fun `imports population`()
     {
         assertSavesAndValidatesUrl(FileType.Population) { sut ->
-            (sut as ADRController).importPopulation(fakeUrl)
+            (sut as ADRController).importPopulation(adrResource)
         }
     }
 
@@ -391,7 +391,7 @@ class ADRControllerTests : HintrControllerTests()
     fun `imports shape file`()
     {
         assertSavesAndValidatesUrl(FileType.Shape) { sut ->
-            (sut as ADRController).importShape(fakeUrl)
+            (sut as ADRController).importShape(adrResource)
         }
     }
 
@@ -399,7 +399,7 @@ class ADRControllerTests : HintrControllerTests()
     fun `imports survey`()
     {
         assertSavesAndValidatesUrl(FileType.Survey) { sut ->
-            (sut as ADRController).importSurvey(fakeUrl)
+            (sut as ADRController).importSurvey(adrResource)
         }
     }
 
@@ -410,7 +410,7 @@ class ADRControllerTests : HintrControllerTests()
         val mockRequest = mock<HttpServletRequest>()
         val mockFileManager = getMockFileManager(FileType.Survey)
         val sut = getSut(mockFileManager, mockApiClient, mock(), mock(), mockRequest) as ADRController
-        sut.importSurvey(fakeUrl)
+        sut.importSurvey(adrResource)
         verify(mockApiClient)
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
@@ -426,7 +426,7 @@ class ADRControllerTests : HintrControllerTests()
         }
         val mockFileManager = getMockFileManager(FileType.Survey)
         val sut = getSut(mockFileManager, mockApiClient, mock(), mock(), mockRequest) as ADRController
-        sut.importSurvey(fakeUrl)
+        sut.importSurvey(adrResource)
         verify(mockApiClient)
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),
@@ -442,7 +442,7 @@ class ADRControllerTests : HintrControllerTests()
         }
         val mockFileManager = getMockFileManager(FileType.Survey)
         val sut = getSut(mockFileManager, mockApiClient, mock(), mock(), mockRequest) as ADRController
-        sut.importSurvey(fakeUrl)
+        sut.importSurvey(adrResource)
         verify(mockApiClient)
                 .validateSurveyAndProgramme(
                         VersionFileWithPath("test-path", "hash", "some-file-name.csv", false),

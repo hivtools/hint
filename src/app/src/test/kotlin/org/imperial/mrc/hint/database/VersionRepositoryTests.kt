@@ -426,16 +426,23 @@ class VersionRepositoryTests
     fun `saves new version file`()
     {
         setUpVersionAndHash()
-        sut.saveVersionFile(versionId, FileType.PJNZ, "newhash", "original.pjnz", true)
+        sut.saveVersionFile(
+            versionId,
+            FileType.PJNZ,
+            "newhash",
+            "original.pjnz",
+            true,
+            "http://test"
+        )
 
-        val record = dsl.selectFrom(VERSION_FILE)
-                .fetchOne()
+        val record = dsl.selectFrom(VERSION_FILE).fetchOne()
 
         assertThat(record?.get(VERSION_FILE.FILENAME)).isEqualTo("original.pjnz")
         assertThat(record?.get(VERSION_FILE.HASH)).isEqualTo("newhash")
         assertThat(record?.get(VERSION_FILE.VERSION)).isEqualTo(versionId)
         assertThat(record?.get(VERSION_FILE.TYPE)).isEqualTo("pjnz")
         assertThat(record?.get(VERSION_FILE.FROM_ADR)).isEqualTo(true)
+        assertThat(record?.get(VERSION_FILE.RESOURCE_URL)).isEqualTo("http://test")
     }
 
     @Test
@@ -469,10 +476,16 @@ class VersionRepositoryTests
         sut.saveVersionFile(versionId, FileType.PJNZ, "newhash", "original.pjnz", false)
 
         sut.saveNewHash("anotherhash")
-        sut.saveVersionFile(versionId, FileType.PJNZ, "anotherhash", "anotherfilename.pjnz", true)
+        sut.saveVersionFile(
+            versionId,
+            FileType.PJNZ,
+            "anotherhash",
+            "anotherfilename.pjnz",
+            true,
+            "https://test"
+        )
 
-        val records = dsl.selectFrom(VERSION_FILE)
-                .fetch()
+        val records = dsl.selectFrom(VERSION_FILE).fetch()
 
         assertThat(records.count()).isEqualTo(1)
         assertThat(records[0][VERSION_FILE.FILENAME]).isEqualTo("anotherfilename.pjnz")
@@ -480,17 +493,26 @@ class VersionRepositoryTests
         assertThat(records[0][VERSION_FILE.VERSION]).isEqualTo(versionId)
         assertThat(records[0][VERSION_FILE.TYPE]).isEqualTo("pjnz")
         assertThat(records[0][VERSION_FILE.FROM_ADR]).isEqualTo(true)
+        assertThat(records[0][VERSION_FILE.RESOURCE_URL]).isEqualTo("https://test")
     }
 
     @Test
     fun `can get version file`()
     {
         setUpVersionAndHash()
-        sut.saveVersionFile(versionId, FileType.PJNZ, "newhash", "original.pjnz", true)
+        sut.saveVersionFile(
+            versionId,
+            FileType.PJNZ,
+            "newhash",
+            "original.pjnz",
+            true,
+            "https://test"
+        )
         val result = sut.getVersionFile(versionId, FileType.PJNZ)!!
         assertThat(result.hash).isEqualTo("newhash")
         assertThat(result.filename).isEqualTo("original.pjnz")
         assertThat(result.fromAdr).isEqualTo(true)
+        assertThat(result.resourceUrl).isEqualTo("https://test")
     }
 
     @Test
@@ -512,16 +534,31 @@ class VersionRepositoryTests
         setUpVersionAndHash()
         sut.saveNewHash("pjnzhash")
         sut.saveNewHash("surveyhash")
-        sut.saveVersionFile(versionId, FileType.PJNZ, "pjnzhash", "original.pjnz", false)
-        sut.saveVersionFile(versionId, FileType.Survey, "surveyhash", "original.csv", true)
+        sut.saveVersionFile(
+            versionId,
+            FileType.PJNZ,
+            "pjnzhash",
+            "original.pjnz",
+            false,
+            "https://adr"
+        )
+        sut.saveVersionFile(
+            versionId,
+            FileType.Survey,
+            "surveyhash",
+            "original.csv",
+            true,
+            "https://adr")
         val result = sut.getVersionFiles(versionId)
         assertThat(result["survey"]!!.filename).isEqualTo("original.csv")
         assertThat(result["survey"]!!.hash).isEqualTo("surveyhash")
         assertThat(result["survey"]!!.fromAdr).isEqualTo(true)
+        assertThat(result["survey"]!!.resourceUrl).isEqualTo("https://adr")
 
         assertThat(result["pjnz"]!!.filename).isEqualTo("original.pjnz")
         assertThat(result["pjnz"]!!.hash).isEqualTo("pjnzhash")
         assertThat(result["pjnz"]!!.fromAdr).isEqualTo(false)
+        assertThat(result["pjnz"]!!.resourceUrl).isEqualTo("https://adr")
     }
 
     @Test
@@ -532,8 +569,8 @@ class VersionRepositoryTests
         sut.saveNewHash("shape_hash")
 
         sut.setFilesForVersion(versionId, mapOf(
-                "pjnz" to VersionFile("pjnz_hash", "pjnz_file", false),
-                "shape" to VersionFile("shape_hash", "shape_file", true),
+                "pjnz" to VersionFile("pjnz_hash", "pjnz_file", false, "https://adr"),
+                "shape" to VersionFile("shape_hash", "shape_file", true, "https://adr"),
                 "population" to null //should not attempt to save a null file
         ));
 
@@ -548,12 +585,14 @@ class VersionRepositoryTests
         assertThat(records[0][VERSION_FILE.VERSION]).isEqualTo(versionId)
         assertThat(records[0][VERSION_FILE.TYPE]).isEqualTo("pjnz")
         assertThat(records[0][VERSION_FILE.FROM_ADR]).isEqualTo(false)
+        assertThat(records[0][VERSION_FILE.RESOURCE_URL]).isEqualTo("https://adr")
 
         assertThat(records[1][VERSION_FILE.FILENAME]).isEqualTo("shape_file")
         assertThat(records[1][VERSION_FILE.HASH]).isEqualTo("shape_hash")
         assertThat(records[1][VERSION_FILE.VERSION]).isEqualTo(versionId)
         assertThat(records[1][VERSION_FILE.TYPE]).isEqualTo("shape")
         assertThat(records[1][VERSION_FILE.FROM_ADR]).isEqualTo(true)
+        assertThat(records[1][VERSION_FILE.RESOURCE_URL]).isEqualTo("https://adr")
     }
 
     @Test
@@ -565,8 +604,16 @@ class VersionRepositoryTests
         setUpHashAndVersionFile("old_pjnz_hash", "old_pjnz", versionId, "pjnz")
         setUpHashAndVersionFile("other_shape_hash", "other_shape_file", "sid2", "shape")
 
-        sut.setFilesForVersion(versionId, mapOf(
-                "shape" to VersionFile("shape_hash", "shape_file", false)))
+        sut.setFilesForVersion(
+            versionId, mapOf(
+                "shape" to VersionFile(
+                    "shape_hash",
+                    "shape_file",
+                    false,
+                    "https://adr.org"
+                )
+            )
+        )
 
         val records = dsl.selectFrom(VERSION_FILE)
                 .orderBy(VERSION_FILE.VERSION)
@@ -578,11 +625,13 @@ class VersionRepositoryTests
         assertThat(records[0][VERSION_FILE.HASH]).isEqualTo("shape_hash")
         assertThat(records[0][VERSION_FILE.VERSION]).isEqualTo(versionId)
         assertThat(records[0][VERSION_FILE.TYPE]).isEqualTo("shape")
+        assertThat(records[0][VERSION_FILE.RESOURCE_URL]).isEqualTo("https://adr.org")
 
         assertThat(records[1][VERSION_FILE.FILENAME]).isEqualTo("other_shape_file")
         assertThat(records[1][VERSION_FILE.HASH]).isEqualTo("other_shape_hash")
         assertThat(records[1][VERSION_FILE.VERSION]).isEqualTo("sid2")
         assertThat(records[1][VERSION_FILE.TYPE]).isEqualTo("shape")
+        assertThat(records[0][VERSION_FILE.RESOURCE_URL]).isEqualTo("https://adr.org")
     }
 
     @Test
