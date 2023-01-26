@@ -11,6 +11,7 @@
 @import "partials/progress";
 @import "partials/files";
 @import "partials/genericChart";
+@import "partials/login";
 
 a {
   color: $theme-red;
@@ -89,10 +90,6 @@ button:disabled {
 
 .lds-spin.xs {
   margin-top: -15px;
-}
-
-.login-form {
-  width: 30em;
 }
 
 .large-logo {

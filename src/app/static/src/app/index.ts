@@ -6,6 +6,7 @@ import Errors from "./components/Errors.vue";
 import Stepper from "./components/Stepper.vue";
 import Projects from "./components/projects/Projects.vue";
 import Accessibility from "./components/Accessibility.vue";
+import Privacy from "./components/Privacy.vue";
 import {mapActions, mapState} from "vuex";
 import {RootState} from "./root";
 import VueRouter, {NavigationGuardNext} from "vue-router";
@@ -29,6 +30,7 @@ router.addRoutes([
         beforeEnter
     },
     {path: "/accessibility", component: Accessibility},
+    {path: "/privacy", component: Privacy},
     {path: "/projects", component: Projects}
 ]);
 
