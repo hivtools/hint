@@ -32,6 +32,10 @@ module.exports = {
     },
     moduleNameMapper: {
         'd3-format': '<rootDir>/node_modules/d3-format/dist/d3-format.min.js',
+        'd3-scale-chromatic': '<rootDir>/node_modules/d3-scale-chromatic/dist/d3-scale-chromatic.min.js',
+        'd3-interpolate': '<rootDir>/node_modules/d3-interpolate/dist/d3-interpolate.min.js',
+        'd3-color': '<rootDir>/node_modules/d3-color/dist/d3-color.min.js',
+
     },
     coverageDirectory: './coverage/',
     collectCoverage: true,

@@ -439,6 +439,8 @@ describe("Load actions", () => {
         localStorageManager.savePartialState = mockSaveToLocalStorage;
 
         const mockLocationReload = jest.fn();
+        delete (window as any).location
+        delete (window as any).location
         window.location = {reload: mockLocationReload} as any;
 
         const testState = mockRootState();
@@ -453,6 +455,7 @@ describe("Load actions", () => {
         localStorageManager.savePartialState = mockSaveToLocalStorage;
 
         const mockLocationReload = jest.fn();
+        delete (window as any).location
         window.location = {reload: mockLocationReload} as any;
 
         const testState = mockRootState({
@@ -499,6 +502,7 @@ describe("Load actions", () => {
         localStorageManager.savePartialState = mockSaveToLocalStorage;
 
         const mockLocationReload = jest.fn();
+        delete (window as any).location
         window.location = {reload: mockLocationReload} as any;
 
         const testState = mockRootState({
@@ -544,6 +548,7 @@ describe("Load actions", () => {
         localStorageManager.savePartialState = mockSaveToLocalStorage;
 
         const mockLocationReload = jest.fn();
+        delete (window as any).location
         window.location = {reload: mockLocationReload} as any;
 
         const testState = mockRootState({

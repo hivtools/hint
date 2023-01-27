@@ -135,11 +135,12 @@ describe("ApiService", () => {
 
     it("can redirect to login when 401 response is received", async () => {
         const realLocation = window.location
+        delete (window as any).location
         window.location = {...window.location, assign: jest.fn()};
 
         mockAxios.onGet("/baseline/")
             .reply(401, null);
-        expect(window.location.assign).toHaveBeenCalledTimes(0)
+        expect(window.location.assign).not.toHaveBeenCalled()
 
         const commit = jest.fn();
         await api({commit, rootState} as any)

@@ -133,7 +133,7 @@ describe("Model run actions", () => {
 
     });
 
-    it("poll commits status when successfully fetched", async (done) => {
+    it("poll commits status when successfully fetched",  (done) => {
         mockAxios.onGet(`/model/status/1234`)
             .reply(200, mockSuccess("TEST DATA"));
         mockAxios.onGet(`/model/result/1234`)
