@@ -539,7 +539,7 @@ const en: Translations = {
     population: "Population",
     preparing: "Preparing files...",
     previousPage: "Previous page",
-    privacyPreambleHeading: "Privay notice for naomi.unaids.org",
+    privacyPreambleHeading: "Privacy notice for naomi.unaids.org",
     privacyPreambleBody: "In accordance with Data Protection Legislation and the Privacy Electronic Communications Regulations, the privacy notice will:",
     privacyPreambleList: "<li>inform you as to how we look after your personal data when you visit our websites;</li>\n" +
         "                 <li>tell you about your privacy rights;</li>\n" +
@@ -568,7 +568,7 @@ const en: Translations = {
         "               <li>You also have the right to have data erased if it is no longer necessary for the purpose for which it was originally collected/processed, or if there are no overriding legitimate grounds for the processing. This is sometimes known as 'the right to be forgotten'.</li>" +
         "               <li>To find out more, please see - <a href=\"https://www.imperial.ac.uk/admin-services/secretariat/information-governance/data-protection/internal-guidance/guide-10/\">Guide 12 - Individual Rights | Administration and support services | Imperial College London</a></li>",
     privacyLinksHeader: "Links to other websites",
-    privacyLinksBody: "The naomi.unaids.org website contains links to other websites. This privacy policy only applies to naomi.unaids.org and doesn't cover other websites that we link to. These services, have their own terms and conditions and privacy policies. If you do go to another website from this one, read the privacy policy on that website to find out what it does with your information.",
+    privacyLinksBody: "The naomi.unaids.org website contains links to other websites. This privacy policy only applies to naomi.unaids.org and doesn't cover other websites that we link to. These services have their own terms and conditions and privacy policies. If you do go to another website from this one, read the privacy policy on that website to find out what it does with your information.",
     project: "Project",
     projectDescription: "Your work is organised into projects. Each project contains its own data and settings.",
     projectHistory: "Project history",
