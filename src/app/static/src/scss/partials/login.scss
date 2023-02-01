@@ -2,16 +2,9 @@
   width: 30em;
 }
 
-footer a .btn {
-  color: $gray-600;
-
+div.links a.btn {
   &:hover {
     color: $theme-red;
     text-decoration: none;
   }
-}
-
-footer {
-  margin-left: auto;
-  margin-right: auto;
 }

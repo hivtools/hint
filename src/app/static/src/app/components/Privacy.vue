@@ -1,7 +1,7 @@
 <template>
     <div class="container mt-5">
         <div class="row">
-            <section id="accessibility-content" class="col">
+            <section id="privacy-content" class="col">
                 <h1 v-translate="'privacyPreambleHeading'"></h1>
                 <p v-translate="'privacyPreambleBody'"></p>
                 <ul id="preamble" v-translate="'privacyPreambleList'"></ul>

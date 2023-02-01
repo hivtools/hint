@@ -28,6 +28,12 @@
     </script>
 </head>
 <body>
+    <div class="links text-sm-right">
+        <a class="btn" href="https://reside-ic.github.io/projects/naomi/" target="_blank">About</a>
+        <a class="btn" href="https://naomi.unaids.org/news" target="_blank">News</a>
+        <a class="btn" href="/privacy">Privacy</a>
+        <a class="btn" href="/accessibility">Accessibility</a>
+    </div>
     <a href="https://www.unaids.org"><img src="public/images/unaids_logo.png" class="large-logo mx-auto mt-5 mb-4"/></a>
     <h1 class="text-center"><strong>${appTitle}</strong></h1>
     <div id="app" class="card login-form mx-auto mt-3">
@@ -79,14 +85,6 @@
         <a href="https://github.com/reside-ic"><img src="public/images/reside_logo.png" class="small-logo"></a>
         <a href="https://www.avenirhealth.org"><img src="public/images/avenir_logo.png" class="small-logo"></a>
         <a href="https://www.washington.edu"><img src="public/images/uw_logo.png" class="small-logo"></a>
-    </div>
-    <div class="text-sm-center border-top mt-3 mb-3">
-    <footer class="footer">
-        <a class="btn" href="https://reside-ic.github.io/projects/naomi/" target="_blank">About</a>
-        <a class="btn" href="https://naomi.unaids.org/news" target="_blank">News</a>
-        <a class="btn" href="/privacy">Privacy</a>
-        <a class="btn" href="/accessibility">Accessibility</a>
-    </footer>
     </div>
 </body>
 </html>
