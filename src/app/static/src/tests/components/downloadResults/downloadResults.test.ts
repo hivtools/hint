@@ -16,6 +16,7 @@ import Download from "../../../app/components/downloadResults/Download.vue";
 import {ADRState} from "../../../app/store/adr/adr";
 import {ADRUploadState} from "../../../app/store/adrUpload/adrUpload";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
+import spyOn = jest.spyOn;
 
 const localVue = createLocalVue();
 
@@ -466,6 +467,7 @@ describe("Download Results component", () => {
 
 const downloadFile = (button: Wrapper<any>) => {
     const realLocation = window.location
+    delete (window as any).location
     window.location = {...window.location, assign: jest.fn()};
     button.trigger("click");
     expect(window.location.assign).toHaveBeenCalledTimes(1)

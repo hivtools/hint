@@ -1,4 +1,4 @@
-import {Mutation, MutationTree} from 'vuex';
+import {MutationTree} from 'vuex';
 import {
     PlottingSelectionsState,
     BarchartSelections,

@@ -7,7 +7,7 @@ import {mockRootState} from "../../mocks";
 import {expectTranslated} from "../../testHelpers";
 import TreeSelect from '@riophae/vue-treeselect';
 import {Language} from "../../../app/store/translations/locales";
-import {Dataset, Release} from "../../../app/types";
+import {Dataset} from "../../../app/types";
 
 describe("select release", () => {
 
@@ -182,7 +182,7 @@ describe("select release", () => {
         const select = rendered.find(TreeSelect);
         expect(select.attributes("disabled")).toBe("true");
         const selectRelease = rendered.findAll("input").at(1)
-        await selectRelease.trigger("click")
+        await selectRelease.trigger("change")
         expect(select.attributes("disabled")).toBeUndefined();
     });
 
@@ -241,7 +241,7 @@ describe("select release", () => {
         const rendered = shallowMount(SelectRelease, {store});
         rendered.setProps({datasetId: "datasetId"})
         const selectRelease = rendered.findAll("input").at(1)
-        await selectRelease.trigger("click")
+        await selectRelease.trigger("change")
         expect(rendered.emitted("valid")).toStrictEqual([[true], [false]])
         rendered.setData({releaseId: "releaseId"})
         expect(rendered.emitted("valid")).toStrictEqual([[true], [false], [true]])
@@ -252,7 +252,7 @@ describe("select release", () => {
         const rendered = shallowMount(SelectRelease, {store});
         rendered.setProps({datasetId: "datasetId"})
         const selectRelease = rendered.findAll("input").at(1);
-        await selectRelease.trigger("click")
+        await selectRelease.trigger("change")
         rendered.setData({releaseId: "releaseId"})
         expect(rendered.vm.$data.releaseId).toBe("releaseId");
         expect(rendered.vm.$data.choiceADR).toBe("useRelease");

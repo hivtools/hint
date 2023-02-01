@@ -94,7 +94,6 @@ describe("Router", () => {
     it("does not redirect to login page for authenticated user", () => {
         const realLocation = window.location
         delete (window as any).location
-        jest.spyOn(window.location, "assign")
         window.location = {...realLocation, assign: jest.fn()};
 
         const next = jest.fn();

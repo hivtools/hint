@@ -47,6 +47,7 @@ describe("Router", () => {
 
     it("doesn't redirect returning guest to login page", () => {
         const realLocation = window.location
+        delete (window as any).location
         window.location = {...realLocation, assign: jest.fn()};
 
         const next = jest.fn();
@@ -64,6 +65,7 @@ describe("Router", () => {
 
     it("redirects to login page if user is not a returning guest", () => {
         const realLocation = window.location
+        delete (window as any).location
         window.location = {...realLocation, assign: jest.fn()};
 
         const next = jest.fn();
@@ -81,6 +83,7 @@ describe("Router", () => {
 
     it("does not redirect to login page for authenticated user", () => {
         const realLocation = window.location
+        delete (window as any).location
         window.location = {...realLocation, assign: jest.fn()};
 
         const next = jest.fn();
