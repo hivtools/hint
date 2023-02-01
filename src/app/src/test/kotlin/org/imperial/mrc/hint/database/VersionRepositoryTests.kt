@@ -516,6 +516,21 @@ class VersionRepositoryTests
     }
 
     @Test
+    fun `can get version file with nullable resourceUrl`()
+    {
+        setUpVersionAndHash()
+        sut.saveVersionFile(
+            versionId,
+            FileType.PJNZ,
+            "newhash",
+            "original.pjnz",
+            true
+        )
+        val result = sut.getVersionFile(versionId, FileType.PJNZ)!!
+        assertThat(result.resourceUrl).isEqualTo("")
+    }
+
+    @Test
     fun `can get all version file hashes`()
     {
         setUpVersionAndHash()
