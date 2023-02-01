@@ -30,7 +30,7 @@ describe("load actions", () => {
         shape = (commit.mock.calls[1][0]["payload"] as ShapeResponse);
 
         const mockLocationReload = jest.fn();
-        delete window.location;
+        delete (window as any).location;
         window.location = {reload: mockLocationReload} as any;
     });
 
