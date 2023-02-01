@@ -540,7 +540,7 @@ const en: Translations = {
     preparing: "Preparing files...",
     previousPage: "Previous page",
     privacyPreambleHeading: "Privacy notice for naomi.unaids.org",
-    privacyPreambleBody: "In accordance with Data Protection Legislation and the Privacy Electronic Communications Regulations, the privacy notice will:",
+    privacyPreambleBody: "In accordance with data protection legislation and the privacy electronic communications regulations, the privacy notice will:",
     privacyPreambleList: "<li>inform you as to how we look after your personal data when you visit our websites;</li>\n" +
         "                 <li>tell you about your privacy rights;</li>\n" +
         "                 <li>tell you how the law protects you;</li>\n",
@@ -548,11 +548,13 @@ const en: Translations = {
     privacyCollectHeading: "What do we collect?",
     privacyCollectBody: "If you use this application we will ask you to provide:",
     privacyCollectList: "<li>Your email address</li>" +
-        "                <li>Input data required for the model to produce estimates including Spectrum PJNZ, country geojson, population data, survey data, ART data and ANC data</li>",
+        "                <li>Input data required for the model to produce estimates including Spectrum PJNZ, country geojson, population data, survey data, ART data and ANC data</li>" +
+        "                <li>Parameters for running a model fit</li>",
     privacyUseHeader: "How we use your personal data",
-    privacyUseBody: "We will only use your personal data when the low allows us to.",
-    privacyUseList: "<li>We will need your email address to identity your projects and so we can contact you regarding any submitted troubleshoting requests.</li>" +
-        "            <li>We will use your country input data for fitting the Naomi model.</li>",
+    privacyUseBody: "We will only use your personal data when the law allows us to.",
+    privacyUseList: "<li>We will need your email address to identify your projects and so we can contact you regarding any submitted troubleshooting requests.</li>" +
+        "            <li>We will use your country input data for fitting the Naomi model.</li>" +
+        "            <li>We may monitor how you use the application in order to improve it.</li>",
     privacyStoreHeader: "Where we store your data",
     privacyStoreBody: "We store your data on our own servers based in London, UK",
     privacySecureHeader: "How we keep your data secure",
