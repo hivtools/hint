@@ -60,6 +60,8 @@
                 </div>
                 <div v-for="dataSource in chartConfigValues.dataSourceConfigValues.filter(ds => ds.tableConfig)"
                      :key="dataSource.config.id">
+                    <download-indicator :filtered-data="filteredDataWithoutPages[dataSource.config.id]"
+                                        :unfiltered-data="unfilteredData[dataSource.config.id]"></download-indicator>
                     <generic-chart-table :table-config="dataSource.tableConfig"
                                          :filtered-data="chartData[dataSource.config.id]"
                                          :columns="dataSource.columns"
@@ -86,7 +88,6 @@
     import Vue from "vue";
     import {ChevronLeftIcon, ChevronRightIcon} from "vue-feather-icons";
     import {
-        DatasetConfig,
         DataSourceConfig,
         Dict, DisplayFilter, GenericChartColumn, GenericChartColumnValue,
         GenericChartDataset,
@@ -106,6 +107,7 @@
     import GenericChartTable from "./GenericChartTable.vue";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
+    import DownloadIndicator from "../downloadIndicator/DownloadIndicator.vue";
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections
@@ -157,6 +159,8 @@
         pageNumberText: string
         prevPageEnabled: boolean
         nextPageEnabled: boolean
+        unfilteredData: Dict<unknown[]> | null
+        filteredDataWithoutPages: Dict<unknown[]> | null
     }
 
     interface Methods {
@@ -179,6 +183,7 @@
             availableDatasetIds: Array
         },
         components: {
+            DownloadIndicator,
             ChevronLeftIcon,
             ChevronRightIcon,
             DataSource,
@@ -297,7 +302,21 @@
                     description
                 };
             },
-            chartData() {
+            unfilteredData() {
+                const result = {} as Dict<unknown[]>;
+
+                for (const dataSource of this.chartMetadata.dataSelectors.dataSources) {
+                    const dataSourceId = dataSource.id;
+                    const dataSourceSelections = this.dataSourceSelections[dataSourceId];
+                    const datasetId = dataSourceSelections.datasetId;
+                    const unfilteredData = this.datasets[datasetId]?.data;
+
+                    result[dataSourceId] = unfilteredData || null
+                }
+
+                return result
+            },
+            filteredDataWithoutPages() {
                 const result = {} as Dict<unknown[]>;
 
                 for (const dataSource of this.chartMetadata.dataSelectors.dataSources) {
@@ -316,7 +335,12 @@
                     result[dataSourceId] = filterData(unfilteredData, filters, selectedFilterOptions);
                 }
 
-                if (result["data"]) {
+                return result
+            },
+            chartData() {
+                const result = this.filteredDataWithoutPages
+
+                if (result && result["data"]) {
                     const dataWithPages = this.addPageNumbersToData(result["data"])
                     return {...result, data: dataWithPages};
                 } else {

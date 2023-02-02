@@ -784,42 +784,42 @@ export interface ModelOptionsValidateRequest {
       hash: string;
       filename: string;
       fromADR?: boolean;
-      resource_url?: string;
+      resource_url?: string | null;
     };
     shape: {
       path: string | null;
       hash: string;
       filename: string;
       fromADR?: boolean;
-      resource_url?: string;
+      resource_url?: string | null;
     };
     population: {
       path: string | null;
       hash: string;
       filename: string;
       fromADR?: boolean;
-      resource_url?: string;
+      resource_url?: string | null;
     };
     survey: {
       path: string | null;
       hash: string;
       filename: string;
       fromADR?: boolean;
-      resource_url?: string;
+      resource_url?: string | null;
     };
     programme?: {
       path: string | null;
       hash: string;
       filename: string;
       fromADR?: boolean;
-      resource_url?: string;
+      resource_url?: string | null;
     };
     anc?: {
       path: string | null;
       hash: string;
       filename: string;
       fromADR?: boolean;
-      resource_url?: string;
+      resource_url?: string | null;
     };
   };
   options: {
@@ -925,28 +925,28 @@ export interface ModelRunOptionsRequest {
     hash: string;
     filename: string;
     fromADR?: boolean;
-    resource_url?: string;
+    resource_url?: string | null;
   };
   survey: {
     path: string | null;
     hash: string;
     filename: string;
     fromADR?: boolean;
-    resource_url?: string;
+    resource_url?: string | null;
   };
   programme?: {
     path: string | null;
     hash: string;
     filename: string;
     fromADR?: boolean;
-    resource_url?: string;
+    resource_url?: string | null;
   };
   anc?: {
     path: string | null;
     hash: string;
     filename: string;
     fromADR?: boolean;
-    resource_url?: string;
+    resource_url?: string | null;
   };
 }
 export interface ModelStatusResponse {
@@ -969,42 +969,42 @@ export interface ModelSubmitData {
     hash: string;
     filename: string;
     fromADR?: boolean;
-    resource_url?: string;
+    resource_url?: string | null;
   };
   shape: {
     path: string | null;
     hash: string;
     filename: string;
     fromADR?: boolean;
-    resource_url?: string;
+    resource_url?: string | null;
   };
   population: {
     path: string | null;
     hash: string;
     filename: string;
     fromADR?: boolean;
-    resource_url?: string;
+    resource_url?: string | null;
   };
   survey: {
     path: string | null;
     hash: string;
     filename: string;
     fromADR?: boolean;
-    resource_url?: string;
+    resource_url?: string | null;
   };
   programme?: {
     path: string | null;
     hash: string;
     filename: string;
     fromADR?: boolean;
-    resource_url?: string;
+    resource_url?: string | null;
   };
   anc?: {
     path: string | null;
     hash: string;
     filename: string;
     fromADR?: boolean;
-    resource_url?: string;
+    resource_url?: string | null;
   };
 }
 export interface ModelSubmitRequest {
@@ -1014,42 +1014,42 @@ export interface ModelSubmitRequest {
       hash: string;
       filename: string;
       fromADR?: boolean;
-      resource_url?: string;
+      resource_url?: string | null;
     };
     shape: {
       path: string | null;
       hash: string;
       filename: string;
       fromADR?: boolean;
-      resource_url?: string;
+      resource_url?: string | null;
     };
     population: {
       path: string | null;
       hash: string;
       filename: string;
       fromADR?: boolean;
-      resource_url?: string;
+      resource_url?: string | null;
     };
     survey: {
       path: string | null;
       hash: string;
       filename: string;
       fromADR?: boolean;
-      resource_url?: string;
+      resource_url?: string | null;
     };
     programme?: {
       path: string | null;
       hash: string;
       filename: string;
       fromADR?: boolean;
-      resource_url?: string;
+      resource_url?: string | null;
     };
     anc?: {
       path: string | null;
       hash: string;
       filename: string;
       fromADR?: boolean;
-      resource_url?: string;
+      resource_url?: string | null;
     };
   };
   options: {
@@ -1275,7 +1275,7 @@ export interface ProjectRehydrateSubmitRequest {
     hash: string;
     filename: string;
     fromADR?: boolean;
-    resource_url?: string;
+    resource_url?: string | null;
   };
 }
 export interface ProjectRehydrateSubmitResponse {
@@ -1347,7 +1347,7 @@ export interface SessionFile {
   hash: string;
   filename: string;
   fromADR?: boolean;
-  resource_url?: string;
+  resource_url?: string | null;
 }
 /**
  * TODO: Validate against a URL e.g. https://geojson.org/schema/FeatureCollection.json
@@ -1428,7 +1428,7 @@ export interface ValidateInputRequest {
     hash: string;
     filename: string;
     fromADR?: boolean;
-    resource_url?: string;
+    resource_url?: string | null;
   };
 }
 export type ValidateInputResponse =
@@ -1639,7 +1639,7 @@ export interface ValidateSurveyAndProgrammeRequest {
     hash: string;
     filename: string;
     fromADR?: boolean;
-    resource_url?: string;
+    resource_url?: string | null;
   };
   shape: string | null;
 }

@@ -20,7 +20,7 @@ import {actions} from "../../../app/store/genericChart/actions";
 import {mutations} from "../../../app/store/genericChart/mutations";
 import {mockAxios} from "../../mocks";
 import GenericChartTable from "../../../app/components/genericChart/GenericChartTable.vue";
-import {Language} from "../../../app/store/translations/locales";
+import DownloadIndicator from "../../../app/components/downloadIndicator/DownloadIndicator.vue";
 
 describe("GenericChart component", () => {
 
@@ -619,6 +619,33 @@ describe("GenericChart component", () => {
                 yAxisFormat: ".1%"
             });
             expect(wrapper.find(GenericChartTable).props("valueFormat")).toBe(".1%");
+            expect(wrapper.find(DownloadIndicator).props()).toEqual(
+                {
+                    unfilteredData: [
+                        {
+                            area: "a",
+                            plot_type: "p1",
+                            type: "test"
+                        },
+                        {
+                            area: "b",
+                            plot_type: "p2",
+                            type: "test"
+                        }
+                    ],
+                    filteredData: [
+                        {
+                            area: "a",
+                            plot_type: "p1",
+                            type: "test"
+                        },
+                        {
+                            area: "b",
+                            plot_type: "p2",
+                            type: "test"
+                        }
+                    ]
+                })
             done();
         });
     });

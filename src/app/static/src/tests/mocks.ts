@@ -36,7 +36,7 @@ import {
 } from "../app/store/plottingSelections/plottingSelections";
 import {ErrorsState, initialErrorsState} from "../app/store/errors/errors";
 import {ColourScalesState, initialColourScalesState} from "../app/store/plottingSelections/plottingSelections";
-import {Dataset, DatasetResource, DownloadResultsDependency, Release} from "../app/types";
+import {Dataset, DatasetResource, DownloadIndicatorDataset, DownloadResultsDependency, Release} from "../app/types";
 import {initialProjectsState, ProjectsState} from "../app/store/projects/projects";
 import {initialModelCalibrateState, ModelCalibrateState} from "../app/store/modelCalibrate/modelCalibrate";
 import { HintrVersionState, initialHintrVersionState } from "../app/store/hintrVersion/hintrVersion";
@@ -556,3 +556,28 @@ export const mockOptionsFormMeta = (props: Partial<DynamicFormMeta> = {}) => {
         ...props
     }
 };
+
+export const mockDownloadIndicatorData = (props: Partial<DownloadIndicatorDataset> = {}): DownloadIndicatorDataset => {
+    return {
+        unfilteredData: [
+            {
+                "area_id": "MWI",
+                "area_name": "Malawi",
+                "value": 30
+            },
+            {
+                "area_id": "MWI",
+                "area_name": "Malawi",
+                "value": 20
+            },
+        ],
+        filteredData: [
+            {
+                "area_id": "MWI",
+                "area_name": "Malawi",
+                "value": 20
+            }
+        ],
+        ...props
+    }
+}

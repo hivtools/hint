@@ -176,15 +176,16 @@ describe("Baseline actions", () => {
     });
 
     it("sets country and iso3 after PJNZ import, and fetches plotting metadata, and validates", async () => {
-
-        mockAxios.onPost(`/adr/pjnz/`)
+        const url = "/adr/pjnz/"
+        mockAxios.onPost(url)
             .reply(200, mockSuccess({data: {country: "Malawi", iso3: "MWI"}}));
 
         const commit = jest.fn();
-        const state = mockBaselineState({iso3: "MWI"});
+        const state = mockBaselineState({iso3: "MWI", selectedDataset: {id: "1", resources: {pjnz: {id: "123"}}}} as any);
         const dispatch = jest.fn();
-
         await actions.importPJNZ({commit, state, dispatch, rootState} as any, "some-url");
+
+        expectValidAdrImportPayload(url)
 
         checkPJNZImportUpload(commit, dispatch)
     });
@@ -278,14 +279,18 @@ describe("Baseline actions", () => {
     });
 
     it("commits response and validates after shape file import", async () => {
-
+        const url = "/adr/shape/"
         const mockShape = mockShapeResponse();
-        mockAxios.onPost(`/adr/shape/`)
+        mockAxios.onPost(url)
             .reply(200, mockSuccess(mockShape));
+
+        const state = mockBaselineState({selectedDataset: {id: "1", resources: {shape: {id: "123"}}}} as any)
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.importShape({commit, dispatch, rootState} as any, "some-url");
+        await actions.importShape({commit, dispatch, state, rootState} as any, "some-url");
+
+        expectValidAdrImportPayload(url)
 
         checkShapeImportUpload(commit, dispatch, mockShape);
     });
@@ -339,14 +344,19 @@ describe("Baseline actions", () => {
     });
 
     it("commits response and validates after population file import", async () => {
+        const url = "/adr/population/"
 
         const mockPop = mockPopulationResponse();
-        mockAxios.onPost(`/adr/population/`)
+        mockAxios.onPost(url)
             .reply(200, mockSuccess(mockPop));
+
+        const state = mockBaselineState({selectedDataset: {id: "1", resources: {pop: {id: "123"}}}} as any)
 
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await actions.importPopulation({commit, dispatch, rootState} as any, "some-url");
+        await actions.importPopulation({commit, dispatch, state, rootState} as any, "some-url");
+
+        expectValidAdrImportPayload(url)
 
         checkPopulationImportUpload(commit, dispatch, mockPop);
     });
@@ -607,7 +617,7 @@ describe("Baseline actions", () => {
         });
     });
 
-    it("refreshDatasetMetadata does not attempt to retrieve resources not found in selectedDatasetAvailableResources getter", async () => {
+    it("refreshDatasetMetadata attempts to retrieve all available resources", async () => {
 
         mockAxios.onGet("/adr/datasets/1234")
             .reply(200, mockSuccess({
@@ -623,6 +633,15 @@ describe("Baseline actions", () => {
             anc: null
         }
 
+        const expectResources = {
+            shape: availableResources.shape,
+            pjnz: availableResources.pjnz,
+            pop: availableResources.pop,
+            survey: availableResources.survey,
+            program: availableResources.program,
+            anc: availableResources.anc
+        }
+
         const commit = jest.fn();
         const state = mockBaselineState({
             selectedDataset: mockDataset({ id: "1234" })
@@ -635,7 +654,7 @@ describe("Baseline actions", () => {
         await actions.refreshDatasetMetadata({ commit, rootState, state, rootGetters } as any);
 
         expect(commit.mock.calls[0][0]).toBe(BaselineMutation.UpdateDatasetResources);
-        expect(commit.mock.calls[0][1]).toEqual(resources);
+        expect(commit.mock.calls[0][1]).toEqual(expectResources);
     });
 
     it("refreshDatasetMetadata takes release into account", async () => {
@@ -694,4 +713,14 @@ const expectValidationActionsDispatched = (dispatch: Mock) => {
     expect(dispatch.mock.calls[0][0]).toBe("validate");
     expect(dispatch.mock.calls[1][0]).toBe("surveyAndProgram/validateSurveyAndProgramData");
     expect(dispatch.mock.calls[1][2]).toStrictEqual({root: true});
+}
+
+export const expectValidAdrImportPayload = (url: string) => {
+    expect(mockAxios.history.post.length).toBe(1)
+    expect(mockAxios.history.post[0].url).toBe(url)
+    expect(JSON.parse(mockAxios.history.post[0].data)).toEqual({
+        url: "some-url",
+        datasetId: "1",
+        resourceId: "123"
+    })
 }

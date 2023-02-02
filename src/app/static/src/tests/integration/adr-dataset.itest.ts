@@ -168,7 +168,9 @@ describe("ADR dataset-related actions", () => {
     it("can import PJNZ file", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
-        const state = {country: "Malawi"} as any;
+
+        const state = await getSelectedDatasetState()
+
         await baselineActions.importPJNZ({commit, state, dispatch, rootState} as any,
             "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/Malawi2019.PJNZ");
 
@@ -180,7 +182,10 @@ describe("ADR dataset-related actions", () => {
     it("can import shape file", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await baselineActions.importShape({commit, dispatch, rootState} as any,
+
+        const state = await getSelectedDatasetState()
+
+        await baselineActions.importShape({commit, dispatch, state, rootState} as any,
             "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/malawi.geojson");
 
         expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.ShapeUpdated);
@@ -192,7 +197,10 @@ describe("ADR dataset-related actions", () => {
     it("can import population file", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
-        await baselineActions.importPopulation({commit, dispatch, rootState} as any,
+
+        const state = await getSelectedDatasetState()
+
+        await baselineActions.importPopulation({commit, dispatch, state, rootState} as any,
             "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/population.csv");
 
         expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
@@ -205,7 +213,9 @@ describe("ADR dataset-related actions", () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
-        await surveyAndProgramActions.importSurvey({commit, dispatch, rootState} as any,
+        const state = await getSelectedDatasetState()
+
+        await surveyAndProgramActions.importSurvey({commit, dispatch, state, rootState} as any,
             "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/survey.csv");
 
         expect(commit.mock.calls[2][0]["type"]).toBe(SurveyAndProgramMutation.SurveyUpdated);
@@ -218,8 +228,9 @@ describe("ADR dataset-related actions", () => {
 
         const commit = jest.fn();
         const dispatch = jest.fn();
+        const state = await getSelectedDatasetState()
 
-        await surveyAndProgramActions.importProgram({commit, dispatch, rootState} as any,
+        await surveyAndProgramActions.importProgram({commit, dispatch, state, rootState} as any,
             "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/programme.csv");
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
@@ -236,7 +247,9 @@ describe("ADR dataset-related actions", () => {
 
         const commit = jest.fn();
 
-        await surveyAndProgramActions.importANC({commit, rootState} as any,
+        const state = await getSelectedDatasetState()
+
+        await surveyAndProgramActions.importANC({commit, state, rootState} as any,
             "https://raw.githubusercontent.com/mrc-ide/hint/master/src/app/testdata/anc.csv");
 
         expect(commit.mock.calls[2][0]).toStrictEqual({
@@ -327,3 +340,16 @@ describe("ADR dataset-related actions", () => {
     });
 
 });
+
+const getSelectedDatasetState = async () => {
+    const commitDataset = jest.fn();
+    await adrActions.getDatasets({commit: commitDataset, rootState} as any);
+    const datasets = commitDataset.mock.calls[2][0]["payload"];
+    return {
+        selectedDataset:
+            {
+                id: datasets.id,
+                resources: datasets.resources
+            }
+    }
+}

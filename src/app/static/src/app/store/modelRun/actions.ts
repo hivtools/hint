@@ -19,7 +19,6 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
         commit({type: ModelRunMutation.StartedRunning, payload: true})
         const options = rootState.modelOptions.options;
         const version = rootState.modelOptions.version;
-
         if (state.statusPollId !== -1) {
             commit(ModelRunMutation.RunCancelled);
         }

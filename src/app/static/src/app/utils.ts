@@ -9,9 +9,9 @@ import {
     mapState,
     MutationMethod
 } from "vuex";
-import {ADRSchemas, DatasetResource, Dict, UploadFile, Version} from "./types";
+import {ADRSchemas, Dataset, DatasetResource, DatasetResourceType, Dict, UploadFile, Version} from "./types";
 import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse, Response} from "./generated";
-import moment from 'moment';
+import moment, {utc} from 'moment';
 import {
     DynamicControlGroup,
     DynamicControlSection,
@@ -208,6 +208,10 @@ export const formatDateTime = (isoUTCString: string) => {
 export const formatToLocalISODateTime = (isoUTCString: string) => {
     return moment.utc(isoUTCString).local().format('YYYY/MM/DD HH:mm:ss');
 };
+
+export const appendCurrentDateTime = () => {
+    return utc().local().format("YMMDD-HHmmss");
+}
 
 export const findResource = (datasetWithResources: any, resourceType: string, resourceName?: string | null): DatasetResource | null => {
     let resources = datasetWithResources.resources;
@@ -492,3 +496,9 @@ export const extractFilenameFrom = (contentDisposition: string): string => {
         .replace(/"/g, '')
         .trim();
 }
+
+export const buildData = (selectedDataset: Dataset | null, url: string, resourceType: DatasetResourceType) => ({
+    url,
+    datasetId: selectedDataset?.id || "",
+    resourceId: selectedDataset?.resources?.[resourceType]?.id || ""
+});

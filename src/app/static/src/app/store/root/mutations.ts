@@ -17,6 +17,7 @@ import {initialModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {initialADRUploadState} from "../adrUpload/adrUpload";
 import {initialDownloadResultsState} from "../downloadResults/downloadResults";
 import {initialGenericChartState} from "../genericChart/genericChart";
+import {initialDownloadIndicatorState} from "../downloadIndicator/downloadIndicator";
 
 export enum RootMutation {
     Reset = "Reset",
@@ -59,7 +60,8 @@ export const mutations: MutationTree<RootState> = {
             projects: initialProjectsState(),
             currentUser: state.currentUser,
             downloadResults: initialDownloadResultsState(),
-            dataExplorationMode: false
+            dataExplorationMode: false,
+            downloadIndicator: initialDownloadIndicatorState()
         };
         Object.assign(state, resetState);
 
