@@ -205,20 +205,20 @@ export interface Translations {
     privacyCollectList: string,
     privacyThirdPartyHeading: string,
     privacyThirdPartyList: string,
-    privacyUseHeader: string,
+    privacyUseHeading: string,
     privacyUseBody: string,
     privacyUseList: string,
-    privacyStoreHeader: string,
+    privacyStoreHeading: string,
     privacyStoreBody: string,
-    privacySecureHeader: string,
+    privacySecureHeading: string,
     privacySecureBody: string,
-    privacyLengthHeader: string,
+    privacyLengthHeading: string,
     privacyLengthList: string,
-    privacyDiscloseHeader: string,
+    privacyDiscloseHeading: string,
     privacyDiscloseList: string,
-    privacyRightsHeader: string,
+    privacyRightsHeading: string,
     privacyRightsList: string,
-    privacyLinksHeader: string,
+    privacyLinksHeading: string,
     privacyLinksBody: string,
     project: string,
     projectDescription: string,
@@ -555,27 +555,27 @@ const en: Translations = {
     privacyThirdPartyHeading: "Information we collect from third parties",
     privacyThirdPartyList: "<li>If you login to Naomi using the HIV Tools single sign-on service you direct the service to send us profile information. Your email address will be stored on the Naomi servers.</li>" +
         "                   <li>If you link your ADR account via an API key any data imported from the ADR is stored on the Naomi servers.</li>",
-    privacyUseHeader: "How we use your personal data",
+    privacyUseHeading: "How we use your personal data",
     privacyUseBody: "We will only use your personal data when the law allows us to.",
     privacyUseList: "<li>We will need your email address to identify your projects and so we can contact you regarding any submitted troubleshooting requests.</li>" +
         "            <li>We will use your country input data for fitting the Naomi model.</li>" +
         "            <li>We may monitor how you use the application in order to improve it.</li>",
-    privacyStoreHeader: "Where we store your data",
+    privacyStoreHeading: "Where we store your data",
     privacyStoreBody: "We store your data on our own servers based in London, UK",
-    privacySecureHeader: "How we keep your data secure",
+    privacySecureHeading: "How we keep your data secure",
     privacySecureBody: "We have put in place appropriate security measures to prevent your personal data from being accidentally lost, used or accessed in an unauthorised way, altered or disclosed. In addition, we limit access to your personal data to the administrators of Naomi, who have a business need to know, and are subject to a duty of confidentiality.",
-    privacyLengthHeader: "How long will you use my personal data for?",
+    privacyLengthHeading: "How long will you use my personal data for?",
     privacyLengthList: "<li>We will retain your personal data indefinitely to fulfil the purposes we collected it for, including for the purposes of satisfying any legal, accounting, or reporting requirements.</li>" +
         "               <li>We therefore will remove your data when the site is discontinued.</li>" +
         "               <li>We will remove your data when you request we do so.</li>",
-    privacyDiscloseHeader: "Disclosing your information",
+    privacyDiscloseHeading: "Disclosing your information",
     privacyDiscloseList: "<li>We may pass on your personal information if we have a legal obligation to do so, or if we have to enforce or apply our terms of use and other agreements.</li>" +
         "                 <li>We will not share your information with any other organisation for marketing, market research, or any other commercial purposes.</li>",
-    privacyRightsHeader: "Your rights",
+    privacyRightsHeading: "Your rights",
     privacyRightsList: "<li>You can find out what information we hold about you by submitting a subject access request to <a href=\"mailto:naomi-support@imperial.ac.uk\">naomi-support@imperial.ac.uk</a> and ask us not to use the information we collect.</li>" +
         "               <li>You also have the right to have data erased if it is no longer necessary for the purpose for which it was originally collected/processed, or if there are no overriding legitimate grounds for the processing. This is sometimes known as 'the right to be forgotten'.</li>" +
         "               <li>To find out more, please see - <a href=\"https://www.imperial.ac.uk/admin-services/secretariat/information-governance/data-protection/internal-guidance/guide-10/\">Guide 12 - Individual Rights | Administration and support services | Imperial College London</a></li>",
-    privacyLinksHeader: "Links to other websites",
+    privacyLinksHeading: "Links to other websites",
     privacyLinksBody: "The naomi.unaids.org website contains links to other websites. This privacy policy applies to naomi.unaids.org and shiny90.unaids.org only and doesn't cover other websites that we link to. These services have their own terms and conditions and privacy policies. If you do go to another website from this one, read the privacy policy on that website to find out what it does with your information.",
     project: "Project",
     projectDescription: "Your work is organised into projects. Each project contains its own data and settings.",
@@ -903,6 +903,42 @@ const fr: Partial<Translations> = {
     population: "Population",
     preparing: "Préparer les fichiers...",
     previousPage: "Page précédente",
+    privacyPreambleHeading: "Avis de confidentialité pour naomi.unaids.org",
+    privacyPreambleBody: "Conformément à la législation sur la protection des données et à la réglementation sur la confidentialité des communications électroniques, l'avis de confidentialité:",
+    privacyPreambleList: "<li>vous informer sur la manière dont nous traitons vos données personnelles lorsque vous visitez nos sites web;</li>\n" +
+        "                 <li>vous informer de vos droits en matière de confidentialité;</li>\n" +
+        "                 <li>vous dire comment la loi vous protège;</li>\n",
+    privacyPreambleBody2: "Cette politique est fondée sur la <a href=\"https://www.imperial.ac.uk/about-the-site/privacy/\" target='_blank' rel='noopener noreferrer'>Imperial College politique de confidentialité</a>.",
+    privacyCollectHeading: "Ce que nous collectons?",
+    privacyCollectBody: "Si vous utilisez cette application, nous vous demanderons de fournir:",
+    privacyCollectList: "<li>Votre adresse électronique</li>" +
+        "                <li>Données d'entrée nécessaires pour que le modèle produise des estimations, y compris Spectrum PJNZ, géojson du pays, données de population, données d'enquête, données ATRV et test de clinique prénatale.</li>" +
+        "                <li>Paramètres pour l'exécution d'un ajustement de modèle</li>",
+    privacyThirdPartyHeading: "Informations que nous recueillons auprès de tiers",
+    privacyThirdPartyList: "<li>Si vous vous connectez à Naomi en utilisant le service d'authentification unique HIV Tools, vous demandez à ce service de nous envoyer des informations sur votre profil. Votre adresse électronique sera stockée sur les serveurs de Naomi.</li>" +
+        "                   <li>Si vous liez votre compte ADR via une clé API, toutes les données importées de l'ADR sont stockées sur les serveurs de Naomi.</li>",
+    privacyUseHeading: "Comment nous utilisons vos données personnelles",
+    privacyUseBody: "Nous n'utiliserons vos données personnelles que si la loi nous y autorise.",
+    privacyUseList: "<li>Nous aurons besoin de votre adresse électronique pour identifier vos projets et vous contacter au sujet de toute demande de dépannage.</li>" +
+        "            <li>Nous utiliserons les données d'entrée de votre pays pour ajuster le modèle Naomi.</li>" +
+        "            <li>Nous pouvons surveiller la façon dont vous utilisez l'application afin de l'améliorer.</li>",
+    privacyStoreHeading: "Où nous stockons vos données",
+    privacyStoreBody: "Nous stockons vos données sur nos propres serveurs basés à Londres, UK",
+    privacySecureHeading: "Comment nous assurons la sécurité de vos données",
+    privacySecureBody: "Nous avons mis en place des mesures de sécurité appropriées pour éviter que vos données personnelles ne soient accidentellement perdues, utilisées ou consultées de manière non autorisée, modifiées ou divulguées. En outre, nous limitons l'accès à vos données personnelles aux administrateurs de Naomi, qui ont besoin de les connaître et sont soumis à un devoir de confidentialité.",
+    privacyLengthHeading: "Combien de temps utiliserez-vous mes données personnelles?",
+    privacyLengthList: "<li>Nous conserverons vos données personnelles indéfiniment pour répondre aux objectifs pour lesquels nous les avons collectées, y compris pour satisfaire à toute exigence légale, comptable ou de rapport.</li>" +
+        "               <li>Nous supprimerons donc vos données lorsque le site sera fermé.</li>" +
+        "               <li>Nous supprimerons vos données si vous nous le demandez.</li>",
+    privacyDiscloseHeading: "Divulgation de vos informations",
+    privacyDiscloseList: "<li>Nous pouvons transmettre vos informations personnelles si nous avons une obligation légale de le faire, ou si nous devons faire respecter ou appliquer nos conditions d'utilisation et autres accords.</li>" +
+        "                 <li>Nous ne partagerons pas vos informations avec d'autres organisations à des fins de marketing, d'études de marché ou à d'autres fins commerciales.</li>",
+    privacyRightsHeading: "Vos droits",
+    privacyRightsList: "<li>Vous pouvez découvrir les informations que nous détenons à votre sujet en soumettant une demande d'accès à un sujet à l'adresse suivante <a href=\"mailto:naomi-support@imperial.ac.uk\">naomi-support@imperial.ac.uk</a> et nous demander de ne pas utiliser les informations que nous recueillons.</li>" +
+        "               <li>Vous avez également le droit de faire effacer les données si elles ne sont plus nécessaires à la finalité pour laquelle elles ont été initialement collectées/traitées, ou s'il n'existe pas de motifs légitimes prépondérants pour le traitement. Ce droit est parfois appelé 'droit à l'oubli'.</li>" +
+        "               <li>Pour en savoir plus, veuillez consulter - <a href=\"https://www.imperial.ac.uk/admin-services/secretariat/information-governance/data-protection/internal-guidance/guide-10/\">Guide 12 - Individual Rights | Administration and support services | Imperial College London</a></li>",
+    privacyLinksHeading: "Liens vers d'autres sites web",
+    privacyLinksBody: "Le site naomi.unaids.org contient des liens vers d'autres sites Web. Cette politique de confidentialité s'applique uniquement à naomi.unaids.org et à shiny90.unaids.org et ne couvre pas les autres sites Web vers lesquels nous proposons des liens. Ces services ont leurs propres conditions et politiques de confidentialité. Si vous vous rendez sur un autre site Web à partir de celui-ci, lisez la politique de confidentialité de ce site pour savoir ce qu'il fait de vos informations.",
     projectsHeaderCreate: "Créer un nouveau projet",
     projectsHeaderReturn: "retour au projet actuel",
     projectsNoSelfShare: "Les projets ne peuvent pas être partagés avec le propre compte de l'utilisateur",
@@ -1228,6 +1264,42 @@ const pt: Partial<Translations> = {
     population: "População",
     preparing: "Preparando arquivos",
     previousPage: "Página anterior",
+    privacyPreambleHeading: "Aviso de privacidade para naomi.unaids.org",
+    privacyPreambleBody: "De acordo com a legislação de protecção de dados e os regulamentos de privacidade das comunicações electrónicas, a declaração de privacidade:",
+    privacyPreambleList: "<li>informá-lo de como cuidamos dos seus dados pessoais quando visita os nossos sítios Web;</li>\n" +
+        "                 <li>falar-lhe sobre os seus direitos de privacidade;</li>\n" +
+        "                 <li>dizer-lhe como a lei o protege;</li>\n",
+    privacyPreambleBody2: "Esta política é baseada na <a href=\"https://www.imperial.ac.uk/about-the-site/privacy/\" target='_blank' rel='noopener noreferrer'>Imperial College política de privacidade</a>.",
+    privacyCollectHeading: "O que é que recolhemos?",
+    privacyCollectBody: "Se utilizar esta aplicação, pedimos-lhe que nos forneça:",
+    privacyCollectList: "<li>O seu endereço electrónico/li>" +
+        "                <li>Dados de entrada necessários para o modelo produzir estimativas incluindo o Spectrum PJNZ, geojson do país, dados populacionais, dados de inquéritos, dados TARV e dados teste da CPN</li>" +
+        "                <li>Parâmetros para executar um ajuste de modelo</li>",
+    privacyThirdPartyHeading: "Informação que recolhemos de terceiros",
+    privacyThirdPartyList: "<li>Se iniciar sessão na Naomi utilizando o serviço de início de sessão único das Ferramentas VIH, direcciona o serviço para nos enviar informações de perfil. O seu endereço de correio electrónico será armazenado nos servidores da Naomi.</li>" +
+        "                   <li>Se ligar a sua conta ADR através de uma chave API, quaisquer dados importados do ADR são armazenados nos servidores da Naomi.</li>",
+    privacyUseHeading: "Como utilizamos os seus dados pessoais",
+    privacyUseBody: "Só utilizaremos os seus dados pessoais quando a lei nos permitir.",
+    privacyUseList: "<li>Precisaremos do seu endereço de correio electrónico para identificar os seus projectos e para que possamos contactá-lo relativamente a quaisquer pedidos de resolução de problemas apresentados.</li>" +
+        "            <li>Utilizaremos os dados de entrada do seu país para a montagem do modelo Naomi.</li>" +
+        "            <li>Podemos monitorizar a forma como utiliza a aplicação a fim de a melhorar.</li>",
+    privacyStoreHeading: "Onde guardamos os seus dados",
+    privacyStoreBody: "Armazenamos os seus dados nos nossos próprios servidores baseados em Londres, UK",
+    privacySecureHeading: "Como mantemos os seus dados seguros",
+    privacySecureBody: "Tomámos as medidas de segurança adequadas para evitar que os seus dados pessoais sejam acidentalmente perdidos, utilizados ou acedidos de forma não autorizada, alterados ou divulgados. Além disso, limitamos o acesso aos seus dados pessoais aos administradores da Naomi, que têm uma necessidade comercial de saber, e estamos sujeitos a um dever de confidencialidade.",
+    privacyLengthHeading: "Por quanto tempo irá utilizar os meus dados pessoais durante?",
+    privacyLengthList: "<li>Conservaremos os seus dados pessoais indefinidamente para cumprir os objectivos para os quais os recolhemos, incluindo para satisfazer quaisquer requisitos legais, contabilísticos ou de informação.</li>" +
+        "               <li>Por conseguinte, removeremos os seus dados quando o sítio for descontinuado.</li>" +
+        "               <li>Removeremos os seus dados quando nos solicitar.</li>",
+    privacyDiscloseHeading: "Divulgação da sua informação",
+    privacyDiscloseList: "<li>Podemos transmitir as suas informações pessoais se tivermos a obrigação legal de o fazer, ou se tivermos de fazer cumprir ou aplicar os nossos termos de utilização e outros acordos.</li>" +
+        "                 <li>Não partilharemos a sua informação com qualquer outra organização para fins de marketing, pesquisa de mercado, ou qualquer outro propósito comercial.</li>",
+    privacyRightsHeading: "Os seus direitos",
+    privacyRightsList: "<li>Pode saber que informações temos sobre si, submetendo um pedido de acesso ao assunto a <a href=\"mailto:naomi-support@imperial.ac.uk\">naomi-support@imperial.ac.uk</a> e pedir-nos que não utilizemos a informação que recolhemos.</li>" +
+        "               <li>Também tem direito a que os dados sejam apagados se já não forem necessários para o fim para o qual foram originalmente recolhidos/processados, ou se não houver razões legítimas que prevaleçam para o processamento. Isto é por vezes conhecido como 'o direito a ser esquecido'.</li>" +
+        "               <li>Para saber mais, por favor veja - <a href=\"https://www.imperial.ac.uk/admin-services/secretariat/information-governance/data-protection/internal-guidance/guide-10/\">Guide 12 - Individual Rights | Administration and support services | Imperial College London</a></li>",
+    privacyLinksHeading: "Ligações a outros sítios Web",
+    privacyLinksBody: "O website naomi.unaids.org contém links para outros websites. Esta política de privacidade aplica-se apenas a naomi.unaids.org e a shiny90.unaids.org e não cobre outros websites para os quais temos ligações. Estes serviços têm os seus próprios termos e condições e políticas de privacidade. Se for a outro website a partir deste, leia a política de privacidade desse website para saber o que faz com a sua informação.",
     project: "Projeto",
     projectDescription: "O seu trabalho está organizado em projetos. Cada projeto contém os seus próprios dados e definições.",
     projectHistory: "Histórico do projeto",

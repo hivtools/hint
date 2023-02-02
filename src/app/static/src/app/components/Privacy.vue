@@ -11,20 +11,20 @@
                 <ul id="collect" v-translate="'privacyCollectList'"></ul>
                 <h2 v-translate="'privacyThirdPartyHeading'"></h2>
                 <ul id="third-party" v-translate="'privacyThirdPartyList'"></ul>
-                <h2 v-translate="'privacyUseHeader'"></h2>
+                <h2 v-translate="'privacyUseHeading'"></h2>
                 <p v-translate="'privacyUseBody'"></p>
                 <ul id="use" v-translate="'privacyUseList'"></ul>
-                <h2 v-translate="'privacyStoreHeader'"></h2>
+                <h2 v-translate="'privacyStoreHeading'"></h2>
                 <p v-translate="'privacyStoreBody'"></p>
-                <h2 v-translate="'privacySecureHeader'"></h2>
+                <h2 v-translate="'privacySecureHeading'"></h2>
                 <p v-translate="'privacySecureBody'"></p>
-                <h2 v-translate="'privacyLengthHeader'"></h2>
+                <h2 v-translate="'privacyLengthHeading'"></h2>
                 <ul id="use" v-translate="'privacyLengthList'"></ul>
-                <h2 v-translate="'privacyDiscloseHeader'"></h2>
+                <h2 v-translate="'privacyDiscloseHeading'"></h2>
                 <ul id="use" v-translate="'privacyDiscloseList'"></ul>
-                <h2 v-translate="'privacyRightsHeader'"></h2>
+                <h2 v-translate="'privacyRightsHeading'"></h2>
                 <ul id="use" v-translate="'privacyRightsList'"></ul>
-                <h2 v-translate="'privacyLinksHeader'"></h2>
+                <h2 v-translate="'privacyLinksHeading'"></h2>
                 <p id="use" v-translate="'privacyLinksBody'"></p>
             </section>
         </div>
