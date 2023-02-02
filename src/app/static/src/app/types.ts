@@ -1,5 +1,5 @@
 import {Payload} from "vuex";
-import {FilterOption, Error, Warning, VersionInfo, Response} from "./generated";
+import {FilterOption, Error, Warning, VersionInfo} from "./generated";
 import {Language} from "./store/translations/locales";
 
 export interface PayloadWithType<T> extends Payload {
@@ -343,8 +343,21 @@ export interface Field {
     sortByFormatted: boolean
 }
 
-export interface GenericResponse<T> extends Response {
-    data: T | null;
+export interface GenericResponse<T> {
+    data: T | null
+    errors: {
+        error: string
+        detail: string | null
+        key?: string
+        trace?: string[]
+        [k: string]: any
+    }[]
+    version?: {
+        hintr: string
+        naomi: string
+        rrq: string
+        [k: string]: any
+    }
 }
 
 export interface StepperNavigationProps {
