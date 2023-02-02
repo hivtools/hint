@@ -75,7 +75,7 @@ class LocalFileManager(
         originalFilename: String,
         type: FileType,
         fromADR: Boolean,
-        resourceUrl: String? = "",
+        resourceUrl: String? = null,
     ): VersionFileWithPath
     {
         val md = MessageDigest.getInstance("MD5")
