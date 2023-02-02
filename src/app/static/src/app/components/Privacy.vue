@@ -9,6 +9,8 @@
                 <h2 v-translate="'privacyCollectHeading'"></h2>
                 <p v-translate="'privacyCollectBody'"></p>
                 <ul id="collect" v-translate="'privacyCollectList'"></ul>
+                <h2 v-translate="'privacyThirdPartyHeading'"></h2>
+                <ul id="third-party" v-translate="'privacyThirdPartyList'"></ul>
                 <h2 v-translate="'privacyUseHeader'"></h2>
                 <p v-translate="'privacyUseBody'"></p>
                 <ul id="use" v-translate="'privacyUseList'"></ul>

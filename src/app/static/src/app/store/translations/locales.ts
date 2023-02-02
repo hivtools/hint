@@ -203,6 +203,8 @@ export interface Translations {
     privacyCollectHeading: string,
     privacyCollectBody: string,
     privacyCollectList: string,
+    privacyThirdPartyHeading: string,
+    privacyThirdPartyList: string,
     privacyUseHeader: string,
     privacyUseBody: string,
     privacyUseList: string,
@@ -550,6 +552,9 @@ const en: Translations = {
     privacyCollectList: "<li>Your email address</li>" +
         "                <li>Input data required for the model to produce estimates including Spectrum PJNZ, country geojson, population data, survey data, ART data and ANC data</li>" +
         "                <li>Parameters for running a model fit</li>",
+    privacyThirdPartyHeading: "Information we collect from third parties",
+    privacyThirdPartyList: "<li>If you login to Naomi using the HIV Tools single sign-on service you direct the service to send us profile information. Your email address will be stored on the Naomi servers.</li>" +
+        "                   <li>If you link your ADR account via an API key any data imported from the ADR is stored on the Naomi servers.</li>",
     privacyUseHeader: "How we use your personal data",
     privacyUseBody: "We will only use your personal data when the law allows us to.",
     privacyUseList: "<li>We will need your email address to identify your projects and so we can contact you regarding any submitted troubleshooting requests.</li>" +

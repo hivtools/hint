@@ -1,6 +1,6 @@
 import {emptyState} from "../../app/root";
 import Vuex from "vuex";
-import Accessibility from "../../app/components/Accessibility.vue"
+import Privacy from "../../app/components/Privacy.vue"
 
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {shallowMount} from "@vue/test-utils";
@@ -21,7 +21,7 @@ describe(`accessibility`, () =>{
     };
 
     const getWrapper = () => {
-        return shallowMount(Accessibility,
+        return shallowMount(Privacy,
             {
                 store: createStore()
             })
@@ -41,20 +41,22 @@ describe(`accessibility`, () =>{
 
         expectTranslated(h2.at(0),"What do we collect?", "What do we collect?",
             "What do we collect?", store);
-        expectTranslated(h2.at(1), "How we use your personal data", "How we use your personal data",
+        expectTranslated(h2.at(1), "Information we collect from third parties", "Information we collect from third parties",
+            "Information we collect from third parties", store);
+        expectTranslated(h2.at(2), "How we use your personal data", "How we use your personal data",
             "How we use your personal data", store);
-        expectTranslated(h2.at(2), "Where we store your data",
+        expectTranslated(h2.at(3), "Where we store your data",
             "Where we store your data",
             "Where we store your data", store);
-        expectTranslated(h2.at(3), "How we keep your data secure", "How we keep your data secure",
+        expectTranslated(h2.at(4), "How we keep your data secure", "How we keep your data secure",
             "How we keep your data secure", store);
-        expectTranslated(h2.at(4), "How long will you use my personal data for?", "How long will you use my personal data for?",
+        expectTranslated(h2.at(5), "How long will you use my personal data for?", "How long will you use my personal data for?",
             "How long will you use my personal data for?", store);
-        expectTranslated(h2.at(5), "Disclosing your information", "Disclosing your information",
+        expectTranslated(h2.at(6), "Disclosing your information", "Disclosing your information",
             "Disclosing your information", store);
-        expectTranslated(h2.at(6), "Your rights", "Your rights",
+        expectTranslated(h2.at(7), "Your rights", "Your rights",
             "Your rights", store);
-        expectTranslated(h2.at(7), "Links to other websites", "Links to other websites",
+        expectTranslated(h2.at(8), "Links to other websites", "Links to other websites",
             "Links to other websites", store);
     })
 
