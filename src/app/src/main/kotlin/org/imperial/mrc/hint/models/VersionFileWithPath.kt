@@ -7,7 +7,7 @@ data class VersionFile(
     val filename: String,
     val fromAdr: Boolean,
     @field:JsonProperty("resource_url")
-    val resourceUrl: String? = "")
+    val resourceUrl: String? = null)
 {
     fun toVersionFileWithPath(pathDirectory: String): VersionFileWithPath
     {
@@ -20,5 +20,5 @@ data class VersionFileWithPath(
     val filename: String,
     val fromADR: Boolean,
     @field:JsonProperty("resource_url")
-    val resourceUrl: String? = ""
+    val resourceUrl: String? = null
 )

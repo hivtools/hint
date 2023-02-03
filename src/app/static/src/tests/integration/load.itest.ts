@@ -61,7 +61,7 @@ describe("load actions", () => {
                     hash: shape.hash,
                     filename: shape.filename,
                     fromAdr: false,
-                    resource_url: ""
+                    resource_url: null
                 }
             });
             expect(dispatch.mock.calls[0][1]).toStrictEqual({
@@ -166,7 +166,7 @@ describe("load actions", () => {
                             hash: shape.hash,
                             filename: shape.filename,
                             fromAdr: false,
-                            resource_url: ""
+                            resource_url: null
                         }
                 });
             expect(mockSaveToLocalStorage.mock.calls[0][0].baseline).toBe("TEST BASELINE");
