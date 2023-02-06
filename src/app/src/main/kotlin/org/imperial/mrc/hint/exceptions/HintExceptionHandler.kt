@@ -106,19 +106,12 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         val messageArguments = arrayOf(
                 appProperties.applicationTitle,
                 errorCodeGenerator.newCode(),
-                appProperties.supportEmail
+                appProperties.supportEmail,
+                if (originalMessage != null) " $originalMessage" else ""
         )
         message = formatter.format(messageArguments)
 
-        val trace = if (originalMessage != null)
-        {
-            listOf(originalMessage)
-        }
-        else
-        {
-            null
-        }
-        return ErrorDetail(status, message, defaultError, trace)
+        return ErrorDetail(status, message, defaultError)
                 .toResponseEntity()
     }
 

@@ -83,7 +83,7 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(0);
     });
 
-    it("can poll for summary status, get pollId and commit result", async (done) => {
+    it("can poll for summary status, get pollId and commit result", (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn()
         const partialDownloadResultsState = {downloadId: "1", status: CompleteStatusResponse};
@@ -95,7 +95,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(RunningStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SUMMARY);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SUMMARY);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2);
@@ -130,7 +130,7 @@ describe(`download Results actions`, () => {
         });
     });
 
-    it("gets adr upload metadata if summary status is done", async (done) => {
+    it("gets adr upload metadata if summary status is done", (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -141,7 +141,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(CompleteStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SUMMARY);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SUMMARY);
 
         setTimeout(() => {
             expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
@@ -153,7 +153,7 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("does get adr upload metadata error for summary if metadata request is successful", async (done) => {
+    it("does get adr upload metadata error for summary if metadata request is successful",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -165,7 +165,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(CompleteStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SUMMARY);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SUMMARY);
 
         setTimeout(() => {
             expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
@@ -181,7 +181,7 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("can get adr upload metadata error for summary if metadata request is unsuccessful", async (done) => {
+    it("can get adr upload metadata error for summary if metadata request is unsuccessful", (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -199,7 +199,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(CompleteStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.SUMMARY);
+        actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.SUMMARY);
 
         setTimeout(() => {
             expect(commit.mock.calls[1][0]["type"]).toBe("SummaryReportStatusUpdated")
@@ -215,7 +215,7 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("does not continue to poll summary status when unsuccessful", async (done) => {
+    it("does not continue to poll summary status when unsuccessful", (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const partialDownloadResultsState = mockDownloadResultsDependency({downloadId: "1"});
@@ -227,7 +227,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(500, mockFailure("TEST FAILED"));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SUMMARY);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SUMMARY);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2)
@@ -297,7 +297,7 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(0);
     });
 
-    it("can invoke spectrum poll action, gets pollId, commits PollingStatusStarted", async (done) => {
+    it("can invoke spectrum poll action, gets pollId, commits PollingStatusStarted",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -312,7 +312,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(RunningStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.SPECTRUM);
+        actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.SPECTRUM);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2);
@@ -327,7 +327,7 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("can poll for spectrum output status", async (done) => {
+    it("can poll for spectrum output status", (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -338,7 +338,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(RunningStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SPECTRUM);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SPECTRUM);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2);
@@ -352,7 +352,7 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("gets adr upload metadata if spectrum status is done", async (done) => {
+    it("gets adr upload metadata if spectrum status is done",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -363,7 +363,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(CompleteStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SPECTRUM);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SPECTRUM);
 
         setTimeout(() => {
             expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
@@ -375,7 +375,7 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("does get adr upload metadata error for spectrum if metadata request is successful", async (done) => {
+    it("does get adr upload metadata error for spectrum if metadata request is successful", (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -387,7 +387,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(CompleteStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SPECTRUM);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SPECTRUM);
 
         setTimeout(() => {
             expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
@@ -403,7 +403,7 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("can get adr upload metadata error for spectrum if metadata request is unsuccessful", async (done) => {
+    it("can get adr upload metadata error for spectrum if metadata request is unsuccessful",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -421,7 +421,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(CompleteStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.SPECTRUM);
+        actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.SPECTRUM);
 
         setTimeout(() => {
             expect(commit.mock.calls[1][0]["type"]).toBe("SpectrumOutputStatusUpdated")
@@ -460,7 +460,7 @@ describe(`download Results actions`, () => {
         });
     });
 
-    it("does not continue to poll spectrum status when unsuccessful", async (done) => {
+    it("does not continue to poll spectrum status when unsuccessful", (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -471,7 +471,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(500, mockFailure("TEST FAILED"));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SPECTRUM);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.SPECTRUM);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2)
@@ -539,7 +539,7 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(0);
     });
 
-    it("gets adr upload metadata if coarse output status is done", async (done) => {
+    it("gets adr upload metadata if coarse output status is done",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -550,7 +550,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(CompleteStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
 
         setTimeout(() => {
             expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
@@ -562,7 +562,7 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("does get adr upload metadata error for coarseOutput if metadata request is successful", async (done) => {
+    it("does get adr upload metadata error for coarseOutput if metadata request is successful",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -574,7 +574,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(CompleteStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
 
         setTimeout(() => {
             expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
@@ -590,7 +590,7 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("can get adr upload metadata error for coarseOutput if metadata request is unsuccessful", async (done) => {
+    it("can get adr upload metadata error for coarseOutput if metadata request is unsuccessful",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -608,7 +608,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(CompleteStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.COARSE);
+        actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.COARSE);
 
         setTimeout(() => {
             expect(commit.mock.calls[1][0]["type"]).toBe("CoarseOutputStatusUpdated")
@@ -624,7 +624,7 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("can invoke coarse output poll action, get pollId and commit PollingStatusStarted", async (done) => {
+    it("can invoke coarse output poll action, get pollId and commit PollingStatusStarted",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -635,7 +635,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(RunningStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2);
@@ -649,7 +649,7 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("can get coarse output status results", async (done) => {
+    it("can get coarse output status results",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -660,7 +660,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(RunningStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2);
@@ -695,7 +695,7 @@ describe(`download Results actions`, () => {
         });
     });
 
-    it("does not continue to poll coarse output status when unsuccessful", async (done) => {
+    it("does not continue to poll coarse output status when unsuccessful",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const partialDownloadResultsState = mockDownloadResultsDependency({downloadId: "1"});
@@ -707,7 +707,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(500, mockFailure("TEST FAILED"));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COARSE);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2)
@@ -799,7 +799,7 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(0);
     });
 
-    it("can invoke comparison poll action, gets pollId, commits PollingStatusStarted", async (done) => {
+    it("can invoke comparison poll action, gets pollId, commits PollingStatusStarted",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -814,7 +814,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(RunningStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON);
+        actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2);
@@ -829,7 +829,7 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("can poll for comparison output status", async (done) => {
+    it("can poll for comparison output status", (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -840,7 +840,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(RunningStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2);
@@ -854,7 +854,7 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("gets adr upload metadata if comparison status is done", async (done) => {
+    it("gets adr upload metadata if comparison status is done",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -865,7 +865,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(CompleteStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
 
         setTimeout(() => {
             expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
@@ -878,7 +878,7 @@ describe(`download Results actions`, () => {
     });
 
 
-    it("does get adr upload metadata error for comparison if metadata request is successful", async (done) => {
+    it("does get adr upload metadata error for comparison if metadata request is successful",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -890,7 +890,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(CompleteStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
 
         setTimeout(() => {
             expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
@@ -906,7 +906,7 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("can get adr upload metadata error for comparison if metadata request is unsuccessful", async (done) => {
+    it("can get adr upload metadata error for comparison if metadata request is unsuccessful",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -924,7 +924,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(200, mockSuccess(CompleteStatusResponse));
 
-        await actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.COMPARISON);
+        actions.poll({commit, state, dispatch, rootState} as any, DOWNLOAD_TYPE.COMPARISON);
 
         setTimeout(() => {
             expect(commit.mock.calls[1][0]["type"]).toBe("ComparisonOutputStatusUpdated")
@@ -961,7 +961,7 @@ describe(`download Results actions`, () => {
         });
     });
 
-    it("does not continue to poll comparison status when unsuccessful", async (done) => {
+    it("does not continue to poll comparison status when unsuccessful",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
@@ -972,7 +972,7 @@ describe(`download Results actions`, () => {
         mockAxios.onGet(`download/status/1`)
             .reply(500, mockFailure("TEST FAILED"));
 
-        await actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.COMPARISON);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2)

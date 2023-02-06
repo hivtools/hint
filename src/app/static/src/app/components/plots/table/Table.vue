@@ -39,17 +39,11 @@
     import {BButton, BFormGroup, BFormInput, BInputGroup, BInputGroupAppend, BTable} from 'bootstrap-vue';
     import {RootState} from "../../../root";
     import {Language} from "../../../store/translations/locales";
+    import {Field} from "../../../types";
 
     interface Props {
         filteredData: any[],
         fields: Field[]
-    }
-
-    export interface Field {
-        key: string,
-        label?: string
-        sortable: boolean,
-        sortByFormatted: boolean
     }
 
     interface Methods {

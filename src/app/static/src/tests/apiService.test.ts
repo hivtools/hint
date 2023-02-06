@@ -135,7 +135,7 @@ describe("ApiService", () => {
 
     it("can redirect to login when 401 response is received", async () => {
         const realLocation = window.location
-        delete window.location;
+        delete (window as any).location
         window.location = {...window.location, assign: jest.fn()};
 
         mockAxios.onGet("/baseline/")

@@ -273,7 +273,7 @@ describe(`uploadModal `, () => {
         store.state.adrUpload.uploadFiles = metadataWithInput
         await Vue.nextTick()
         const radialInput = wrapper.find("#uploadFiles")
-        await radialInput.trigger("click")
+        await radialInput.trigger("change")
         const inputs = wrapper.findAll("input[type='checkbox']")
         inputs.at(0).setChecked(false)
         inputs.at(1).setChecked(false)
@@ -285,7 +285,7 @@ describe(`uploadModal `, () => {
         const input3 = inputs.at(2).element as HTMLInputElement
         expect(input3.checked).toBe(false)
         const radialInput2 = wrapper.find("#createRelease")
-        await radialInput2.trigger("click")
+        await radialInput2.trigger("change")
         expect(input1.checked).toBe(true)
         expect(input2.checked).toBe(true)
         expect(input3.checked).toBe(true)
@@ -360,7 +360,7 @@ describe(`uploadModal `, () => {
         const modal = wrapper.find(".modal");
         store.state.adrUpload.uploadFiles = {...metadataWithInput};
         const radialInput = wrapper.find("#uploadFiles")
-        await radialInput.trigger("click")
+        await radialInput.trigger("change")
         const okBtn = modal.find("button.btn-red");
         await okBtn.trigger("click");
 
@@ -390,7 +390,7 @@ describe(`uploadModal `, () => {
         const modal = wrapper.find(".modal");
         store.state.adrUpload.uploadFiles = {...metadataWithInput};
         const radialInput = wrapper.find("#uploadFiles")
-        await radialInput.trigger("click")
+        await radialInput.trigger("change")
 
         const checkInputs = wrapper.findAll("input[type='checkbox']")
         await checkInputs.at(1).setChecked(false)

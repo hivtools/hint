@@ -109,8 +109,7 @@ class GenericLoggerImplTests
                 ErrorDetail(
                     HttpStatus.valueOf(500),
                     "error message",
-                    "OTHER_ERROR",
-                    null
+                    "OTHER_ERROR"
                 )
             ),
             requestData,
@@ -135,8 +134,7 @@ class GenericLoggerImplTests
                 ErrorDetail(
                     HttpStatus.valueOf(500),
                     "",
-                    "OTHER_ERROR",
-                    null
+                    "OTHER_ERROR"
                 )
             ),
             requestData,
@@ -161,8 +159,7 @@ class GenericLoggerImplTests
                 ErrorDetail(
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     "test error message",
-                    "OTHER_ERROR",
-                    listOf("test error message")
+                    "OTHER_ERROR"
                 )
             ),
             requestData,
@@ -186,8 +183,7 @@ class GenericLoggerImplTests
                 ErrorDetail(
                     error.httpStatus,
                     error.message.toString(),
-                    "OTHER_ERROR",
-                    listOf(error.message.toString())
+                    "OTHER_ERROR"
                 ),
                 error.key
             ),

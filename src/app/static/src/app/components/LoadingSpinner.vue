@@ -87,8 +87,14 @@
 <script lang="ts">
     import Vue from "vue";
 
-    export default Vue.extend({
-        props: ["size"],
+    interface Props {
+        size: string
+    }
+
+    export default Vue.extend<unknown, unknown, unknown, Props>({
+        props: {
+            size: String
+        },
         computed: {
             height() {
                 return this.size == "xs" ? "40px" : (this.size == "sm") ? "100px" : "200px";

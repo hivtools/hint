@@ -7,6 +7,10 @@ import {emptyState} from "../../../app/root";
 
 describe("MapAdjustScale component", () => {
 
+    afterEach(() => {
+        jest.clearAllMocks()
+    })
+
     const store = new Vuex.Store({
         state: emptyState()
     });
@@ -165,7 +169,7 @@ describe("MapAdjustScale component", () => {
     it("emits update event when type changes", () => {
         const wrapper = mount(MapAdjustScale, {store, propsData});
 
-        wrapper.find("#type-input-custom").trigger("click");
+        wrapper.find("#type-input-custom").trigger("change");
 
         expect(wrapper.emitted("update").length).toBe(1);
         expect(wrapper.emitted("update")[0][0]).toStrictEqual({
@@ -174,7 +178,7 @@ describe("MapAdjustScale component", () => {
             customMax: 1
         });
 
-        wrapper.find("#type-input-default").trigger("click");
+        wrapper.find("#type-input-default").trigger("change");
 
         expect(wrapper.emitted("update").length).toBe(2);
         expect(wrapper.emitted("update")[1][0]).toStrictEqual({
@@ -183,7 +187,7 @@ describe("MapAdjustScale component", () => {
             customMax: 1
         });
 
-        wrapper.find("#type-input-dynamic-full").trigger("click");
+        wrapper.find("#type-input-dynamic-full").trigger("change");
 
         expect(wrapper.emitted("update").length).toBe(3);
         expect(wrapper.emitted("update")[1][0]).toStrictEqual({
@@ -192,7 +196,7 @@ describe("MapAdjustScale component", () => {
             customMax: 1
         });
 
-        wrapper.find("#type-input-dynamic-filtered").trigger("click");
+        wrapper.find("#type-input-dynamic-filtered").trigger("change");
 
         expect(wrapper.emitted("update").length).toBe(4);
         expect(wrapper.emitted("update")[1][0]).toStrictEqual({
@@ -250,7 +254,7 @@ describe("MapAdjustScale component", () => {
         expect(wrapper.emitted("update")).toBeUndefined();
 
         //Should emit event when change to default
-        wrapper.find("#type-input-default").trigger("click");
+        wrapper.find("#type-input-default").trigger("change");
         expect(wrapper.emitted("update").length).toBe(1);
     });
 

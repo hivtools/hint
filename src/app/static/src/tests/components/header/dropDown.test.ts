@@ -27,7 +27,7 @@ describe("Drop down", () => {
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
     });
 
-    it("closes dropdown on blur after delay when 'delay' prop is true", async (done) => {
+    it("closes dropdown on blur after delay when 'delay' prop is true", (done) => {
         const wrapper = shallowMount(DropDown, {store, propsData: {text: "text", delay: true}});
         wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);

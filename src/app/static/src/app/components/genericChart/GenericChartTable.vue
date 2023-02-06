@@ -12,8 +12,8 @@
 <script lang="ts">
     import Vue from "vue";
     import {FilterOption, NestedFilterOption} from "../../generated";
-    import {Dict, GenericChartColumn, GenericChartTableColumnConfig, GenericChartTableConfig} from "../../types";
-    import TableView, {Field} from "../plots/table/Table.vue";
+    import {Dict, Field, GenericChartColumn, GenericChartTableColumnConfig, GenericChartTableConfig} from "../../types";
+    import TableView from "../plots/table/Table.vue";
     import {format} from "d3-format";
 
     interface Props {
