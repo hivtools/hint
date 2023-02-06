@@ -556,7 +556,7 @@ const en: Translations = {
         "                <li>Input data required for the model to produce estimates including Spectrum PJNZ, country geojson, population data, survey data, ART data and ANC data</li>" +
         "                <li>Parameters for running a model fit</li>",
     privacyThirdPartyHeading: "Information we collect from third parties",
-    privacyThirdPartyList: "<li>If you login to Naomi using the HIV Tools single sign-on service you direct the service to send us profile information. Your email address will be stored on the Naomi servers.</li>" +
+    privacyThirdPartyList: "<li>If you login to Naomi using the HIV Tools Single Sign-On service you direct the service to send us profile information. Your email address will be stored on the Naomi servers.</li>" +
         "                   <li>If you link your ADR account via an API key any data imported from the ADR is stored on the Naomi servers.</li>",
     privacyUseHeading: "How we use your personal data",
     privacyUseBody: "We will only use your personal data when the law allows us to.",
@@ -577,7 +577,7 @@ const en: Translations = {
     privacyRightsHeading: "Your rights",
     privacyRightsList: "<li>You can find out what information we hold about you by submitting a subject access request to <a href=\"mailto:naomi-support@imperial.ac.uk\">naomi-support@imperial.ac.uk</a> and ask us not to use the information we collect.</li>" +
         "               <li>You also have the right to have data erased if it is no longer necessary for the purpose for which it was originally collected/processed, or if there are no overriding legitimate grounds for the processing. This is sometimes known as 'the right to be forgotten'.</li>" +
-        "               <li>To find out more, please see - <a href=\"https://www.imperial.ac.uk/admin-services/secretariat/information-governance/data-protection/internal-guidance/guide-10/\">Guide 12 - Individual Rights | Administration and support services | Imperial College London</a></li>",
+        "               <li>To find out more, please see - <a href=\"https://www.imperial.ac.uk/admin-services/secretariat/information-governance/data-protection/internal-guidance/guide-10/\" target='_blank'>Guide 12 - Individual Rights | Administration and support services | Imperial College London</a></li>",
     privacyLinksHeading: "Links to other websites",
     privacyLinksBody: "The naomi.unaids.org website contains links to other websites. This privacy policy applies to naomi.unaids.org and shiny90.unaids.org only and doesn't cover other websites that we link to. These services have their own terms and conditions and privacy policies. If you do go to another website from this one, read the privacy policy on that website to find out what it does with your information.",
     project: "Project",
