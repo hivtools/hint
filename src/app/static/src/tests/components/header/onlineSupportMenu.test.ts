@@ -338,9 +338,28 @@ describe("Online support menu", () => {
             router
         });
 
-        const link = wrapper.find("router-link-stub");
+        const links = wrapper.findAll("router-link-stub");
+        expect(links.length).toBe(2)
+
+        const link = links.at(1)
         expect(link.attributes("to")).toBe("/accessibility");
         expectTranslated(link, "Accessibility", "Accessibilité", "Acessibilidade", store as any);
+    });
+
+    it("renders privacy menu-item text and link", () => {
+        const store = createStore();
+        const wrapper = shallowMount(OnlineSupportMenu, {
+            store,
+            localVue,
+            router
+        });
+
+        const links = wrapper.findAll("router-link-stub");
+        expect(links.length).toBe(2)
+
+        const link = links.at(0)
+        expect(link.attributes("to")).toBe("/privacy");
+        expectTranslated(link, "Privacy", "Vie privée", "Privacidade", store as any);
     });
 
 });

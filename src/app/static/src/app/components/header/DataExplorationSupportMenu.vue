@@ -5,6 +5,11 @@
                @click="toggleErrorReportModal"
                v-translate="'troubleshootingRequest'">
             </a>
+            <router-link id="privacy-link"
+                         to="/privacy"
+                         class="dropdown-item"
+                         v-translate="'privacy'">
+            </router-link>
             <router-link id="accessibility-link"
                          to="/accessibility"
                          class="dropdown-item"

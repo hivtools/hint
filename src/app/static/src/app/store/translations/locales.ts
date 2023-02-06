@@ -198,6 +198,7 @@ export interface Translations {
     population: string,
     preparing: string,
     previousPage: string,
+    privacy: string,
     privacyPreambleHeading: string,
     privacyPreambleBody: string,
     privacyPreambleList: string,
@@ -544,6 +545,7 @@ const en: Translations = {
     population: "Population",
     preparing: "Preparing files...",
     previousPage: "Previous page",
+    privacy: "Privacy",
     privacyPreambleHeading: "Privacy notice for naomi.unaids.org",
     privacyPreambleBody: "In accordance with data protection legislation and the privacy electronic communications regulations, the privacy notice will:",
     privacyPreambleList: "<li>inform you as to how we look after your personal data when you visit our websites;</li>\n" +
@@ -907,6 +909,7 @@ const fr: Partial<Translations> = {
     population: "Population",
     preparing: "Préparer les fichiers...",
     previousPage: "Page précédente",
+    privacy: "Vie privée",
     privacyPreambleHeading: "Avis de confidentialité pour naomi.unaids.org",
     privacyPreambleBody: "Conformément à la législation sur la protection des données et à la réglementation sur la confidentialité des communications électroniques, l'avis de confidentialité:",
     privacyPreambleList: "<li>vous informer sur la manière dont nous traitons vos données personnelles lorsque vous visitez nos sites web;</li>\n" +
@@ -1268,6 +1271,7 @@ const pt: Partial<Translations> = {
     PJNZ: "Ficheiro Spectrum",
     population: "População",
     preparing: "Preparando arquivos",
+    privacy: "Privacidade",
     previousPage: "Página anterior",
     privacyPreambleHeading: "Aviso de privacidade para naomi.unaids.org",
     privacyPreambleBody: "De acordo com a legislação de protecção de dados e os regulamentos de privacidade das comunicações electrónicas, a declaração de privacidade:",
