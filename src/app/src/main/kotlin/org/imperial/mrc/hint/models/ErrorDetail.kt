@@ -6,8 +6,7 @@ import org.springframework.http.ResponseEntity
 
 class ErrorDetail(private val httpStatus: HttpStatus,
                   val detail: String,
-                  val error: String = defaultError,
-                  val trace: List<String>? = null)
+                  val error: String = defaultError)
 {
 
     companion object
@@ -30,7 +29,6 @@ class ErrorDetail(private val httpStatus: HttpStatus,
         if (httpStatus != other.httpStatus) return false
         if (detail != other.detail) return false
         if (error != other.error) return false
-        if (trace != other.trace) return false
 
         return true
     }
@@ -40,12 +38,11 @@ class ErrorDetail(private val httpStatus: HttpStatus,
         var result = httpStatus.hashCode()
         result = 31 * result + detail.hashCode()
         result = 31 * result + error.hashCode()
-        result = 31 * result + (trace?.hashCode() ?: 0)
         return result
     }
 
     override fun toString(): String
     {
-        return "ErrorDetail(httpStatus=$httpStatus, detail='$detail', error='$error', trace=$trace)"
+        return "ErrorDetail(httpStatus=$httpStatus, detail='$detail', error='$error')"
     }
 }

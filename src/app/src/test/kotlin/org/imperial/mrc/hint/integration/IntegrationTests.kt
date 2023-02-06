@@ -246,39 +246,16 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
         Assertions.assertThat(responseEntity.headers.location!!.toString()).isEqualTo("/login")
     }
 
-    fun assertSecureWithError(isAuthorized: IsAuthorized,
-                              responseEntity: ResponseEntity<String>,
-                              httpStatus: HttpStatus,
-                              errorCode: String,
-                              errorDetail: String? = null,
-                              errorTrace: String? = null)
-    {
-
-        when (isAuthorized)
-        {
-            IsAuthorized.TRUE ->
-            {
-                Assertions.assertThat(responseEntity.headers.contentType!!.toString()).isEqualTo("application/json")
-                Assertions.assertThat(responseEntity.statusCode).isEqualTo(httpStatus)
-                JSONValidator().validateError(responseEntity.body!!, errorCode, errorDetail, errorTrace)
-            }
-            IsAuthorized.FALSE ->
-            {
-                assertUnauthorized(responseEntity)
-            }
-        }
-    }
 
     fun assertError(responseEntity: ResponseEntity<String>,
                     httpStatus: HttpStatus,
                     errorCode: String,
-                    errorDetail: String? = null,
-                    errorTrace: String? = null)
+                    errorDetail: String? = null)
     {
 
         Assertions.assertThat(responseEntity.headers.contentType!!.toString()).isEqualTo("application/json")
         Assertions.assertThat(responseEntity.statusCode).isEqualTo(httpStatus)
-        JSONValidator().validateError(responseEntity.body!!, errorCode, errorDetail, errorTrace)
+        JSONValidator().validateError(responseEntity.body!!, errorCode, errorDetail)
 
     }
 
