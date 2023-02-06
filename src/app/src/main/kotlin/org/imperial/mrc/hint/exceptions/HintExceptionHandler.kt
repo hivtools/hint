@@ -86,7 +86,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         val resourceBundle = getBundle(request)
         val message = if (resourceBundle.containsKey(key))
         {
-            resourceBundle.getUTF8String(key)
+            resourceBundle.getString(key)
         }
         else
         {
@@ -101,7 +101,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     {
 
         val resourceBundle = getBundle(request)
-        var message = resourceBundle.getUTF8String("unexpectedError")
+        var message = resourceBundle.getString("unexpectedError")
         val formatter = MessageFormat(message)
         val messageArguments = arrayOf(
                 appProperties.applicationTitle,
@@ -135,14 +135,6 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         {
             unexpectedError(HttpStatus.NOT_FOUND, request, e.message)
         }
-    }
-
-    // resource bundles are encoded with ISO-8859-1
-    fun ResourceBundle.getUTF8String(key: String): String
-    {
-        return this.getString(key)
-                .toByteArray(Charsets.ISO_8859_1)
-                .toString(Charsets.UTF_8)
     }
 
     fun handleOtherExceptions(error: Throwable?, request: HttpServletRequest): ResponseEntity<Any>
