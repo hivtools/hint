@@ -1,30 +1,40 @@
 import {shallowMount} from '@vue/test-utils';
 import ErrorAlert from "../../app/components/ErrorAlert.vue";
 import {mockError} from "../mocks";
+import Vuex from "vuex";
+import {Language} from "../../app/store/translations/locales";
+import registerTranslations from "../../app/store/translations/registerTranslations";
+import {expectTranslated} from "../testHelpers";
 
 describe("Error alert component", () => {
 
-    const noTraceProps = {
+    const noJobIdProps = {
         error: mockError("Error text")
     };
 
-    const traceProps = {
+    const jobIdProps = {
         error: {
             error: "TEST_ERROR_TYPE",
             detail: "Error text",
-            trace: ["trace1", "trace2"]
+            job_id: "12345abc"
         }
     };
 
+    const store = new Vuex.Store({
+        state: {language: Language.en, updatingLanguage: false}
+    });
+    registerTranslations(store);
+
     it("renders error message", () => {
         const wrapper = shallowMount(ErrorAlert, {
-            propsData: noTraceProps
+            propsData: noJobIdProps,
+            store
         });
 
         expect(wrapper.find(".error-message").text()).toBe("Error text");
         expect(wrapper.find("div").classes()).toStrictEqual(["pt-1", "text-danger"])
         expect(wrapper.findAll("a").length).toBe(0);
-        expect(wrapper.findAll(".error-trace").length).toBe(0);
+        expect(wrapper.findAll(".error-job-id").length).toBe(0);
     });
 
     it("renders error value if detail is not present", () => {
@@ -34,43 +44,24 @@ describe("Error alert component", () => {
                     error: "TEST ERROR TYPE",
                     detail: null
                 }
-            }
+            },
+            store
         });
 
         expect(wrapper.find(".error-message").text()).toBe("TEST ERROR TYPE");
     });
 
-    it("shows details link if trace is present", () => {
+    it("shows job ID if present", () => {
         const wrapper = shallowMount(ErrorAlert, {
-            propsData: traceProps
+            propsData: jobIdProps,
+            store
         });
 
         expect(wrapper.find(".error-message").text()).toBe("Error text");
         expect(wrapper.find("div").classes()).toStrictEqual(["pt-1", "text-danger"]);
-        expect(wrapper.find("a").text()).toBe("stack trace");
-        expect(wrapper.find("a").classes()).toContain("down");
-        expect(wrapper.findAll(".error-trace").length).toBe(0);
+        expect(wrapper.find(".error-job-id").text()).toBe("Job ID: 12345abc");
+        const jobId = wrapper.find(".error-job-id").find("span");
+        expectTranslated(jobId, "Job ID", "ID du job",
+            "ID de job", store as any);
     });
-
-    it("toggles display of trace when click link", () => {
-        const wrapper = shallowMount(ErrorAlert, {
-            propsData: traceProps
-        });
-
-        const link = wrapper.find("a");
-        link.trigger("click");
-
-        expect(link.text()).toBe("stack trace");
-        expect(link.classes()).toContain("up");
-        const traceMsgs = wrapper.findAll(".error-trace");
-        expect(traceMsgs.length).toBe(2);
-        expect(traceMsgs.at(0).text()).toBe("trace1");
-        expect(traceMsgs.at(1).text()).toBe("trace2");
-
-        link.trigger("click");
-        expect(link.text()).toBe("stack trace");
-        expect(link.classes()).toContain("down");
-        expect(wrapper.findAll(".error-trace").length).toBe(0);
-    });
-
 });

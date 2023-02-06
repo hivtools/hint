@@ -40,8 +40,8 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
         JSONValidator().validateError(entity.body!!,
                 "OTHER_ERROR",
-                unexpectedErrorRegex,
-                "No handler found for GET /nonsense/route/")
+            "$unexpectedErrorRegex No handler found for GET /nonsense/route/"
+        )
     }
 
     @Test
@@ -75,8 +75,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         assertError(entity,
                 HttpStatus.BAD_REQUEST,
                 "OTHER_ERROR",
-                unexpectedErrorRegex,
-                "Required request part 'file' is not present")
+                "$unexpectedErrorRegex Required request part 'file' is not present")
     }
 
     @Test
@@ -96,7 +95,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
                 "An unexpected error occurred. If you see this message while you are using " +
                         "AppTitle at a workshop, " +
                         "please contact your workshop technical support and show them this code: 1234. " +
-                        "Otherwise please contact support at support@email.com and quote this code: 1234")
+                        "Otherwise please contact support at support@email.com and quote this code: 1234.")
     }
 
     @Test
@@ -142,7 +141,8 @@ class ExceptionHandlerTests : SecureIntegrationTests()
                 "An unexpected error occurred. If you see this message while you are " +
                         "using AppTitle at a workshop, " +
                         "please contact your workshop technical support and show them this code: 1234. " +
-                        "Otherwise please contact support at support@email.com and quote this code: 1234")
+                        "Otherwise please contact support at support@email.com and quote this code: 1234.")
+
     }
 
     @Test

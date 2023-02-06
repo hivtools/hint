@@ -33,8 +33,7 @@ class JSONValidator
 
     fun validateError(response: String,
                       expectedErrorCode: String,
-                      expectedErrorMessage: String? = null,
-                      errorTrace: String? = null)
+                      expectedErrorMessage: String? = null)
     {
         assertValidates(response, responseSchema, "Response")
         val error = objectMapper.readValue<JsonNode>(response)["errors"].first()
@@ -48,14 +47,6 @@ class JSONValidator
             val regex = Regex(expectedErrorMessage)
             assertThat(regex.matchEntire(actualErrorDetail))
                     .withFailMessage("Expected $actualErrorDetail to match $expectedErrorMessage")
-                    .isNotNull()
-        }
-        if (errorTrace != null)
-        {
-            val actualErrorTrace = error["trace"].first().asText()
-            val regex = Regex(errorTrace)
-            assertThat(regex.matchEntire(actualErrorTrace))
-                    .withFailMessage("Expected $actualErrorTrace to match $errorTrace")
                     .isNotNull()
         }
     }
