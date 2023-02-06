@@ -21,10 +21,10 @@
 <script lang="ts">
     import Vue from "vue";
     import i18next from "i18next";
-    import TableView, {Field} from "./Table.vue";
+    import TableView from "./Table.vue";
     import {findPath, iterateDataValues, formatOutput} from "../utils";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
-    import {Dict, Filter} from "../../../types";
+    import {Dict, Field, Filter} from "../../../types";
     import {flattenOptions, flattenToIdSet, mapStateProp} from "../../../utils";
     import {RootState} from "../../../root";
     import {Language} from "../../../store/translations/locales";

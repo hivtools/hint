@@ -7,7 +7,7 @@ import {mockRootState} from "../../mocks";
 import {expectTranslated} from "../../testHelpers";
 import TreeSelect from '@riophae/vue-treeselect';
 import {Language} from "../../../app/store/translations/locales";
-import {Dataset, Release} from "../../../app/types";
+import {Dataset} from "../../../app/types";
 
 describe("select release", () => {
 
@@ -175,16 +175,15 @@ describe("select release", () => {
         expect(mockTooltip.mock.calls[1][1].value).toBe("Carregar dados de uma determinada versão rotulada, que podem não ser os dados mais recentes");
     });
 
-    it("radial toggles whether release tree select is disabled", async (done) => {
+    it("radial toggles whether release tree select is disabled", async () => {
         let store = getStore()
         const rendered = shallowMount(SelectRelease, {store});
         rendered.setProps({datasetId: "datasetId"})
         const select = rendered.find(TreeSelect);
         expect(select.attributes("disabled")).toBe("true");
         const selectRelease = rendered.findAll("input").at(1)
-        await selectRelease.trigger("click")
+        await selectRelease.trigger("change")
         expect(select.attributes("disabled")).toBeUndefined();
-        done()
     });
 
     it("radial toggles automatically toggles and selects release if selectedDataset has an appropriate releaseId", () => {
@@ -227,7 +226,7 @@ describe("select release", () => {
     });
     
 
-    it("selecting a release emits release id", async (done) => {
+    it("selecting a release emits release id", async () => {
         let store = getStore()
         const rendered = shallowMount(SelectRelease, {store});
         rendered.setProps({datasetId: "datasetId"})
@@ -235,19 +234,17 @@ describe("select release", () => {
         await selectRelease.trigger("click")
         rendered.setData({releaseId: "releaseId"})
         expect(rendered.emitted("selected-dataset-release")).toStrictEqual([[undefined], [releasesArray[0]]])
-        done()
     });
 
-    it("selecting a release emits true valid", async (done) => {
+    it("selecting a release emits true valid", async () => {
         let store = getStore()
         const rendered = shallowMount(SelectRelease, {store});
         rendered.setProps({datasetId: "datasetId"})
         const selectRelease = rendered.findAll("input").at(1)
-        await selectRelease.trigger("click")
+        await selectRelease.trigger("change")
         expect(rendered.emitted("valid")).toStrictEqual([[true], [false]])
         rendered.setData({releaseId: "releaseId"})
         expect(rendered.emitted("valid")).toStrictEqual([[true], [false], [true]])
-        done()
     });
 
     it("changing datasetId clears releases and resets radial and releaseId", async () => {
@@ -255,7 +252,7 @@ describe("select release", () => {
         const rendered = shallowMount(SelectRelease, {store});
         rendered.setProps({datasetId: "datasetId"})
         const selectRelease = rendered.findAll("input").at(1);
-        await selectRelease.trigger("click")
+        await selectRelease.trigger("change")
         rendered.setData({releaseId: "releaseId"})
         expect(rendered.vm.$data.releaseId).toBe("releaseId");
         expect(rendered.vm.$data.choiceADR).toBe("useRelease");

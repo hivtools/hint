@@ -251,7 +251,7 @@ describe("Project history component", () => {
         expect(modal.classes).not.toContain("show");
     });
 
-    it("can expand project row", async (done) => {
+    it("can expand project row",  (done) => {
         const wrapper = getWrapper();
         const button = wrapper.find("#p-1 button");
         button.trigger("click");
@@ -262,7 +262,7 @@ describe("Project history component", () => {
         });
     });
 
-    it("can collapse project row", async (done) => {
+    it("can collapse project row",  (done) => {
         const wrapper = getWrapper();
         const button = wrapper.find("#p-1 button");
         button.trigger("click");

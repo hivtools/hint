@@ -76,7 +76,7 @@ describe("Projects actions", () => {
         expect(result).toBe(false);
     });
 
-    it("createProject posts to new project endpoint and sets error on unsuccessful response", async (done) => {
+    it("createProject posts to new project endpoint and sets error on unsuccessful response",  (done) => {
         mockAxios.onPost(`/project/`)
             .reply(500, mockFailure("TestError"));
 
@@ -102,7 +102,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("createProject posts to new project endpoint and resets project with root on successful response", async (done) => {
+    it("createProject posts to new project endpoint and resets project with root on successful response",  (done) => {
         mockAxios.onPost(`/project/`)
             .reply(200, mockSuccess("TestProject"));
 
@@ -127,7 +127,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("gets projects and commits mutation on successful response", async (done) => {
+    it("gets projects and commits mutation on successful response",  (done) => {
         const testProjects = [{id: 1, name: "v1", versions: []}];
         mockAxios.onGet("/projects/")
             .reply(200, mockSuccess(testProjects));
@@ -147,7 +147,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("gets current project and commits mutation on successful response", async (done) => {
+    it("gets current project and commits mutation on successful response",  (done) => {
         const testProjects = [{id: 1, name: "v1", versions: []}];
         mockAxios.onGet("/project/current")
             .reply(200, mockSuccess(testProjects));
@@ -169,7 +169,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("if current version, createProject uploads current version before post to new project endpoint", async (done) => {
+    it("if current version, createProject uploads current version before post to new project endpoint",  (done) => {
         mockAxios.onPost(`/project/`)
             .reply(200, mockSuccess("TestProject"));
         mockAxios.onPost("/project/1/version/version-id/state/")
@@ -198,7 +198,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("gets projects and sets error on unsuccessful response", async (done) => {
+    it("gets projects and sets error on unsuccessful response",  (done) => {
         mockAxios.onGet("/projects/")
             .reply(500, mockFailure("TestError"));
 
@@ -218,7 +218,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("gets current project and sets error on unsuccessful response", async (done) => {
+    it("gets current project and sets error on unsuccessful response",  (done) => {
         mockAxios.onGet("/project/current")
             .reply(500, mockFailure("TestError"));
 
@@ -240,7 +240,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("queueVersionStateUpload does nothing if no current version", async (done) => {
+    it("queueVersionStateUpload does nothing if no current version",  (done) => {
         const commit = jest.fn();
         const state = mockProjectsState();
 
@@ -253,7 +253,7 @@ describe("Projects actions", () => {
         }, 2500);
     });
 
-    it("queued upload will not run while version upload is already in progress", async () => {
+    it("queued upload will not run while version upload is already in progress",  () => {
         const commit = jest.fn();
         const state = mockProjectsState({
             currentProject: mockProject,
@@ -341,7 +341,7 @@ describe("Projects actions", () => {
         })
     });
 
-    it("uploadVersionState commits ErrorAdded on error response and unsets in progress upload", async (done) => {
+    it("uploadVersionState commits ErrorAdded on error response and unsets in progress upload",  (done) => {
         const commit = jest.fn();
         const state = mockProjectsState({
             currentProject: mockProject,
@@ -463,7 +463,7 @@ describe("Projects actions", () => {
         expect(commit.mock.calls[3][1]).toStrictEqual({root: true});
     });
 
-    it("loadVersion fetches version details and invokes load state action", async (done) => {
+    it("loadVersion fetches version details and invokes load state action",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = {error: null};
@@ -482,7 +482,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("loadVersion commits error if cannot fetch version details", async (done) => {
+    it("loadVersion commits error if cannot fetch version details",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = {error: "test error"};
@@ -501,7 +501,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("deleteProject dispatches getProjects action", async (done) => {
+    it("deleteProject dispatches getProjects action",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = {};
@@ -516,7 +516,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("deleteProject commits ProjectError on failure", async (done) => {
+    it("deleteProject commits ProjectError on failure",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = {};
@@ -544,7 +544,7 @@ describe("Projects actions", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.ClearCurrentVersion});
     });
 
-    it("deleteVersion dispatches getProjects action", async (done) => {
+    it("deleteVersion dispatches getProjects action",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = {};
@@ -559,7 +559,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("deleteVersion commits ProjectError on failure", async (done) => {
+    it("deleteVersion commits ProjectError on failure",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = {};
@@ -587,7 +587,7 @@ describe("Projects actions", () => {
         expect(commit.mock.calls[0][0]).toStrictEqual({type: ProjectsMutations.ClearCurrentVersion});
     });
 
-    it("promoteVersion creates new project containing replicated version", async (done) => {
+    it("promoteVersion creates new project containing replicated version",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = mockProjectsState({
@@ -616,7 +616,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("promoteVersion commits ErrorAdded on failure", async (done) => {
+    it("promoteVersion commits ErrorAdded on failure",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = {};
@@ -639,7 +639,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("updateVersionNote action adds/edits a project's note", async (done) => {
+    it("updateVersionNote action adds/edits a project's note",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const testProjects = [{id: 1, name: "v1", versions: []}];
@@ -665,7 +665,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("can update project notes", async (done) => {
+    it("can update project notes",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const testProjects = [{id: 1, name: "v1", versions: []}];
@@ -689,7 +689,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("update project notes commits Project Error on failure", async (done) => {
+    it("update project notes commits Project Error on failure",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = mockProjectsState({error: "TEST ERROR" as any});
@@ -713,7 +713,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("update version notes commits Project Error on failure", async (done) => {
+    it("update version notes commits Project Error on failure",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = mockProjectsState({error: "TEST ERROR" as any});
@@ -766,7 +766,7 @@ describe("Projects actions", () => {
         expect(dispatch.mock.calls.length).toBe(2);
     });
 
-    it("renameProject does not dispatch getCurrentProject if currentProject is not being renamed", async (done) => {
+    it("renameProject does not dispatch getCurrentProject if currentProject is not being renamed",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = mockProjectsState({
@@ -793,7 +793,7 @@ describe("Projects actions", () => {
         });
     });
 
-    it("renameProject commits ErrorAdded on failure", async (done) => {
+    it("renameProject commits ErrorAdded on failure",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const state = {};
