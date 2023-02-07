@@ -1,3 +1,7 @@
+# hint 2.32.3
+
+* Use UTF-8 encoded properties file to fix issue with malformed special characters in error string
+
 # hint 2.32.2
 
 * fix project load
