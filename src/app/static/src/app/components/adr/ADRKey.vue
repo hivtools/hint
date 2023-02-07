@@ -28,7 +28,7 @@
                              <button class="btn btn-red"
                                      type="button"
                                      @click="remove"
-                                     v-translate="'remove'">
+                                     v-translate="'removeButton'">
                             </button>
                          </span>
                     </div>

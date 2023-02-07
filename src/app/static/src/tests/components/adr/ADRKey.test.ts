@@ -74,7 +74,7 @@ describe("ADR Key", function () {
         const rendered = shallowMount(ADRKey, {store: createStore(), directives: {"tooltip": mockTooltipDirective}});
         const links = rendered.findAll("a");
         expect(links.length).toBe(1);
-        expect(links.at(0).text()).toBe("get access key from ADR");
+        expect(links.at(0).text()).toBe("Get access key from ADR");
         expect(links.at(0).attributes("href")).toBe("www.adr.com/me");
         expect(mockTooltipDirective.mock.calls[0][0].innerHTML)
             .toBe("Get access key from ADR");
