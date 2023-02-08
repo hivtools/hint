@@ -6,5 +6,5 @@ import java.net.URI
 open class HintException(
         val key: String,
         val httpStatus: HttpStatus = HttpStatus.INTERNAL_SERVER_ERROR,
-        val adrUri: URI? = null
+        val adrUri: String? = null
 ) : Exception("HintException with key $key")

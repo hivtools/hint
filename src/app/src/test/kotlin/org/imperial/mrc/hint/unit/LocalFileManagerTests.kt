@@ -12,17 +12,21 @@ import org.imperial.mrc.hint.LocalFileManager
 import org.imperial.mrc.hint.clients.ADRClient
 import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.exceptions.AdrException
+import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.models.AdrResource
 import org.imperial.mrc.hint.models.VersionFile
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.mock.web.MockMultipartFile
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.InputStream
+import java.net.URI
 import java.net.http.HttpResponse
 
 class LocalFileManagerTests
@@ -51,6 +55,8 @@ class LocalFileManagerTests
 
     private val mockInputStream = mock<HttpResponse<InputStream>> {
         on { body() } doReturn BufferedInputStream("test content".byteInputStream())
+        on { statusCode() } doReturn 200
+        on { uri() } doReturn URI("https://adr")
     }
 
     @AfterEach
@@ -124,6 +130,66 @@ class LocalFileManagerTests
         assertThat(file.hash).isEqualTo("9473FDD0D880A43C21B7778D34872157.csv")
         assertThat(file.fromADR).isEqualTo(true)
         assertThat(file.resourceUrl).isEqualTo("https://adr.org/dataset/1/resource/2/download/name.csv?activity_id=3")
+    }
+
+    @Test
+    fun `throws ADR exception when a user does not have permission to load resource`()
+    {
+        val mockStateRepository = mock<VersionRepository> {
+            on { saveNewHash(any()) } doReturn true
+        }
+
+        val mockLocalInputStream = mock<HttpResponse<InputStream>> {
+            on { body() } doReturn BufferedInputStream("test content".byteInputStream())
+            on { statusCode() } doReturn 503
+            on { uri() } doReturn URI("https://adr")
+        }
+
+        val mockClient = mock<ADRClient> {
+            on { getInputStream(any()) } doReturn mockLocalInputStream
+            on { get(anyString()) } doReturn mockAdrActivityResponse
+        }
+
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mockBuilder, objectMapper)
+
+        TranslationAssert.assertThatThrownBy { sut.saveFile(AdrResource("some-url/name.csv", "1", "2"), FileType.PJNZ) }
+            .isInstanceOf(AdrException::class.java)
+            .matches { (it as AdrException).httpStatus == HttpStatus.SERVICE_UNAVAILABLE }
+            .hasTranslatedMessage("Unable to load resource, check resource in ADR {0}.")
+    }
+
+    @Test
+    fun `throws ADR exception when any error is encountered when loading resource`()
+    {
+        val mockStateRepository = mock<VersionRepository> {
+            on { saveNewHash(any()) } doReturn true
+        }
+
+        val mockLocalInputStream = mock<HttpResponse<InputStream>> {
+            on { body() } doReturn BufferedInputStream("test content".byteInputStream())
+            on { statusCode() } doReturn 302
+            on { uri() } doReturn URI("https://tenant.eu.auth0.com/login/extra")
+        }
+
+        val mockClient = mock<ADRClient> {
+            on { getInputStream(any()) } doReturn mockLocalInputStream
+            on { get(anyString()) } doReturn mockAdrActivityResponse
+        }
+
+        val mockBuilder = mock<ADRClientBuilder> {
+            on { build() } doReturn mockClient
+        }
+
+        val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mockBuilder, objectMapper)
+
+        TranslationAssert.assertThatThrownBy { sut.saveFile(AdrResource("some-url/name.csv", "1", "2"), FileType.PJNZ) }
+            .isInstanceOf(AdrException::class.java)
+            .hasTranslatedMessage("You do not have permission to load this resource from ADR." +
+                    " Contact dataset admin for permission.")
     }
 
     @Test
@@ -304,6 +370,7 @@ class LocalFileManagerTests
         val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mockBuilder, objectMapper)
 
         val file = sut.saveFile(adrResource, FileType.Survey)
+
         assertThat(file.resourceUrl).isEqualTo("")
     }
 

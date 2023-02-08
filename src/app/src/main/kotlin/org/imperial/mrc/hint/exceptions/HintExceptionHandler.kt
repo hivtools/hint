@@ -3,7 +3,6 @@ package org.imperial.mrc.hint.exceptions
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.models.ErrorDetail
-import org.imperial.mrc.hint.models.ErrorDetail.Companion.defaultError
 import org.springframework.beans.TypeMismatchException
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -75,27 +74,35 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         return translatedError(error.key, error.httpStatus, request)
     }
 
-    /**
-     * When a user is unauthenticated or lack required permission, the user gets redirected
-     * to auth0 login page. handleAdrException handles permission and unexpected ADR errors
-     */
     @ExceptionHandler(AdrException::class)
     fun handleAdrException(error: AdrException, request: HttpServletRequest): ResponseEntity<Any>
     {
         logger.error(request, error)
 
-        if (error.adrUri != null && error.adrUri.host.contains(".eu.auth0.com"))
-        {
-            return translatedError("noPermissionToAccessResource", HttpStatus.UNAUTHORIZED, request)
-        }
+        val messageArguments = arrayOf(error.adrUri ?: "")
 
-        return translatedError(error.key, error.httpStatus, request)
+        return translatedErrorArgs(error.key, messageArguments, error.httpStatus, request)
     }
 
     private fun getBundle(request: HttpServletRequest): ResourceBundle
     {
         val language = request.getHeader("Accept-Language") ?: "en"
         return ResourceBundle.getBundle("ErrorMessageBundle", Locale(language))
+    }
+
+    private fun translatedErrorArgs(
+        key: String,
+        args: Array<String>,
+        status: HttpStatus,
+        request: HttpServletRequest,
+    ): ResponseEntity<Any>
+    {
+        val resourceBundle = getBundle(request)
+        var message = resourceBundle.getString(key)
+        val formatter = MessageFormat(message)
+        message = formatter.format(args)
+
+        return ErrorDetail(status, message).toResponseEntity()
     }
 
     private fun translatedError(key: String, status: HttpStatus, request: HttpServletRequest): ResponseEntity<Any>
@@ -112,24 +119,20 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         return ErrorDetail(status, message).toResponseEntity()
     }
 
-    private fun unexpectedError(status: HttpStatus,
-                                request: HttpServletRequest,
-                                originalMessage: String? = null): ResponseEntity<Any>
+    private fun unexpectedError(
+        status: HttpStatus,
+        request: HttpServletRequest,
+        originalMessage: String? = null,
+    ): ResponseEntity<Any>
     {
-
-        val resourceBundle = getBundle(request)
-        var message = resourceBundle.getString("unexpectedError")
-        val formatter = MessageFormat(message)
         val messageArguments = arrayOf(
-                appProperties.applicationTitle,
-                errorCodeGenerator.newCode(),
-                appProperties.supportEmail,
-                if (originalMessage != null) " $originalMessage" else ""
+            appProperties.applicationTitle,
+            errorCodeGenerator.newCode(),
+            appProperties.supportEmail,
+            if (originalMessage != null) " $originalMessage" else ""
         )
-        message = formatter.format(messageArguments)
 
-        return ErrorDetail(status, message, defaultError)
-                .toResponseEntity()
+        return translatedErrorArgs("unexpectedError", messageArguments, status, request)
     }
 
     private fun handleErrorPage(page: String, e: Exception, request: HttpServletRequest): Any
