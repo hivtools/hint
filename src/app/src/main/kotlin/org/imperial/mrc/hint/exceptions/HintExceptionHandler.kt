@@ -75,6 +75,23 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         return translatedError(error.key, error.httpStatus, request)
     }
 
+    /**
+     * When a user is unauthenticated or lack required permission, the user gets redirected
+     * to auth0 login page. handleAdrException handles permission and unexpected ADR errors
+     */
+    @ExceptionHandler(AdrException::class)
+    fun handleAdrException(error: AdrException, request: HttpServletRequest): ResponseEntity<Any>
+    {
+        logger.error(request, error)
+
+        if (error.adrUri != null && error.adrUri.host.contains(".eu.auth0.com"))
+        {
+            return translatedError("noPermissionToAccessResource", HttpStatus.UNAUTHORIZED, request)
+        }
+
+        return translatedError(error.key, error.httpStatus, request)
+    }
+
     private fun getBundle(request: HttpServletRequest): ResourceBundle
     {
         val language = request.getHeader("Accept-Language") ?: "en"

@@ -22,6 +22,8 @@ import org.springframework.http.ResponseEntity
 import org.springframework.mock.web.MockMultipartFile
 import java.io.BufferedInputStream
 import java.io.File
+import java.io.InputStream
+import java.net.http.HttpResponse
 
 class LocalFileManagerTests
 {
@@ -46,6 +48,10 @@ class LocalFileManagerTests
     }
 
     private val objectMapper = ObjectMapper()
+
+    private val mockInputStream = mock<HttpResponse<InputStream>> {
+        on { body() } doReturn BufferedInputStream("test content".byteInputStream())
+    }
 
     @AfterEach
     fun tearDown()
@@ -102,7 +108,7 @@ class LocalFileManagerTests
             on { saveNewHash(any()) } doReturn true
         }
         val mockClient = mock<ADRClient> {
-            on { getInputStream(any()) } doReturn BufferedInputStream("test content".byteInputStream())
+            on { getInputStream(any()) } doReturn mockInputStream
             on { get(anyString()) } doReturn mockAdrActivityResponse
         }
         val mockBuilder = mock<ADRClientBuilder> {
@@ -156,7 +162,7 @@ class LocalFileManagerTests
     {
 
         val mockClient = mock<ADRClient> {
-            on { getInputStream(any()) } doReturn BufferedInputStream("test content".byteInputStream())
+            on { getInputStream(any()) } doReturn mockInputStream
             on { get(anyString()) } doReturn mockAdrActivityResponse
         }
         val mockBuilder = mock<ADRClientBuilder> {
@@ -177,7 +183,7 @@ class LocalFileManagerTests
             on { saveNewHash(any()) } doReturn false
         }
         val mockClient = mock<ADRClient> {
-            on { getInputStream(any()) } doReturn BufferedInputStream("test content".byteInputStream())
+            on { getInputStream(any()) } doReturn mockInputStream
             on { get(anyString()) } doReturn mockAdrActivityResponse
         }
         val mockBuilder = mock<ADRClientBuilder> {
@@ -289,7 +295,7 @@ class LocalFileManagerTests
         }
 
         val mockClient = mock<ADRClient> {
-            on { getInputStream(any()) } doReturn BufferedInputStream("test content".byteInputStream())
+            on { getInputStream(any()) } doReturn mockInputStream
             on { get(anyString()) } doReturn activityResponse
         }
         val mockBuilder = mock<ADRClientBuilder> {

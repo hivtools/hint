@@ -12,7 +12,9 @@ import java.io.InputStream
 import java.security.DigestInputStream
 import java.security.MessageDigest
 import jakarta.xml.bind.DatatypeConverter
+import org.imperial.mrc.hint.exceptions.AdrException
 import org.imperial.mrc.hint.models.*
+import org.springframework.http.HttpStatus
 import org.springframework.web.util.UriComponentsBuilder
 
 enum class FileType
@@ -65,9 +67,14 @@ class LocalFileManager(
 
         val resourceUrl = getResourceUrl(data, originalFilename)
 
-        val inputStream = adr.getInputStream(data.url)
+        val response = adr.getInputStream(data.url)
 
-        return saveFile(inputStream, originalFilename, type, true, resourceUrl)
+        if (response.statusCode() != 200)
+        {
+            throw AdrException("adrResourceError", HttpStatus.valueOf(response.statusCode()), response.uri())
+        }
+
+        return saveFile(response.body(), originalFilename, type, true, resourceUrl)
     }
 
     private fun saveFile(
