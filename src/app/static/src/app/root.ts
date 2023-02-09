@@ -19,7 +19,7 @@ import {getters} from "./store/root/getters";
 import {initialModelOptionsState, modelOptions, ModelOptionsState} from "./store/modelOptions/modelOptions";
 import {ModelOptionsMutation, ModelOptionsUpdates} from "./store/modelOptions/mutations";
 import {SurveyAndProgramMutation, SurveyAndProgramUpdates} from "./store/surveyAndProgram/mutations";
-import {BaselineMutation, BaselineUpdates} from "./store/baseline/mutations";
+import {BaselineDatasetUpdates, BaselineMutation, BaselineUpdates} from "./store/baseline/mutations";
 import {stripNamespace} from "./utils";
 import {
     initialPlottingSelectionsState,
@@ -104,15 +104,21 @@ const resetState = (store: Store<RootState>): void => {
 
             const type = stripNamespace(mutation.type);
 
-            if (type[0] == "baseline" && BaselineUpdates.includes(type[1] as BaselineMutation)) {
-                store.commit(RootMutation.InvalidateOptions);
-                store.commit(RootMutation.ResetSelectedDataType);
-                store.commit(RootMutation.ResetOutputs);
+            if (type[0] == "baseline") {
+                if (BaselineDatasetUpdates.includes(type[1] as BaselineMutation)) {
+                    store.commit(RootMutation.ResetOptions);
+                }
+
+                if (BaselineUpdates.includes(type[1] as BaselineMutation)) {
+                    store.commit(RootMutation.ResetSelectedDataType);
+                    store.commit(RootMutation.InvalidateOptions);
+                    store.commit(RootMutation.ResetOutputs);
+                }
             }
 
             if (type[0] == "surveyAndProgram" && SurveyAndProgramUpdates.includes(type[1] as SurveyAndProgramMutation)) {
-                store.commit(RootMutation.InvalidateOptions);
                 store.commit(RootMutation.ResetSelectedDataType);
+                store.commit(RootMutation.InvalidateOptions);
                 store.commit(RootMutation.ResetOutputs);
             }
 

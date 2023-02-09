@@ -1,3 +1,7 @@
+# hint 2.33.0
+
+* Naomi issue: model options reset if data set updated
+
 # hint 2.32.3
 
 * Use UTF-8 encoded properties file to fix issue with malformed special characters in error string

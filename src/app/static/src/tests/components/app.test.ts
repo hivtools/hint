@@ -139,13 +139,33 @@ describe("App", () => {
         expect(localStorageManager.getState(false)?.language).toEqual("pt")
     });
 
+    it("resets model options if baseline selected dataset is updated and state is ready", () => {
+        const store = getStore(true);
+        const spy = jest.spyOn(store, "commit");
+        store.commit(prefixNamespace("baseline", BaselineMutation.SetDataset), {payload: null});
+
+        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetOptions);
+
+        expect(spy).toBeCalledTimes(2);
+    });
+
+    it("resets model options if baseline released dataset is updated and state is ready", () => {
+        const store = getStore(true);
+        const spy = jest.spyOn(store, "commit");
+        store.commit(prefixNamespace("baseline", BaselineMutation.SetRelease), {payload: null});
+
+        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetOptions);
+
+        expect(spy).toBeCalledTimes(2);
+    });
+
     it("resets inputs if baseline update mutation is called and state is ready", () => {
         const store = getStore(true);
         const spy = jest.spyOn(store, "commit");
         store.commit(prefixNamespace("baseline", BaselineMutation.PJNZUpdated), {payload: null});
 
         expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetSelectedDataType);
-        expect(spy.mock.calls[2][0]).toBe(RootMutation.ResetOptions);
+        expect(spy.mock.calls[2][0]).toBe(RootMutation.InvalidateOptions);
         expect(spy.mock.calls[3][0]).toBe(RootMutation.ResetOutputs);
 
         expect(spy).toBeCalledTimes(4);
@@ -158,7 +178,7 @@ describe("App", () => {
         store.commit(prefixNamespace("surveyAndProgram", SurveyAndProgramMutation.SurveyUpdated), {payload: null});
 
         expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetSelectedDataType);
-        expect(spy.mock.calls[2][0]).toBe(RootMutation.ResetOptions);
+        expect(spy.mock.calls[2][0]).toBe(RootMutation.InvalidateOptions);
         expect(spy.mock.calls[3][0]).toBe(RootMutation.ResetOutputs);
 
         expect(spy).toBeCalledTimes(4);

@@ -27,7 +27,6 @@ export enum RootMutation {
     SetProject = "SetProject",
     ResetDownload = "ResetDownload",
     InvalidateOptions = "InvalidateOptions"
-
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -139,16 +138,9 @@ export const mutations: MutationTree<RootState> = {
 
     [RootMutation.InvalidateOptions](state: RootState) {
         /**
-         * Invalidate and Retains model options when input dataset changes
-         * for the same country else reset options to default values
+         * Invalidate and Retains model options when selected dataset changes
          */
-        console.log(state.baseline.iso3)
-        console.log(state.modelOptions.iso3)
-        if (state.baseline.iso3 === state.modelOptions.iso3) {
-            Object.assign(state.modelOptions, {valid: false, validating: false});
-        } else {
-            Object.assign(state.modelOptions, initialModelOptionsState());
-        }
+        Object.assign(state.modelOptions, {valid: false});
     },
 
     [RootMutation.ResetDownload](state: RootState) {

@@ -15,7 +15,6 @@ export interface ModelOptionsState extends WarningsState {
     version: VersionInfo
     validateError: Error | null
     optionsError: Error | null
-    iso3: string
 }
 
 export const initialModelOptionsState = (): ModelOptionsState => {
@@ -29,8 +28,7 @@ export const initialModelOptionsState = (): ModelOptionsState => {
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
         validateError: null,
         optionsError: null,
-        warnings: [],
-        iso3: ""
+        warnings: []
     }
 };
 
