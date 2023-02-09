@@ -9,6 +9,7 @@ import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
+import org.springframework.web.util.UriComponentsBuilder
 import java.io.File
 import java.io.InputStream
 import java.net.http.HttpResponse
@@ -69,6 +70,6 @@ class ADRFuelClient(appProperties: AppProperties,
 
     override fun getInputStream(url: String): HttpResponse<InputStream>
     {
-        return logADRRequestDuration({ getFile(url) }, logger)
+        return logADRRequestDuration({ getFile(getUri(url)) }, logger)
     }
 }

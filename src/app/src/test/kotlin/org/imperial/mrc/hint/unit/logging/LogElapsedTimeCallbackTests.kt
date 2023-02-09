@@ -3,6 +3,8 @@ package org.imperial.mrc.hint.unit.logging
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
+import org.imperial.mrc.hint.clients.ADRClient
+import org.imperial.mrc.hint.clients.ADRFuelClient
 import org.imperial.mrc.hint.clients.FuelClient
 import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.logging.logADRRequestDuration
@@ -12,8 +14,10 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.ArgumentMatchers.contains
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import java.io.BufferedInputStream
 import java.io.ByteArrayInputStream
+import java.io.InputStream
+import java.net.URI
+import java.net.http.HttpResponse
 
 class LogElapsedTimeCallbackTests
 {
@@ -33,11 +37,28 @@ class LogElapsedTimeCallbackTests
     }
 
     @Test
-    fun `callback request can return BufferedStream`()
+    fun `callback request can return HttpResponse`()
     {
         val anyInputStream = ByteArrayInputStream("test data".toByteArray())
-        val result = logADRRequestDuration({ BufferedInputStream(anyInputStream) }, mockLogger)
-        assertEquals(result.readAllBytes().decodeToString(), "test data")
+
+        val mockHttpResponse = mock<HttpResponse<InputStream>> {
+            on { body() } doReturn anyInputStream
+            on { statusCode() } doReturn 200
+            on { uri() } doReturn URI("http://test.url")
+        }
+
+        val mockADRClient = mock<ADRClient> {
+            on { getInputStream(anyString()) } doReturn mockHttpResponse
+        }
+
+        val result = logADRRequestDuration({ mockADRClient.getInputStream("url") }, mockLogger)
+
+        assertEquals(result.statusCode(), 200)
+
+        assertEquals(result.uri(), URI("http://test.url"))
+
+        assertEquals(result.body().bufferedReader().use { it.readText() }, "test data")
+
         verify(mockLogger).info(contains("ADR request time elapsed: "))
     }
 }
