@@ -5,6 +5,8 @@ import {api} from "../../apiService";
 import {RootState} from "../../root";
 import {ModelOptionsMutation} from "./mutations";
 import { ModelOptionsValidate } from "../../generated";
+import {RootMutation} from "../root/mutations";
+import {rootState} from "../../../tests/integration/integrationTest";
 
 export interface ModelOptionsActions {
     fetchModelRunOptions: (store: ActionContext<ModelOptionsState, RootState>) => void
@@ -14,7 +16,7 @@ export interface ModelOptionsActions {
 export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsActions = {
 
     async fetchModelRunOptions(context) {
-        const {commit} = context;
+        const {commit, rootState} = context;
         commit(ModelOptionsMutation.FetchingModelOptions);
         const response = await api<ModelOptionsMutation, ModelOptionsMutation>(context)
             .withSuccess(ModelOptionsMutation.ModelOptionsFetched)
@@ -23,6 +25,8 @@ export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsAct
 
         if (response) {
             commit({type: ModelOptionsMutation.SetModelOptionsVersion, payload: response.version});
+            console.log("from action: ", rootState.baseline.iso3)
+            commit({type: ModelOptionsMutation.SetModelOptionsCountryCode, payload: rootState.baseline.iso3});
         }
     },
 

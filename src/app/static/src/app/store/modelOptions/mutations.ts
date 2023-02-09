@@ -18,7 +18,8 @@ export enum ModelOptionsMutation {
     SetModelOptionsVersion = "SetModelOptionsVersion",
     HasValidationError = "HasValidationError",
     LoadUpdatedOptions = "LoadUpdatedOptions",
-    ClearWarnings = "ClearWarnings"
+    ClearWarnings = "ClearWarnings",
+    SetModelOptionsCountryCode = "SetModelOptionsCountryCode"
 }
 
 export const ModelOptionsUpdates = [ModelOptionsMutation.Update, ModelOptionsMutation.UnValidate];
@@ -80,5 +81,9 @@ export const mutations: MutationTree<ModelOptionsState> = {
 
     [ModelOptionsMutation.SetModelOptionsVersion](state: ModelOptionsState, action: PayloadWithType<VersionInfo>) {
         state.version = action.payload
+    },
+
+    [ModelOptionsMutation.SetModelOptionsCountryCode](state: ModelOptionsState, action: PayloadWithType<string>) {
+        state.iso3 = action.payload
     }
 };
