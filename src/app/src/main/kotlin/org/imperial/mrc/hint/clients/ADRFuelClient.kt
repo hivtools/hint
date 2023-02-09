@@ -9,7 +9,6 @@ import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
-import org.springframework.web.util.UriComponentsBuilder
 import java.io.File
 import java.io.InputStream
 import java.net.http.HttpResponse

@@ -3,15 +3,23 @@ package org.imperial.mrc.hint.integration.adr
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
+import org.imperial.mrc.hint.clients.ADRClient
 import org.imperial.mrc.hint.clients.ADRFuelClient
 import org.imperial.mrc.hint.logging.GenericLogger
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito
+import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.InputStream
+import java.net.URI
+import java.net.http.HttpResponse
 
 class ADRClientTests
 {
@@ -27,6 +35,30 @@ class ADRClientTests
         assertThat(data.isArray).isTrue()
         assertThat(data.count()).isEqualTo(0) // no orgs because the key isn't valid
         verify(mockLogger).info(Mockito.contains("ADR request time elapsed: "))
+    }
+
+    @Test
+    fun `can parse inputStream response from ADRHttpClient`()
+    {
+        val anyInputStream = ByteArrayInputStream("test data".toByteArray())
+
+        val mockHttpResponse = mock<HttpResponse<InputStream>> {
+            on { body() } doReturn anyInputStream
+            on { statusCode() } doReturn 200
+            on { uri() } doReturn URI("http://test.url")
+        }
+
+        val mockADRClient = mock<ADRClient> {
+            on { getInputStream(anyString()) } doReturn mockHttpResponse
+        }
+
+        val result = mockADRClient.getInputStream("url")
+
+        Assertions.assertEquals(result.statusCode(), 200)
+
+        Assertions.assertEquals(result.uri(), URI("http://test.url"))
+
+        Assertions.assertEquals(result.body().bufferedReader().use { it.readText() }, "test data")
     }
 
     @Test

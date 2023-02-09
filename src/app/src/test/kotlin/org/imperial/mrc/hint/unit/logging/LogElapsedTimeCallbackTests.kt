@@ -4,7 +4,6 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.imperial.mrc.hint.clients.ADRClient
-import org.imperial.mrc.hint.clients.ADRFuelClient
 import org.imperial.mrc.hint.clients.FuelClient
 import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.logging.logADRRequestDuration
