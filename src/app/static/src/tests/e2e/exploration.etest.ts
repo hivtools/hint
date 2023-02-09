@@ -9,6 +9,6 @@ test.describe("data exploration test", () => {
         await expect(page.locator('a[href="/logout"]')).toHaveCount(1)
 
         await page.waitForSelector("#data-exploration")
-        await expect(page.locator("#data-exploration .has-tooltip")).toHaveText("get access key from ADR");
+        await expect(page.locator("#data-exploration .has-tooltip")).toHaveText("Get access key from ADR");
     });
 })

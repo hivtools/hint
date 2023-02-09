@@ -2,6 +2,11 @@
 
 * Naomi issue: model options reset if data set updated
 
+# hint 2.32.4
+
+* Capitalise ADR API key buttons
+* Align ADR key text with the button text
+
 # hint 2.32.3
 
 * Use UTF-8 encoded properties file to fix issue with malformed special characters in error string
