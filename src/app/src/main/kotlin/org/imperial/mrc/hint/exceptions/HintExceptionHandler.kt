@@ -95,7 +95,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         key: String,
         args: Array<String>,
         status: HttpStatus,
-        request: HttpServletRequest,
+        request: HttpServletRequest
     ): ResponseEntity<Any>
     {
         val resourceBundle = getBundle(request)
