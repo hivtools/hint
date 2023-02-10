@@ -31,7 +31,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
 
     private val mockLogger = mock<GenericLogger>()
 
-    private val fakeResourceUrl = "https://resource-server.com"
+    private val adrUrl = "https://adr-resource-server.com"
 
     @Test
     fun `route not found errors are correctly formatted`()
@@ -63,8 +63,18 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     {
         expectTranslatedAdrException(
             "adrResourceError",
-            "Unable to load resource, check resource in ADR $fakeResourceUrl.",
+            "Unable to load resource, check resource in ADR $adrUrl.",
             Language.EN,
+        )
+    }
+    @Test
+    fun `adr resource error are correctly formatted without adrURl`()
+    {
+        expectTranslatedAdrException(
+            "adrResourceError",
+            "Unable to load resource, check resource in ADR .",
+            Language.EN,
+            ""
         )
     }
 
@@ -73,7 +83,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     {
         expectTranslatedAdrException(
             "adrResourceError",
-            "Impossible de charger la ressource, vérifiez la ressource dans ADR $fakeResourceUrl.",
+            "Impossible de charger la ressource, vérifiez la ressource dans ADR $adrUrl.",
             Language.FR
         )
     }
@@ -83,7 +93,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     {
         expectTranslatedAdrException(
             "adrResourceError",
-            "Não é possível carregar o recurso, verifique o recurso no ADR $fakeResourceUrl.",
+            "Não é possível carregar o recurso, verifique o recurso no ADR $adrUrl.",
             Language.PT
         )
     }
@@ -240,7 +250,12 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
-    private fun expectTranslatedAdrException(key: String, expectedMessage: String, lang: Language)
+    private fun expectTranslatedAdrException(
+        key: String,
+        expectedMessage: String,
+        lang: Language,
+        adrUrl: String = this.adrUrl,
+    )
     {
         val mockProperties = mock<AppProperties>()
 
@@ -254,7 +269,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
             AdrException(
                 key,
                 HttpStatus.SERVICE_UNAVAILABLE,
-                fakeResourceUrl
+                adrUrl
             ), mockRequest
         )
 
