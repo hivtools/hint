@@ -3,6 +3,7 @@ package org.imperial.mrc.hint.exceptions
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.models.ErrorDetail
+import org.imperial.mrc.hint.models.ErrorDetail.Companion.defaultError
 import org.springframework.beans.TypeMismatchException
 import org.springframework.core.Ordered
 import org.springframework.core.annotation.Order
@@ -102,7 +103,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         val formatter = MessageFormat(message)
         message = formatter.format(args)
 
-        return ErrorDetail(status, message).toResponseEntity()
+        return ErrorDetail(status, message, defaultError).toResponseEntity()
     }
 
     private fun translatedError(key: String, status: HttpStatus, request: HttpServletRequest): ResponseEntity<Any>
