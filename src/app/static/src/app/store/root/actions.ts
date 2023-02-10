@@ -103,6 +103,12 @@ const getDownloadIds = (rootState: RootState) => {
     const spectrumId = rootState.downloadResults.spectrum.downloadId || ErrorReportDefaultValue.download;
     const summaryId = rootState.downloadResults.summary.downloadId || ErrorReportDefaultValue.download;
     const coarseOutputId = rootState.downloadResults.coarseOutput.downloadId || ErrorReportDefaultValue.download
+    const comparisonId = rootState.downloadResults.comparison.downloadId || ErrorReportDefaultValue.download
 
-    return {spectrum: spectrumId, summary: summaryId, coarse_output: coarseOutputId}
+    return {
+        spectrum: spectrumId,
+        summary: summaryId,
+        coarse_output: coarseOutputId,
+        comparison: comparisonId
+    }
 }
