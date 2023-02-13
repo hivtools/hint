@@ -46,6 +46,7 @@ class ADRClientBuilderTests
         val result = sut.build() as ADRFuelClient
         val headers = result.standardHeaders()
         Assertions.assertThat(headers["Authorization"]).isEqualTo(TEST_KEY)
+        Assertions.assertThat(result.httpRequestHeaders()).isEqualTo(arrayOf("Authorization", TEST_KEY))
     }
 
 }

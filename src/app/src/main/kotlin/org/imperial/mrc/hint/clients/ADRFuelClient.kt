@@ -43,6 +43,8 @@ class ADRFuelClient(appProperties: AppProperties,
                     private val logger: GenericLogger)
     : FuelClient(appProperties.adrUrl + "api/3/action"), ADRClient
 {
+    private val header = Pair("Authorization", apiKey)
+
     override fun get(url: String): ResponseEntity<String>
     {
         return logADRRequestDuration({ super.get(url) }, logger)
@@ -64,11 +66,16 @@ class ADRFuelClient(appProperties: AppProperties,
 
     override fun standardHeaders(): Map<String, Any>
     {
-        return mapOf("Authorization" to apiKey)
+        return mapOf(header.first to header.second)
+    }
+
+    override fun httpRequestHeaders(): Array<String>
+    {
+        return arrayOf(header.first, header.second)
     }
 
     override fun getInputStream(url: String): HttpResponse<InputStream>
     {
-        return logADRRequestDuration({ getFile(getUri(url)) }, logger)
+        return logADRRequestDuration({ getStream(getUri(url)) }, logger)
     }
 }

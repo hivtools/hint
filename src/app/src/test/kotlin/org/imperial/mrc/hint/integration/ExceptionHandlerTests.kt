@@ -31,7 +31,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
 
     private val mockLogger = mock<GenericLogger>()
 
-    private val adrUrl = "https://adr-resource-server.com"
+    private val errorArgs = arrayOf("https://adr-resource-server.com")
 
     @Test
     fun `route not found errors are correctly formatted`()
@@ -63,7 +63,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     {
         expectTranslatedAdrException(
             "adrResourceError",
-            "Unable to load resource, check resource in ADR $adrUrl.",
+            "Unable to load resource, check resource in ADR ${errorArgs.first()}.",
             Language.EN,
         )
     }
@@ -74,7 +74,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
             "adrResourceError",
             "Unable to load resource, check resource in ADR .",
             Language.EN,
-            ""
+            arrayOf("")
         )
     }
 
@@ -83,7 +83,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     {
         expectTranslatedAdrException(
             "adrResourceError",
-            "Impossible de charger la ressource, vérifiez la ressource dans ADR $adrUrl.",
+            "Impossible de charger la ressource, vérifiez la ressource dans ADR ${errorArgs.first()}.",
             Language.FR
         )
     }
@@ -93,7 +93,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     {
         expectTranslatedAdrException(
             "adrResourceError",
-            "Não é possível carregar o recurso, verifique o recurso no ADR $adrUrl.",
+            "Não é possível carregar o recurso, verifique o recurso no ADR ${errorArgs.first()}.",
             Language.PT
         )
     }
@@ -113,8 +113,8 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     {
         expectTranslatedAdrException(
             "noPermissionToAccessResource",
-            "Vous nêtes pas autorisé à charger cette ressource à partir dADR. Contactez ladministrateur " +
-                    "de lensemble de données pour obtenir lautorisation.",
+            "Vous n'êtes pas autorisé à charger cette ressource à partir d'ADR. Contacter l'administrateur " +
+                    "de l'ensemble de données pour obtenir l'autorisation",
             Language.FR,
         )
     }
@@ -254,7 +254,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         key: String,
         expectedMessage: String,
         lang: Language,
-        adrUrl: String = this.adrUrl,
+        args: Array<String> = this.errorArgs,
     )
     {
         val mockProperties = mock<AppProperties>()
@@ -269,7 +269,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
             AdrException(
                 key,
                 HttpStatus.SERVICE_UNAVAILABLE,
-                adrUrl
+                args
             ), mockRequest
         )
 

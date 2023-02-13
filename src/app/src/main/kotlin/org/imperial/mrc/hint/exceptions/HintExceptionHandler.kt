@@ -80,9 +80,7 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
     {
         logger.error(request, error)
 
-        val messageArguments = arrayOf(error.adrUri ?: "")
-
-        return translatedErrorArgs(error.key, messageArguments, error.httpStatus, request)
+        return translatedErrorArgs(error.key, error.args, error.httpStatus, request)
     }
 
     private fun getBundle(request: HttpServletRequest): ResourceBundle

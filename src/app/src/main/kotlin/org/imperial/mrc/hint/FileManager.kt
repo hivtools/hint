@@ -75,16 +75,16 @@ class LocalFileManager(
              * When a user is unauthenticated or lack required permission, the user gets redirected
              * to auth0 login page. handleAdrException handles permission and unexpected ADR errors
              */
-            if (response.uri().host.contains("eu.auth0.com"))
+            if (response.statusCode() == 302)
             {
                 throw AdrException(
                     "noPermissionToAccessResource",
                     HttpStatus.valueOf(response.statusCode()),
-                    data.url
+                    arrayOf(data.url)
                 )
             }
 
-            throw AdrException("adrResourceError", HttpStatus.valueOf(response.statusCode()), data.url)
+            throw AdrException("adrResourceError", HttpStatus.valueOf(response.statusCode()), arrayOf(data.url))
         }
 
         return saveFile(response.body(), originalFilename, type, true, resourceUrl)

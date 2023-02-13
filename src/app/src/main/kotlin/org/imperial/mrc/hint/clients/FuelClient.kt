@@ -26,6 +26,8 @@ abstract class FuelClient(protected val baseUrl: String)
 
     abstract fun standardHeaders(): Map<String, Any>
 
+    abstract fun httpRequestHeaders(): Array<String>
+
     open fun get(url: String): ResponseEntity<String>
     {
         return "$baseUrl/$url".httpGet()
@@ -96,12 +98,10 @@ abstract class FuelClient(protected val baseUrl: String)
 
     private fun getRequest(uri: URI): HttpRequest
     {
-        val entry = standardHeaders().entries.first()
-
         return HttpRequest
             .newBuilder()
             .uri(uri)
-            .header(entry.key, entry.value.toString())
+            .headers(*httpRequestHeaders())
             .GET()
             .build()
     }
@@ -113,7 +113,7 @@ abstract class FuelClient(protected val baseUrl: String)
             .followRedirects(HttpClient.Redirect.ALWAYS)
     }
 
-    protected fun getFile(uri: URI): HttpResponse<InputStream>
+    protected fun getStream(uri: URI): HttpResponse<InputStream>
     {
         return this.clientBuilder()
             .build()
