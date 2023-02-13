@@ -1,6 +1,6 @@
 # hint 2.33.0
 
-* Naomi issue: model options reset if data set updated
+* Retain model options when selected dataset is updated data is updated
 
 # hint 2.32.3
 

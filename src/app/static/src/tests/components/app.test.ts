@@ -162,26 +162,30 @@ describe("App", () => {
     it("resets inputs if baseline update mutation is called and state is ready", () => {
         const store = getStore(true);
         const spy = jest.spyOn(store, "commit");
-        store.commit(prefixNamespace("baseline", BaselineMutation.PJNZUpdated), {payload: null});
+        store.commit(prefixNamespace(
+                "baseline", BaselineMutation.PJNZUpdated),
+            {payload: null});
 
         expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetSelectedDataType);
-        expect(spy.mock.calls[2][0]).toBe(RootMutation.InvalidateOptions);
+        expect(spy.mock.calls[2][0].type).toBe("modelOptions/UnValidate");
         expect(spy.mock.calls[3][0]).toBe(RootMutation.ResetOutputs);
 
-        expect(spy).toBeCalledTimes(4);
+        expect(spy).toBeCalledTimes(5);
     });
 
 
     it("resets inputs if surveyAndProgram update mutation is called and state is ready", () => {
         const store = getStore(true);
         const spy = jest.spyOn(store, "commit");
-        store.commit(prefixNamespace("surveyAndProgram", SurveyAndProgramMutation.SurveyUpdated), {payload: null});
+        store.commit(prefixNamespace(
+                "surveyAndProgram", SurveyAndProgramMutation.SurveyUpdated),
+            {payload: null});
 
         expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetSelectedDataType);
-        expect(spy.mock.calls[2][0]).toBe(RootMutation.InvalidateOptions);
+        expect(spy.mock.calls[2][0].type).toBe("modelOptions/UnValidate");
         expect(spy.mock.calls[3][0]).toBe(RootMutation.ResetOutputs);
 
-        expect(spy).toBeCalledTimes(4);
+        expect(spy).toBeCalledTimes(5);
     });
 
     it("resets outputs if modelOptions update mutation is called and state is ready", () => {

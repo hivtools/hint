@@ -4,12 +4,14 @@
             <h4 v-if="isGuest" v-translate="'haveYouSaved'"></h4>
             <h4 v-if="!isGuest" v-translate="'saveVersion'"></h4>
 
-            <p v-translate="'discardWarning'"></p>
-            <ul>
-                <li v-for="step in changesToRelevantSteps" :key="step.number">
-                    <span v-translate="'step'"></span> {{ step.number }}: <span v-translate="step.textKey"></span>
-                </li>
-            </ul>
+            <div v-if="showWarning">
+                <p v-translate="'discardWarning'"></p>
+                <ul>
+                    <li v-for="step in showRelevantSteps" :key="step.number">
+                        <span v-translate="'step'"></span> {{ step.number }}: <span v-translate="step.textKey"></span>
+                    </li>
+                </ul>
+            </div>
 
             <p v-if="isGuest" v-translate="'savePrompt'"></p>
             <p v-if="!isGuest" v-translate="'savePromptLoggedIn'"></p>
@@ -59,12 +61,15 @@
         errorsCount: number
         currentVersionNote: string
         isGuest: boolean
+        showRelevantSteps: StepDescription[]
+        showWarning: boolean
     }
 
     interface Props {
         open: boolean
         continueEditing: () => void
         cancelEditing: () => void
+        discardStepWarning: number
     }
 
     interface Data {
@@ -84,7 +89,8 @@
         props: {
             open: Boolean,
             continueEditing: Function,
-            cancelEditing: Function
+            cancelEditing: Function,
+            discardStepWarning: Number
         },
         data: function () {
             return {
@@ -104,7 +110,13 @@
             isGuest: mapGetterByName(null, "isGuest"),
             errorsCount: mapStateProp<ErrorsState, number>("errors", state => {
                 return state.errors ? state.errors.length : 0;
-            })
+            }),
+            showRelevantSteps() {
+                return this.changesToRelevantSteps.filter(step => step.number !== this.discardStepWarning)
+            },
+            showWarning() {
+                return this.showRelevantSteps.length > 0
+            }
         },
         methods: {
             handleConfirm: function () {

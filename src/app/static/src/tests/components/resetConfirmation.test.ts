@@ -10,6 +10,7 @@ import {mutations as versionsMutations} from "../../app/store/projects/mutations
 import {mutations as errorMutations} from "../../app/store/errors/mutations";
 import {getters} from "../../app/store/root/getters";
 import {expectTranslated} from "../testHelpers";
+import {Step} from "../../app/types";
 
 const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState> = {}, partialStepperGetters = {}) => {
     const store = new Vuex.Store({
@@ -122,6 +123,26 @@ describe("Reset confirmation modal", () => {
             propsData: {
                 continueEditing: jest.fn(),
                 cancelEditing: jest.fn()
+            },
+            store
+        });
+
+        expectRenderedModelRunSteps(rendered);
+    });
+
+    it("does not render discarded step when upload input changes", () => {
+        const stepperGetter = {
+            changesToRelevantSteps: () => [
+                {number: 3, textKey: "modelOptions"},
+                {number: 4, textKey: "fitModel"}
+            ]
+        }
+        const store = createStore(jest.fn(), {}, stepperGetter);
+        const rendered = mount(ResetConfirmation, {
+            propsData: {
+                continueEditing: jest.fn(),
+                cancelEditing: jest.fn(),
+                discardStepWarning: Step.ModelOptions
             },
             store
         });

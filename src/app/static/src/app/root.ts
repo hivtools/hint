@@ -111,14 +111,14 @@ const resetState = (store: Store<RootState>): void => {
 
                 if (BaselineUpdates.includes(type[1] as BaselineMutation)) {
                     store.commit(RootMutation.ResetSelectedDataType);
-                    store.commit(RootMutation.InvalidateOptions);
+                    store.commit({type: `modelOptions/${ModelOptionsMutation.UnValidate}`}, {root:true});
                     store.commit(RootMutation.ResetOutputs);
                 }
             }
 
             if (type[0] == "surveyAndProgram" && SurveyAndProgramUpdates.includes(type[1] as SurveyAndProgramMutation)) {
                 store.commit(RootMutation.ResetSelectedDataType);
-                store.commit(RootMutation.InvalidateOptions);
+                store.commit({type: `modelOptions/${ModelOptionsMutation.UnValidate}`}, {root:true});
                 store.commit(RootMutation.ResetOutputs);
             }
 

@@ -26,6 +26,7 @@ export const ModelOptionsUpdates = [ModelOptionsMutation.Update, ModelOptionsMut
 export const mutations: MutationTree<ModelOptionsState> = {
     [ModelOptionsMutation.UnValidate](state: ModelOptionsState) {
         state.valid = false;
+        state.warnings = []
     },
 
     [ModelOptionsMutation.Validate](state: ModelOptionsState, action: PayloadWithType<ModelOptionsValidate>) {
