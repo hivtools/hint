@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint.integration.clients
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.FileType
@@ -174,5 +175,12 @@ class HintrApiClientTests
         val result = sut.getInputTimeSeriesChartData("anc", emptyMap())
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "INVALID_INPUT")
+    }
+
+    @Test
+    fun `httpRequestHeaders returns empty string`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        Assertions.assertThat(sut.httpRequestHeaders()).isEqualTo(arrayOf(""))
     }
 }
