@@ -59,14 +59,14 @@ describe("ADR Key", function () {
         const rendered = shallowMount(ADRKey, {store: createStore("123-abc")});
         const links = rendered.findAll(".btn")
         expect(links.length).toBe(1);
-        expect(links.at(0).text()).toBe("remove");
+        expect(links.at(0).text()).toBe("Remove");
     });
 
     it("shows add button if key does not exist", () => {
         const rendered = shallowMount(ADRKey, {store: createStore()});
         const links = rendered.findAll(".btn");
         expect(links.length).toBe(2);
-        expect(links.at(0).text()).toBe("add");
+        expect(links.at(0).text()).toBe("Add");
     });
 
     it("shows button to ADR with tooltip if key does not exist", () => {
@@ -74,10 +74,10 @@ describe("ADR Key", function () {
         const rendered = shallowMount(ADRKey, {store: createStore(), directives: {"tooltip": mockTooltipDirective}});
         const links = rendered.findAll("a");
         expect(links.length).toBe(1);
-        expect(links.at(0).text()).toBe("get access key from ADR");
+        expect(links.at(0).text()).toBe("Get access key from ADR");
         expect(links.at(0).attributes("href")).toBe("www.adr.com/me");
         expect(mockTooltipDirective.mock.calls[0][0].innerHTML)
-            .toBe("get access key from ADR");
+            .toBe("Get access key from ADR");
         expect(mockTooltipDirective.mock.calls[0][1].value)
             .toBe("To import data from the ADR you have to provide your ADR access key. " +
                 "This can be found on your ADR profile page");

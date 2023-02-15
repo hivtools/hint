@@ -240,6 +240,7 @@ export interface Translations {
     releaseExists: string,
     releaseNameUnique: string,
     remove: string,
+    removeButton: string,
     renameNoteHeader: string,
     renameProject: string,
     renameProjectHeader: string,
@@ -323,7 +324,7 @@ export interface Translations {
 }
 
 const en: Translations = {
-    add: "add",
+    add: "Add",
     adjustScale: "Adjust scale",
     adrKey: "ADR access key",
     adrAccessLevel: "ADR access level:",
@@ -486,7 +487,7 @@ const en: Translations = {
     forgottenPassword: "Forgotten your password?",
     forgottenPasswordHelp: "If you've forgotten your password, enter your email address to request a link which you can use to create a new password.",
     genCalibResults: "Generating calibration results",
-    getAccessKey: "get access key from ADR",
+    getAccessKey: "Get access key from ADR",
     haveYouSaved: "Have you saved your work?",
     help: "Basic steps",
     import: "Import",
@@ -599,6 +600,7 @@ const en: Translations = {
     releaseExists: "A release already exists on ADR for the latest files",
     releaseNameUnique: "Release names must be unique per dataset and a release with the same name already exists on ADR. Try renaming the project to generate a new release name.",
     remove: "remove",
+    removeButton: "Remove",
     renameNoteHeader: "Notes: (your reason for renaming the project)",
     renameProject: "Rename project",
     renameProjectHeader: "Please enter a new name for the project",
@@ -690,7 +692,7 @@ const en: Translations = {
 };
 
 const fr: Partial<Translations> = {
-    add: "ajouter",
+    add: "Ajouter",
     adjustScale: "Ajuster l'échelle",
     adrKey: "Clé d'accès ADR",
     adrAccessLevel: "Niveau d'accès ADR:",
@@ -850,7 +852,7 @@ const fr: Partial<Translations> = {
     forgottenPassword: "Vous avez oublié votre mot de passe ?",
     forgottenPasswordHelp: "Si vous avez oublié votre mot de passe, entrez votre adresse e-mail pour demander un lien qui vous permettra de créer un nouveau mot de passe.",
     genCalibResults: "Générer des résultats d'étalonnage",
-    getAccessKey: "obtenir la clé d'accès d'ADR",
+    getAccessKey: "Obtenir la clé d'accès d'ADR",
     haveYouSaved: "Avez-vous sauvegardé votre travail ?",
     help: "Etapes de base",
     import: "Importer",
@@ -963,6 +965,7 @@ const fr: Partial<Translations> = {
     releaseExists: "Une release existe déjà sur ADR pour les derniers fichiers",
     releaseNameUnique: "Les noms de version doivent être uniques par ensemble de données et une version portant le même nom existe déjà sur ADR. Essayez de renommer le projet pour générer un nouveau nom de version.",
     remove: "supprimer",
+    removeButton: "Supprimer",
     renameNoteHeader: "Remarques : (la raison pour laquelle vous avez renommé le projet)",
     renameProject: "Renommer le projet",
     renameProjectHeader: "Veuillez entrer un nouveau nom pour le projet",
@@ -1053,7 +1056,7 @@ const fr: Partial<Translations> = {
 };
 
 const pt: Partial<Translations> = {
-    add: "adicionar",
+    add: "Adicionar",
     adjustScale: "Ajustar a escala",
     adrKey: "Chave de acesso ADR",
     adrAccessLevel: "Nível de acesso ADR:",
@@ -1213,7 +1216,7 @@ const pt: Partial<Translations> = {
     forgottenPassword: "Esqueceu-se da sua palavra-passe?",
     forgottenPasswordHelp: "Se se esqueceu da sua palavra-passe, introduza o seu endereço de e-mail para solicitar uma ligação que poderá utilizar para criar uma nova palavra-passe.",
     genCalibResults: "Gerando resultados de calibração",
-    getAccessKey: "obter a chave de acesso do ADR",
+    getAccessKey: "Obter a chave de acesso do ADR",
     haveYouSaved: "Já guardou o seu trabalho?",
     help: "Passos básicos",
     import: "Importação",
@@ -1326,6 +1329,7 @@ const pt: Partial<Translations> = {
     releaseExists: "Já existe uma versão no ADR para os arquivos mais recentes",
     releaseNameUnique: "Os nomes de versão devem ser exclusivos por conjunto de dados e uma versão com o mesmo nome já existe no ADR. Tente renomear o projeto para gerar um novo nome de versão.",
     remove: "remover",
+    removeButton: "Remover",
     renameNoteHeader: "Notas: (seu motivo para renomear o projeto)",
     renameProject: "Mudar o nome do projeto",
     renameProjectHeader: "Por favor, introduza um novo nome para o projeto",
