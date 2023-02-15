@@ -181,6 +181,6 @@ class HintrApiClientTests
     fun `httpRequestHeaders returns empty string`()
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        Assertions.assertThat(sut.httpRequestHeaders()).isEqualTo(arrayOf(""))
+        Assertions.assertThat(sut.httpRequestHeaders()).isEmpty()
     }
 }
