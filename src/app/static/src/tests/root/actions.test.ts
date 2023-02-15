@@ -217,6 +217,9 @@ describe("root actions", () => {
                 },
                 spectrum: {
                     downloadId: "spectrum123"
+                },
+                comparison: {
+                    downloadId: "comparison123"
                 }
             } as any),
             projects: mockProjectsState({
@@ -264,7 +267,12 @@ describe("root actions", () => {
             timeStamp: new Date(),
             modelRunId: "1234",
             calibrateId: "2022",
-            downloadIds: {spectrum: "spectrum123", summary: "summary123", coarse_output: "none"},
+            downloadIds: {
+                spectrum: "spectrum123",
+                summary: "summary123",
+                coarse_output: "none",
+                comparison: "comparison123"
+            },
             description: "desc",
             section: "reviewInputs",
             stepsToReproduce: "repro",
@@ -349,7 +357,7 @@ describe("root actions", () => {
             timeStamp: new Date(),
             modelRunId: "no associated modelRunId",
             calibrateId: "no associated calibrateId",
-            downloadIds: {spectrum: "none", summary: "none", coarse_output: "none"},
+            downloadIds: {spectrum: "none", summary: "none", coarse_output: "none", comparison: "none"},
             description: "desc",
             section: "reviewInputs",
             stepsToReproduce: "repro",

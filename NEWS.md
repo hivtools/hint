@@ -1,3 +1,7 @@
+# hint 2.33.0
+
+* Add Comparison download ID to generateErrorReport action
+
 # hint 2.32.4
 
 * Capitalise ADR API key buttons
