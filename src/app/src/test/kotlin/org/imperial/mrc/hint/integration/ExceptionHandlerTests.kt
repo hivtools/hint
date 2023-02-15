@@ -113,8 +113,8 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     {
         expectTranslatedAdrException(
             "noPermissionToAccessResource",
-            "Vous n'êtes pas autorisé à charger cette ressource à partir d'ADR. Contacter l'administrateur " +
-                    "de l'ensemble de données pour obtenir l'autorisation",
+            "Vous nêtes pas autorisé à charger cette ressource à partir dADR. " +
+                    "Contacter ladministrateur de lensemble de données pour obtenir lautorisation",
             Language.FR,
         )
     }
