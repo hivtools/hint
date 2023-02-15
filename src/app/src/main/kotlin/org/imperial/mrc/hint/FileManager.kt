@@ -69,13 +69,13 @@ class LocalFileManager(
 
         val response = adr.getInputStream(data.url)
 
-        if (response.statusCode() != 200)
+        if (response.statusCode() != HttpStatus.OK.value())
         {
             /**
              * When a user is unauthenticated or lack required permission, the user gets redirected
              * to auth0 login page. handleAdrException handles permission and unexpected ADR errors
              */
-            if (response.statusCode() == 302)
+            if (response.statusCode() == HttpStatus.TEMPORARY_REDIRECT.value())
             {
                 throw AdrException(
                     "noPermissionToAccessResource",
