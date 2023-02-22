@@ -2,6 +2,8 @@
 
 * Retain model options when selected dataset is updated data is updated
 
+* Add Comparison download ID to generateErrorReport action
+
 # hint 2.32.4
 
 * Capitalise ADR API key buttons

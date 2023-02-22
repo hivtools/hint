@@ -29,6 +29,9 @@ describe(`root actions`, () => {
                 },
                 coarseOutput: {
                     downloadId: "coarse123"
+                },
+                comparison: {
+                    downloadId: "comparison123"
                 }
             },
             projects: {currentProject: {name: "p1", id: 1, versions: []}}
