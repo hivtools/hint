@@ -106,11 +106,16 @@ const resetState = (store: Store<RootState>): void => {
 
             if (type[0] == "baseline") {
                 if (BaselineDatasetUpdates.includes(type[1] as BaselineMutation)) {
-                    store.commit(RootMutation.ResetOptions);
+                    if (!state.baseline.selectedDatasetIsRefreshed) {
+                        store.commit(RootMutation.ResetOptions);
+                    }
                 }
 
                 if (BaselineUpdates.includes(type[1] as BaselineMutation)) {
                     store.commit(RootMutation.ResetSelectedDataType);
+                    /** If data has been updated without changing the selected dataset,
+                     *  retain model options, but reset their valid status to false in order to force revalidation
+                     */
                     store.commit({type: `modelOptions/${ModelOptionsMutation.UnValidate}`}, {root:true});
                     store.commit(RootMutation.ResetOutputs);
                 }

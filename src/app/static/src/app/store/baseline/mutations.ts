@@ -39,8 +39,7 @@ export const BaselineUpdates = [
 ];
 
 export const BaselineDatasetUpdates = [
-    BaselineMutation.SetDataset,
-    BaselineMutation.SetRelease
+    BaselineMutation.SetDataset
 ]
 
 export const mutations: MutationTree<BaselineState> = {
@@ -79,6 +78,7 @@ export const mutations: MutationTree<BaselineState> = {
     },
 
     [BaselineMutation.SetDataset](state: BaselineState, payload: Dataset) {
+        state.selectedDatasetIsRefreshed = state.selectedDataset?.id === payload.id
         state.selectedDataset = payload;
     },
 

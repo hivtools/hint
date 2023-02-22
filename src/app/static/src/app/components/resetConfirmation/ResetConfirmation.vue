@@ -112,6 +112,7 @@
                 return state.errors ? state.errors.length : 0;
             }),
             showRelevantSteps() {
+                // In special cases when data for a downstream step can be retained, remove the warning for that step
                 return this.changesToRelevantSteps.filter(step => step.number !== this.discardStepWarning)
             },
             showWarning() {
