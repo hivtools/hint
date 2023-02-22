@@ -108,7 +108,8 @@ describe("LocalStorageManager", () => {
             version: "1.0.0",
             baseline: {
                 selectedDataset: dataset,
-                selectedRelease: release
+                selectedRelease: release,
+                selectedDatasetIsRefreshed: false
             },
             modelRun: mockModelRunState(),
             modelOptions: mockModelOptionsState(),
@@ -141,7 +142,8 @@ describe("LocalStorageManager", () => {
             hintrVersion: mockHintrVersionState(),
             baseline: mockBaselineState({
                 selectedDataset: dataset,
-                selectedRelease: release
+                selectedRelease: release,
+                selectedDatasetIsRefreshed: false
             }) ,
             metadata: mockMetadataState(),
             surveyAndProgram: {
@@ -157,7 +159,8 @@ describe("LocalStorageManager", () => {
             version: "1.0.0",
             baseline: {
                 selectedDataset: dataset,
-                selectedRelease: release
+                selectedRelease: release,
+                selectedDatasetIsRefreshed: false
             },
             metadata: mockMetadataState(),
             plottingSelections: mockPlottingSelections(),

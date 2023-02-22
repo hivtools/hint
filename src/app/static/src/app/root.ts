@@ -106,7 +106,8 @@ const resetState = (store: Store<RootState>): void => {
 
             if (type[0] == "baseline") {
                 if (BaselineDatasetUpdates.includes(type[1] as BaselineMutation)) {
-                    if (!state.baseline.selectedDatasetIsRefreshed) {
+                    // Reset options when a new dataset is uploaded.
+                    if (state.baseline.selectedDatasetIsRefreshed) {
                         store.commit(RootMutation.ResetOptions);
                     }
                 }

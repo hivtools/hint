@@ -27,6 +27,7 @@
 
             <template v-if="!waitingForVersion" v-slot:footer>
                 <button type="button"
+                        id="handle-confirm-id"
                         class="btn btn-red"
                         @click="handleConfirm"
                         v-translate="isGuest? 'discardSteps' : 'saveVersionConfirm'">
@@ -69,7 +70,7 @@
         open: boolean
         continueEditing: () => void
         cancelEditing: () => void
-        discardStepWarning: number
+        discardStepWarning: number | null
     }
 
     interface Data {

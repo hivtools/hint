@@ -114,7 +114,7 @@ describe("File menu", () => {
 
         const expectedJson = {
             state: {
-                baseline: {selectedDataset: null, selectedRelease: null},
+                baseline: {selectedDataset: null, selectedRelease: null, selectedDatasetIsRefreshed: false},
                 modelRun: mockModelRunState(),
                 modelCalibrate: {result: null, calibratePlotResult: null, comparisonPlotResult: null},
                 metadata: mockMetadataState(),

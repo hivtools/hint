@@ -68,7 +68,12 @@ describe("App", () => {
 
     const getStore = (ready: boolean = false) => {
         const localStoreOptions = {...storeOptions};
-        localStoreOptions.modules!!.baseline.state.ready = ready;
+        Object.assign(localStoreOptions.modules!!.baseline.state,
+            {
+                ready,
+                selectedDataset: {id: "1"}
+            }
+        );
         localStoreOptions.modules!!.surveyAndProgram.state.ready = ready;
         localStoreOptions.modules!!.modelRun.state.ready = ready;
         localStoreOptions.modules!!.modelCalibrate.state.ready = ready;
@@ -142,17 +147,7 @@ describe("App", () => {
     it("resets model options if baseline selected dataset is updated and state is ready", () => {
         const store = getStore(true);
         const spy = jest.spyOn(store, "commit");
-        store.commit(prefixNamespace("baseline", BaselineMutation.SetDataset), {payload: null});
-
-        expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetOptions);
-
-        expect(spy).toBeCalledTimes(2);
-    });
-
-    it("resets model options if baseline released dataset is updated and state is ready", () => {
-        const store = getStore(true);
-        const spy = jest.spyOn(store, "commit");
-        store.commit(prefixNamespace("baseline", BaselineMutation.SetRelease), {payload: null});
+        store.commit(prefixNamespace("baseline", BaselineMutation.SetDataset), {payload: {id: "2"}});
 
         expect(spy.mock.calls[1][0]).toBe(RootMutation.ResetOptions);
 

@@ -78,10 +78,9 @@ export const mutations: MutationTree<BaselineState> = {
     },
 
     [BaselineMutation.SetDataset](state: BaselineState, payload: Dataset) {
-        state.selectedDatasetIsRefreshed = state.selectedDataset?.id === payload.id
+        state.selectedDatasetIsRefreshed = state.selectedDataset?.id !== payload.id
         state.selectedDataset = payload;
     },
-
 
     [BaselineMutation.SetRelease](state: BaselineState, payload: Release | null) {
         state.selectedRelease = payload;
