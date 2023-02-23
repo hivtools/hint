@@ -1,3 +1,7 @@
+# hint 2.33.1
+
+* Bug: fix export model outputs download, it fails to prepare file download.
+
 # hint 2.33.0
 
 * Add Comparison download ID to generateErrorReport action
