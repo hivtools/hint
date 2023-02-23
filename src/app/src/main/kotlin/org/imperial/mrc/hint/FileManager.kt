@@ -80,11 +80,11 @@ class LocalFileManager(
                 throw AdrException(
                     "noPermissionToAccessResource",
                     HttpStatus.valueOf(response.statusCode()),
-                    arrayOf(data.url)
+                    data.url
                 )
             }
 
-            throw AdrException("adrResourceError", HttpStatus.valueOf(response.statusCode()), arrayOf(data.url))
+            throw AdrException("adrResourceError", HttpStatus.valueOf(response.statusCode()), data.url)
         }
 
         return saveFile(response.body(), originalFilename, type, true, resourceUrl)

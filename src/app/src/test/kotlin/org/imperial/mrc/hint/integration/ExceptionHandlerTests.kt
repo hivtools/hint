@@ -74,7 +74,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
             "adrResourceError",
             "Unable to load resource, check resource in ADR .",
             Language.EN,
-            arrayOf("")
+            ""
         )
     }
 
@@ -254,7 +254,7 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         key: String,
         expectedMessage: String,
         lang: Language,
-        args: Array<String> = this.errorArgs,
+        args: String = "https://adr-resource-server.com",
     )
     {
         val mockProperties = mock<AppProperties>()

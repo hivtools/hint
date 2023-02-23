@@ -5,5 +5,5 @@ import org.springframework.http.HttpStatus
 class AdrException(
     key: String,
     status: HttpStatus,
-    url: Array<String> = arrayOf("")
-) : HintException(key, status, url)
+    url: String
+) : HintException(key, status, arrayOf(url))
