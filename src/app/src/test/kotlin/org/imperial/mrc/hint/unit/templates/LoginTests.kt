@@ -25,13 +25,13 @@ class LoginTests
 
         assertThat(doc.select("form").attr("onsubmit")).isEqualTo("validate(event);")
 
-        assertThat(doc.select("form label[for='user-id']").text()).isEqualTo("Username (email address)")
+        assertThat(doc.select("form #user-id").attr("placeholder")).isEqualTo("Email")
         assertThat(doc.select("form #user-id").attr("value")).isEqualTo("test user")
         assertThat(doc.select("form #user-id").attr("type")).isEqualTo("text")
         assertThat(doc.select("form #userid-feedback").hasClass("invalid-feedback")).isTrue()
         assertThat(doc.select("form #userid-feedback").text()).isEqualTo("Please enter your username.")
 
-        assertThat(doc.select("form label[for='pw-id']").text()).isEqualTo("Password")
+        assertThat(doc.select("form #pw-id").attr("placeholder")).isEqualTo("Password")
         assertThat(doc.select("form #pw-id").attr("value")).isEqualTo("")
         assertThat(doc.select("form #pw-id").attr("type")).isEqualTo("password")
         assertThat(doc.select("form #pw-feedback").hasClass("invalid-feedback")).isTrue()
@@ -63,10 +63,10 @@ class LoginTests
         model["continueTo"] = "/"
         val doc = template.jsoupDocFor(model)
 
-        assertThat(doc.select("form label[for='user-id']").text()).isEqualTo("Username (email address)")
+        assertThat(doc.select("form #user-id").attr("placeholder")).isEqualTo("Email")
         assertThat(doc.select("form #user-id").attr("value")).isEqualTo("")
 
-        assertThat(doc.select("form label[for='pw-id']").text()).isEqualTo("Password")
+        assertThat(doc.select("form #pw-id").attr("placeholder")).isEqualTo("Password")
         assertThat(doc.select("form #pw-id").attr("value")).isEqualTo("")
 
         assertThat(doc.select("form input[type='submit']").attr("value")).isEqualTo("Log In")
@@ -124,7 +124,7 @@ class LoginTests
         model["continueTo"] = "/"
         val doc = template.jsoupDocFor(model)
 
-        assertThat(doc.select("input[type='submit']").attr("value")).isEqualTo("Log in with your HIV Tools Single Sign-On account")
+        assertThat(doc.select("input[type='submit']").attr("value")).isEqualTo("Log in with HIV Tools Single Sign-On account")
         assertThat(doc.select("input[type='submit']").attr("onclick")).isEqualTo("oauth2Callback()")
         assertThat(doc.select("#error").count()).isEqualTo(0)
         assertThat(doc.select("#register-oauth2-account").text()).isEqualTo("Don't have an account? Create an account")
