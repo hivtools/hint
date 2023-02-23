@@ -28,7 +28,7 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
     projectState: (rootState: RootState): DownloadSubmitRequest => {
         const versions = rootState.projects.currentProject?.versions || []
         const name = rootState.projects.currentProject?.name || ""
-        const getProjectUpdateDate = versions.length > 0 ? versions[0].updated : new Date().toUTCString()
+        const getUpdatedDate = versions.length > 0 ? versions[0].updated : new Date().toUTCString()
 
         return {
             state: {
@@ -71,7 +71,7 @@ export const getters: RootGetters & GetterTree<RootState, RootState> = {
             notes: {
                 project_notes: {
                     name: name,
-                    updated: formatToLocalISODateTime(getProjectUpdateDate),
+                    updated: formatToLocalISODateTime(getUpdatedDate),
                     note: rootState.projects.currentProject?.note || ""
                 },
                 version_notes: getVersionNotes(versions, name)
