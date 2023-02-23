@@ -1274,8 +1274,8 @@ const pt: Partial<Translations> = {
     PJNZ: "Ficheiro Spectrum",
     population: "População",
     preparing: "Preparando arquivos",
-    privacy: "Privacidade",
     previousPage: "Página anterior",
+    privacy: "Privacidade",
     privacyPreambleHeading: "Aviso de privacidade para naomi.unaids.org",
     privacyPreambleBody: "De acordo com a legislação de protecção de dados e os regulamentos de privacidade das comunicações electrónicas, a declaração de privacidade:",
     privacyPreambleList: "<li>informá-lo de como cuidamos dos seus dados pessoais quando visita os nossos sítios Web;</li>\n" +

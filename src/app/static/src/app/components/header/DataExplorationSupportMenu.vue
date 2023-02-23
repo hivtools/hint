@@ -3,6 +3,7 @@
         <drop-down text="support" :right="true" :delay="true" style="flex: none">
             <a class="dropdown-item"
                @click="toggleErrorReportModal"
+               tabindex="0"
                v-translate="'troubleshootingRequest'">
             </a>
             <router-link id="privacy-link"
