@@ -143,7 +143,7 @@ describe("LocalStorageManager", () => {
             baseline: mockBaselineState({
                 selectedDataset: dataset,
                 selectedRelease: release,
-                selectedDatasetIsRefreshed: false
+                selectedDatasetHasChanged: false
             }) ,
             metadata: mockMetadataState(),
             surveyAndProgram: {

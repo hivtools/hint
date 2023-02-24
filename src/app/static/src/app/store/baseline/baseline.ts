@@ -9,7 +9,7 @@ import {DataExplorationState} from "../dataExploration/dataExploration";
 
 export interface BaselineState extends ReadyState {
     selectedDataset: Dataset | null
-    selectedDatasetIsRefreshed: boolean
+    selectedDatasetHasChanged: boolean
     selectedRelease: Release | null
     pjnzError: Error | null
     pjnzErroredFile: string | null
@@ -32,7 +32,7 @@ export interface BaselineState extends ReadyState {
 export const initialBaselineState = (): BaselineState => {
     return {
         selectedDataset: null,
-        selectedDatasetIsRefreshed: false,
+        selectedDatasetHasChanged: false,
         selectedRelease: null,
         country: "",
         iso3: "",

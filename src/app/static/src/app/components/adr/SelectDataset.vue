@@ -231,7 +231,7 @@
             ),
             selectedDatasetIsRefreshed: mapStateProp<BaselineState, boolean>(
                 "baseline",
-                (state: BaselineState) => state.selectedDatasetIsRefreshed
+                (state: BaselineState) => state.selectedDatasetHasChanged
             ),
             selectedRelease: mapStateProp<BaselineState, Release | null>(
                 "baseline",

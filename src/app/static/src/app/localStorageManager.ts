@@ -10,7 +10,7 @@ const getAppStateKey = (dataExplorationMode: boolean) => {
 export const serialiseState = (state: DataExplorationState): Partial<RootState> => {
     const baseline = {
         selectedDataset: state.baseline.selectedDataset,
-        selectedDatasetIsRefreshed: state.baseline.selectedDatasetIsRefreshed,
+        selectedDatasetIsRefreshed: state.baseline.selectedDatasetHasChanged,
         selectedRelease: state.baseline.selectedRelease
     } as any;
     const surveyAndProgram = {
