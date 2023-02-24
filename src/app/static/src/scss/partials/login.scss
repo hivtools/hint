@@ -1,65 +1,18 @@
-body.login-page {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-
-#container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
 .login-form {
   width: 30em;
-
-  .btn {
-    width: 100%
-  }
-}
-
-.logos {
-  margin: auto 27%;
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
-  justify-content: space-between;
-
-  img {
-    margin: 10px 30px 10px 30px;
-    max-width: 400px;
-    max-height: 60px;
-    object-fit: contain;
-  }
 }
 
 .large-logo {
-  display: flex;
   width: 20em;
 }
 
 .small-logo {
-  width: 7em;
-}
-
-#spacer {
-  flex-grow: 1;
+  width: 9em;
+  height: 2.5em;
 }
 
 .links {
   width: 30em;
-  margin: auto;
-  display: flex;
-  flex-flow: row wrap;
-  align-items: center;
-  justify-content: space-between;
-}
-
-div.links a.btn {
-  &:hover {
-    color: $theme-red;
-    text-decoration: none;
-  }
 }
 
 .text-divider {
