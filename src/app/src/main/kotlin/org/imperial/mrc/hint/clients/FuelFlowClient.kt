@@ -23,6 +23,11 @@ class FuelFlowClient(
         return emptyMap()
     }
 
+    override fun httpRequestHeaders(): Array<String>
+    {
+        return emptyArray()
+    }
+
     override fun notifyTeams(data: ErrorReport): ResponseEntity<String>
     {
         return postJson(null, objectMapper.writeValueAsString(data))

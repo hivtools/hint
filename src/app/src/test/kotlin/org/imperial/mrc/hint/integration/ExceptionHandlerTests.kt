@@ -6,11 +6,9 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.ConfiguredAppProperties
-import org.imperial.mrc.hint.exceptions.ErrorCodeGenerator
-import org.imperial.mrc.hint.exceptions.HintException
-import org.imperial.mrc.hint.exceptions.HintExceptionHandler
-import org.imperial.mrc.hint.exceptions.RandomErrorCodeGenerator
+import org.imperial.mrc.hint.exceptions.*
 import org.imperial.mrc.hint.helpers.JSONValidator
+import org.imperial.mrc.hint.helpers.Language
 import org.imperial.mrc.hint.helpers.tmpUploadDirectory
 import org.imperial.mrc.hint.helpers.unexpectedErrorRegex
 import org.imperial.mrc.hint.logging.GenericLogger
@@ -32,6 +30,8 @@ class ExceptionHandlerTests : SecureIntegrationTests()
     private val mockException = mock<HttpMessageNotWritableException>()
 
     private val mockLogger = mock<GenericLogger>()
+
+    private val errorArgs = arrayOf("https://adr-resource-server.com")
 
     @Test
     fun `route not found errors are correctly formatted`()
@@ -56,6 +56,78 @@ class ExceptionHandlerTests : SecureIntegrationTests()
 
         Assertions.assertThat(entity.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
         Assertions.assertThat(entity.body).contains("404 Error Page")
+    }
+
+    @Test
+    fun `adr resource error are correctly formatted in English`()
+    {
+        expectTranslatedAdrException(
+            "adrResourceError",
+            "Unable to load resource, check resource in ADR ${errorArgs.first()}.",
+            Language.EN,
+        )
+    }
+    @Test
+    fun `adr resource error are correctly formatted without adrURl`()
+    {
+        expectTranslatedAdrException(
+            "adrResourceError",
+            "Unable to load resource, check resource in ADR .",
+            Language.EN,
+            ""
+        )
+    }
+
+    @Test
+    fun `adr resource error are correctly formatted in French`()
+    {
+        expectTranslatedAdrException(
+            "adrResourceError",
+            "Impossible de charger la ressource, vérifiez la ressource dans ADR ${errorArgs.first()}.",
+            Language.FR
+        )
+    }
+
+    @Test
+    fun `adr resource error are correctly formatted in Portuguese`()
+    {
+        expectTranslatedAdrException(
+            "adrResourceError",
+            "Não é possível carregar o recurso, verifique o recurso no ADR ${errorArgs.first()}.",
+            Language.PT
+        )
+    }
+
+    @Test
+    fun `adr no permission to load resource error are correctly formatted in English`()
+    {
+        expectTranslatedAdrException(
+            "noPermissionToAccessResource",
+            "You do not have permission to load this resource from ADR. Contact dataset admin for permission.",
+            Language.EN,
+        )
+    }
+
+    @Test
+    fun `adr no permission to load resource error are correctly formatted in French`()
+    {
+        expectTranslatedAdrException(
+            "noPermissionToAccessResource",
+            "Vous n'êtes pas autorisé à charger cette ressource à partir d'ADR. Contacter " +
+                    "l'administrateur de l'ensemble de données pour obtenir l'autorisation",
+            Language.FR,
+        )
+    }
+
+    @Test
+    fun `adr no permission to load resource error are correctly formatted in Portuguese`()
+    {
+        expectTranslatedAdrException(
+            "noPermissionToAccessResource",
+            "Você não tem permissão para carregar este recurso do ADR. Entre em contato com o " +
+                    "administrador do conjunto de dados para obter permissão.",
+            Language.PT,
+        )
     }
 
     @Test
@@ -178,4 +250,29 @@ class ExceptionHandlerTests : SecureIntegrationTests()
         assertThat(result.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
     }
 
+    private fun expectTranslatedAdrException(
+        key: String,
+        expectedMessage: String,
+        lang: Language,
+        args: String = "https://adr-resource-server.com",
+    )
+    {
+        val mockProperties = mock<AppProperties>()
+
+        val mockRequest = mock<HttpServletRequest> {
+            on { getHeader("Accept-Language") } doReturn lang.toString()
+        }
+
+        val sut = HintExceptionHandler(mock(), mockProperties, mockLogger)
+
+        val result = sut.handleAdrException(
+            AdrException(
+                key,
+                HttpStatus.SERVICE_UNAVAILABLE,
+                args
+            ), mockRequest
+        )
+
+        JSONValidator().validateError(result.body!!.toString(), "OTHER_ERROR", expectedMessage)
+    }
 }

@@ -9,6 +9,12 @@ import com.github.kittinunf.fuel.httpUpload
 import org.imperial.mrc.hint.asResponseEntity
 import org.springframework.http.ResponseEntity
 import java.io.File
+import java.io.InputStream
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpClient.Builder
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 
 abstract class FuelClient(protected val baseUrl: String)
 {
@@ -19,6 +25,8 @@ abstract class FuelClient(protected val baseUrl: String)
     }
 
     abstract fun standardHeaders(): Map<String, Any>
+
+    abstract fun httpRequestHeaders(): Array<String>
 
     open fun get(url: String): ResponseEntity<String>
     {
@@ -86,5 +94,29 @@ abstract class FuelClient(protected val baseUrl: String)
                 .response()
                 .second
                 .asResponseEntity()
+    }
+
+    private fun getRequest(uri: URI): HttpRequest
+    {
+        return HttpRequest
+            .newBuilder()
+            .uri(uri)
+            .headers(*httpRequestHeaders())
+            .GET()
+            .build()
+    }
+
+    private fun clientBuilder(): Builder
+    {
+        return HttpClient
+            .newBuilder()
+            .followRedirects(HttpClient.Redirect.ALWAYS)
+    }
+
+    protected fun getStream(uri: URI): HttpResponse<InputStream>
+    {
+        return this.clientBuilder()
+            .build()
+            .send(this.getRequest(uri), HttpResponse.BodyHandlers.ofInputStream())
     }
 }
