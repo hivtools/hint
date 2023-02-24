@@ -23,6 +23,8 @@ import java.io.*
 import java.security.DigestInputStream
 import java.security.MessageDigest
 import jakarta.xml.bind.DatatypeConverter
+import org.springframework.web.util.UriComponentsBuilder
+import java.net.URI
 
 fun httpStatusFromCode(code: Int): HttpStatus
 {
@@ -165,3 +167,12 @@ fun caseInsensitiveEmail(email: String): Regex
 {
     return Regex("(?i)${email}")
 }
+
+fun getUri(url: String): URI
+{
+    return UriComponentsBuilder
+        .fromHttpUrl(url)
+        .build()
+        .toUri()
+}
+

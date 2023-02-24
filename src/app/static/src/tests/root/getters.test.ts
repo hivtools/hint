@@ -454,6 +454,39 @@ describe("root getters", () => {
             } as any
         }))
     })
+
+    it(`can get serialized project states when logged in as guest`, () => {
+        const projectStates = () => {
+            return mockRootState(projectStateTestData({
+                projects: mockProjectsState()
+            }))
+        }
+
+        const rootState = projectStates()
+
+        const millis = Date.UTC(2023, 1, 23, 17, 35, 19)
+
+        const mockDate = jest.spyOn(Date, 'UTC').mockImplementation(() => millis)
+
+        const result = getters.projectState(rootState, null, projectStates() as any, null)
+
+        const date = new Date(millis)
+
+        const updated = `2023/02/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+
+        expect(mockDate).toHaveBeenCalled()
+
+        expect(result).toStrictEqual(mockProjectOutputState({
+            notes: {
+                project_notes: {
+                    name: "",
+                    updated: updated,
+                    note: ""
+                },
+                version_notes: []
+            } as any
+        }))
+    })
 })
 
 const projectStateTestData = (props: Partial<any> = {}) => {

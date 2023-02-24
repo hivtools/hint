@@ -75,10 +75,33 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         return translatedError(error.key, error.httpStatus, request)
     }
 
+    @ExceptionHandler(AdrException::class)
+    fun handleAdrException(error: AdrException, request: HttpServletRequest): ResponseEntity<Any>
+    {
+        logger.error(request, error)
+
+        return translatedErrorArgs(error.key, error.args, error.httpStatus, request)
+    }
+
     private fun getBundle(request: HttpServletRequest): ResourceBundle
     {
         val language = request.getHeader("Accept-Language") ?: "en"
         return ResourceBundle.getBundle("ErrorMessageBundle", Locale(language))
+    }
+
+    private fun translatedErrorArgs(
+        key: String,
+        args: Array<String>,
+        status: HttpStatus,
+        request: HttpServletRequest
+    ): ResponseEntity<Any>
+    {
+        val resourceBundle = getBundle(request)
+        var message = resourceBundle.getString(key)
+        val formatter = MessageFormat(message)
+        message = formatter.format(args)
+
+        return ErrorDetail(status, message, defaultError).toResponseEntity()
     }
 
     private fun translatedError(key: String, status: HttpStatus, request: HttpServletRequest): ResponseEntity<Any>
@@ -95,24 +118,20 @@ class HintExceptionHandler(private val errorCodeGenerator: ErrorCodeGenerator,
         return ErrorDetail(status, message).toResponseEntity()
     }
 
-    private fun unexpectedError(status: HttpStatus,
-                                request: HttpServletRequest,
-                                originalMessage: String? = null): ResponseEntity<Any>
+    private fun unexpectedError(
+        status: HttpStatus,
+        request: HttpServletRequest,
+        originalMessage: String? = null,
+    ): ResponseEntity<Any>
     {
-
-        val resourceBundle = getBundle(request)
-        var message = resourceBundle.getString("unexpectedError")
-        val formatter = MessageFormat(message)
         val messageArguments = arrayOf(
-                appProperties.applicationTitle,
-                errorCodeGenerator.newCode(),
-                appProperties.supportEmail,
-                if (originalMessage != null) " $originalMessage" else ""
+            appProperties.applicationTitle,
+            errorCodeGenerator.newCode(),
+            appProperties.supportEmail,
+            if (originalMessage != null) " $originalMessage" else ""
         )
-        message = formatter.format(messageArguments)
 
-        return ErrorDetail(status, message, defaultError)
-                .toResponseEntity()
+        return translatedErrorArgs("unexpectedError", messageArguments, status, request)
     }
 
     private fun handleErrorPage(page: String, e: Exception, request: HttpServletRequest): Any

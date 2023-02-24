@@ -206,7 +206,7 @@ describe("ADR dataset-related actions", () => {
         expect(commit.mock.calls[1][0]["type"]).toBe(BaselineMutation.PopulationUpdated);
         expect(commit.mock.calls[1][0]["payload"]["filename"])
             .toBe("population.csv");
-    }, 7000);
+    }, 10000);
 
     it("can import survey", async () => {
 
@@ -222,7 +222,7 @@ describe("ADR dataset-related actions", () => {
         expect(commit.mock.calls[2][0]["payload"]["filename"])
             .toBe("survey.csv")
         expect(commit.mock.calls[3][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
-    }, 7000);
+    }, 10000);
 
     it("can import programme", async () => {
 
@@ -241,7 +241,7 @@ describe("ADR dataset-related actions", () => {
         expect(commit.mock.calls[3][0]["payload"]["filename"])
             .toBe("programme.csv")
         expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
-    }, 7000);
+    }, 10000);
 
     it("can import anc", async () => {
 
@@ -260,7 +260,7 @@ describe("ADR dataset-related actions", () => {
         expect(commit.mock.calls[3][0]["payload"]["filename"])
             .toBe("anc.csv");
         expect(commit.mock.calls[4][0]["type"]).toBe(SurveyAndProgramMutation.WarningsFetched);
-    }, 7000);
+    }, 10000);
 
     it("hits upload files to adr endpoint and gets appropriate error", async () => {
 
@@ -305,7 +305,7 @@ describe("ADR dataset-related actions", () => {
         expect(commit.mock.calls[2][0]["payload"]["error"]).toBe("OTHER_ERROR");
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("getUploadFiles");
-    }, 7000);
+    }, 10000);
 
     it("attempts to create release and gets appropriate error", async () => {
         const commit = jest.fn();

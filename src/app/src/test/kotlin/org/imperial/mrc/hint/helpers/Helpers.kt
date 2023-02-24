@@ -46,3 +46,7 @@ fun getJsonEntity(payload: Map<String, Any>): HttpEntity<String>
     val jsonString = ObjectMapper().writeValueAsString(payload)
     return HttpEntity(jsonString, headers)
 }
+
+enum class Language {
+    FR, EN, PT
+}

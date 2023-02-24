@@ -9,10 +9,9 @@ import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
-import java.io.BufferedInputStream
 import java.io.File
-import java.net.URL
-import java.net.URLConnection
+import java.io.InputStream
+import java.net.http.HttpResponse
 
 @Component
 class ADRClientBuilder(val appProperties: AppProperties,
@@ -33,7 +32,7 @@ class ADRClientBuilder(val appProperties: AppProperties,
 
 interface ADRClient
 {
-    fun getInputStream(url: String): BufferedInputStream
+    fun getInputStream(url: String): HttpResponse<InputStream>
     fun get(url: String): ResponseEntity<String>
     fun post(url: String, params: List<Pair<String, String>>): ResponseEntity<String>
     fun postFile(url: String, parameters: List<Pair<String, Any?>>, file: Pair<String, File>): ResponseEntity<String>
@@ -44,6 +43,8 @@ class ADRFuelClient(appProperties: AppProperties,
                     private val logger: GenericLogger)
     : FuelClient(appProperties.adrUrl + "api/3/action"), ADRClient
 {
+    private val header = Pair("Authorization", apiKey)
+
     override fun get(url: String): ResponseEntity<String>
     {
         return logADRRequestDuration({ super.get(url) }, logger)
@@ -65,13 +66,16 @@ class ADRFuelClient(appProperties: AppProperties,
 
     override fun standardHeaders(): Map<String, Any>
     {
-        return mapOf("Authorization" to apiKey)
+        return mapOf(header.first to header.second)
     }
 
-    override fun getInputStream(url: String): BufferedInputStream
+    override fun httpRequestHeaders(): Array<String>
     {
-        val urlConn: URLConnection = URL(url).openConnection()
-        urlConn.setRequestProperty("Authorization", apiKey)
-        return logADRRequestDuration({ BufferedInputStream(urlConn.getInputStream()) }, logger)
+        return arrayOf(header.first, header.second)
+    }
+
+    override fun getInputStream(url: String): HttpResponse<InputStream>
+    {
+        return logADRRequestDuration({ getStream(getUri(url)) }, logger)
     }
 }

@@ -1,6 +1,10 @@
-# hint 2.33.1
+# hint 2.33.2
 
 * Retain model options when selected dataset is updated data is updated
+
+# hint 2.33.1
+
+* Bug: fix export model outputs download, it fails to prepare file download when logged in as guest user.
 
 # hint 2.33.0
 

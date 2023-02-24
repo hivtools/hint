@@ -1,0 +1,34 @@
+.login-form {
+  width: 30em;
+}
+
+.large-logo {
+  width: 20em;
+}
+
+.small-logo {
+  width: 9em;
+  height: 2.5em;
+}
+
+.links {
+  width: 30em;
+}
+
+.text-divider {
+  margin: 2em 0;
+  line-height: 0;
+  text-align: center;
+
+  span {
+    background-color: #ffffff;
+    padding-left: 3em;
+  }
+
+  :before {
+    content: " ";
+    display: block;
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  }
+}
