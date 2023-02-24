@@ -6,8 +6,8 @@ async function loginSetup(config: FullConfig) {
     const page = await browser.newPage();
 
     await page.goto(baseURL);
-    await page.getByLabel('Username (email address)').fill('test.user@example.com');
-    await page.getByLabel('Password').fill('password');
+    await page.getByPlaceholder('Email').fill('test.user@example.com');
+    await page.getByPlaceholder('Password').fill('password');
     await page.getByText('Log In').click();
     // Save signed-in state to 'storageState.json'.
     await page.context().storageState({ path: 'storageState.json' });

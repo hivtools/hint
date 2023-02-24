@@ -65,7 +65,7 @@ describe("Data exploration online support menu", () => {
 
         const link = wrapper.find(".dropdown").findAll("a");
 
-        expect(link.length).toBe(3)
+        expect(link.length).toBe(4)
 
         expectTranslated(link.at(0),
             "Online support",
@@ -80,31 +80,15 @@ describe("Data exploration online support menu", () => {
             store as any);
 
         expectTranslated(link.at(2),
+            "Privacy",
+            "Vie privée",
+            "Privacidade",
+            store as any);
+
+        expectTranslated(link.at(3),
             "Accessibility",
             "Accessibilité",
             "Acessibilidade",
-            store as any);
-    });
-
-    it("renders drop down text correctly", () => {
-        const store = createStore();
-        const wrapper = mount(DataExplorationSupportMenu, {
-            store,
-            localVue,
-            router
-        });
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes())
-            .toStrictEqual(["dropdown-menu", "show", "dropdown-menu-right"]);
-
-        const link = wrapper.find(".dropdown").findAll("a");
-
-        expect(link.length).toBe(3)
-
-        expectTranslated(link.at(0),
-            "Online support",
-            "Support en ligne",
-            "Apoio online",
             store as any);
     });
 
@@ -116,8 +100,26 @@ describe("Data exploration online support menu", () => {
             router
         });
 
-        const link = wrapper.find("router-link-stub");
+        const links = wrapper.findAll("router-link-stub");
+        expect(links.length).toBe(2)
+
+        const link = links.at(1)
         expect(link.attributes("to")).toBe("/accessibility");
+    });
+
+    it("renders privacy menu-item text and link", () => {
+        const store = createStore();
+        const wrapper = shallowMount(DataExplorationSupportMenu, {
+            store,
+            localVue,
+            router
+        });
+
+        const links = wrapper.findAll("router-link-stub");
+        expect(links.length).toBe(2)
+
+        const link = links.at(0)
+        expect(link.attributes("to")).toBe("/privacy");
     });
 
     it("renders error report widget", () => {
@@ -133,8 +135,6 @@ describe("Data exploration online support menu", () => {
         expect(wrapper.find(ErrorReport).props("open")).toBe(false);
 
         const link = wrapper.findAll(".dropdown-item").at(0);
-
-        expectTranslated(link, "Troubleshooting request", "Demande de dépannage", "Solicitação de solução de problemas", store as any);
 
         expectErrorReportOpen(wrapper)
     });

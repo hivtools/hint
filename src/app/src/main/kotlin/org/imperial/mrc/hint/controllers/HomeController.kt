@@ -21,7 +21,7 @@ class HomeController(
 {
     private val objectMapper = ObjectMapper()
 
-    @GetMapping(value = ["/", "/projects", "accessibility"])
+    @GetMapping(value = ["/", "/projects", "accessibility", "privacy"])
     fun index(model: Model): String
     {
         return loadApp("naomi", appProperties.applicationTitle, "index", model)
