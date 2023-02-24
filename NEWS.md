@@ -1,3 +1,7 @@
+# hint 2.33.1
+
+* Bug: fix export model outputs download, it fails to prepare file download when logged in as guest user.
+
 # hint 2.33.0
 
 * Add Comparison download ID to generateErrorReport action
