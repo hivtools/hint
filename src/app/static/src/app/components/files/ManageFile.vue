@@ -26,6 +26,7 @@
                      @uploading="handleUploading"></file-upload>
         <error-alert v-if="hasError" :error="error"></error-alert>
         <reset-confirmation v-if="!dataExplorationMode"
+                            :discard-step-warning="modelOptions"
                             :continue-editing="deleteSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showDeleteConfirmation"></reset-confirmation>
@@ -39,10 +40,12 @@
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import {Error} from "../../generated";
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
+    import {Step} from "../../types";
 
     interface Data {
         uploading: boolean
         showDeleteConfirmation: boolean
+        modelOptions: number
     }
 
     interface Computed {
@@ -86,7 +89,8 @@
         data(): Data {
             return {
                 uploading: false,
-                showDeleteConfirmation: false
+                showDeleteConfirmation: false,
+                modelOptions: Step.ModelOptions
             }
         },
         computed: {

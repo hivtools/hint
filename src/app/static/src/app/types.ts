@@ -367,3 +367,6 @@ export interface StepperNavigationProps {
     nextDisabled: boolean
 }
 
+export enum Step {
+    ModelOptions = 3
+}

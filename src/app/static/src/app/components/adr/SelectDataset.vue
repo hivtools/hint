@@ -84,6 +84,7 @@
         </modal>
         <reset-confirmation
             v-if="!dataExplorationMode && showConfirmation"
+            :discard-step-warning="selectedDatasetIsRefreshed ? modelOptions : null"
             :continue-editing="continueEditing"
             :cancel-editing="cancelEditing"
             :open="showConfirmation">
@@ -109,7 +110,7 @@
         Dataset,
         DatasetResource,
         DatasetResourceSet,
-        Release
+        Release, Step
     } from "../../types";
     import {InfoIcon} from "vue-feather-icons";
     import {VTooltip} from "v-tooltip";
@@ -164,6 +165,7 @@
         hasPjnzFile: boolean;
         hasPopulationFile: boolean;
         selectedDatasetAvailableResources: { [k in keyof DatasetResourceSet]?: DatasetResource | null }
+        selectedDatasetIsRefreshed: boolean
     }
 
     interface Data {
@@ -174,6 +176,7 @@
         newDatasetRelease: Release | undefined;
         pollingId: number | null;
         valid: boolean;
+        modelOptions: number;
     }
 
     const names: { [k in keyof DatasetResourceSet]: string } = {
@@ -196,7 +199,8 @@
                 newDatasetId: null,
                 pollingId: null,
                 valid: true,
-                newDatasetRelease: undefined
+                newDatasetRelease: undefined,
+                modelOptions: Step.ModelOptions
             };
         },
         components: {
@@ -224,6 +228,10 @@
             selectedDataset: mapStateProp<BaselineState, Dataset | null>(
                 "baseline",
                 (state: BaselineState) => state.selectedDataset
+            ),
+            selectedDatasetIsRefreshed: mapStateProp<BaselineState, boolean>(
+                "baseline",
+                (state: BaselineState) => state.selectedDatasetHasChanged
             ),
             selectedRelease: mapStateProp<BaselineState, Release | null>(
                 "baseline",
@@ -423,6 +431,7 @@
             },
             confirmImport() {
                 if (this.editsRequireConfirmation) {
+                    this.open = false
                     this.showConfirmation = true;
                 } else {
                     this.importDataset();

@@ -15,6 +15,7 @@
             </label>
         </div>
         <reset-confirmation v-if="!dataExplorationMode"
+                            :discard-step-warning="modelOptions"
                             :continue-editing="uploadSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showUploadConfirmation"></reset-confirmation>
@@ -24,6 +25,7 @@
 <script lang="ts">
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin"
+    import {Step} from "../../types";
 
     interface Methods {
         handleFileSelect: () => void
@@ -33,6 +35,7 @@
 
     interface Data {
         showUploadConfirmation: boolean
+        modelOptions: number
     }
 
     interface Props {
@@ -51,7 +54,8 @@
         },
         data(): Data {
             return {
-                showUploadConfirmation: false
+                showUploadConfirmation: false,
+                modelOptions: Step.ModelOptions
             }
         },
         components: {
