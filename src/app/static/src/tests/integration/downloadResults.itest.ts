@@ -1,9 +1,13 @@
 import {actions} from "../../app/store/downloadResults/actions";
-import {rootState} from "./integrationTest";
+import {login, rootState} from "./integrationTest";
 import {DOWNLOAD_TYPE} from "../../app/types";
 import {formatToLocalISODateTime} from "../../app/utils";
 
 describe(`download results actions integration`, () => {
+
+    beforeAll(async () => {
+        await login();
+    });
 
     it(`can prepare summary report for download`, async () => {
         const commit = jest.fn();
@@ -269,10 +273,10 @@ const downloadResultAsExpected = async (action: Function, mutationType: string) 
     };
 
     const state = {
-        comparison: {downloadId: "1", error: null, complete: true},
-        summary: {downloadId: "2", error: null, complete: true},
-        coarseOutput: {downloadId: "3", error: null, complete: true},
-        spectrum: {downloadId: "4", error: null, complete: true}
+        comparison: {downloadId: 123, error: null, complete: true},
+        summary: {downloadId: 123, error: null, complete: true},
+        coarseOutput: {downloadId: 123, error: null, complete: true},
+        spectrum: {downloadId: 123, error: null, complete: true}
     }
 
     await action({commit, dispatch, state, rootState: root} as any);
