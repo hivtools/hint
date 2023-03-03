@@ -14,10 +14,10 @@ export interface DownloadResultsActions {
     prepareComparisonOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareOutputs: (store: ActionContext<DownloadResultsState, RootState>) => void
     poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: string) => void
-    downloadComparisonReport: (store: ActionContext<DownloadResultsState, RootState>) => Promise<void>
-    downloadSpectrumOutput: (store: ActionContext<DownloadResultsState, RootState>) => Promise<void>
-    downloadSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => Promise<void>
-    downloadCoarseOutput: (store: ActionContext<DownloadResultsState, RootState>) => Promise<void>
+    downloadComparisonReport: (store: ActionContext<DownloadResultsState, RootState>) => void
+    downloadSpectrumOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
+    downloadSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => void
+    downloadCoarseOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
 }
 
 export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResultsActions = {

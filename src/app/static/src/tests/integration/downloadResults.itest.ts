@@ -5,22 +5,6 @@ import {formatToLocalISODateTime} from "../../app/utils";
 
 describe(`download results actions integration`, () => {
 
-    it(`can download comparison output report`, async () => {
-        await downloadResultAsExpected(actions.downloadComparisonReport, "ComparisonDownloadError")
-    })
-
-    it(`can download summary output report`, async () => {
-        await downloadResultAsExpected(actions.downloadSummaryReport, "SummaryOutputDownloadError")
-    })
-
-    it(`can download spectrum output report`, async () => {
-        await downloadResultAsExpected(actions.downloadSpectrumOutput, "SpectrumOutputDownloadError")
-    })
-
-    it(`can download coarse output report`, async () => {
-        await downloadResultAsExpected(actions.downloadCoarseOutput, "CoarseOutputDownloadError")
-    })
-
     it(`can prepare summary report for download`, async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -64,6 +48,10 @@ describe(`download results actions integration`, () => {
             done()
 
         }, 3100)
+    })
+
+    it(`can download summary output report`, async () => {
+        await downloadResultAsExpected(actions.downloadSummaryReport, "SummaryOutputDownloadError")
     })
 
     it(`can prepare spectrum output for download`, async () => {
@@ -150,6 +138,10 @@ describe(`download results actions integration`, () => {
         }, 3100)
     })
 
+    it(`can download spectrum output report`, async () => {
+        await downloadResultAsExpected(actions.downloadSpectrumOutput, "SpectrumOutputDownloadError")
+    })
+
     it(`can prepare coarse output for download`, async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -190,6 +182,10 @@ describe(`download results actions integration`, () => {
             done()
 
         }, 3100)
+    })
+
+    it(`can download coarse output report`, async () => {
+        await downloadResultAsExpected(actions.downloadCoarseOutput, "CoarseOutputDownloadError")
     })
 
     it(`can prepare comparison output for download`, async () => {
@@ -258,6 +254,10 @@ describe(`download results actions integration`, () => {
 
         }, 3100)
     })
+
+    it(`can download comparison output report`, async () => {
+        await downloadResultAsExpected(actions.downloadComparisonReport, "ComparisonDownloadError")
+    })
 })
 
 const downloadResultAsExpected = async (action: Function, mutationType: string) => {
@@ -269,10 +269,10 @@ const downloadResultAsExpected = async (action: Function, mutationType: string) 
     };
 
     const state = {
-        comparison: {downloadId: 123, error: null, complete: true},
-        summary: {downloadId: 123, error: null, complete: true},
-        coarseOutput: {downloadId: 123, error: null, complete: true},
-        spectrum: {downloadId: 123, error: null, complete: true}
+        comparison: {downloadId: "1", error: null, complete: true},
+        summary: {downloadId: "2", error: null, complete: true},
+        coarseOutput: {downloadId: "3", error: null, complete: true},
+        spectrum: {downloadId: "4", error: null, complete: true}
     }
 
     await action({commit, dispatch, state, rootState: root} as any);
