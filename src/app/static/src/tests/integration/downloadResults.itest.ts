@@ -278,7 +278,6 @@ const downloadResultAsExpected = async (action: Function, mutationType: string) 
         coarseOutput: {downloadId: 123, error: null, complete: true},
         spectrum: {downloadId: 123, error: null, complete: true}
     }
-
     await action({commit, dispatch, state, rootState: root} as any);
 
     expect(commit.mock.calls.length).toBe(1);

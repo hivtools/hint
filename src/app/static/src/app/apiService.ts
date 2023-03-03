@@ -144,7 +144,8 @@ export class APIService<S extends string, E extends string> implements API<S, E>
     }
 
     private _handleDownloadError = async (e: AxiosError) => {
-        
+        console.log(e.response && e.response.data || e);
+
         this._handle401Error(e)
 
         const response = e.response && e.response.data;
