@@ -122,8 +122,6 @@
         downloadSpectrumOutput: () => void
         downloadCoarseOutput: () => void
         downloadComparisonReport: () => void
-        downloadUrl: (downloadId: string) => string
-        handleDownloadResult: (downloadResults: DownloadResultsDependency) => void
     }
 
     interface Data {
@@ -180,29 +178,17 @@
             }
         },
         methods: {
-            downloadUrl(downloadId) {
-                return `/download/result/${downloadId}`;
-            },
             handleUploadModal() {
                 this.uploadModalOpen = true;
-            },
-            handleDownloadResult(downloadResults) {
-                window.location.assign(this.downloadUrl(downloadResults.downloadId));
-            },
-            downloadSpectrumOutput() {
-                this.handleDownloadResult(this.spectrum)
-            },
-            downloadSummaryReport() {
-                this.handleDownloadResult(this.summary)
-            },
-            downloadCoarseOutput() {
-                this.handleDownloadResult(this.coarseOutput)
             },
             clearStatus: mapMutationByName("adrUpload", "ClearStatus"),
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
             getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
             prepareOutputs: mapActionByName("downloadResults", "prepareOutputs"),
-            downloadComparisonReport: mapActionByName("downloadResults", "downloadComparisonReport")
+            downloadComparisonReport: mapActionByName("downloadResults", "downloadComparisonReport"),
+            downloadSpectrumOutput: mapActionByName("downloadResults", "downloadSpectrumOutput"),
+            downloadSummaryReport: mapActionByName("downloadResults", "downloadSummaryReport"),
+            downloadCoarseOutput: mapActionByName("downloadResults", "downloadCoarseOutput")
         },
         mounted() {
             this.getUserCanUpload();

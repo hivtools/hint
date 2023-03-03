@@ -64,6 +64,12 @@ describe(`download results mutations`, () => {
         expect(state.summary.statusPollId).toBeGreaterThan(-1);
     });
 
+    it("sets summary download error", () => {
+        const state = mockDownloadResultsState();
+        mutations[DownloadResultsMutation.SummaryOutputDownloadError](state, {payload: error});
+        expect(state.summary.downloadError).toEqual(errorMsg);
+    });
+
     it("sets fetchingDownloadId for summary download on SetFetchingDownloadId", () => {
         const state = mockDownloadResultsState();
         const payload = DOWNLOAD_TYPE.SUMMARY
@@ -140,6 +146,12 @@ describe(`download results mutations`, () => {
         expect(state.spectrum.fetchingDownloadId).toBe(true);
     });
 
+    it("sets spectrum download error", () => {
+        const state = mockDownloadResultsState();
+        mutations[DownloadResultsMutation.SpectrumOutputDownloadError](state, {payload: error});
+        expect(state.spectrum.downloadError).toEqual(errorMsg);
+    });
+
     it("set spectrum status to complete, clears interval on SpectrumDownloadStatusUpdated", () => {
         jest.useFakeTimers();
         const clearInterval = jest.spyOn(window, "clearInterval");
@@ -209,6 +221,12 @@ describe(`download results mutations`, () => {
         const payload = DOWNLOAD_TYPE.COARSE
         mutations[DownloadResultsMutation.SetFetchingDownloadId](state, {payload: payload});
         expect(state.coarseOutput.fetchingDownloadId).toBe(true);
+    });
+
+    it("sets coarseOutput download error", () => {
+        const state = mockDownloadResultsState();
+        mutations[DownloadResultsMutation.CoarseOutputDownloadError](state, {payload: error});
+        expect(state.coarseOutput.downloadError).toEqual(errorMsg);
     });
 
     it("set coarseOutput status to complete, clears interval on CoarseOutputDownloadStatusUpdated", () => {

@@ -5,22 +5,20 @@ import {formatToLocalISODateTime} from "../../app/utils";
 
 describe(`download results actions integration`, () => {
 
-    it.skip(`can download comparison output report`, async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
-        const root = {
-            ...rootState,
-            modelCalibrate: {calibrateId: "calibrate123"}
-        };
+    it(`can download comparison output report`, async () => {
+        await downloadResultAsExpected(actions.downloadComparisonReport, "ComparisonDownloadError")
+    })
 
-        const state = {comparison: {downloadId: 123, error: null, complete: true}}
+    it(`can download summary output report`, async () => {
+        await downloadResultAsExpected(actions.downloadSummaryReport, "SummaryOutputDownloadError")
+    })
 
-        await actions.downloadComparisonReport({commit, dispatch, state, rootState: root} as any);
+    it(`can download spectrum output report`, async () => {
+        await downloadResultAsExpected(actions.downloadSpectrumOutput, "SpectrumOutputDownloadError")
+    })
 
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("ComparisonError");
-        expect(commit.mock.calls[0][0]["payload"].detail).toEqual("Missing some results")
-        expect(commit.mock.calls[0][0]["payload"].error).toEqual("FAILED_TO_RETRIEVE_RESULT")
+    it(`can download coarse output report`, async () => {
+        await downloadResultAsExpected(actions.downloadCoarseOutput, "CoarseOutputDownloadError")
     })
 
     it(`can prepare summary report for download`, async () => {
@@ -261,3 +259,26 @@ describe(`download results actions integration`, () => {
         }, 3100)
     })
 })
+
+const downloadResultAsExpected = async (action: Function, mutationType: string) => {
+    const commit = jest.fn();
+    const dispatch = jest.fn();
+    const root = {
+        ...rootState,
+        modelCalibrate: {calibrateId: "calibrate123"}
+    };
+
+    const state = {
+        comparison: {downloadId: 123, error: null, complete: true},
+        summary: {downloadId: 123, error: null, complete: true},
+        coarseOutput: {downloadId: 123, error: null, complete: true},
+        spectrum: {downloadId: 123, error: null, complete: true}
+    }
+
+    await action({commit, dispatch, state, rootState: root} as any);
+
+    expect(commit.mock.calls.length).toBe(1);
+    expect(commit.mock.calls[0][0]["type"]).toBe(mutationType);
+    expect(commit.mock.calls[0][0]["payload"].detail).toEqual("Missing some results")
+    expect(commit.mock.calls[0][0]["payload"].error).toEqual("FAILED_TO_RETRIEVE_RESULT")
+}

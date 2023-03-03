@@ -130,6 +130,10 @@ describe(`download Results actions`, () => {
         });
     });
 
+    it("downloads summary report", async () => {
+        await downloadFileAsExpected(actions.downloadSummaryReport)
+    });
+
     it("gets adr upload metadata if summary status is done", (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -352,6 +356,10 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
+    it("downloads spectrum report", async () => {
+        await downloadFileAsExpected(actions.downloadSpectrumOutput)
+    });
+
     it("gets adr upload metadata if spectrum status is done",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -562,6 +570,11 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
+
+    it("downloads coarseOutput report", async () => {
+        await downloadFileAsExpected(actions.downloadCoarseOutput)
+    });
+
     it("does get adr upload metadata error for coarseOutput if metadata request is successful",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -763,29 +776,8 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(0);
     });
 
-    it("download comparison report", async () => {
-        const commit = jest.fn();
-
-        const root = mockRootState({
-            modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
-        });
-
-        const state = mockDownloadResultsState({
-            comparison: mockDownloadResultsDependency({downloadId: "1"})
-        });
-
-        await actions.downloadComparisonReport({commit, state, rootState: root} as any,);
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("errors/ErrorAdded")
-        expect(commit.mock.calls[0][0]["payload"]).toEqual(
-            {
-                detail: "Could not parse API response. Please contact support.",
-                error: "MALFORMED_RESPONSE"
-            }
-        )
-        expect(mockAxios.history.get.length).toBe(1);
-
-        expect(mockAxios.history.get[0]["url"]).toBe("download/result/1");
+    it("downloads comparison report", async () => {
+        await downloadFileAsExpected(actions.downloadComparisonReport)
     });
 
     it("prepare comparison does not do anything if fetchingDownloadId is set", async () => {
@@ -1004,3 +996,35 @@ describe(`download Results actions`, () => {
         expect(dispatch.mock.calls[3][0]).toBe("prepareComparisonOutput");
     });
 });
+
+const downloadFileAsExpected = async (action: Function) => {
+    const commit = jest.fn();
+
+    const root = mockRootState({
+        modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
+    });
+
+    const state = mockDownloadResultsState({
+        comparison: mockDownloadResultsDependency({downloadId: "1"}),
+        summary: mockDownloadResultsDependency({downloadId: "1"}),
+        coarseOutput: mockDownloadResultsDependency({downloadId: "1"}),
+        spectrum: mockDownloadResultsDependency({downloadId: "1"})
+    });
+
+    await action({commit, state, rootState: root} as any)
+
+    expect(commit.mock.calls.length).toBe(1);
+
+    expect(commit.mock.calls[0][0]["type"]).toBe("errors/ErrorAdded")
+
+    expect(commit.mock.calls[0][0]["payload"]).toEqual(
+        {
+            detail: "Could not parse API response. Please contact support.",
+            error: "MALFORMED_RESPONSE"
+        }
+    )
+
+    expect(mockAxios.history.get.length).toBe(1);
+
+    expect(mockAxios.history.get[0]["url"]).toBe("download/result/1");
+}

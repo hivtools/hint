@@ -7,12 +7,15 @@ export enum DownloadResultsMutation {
     PreparingSpectrumOutput = "PreparingSpectrumOutput",
     SpectrumOutputStatusUpdated = "SpectrumOutputStatusUpdated",
     SpectrumError = "SpectrumError",
+    SpectrumOutputDownloadError = "SpectrumOutputDownloadError",
     PreparingCoarseOutput = "PreparingCoarseOutput",
     CoarseOutputStatusUpdated = "CoarseOutputStatusUpdated",
     CoarseOutputError = "CoarseOutputError",
+    CoarseOutputDownloadError = "CoarseOutputDownloadError",
     PreparingSummaryReport = "PreparingSummaryReport",
     SummaryReportStatusUpdated = "SummaryReportStatusUpdated",
     SummaryError = "SummaryError",
+    SummaryOutputDownloadError = "SummaryOutputDownloadError",
     PreparingComparisonOutput = "PreparingComparisonOutput",
     ComparisonOutputStatusUpdated = "ComparisonOutputStatusUpdated",
     ComparisonDownloadError = "ComparisonDownloadError",
@@ -55,6 +58,10 @@ export const mutations: MutationTree<DownloadResultsState> = {
         state.spectrum.metadataError = action.payload;
     },
 
+    [DownloadResultsMutation.SpectrumOutputDownloadError](state: DownloadResultsState, action: PayloadWithType<Error | null>) {
+        state.spectrum.downloadError = action.payload;
+    },
+
     [DownloadResultsMutation.PreparingCoarseOutput](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
         const downloadId = action.payload.id
         state.coarseOutput = {...state.coarseOutput, downloadId, preparing: true, complete: false, error: null, fetchingDownloadId: false}
@@ -82,6 +89,10 @@ export const mutations: MutationTree<DownloadResultsState> = {
         state.coarseOutput.metadataError = action.payload;
     },
 
+    [DownloadResultsMutation.CoarseOutputDownloadError](state: DownloadResultsState, action: PayloadWithType<Error | null>) {
+        state.coarseOutput.downloadError = action.payload;
+    },
+
     [DownloadResultsMutation.PreparingSummaryReport](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
         const downloadId = action.payload.id
         state.summary = {...state.summary, downloadId, preparing: true, complete: false, error: null, fetchingDownloadId: false}
@@ -107,6 +118,10 @@ export const mutations: MutationTree<DownloadResultsState> = {
 
     [DownloadResultsMutation.SummaryMetadataError](state: DownloadResultsState, action: PayloadWithType<Error>) {
         state.summary.metadataError = action.payload;
+    },
+
+    [DownloadResultsMutation.SummaryOutputDownloadError](state: DownloadResultsState, action: PayloadWithType<Error | null>) {
+        state.summary.downloadError = action.payload;
     },
 
     [DownloadResultsMutation.PreparingComparisonOutput](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {

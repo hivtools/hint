@@ -1,3 +1,7 @@
+# hint 2.34.0
+
+* Change download approach for remaining download files
+
 # hint 2.33.2
 
 * Retain model options when selected dataset is updated data is updated

@@ -1,4 +1,4 @@
-import {createLocalVue, shallowMount, mount, Wrapper} from '@vue/test-utils';
+import {createLocalVue, shallowMount, mount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import {
     mockADRState,
@@ -16,7 +16,6 @@ import Download from "../../../app/components/downloadResults/Download.vue";
 import {ADRState} from "../../../app/store/adr/adr";
 import {ADRUploadState} from "../../../app/store/adrUpload/adrUpload";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
-import spyOn = jest.spyOn;
 
 const localVue = createLocalVue();
 
@@ -24,6 +23,9 @@ describe("Download Results component", () => {
 
     const mockPrepareOutputs = jest.fn();
     const mockDownloadComparisonReport = jest.fn()
+    const mockDownloadSpectrumReport = jest.fn()
+    const mockDownloadCoarseReport = jest.fn()
+    const mockDownloadSummaryReport = jest.fn()
 
     afterEach(() => {
         jest.useRealTimers();
@@ -68,7 +70,10 @@ describe("Download Results component", () => {
                     state: mockDownloadResultsState(downloadResults),
                     actions: {
                         prepareOutputs: mockPrepareOutputs,
-                        downloadComparisonReport: mockDownloadComparisonReport
+                        downloadComparisonReport: mockDownloadComparisonReport,
+                        downloadSpectrumOutput: mockDownloadSpectrumReport,
+                        downloadSummaryReport: mockDownloadSummaryReport,
+                        downloadCoarseOutput: mockDownloadCoarseReport
                     }
                 }
             }
@@ -295,7 +300,8 @@ describe("Download Results component", () => {
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
         const button = wrapper.find("#spectrum-download").find("button");
         expect(button.attributes().disabled).toBeUndefined();
-        downloadFile(button);
+        button.trigger("click");
+        expect(mockDownloadSpectrumReport).toHaveBeenCalled()
     });
 
     it("cannot download summary report while preparing", () => {
@@ -331,7 +337,8 @@ describe("Download Results component", () => {
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
         const button = wrapper.find("#summary-download").find("button");
         expect(button.attributes().disabled).toBeUndefined();
-        downloadFile(button);
+        button.trigger("click");
+        expect(mockDownloadSummaryReport).toHaveBeenCalled()
     });
 
     it("cannot download coarse output while preparing", () => {
@@ -367,7 +374,8 @@ describe("Download Results component", () => {
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
         const button = wrapper.find("#coarse-output-download").find("button");
         expect(button.attributes().disabled).toBeUndefined();
-        downloadFile(button);
+        button.trigger("click");
+        expect(mockDownloadCoarseReport).toHaveBeenCalled()
     });
 
     it("cannot download comparison output while preparing", async () => {
@@ -464,13 +472,3 @@ describe("Download Results component", () => {
         expect(spy).toHaveBeenCalledTimes(1)
     });
 });
-
-const downloadFile = (button: Wrapper<any>) => {
-    const realLocation = window.location
-    delete (window as any).location
-    window.location = {...window.location, assign: jest.fn()};
-    button.trigger("click");
-    expect(window.location.assign).toHaveBeenCalledTimes(1)
-    expect(window.location.assign).toHaveBeenCalledWith("/download/result/123")
-    window.location = realLocation
-}
