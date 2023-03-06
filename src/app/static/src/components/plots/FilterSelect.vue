@@ -30,7 +30,7 @@
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import {FilterOption} from "../../generated";
-    import {HelpCircleIcon} from "vue-feather-icons";
+    import {HelpCircleIcon} from "vue-feather";
     import {VTooltip} from "floating-vue";
 
     interface Methods {

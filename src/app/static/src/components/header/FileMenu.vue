@@ -47,7 +47,7 @@
     import {serialiseState} from "../../localStorageManager";
     import {BaselineState} from "../../store/baseline/baseline";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
-    import {DownloadIcon, UploadIcon} from "vue-feather-icons";
+    import {DownloadIcon, UploadIcon} from "vue-feather";
     import {LocalSessionFile} from "../../types";
     import {addCheckSum, getFormData, mapActionByName, mapStateProp} from "../../utils";
     import {ValidateInputResponse} from "../../generated";

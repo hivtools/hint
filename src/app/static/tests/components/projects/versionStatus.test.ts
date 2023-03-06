@@ -3,7 +3,7 @@ import {shallowMount} from '@vue/test-utils';
 import VersionStatus from "../../../app/components/projects/VersionStatus.vue";
 import {ProjectsState} from "../../../app/store/projects/projects";
 import {mockProjectsState} from "../../mocks";
-import {CheckIcon} from "vue-feather-icons";
+import {CheckIcon} from "vue-feather";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
 import {expectTranslated} from "../../testHelpers";

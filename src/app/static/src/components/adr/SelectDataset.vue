@@ -112,7 +112,7 @@
         DatasetResourceSet,
         Release, Step
     } from "../../types";
-    import {InfoIcon} from "vue-feather-icons";
+    import {InfoIcon} from "vue-feather";
     import {VTooltip} from "floating-vue";
     import {ADRState} from "../../store/adr/adr";
     import {Error} from "../../generated";

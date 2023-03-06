@@ -4,7 +4,7 @@ import TreeSelect from '@riophae/vue-treeselect';
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {HelpCircleIcon} from "vue-feather-icons";
+import {HelpCircleIcon} from "vue-feather";
 
 describe("FilterSelect component", () => {
     const testOptions = [{id: "1", label: "one"}, {id: "2", label: "two"}];
