@@ -998,6 +998,9 @@ describe(`download Results actions`, () => {
 });
 
 const downloadFileAsExpected = async (action: Function) => {
+    mockAxios.onGet(`download/result/1`)
+        .reply(200, mockSuccess("true"));
+
     const commit = jest.fn();
 
     const root = mockRootState({
