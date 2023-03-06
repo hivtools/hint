@@ -130,8 +130,8 @@ describe(`download Results actions`, () => {
         });
     });
 
-    it("downloads summary report", async () => {
-        await downloadFileAsExpected(actions.downloadSummaryReport, "SummaryOutputDownloadError")
+    it("renders summary report download error", async () => {
+        await rendersDownloadErrorAsExpected(actions.downloadSummaryReport, "SummaryOutputDownloadError")
     });
 
     it("gets adr upload metadata if summary status is done", (done) => {
@@ -356,8 +356,8 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("downloads spectrum report", async () => {
-        await downloadFileAsExpected(actions.downloadSpectrumOutput, "SpectrumOutputDownloadError")
+    it("renders spectrum report download error", async () => {
+        await rendersDownloadErrorAsExpected(actions.downloadSpectrumOutput, "SpectrumOutputDownloadError")
     });
 
     it("gets adr upload metadata if spectrum status is done",  (done) => {
@@ -571,8 +571,8 @@ describe(`download Results actions`, () => {
     });
 
 
-    it("downloads coarseOutput report", async () => {
-        await downloadFileAsExpected(actions.downloadCoarseOutput, "CoarseOutputDownloadError")
+    it("renders coarseOutput report download error", async () => {
+        await rendersDownloadErrorAsExpected(actions.downloadCoarseOutput, "CoarseOutputDownloadError")
     });
 
     it("does get adr upload metadata error for coarseOutput if metadata request is successful",  (done) => {
@@ -776,8 +776,8 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(0);
     });
 
-    it("downloads comparison report", async () => {
-        await downloadFileAsExpected(actions.downloadComparisonReport, "ComparisonDownloadError")
+    it("renders comparison report download error", async () => {
+        await rendersDownloadErrorAsExpected(actions.downloadComparisonReport, "ComparisonDownloadError")
     });
 
     it("prepare comparison does not do anything if fetchingDownloadId is set", async () => {
@@ -997,9 +997,9 @@ describe(`download Results actions`, () => {
     });
 });
 
-const downloadFileAsExpected = async (action: Function, mutationType: string) => {
+const rendersDownloadErrorAsExpected = async (action: Function, mutationType: string) => {
     mockAxios.onGet(`download/result/1`)
-        .reply(400, mockFailure("error"));
+        .reply(400, mockFailure("data"));
 
     const commit = jest.fn();
 
