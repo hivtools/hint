@@ -35,7 +35,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {Feature} from "geojson";
-    import {LGeoJson, LMap} from "vue2-leaflet";
+    import {LGeoJson, LMap} from "@vue-leaflet/vue-leaflet";
     import {GeoJSON, Layer, GeoJSONOptions} from "leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
