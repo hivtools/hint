@@ -14,6 +14,6 @@ declare module '*.vue' {
 //   }
 // }
 
-declare module "vue3-treeselect";
-declare module 'chartjs-plugin-error-bars';
+// declare module "vue3-treeselect";
+// declare module 'chartjs-plugin-error-bars';
 declare module '@reside-ic/vue-charts';
