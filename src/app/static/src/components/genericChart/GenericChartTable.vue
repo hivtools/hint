@@ -1,7 +1,8 @@
 <template>
     <table-view :fields="generatedFields" :filtered-data="labelledData">
-        <template v-for="column in columnsWithHierarchy" v-slot:[`cell(${column.data.columnId})`]="data">
-            <div :key="column.data.columnId">
+        <template v-for="column in columnsWithHierarchy" v-slot:[`cell(${column.data.columnId})`]="data"
+        :key="column.data.columnId">
+            <div>
                 <div class="column-data">{{ data.item[column.data.columnId] }}</div>
                 <div class="small">{{ data.item[`${column.data.columnId}_hierarchy`] }}</div>
             </div>

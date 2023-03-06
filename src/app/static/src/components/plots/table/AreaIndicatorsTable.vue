@@ -4,8 +4,9 @@
             <div>{{ data.item.areaLabel }}</div>
             <div class="small">{{ data.item.areaHierarchy }}</div>
         </template>
-        <template v-for="i in indicators" v-slot:[`cell(${i.indicator})`]="data">
-            <div :key="i.indicator">
+        <template v-for="i in indicators" v-slot:[`cell(${i.indicator})`]="data"
+        :key="i.indicator">
+            <div>
                 <div class="value">{{ data.item[i.indicator] }}</div>
                 <div class="small" v-if="data.item[`${i.indicator}_lower`]">
                     ({{ data.item[`${i.indicator}_lower`] }} – {{ data.item[`${i.indicator}_upper`] }})

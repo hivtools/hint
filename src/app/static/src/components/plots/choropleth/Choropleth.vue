@@ -6,8 +6,9 @@
                  @update="onFilterSelectionsChange"></filters>
         <div id="chart" :class="includeFilters ? 'col-md-9' : 'col-md-12'">
             <l-map ref="map" style="height: 800px; width: 100%">
-                <template v-for="feature in currentFeatures">
-                    <l-geo-json ref="" :key="feature.id"
+                <template v-for="feature in currentFeatures"
+                :key="feature.id">
+                    <l-geo-json ref=""
                                 :geojson="feature"
                                 :options="options"
                                 :optionsStyle="{...style, fillColor: getColor(feature)}">

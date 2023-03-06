@@ -1,9 +1,9 @@
 <template>
     <div>
         <div class="row">
-            <template v-for="step in steps">
-                <step :key="step.number"
-                      :active="isActive(step.number)"
+            <template v-for="step in steps"
+            :key="step.number">
+                <step :active="isActive(step.number)"
                       :number="step.number"
                       :text-key="step.textKey"
                       :enabled="isEnabled(step.number)"

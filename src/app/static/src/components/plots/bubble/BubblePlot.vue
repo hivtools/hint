@@ -40,9 +40,9 @@
         </div>
         <div id="chart" class="col-md-9">
             <l-map ref="map" style="height: 800px; width: 100%">
-                <template v-for="feature in currentFeatures">
-                    <l-geo-json :key="feature.id"
-                                ref=""
+                <template v-for="feature in currentFeatures"
+                :key="feature.id">
+                    <l-geo-json ref=""
                                 :geojson="feature"
                                 :optionsStyle="style">
                     </l-geo-json>
