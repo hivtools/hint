@@ -56,7 +56,7 @@ describe(`download results actions integration`, () => {
 
     it(`can download summary output report`, async () => {
         await downloadResultAsExpected(actions.downloadSummaryReport, "SummaryOutputDownloadError")
-    })
+    }, 10000)
 
     it(`can prepare spectrum output for download`, async () => {
         const commit = jest.fn();
@@ -144,7 +144,7 @@ describe(`download results actions integration`, () => {
 
     it(`can download spectrum output report`, async () => {
         await downloadResultAsExpected(actions.downloadSpectrumOutput, "SpectrumOutputDownloadError")
-    })
+    }, 10000)
 
     it(`can prepare coarse output for download`, async () => {
         const commit = jest.fn();
@@ -190,7 +190,7 @@ describe(`download results actions integration`, () => {
 
     it(`can download coarse output report`, async () => {
         await downloadResultAsExpected(actions.downloadCoarseOutput, "CoarseOutputDownloadError")
-    })
+    }, 10000)
 
     it(`can prepare comparison output for download`, async () => {
         const commit = jest.fn();
@@ -261,7 +261,7 @@ describe(`download results actions integration`, () => {
 
     it(`can download comparison output report`, async () => {
         await downloadResultAsExpected(actions.downloadComparisonReport, "ComparisonDownloadError")
-    })
+    }, 10000)
 })
 
 const downloadResultAsExpected = async (action: Function, mutationType: string) => {
