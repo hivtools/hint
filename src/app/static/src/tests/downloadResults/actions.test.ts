@@ -999,7 +999,7 @@ describe(`download Results actions`, () => {
 
 const rendersDownloadErrorAsExpected = async (action: Function, mutationType: string) => {
     mockAxios.onGet(`download/result/1`)
-        .reply(400, mockFailure("data"));
+        .reply(400, mockFailure("error"));
 
     const commit = jest.fn();
 
