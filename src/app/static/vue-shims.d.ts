@@ -1,6 +1,4 @@
 // src/vue-shims.d.ts
-import { ComponentCustomProperties } from "vue";
-import { Store } from "vuex";
 
 declare module '*.vue' {
   import { DefineComponent } from 'vue';

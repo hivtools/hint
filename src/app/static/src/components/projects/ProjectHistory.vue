@@ -281,7 +281,7 @@
     import {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
-    import {VTooltip} from 'v-tooltip';
+    import {VTooltip} from "floating-vue";
     import {projects} from "../../store/projects/projects";
 
     const namespace = "projects";
