@@ -127,7 +127,7 @@
     const outputFileTypes = ["outputZip", "outputSummary", "outputComparison"];
     const inputFileTypes = ["anc", "programme", "pjnz", "population", "shape", "survey"];
 
-    export default defineComponent<Data, Methods, Computed, unknown>({
+    export default defineComponent<Methods, Computed, Data>({
         name: "UploadModal",
         data(): Data {
             return {
@@ -154,7 +154,7 @@
             handleCancel() {
                 this.$emit("close")
             },
-            translate(text) {
+            translate(text: string) {
                 return i18next.t(text, {lng: this.currentLanguage});
             },
             setDefaultCheckedItems: function () {
@@ -162,7 +162,7 @@
                     .filter(key => this.uploadableFiles.hasOwnProperty(key))
             },
             //show and upload only successfully downloaded outputFiles in upload modal
-            outputFileIsAvailable: function (key) {
+            outputFileIsAvailable: function (key: string) {
                 if (key === "outputZip" && !(this.spectrum.error || this.spectrum.metadataError)) {
                     return true
                 } else if (key === "outputSummary" && !(this.summary.error || this.summary.metadataError)) {
@@ -173,11 +173,11 @@
 
                 return false
             },
-            getSectionHeading: function (sectionIndex) {
+            getSectionHeading: function (sectionIndex: number) {
                 const hasOutputFile = Object.keys(this.uploadFileSections[0]).length > 0
                 return sectionIndex === 0 ? (hasOutputFile ? 'outputFiles' : '') : 'inputFiles';
             },
-            translatedOutputFileError: function (key) {
+            translatedOutputFileError: function (key: string) {
                 return i18next.t("downloadOutputsError", {
                     outputFileType: this.translate(key),
                     lng: this.currentLanguage,

@@ -97,7 +97,7 @@
 
     const namespace = "adr";
 
-    export default defineComponent<Data, Methods, Computed, unknown>({
+    export default defineComponent<Methods, Computed, Data>({
         data() {
             return {
                 editableKey: "",

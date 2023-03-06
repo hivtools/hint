@@ -13,11 +13,11 @@
     import {defineComponent} from "vue"
     import LoadingSpinner from "../LoadingSpinner.vue";
 
-    interface Props {
-        preparing: boolean,
-        translateKey: string
-    }
-    export default defineComponent<unknown, unknown, unknown, Props>({
+    // interface Props {
+    //     preparing: boolean,
+    //     translateKey: string
+    // }
+    export default defineComponent({
         name: "DownloadStatus",
         components: {
             LoadingSpinner

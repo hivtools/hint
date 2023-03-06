@@ -13,16 +13,16 @@
     import {defineComponent} from "vue";
     import {DownloadIcon} from "vue-feather";
 
-    interface Props {
-        disabled: boolean
-        name: string
-    }
+    // interface Props {
+    //     disabled: boolean
+    //     name: string
+    // }
 
-    interface Method {
-        download: () => void
-    }
+    // interface Method {
+    //     download: () => void
+    // }
 
-    export default defineComponent<unknown, Method, unknown, Props>({
+    export default defineComponent({
         name: "downloadButton",
         components: {
             DownloadIcon

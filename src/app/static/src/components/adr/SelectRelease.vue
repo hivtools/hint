@@ -57,6 +57,7 @@
 
 <script lang="ts">
     import {defineComponent} from "vue";
+    import type { PropType } from "vue";
     import { mapActionByName, mapStateProp, mapMutationByName } from "../../utils";
     import TreeSelect from "vue3-treeselect";
     import { ADRState } from "../../store/adr/adr";
@@ -74,39 +75,39 @@
         choiceADR: "useLatest" | "useRelease";
     }
 
-    interface Methods {
-        getReleases: (id: string) => void;
-        clearReleases: () => void;
-        translate(text: string): string;
-        preSelectRelease: () => void;
-    }
+    // interface Methods {
+    //     getReleases: (id: string) => void;
+    //     clearReleases: () => void;
+    //     translate(text: string): string;
+    //     preSelectRelease: () => void;
+    // }
 
-    interface Computed {
-        releases: Release[];
-        initialRelease: string | undefined;
-        valid: boolean;
-        releaseOptions: any[];
-        useRelease: boolean;
-        currentLanguage: Language;
-    }
+    // interface Computed {
+    //     releases: Release[];
+    //     initialRelease: string | undefined;
+    //     valid: boolean;
+    //     releaseOptions: any[];
+    //     useRelease: boolean;
+    //     currentLanguage: Language;
+    // }
 
-    interface Props {
-        datasetId: string | null;
-        open: boolean;
-    }
+    // interface Props {
+    //     datasetId: string | null;
+    //     open: boolean;
+    // }
 
     const namespace = "adr";
 
-    export default defineComponent<Data, Methods, Computed, Props>({
+    export default defineComponent({
         components: {
             TreeSelect,
             HelpCircleIcon,
         },
         props: {
-            datasetId: String,
+            datasetId: String as PropType<string | null>,
             open: Boolean
         },
-        data() {
+        data(): Data {
             return {
                 releaseId: undefined,
                 choiceADR: "useLatest",
@@ -144,7 +145,7 @@
         },
         methods: {
             getReleases: mapActionByName(namespace, "getReleases"),
-            translate(text) {
+            translate(text: string) {
                 return i18next.t(text, { lng: this.currentLanguage });
             },
             clearReleases: mapMutationByName(namespace, ADRMutation.ClearReleases),

@@ -92,6 +92,7 @@
     </div>
 </template>
 <script lang="ts">
+    import { defineComponent } from "vue";
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
     import TreeSelect from "vue3-treeselect";
@@ -190,7 +191,8 @@
 
     const namespace = "adr";
 
-    export default ResetConfirmationMixin.extend<Data, Methods, Computed, unknown>({
+    export default defineComponent<Computed, Methods, Data>({
+        extends: ResetConfirmationMixin,
         data() {
             return {
                 open: false,
@@ -458,10 +460,10 @@
                     window.clearInterval(this.pollingId);
                 }
             },
-            updateDatasetRelease(release) {
+            updateDatasetRelease(release: Release) {
                 this.newDatasetRelease = release;
             },
-            updateValid(valid) {
+            updateValid(valid: boolean) {
                 this.valid = valid;
             }
         },

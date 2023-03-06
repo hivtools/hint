@@ -131,7 +131,7 @@
         comparisonSwitch: boolean
     }
 
-    export default defineComponent<Data, Methods, Computed>({
+    export default defineComponent<Computed, Methods, Data>({
         name: "downloadResults",
         data() {
             return {
@@ -180,13 +180,13 @@
             }
         },
         methods: {
-            downloadUrl(downloadId) {
+            downloadUrl(downloadId: string) {
                 return `/download/result/${downloadId}`;
             },
             handleUploadModal() {
                 this.uploadModalOpen = true;
             },
-            handleDownloadResult(downloadResults) {
+            handleDownloadResult(downloadResults: DownloadResultsDependency) {
                 window.location.assign(this.downloadUrl(downloadResults.downloadId));
             },
             downloadSpectrumOutput() {

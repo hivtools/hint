@@ -44,7 +44,7 @@
 
     const namespace = "adr";
 
-    export default defineComponent<unknown, Methods, Computed, unknown>({
+    export default defineComponent<Methods, Computed>({
         components: {adrKey, SelectDataset},
         computed: {
             isGuest: mapGetterByName(null, "isGuest"),

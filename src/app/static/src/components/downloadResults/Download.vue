@@ -18,6 +18,7 @@
 
 <script lang="ts">
     import {defineComponent} from "vue";
+    import type { PropType } from "vue";
     import DownloadStatus from "./DownloadStatus.vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import {DownloadIcon} from "vue-feather";
@@ -38,7 +39,7 @@
         download: () => void
     }
 
-    export default defineComponent<unknown, Methods, unknown, Props>({
+    export default defineComponent({
         name: "Download",
         components: {
             DownloadIcon,
@@ -48,11 +49,11 @@
         props: {
             file: {
                 required: true,
-                type: Object
+                type: Object as PropType<DownloadResultsDependency>
             },
             translateKey: {
                 required: true,
-                type: Object
+                type: Object as PropType<downloadTranslate>
             },
             disabled: {
                 required: true,

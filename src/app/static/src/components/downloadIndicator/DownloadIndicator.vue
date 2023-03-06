@@ -9,6 +9,7 @@
 
 <script lang="ts">
     import {defineComponent} from "vue";
+    import type { PropType } from "vue";
     import DownloadButton from "./DownloadButton.vue";
     import {DownloadIndicatorPayload} from "../../types";
     import {appendCurrentDateTime, mapActionByName, mapStateProps} from "../../utils";
@@ -33,14 +34,14 @@
         downloadingIndicator: boolean
     }
 
-    export default defineComponent<unknown, Methods, Computed, Props>({
+    export default defineComponent({
         name: "downloadIndicator",
         components: {
             DownloadButton
         },
         props: {
-            unfilteredData: Array,
-            filteredData: Array
+            unfilteredData: Array as PropType<unknown[] | null>,
+            filteredData: Array as PropType<unknown[]>
         },
         computed: {
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {

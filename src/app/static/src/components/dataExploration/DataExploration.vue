@@ -53,7 +53,7 @@
         getPlottingMetadata: (country: string) => void
     }
 
-    export default defineComponent<unknown, Methods, Computed, unknown>({
+    export default defineComponent<Methods, Computed>({
         computed: {
             step: mapStateProp<StepperState, number>("stepper", state => state.activeStep),
             canProgress() {
