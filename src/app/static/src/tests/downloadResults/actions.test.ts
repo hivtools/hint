@@ -131,7 +131,7 @@ describe(`download Results actions`, () => {
     });
 
     it("downloads summary report", async () => {
-        await downloadFileAsExpected(actions.downloadSummaryReport)
+        await downloadFileAsExpected(actions.downloadSummaryReport, "SummaryOutputDownloadError")
     });
 
     it("gets adr upload metadata if summary status is done", (done) => {
@@ -357,7 +357,7 @@ describe(`download Results actions`, () => {
     });
 
     it("downloads spectrum report", async () => {
-        await downloadFileAsExpected(actions.downloadSpectrumOutput)
+        await downloadFileAsExpected(actions.downloadSpectrumOutput, "SpectrumOutputDownloadError")
     });
 
     it("gets adr upload metadata if spectrum status is done",  (done) => {
@@ -572,7 +572,7 @@ describe(`download Results actions`, () => {
 
 
     it("downloads coarseOutput report", async () => {
-        await downloadFileAsExpected(actions.downloadCoarseOutput)
+        await downloadFileAsExpected(actions.downloadCoarseOutput, "CoarseOutputDownloadError")
     });
 
     it("does get adr upload metadata error for coarseOutput if metadata request is successful",  (done) => {
@@ -777,7 +777,7 @@ describe(`download Results actions`, () => {
     });
 
     it("downloads comparison report", async () => {
-        await downloadFileAsExpected(actions.downloadComparisonReport)
+        await downloadFileAsExpected(actions.downloadComparisonReport, "ComparisonDownloadError")
     });
 
     it("prepare comparison does not do anything if fetchingDownloadId is set", async () => {
@@ -997,9 +997,9 @@ describe(`download Results actions`, () => {
     });
 });
 
-const downloadFileAsExpected = async (action: Function) => {
+const downloadFileAsExpected = async (action: Function, mutationType: string) => {
     mockAxios.onGet(`download/result/1`)
-        .reply(200, mockSuccess("true"));
+        .reply(400, mockFailure("error"));
 
     const commit = jest.fn();
 
@@ -1018,12 +1018,12 @@ const downloadFileAsExpected = async (action: Function) => {
 
     expect(commit.mock.calls.length).toBe(1);
 
-    expect(commit.mock.calls[0][0]["type"]).toBe("errors/ErrorAdded")
+    expect(commit.mock.calls[0][0]["type"]).toBe(mutationType)
 
     expect(commit.mock.calls[0][0]["payload"]).toEqual(
         {
-            detail: "Could not parse API response. Please contact support.",
-            error: "MALFORMED_RESPONSE"
+            detail: "error",
+            error: "OTHER_ERROR"
         }
     )
 
