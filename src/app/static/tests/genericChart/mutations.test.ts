@@ -1,4 +1,4 @@
-import Vue from "vue";
+import {defineComponent} from "vue";
 import {mutations} from "../../app/store/genericChart/mutations";
 import {mockGenericChartState, mockWarning} from "../mocks";
 

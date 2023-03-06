@@ -10,7 +10,7 @@ import {BarChartWithFilters} from "@reside-ic/vue-charts";
 import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
 import {expectTranslated} from "../../testHelpers";
 import {BarchartIndicator} from "../../../app/types";
-import Vue from 'vue';
+import {defineComponent} from 'vue';
 
 const localVue = createLocalVue();
 

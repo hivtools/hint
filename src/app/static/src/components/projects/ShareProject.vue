@@ -58,7 +58,7 @@
 
 <script lang="ts">
     import {Project} from "../../types";
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import Modal from "../Modal.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {mapActionByName, mapStatePropByName} from "../../utils";

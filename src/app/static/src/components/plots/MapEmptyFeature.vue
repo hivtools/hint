@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {LControl} from "@vue-leaflet/vue-leaflet";
 
     export default Vue.extend({

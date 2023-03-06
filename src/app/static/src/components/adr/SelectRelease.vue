@@ -56,7 +56,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import { mapActionByName, mapStateProp, mapMutationByName } from "../../utils";
     import TreeSelect from "vue3-treeselect";
     import { ADRState } from "../../store/adr/adr";

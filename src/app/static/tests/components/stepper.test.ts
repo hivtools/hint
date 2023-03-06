@@ -1,5 +1,5 @@
 import {createLocalVue, shallowMount, Wrapper} from '@vue/test-utils';
-import Vue from 'vue';
+import {defineComponent} from 'vue';
 import Vuex from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import {

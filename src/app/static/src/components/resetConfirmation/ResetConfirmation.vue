@@ -48,7 +48,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import Modal from "../Modal.vue";
     import {mapActionByName, mapGetterByName, mapStateProp} from "../../utils";
     import {StepDescription} from "../../store/stepper/stepper";

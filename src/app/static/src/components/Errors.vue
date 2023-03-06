@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {ErrorsState} from "../store/errors/errors";
     import {mapMutationByName, mapStateProps} from "../utils";
     import {ErrorsMutation} from "../store/errors/mutations";

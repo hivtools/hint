@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import TreeSelect from "vue3-treeselect";
     import i18next from "i18next";
     import {mapGetters, mapMutations, mapState} from "vuex";

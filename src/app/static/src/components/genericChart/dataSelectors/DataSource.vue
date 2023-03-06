@@ -11,7 +11,7 @@
 
 <script lang="ts">
     import {DatasetConfig, DataSourceConfig} from "../../../types";
-    import Vue from "vue";
+    import {defineComponent} from "vue";
 
     interface Props {
         config: DataSourceConfig,

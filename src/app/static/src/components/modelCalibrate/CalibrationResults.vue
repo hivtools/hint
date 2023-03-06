@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import i18next from "i18next";
     import { Language, Translations } from "../../store/translations/locales";
     import {

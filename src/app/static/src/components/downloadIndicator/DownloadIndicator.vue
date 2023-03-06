@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import DownloadButton from "./DownloadButton.vue";
     import {DownloadIndicatorPayload} from "../../types";
     import {appendCurrentDateTime, mapActionByName, mapStateProps} from "../../utils";

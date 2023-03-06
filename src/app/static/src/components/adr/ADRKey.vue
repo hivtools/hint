@@ -62,7 +62,7 @@
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {mapActionsByNames, mapStateProp} from "../../utils";
     import {Error} from "../../generated"
     import {RootState} from "../../root";

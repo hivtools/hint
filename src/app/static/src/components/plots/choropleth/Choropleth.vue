@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {Feature} from "geojson";
     import {LGeoJson, LMap} from "@vue-leaflet/vue-leaflet";
     import {GeoJSON, Layer, GeoJSONOptions} from "leaflet";

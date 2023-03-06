@@ -1,4 +1,4 @@
-import Vue from "vue";
+import {defineComponent} from "vue";
 import {MutationTree} from 'vuex';
 import {GenericChartState} from "./genericChart";
 import {GenericChartDataset, GenericChartMetadataResponse, PayloadWithType} from "../../types";

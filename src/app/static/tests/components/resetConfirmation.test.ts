@@ -1,4 +1,4 @@
-import Vue from "vue";
+import {defineComponent} from "vue";
 import {mount, Wrapper} from "@vue/test-utils";
 import ResetConfirmation from "../../app/components/resetConfirmation/ResetConfirmation.vue";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";

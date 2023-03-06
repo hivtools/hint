@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {FilterOption, NestedFilterOption} from "../../generated";
     import {Dict, Field, GenericChartColumn, GenericChartTableColumnConfig, GenericChartTableConfig} from "../../types";
     import TableView from "../plots/table/Table.vue";

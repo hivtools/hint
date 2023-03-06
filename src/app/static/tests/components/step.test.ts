@@ -1,6 +1,6 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from "vuex";
-import Vue from 'vue';
+import {defineComponent} from 'vue';
 import Step from "../../app/components/Step.vue";
 import {emptyState} from "../../app/root";
 import registerTranslations from "../../app/store/translations/registerTranslations";

@@ -1,4 +1,4 @@
-import Vue from "vue";
+import {defineComponent} from "vue";
 import {shallowMount, Slots} from '@vue/test-utils';
 
 import FileUpload from "../../../app/components/files/FileUpload.vue";

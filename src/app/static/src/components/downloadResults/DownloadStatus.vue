@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue"
+    import {defineComponent} from "vue"
     import LoadingSpinner from "../LoadingSpinner.vue";
 
     interface Props {

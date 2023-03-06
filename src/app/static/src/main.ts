@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import {defineComponent} from 'vue';
 import Vuex from 'vuex';
 import {RootState, storeOptions} from "./root";
 import registerTranslations from "./store/translations/registerTranslations";

@@ -20,7 +20,7 @@ import {prefixNamespace} from "../../../app/utils";
 import {Language} from "../../../app/store/translations/locales";
 import {expectTranslated} from "../../testHelpers";
 import {BaselineState} from "../../../app/store/baseline/baseline";
-import Vue from "vue";
+import {defineComponent} from "vue";
 
 describe("adr integration", () => {
 

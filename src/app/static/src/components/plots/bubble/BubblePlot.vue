@@ -83,7 +83,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import Treeselect from "vue3-treeselect";
     import {Feature} from "geojson";
     import {LCircleMarker, LGeoJson, LMap, LTooltip} from "@vue-leaflet/vue-leaflet";

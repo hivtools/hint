@@ -92,7 +92,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue"
+    import {defineComponent} from "vue"
     import {mapActionByName, mapGetterByName, mapStateProp, validateEmail, emailRegex} from "../utils";
     import Modal from "./Modal.vue";
     import {ErrorReportManualDetails} from "../types";

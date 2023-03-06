@@ -68,7 +68,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {mapActionByName, mapStateProp, mapMutationByName, mapStateProps} from "../../utils";
     import {UploadIcon} from "vue-feather";
     import UploadModal from "./UploadModal.vue";

@@ -28,7 +28,7 @@
 </template>
 <script lang="ts">
 
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {mapGetters} from 'vuex';
     import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";

@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {ProjectsState} from "../../store/projects/projects";
     import {mapStateProp} from "../../utils";
     import {CheckIcon} from "vue-feather";

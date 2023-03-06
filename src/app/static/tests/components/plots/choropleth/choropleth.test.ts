@@ -10,7 +10,7 @@ import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import {plhiv, prev, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
 import {ChoroplethSelections, ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
-import Vue from "vue";
+import {defineComponent} from "vue";
 import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
 import ResetMap from "../../../../app/components/plots/ResetMap.vue";
 import {ChoroplethIndicatorMetadata} from "../../../../app/generated";

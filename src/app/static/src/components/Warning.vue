@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import { AlertTriangleIcon } from "vue-feather";
     import i18next from "i18next";
     import { mapStateProp } from "../utils";

@@ -49,7 +49,7 @@
 
 <script lang="ts">
 
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {mapActions, mapGetters} from "vuex";
     import AdrIntegration from "./adr/ADRIntegration.vue";
     import Step from "./Step.vue";

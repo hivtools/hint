@@ -1,4 +1,4 @@
-import Vue from "vue";
+import {defineComponent} from "vue";
 import Vuex, {mapActions, StoreOptions} from "vuex";
 import ResetPassword from "./components/password/ResetPassword.vue";
 import {initialPasswordState, PasswordState} from "./store/password/password";

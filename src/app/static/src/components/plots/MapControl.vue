@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import TreeSelect from "vue3-treeselect"
     import {LControl} from "@vue-leaflet/vue-leaflet";
     import {ChoroplethIndicatorMetadata} from "../../generated";

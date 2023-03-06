@@ -1,4 +1,4 @@
-import Vue from "vue";
+import {defineComponent} from "vue";
 import Vuex, {mapActions, mapState} from "vuex";
 import registerTranslations from "./store/translations/registerTranslations";
 import {DataExplorationState, storeOptions} from "./store/dataExploration/dataExploration";

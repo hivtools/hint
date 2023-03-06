@@ -1,4 +1,4 @@
-import Vue from "vue";
+import {defineComponent} from "vue";
 import {shallowMount, mount, createLocalVue} from '@vue/test-utils';
 import ErrorReport from "../../app/components/ErrorReport.vue";
 import Modal from "../../app/components/Modal.vue";

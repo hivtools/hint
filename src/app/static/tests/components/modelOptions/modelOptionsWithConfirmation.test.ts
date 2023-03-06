@@ -1,6 +1,6 @@
 import {mount} from "@vue/test-utils";
 import Vuex, {ActionTree, MutationTree} from "vuex";
-import Vue from "vue";
+import {defineComponent} from "vue";
 
 import ModelOptions from "../../../app/components/modelOptions/ModelOptions.vue";
 import {ModelOptionsMutation} from "../../../app/store/modelOptions/mutations";

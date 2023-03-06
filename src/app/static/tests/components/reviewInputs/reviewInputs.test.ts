@@ -1,5 +1,5 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
-import Vue from 'vue';
+import {defineComponent} from 'vue';
 import Vuex from 'vuex';
 import ReviewInputs from "../../../app/components/reviewInputs/ReviewInputs.vue";
 import {

@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import FilterSelect from "./FilterSelect.vue";
     import {Dict, DisplayFilter} from "../../types";
     import {FilterOption} from "../../generated";

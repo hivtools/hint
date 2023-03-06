@@ -1,7 +1,7 @@
 import i18next from "i18next";
 import {Language, locales} from "./locales";
 import {Store} from "vuex";
-import Vue from "vue";
+import {defineComponent} from "vue";
 import translate from "../../directives/translate";
 import {TranslatableState} from "../../types";
 

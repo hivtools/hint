@@ -7,7 +7,7 @@ jest.mock("plotly.js-basic-dist", () => ({
     react: jest.fn()
 }));
 import * as plotly from "plotly.js-basic-dist";
-import Vue from "vue";
+import {defineComponent} from "vue";
 import { shallowMount } from "@vue/test-utils";
 import Plotly from "../../../app/components/genericChart/Plotly.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";

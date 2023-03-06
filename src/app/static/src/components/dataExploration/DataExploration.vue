@@ -18,7 +18,7 @@
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import AdrIntegration from "../adr/ADRIntegration.vue";
     import UploadInputs from "../uploadInputs/UploadInputs.vue";

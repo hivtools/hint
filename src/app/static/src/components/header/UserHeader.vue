@@ -30,7 +30,7 @@
 </template>
 <script lang="ts">
 
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {mapGetters} from 'vuex';
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";

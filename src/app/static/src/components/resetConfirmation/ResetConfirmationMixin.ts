@@ -1,4 +1,4 @@
-import Vue from "vue";
+import {defineComponent} from "vue";
 import {mapStatePropByName} from "../../utils";
 
 interface Computed {

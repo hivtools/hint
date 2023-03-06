@@ -9,7 +9,7 @@ import registerTranslations from "../../../../app/store/translations/registerTra
 import Vuex from "vuex";
 import Treeselect from "vue3-treeselect";
 import {emptyState} from "../../../../app/root";
-import Vue from "vue";
+import {defineComponent} from "vue";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 import {expectFilter, plhiv, prev, testData} from "../testHelpers"

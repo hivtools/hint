@@ -1,4 +1,4 @@
-import Vue from "vue"
+import {defineComponent} from "vue"
 import {mount, shallowMount} from "@vue/test-utils";
 import ShareProject from "../../../app/components/projects/ShareProject.vue";
 import Modal from "../../../app/components/Modal.vue";

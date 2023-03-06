@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue"
+    import {defineComponent} from "vue"
     import Modal from "../Modal.vue";
 
     interface Props {

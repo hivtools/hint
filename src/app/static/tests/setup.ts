@@ -1,5 +1,5 @@
 import i18next from "i18next";
-import Vue from "vue";
+import {defineComponent} from "vue";
 import Vuex from "vuex";
 import {Language, locales} from "../app/store/translations/locales";
 

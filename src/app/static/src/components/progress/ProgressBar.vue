@@ -10,7 +10,7 @@
 
 <script lang="ts">
 
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {BProgress, BProgressBar} from "bootstrap-vue";
     import Tick from "../Tick.vue";
     import {ProgressPhase} from "../../generated";

@@ -3,7 +3,7 @@ import ProjectHistory from "../../../app/components/projects/ProjectHistory.vue"
 import {formatDateTime} from "../../../app/utils";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import Vuex, {Store} from "vuex";
-import Vue from "vue";
+import {defineComponent} from "vue";
 import {emptyState, RootState} from "../../../app/root";
 import {Project} from "../../../app/types";
 import {mockProjectsState} from "../../mocks";

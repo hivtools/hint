@@ -1,4 +1,4 @@
-import Vue from "vue";
+import {defineComponent} from "vue";
 import {store} from "./main"
 import {router} from "./router";
 import UserHeader from "./components/header/UserHeader.vue";

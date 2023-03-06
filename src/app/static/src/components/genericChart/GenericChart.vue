@@ -85,7 +85,7 @@
 
 <script lang="ts">
     import i18next from "i18next";
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {ChevronLeftIcon, ChevronRightIcon} from "vue-feather";
     import {
         DataSourceConfig,

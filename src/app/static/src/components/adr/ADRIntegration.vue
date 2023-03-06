@@ -13,7 +13,7 @@
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {mapActionByName, mapStateProp, mapGetterByName} from "../../utils";
     import adrKey from "./ADRKey.vue";
     import SelectDataset from "./SelectDataset.vue";

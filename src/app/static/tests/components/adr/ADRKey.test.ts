@@ -1,4 +1,4 @@
-import Vue from "vue";
+import {defineComponent} from "vue";
 import {mount, shallowMount} from "@vue/test-utils";
 
 import ADRKey from "../../../app/components/adr/ADRKey.vue";

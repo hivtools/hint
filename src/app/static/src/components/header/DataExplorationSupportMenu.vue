@@ -24,7 +24,7 @@
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import DropDown from "./DropDown.vue";
     import i18next from "i18next";
     import {mapActionByName, mapStateProp} from "../../utils";

@@ -84,7 +84,7 @@
 
 <script lang="ts">
 
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {mapActions, mapState} from "vuex";
     import {BaselineState} from "../../store/baseline/baseline";
     import {PartialFileUploadProps} from "../../types";

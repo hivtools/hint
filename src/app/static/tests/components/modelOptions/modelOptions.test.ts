@@ -1,7 +1,7 @@
 import {mount, shallowMount} from "@vue/test-utils";
 import ModelOptions from "../../../app/components/modelOptions/ModelOptions.vue";
 import {DynamicForm} from "@reside-ic/vue-dynamic-form";
-import Vue from "vue";
+import {defineComponent} from "vue";
 import Vuex, {ActionTree, MutationTree} from "vuex";
 import {mockError, mockModelOptionsState, mockOptionsFormMeta, mockRootState} from "../../mocks";
 import {ModelOptionsState} from "../../../app/store/modelOptions/modelOptions";

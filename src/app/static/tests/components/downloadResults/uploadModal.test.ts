@@ -11,7 +11,7 @@ import {
 } from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
-import Vue from 'vue';
+import {defineComponent} from 'vue';
 import {Dict} from "../../../app/types";
 import {Language} from "../../../app/store/translations/locales";
 import {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";

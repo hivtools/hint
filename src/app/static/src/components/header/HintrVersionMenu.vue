@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {HintrVersionResponse} from "../../generated";
     import {RootState} from "../../root";
     import {mapActionByName, mapStateProp} from "../../utils";

@@ -24,7 +24,7 @@
 
 <script lang="ts">
     import i18next from "i18next";
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import Treeselect from "vue3-treeselect";
     import {flattenOptions, mapStateProp} from "../../utils";
     import {RootState} from "../../root";

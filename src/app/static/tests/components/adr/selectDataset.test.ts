@@ -1,5 +1,5 @@
 import Vuex, {ActionTree} from "vuex";
-import Vue from "vue";
+import {defineComponent} from "vue";
 import {mount, shallowMount} from "@vue/test-utils";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
 import SelectRelease from "../../../app/components/adr/SelectRelease.vue";

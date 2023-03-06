@@ -120,7 +120,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import BubblePlot from "../plots/bubble/BubblePlot.vue";
     import AreaIndicatorsTable from "../plots/table/AreaIndicatorsTable.vue";

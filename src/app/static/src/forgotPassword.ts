@@ -1,4 +1,4 @@
-import Vue from "vue";
+import {defineComponent} from "vue";
 import Vuex, {StoreOptions} from "vuex";
 import ForgotPassword from "./components/password/ForgotPassword.vue";
 import {initialPasswordState, PasswordState} from "./store/password/password";

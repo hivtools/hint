@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import {mapActions, mapState} from "vuex";
     import {PasswordState} from "../../store/password/password";

@@ -18,7 +18,7 @@
 
 <script lang="ts">
 
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {StepperNavigationProps} from "../types";
 
     export default Vue.extend<void, void, void, StepperNavigationProps>({

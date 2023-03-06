@@ -1,6 +1,6 @@
 import {createLocalVue, shallowMount, Wrapper} from '@vue/test-utils';
 import Warning from "../../app/components/Warning.vue";
-import Vue from "vue";
+import {defineComponent} from "vue";
 import Vuex from "vuex";
 import {emptyState} from "../../app/root";
 import registerTranslations from "../../app/store/translations/registerTranslations";

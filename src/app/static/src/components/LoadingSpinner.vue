@@ -85,7 +85,7 @@
     </svg>
 </template>
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
 
     interface Props {
         size: string

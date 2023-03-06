@@ -10,7 +10,7 @@
 
 <script lang="ts">
     import Plotly from "plotly.js-basic-dist";
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import jsonata from "jsonata";
     import {Dict} from "../../types";
     import LoadingSpinner from "../LoadingSpinner.vue";

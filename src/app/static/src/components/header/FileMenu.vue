@@ -43,7 +43,7 @@
 </template>
 <script lang="ts">
 
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {serialiseState} from "../../localStorageManager";
     import {BaselineState} from "../../store/baseline/baseline";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";

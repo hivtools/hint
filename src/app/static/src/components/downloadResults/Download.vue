@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import DownloadStatus from "./DownloadStatus.vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import {DownloadIcon} from "vue-feather";

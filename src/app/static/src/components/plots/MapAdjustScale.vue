@@ -75,7 +75,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {ScaleSettings, ScaleType} from "../../store/plottingSelections/plottingSelections";
     import i18next from "i18next";
 

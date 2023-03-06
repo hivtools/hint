@@ -12,7 +12,7 @@
     </header>
 </template>
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import LanguageMenu from "./LanguageMenu.vue";
 
     interface Props {

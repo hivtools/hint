@@ -1,6 +1,6 @@
 import {createLocalVue, mount, shallowMount} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
-import Vue from 'vue';
+import {defineComponent} from 'vue';
 import {
     mockAxios,
     mockError,

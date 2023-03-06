@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import { Warning as WarningType } from "../generated";
     import { Dict } from "../types";
     import Warning from "./Warning.vue"

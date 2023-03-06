@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {Error} from "../generated";
 
     interface Props {

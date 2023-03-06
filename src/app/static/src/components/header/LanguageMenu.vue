@@ -13,7 +13,7 @@
 </template>
 <script lang="ts">
 
-    import Vue from "vue";
+    import {defineComponent} from "vue";
     import {mapActionByName, mapStateProp} from "../../utils";
     import DropDown from "./DropDown.vue";
     import {DataExplorationState} from "../../store/dataExploration/dataExploration";
