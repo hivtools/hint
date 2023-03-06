@@ -27,7 +27,7 @@ describe("File upload component", () => {
     };
 
     const mockHideDropDown = jest.fn();
-    const dropdownWithMockedHideMethod = Vue.extend({mixins: [BDropdown], methods: {hide: mockHideDropDown}});
+    const dropdownWithMockedHideMethod = defineComponent({mixins: [BDropdown], methods: {hide: mockHideDropDown}});
 
     const createSut = (props?: any, slots?: Slots, store?: Store<DataExplorationState>) => {
         return shallowMount(FileUpload, {

@@ -99,7 +99,7 @@
         return file ? {hash: file.hash, filename: file.filename} : null
     };
 
-    export default Vue.extend<Data, Methods, Computed, "title">({
+    export default defineComponent<Data, Methods, Computed, "title">({
         props: ["title"],
         data(): Data {
             return {

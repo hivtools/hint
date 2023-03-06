@@ -86,7 +86,7 @@
 
     let uuid = 0;
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent<Data, Methods, Computed, Props>({
         props: {
             open: Boolean,
             continueEditing: Function,

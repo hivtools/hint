@@ -94,7 +94,7 @@
         }
     }
 
-    export default Vue.extend<unknown, unknown, Computed, Props>({
+    export default defineComponent<unknown, unknown, Computed, Props>({
         name: "AreaIndicatorsTable",
         props: props,
         computed: {

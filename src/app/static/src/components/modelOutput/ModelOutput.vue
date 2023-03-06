@@ -213,7 +213,7 @@
         comparisonPlotDefaultSelections: UnadjustedBarchartSelections[]
     }
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponent<Data, Methods, Computed, unknown>({
         name: "ModelOutput",
         created() {
             if (!this.selectedTab) {

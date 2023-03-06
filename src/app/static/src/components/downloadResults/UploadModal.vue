@@ -127,7 +127,7 @@
     const outputFileTypes = ["outputZip", "outputSummary", "outputComparison"];
     const inputFileTypes = ["anc", "programme", "pjnz", "population", "shape", "survey"];
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponent<Data, Methods, Computed, unknown>({
         name: "UploadModal",
         data(): Data {
             return {

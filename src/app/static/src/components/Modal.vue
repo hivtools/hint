@@ -18,7 +18,7 @@
 <script lang="ts">
     import {defineComponent} from "vue"
 
-    export default Vue.extend({
+    export default defineComponent({
         name: "Modal",
         props: ["open"],
         computed: {

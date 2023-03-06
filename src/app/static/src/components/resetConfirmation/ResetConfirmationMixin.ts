@@ -6,7 +6,7 @@ interface Computed {
     dataExplorationMode: boolean
 }
 
-export default Vue.extend<unknown, unknown, Computed, unknown>({
+export default defineComponent<unknown, unknown, Computed, unknown>({
     computed: {
         dataExplorationMode: mapStatePropByName(null, "dataExplorationMode"),
         editsRequireConfirmation() {

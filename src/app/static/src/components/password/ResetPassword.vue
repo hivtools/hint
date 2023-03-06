@@ -41,7 +41,7 @@
     import LoggedOutHeader from "../header/LoggedOutHeader.vue";
     import {Language} from "../../store/translations/locales";
 
-    export default Vue.extend({
+    export default defineComponent({
         name: "ResetPassword",
         props: ["token", "title"],
         data: () => {

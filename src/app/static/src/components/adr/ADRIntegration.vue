@@ -44,7 +44,7 @@
 
     const namespace = "adr";
 
-    export default Vue.extend<unknown, Methods, Computed, unknown>({
+    export default defineComponent<unknown, Methods, Computed, unknown>({
         components: {adrKey, SelectDataset},
         computed: {
             isGuest: mapGetterByName(null, "isGuest"),

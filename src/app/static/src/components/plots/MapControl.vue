@@ -65,7 +65,7 @@
         indicatorChanged: (newVal: string) => void;
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent<Data, Methods, Computed, Props>({
         name: 'MapControl',
         components: {
             TreeSelect,

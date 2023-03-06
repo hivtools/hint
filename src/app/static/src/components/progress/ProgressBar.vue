@@ -22,7 +22,7 @@
         cssClass: string
     }
 
-    export default Vue.extend<unknown, unknown, Computed, { phase: ProgressPhase }>({
+    export default defineComponent<unknown, unknown, Computed, { phase: ProgressPhase }>({
         props: {
             phase: Object
         },

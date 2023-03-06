@@ -58,7 +58,7 @@
         selectedOptions: any
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent<Data, Methods, Computed, Props>({
         name: "FilterSelect",
         props: {
             multiple: Boolean,

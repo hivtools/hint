@@ -48,7 +48,7 @@
     interface Computed {
         helpFilename: string
     }
-    export default Vue.extend<unknown, unknown, Computed, Props>({
+    export default defineComponent<unknown, unknown, Computed, Props>({
         computed: {
             helpFilename: mapStateProp<RootState, string>(null,
                 (state: RootState) => {

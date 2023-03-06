@@ -57,7 +57,7 @@
         lineStyling: Dict<string | number | undefined>;
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent<Data, Methods, Computed, Props>({
         name: "Warning",
         props: {
             origin: String,

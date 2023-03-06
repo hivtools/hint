@@ -33,7 +33,7 @@
     import Modal from "../Modal.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
 
-    export default Vue.extend({
+    export default defineComponent({
         name: "UploadProgress",
         props: {
             openModal: Boolean,

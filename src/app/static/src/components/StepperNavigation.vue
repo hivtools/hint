@@ -21,7 +21,7 @@
     import {defineComponent} from "vue";
     import {StepperNavigationProps} from "../types";
 
-    export default Vue.extend<void, void, void, StepperNavigationProps>({
+    export default defineComponent<void, void, void, StepperNavigationProps>({
         props: {
             back: Function,
             backDisabled: Boolean,

@@ -202,7 +202,7 @@
         }
     };
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent<Data, Methods, Computed, Props>({
         name: "BubblePlot",
         components: {
             LMap,

@@ -46,7 +46,7 @@
         helpFilename: string
     }
 
-    export default Vue.extend<unknown, unknown, Computed, Props>({
+    export default defineComponent<unknown, unknown, Computed, Props>({
         computed: {
             helpFilename: mapStateProp<DataExplorationState, string>(null,
                 (state: DataExplorationState) => {

@@ -72,7 +72,7 @@
         currentLanguage: Language;
     }
 
-    export default Vue.extend<unknown, Methods, Computed, unknown>({
+    export default defineComponent<unknown, Methods, Computed, unknown>({
         name: "CalibrationResults",
         components: {
             BarChartWithFilters,

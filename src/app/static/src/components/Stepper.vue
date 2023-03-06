@@ -97,7 +97,7 @@
 
     const namespace = 'stepper';
 
-    export default Vue.extend<unknown, any, ComputedState & ComputedGetters, unknown>({
+    export default defineComponent<unknown, any, ComputedState & ComputedGetters, unknown>({
         computed: {
             ...mapStateProps<StepperState, keyof ComputedState>(namespace, {
                 activeStep: state => state.activeStep,

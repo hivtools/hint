@@ -102,7 +102,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
         update: () => void
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent<Data, Methods, Computed, Props>({
         name: "MapAdjustScale",
         props: {
             name: String,

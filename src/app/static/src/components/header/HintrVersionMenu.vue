@@ -32,7 +32,7 @@
     }
 
     const namespace = "hintrVersion";
-    export default Vue.extend<unknown, Methods, Computed, unknown>({
+    export default defineComponent<unknown, Methods, Computed, unknown>({
 
         computed: {
             hintrVersions: mapStateProp<RootState, HintrVersionResponse>(

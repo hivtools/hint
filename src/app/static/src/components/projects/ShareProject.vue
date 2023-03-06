@@ -106,7 +106,7 @@
 
     declare const currentUser: string;
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent<Data, Methods, Computed, Props>({
         props: {
             project: {
                 type: Object

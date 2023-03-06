@@ -48,7 +48,7 @@
         generateErrorReport: (payload: ErrorReportManualDetails) => void
     }
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponent<Data, Methods, Computed, unknown>({
         data: function () {
             return {
                 errorReportOpen: false

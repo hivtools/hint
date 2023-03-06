@@ -29,7 +29,7 @@
         delay: boolean
     }
 
-    export default Vue.extend<Data, Methods, unknown, keyof Props>({
+    export default defineComponent<Data, Methods, unknown, keyof Props>({
         props: ["text", "right", "delay"],
         data(): Data {
             return {

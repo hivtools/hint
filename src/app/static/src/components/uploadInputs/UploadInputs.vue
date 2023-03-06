@@ -98,7 +98,7 @@
 
     const namespace = 'baseline';
 
-    export default Vue.extend({
+    export default defineComponent({
         name: "UploadInputs",
         computed: {
             ...mapState<BaselineState>(namespace, {

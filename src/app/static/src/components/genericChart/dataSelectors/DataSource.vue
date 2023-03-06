@@ -23,7 +23,7 @@
         selected: string
     }
 
-    export default Vue.extend<unknown, unknown, Computed, Props>( {
+    export default defineComponent<unknown, unknown, Computed, Props>( {
         name: "DataSource",
         props: {
             config: {

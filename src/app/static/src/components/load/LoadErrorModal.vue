@@ -26,7 +26,7 @@
         clearLoadError: () => void
     }
 
-    export default Vue.extend<unknown, unknown, unknown, Props>({
+    export default defineComponent<unknown, unknown, unknown, Props>({
         name: "LoadErrorModal",
         props: {
             hasError: Boolean,

@@ -174,7 +174,7 @@
 
     const namespace = "genericChart";
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent<Data, Methods, Computed, Props>({
         name: "GenericChart",
         props: {
             metadata: Object,

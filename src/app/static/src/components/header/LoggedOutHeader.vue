@@ -19,7 +19,7 @@
         title: string
     }
 
-    export default Vue.extend<unknown, unknown, unknown, Props>({
+    export default defineComponent<unknown, unknown, unknown, Props>({
         props: {
             title: String
         },

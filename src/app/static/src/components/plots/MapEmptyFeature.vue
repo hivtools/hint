@@ -12,7 +12,7 @@
     import {defineComponent} from "vue";
     import {LControl} from "@vue-leaflet/vue-leaflet";
 
-    export default Vue.extend({
+    export default defineComponent({
         components: {
             LControl
         }

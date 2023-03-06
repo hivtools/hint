@@ -40,7 +40,7 @@
         drawChart: () => void
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>( {
+    export default defineComponent<Data, Methods, Computed, Props>( {
         name: "Plotly",
         props: {
             chartMetadata: String,

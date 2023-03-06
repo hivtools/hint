@@ -131,7 +131,7 @@
         comparisonSwitch: boolean
     }
 
-    export default Vue.extend<Data, Methods, Computed>({
+    export default defineComponent<Data, Methods, Computed>({
         name: "downloadResults",
         data() {
             return {

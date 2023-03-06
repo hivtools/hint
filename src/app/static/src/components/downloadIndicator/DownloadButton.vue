@@ -22,7 +22,7 @@
         download: () => void
     }
 
-    export default Vue.extend<unknown, Method, unknown, Props>({
+    export default defineComponent<unknown, Method, unknown, Props>({
         name: "downloadButton",
         components: {
             DownloadIcon

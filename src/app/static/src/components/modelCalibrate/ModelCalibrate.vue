@@ -103,7 +103,7 @@
 
     const namespace = "modelCalibrate";
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponent<Data, Methods, Computed, unknown>({
         name: "ModelCalibrate",
         data() {
             return {
