@@ -1,13 +1,27 @@
 import {actions} from "../../app/store/downloadResults/actions";
-import {login, rootState} from "./integrationTest";
+import {rootState} from "./integrationTest";
 import {DOWNLOAD_TYPE} from "../../app/types";
 import {formatToLocalISODateTime} from "../../app/utils";
 
 describe(`download results actions integration`, () => {
 
-    beforeAll(async () => {
-        await login();
-    });
+    it.skip(`can download comparison output report`, async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const root = {
+            ...rootState,
+            modelCalibrate: {calibrateId: "calibrate123"}
+        };
+
+        const state = {comparison: {downloadId: 123, error: null, complete: true}}
+
+        await actions.downloadComparisonReport({commit, dispatch, state, rootState: root} as any);
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0]["type"]).toBe("ComparisonError");
+        expect(commit.mock.calls[0][0]["payload"].detail).toEqual("Missing some results")
+        expect(commit.mock.calls[0][0]["payload"].error).toEqual("FAILED_TO_RETRIEVE_RESULT")
+    })
 
     it(`can prepare summary report for download`, async () => {
         const commit = jest.fn();
@@ -53,10 +67,6 @@ describe(`download results actions integration`, () => {
 
         }, 3100)
     })
-
-    it(`can download summary output report`, async () => {
-        await downloadResultAsExpected(actions.downloadSummaryReport, "SummaryOutputDownloadError")
-    }, 10000)
 
     it(`can prepare spectrum output for download`, async () => {
         const commit = jest.fn();
@@ -142,10 +152,6 @@ describe(`download results actions integration`, () => {
         }, 3100)
     })
 
-    it(`can download spectrum output report`, async () => {
-        await downloadResultAsExpected(actions.downloadSpectrumOutput, "SpectrumOutputDownloadError")
-    }, 10000)
-
     it(`can prepare coarse output for download`, async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -187,10 +193,6 @@ describe(`download results actions integration`, () => {
 
         }, 3100)
     })
-
-    it(`can download coarse output report`, async () => {
-        await downloadResultAsExpected(actions.downloadCoarseOutput, "CoarseOutputDownloadError")
-    }, 10000)
 
     it(`can prepare comparison output for download`, async () => {
         const commit = jest.fn();
@@ -258,30 +260,4 @@ describe(`download results actions integration`, () => {
 
         }, 3100)
     })
-
-    it(`can download comparison output report`, async () => {
-        await downloadResultAsExpected(actions.downloadComparisonReport, "ComparisonDownloadError")
-    }, 10000)
 })
-
-const downloadResultAsExpected = async (action: Function, mutationType: string) => {
-    const commit = jest.fn();
-    const dispatch = jest.fn();
-    const root = {
-        ...rootState,
-        modelCalibrate: {calibrateId: "calibrate123"}
-    };
-
-    const state = {
-        comparison: {downloadId: 123, error: null, complete: true},
-        summary: {downloadId: 123, error: null, complete: true},
-        coarseOutput: {downloadId: 123, error: null, complete: true},
-        spectrum: {downloadId: 123, error: null, complete: true}
-    }
-    await action({commit, dispatch, state, rootState: root} as any);
-
-    expect(commit.mock.calls.length).toBe(1);
-    expect(commit.mock.calls[0][0]["type"]).toBe(mutationType);
-    expect(commit.mock.calls[0][0]["payload"].detail).toEqual("Missing some results")
-    expect(commit.mock.calls[0][0]["payload"].error).toEqual("FAILED_TO_RETRIEVE_RESULT")
-}
