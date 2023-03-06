@@ -58,7 +58,7 @@
 <script lang="ts">
     import Vue from "vue";
     import { mapActionByName, mapStateProp, mapMutationByName } from "../../utils";
-    import TreeSelect from "@riophae/vue-treeselect";
+    import TreeSelect from "vue3-treeselect";
     import { ADRState } from "../../store/adr/adr";
     import { HelpCircleIcon } from "vue-feather";
     import { VTooltip } from "floating-vue";

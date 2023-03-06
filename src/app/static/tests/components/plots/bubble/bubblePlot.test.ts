@@ -7,7 +7,7 @@ import MapControl from "../../../../app/components/plots/MapControl.vue";
 import {NestedFilterOption} from "../../../../app/generated";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
 import Vuex from "vuex";
-import Treeselect from '@riophae/vue-treeselect';
+import Treeselect from "vue3-treeselect";
 import {emptyState} from "../../../../app/root";
 import Vue from "vue";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";

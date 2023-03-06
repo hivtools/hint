@@ -94,7 +94,7 @@
 <script lang="ts">
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
-    import TreeSelect from "@riophae/vue-treeselect";
+    import TreeSelect from "vue3-treeselect";
     import {
         mapActionByName,
         mapGetterByName,

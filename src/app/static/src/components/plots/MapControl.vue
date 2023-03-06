@@ -33,7 +33,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import TreeSelect from '@riophae/vue-treeselect'
+    import TreeSelect from "vue3-treeselect"
     import {LControl} from 'vue2-leaflet';
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {LevelLabel} from "../../types";
