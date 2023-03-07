@@ -14,7 +14,7 @@
 </template>
 <script lang="ts">
     import {defineComponent} from "vue";
-    import {mapActionByName, mapStateProp, mapGetterByName} from "../../utils";
+    import {mapActionByName, mapStateProp, mapGetterByName, ComputedWithType} from "../../utils";
     import adrKey from "./ADRKey.vue";
     import SelectDataset from "./SelectDataset.vue";
     import {ADRState} from "../../store/adr/adr";
@@ -26,6 +26,7 @@
     import {Dataset} from "../../types";
 
     interface Methods {
+        [key: string]: any
         getDatasets: () => void
         fetchADRKey: () => void
         getUserCanUpload: () => void
@@ -34,17 +35,18 @@
     }
 
     interface Computed {
-        isGuest: boolean
-        loggedIn: boolean
-        key: string | null,
-        hasUploadPermission: boolean,
+        [key: string]: any
+        isGuest: ComputedWithType<boolean>
+        loggedIn: () => boolean
+        key: string | null
+        hasUploadPermission: boolean
         currentLanguage: Language
         selectedDataset: Dataset | null
     }
 
     const namespace = "adr";
 
-    export default defineComponent<Methods, Computed>({
+    export default defineComponent<{}, unknown, unknown, Computed, Methods>({
         components: {adrKey, SelectDataset},
         computed: {
             isGuest: mapGetterByName(null, "isGuest"),

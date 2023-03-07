@@ -10,26 +10,25 @@
 </template>
 
 <script lang="ts">
+    import type { PropType } from "vue";
     import {defineComponent} from "vue";
     import {DownloadIcon} from "vue-feather";
 
-    // interface Props {
-    //     disabled: boolean
-    //     name: string
-    // }
+    interface Props {
+        [key: string]: any
+        disabled: boolean
+        name: string
+    }
 
-    // interface Method {
-    //     download: () => void
-    // }
+    interface Method {
+        [key: string]: any
+        download: () => void
+    }
 
-    export default defineComponent({
+    export default defineComponent<Props, unknown, unknown, {}, Method>({
         name: "downloadButton",
         components: {
             DownloadIcon
-        },
-        props: {
-            name: String,
-            disabled: Boolean
         },
         methods: {
             download() {

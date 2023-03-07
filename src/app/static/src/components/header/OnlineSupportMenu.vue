@@ -68,12 +68,16 @@
     import {ErrorReportManualDetails} from "../../types";
 
     interface Computed {
-        support: string
+        [key: string]: any
+        support(): string
         currentLanguage: Language
         troubleFilename: string
-        faqLocation: string
+        faqLocation(): string
         projectName: string | undefined
-        currentSection: string
+        currentSection: {
+            get(): string,
+            set: Function
+        }
         currentSectionKey: string
         steps: StepDescription[]
     }
@@ -84,13 +88,14 @@
     }
 
     interface Methods {
+        [key: string]: any
         toggleErrorReportModal: () => void
         sendErrorReport: (errorReport: ErrorReportManualDetails) => void
         generateErrorReport: (payload: ErrorReportManualDetails) => void
         projectSection: () => void
     }
 
-    export default defineComponent<Data, Methods, Computed, unknown>({
+    export default defineComponent<{}, unknown, Data, Computed, Methods>({
         data: function () {
             return {
                 errorReportOpen: false,

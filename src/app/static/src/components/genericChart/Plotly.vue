@@ -10,7 +10,8 @@
 
 <script lang="ts">
     import Plotly from "plotly.js-basic-dist";
-    import {defineComponent} from "vue";
+    import {defineComponent, StyleValue} from "vue";
+    import type { PropType } from "vue";
     import jsonata from "jsonata";
     import {Dict} from "../../types";
     import LoadingSpinner from "../LoadingSpinner.vue";
@@ -21,36 +22,34 @@
     }
 
     interface Props {
+        [key: string]: any
         chartMetadata: string,
         chartData: Dict<unknown[]>,
         layoutData: Dict<unknown>
     }
 
     interface Computed {
-        inputData: Dict<unknown>,
-        data: {
+        [key: string]: any
+        inputData(): Dict<unknown>,
+        data(): {
             data: unknown,
             layout: Dict<unknown>,
             config: unknown
         },
-        style: unknown
+        style(): StyleValue
     }
 
     interface Methods {
+        [key: string]: any
         drawChart: () => void
     }
 
-    export default defineComponent<Data, Methods, Computed, Props>( {
+    export default defineComponent<Props, unknown, Data, Computed, Methods>({
         name: "Plotly",
-        props: {
-            chartMetadata: String,
-            chartData: Object,
-            layoutData: Object
-        },
         components: {
             LoadingSpinner
         },
-        data: function() {
+        data() {
             return {
                 rendering: false,
                 layoutRequired: false

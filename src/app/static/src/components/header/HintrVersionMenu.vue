@@ -23,16 +23,18 @@
     import {currentHintVersion} from "../../hintVersion";
 
     interface Computed {
+        [key: string]: any
         hintrVersions: HintrVersionResponse;
-        hintVersion: string
+        hintVersion: () => string
     }
 
     interface Methods {
+        [key: string]: any
         showHintrVersion: () => void;
     }
 
     const namespace = "hintrVersion";
-    export default defineComponent<unknown, Methods, Computed, unknown>({
+    export default defineComponent<{}, unknown, {}, Computed, Methods>({
 
         computed: {
             hintrVersions: mapStateProp<RootState, HintrVersionResponse>(

@@ -33,6 +33,7 @@
     </div>
 </template>
 <script lang="ts">
+    import { defineComponent } from "vue";
     import FileUpload from "./FileUpload.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
@@ -49,10 +50,12 @@
     }
 
     interface Computed {
-        hasError: boolean
+        [key: string]: any
+        hasError: () => boolean
     }
 
     interface Methods {
+        [key: string]: any
         deleteSelectedFile: () => void
         handleFileDelete: () => void
         cancelEdit: () => void
@@ -60,6 +63,7 @@
     }
 
     interface Props {
+        [key: string]: any
         upload: (formData: FormData) => void,
         deleteFile: () => void,
         accept: string,
@@ -72,21 +76,10 @@
         required: boolean
     }
 
-    export default ResetConfirmationMixin.extend<Data, Methods, Computed, Props>({
+    export default defineComponent<Props, {}, Data, Computed, Methods>({
+        extends: ResetConfirmationMixin,
         name: "FileSelect",
-        props: {
-            "upload": Function,
-            "deleteFile": Function,
-            "accept": String,
-            "label": String,
-            "valid": Boolean,
-            "error": Object,
-            "existingFileName": String,
-            "fromADR": Boolean,
-            "name": String,
-            "required": Boolean
-        },
-        data(): Data {
+        data() {
             return {
                 uploading: false,
                 showDeleteConfirmation: false,

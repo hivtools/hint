@@ -38,15 +38,17 @@
     import DataExplorationSupportMenu from "./DataExplorationSupportMenu.vue";
 
     interface Props {
+        [key: string]: any
         title: string,
         user: string
     }
 
     interface Computed {
+        [key: string]: any
         helpFilename: string
     }
 
-    export default defineComponent<unknown, unknown, Computed, Props>({
+    export default defineComponent<Props, unknown, {}, Computed>({
         computed: {
             helpFilename: mapStateProp<DataExplorationState, string>(null,
                 (state: DataExplorationState) => {
@@ -56,10 +58,6 @@
                     return HelpFile.english;
                 }),
             ...mapGetters(["isGuest"])
-        },
-        props: {
-            title: String,
-            user: String
         },
         components: {
             LanguageMenu,

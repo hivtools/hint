@@ -86,6 +86,7 @@
 <script lang="ts">
     import i18next from "i18next";
     import {defineComponent} from "vue";
+    import type { PropType } from "vue";
     import {ChevronLeftIcon, ChevronRightIcon} from "vue-feather";
     import {
         DataSourceConfig,
@@ -139,6 +140,7 @@
     }
 
     interface Props {
+        [key: string]: any
         metadata: GenericChartMetadataResponse
         chartId: string
         chartHeight: string
@@ -146,24 +148,26 @@
     }
 
     interface Computed {
+        [key: string]: any
         currentLanguage: Language
         datasets: Record<string, GenericChartDataset>
         error: Error | null
-        chartMetadata: GenericChartMetadata
-        valueFormat: string
-        chartConfigValues: ChartConfigValues
-        chartData: Dict<unknown[]> | null
-        chartDataPage: Dict<unknown[]> | null
-        chartDataIsEmpty: boolean
-        filters: Dict<DisplayFilter[]>
-        pageNumberText: string
-        prevPageEnabled: boolean
-        nextPageEnabled: boolean
-        unfilteredData: Dict<unknown[]> | null
-        filteredDataWithoutPages: Dict<unknown[]> | null
+        chartMetadata(): GenericChartMetadata
+        valueFormat(): string
+        chartConfigValues(): ChartConfigValues
+        chartData(): Dict<unknown[]> | null
+        chartDataPage(): Dict<unknown[]> | null
+        chartDataIsEmpty(): boolean
+        filters(): Dict<DisplayFilter[]>
+        pageNumberText(): string
+        prevPageEnabled(): boolean
+        nextPageEnabled(): boolean
+        unfilteredData(): Dict<unknown[]> | null
+        filteredDataWithoutPages(): Dict<unknown[]> | null
     }
 
     interface Methods {
+        [key: string]: any
         ensureDataset: (datasetId: string) => void,
         getDataset: (payload: getDatasetPayload) => void,
         setDataSourceDefaultFilterSelections: (dataSourceId: string, datasetId: string) => void,
@@ -174,14 +178,8 @@
 
     const namespace = "genericChart";
 
-    export default defineComponent<Data, Methods, Computed, Props>({
+    export default defineComponent<Props, unknown, Data, Computed, Methods>({
         name: "GenericChart",
-        props: {
-            metadata: Object,
-            chartId: String,
-            chartHeight: String,
-            availableDatasetIds: Array
-        },
         components: {
             DownloadIndicator,
             ChevronLeftIcon,
@@ -193,7 +191,7 @@
             ErrorAlert,
             LoadingSpinner
         },
-        data: function() {
+        data() {
             const chart = this.metadata[this.chartId];
             const dataSourceSelections = chart.dataSelectors.dataSources
                 .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => ({
@@ -237,7 +235,7 @@
                         // Only include columns which are configured as filters in the dataset config
                         const configuredFilterIds = datasetConfig.filters.map(filter => filter.id);
                         const allColumns = this.datasets[datasetId]?.metadata.columns || [];
-                        filterColumns = allColumns.filter(column => configuredFilterIds.includes(column.id));
+                        filterColumns = allColumns.filter((column: GenericChartColumn) => configuredFilterIds.includes(column.id));
                     }
                     result[datasetId] = genericChartColumnsToFilters(filterColumns, datasetConfig.filters);
                 }

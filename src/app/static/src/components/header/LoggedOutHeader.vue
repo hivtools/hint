@@ -19,10 +19,7 @@
         title: string
     }
 
-    export default defineComponent<unknown, unknown, unknown, Props>({
-        props: {
-            title: String
-        },
+    export default defineComponent<Props>({
         components: {
             LanguageMenu
         }

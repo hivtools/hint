@@ -17,6 +17,7 @@
     //     preparing: boolean,
     //     translateKey: string
     // }
+
     export default defineComponent({
         name: "DownloadStatus",
         components: {

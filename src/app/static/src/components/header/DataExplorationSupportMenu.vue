@@ -34,7 +34,8 @@
     import {ErrorReportManualDetails} from "../../types";
 
     interface Computed {
-        support: string
+        [key: string]: any
+        support(): string
         currentLanguage: Language
     }
 
@@ -43,12 +44,13 @@
     }
 
     interface Methods {
+        [key: string]: any
         toggleErrorReportModal: () => void
         sendErrorReport: (errorReport: ErrorReportManualDetails) => void
         generateErrorReport: (payload: ErrorReportManualDetails) => void
     }
 
-    export default defineComponent<Data, Methods, Computed, unknown>({
+    export default defineComponent<{}, unknown, Data, Computed, Methods>({
         data: function () {
             return {
                 errorReportOpen: false
@@ -66,7 +68,7 @@
             toggleErrorReportModal() {
                 this.errorReportOpen = !this.errorReportOpen
             },
-            async sendErrorReport(errorReport) {
+            async sendErrorReport(errorReport: ErrorReportManualDetails) {
                 await this.generateErrorReport({
                     section: "dataExploration",
                     ...errorReport

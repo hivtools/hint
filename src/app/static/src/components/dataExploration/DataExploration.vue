@@ -34,26 +34,28 @@
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
 
     interface Computed {
+        [key: string]: any
         step: number,
         baselineReady: boolean,
-        baselineValid: boolean,
+        baselineValid: () => boolean,
         surveyAndProgramReady: boolean,
-        surveyAndProgramValid: boolean,
-        canProgress: boolean,
-        isUploadStep: boolean,
-        isReviewStep: boolean,
-        updatingLanguage: boolean,
-        loading: boolean
+        surveyAndProgramValid: () => boolean,
+        canProgress(): boolean,
+        isUploadStep(): boolean,
+        isReviewStep(): boolean,
+        updatingLanguage: () => boolean,
+        loading(): boolean
     }
 
     interface Methods {
+        [key: string]: any
         jump: (step: number) => void,
         next: () => void
         back: () => void
         getPlottingMetadata: (country: string) => void
     }
 
-    export default defineComponent<Methods, Computed>({
+    export default defineComponent<{}, unknown, unknown, Computed, Methods>({
         computed: {
             step: mapStateProp<StepperState, number>("stepper", state => state.activeStep),
             canProgress() {

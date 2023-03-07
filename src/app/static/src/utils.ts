@@ -28,9 +28,9 @@ import {AxiosResponse} from "axios";
 
 export type ComputedWithType<T> = () => T;
 
-export const mapStateProp = <S, T>(namespace: string | null, func: (s: S) => T): ComputedWithType<T> => {
-    return namespace && (mapState<S>(namespace, {prop: (state: S) => func(state)}) as Dict<ComputedWithType<T>>)["prop"]
-        || (mapState<S>({prop: (state: S) => func(state)}) as Dict<ComputedWithType<T>>)["prop"]
+export const mapStateProp = <S, T>(namespace: string | null, func: (s: S) => T): T => {
+    return namespace && (mapState<S>(namespace, {prop: (state: S) => func(state)}) as Dict<T>)["prop"]
+        || (mapState<S>({prop: (state: S) => func(state)}) as Dict<T>)["prop"]
 };
 
 export const mapStatePropByName = <T>(namespace: string | null, name: string): ComputedWithType<T> => {

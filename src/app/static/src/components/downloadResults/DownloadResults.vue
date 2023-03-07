@@ -105,14 +105,16 @@
     }
 
     interface Computed extends ComputedFromADRUpload, ComputedFromDownloadResults {
-        uploadingStatus: string,
+        [key: string]: any
+        uploadingStatus(): string,
         currentLanguage: Language,
         hasUploadPermission: boolean,
-        translation: Record<string, any>,
-        isPreparing: boolean
+        translation(): Record<string, any>,
+        isPreparing(): boolean
     }
 
     interface Methods {
+        [key: string]: any
         handleUploadModal: () => void
         getUserCanUpload: () => void
         getUploadFiles: () => void
@@ -131,7 +133,7 @@
         comparisonSwitch: boolean
     }
 
-    export default defineComponent<Computed, Methods, Data>({
+    export default defineComponent<{}, unknown, Data, Computed, Methods>({
         name: "downloadResults",
         data() {
             return {

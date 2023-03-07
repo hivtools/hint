@@ -19,14 +19,16 @@
     import {DataExplorationState} from "../../store/dataExploration/dataExploration";
 
     interface Methods {
+        [key: string]: any
         changeLanguage: (lang: string) => void
     }
 
     interface Computed {
+        [key: string]: any
         currentLanguage: string
     }
 
-    export default defineComponent<unknown, Methods, Computed, unknown>({
+    export default defineComponent<{}, unknown, {}, Computed, Methods>({
         computed: {
             currentLanguage: mapStateProp<DataExplorationState, string>(null,
                 (state: DataExplorationState) => state.language.toUpperCase())

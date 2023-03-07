@@ -12,12 +12,14 @@
 
 <script lang="ts">
     import {defineComponent} from "vue";
+    import type { PropType } from "vue";
     import {FilterOption, NestedFilterOption} from "../../generated";
     import {Dict, Field, GenericChartColumn, GenericChartTableColumnConfig, GenericChartTableConfig} from "../../types";
     import TableView from "../plots/table/Table.vue";
     import {format} from "d3-format";
 
     interface Props {
+        [key: string]: any
         filteredData: any[],
         columns: GenericChartColumn[],
         selectedFilterOptions: Dict<FilterOption[]>,
@@ -26,33 +28,15 @@
     }
 
     interface Computed {
-        generatedFields: Field[],
-        labelledData: any[],
-        columnsWithHierarchy: GenericChartTableColumnConfig[],
-        hierarchyColumnPaths: Dict<Dict<string>>
+        [key: string]: any
+        generatedFields(): Field[],
+        labelledData(): any[],
+        columnsWithHierarchy(): GenericChartTableColumnConfig[],
+        hierarchyColumnPaths(): Dict<Dict<string>>
     }
 
-    const props = {
-        filteredData: {
-            type: Array
-        },
-        columns: {
-            type: Array
-        },
-        selectedFilterOptions: {
-            type: Object
-        },
-        tableConfig: {
-            type: Object
-        },
-        valueFormat: {
-            type: String
-        }
-    };
-
-    export default defineComponent<unknown, unknown, Computed, Props>({
+    export default defineComponent<Props, unknown, {}, Computed>({
         name: "GenericChartTable",
-        props: props,
         computed: {
             generatedFields() {
                 return this.tableConfig.columns.map(column => {

@@ -15,6 +15,7 @@
     import {defineComponent} from "vue";
 
     interface Methods {
+        [key: string]: any
         toggle: () => void
         close: () => void
     }
@@ -24,14 +25,14 @@
     }
 
     interface Props {
+        [key: string]: any
         text: string
         right: boolean
         delay: boolean
     }
 
-    export default defineComponent<Data, Methods, unknown, keyof Props>({
-        props: ["text", "right", "delay"],
-        data(): Data {
+    export default defineComponent<Props, unknown, Data, {}, Methods>({
+        data() {
             return {
                 show: false
             }

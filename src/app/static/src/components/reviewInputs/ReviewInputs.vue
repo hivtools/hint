@@ -144,7 +144,7 @@
         name: "ReviewInputs",
         data: () => {
             return {
-                areaFilterId: "area",
+                areaFilterId: "",
                 selectedTab: Tab.Map
             };
         },

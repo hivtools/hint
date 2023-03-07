@@ -12,45 +12,46 @@
     import type { PropType } from "vue";
     import DownloadButton from "./DownloadButton.vue";
     import {DownloadIndicatorPayload} from "../../types";
-    import {appendCurrentDateTime, mapActionByName, mapStateProps} from "../../utils";
+    import {appendCurrentDateTime, mapActionByName, mapStateProp} from "../../utils";
     import {BaselineState} from "../../store/baseline/baseline";
     import {DownloadIndicatorState} from "../../store/downloadIndicator/downloadIndicator";
 
     const namespace = "downloadIndicator";
 
     interface Methods {
+        [key: string]: any
         download: () => void
         downloadFile: (data: DownloadIndicatorPayload) => void
     }
 
     interface Props {
+        [key: string]: any
         filteredData: unknown[] | null
         unfilteredData: unknown[]
     }
 
     interface Computed {
+        [key: string]: any
         iso3: string
         country: string
         downloadingIndicator: boolean
     }
 
-    export default defineComponent({
+    export default defineComponent<Props, unknown, unknown, Computed, Methods>({
         name: "downloadIndicator",
         components: {
             DownloadButton
         },
-        props: {
-            unfilteredData: Array as PropType<unknown[] | null>,
-            filteredData: Array as PropType<unknown[]>
-        },
         computed: {
-            ...mapStateProps<BaselineState, keyof Computed>("baseline", {
-                iso3: state => state.iso3,
-                country: state => state.country
-            }),
-            ...mapStateProps<DownloadIndicatorState, keyof Computed>(namespace, {
-                downloadingIndicator: state => state.downloadingIndicator
-            })
+            iso3: mapStateProp<BaselineState, string>("baseline", 
+                state => state.iso3
+            ),
+            country: mapStateProp<BaselineState, string>("baseline", 
+                state => state.country
+            ),
+            downloadingIndicator: mapStateProp<DownloadIndicatorState, boolean>(namespace, 
+                state => state.downloadingIndicator
+            )
         },
         methods: {
             download() {

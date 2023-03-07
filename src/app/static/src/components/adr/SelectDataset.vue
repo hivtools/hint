@@ -6,10 +6,10 @@
                   id="selectedDatasetSpan">
             </span>
             <a v-if="releaseName" :href="releaseURL" target="_blank">
-                {{ selectedDataset.title }} — {{ releaseName }}
+                {{ (selectedDataset as Dataset).title }} — {{ releaseName }}
             </a>
-            <a v-else :href="selectedDataset.url" target="_blank">
-                {{ selectedDataset.title }}
+            <a v-else :href="(selectedDataset as Dataset).url" target="_blank">
+                {{ (selectedDataset as Dataset).title }}
             </a>
             <span class="color-red">
                 <info-icon size="20"
@@ -123,6 +123,7 @@
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
 
     interface Methods {
+        [key: string]: any;
         getDatasets: () => void;
         getDataset: (payload: GetDatasetPayload) => void;
         importDataset: () => void;
@@ -148,24 +149,25 @@
     }
 
     interface Computed {
+        [key: string]: any;
         datasets: any[];
         selectedRelease: Release | null;
-        releaseName: string | null;
-        releaseURL: string;
+        releaseName(): string | null;
+        releaseURL(): string;
         fetchingDatasets: boolean;
         adrError: Error | null;
-        datasetOptions: any[];
+        datasetOptions(): any[];
         selectedDataset: Dataset | null;
-        selectText: string;
-        outOfDateMessage: string;
-        outOfDateResources: { [k in keyof DatasetResourceSet]?: true };
+        selectText(): string;
+        outOfDateMessage(): string;
+        outOfDateResources(): { [k in keyof DatasetResourceSet]?: true };
         hasShapeFile: boolean;
         currentLanguage: Language;
-        select: string;
-        disableImport: boolean;
+        select(): string;
+        disableImport(): boolean;
         hasPjnzFile: boolean;
         hasPopulationFile: boolean;
-        selectedDatasetAvailableResources: { [k in keyof DatasetResourceSet]?: DatasetResource | null }
+        selectedDatasetAvailableResources: () => { [k in keyof DatasetResourceSet]?: DatasetResource | null }
         selectedDatasetIsRefreshed: boolean
     }
 
@@ -191,7 +193,7 @@
 
     const namespace = "adr";
 
-    export default defineComponent<Computed, Methods, Data>({
+    export default defineComponent<{}, unknown, Data, Computed, Methods>({
         extends: ResetConfirmationMixin,
         data() {
             return {
@@ -253,13 +255,18 @@
             ),
             selectedDatasetAvailableResources: mapGetterByName("baseline", "selectedDatasetAvailableResources"),
             releaseName() {
-                return this.selectedRelease?.name || null;
+                return (this.selectedRelease as Release | null)?.name || null;
             },
             releaseURL() {
-                return new URL(this.selectedDataset!.url).origin + '/dataset/' + this.selectedDataset!.id + '?activity_id=' + this.selectedRelease!.activity_id;
+                const selRelease = this.selectedRelease as Release | null
+                const selDataset = this.selectedDataset as Dataset | null
+                // TODO this was selRelease!.url however there is no URL
+                // prop in Release, was this a typo and actually meant to be
+                // selected database like implemented below?
+                return new URL(selDataset!.url).origin + '/dataset/' + selRelease!.id + '?activity_id=' + selRelease!.activity_id;
             },
             datasetOptions() {
-                return this.datasets.map((d) => ({
+                return (this.datasets as any[]).map((d) => ({
                     id: d.id,
                     label: d.title,
                     customLabel: `${d.title}
@@ -280,7 +287,7 @@
                 if (!this.selectedDataset) {
                     return {};
                 }
-                const resources = this.selectedDataset.resources;
+                const resources = (this.selectedDataset as Dataset).resources;
                 const outOfDateResources: {
                     [k in keyof DatasetResourceSet]?: true;
                 } = {};
@@ -379,7 +386,7 @@
                     survey,
                     program,
                     anc,
-                } = this.selectedDataset!.resources;
+                } = (this.selectedDataset as Dataset)!.resources;
                 await Promise.all([
                     this.outOfDateResources["pjnz"] &&
                     pjnz &&
@@ -426,8 +433,8 @@
                 }
             },
             preSelectDataset() {
-                const selectedDatasetId = this.selectedDataset?.id
-                if (selectedDatasetId && this.datasets.some(dataset => dataset.id === selectedDatasetId)) {
+                const selectedDatasetId = (this.selectedDataset as Dataset)?.id
+                if (selectedDatasetId && (this.datasets as any[]).some((dataset: any) => dataset.id === selectedDatasetId)) {
                     this.newDatasetId = selectedDatasetId;
                 }
             },
@@ -448,7 +455,7 @@
                 this.open = false;
             },
             startPolling() {
-                if (!this.selectedDataset?.release) {
+                if (!(this.selectedDataset as Dataset)?.release) {
                     this.pollingId = window.setInterval(
                         this.refreshDatasetMetadata,
                         10000

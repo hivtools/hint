@@ -78,6 +78,7 @@
     }
 
     interface Methods {
+        [key: string]: any
         saveKey: (key: string | null) => void
         deleteKey: () => void
         add: (e: Event) => void
@@ -87,17 +88,19 @@
     }
 
     interface Computed {
+        [key: string]: any
         key: string | null
         currentLanguage: Language
-        keyText: string
+        keyText(): string
         error: Error | null
-        tooltipContent: string,
+        tooltipContent(): string,
         adrProfileUrl: string
     }
 
     const namespace = "adr";
 
-    export default defineComponent<Methods, Computed, Data>({
+    export default defineComponent<{}, unknown, Data, Computed, Methods>({
+        components: {ErrorAlert},
         data() {
             return {
                 editableKey: "",
@@ -116,7 +119,10 @@
             keyText() {
                 if (this.key) {
                     let str = ""
-                    let count = this.key.length
+                    // bug below if you replace line with
+                    // this.key.length ts will not like it
+                    // please test this out
+                    let count = this.key["length"]
                     while (count) {
                         str += "*";
                         count--;
@@ -131,8 +137,7 @@
             }
         },
         methods: {
-            ...mapActionsByNames<keyof Methods>(namespace, ["saveKey", "deleteKey"]),
-            add(e: Event) {
+            add(e: Event): void {
                 e.preventDefault();
                 this.editing = true;
                 this.editableKey = this.key;
@@ -140,21 +145,21 @@
                     (this.$refs["keyInput"] as HTMLInputElement).focus();
                 })
             },
-            remove(e: Event) {
+            remove(e: Event): void {
                 this.deleteKey();
                 e.preventDefault();
             },
-            save(e: Event) {
+            save(e: Event): void {
                 e.preventDefault();
                 this.saveKey(this.editableKey);
                 this.editing = false;
             },
-            cancel(e: Event) {
+            cancel(e: Event): void {
                 e.preventDefault();
                 this.editing = false;
-            }
+            },
+            ...mapActionsByNames<"saveKey" | "deleteKey">(namespace, ["saveKey", "deleteKey"]),
         },
-        components: {ErrorAlert},
         directives: {"tooltip": VTooltip}
     });
 

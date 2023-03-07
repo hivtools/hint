@@ -23,11 +23,13 @@
 </template>
 
 <script lang="ts">
+    import { defineComponent } from "vue";
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin"
     import {Step} from "../../types";
 
     interface Methods {
+        [key: string]: any
         handleFileSelect: () => void
         uploadSelectedFile: () => void
         cancelEdit: () => void
@@ -39,20 +41,16 @@
     }
 
     interface Props {
+        [key: string]: any
         upload: (formData: FormData) => void,
         accept: string,
         name: string,
         uploading: boolean
     }
 
-    export default ResetConfirmationMixin.extend<Data, Methods, unknown, Props>({
-        props: {
-            "upload": Function,
-            "accept": String,
-            "name": String,
-            "uploading": Boolean
-        },
-        data(): Data {
+    export default defineComponent<Props, unknown, Data, {}, Methods>({
+        extends: ResetConfirmationMixin,
+        data() {
             return {
                 showUploadConfirmation: false,
                 modelOptions: Step.ModelOptions

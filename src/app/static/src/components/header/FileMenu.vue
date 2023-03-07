@@ -64,6 +64,7 @@
     }
 
     interface Methods {
+        [key: string]: any
         save: (e: Event) => void;
         loadJson: () => void;
         loadZip: () => void;
@@ -78,9 +79,15 @@
     }
 
     interface Computed {
+        [key: string]: any
         baselineFiles: BaselineFiles
         surveyAndProgramFiles: SurveyAndProgramFiles,
-        isGuest: boolean
+        isGuest: () => boolean
+    }
+
+    interface Props {
+        [key: string]: any
+        title: string
     }
 
     interface BaselineFiles {
@@ -99,9 +106,8 @@
         return file ? {hash: file.hash, filename: file.filename} : null
     };
 
-    export default defineComponent<Data, Methods, Computed, "title">({
-        props: ["title"],
-        data(): Data {
+    export default defineComponent<Props, unknown, Data, Computed, Methods>({
+        data() {
             return {
                 projectNameJson: false,
                 projectNameZip: false,

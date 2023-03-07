@@ -10,32 +10,26 @@
 </template>
 
 <script lang="ts">
-    import {DatasetConfig, DataSourceConfig} from "../../../types";
     import {defineComponent} from "vue";
+    import {DatasetConfig, DataSourceConfig} from "../../../types";
 
     interface Props {
+        [key: string]: any
         config: DataSourceConfig,
         datasets: DatasetConfig[],
         value: string
     }
 
     interface Computed {
-        selected: string
+        [key: string]: any
+        selected: {
+            get(): string
+            set: Function
+        }
     }
 
-    export default defineComponent<unknown, unknown, Computed, Props>( {
+    export default defineComponent<Props, unknown, {}, Computed>({
         name: "DataSource",
-        props: {
-            config: {
-                type: Object
-            },
-            datasets: {
-                type: Array
-            },
-            value: {
-                type: String
-            }
-        },
         computed: {
             selected: {
                 get() {

@@ -92,6 +92,7 @@
     import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
 
     interface Methods {
+        [key: string]: any
         uploadFilesToADRAction: (selectedUploadFiles: { uploadFiles: UploadFile[], createRelease: boolean }) => void;
         confirmUpload: () => void;
         handleCancel: () => void
@@ -110,12 +111,13 @@
     }
 
     interface Computed extends ComputedFromDownloadResults{
+        [key: string]: any
         dataset: string | undefined,
         uploadableFiles: Dict<UploadFile>,
-        uploadFileSections: Array<Dict<UploadFile>>
+        uploadFileSections(): Array<Dict<UploadFile>>
         currentLanguage: Language;
-        createRelease: boolean
-        outputFileError:  string | null
+        createRelease(): boolean
+        outputFileError():  string | null
     }
 
     interface Data {
@@ -127,7 +129,7 @@
     const outputFileTypes = ["outputZip", "outputSummary", "outputComparison"];
     const inputFileTypes = ["anc", "programme", "pjnz", "population", "shape", "survey"];
 
-    export default defineComponent<Methods, Computed, Data>({
+    export default defineComponent<{}, unknown, Data, Computed, Methods>({
         name: "UploadModal",
         data(): Data {
             return {
