@@ -14,7 +14,10 @@ export interface DownloadResultsActions {
     prepareComparisonOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareOutputs: (store: ActionContext<DownloadResultsState, RootState>) => void
     poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: string) => void
-    downloadComparisonReport: (store: ActionContext<DownloadResultsState, RootState>) => Promise<any>
+    downloadComparisonReport: (store: ActionContext<DownloadResultsState, RootState>) => void
+    downloadSpectrumOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
+    downloadSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => void
+    downloadCoarseOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
 }
 
 export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResultsActions = {
@@ -31,14 +34,38 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async downloadComparisonReport(context) {
         const {state, commit} = context
-        const response = await api(context)
+        commit({type: DownloadResultsMutation.ComparisonDownloadError, payload: null})
+        await api(context)
             .ignoreSuccess()
             .withError(DownloadResultsMutation.ComparisonDownloadError)
             .download(`download/result/${state.comparison.downloadId}`)
+    },
 
-        if (response) {
-            commit({type: DownloadResultsMutation.ComparisonDownloadError, payload: null})
-        }
+    async downloadSpectrumOutput(context) {
+        const {state, commit} = context
+        commit({type: DownloadResultsMutation.SpectrumOutputDownloadError, payload: null})
+        await api(context)
+            .ignoreSuccess()
+            .withError(DownloadResultsMutation.SpectrumOutputDownloadError)
+            .download(`download/result/${state.spectrum.downloadId}`)
+    },
+
+    async downloadSummaryReport(context) {
+        const {state, commit} = context
+        commit({type: DownloadResultsMutation.SummaryOutputDownloadError, payload: null})
+        await api(context)
+            .ignoreSuccess()
+            .withError(DownloadResultsMutation.SummaryOutputDownloadError)
+            .download(`download/result/${state.summary.downloadId}`)
+    },
+
+    async downloadCoarseOutput(context) {
+        const {state, commit} = context
+        commit({type: DownloadResultsMutation.CoarseOutputDownloadError, payload: null})
+        await api(context)
+            .ignoreSuccess()
+            .withError(DownloadResultsMutation.CoarseOutputDownloadError)
+            .download(`download/result/${state.coarseOutput.downloadId}`)
     },
 
     async prepareCoarseOutput(context) {
