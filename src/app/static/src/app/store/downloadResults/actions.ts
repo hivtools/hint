@@ -34,50 +34,38 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async downloadComparisonReport(context) {
         const {state, commit} = context
-        const response = await api(context)
+        commit({type: DownloadResultsMutation.ComparisonDownloadError, payload: null})
+        await api(context)
             .ignoreSuccess()
             .withError(DownloadResultsMutation.ComparisonDownloadError)
             .download(`download/result/${state.comparison.downloadId}`)
-
-        if (response) {
-            commit({type: DownloadResultsMutation.ComparisonDownloadError, payload: null})
-        }
     },
 
     async downloadSpectrumOutput(context) {
         const {state, commit} = context
-        const response = await api(context)
+        commit({type: DownloadResultsMutation.SpectrumOutputDownloadError, payload: null})
+        await api(context)
             .ignoreSuccess()
             .withError(DownloadResultsMutation.SpectrumOutputDownloadError)
             .download(`download/result/${state.spectrum.downloadId}`)
-
-        if (response) {
-            commit({type: DownloadResultsMutation.SpectrumOutputDownloadError, payload: null})
-        }
     },
 
     async downloadSummaryReport(context) {
         const {state, commit} = context
-        const response = await api(context)
+        commit({type: DownloadResultsMutation.SummaryOutputDownloadError, payload: null})
+        await api(context)
             .ignoreSuccess()
             .withError(DownloadResultsMutation.SummaryOutputDownloadError)
             .download(`download/result/${state.summary.downloadId}`)
-
-        if (response) {
-            commit({type: DownloadResultsMutation.SummaryOutputDownloadError, payload: null})
-        }
     },
 
     async downloadCoarseOutput(context) {
         const {state, commit} = context
-        const response = await api(context)
+        commit({type: DownloadResultsMutation.CoarseOutputDownloadError, payload: null})
+        await api(context)
             .ignoreSuccess()
             .withError(DownloadResultsMutation.CoarseOutputDownloadError)
             .download(`download/result/${state.coarseOutput.downloadId}`)
-
-        if (response) {
-            commit({type: DownloadResultsMutation.CoarseOutputDownloadError, payload: null})
-        }
     },
 
     async prepareCoarseOutput(context) {

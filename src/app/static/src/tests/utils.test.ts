@@ -73,9 +73,7 @@ describe("utils", () => {
         })
 
         //trigger download
-        const response = readStream(mockAxiosResponse)
-
-        expect(response).toEqual(mockAxiosResponse.data)
+        readStream(mockAxiosResponse)
 
         expect(document.body.appendChild).toBeCalledTimes(1)
         expect(window.URL.createObjectURL).toBeCalledTimes(1)

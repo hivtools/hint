@@ -1067,11 +1067,15 @@ const rendersDownloadErrorAsExpected = async (action: Function, mutationType: st
 
     expect(mockAxios.history.get[0].url).toBe("download/result/1");
 
-    expect(commit.mock.calls.length).toBe(1);
+    expect(commit.mock.calls.length).toBe(2);
 
     expect(commit.mock.calls[0][0]["type"]).toBe(mutationType)
 
-    expect(commit.mock.calls[0][0]["payload"]).toEqual(
+    expect(commit.mock.calls[0][0]["payload"]).toBeNull()
+
+    expect(commit.mock.calls[1][0]["type"]).toBe(mutationType)
+
+    expect(commit.mock.calls[1][0]["payload"]).toEqual(
         {
             detail: "error",
             error: "OTHER_ERROR"

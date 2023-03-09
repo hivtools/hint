@@ -486,8 +486,6 @@ export const readStream = (response: AxiosResponse) => {
     document.body.appendChild(fileLink);
     fileLink.click()
     URL.revokeObjectURL(fileUrl)
-
-    return response.data
 }
 
 export const extractFilenameFrom = (contentDisposition: string): string => {

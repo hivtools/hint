@@ -7,18 +7,21 @@
                               @click="downloadSpectrumOutput"
                               :disabled="!spectrum.downloadId || spectrum.preparing"
                               :file="spectrum"/>
+                    <error-alert v-if="spectrum.downloadError" :error="spectrum.downloadError"></error-alert>
                 </div>
                 <div id="coarse-output-download">
                     <download :translate-key="translation.coarse"
                               @click="downloadCoarseOutput"
                               :disabled="!coarseOutput.downloadId || coarseOutput.preparing"
                               :file="coarseOutput"/>
+                    <error-alert v-if="coarseOutput.downloadError" :error="coarseOutput.downloadError"></error-alert>
                 </div>
                 <div id="summary-download">
                     <download :translate-key="translation.summary"
                               @click="downloadSummaryReport"
                               :disabled="!summary.downloadId || summary.preparing"
                               :file="summary"/>
+                    <error-alert v-if="summary.downloadError" :error="summary.downloadError"></error-alert>
                 </div>
                 <div id="comparison-download" v-if="comparisonSwitch">
                     <download :translate-key="translation.comparison"
