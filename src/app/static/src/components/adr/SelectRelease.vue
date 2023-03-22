@@ -45,12 +45,10 @@
             :disabled="!useRelease"
             v-model="releaseId"
         >
-            <label
-                slot="option-label"
-                slot-scope="{ node }"
-                v-html="node.raw.customLabel"
-            >
+        <template v-slot:option-label="{node}">
+            <label v-html="node.raw.customLabel">
             </label>
+        </template>
         </tree-select>
     </div>
 </template>
