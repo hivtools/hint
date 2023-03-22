@@ -1,5 +1,5 @@
 <template>
-    <div id="selectRelease" v-if="datasetId && releases.length">
+    <div id="selectRelease" v-if="datasetId && (releases as Release[]).length">
         <div class="pt-2">
             <input
                 type="radio"
@@ -57,7 +57,6 @@
 
 <script lang="ts">
     import {defineComponent} from "vue";
-    import type { PropType } from "vue";
     import { mapActionByName, mapStateProp, mapMutationByName } from "../../utils";
     import TreeSelect from "vue3-treeselect";
     import { ADRState } from "../../store/adr/adr";
@@ -75,39 +74,37 @@
         choiceADR: "useLatest" | "useRelease";
     }
 
-    // interface Methods {
-    //     getReleases: (id: string) => void;
-    //     clearReleases: () => void;
-    //     translate(text: string): string;
-    //     preSelectRelease: () => void;
-    // }
+    interface Methods {
+        [key: string]: any
+        getReleases: (id: string) => void;
+        clearReleases: () => void;
+        translate(text: string): string;
+        preSelectRelease: () => void;
+    }
 
-    // interface Computed {
-    //     releases: Release[];
-    //     initialRelease: string | undefined;
-    //     valid: boolean;
-    //     releaseOptions: any[];
-    //     useRelease: boolean;
-    //     currentLanguage: Language;
-    // }
+    interface Computed {
+        [key: string]: any
+        releases: Release[]
+        initialRelease: string | undefined
+        valid(): boolean;
+        releaseOptions(): any[];
+        useRelease(): boolean
+        currentLanguage: Language
+    }
 
-    // interface Props {
-    //     datasetId: string | null;
-    //     open: boolean;
-    // }
+    interface Props {
+        datasetId: string | null;
+        open: boolean;
+    }
 
     const namespace = "adr";
 
-    export default defineComponent({
+    export default defineComponent<Props, unknown, Data, Computed, Methods>({
         components: {
             TreeSelect,
             HelpCircleIcon,
         },
-        props: {
-            datasetId: String as PropType<string | null>,
-            open: Boolean
-        },
-        data(): Data {
+        data() {
             return {
                 releaseId: undefined,
                 choiceADR: "useLatest",
@@ -126,7 +123,7 @@
                 return (this.choiceADR === "useLatest") || !!this.releaseId;
             },
             releaseOptions() {
-                return this.releases.map((d) => ({
+                return (this.releases as Release[]).map((d) => ({
                     id: d.id,
                     label: d.name,
                 customLabel: `${d.name}
@@ -149,12 +146,12 @@
                 return i18next.t(text, { lng: this.currentLanguage });
             },
             clearReleases: mapMutationByName(namespace, ADRMutation.ClearReleases),
-            preSelectRelease(){
+            preSelectRelease() {
                 const selectedReleaseId = this.initialRelease
-                if (selectedReleaseId && this.releases.some(release => release.id === selectedReleaseId)){
+                if (selectedReleaseId && (this.releases as Release[]).some(release => release.id === selectedReleaseId)){
                     this.choiceADR = "useRelease"
                     this.releaseId = selectedReleaseId;
-                } else if (selectedReleaseId && !this.releases.some(release => release.id === selectedReleaseId)) {
+                } else if (selectedReleaseId && !(this.releases as Release[]).some(release => release.id === selectedReleaseId)) {
                     this.choiceADR = "useLatest"
                 }
             }
@@ -173,21 +170,21 @@
                 }
             },
             releaseId() {
-                this.$emit("selected-dataset-release", this.releases.find(release => release.id === this.releaseId))
+                this.$emit("selected-dataset-release", (this.releases as Release[]).find(release => release.id === this.releaseId))
             },
             valid() {
                 this.$emit("valid", this.valid);
             },
-            releases(){
+            releases() {
                 this.preSelectRelease();
             },
-            open(){
+            open() {
                 if (this.open && this.datasetId){
                     this.getReleases(this.datasetId);
                 }
             }
         },
-        mounted(){
+        mounted() {
             this.preSelectRelease();
             this.$emit("selected-dataset-release", this.releaseId);
             this.$emit("valid", this.valid);
