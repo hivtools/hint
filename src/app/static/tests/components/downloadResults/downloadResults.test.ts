@@ -1,5 +1,5 @@
-import {createLocalVue, shallowMount, mount, Wrapper} from '@vue/test-utils';
-import Vuex from 'vuex';
+import {createLocalVue, shallowMount, mount} from '@vue/test-utils';
+import Vuex, {Store} from 'vuex';
 import {
     mockADRState,
     mockADRUploadState, mockDownloadResultsDependency,
@@ -8,7 +8,7 @@ import {
 } from "../../mocks";
 import DownloadResults from "../../../app/components/downloadResults/DownloadResults.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {emptyState} from "../../../app/root";
+import {emptyState, RootState} from "../../../app/root";
 import {expectTranslated} from "../../testHelpers";
 import UploadModal from "../../../app/components/downloadResults/UploadModal.vue";
 import {DownloadResultsState} from "../../../app/store/downloadResults/downloadResults";
@@ -16,14 +16,18 @@ import Download from "../../../app/components/downloadResults/Download.vue";
 import {ADRState} from "../../../app/store/adr/adr";
 import {ADRUploadState} from "../../../app/store/adrUpload/adrUpload";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
-import spyOn = jest.spyOn;
 
 const localVue = createLocalVue();
 
 describe("Download Results component", () => {
 
+    const error = {error: "ERR", detail: "download report error"}
+
     const mockPrepareOutputs = jest.fn();
     const mockDownloadComparisonReport = jest.fn()
+    const mockDownloadSpectrumReport = jest.fn()
+    const mockDownloadCoarseReport = jest.fn()
+    const mockDownloadSummaryReport = jest.fn()
 
     afterEach(() => {
         jest.useRealTimers();
@@ -68,7 +72,10 @@ describe("Download Results component", () => {
                     state: mockDownloadResultsState(downloadResults),
                     actions: {
                         prepareOutputs: mockPrepareOutputs,
-                        downloadComparisonReport: mockDownloadComparisonReport
+                        downloadComparisonReport: mockDownloadComparisonReport,
+                        downloadSpectrumOutput: mockDownloadSpectrumReport,
+                        downloadSummaryReport: mockDownloadSummaryReport,
+                        downloadCoarseOutput: mockDownloadCoarseReport
                     }
                 }
             }
@@ -295,7 +302,8 @@ describe("Download Results component", () => {
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
         const button = wrapper.find("#spectrum-download").find("button");
         expect(button.attributes().disabled).toBeUndefined();
-        downloadFile(button);
+        button.trigger("click");
+        expect(mockDownloadSpectrumReport).toHaveBeenCalled()
     });
 
     it("cannot download summary report while preparing", () => {
@@ -331,7 +339,8 @@ describe("Download Results component", () => {
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
         const button = wrapper.find("#summary-download").find("button");
         expect(button.attributes().disabled).toBeUndefined();
-        downloadFile(button);
+        button.trigger("click");
+        expect(mockDownloadSummaryReport).toHaveBeenCalled()
     });
 
     it("cannot download coarse output while preparing", () => {
@@ -367,7 +376,8 @@ describe("Download Results component", () => {
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
         const button = wrapper.find("#coarse-output-download").find("button");
         expect(button.attributes().disabled).toBeUndefined();
-        downloadFile(button);
+        button.trigger("click");
+        expect(mockDownloadCoarseReport).toHaveBeenCalled()
     });
 
     it("cannot download comparison output while preparing", async () => {
@@ -463,14 +473,56 @@ describe("Download Results component", () => {
         shallowMount(DownloadResults, {store});
         expect(spy).toHaveBeenCalledTimes(1)
     });
+
+    it("can display error message for summary download file when errored", async () => {
+        const store = createStore({}, jest.fn(), {}, {
+            summary: mockDownloadResultsDependency({
+                preparing: false,
+                complete: true,
+                error,
+                downloadId: "123"
+            })
+        });
+
+        rendersReportDownloadErrors(store, "#summary-download")
+    });
+
+    it("can display error message for spectrum download file when errored", async () => {
+        const store = createStore({}, jest.fn(), {}, {
+            spectrum: mockDownloadResultsDependency({
+                preparing: false,
+                complete: true,
+                error,
+                downloadId: "123"
+            })
+        });
+
+        rendersReportDownloadErrors(store, "#spectrum-download")
+    });
+
+    it("can display error message for summary download file when errored", async () => {
+        const store = createStore({}, jest.fn(), {}, {
+            coarseOutput: mockDownloadResultsDependency({
+                preparing: false,
+                complete: true,
+                error,
+                downloadId: "123"
+            })
+        });
+
+        rendersReportDownloadErrors(store, "#coarse-output-download")
+    });
 });
 
-const downloadFile = (button: Wrapper<any>) => {
-    const realLocation = window.location
-    delete (window as any).location
-    window.location = {...window.location, assign: jest.fn()};
-    button.trigger("click");
-    expect(window.location.assign).toHaveBeenCalledTimes(1)
-    expect(window.location.assign).toHaveBeenCalledWith("/download/result/123")
-    window.location = realLocation
+const rendersReportDownloadErrors = (store: Store<RootState>, downloadType: string) => {
+    const error = {error: "ERR", detail: "download report error"}
+    const wrapper = mount(DownloadResults,
+        {
+            store, stubs: ["upload-modal"]
+        });
+    const downloadComponent = wrapper.find(downloadType);
+    const button = downloadComponent.find(downloadType).find("button");
+    expect(button.attributes().disabled).toBeUndefined();
+    expect(downloadComponent.find(ErrorAlert).exists()).toBeTruthy()
+    expect(downloadComponent.find(ErrorAlert).props("error")).toEqual(error)
 }

@@ -130,6 +130,14 @@ describe(`download Results actions`, () => {
         });
     });
 
+    it("renders summary report download error", async () => {
+        await rendersDownloadErrorAsExpected(actions.downloadSummaryReport, "SummaryOutputDownloadError")
+    });
+
+    it("downloads summary report", async () => {
+        await downloadReportAsExpected(actions.downloadSummaryReport, "SummaryOutputDownloadError")
+    });
+
     it("gets adr upload metadata if summary status is done", (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -352,6 +360,14 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
+    it("renders spectrum report download error", async () => {
+        await rendersDownloadErrorAsExpected(actions.downloadSpectrumOutput, "SpectrumOutputDownloadError")
+    });
+
+    it("downloads spectrum report", async () => {
+        await downloadReportAsExpected(actions.downloadSpectrumOutput, "SpectrumOutputDownloadError")
+    });
+
     it("gets adr upload metadata if spectrum status is done",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -562,6 +578,15 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
+
+    it("renders coarseOutput report download error", async () => {
+        await rendersDownloadErrorAsExpected(actions.downloadCoarseOutput, "CoarseOutputDownloadError")
+    });
+
+    it("downloads coarseOutput report", async () => {
+        await downloadReportAsExpected(actions.downloadCoarseOutput, "CoarseOutputDownloadError")
+    });
+
     it("does get adr upload metadata error for coarseOutput if metadata request is successful",  (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -763,29 +788,12 @@ describe(`download Results actions`, () => {
         expect(commit.mock.calls.length).toBe(0);
     });
 
-    it("download comparison report", async () => {
-        const commit = jest.fn();
+    it("renders comparison report download error", async () => {
+        await rendersDownloadErrorAsExpected(actions.downloadComparisonReport, "ComparisonDownloadError")
+    });
 
-        const root = mockRootState({
-            modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
-        });
-
-        const state = mockDownloadResultsState({
-            comparison: mockDownloadResultsDependency({downloadId: "1"})
-        });
-
-        await actions.downloadComparisonReport({commit, state, rootState: root} as any,);
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0]["type"]).toBe("errors/ErrorAdded")
-        expect(commit.mock.calls[0][0]["payload"]).toEqual(
-            {
-                detail: "Could not parse API response. Please contact support.",
-                error: "MALFORMED_RESPONSE"
-            }
-        )
-        expect(mockAxios.history.get.length).toBe(1);
-
-        expect(mockAxios.history.get[0]["url"]).toBe("download/result/1");
+    it("downloads comparison report", async () => {
+        await downloadReportAsExpected(actions.downloadComparisonReport, "ComparisonDownloadError")
     });
 
     it("prepare comparison does not do anything if fetchingDownloadId is set", async () => {
@@ -1004,3 +1012,90 @@ describe(`download Results actions`, () => {
         expect(dispatch.mock.calls[3][0]).toBe("prepareComparisonOutput");
     });
 });
+
+const downloadReportAsExpected = async (action: Function, mutationType: string) => {
+
+    window.URL.createObjectURL = jest.fn().mockReturnValueOnce("test");
+    window.URL.revokeObjectURL = jest.fn();
+    document.body.appendChild = jest.fn()
+
+    const data = new Blob(["test"], {type: "text/html"});
+
+    const mockClick = jest.fn()
+    const mockHref = jest.fn()
+    const mockAttr = jest.fn()
+
+    document.createElement = jest.fn().mockImplementation(() => {
+        return {
+            setAttribute: mockAttr,
+            href: mockHref,
+            click: mockClick
+        }
+    })
+
+    mockAxios.onGet(`/download/result/1`)
+        .reply(200,
+            mockSuccess(data),
+            {"content-disposition": "attachment; filename=test.html"});
+
+    const { commit, state, root } = downloadContext()
+
+    await action({commit, state, rootState: root} as any)
+
+    expect(mockAxios.history.get.length).toBe(1);
+
+    expect(mockAxios.history.get[0].url).toBe("download/result/1");
+
+    expect(commit.mock.calls.length).toBe(1);
+
+    expect(commit.mock.calls[0][0]["type"]).toBe(mutationType)
+
+    expect(commit.mock.calls[0][0]["payload"]).toBeNull()
+}
+
+
+const rendersDownloadErrorAsExpected = async (action: Function, mutationType: string) => {
+
+    mockAxios.onGet(`/download/result/1`)
+        .reply(400, mockFailure("error"));
+
+    const { commit, state, root } = downloadContext()
+
+    await action({commit, state, rootState: root} as any)
+
+    expect(mockAxios.history.get.length).toBe(1);
+
+    expect(mockAxios.history.get[0].url).toBe("download/result/1");
+
+    expect(commit.mock.calls.length).toBe(2);
+
+    expect(commit.mock.calls[0][0]["type"]).toBe(mutationType)
+
+    expect(commit.mock.calls[0][0]["payload"]).toBeNull()
+
+    expect(commit.mock.calls[1][0]["type"]).toBe(mutationType)
+
+    expect(commit.mock.calls[1][0]["payload"]).toEqual(
+        {
+            detail: "error",
+            error: "OTHER_ERROR"
+        }
+    )
+}
+
+const downloadContext = () => {
+    const commit = jest.fn();
+
+    const root = mockRootState({
+        modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
+    });
+
+    const state = mockDownloadResultsState({
+        comparison: mockDownloadResultsDependency({downloadId: "1"}),
+        summary: mockDownloadResultsDependency({downloadId: "1"}),
+        coarseOutput: mockDownloadResultsDependency({downloadId: "1"}),
+        spectrum: mockDownloadResultsDependency({downloadId: "1"})
+    });
+
+    return {commit, root, state}
+}

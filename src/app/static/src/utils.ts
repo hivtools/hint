@@ -477,7 +477,7 @@ export const flatMapControlSections = (sections: DynamicControlSection[]): Dynam
     return sections.reduce<DynamicControlGroup[]>((groups, group) => groups.concat(group.controlGroups), [])
 }
 
-export const readStream = (response: AxiosResponse): void => {
+export const readStream = (response: AxiosResponse) => {
     const filename = extractFilenameFrom(response.headers["content-disposition"])
     const fileUrl = URL.createObjectURL(response.data);
     const fileLink = document.createElement('a');
@@ -486,7 +486,6 @@ export const readStream = (response: AxiosResponse): void => {
     document.body.appendChild(fileLink);
     fileLink.click()
     URL.revokeObjectURL(fileUrl)
-
 }
 
 export const extractFilenameFrom = (contentDisposition: string): string => {
