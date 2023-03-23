@@ -7,18 +7,27 @@
                               @click="downloadSpectrumOutput"
                               :disabled="!spectrum.downloadId || spectrum.preparing"
                               :file="spectrum"/>
+                    <div class="pb-2">
+                    <error-alert v-if="spectrum.downloadError" :error="spectrum.downloadError"></error-alert>
+                    </div>
                 </div>
                 <div id="coarse-output-download">
                     <download :translate-key="translation.coarse"
                               @click="downloadCoarseOutput"
                               :disabled="!coarseOutput.downloadId || coarseOutput.preparing"
                               :file="coarseOutput"/>
+                    <div class="pb-2">
+                        <error-alert v-if="coarseOutput.downloadError" :error="coarseOutput.downloadError"></error-alert>
+                    </div>
                 </div>
                 <div id="summary-download">
                     <download :translate-key="translation.summary"
                               @click="downloadSummaryReport"
                               :disabled="!summary.downloadId || summary.preparing"
                               :file="summary"/>
+                    <div class="pb-2">
+                    <error-alert v-if="summary.downloadError" :error="summary.downloadError"></error-alert>
+                    </div>
                 </div>
                 <div id="comparison-download" v-if="comparisonSwitch">
                     <download :translate-key="translation.comparison"
@@ -122,8 +131,6 @@
         downloadSpectrumOutput: () => void
         downloadCoarseOutput: () => void
         downloadComparisonReport: () => void
-        downloadUrl: (downloadId: string) => string
-        handleDownloadResult: (downloadResults: DownloadResultsDependency) => void
     }
 
     interface Data {
@@ -202,7 +209,10 @@
             getUserCanUpload: mapActionByName("adr", "getUserCanUpload"),
             getUploadFiles: mapActionByName("adrUpload", "getUploadFiles"),
             prepareOutputs: mapActionByName("downloadResults", "prepareOutputs"),
-            downloadComparisonReport: mapActionByName("downloadResults", "downloadComparisonReport")
+            downloadComparisonReport: mapActionByName("downloadResults", "downloadComparisonReport"),
+            downloadSpectrumOutput: mapActionByName("downloadResults", "downloadSpectrumOutput"),
+            downloadSummaryReport: mapActionByName("downloadResults", "downloadSummaryReport"),
+            downloadCoarseOutput: mapActionByName("downloadResults", "downloadCoarseOutput")
         },
         mounted() {
             this.getUserCanUpload();
