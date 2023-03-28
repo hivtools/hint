@@ -14,7 +14,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {LControl} from 'vue2-leaflet';
+    import {LControl} from "@vue-leaflet/vue-leaflet";
     import {mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {RefreshCwIcon} from "vue-feather";

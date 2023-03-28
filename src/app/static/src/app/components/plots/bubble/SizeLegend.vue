@@ -27,7 +27,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {LControl} from "vue2-leaflet";
+    import {LControl} from "@vue-leaflet/vue-leaflet";
     import {getRadius} from "./utils";
     import {NumericRange} from "../../../types";
     import numeral from "numeral";

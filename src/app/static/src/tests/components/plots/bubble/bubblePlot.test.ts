@@ -1,6 +1,6 @@
 import {createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
 import BubblePlot from "../../../../app/components/plots/bubble/BubblePlot.vue";
-import {LCircleMarker, LGeoJson, LTooltip} from "vue2-leaflet";
+import {LCircleMarker, LGeoJson, LTooltip} from "@vue-leaflet/vue-leaflet";
 import {getFeatureIndicators, getRadius} from "../../../../app/components/plots/bubble/utils";
 import {getColor} from "../../../../app/components/plots/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
