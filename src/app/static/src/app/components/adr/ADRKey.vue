@@ -69,7 +69,7 @@
     import {Language} from "../../store/translations/locales";
     import i18next from "i18next";
     import ErrorAlert from "../ErrorAlert.vue";
-    import {VTooltip} from 'v-tooltip'
+    import {VTooltip} from "floating-vue"
     import {ADRState} from "../../store/adr/adr";
 
     interface Data {

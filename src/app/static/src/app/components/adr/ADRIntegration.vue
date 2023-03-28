@@ -18,7 +18,7 @@
     import adrKey from "./ADRKey.vue";
     import SelectDataset from "./SelectDataset.vue";
     import {ADRState} from "../../store/adr/adr";
-    import {VTooltip} from "v-tooltip";
+    import {VTooltip} from "floating-vue";
     import i18next from "i18next";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";

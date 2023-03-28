@@ -67,7 +67,7 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import {CloneProjectPayload} from "../../store/projects/actions";
     import {Share2Icon} from "vue-feather-icons";
-    import {VTooltip} from 'v-tooltip';
+    import {VTooltip} from "floating-vue";
 
     interface EmailToShareWith {
         value: string
