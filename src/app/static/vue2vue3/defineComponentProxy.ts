@@ -77,7 +77,21 @@ type ComponentObjectPropsOptions<P> = {
 //    and prop objects but since our Props type that we passed into Vue.extend
 //    already had these I just pass them into this component to bypass the
 //    ExtractPropType function that vue was using.
-type ComponentOptionsWithObjectProps<PropsOptions = ComponentObjectPropsOptions<Data>, RawBindings = {}, D = {}, C extends ComputedOptions = {}, M extends MethodOptions = {}, Mixin extends ComponentOptionsMixin = ComponentOptionsMixin, Extends extends ComponentOptionsMixin = ComponentOptionsMixin, E extends EmitsOptions = EmitsOptions, EE extends string = string, I extends ComponentInjectOptions = {}, II extends string = string, BaseProps = {}, Props = BaseProps & EmitsToProps<E>, Defaults = ExtractDefaultPropTypes<PropsOptions>> = ComponentOptionsBase<Props, RawBindings, D, C, M, Mixin, Extends, E, EE, Defaults, I, II> & {
+type ComponentOptionsWithObjectProps<
+    PropsOptions = ComponentObjectPropsOptions<Data>,
+    RawBindings = {},
+    D = {},
+    C extends ComputedOptions = {},
+    M extends MethodOptions = {},
+    Mixin extends ComponentOptionsMixin = ComponentOptionsMixin,
+    Extends extends ComponentOptionsMixin = ComponentOptionsMixin,
+    E extends EmitsOptions = EmitsOptions,
+    EE extends string = string,
+    I extends ComponentInjectOptions = {},
+    II extends string = string,
+    BaseProps = {},
+    Props = BaseProps & EmitsToProps<E>,
+    Defaults = ExtractDefaultPropTypes<PropsOptions>> = ComponentOptionsBase<Props, RawBindings, D, C, M, Mixin, Extends, E, EE, Defaults, I, II> & {
     props: PropsOptions & ThisType<void>;
 } & ThisType<CreateComponentPublicInstance<Props, RawBindings, D, C, M, Mixin, Extends, E, Props, Defaults, false, I>>;
 
@@ -95,9 +109,35 @@ type ComponentOptionsWithObjectProps<PropsOptions = ComponentObjectPropsOptions<
 // 3. For the ComponentOptionsWithObjectProps type I had to put the custom
 //    defined ComponentObjectPropsOption type around Props to get it into
 //    the correct form
-export function defineComponentVue2<D, M, C, Props = {}, RawBindings = {},  Mixin extends ComponentOptionsMixin = ComponentOptionsMixin, Extends extends ComponentOptionsMixin = ComponentOptionsMixin, E extends EmitsOptions = {}, EE extends string = string, I extends ComponentInjectOptions = {}, II extends string = string>(options: ComponentOptionsWithoutProps<Props, RawBindings, D, ComputedOptionsVue3<C>, MethodOptionsVue3<M>, Mixin, Extends, E, EE, I, II>): DefineComponent<Props, RawBindings, D, ComputedOptionsVue3<C>, MethodOptionsVue3<M>, Mixin, Extends, E, EE>
+export function defineComponentVue2<
+    D,
+    M,
+    C,
+    Props = {},
+    RawBindings = {},
+    Mixin extends ComponentOptionsMixin = ComponentOptionsMixin,
+    Extends extends ComponentOptionsMixin = ComponentOptionsMixin,
+    E extends EmitsOptions = {},
+    EE extends string = string,
+    I extends ComponentInjectOptions = {},
+    II extends string = string>(
+        options: ComponentOptionsWithoutProps<Props, RawBindings, D, ComputedOptionsVue3<C>, MethodOptionsVue3<M>, Mixin, Extends, E, EE, I, II>
+    ): DefineComponent<Props, RawBindings, D, ComputedOptionsVue3<C>, MethodOptionsVue3<M>, Mixin, Extends, E, EE>
 
-export function defineComponentVue2<D, M, C, Props, RawBindings = {}, Mixin extends ComponentOptionsMixin = ComponentOptionsMixin, Extends extends ComponentOptionsMixin = ComponentOptionsMixin, E extends EmitsOptions = {}, EE extends string = string, I extends ComponentInjectOptions = {}, II extends string = string>(options: ComponentOptionsWithObjectProps<ComponentObjectPropsOptions<Props>, RawBindings, D, ComputedOptionsVue3<C>, MethodOptionsVue3<M>, Mixin, Extends, E, EE, I, II, Props>): DefineComponent<Props, RawBindings, D, ComputedOptionsVue3<C>, MethodOptionsVue3<M>, Mixin, Extends, E, EE>;
+export function defineComponentVue2<
+    D,
+    M,
+    C,
+    Props,
+    RawBindings = {},
+    Mixin extends ComponentOptionsMixin = ComponentOptionsMixin,
+    Extends extends ComponentOptionsMixin = ComponentOptionsMixin,
+    E extends EmitsOptions = {},
+    EE extends string = string,
+    I extends ComponentInjectOptions = {},
+    II extends string = string>(
+        options: ComponentOptionsWithObjectProps<ComponentObjectPropsOptions<Props>, RawBindings, D, ComputedOptionsVue3<C>, MethodOptionsVue3<M>, Mixin, Extends, E, EE, I, II, Props>
+    ): DefineComponent<Props, RawBindings, D, ComputedOptionsVue3<C>, MethodOptionsVue3<M>, Mixin, Extends, E, EE>;
 
 // lastly this function just returns defineComponent from Vue and the
 // Options type makes sure that we can only enter component options that
