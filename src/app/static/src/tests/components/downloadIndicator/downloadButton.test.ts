@@ -1,6 +1,6 @@
 import {shallowMount} from "@vue/test-utils";
 import DownloadButton from "../../../app/components/downloadIndicator/DownloadButton.vue"
-import {DownloadIcon} from "vue-feather-icons";
+import {DownloadIcon} from "vue-feather";
 
 describe("download button", () => {
 

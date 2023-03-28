@@ -84,7 +84,7 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
-    import {HelpCircleIcon} from "vue-feather-icons";
+    import {HelpCircleIcon} from "vue-feather";
     import {VTooltip} from "floating-vue";
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";

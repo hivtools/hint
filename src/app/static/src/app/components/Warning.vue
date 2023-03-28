@@ -22,7 +22,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import { AlertTriangleIcon } from "vue-feather-icons";
+    import { AlertTriangleIcon } from "vue-feather";
     import i18next from "i18next";
     import { mapStateProp } from "../utils";
     import { RootState } from "../root";

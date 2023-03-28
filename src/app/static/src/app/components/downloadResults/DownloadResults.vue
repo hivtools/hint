@@ -79,7 +79,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {mapActionByName, mapStateProp, mapMutationByName, mapStateProps} from "../../utils";
-    import {UploadIcon} from "vue-feather-icons";
+    import {UploadIcon} from "vue-feather";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
     import LoadingSpinner from "../LoadingSpinner.vue";

@@ -11,7 +11,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {DownloadIcon} from "vue-feather-icons";
+    import {DownloadIcon} from "vue-feather";
 
     interface Props {
         disabled: boolean

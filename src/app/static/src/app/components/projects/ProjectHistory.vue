@@ -273,7 +273,7 @@
         FileTextIcon,
         RefreshCwIcon,
         Trash2Icon
-    } from "vue-feather-icons";
+    } from "vue-feather";
     import Modal from "../Modal.vue";
     import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
     import {CreateProjectPayload, projectPayload, versionPayload} from "../../store/projects/actions";

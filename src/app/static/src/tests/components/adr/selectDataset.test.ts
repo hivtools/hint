@@ -22,7 +22,7 @@ import {ADRMutation} from "../../../app/store/adr/mutations";
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {ADRSchemas} from "../../../app/types";
-import {InfoIcon} from "vue-feather-icons";
+import {InfoIcon} from "vue-feather";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslatedWithStoreType} from "../../testHelpers";
 import {ADRState} from "../../../app/store/adr/adr";
