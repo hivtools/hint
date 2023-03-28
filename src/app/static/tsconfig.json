@@ -4,18 +4,22 @@
     "sourceMap": true,
     "strict": true,
     "noImplicitReturns": true,
-    "module": "es2015",
+    "module": "ESNext",
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "ESNext",
     "experimentalDecorators": true,
     "esModuleInterop": true
   },
   "include": [
     "./src/app/**/*.ts",
     "./src/app/**/*.vue",
-    "./tests/**/*.test.ts"
-  ],
+    "./tests/**/*.test.ts",
+    "./src/app/**/*.js"
+, "src/app/defineComponentVue2.js", "src/app/defineComponentVue2.js"  ],
   "files": [
     "./vue-shims.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }

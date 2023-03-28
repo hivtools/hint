@@ -2,7 +2,7 @@ module.exports = {
     root: true,
     parser: "vue-eslint-parser",
     parserOptions: {
-        "parser": "@typescript-eslint/parser"
+        ecmaVersion: 2020
     },
     plugins: [
         "@typescript-eslint"
@@ -10,7 +10,22 @@ module.exports = {
     extends: [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
-        "plugin:vue/essential"
+        "plugin:vue/vue3-essential",
+        "@vue/typescript/recommended",
+    ],
+    env: {
+        node: true,
+    },
+    overrides: [
+        {
+          files: [
+            "**/__tests__/*.{j,t}s?(x)",
+            "**/tests/unit/**/*.spec.{j,t}s?(x)",
+          ],
+          env: {
+            jest: true,
+          },
+        },
     ],
     rules: {
         "no-prototype-builtins": "off",
