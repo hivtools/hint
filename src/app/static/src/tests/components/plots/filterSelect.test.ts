@@ -1,6 +1,6 @@
 import {shallowMount} from '@vue/test-utils';
 import FilterSelect from "../../../app/components/plots/FilterSelect.vue";
-import TreeSelect from '@riophae/vue-treeselect';
+import TreeSelect from "vue3-treeselect";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";

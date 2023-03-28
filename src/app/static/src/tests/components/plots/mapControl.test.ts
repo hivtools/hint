@@ -1,6 +1,6 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils';
 import MapControl from "../../../app/components/plots/MapControl.vue";
-import TreeSelect from '@riophae/vue-treeselect';
+import TreeSelect from "vue3-treeselect";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";

@@ -72,7 +72,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import TreeSelect from '@riophae/vue-treeselect';
+    import TreeSelect from "vue3-treeselect";
     import i18next from "i18next";
     import {mapGetters, mapMutations, mapState} from "vuex";
     import Choropleth from "../plots/choropleth/Choropleth.vue";

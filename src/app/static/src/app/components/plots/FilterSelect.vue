@@ -25,7 +25,7 @@
 <script lang="ts">
     import i18next from "i18next";
     import Vue from "vue";
-    import Treeselect from '@riophae/vue-treeselect';
+    import Treeselect from "vue3-treeselect";
     import {flattenOptions, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";

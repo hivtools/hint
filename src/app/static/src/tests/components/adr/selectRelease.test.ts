@@ -5,7 +5,7 @@ import {ADRMutation} from "../../../app/store/adr/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {mockRootState} from "../../mocks";
 import {expectTranslated} from "../../testHelpers";
-import TreeSelect from '@riophae/vue-treeselect';
+import TreeSelect from "vue3-treeselect";
 import {Language} from "../../../app/store/translations/locales";
 import {Dataset} from "../../../app/types";
 
