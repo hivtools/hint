@@ -6,6 +6,7 @@ import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.HintrAPIClient
+import org.imperial.mrc.hint.clients.OAuth2ADRFuelClient
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.md5sum
@@ -31,6 +32,7 @@ class ADRController(private val encryption: Encryption,
                     private val adrClientBuilder: ADRClientBuilder,
                     private val objectMapper: ObjectMapper,
                     private val appProperties: AppProperties,
+                    val oauth2ADRClient: OAuth2ADRFuelClient,
                     fileManager: FileManager,
                     apiClient: HintrAPIClient,
                     session: Session,
@@ -102,6 +104,12 @@ class ADRController(private val encryption: Encryption,
             val data = objectMapper.readTree(response.body!!)["data"]["results"]
             SuccessResponse(data.filter { it["resources"].count() > 0 }).asResponseEntity()
         }
+    }
+
+    @GetMapping("oauth2/orgs")
+    fun getOrgsWithPermissionWithoutADRKey(@RequestParam permission: String): ResponseEntity<String>
+    {
+        return oauth2ADRClient.get("organization_list_for_user?permission=${permission}")
     }
 
     @GetMapping("/datasets/{id}")

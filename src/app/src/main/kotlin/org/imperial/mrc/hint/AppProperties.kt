@@ -42,6 +42,7 @@ interface AppProperties
     val oauth2ClientAdrUrl: String
     val oauth2ClientAudience: String
     val oauth2LoginMethod: Boolean
+    val oauth2ClientScope: String
 }
 
 //prevent auto-wiring of default Properties
@@ -84,6 +85,7 @@ class ConfiguredAppProperties(private val props: HintProperties = properties) : 
     override val oauth2ClientAudience: String = propString("oauth2_client_audience")
     override val oauth2ClientAdrUrl = propString("oauth2_client_adr_url")
     override val oauth2LoginMethod = propString("oauth2_login_method").toBoolean()
+    override val oauth2ClientScope = propString("oauth2_client_scope")
 
     companion object
     {
