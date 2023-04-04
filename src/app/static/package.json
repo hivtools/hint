@@ -9,7 +9,8 @@
   "scripts": {
     "sass": "gulp sass && gulp inject",
     "js": "webpack",
-    "build": "vue-cli-service serve ./src/index.ts",
+    "build": "gulp copy-templates && gulp styles && webpack",
+    "serve": "vue-cli-service serve ./src/index.ts",
     "test": "jest -c jest.config.js",
     "browser-test": "npx playwright test",
     "integration-test": "jest --testPathIgnorePatterns adr-dataset -c jest.integration.config.js",
