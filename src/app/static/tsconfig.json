@@ -4,9 +4,9 @@
     "sourceMap": true,
     "strict": true,
     "noImplicitReturns": true,
-    "module": "ESNext",
+    "module": "esnext",
     "moduleResolution": "node",
-    "target": "ESNext",
+    "target": "esnext",
     "experimentalDecorators": true,
     "esModuleInterop": true
   },
@@ -15,7 +15,7 @@
     "./src/app/**/*.vue",
     "./tests/**/*.test.ts",
     "./src/app/**/*.js"
-, "src/app/defineComponentVue2.js", "src/app/defineComponentVue2.js"  ],
+  ],
   "files": [
     "./vue-shims.d.ts"
   ],
