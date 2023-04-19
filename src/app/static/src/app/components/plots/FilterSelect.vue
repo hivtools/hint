@@ -23,8 +23,8 @@
 </template>
 
 <script lang="ts">
+    import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
     import i18next from "i18next";
-    import Vue from "vue";
     import Treeselect from "vue3-treeselect";
     import {flattenOptions, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
@@ -47,9 +47,9 @@
     }
 
     interface Props {
-        multiple: boolean,
+        multiple?: boolean,
         label: string,
-        disabled: boolean,
+        disabled?: boolean,
         options: FilterOption[],
         value: string[] | string
     }
@@ -58,14 +58,29 @@
         selectedOptions: any
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         name: "FilterSelect",
         props: {
-            multiple: Boolean,
-            label: String,
-            disabled: Boolean,
-            options: Array,
-            value: [Array, String]
+            multiple: {
+                type: Boolean,
+                required: false
+            },
+            label: {
+                type: String,
+                required: true
+            },
+            disabled: {
+                type: Boolean,
+                required: false
+            },
+            options: {
+                type: Array,
+                required: true
+            },
+            value: {
+                type: [Array, String],
+                required: true
+            }
         },
         data() {
             const idArray = Array.isArray(this.value) ? this.value : [this.value];

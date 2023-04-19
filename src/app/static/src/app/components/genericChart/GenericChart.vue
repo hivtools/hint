@@ -23,7 +23,7 @@
             <div class="col-9" style="position: relative;">
                 <div class="chart-container" ref="chartContainer" :style="{height: chartHeight}">
                     <plotly class="chart"
-                            v-if="!this.chartDataIsEmpty"
+                            v-if="!chartDataIsEmpty"
                            :chart-metadata="chartConfigValues.chartConfig"
                            :chart-data="chartDataPage"
                            :layout-data="chartConfigValues.layoutData"
@@ -60,12 +60,12 @@
                 </div>
                 <div v-for="dataSource in chartConfigValues.dataSourceConfigValues.filter(ds => ds.tableConfig)"
                      :key="dataSource.config.id">
-                    <download-indicator :filtered-data="filteredDataWithoutPages[dataSource.config.id]"
-                                        :unfiltered-data="unfilteredData[dataSource.config.id]"></download-indicator>
-                    <generic-chart-table :table-config="dataSource.tableConfig"
+                    <download-indicator :filtered-data="filteredDataWithoutPages ? filteredDataWithoutPages[dataSource.config.id] : null"
+                                        :unfiltered-data="unfilteredData ? unfilteredData[dataSource.config.id] : []"></download-indicator>
+                    <generic-chart-table :table-config="dataSource.tableConfig || { columns: [] }"
                                          :filtered-data="chartData[dataSource.config.id]"
-                                         :columns="dataSource.columns"
-                                         :selected-filter-options="dataSource.selections.selectedFilterOptions"
+                                         :columns="dataSource.columns || []"
+                                         :selected-filter-options="dataSource.selections.selectedFilterOptions || {}"
                                          :value-format="valueFormat"
                     ></generic-chart-table>
                 </div>
@@ -85,7 +85,6 @@
 
 <script lang="ts">
     import i18next from "i18next";
-    import Vue from "vue";
     import {ChevronLeftIcon, ChevronRightIcon} from "vue-feather";
     import {
         DataSourceConfig,
@@ -101,13 +100,14 @@
     import {mapActionByName, mapStateProp} from "../../utils";
     import {GenericChartState} from "../../store/genericChart/genericChart";
     import {getDatasetPayload} from "../../store/genericChart/actions";
-    import {FilterOption} from "../../generated";
+    import {Error, FilterOption} from "../../generated";
     import Plotly from "./Plotly.vue";
     import {filterData, genericChartColumnsToFilters, numeralJsToD3format} from "./utils";
     import GenericChartTable from "./GenericChartTable.vue";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import DownloadIndicator from "../downloadIndicator/DownloadIndicator.vue";
+    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections
@@ -174,13 +174,25 @@
 
     const namespace = "genericChart";
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         name: "GenericChart",
         props: {
-            metadata: Object,
-            chartId: String,
-            chartHeight: String,
-            availableDatasetIds: Array
+            metadata: {
+                type: Object,
+                required: true
+            },
+            chartId: {
+                type: String,
+                required: true
+            },
+            chartHeight: {
+                type: String,
+                required: true
+            },
+            availableDatasetIds: {
+                type: Array,
+                required: true
+            }
         },
         components: {
             DownloadIndicator,

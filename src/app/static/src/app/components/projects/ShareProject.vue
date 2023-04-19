@@ -14,12 +14,12 @@
                     <div class="col">
                         <input autocomplete="no"
                                v-translate:aria-label="'enterEmail'"
-                               @keyup.enter="$event.target.blur()"
+                               @keyup.enter="($event.target as HTMLInputElement).blur()"
                                @keyup.delete="removeEmail(email, index)"
                                class="form-control"
                                :class="{'is-invalid': email.valid === false}"
                                @blur="() => addEmail(email, index)"
-                               @mouseout="$event.target.blur()"
+                               @mouseout="($event.target as HTMLInputElement).blur()"
                                v-model="email.value"/>
                     </div>
                     <div class="col">
@@ -58,7 +58,6 @@
 
 <script lang="ts">
     import {Project} from "../../types";
-    import Vue from "vue";
     import Modal from "../Modal.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {mapActionByName, mapStatePropByName} from "../../utils";
@@ -68,6 +67,7 @@
     import {CloneProjectPayload} from "../../store/projects/actions";
     import {Share2Icon} from "vue-feather";
     import {VTooltip} from "floating-vue";
+    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
 
     interface EmailToShareWith {
         value: string
@@ -106,10 +106,11 @@
 
     declare const currentUser: string;
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         props: {
             project: {
-                type: Object
+                type: Object,
+                required: true
             }
         },
         data() {

@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
     import {DownloadIcon} from "vue-feather";
 
     interface Props {
@@ -22,14 +22,20 @@
         download: () => void
     }
 
-    export default Vue.extend<unknown, Method, unknown, Props>({
+    export default defineComponentVue2WithProps<unknown, Method, unknown, Props>({
         name: "downloadButton",
         components: {
             DownloadIcon
         },
         props: {
-            name: String,
-            disabled: Boolean
+            name: {
+                type: String,
+                required: true
+            },
+            disabled: {
+                type: Boolean,
+                required: true
+            }
         },
         methods: {
             download() {

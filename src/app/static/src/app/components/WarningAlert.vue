@@ -4,20 +4,20 @@
             <button @click="$emit('clear-warnings')" type="button" class="close pt-2 pull-right" v-translate:aria-label="'close'">
                 <span aria-hidden="true">&times;</span>
             </button>
-            <warning v-for="(value, key) in filteredWarnings" :key="key" :origin="key" :warnings="value" :max-lines="maxLines"></warning>
+            <warning v-for="(value, key) in filteredWarnings" :key="key" :origin="`${key}`" :warnings="value" :max-lines="maxLines"></warning>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponentVue2WithProps } from "../defineComponentVue2/defineComponentVue2";
     import { Warning as WarningType } from "../generated";
     import { Dict } from "../types";
     import Warning from "./Warning.vue"
 
     interface Props {
         warnings: Dict<WarningType[]>;
-        maxLines: number;
+        maxLines?: number;
     }
 
     interface Computed  {
@@ -25,10 +25,13 @@
         showAlert: boolean;
     }
 
-    export default Vue.extend<unknown, unknown, Computed, Props>({
+    export default defineComponentVue2WithProps<unknown, unknown, Computed, Props>({
         name: "WarningAlert",
         props: {
-            warnings: Object,
+            warnings: {
+                type: Object,
+                required: true
+            },
             maxLines: {
                 default: 2,
                 required: false,

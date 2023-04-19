@@ -34,27 +34,55 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import {mapActions, mapState} from "vuex";
     import {PasswordState} from "../../store/password/password";
     import LoggedOutHeader from "../header/LoggedOutHeader.vue";
     import {Language} from "../../store/translations/locales";
+    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
+    import { mapStateProps } from "../../utils";
 
-    export default Vue.extend({
+    interface Data {
+        email: string
+    }
+
+    interface Computed {
+        error: Error | null
+        hasError: boolean
+        resetLinkRequested: boolean,
+        language: Language
+    }
+
+    interface Methods {
+        requestResetLink: (email: string) => void
+        handleRequestResetLink: (email: Event) => void
+    }
+
+    interface Props {
+        title: string
+    }
+
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         name: "ForgotPassword",
-        props: ["title"],
+        props: {
+            title: {
+                type: String,
+                required: true
+            }
+        },
         data: () => {
             return {
                 email: ""
             };
         },
-        computed: mapState<PasswordState>({
+        computed: {
+        ...mapStateProps("password", {
             error: (state: PasswordState) => state.requestResetLinkError,
             hasError: (state: PasswordState) => !!state.requestResetLinkError,
             resetLinkRequested: (state: PasswordState) => state.resetLinkRequested,
             language: (state: PasswordState) => state.language
-        }),
+        })
+        },
         components: {
             ErrorAlert,
             LoggedOutHeader

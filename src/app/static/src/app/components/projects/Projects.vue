@@ -49,6 +49,7 @@
     import ProjectHistory from "./ProjectHistory.vue";
     import ProjectsMixin from "./ProjectsMixin";
     import {CreateProjectPayload} from "../../store/projects/actions";
+import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
 
     const namespace = "projects";
 
@@ -68,7 +69,8 @@
         handleCurrentProjectClick: (e: Event) => void
     }
 
-    export default ProjectsMixin.extend<unknown, Methods, Computed, unknown>({
+    export default defineComponentVue2<unknown, Methods, Computed, typeof ProjectsMixin>({
+        extends: ProjectsMixin,
         computed: {
             ...mapStateProps<ProjectsState, keyof Computed>(namespace, {
                 currentProject: state => state.currentProject,

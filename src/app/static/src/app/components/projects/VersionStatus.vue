@@ -11,12 +11,12 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import {ProjectsState} from "../../store/projects/projects";
     import {mapStateProp} from "../../utils";
     import {CheckIcon} from "vue-feather";
     import moment from 'moment';
     import {versionLabel} from "../../utils";
+import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
 
     const namespace = "projects";
 
@@ -28,7 +28,7 @@
         formattedTime: string
     }
 
-    export default Vue.extend<unknown, unknown, Computed, unknown>({
+    export default defineComponentVue2<unknown, unknown, Computed>({
         computed: {
             display: function () {
                 return !!this.projectName;

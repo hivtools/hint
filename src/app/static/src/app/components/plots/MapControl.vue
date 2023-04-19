@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
     import TreeSelect from "vue3-treeselect"
     import {LControl} from "@vue-leaflet/vue-leaflet";
     import {ChoroplethIndicatorMetadata} from "../../generated";
@@ -44,10 +44,10 @@
     }
 
     interface Props {
-        indicator: string,
+        indicator?: string,
         initialDetail: number,
         showIndicators: boolean,
-        indicatorsMetadata: ChoroplethIndicatorMetadata[],
+        indicatorsMetadata?: ChoroplethIndicatorMetadata[],
         levelLabels: LevelLabel[]
     }
 
@@ -65,18 +65,33 @@
         indicatorChanged: (newVal: string) => void;
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         name: 'MapControl',
         components: {
             TreeSelect,
             LControl
         },
         props: {
-            indicator: String,
-            initialDetail: Number,
-            showIndicators: Boolean,
-            indicatorsMetadata: Array,
-            levelLabels: Array
+            indicator: {
+                type: String,
+                required: false
+            },
+            initialDetail: {
+                type: Number,
+                required: true
+            },
+            showIndicators: {
+                type: Boolean,
+                required: true
+            },
+            indicatorsMetadata: {
+                type: Array,
+                required: false
+            },
+            levelLabels: {
+                type: Array,
+                required: true
+            }
         },
         data(): Data {
             return {
@@ -91,9 +106,13 @@
                 });
             },
             indicatorOptions: function () {
-                return this.indicatorsMetadata.map((i: ChoroplethIndicatorMetadata) => {
-                    return {id: i.indicator, label: i.name};
-                });
+                if (this.indicatorsMetadata) {
+                    return this.indicatorsMetadata.map((i: ChoroplethIndicatorMetadata) => {
+                        return {id: i.indicator, label: i.name};
+                    });
+                } else {
+                    return []
+                }
             }
         },
         methods: {

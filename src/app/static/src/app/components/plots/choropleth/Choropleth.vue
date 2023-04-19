@@ -6,9 +6,8 @@
                  @update="onFilterSelectionsChange"></filters>
         <div id="chart" :class="includeFilters ? 'col-md-9' : 'col-md-12'">
             <l-map ref="map" style="height: 800px; width: 100%">
-                <template v-for="feature in currentFeatures">
-                    <l-geo-json ref="" :key="feature.id"
-                                :geojson="feature"
+                <template v-for="feature in currentFeatures" :key="feature.id">
+                    <l-geo-json :geojson="feature"
                                 :options="options"
                                 :optionsStyle="{...style, fillColor: getColor(feature)}">
                     </l-geo-json>
@@ -33,10 +32,10 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponentVue2WithProps} from "../../../defineComponentVue2/defineComponentVue2"
     import {Feature} from "geojson";
     import {LGeoJson, LMap} from "@vue-leaflet/vue-leaflet";
-    import {GeoJSON, Layer, GeoJSONOptions} from "leaflet";
+    import {GeoJSON, Layer, GeoJSONOptions, Map} from "leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
     import Filters from "../Filters.vue";
@@ -64,7 +63,7 @@
         colourScales: ScaleSelections,
         areaFilterId: string,
         includeFilters: boolean
-        roundFormatOutput: boolean
+        roundFormatOutput?: boolean
     }
 
     interface Data {
@@ -107,41 +106,7 @@
         emptyFeature: boolean
     }
 
-    const props = {
-        features: {
-            type: Array
-        },
-        featureLevels: {
-            type: Array
-        },
-        indicators: {
-            type: Array
-        },
-        chartdata: {
-            type: Array
-        },
-        filters: {
-            type: Array
-        },
-        selections: {
-            type: Object
-        },
-        colourScales: {
-            type: Object
-        },
-        areaFilterId: {
-            type: String
-        },
-        includeFilters: {
-            type: Boolean
-        },
-        roundFormatOutput: {
-            type: Boolean,
-            default: true
-        }
-    };
-
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         name: "Choropleth",
         components: {
             LMap,
@@ -152,8 +117,50 @@
             MapEmptyFeature,
             ResetMap
         },
-        props: props,
-        data(): Data {
+        props: {
+            features: {
+                type: Array,
+                required: true
+            },
+            featureLevels: {
+                type: Array,
+                required: true
+            },
+            indicators: {
+                type: Array,
+                required: true
+            },
+            chartdata: {
+                type: Array,
+                required: true
+            },
+            filters: {
+                type: Array,
+                required: true
+            },
+            selections: {
+                type: Object,
+                required: true
+            },
+            colourScales: {
+                type: Object,
+                required: true
+            },
+            areaFilterId: {
+                type: String,
+                required: true
+            },
+            includeFilters: {
+                type: Boolean,
+                required: true
+            },
+            roundFormatOutput: {
+                type: Boolean,
+                required: false,
+                default: true
+            }
+        },
+        data() {
             return {
                 style: {
                     className: "geojson",
@@ -231,7 +238,7 @@
                 }
             },
             featuresByLevel() {
-                const result = {} as any;
+                const result = {} as { [k: number]: Feature[] };
                 this.featureLevels.forEach((l: any) => {
                     if (l.display) {
                         result[l.id] = [];
@@ -244,7 +251,6 @@
                         result[adminLevel].push(feature);
                     }
                 });
-
                 return result;
             },
             maxLevel() {
@@ -367,10 +373,10 @@
             },
             updateBounds: function () {
                 if (this.initialised) {
-                    const map = this.$refs.map as LMap;
+                    let map = this.$refs.map as any;
 
-                    if (map && map.fitBounds) {
-                        map.fitBounds(this.selectedAreaFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
+                    if (map && map.leafletObject) {
+                        map.leafletObject.fitBounds(this.selectedAreaFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
                     }
                 }
             },
@@ -426,7 +432,7 @@
                     this.initialise();
                 },
             },
-        created() {
+        beforeMount() {
             this.initialise();
         },
         mounted() {

@@ -48,13 +48,14 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {PropType} from "vue";
     import Modal from "../Modal.vue";
     import {mapActionByName, mapGetterByName, mapStateProp} from "../../utils";
     import {StepDescription} from "../../store/stepper/stepper";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {ProjectsState} from "../../store/projects/projects";
     import {ErrorsState} from "../../store/errors/errors";
+    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
 
     interface Computed {
         changesToRelevantSteps: StepDescription[]
@@ -70,7 +71,7 @@
         open: boolean
         continueEditing: () => void
         cancelEditing: () => void
-        discardStepWarning: number | null
+        discardStepWarning?: number | null
     }
 
     interface Data {
@@ -86,12 +87,24 @@
 
     let uuid = 0;
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         props: {
-            open: Boolean,
-            continueEditing: Function,
-            cancelEditing: Function,
-            discardStepWarning: Number
+            open: {
+                type: Boolean,
+                required: true
+            },
+            continueEditing: {
+                type: Function as PropType<() => void>,
+                required: true
+            },
+            cancelEditing: {
+                type: Function as PropType<() => void>,
+                required: true
+            },
+            discardStepWarning: {
+                type: Number,
+                required: false
+            }
         },
         data: function () {
             return {
@@ -150,7 +163,7 @@
                 }
             }
         },
-        created() {
+        beforeMount() {
             // There are multiple instances of this component on the page
             // This is appended to the textarea id to avoid duplicate input ids
             this.uuid = uuid.toString()

@@ -4,8 +4,8 @@
             <div>{{ data.item.areaLabel }}</div>
             <div class="small">{{ data.item.areaHierarchy }}</div>
         </template>
-        <template v-for="i in indicators" v-slot:[`cell(${i.indicator})`]="data">
-            <div :key="i.indicator">
+        <template v-for="i in indicators" v-slot:[`cell(${i.indicator})`]="data" :key="i.indicator">
+            <div>
                 <div class="value">{{ data.item[i.indicator] }}</div>
                 <div class="small" v-if="data.item[`${i.indicator}_lower`]">
                     ({{ data.item[`${i.indicator}_lower`] }} – {{ data.item[`${i.indicator}_upper`] }})
@@ -19,7 +19,6 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import i18next from "i18next";
     import TableView from "./Table.vue";
     import {findPath, iterateDataValues, formatOutput} from "../utils";
@@ -28,20 +27,26 @@
     import {flattenOptions, flattenToIdSet, mapStateProp} from "../../../utils";
     import {RootState} from "../../../root";
     import {Language} from "../../../store/translations/locales";
+    import { defineComponentVue2WithProps } from "../../../defineComponentVue2/defineComponentVue2";
+
+    interface Selections {
+        [key: string]: any
+        selectedFilterOptions: Dict<FilterOption[]>,
+        detail: number | null
+    }
 
     interface Props {
         tableData: any[],
         indicators: ChoroplethIndicatorMetadata[],
         selections: {
-            indicatorId: string,
             selectedFilterOptions: Dict<FilterOption[]>,
             detail: number | null
         },
         filters: Filter[],
         countryAreaFilterOption: NestedFilterOption,
         areaFilterId: string
-        translateFilterLabels: boolean,
-        roundFormatOutput: boolean
+        translateFilterLabels?: boolean,
+        roundFormatOutput?: boolean
     }
 
     interface DisplayRow {
@@ -61,41 +66,44 @@
         currentLanguage: Language
     }
 
-    const props = {
-        tableData: {
-            type: Array
-        },
-        filters: {
-            type: Array
-        },
-        countryAreaFilterOption: {
-            type: Object
-        },
-        indicators: {
-            type: Array
-        },
-        areaFilterId: {
-            type: String
-        },
-        selectedFilterOptions: {
-            type: Object
-        },
-        selections: {
-            type: Object
-        },
-        translateFilterLabels: {
-            type: Boolean,
-            default: true
-        },
-        roundFormatOutput: {
-            type: Boolean,
-            default: true
-        }
-    }
-
-    export default Vue.extend<unknown, unknown, Computed, Props>({
+    export default defineComponentVue2WithProps<unknown, unknown, Computed, Props>({
         name: "AreaIndicatorsTable",
-        props: props,
+        props: {
+            tableData: {
+                type: Array,
+                required: true
+            },
+            filters: {
+                type: Array,
+                required: true
+            },
+            countryAreaFilterOption: {
+                type: Object,
+                required: true
+            },
+            indicators: {
+                type: Array,
+                required: true
+            },
+            areaFilterId: {
+                type: String,
+                required: true
+            },
+            selections: {
+                type: Object,
+                required: true
+            },
+            translateFilterLabels: {
+                type: Boolean,
+                required: false,
+                default: true
+            },
+            roundFormatOutput: {
+                type: Boolean,
+                required: false,
+                default: true
+            }
+        },
         computed: {
             nonAreaFilters() {
                 return this.filters.filter((f: Filter) => f.id != this.areaFilterId);

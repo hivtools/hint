@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponentVue2WithProps } from "../../../defineComponentVue2/defineComponentVue2";
     import {LControl} from "@vue-leaflet/vue-leaflet";
     import {getRadius} from "./utils";
     import {NumericRange} from "../../../types";
@@ -53,7 +53,7 @@
         minRadius: number,
         maxRadius: number,
         metadata: ChoroplethIndicatorMetadata
-        sizeScale: ScaleSettings,
+        sizeScale: ScaleSettings | null,
     }
 
     interface Computed {
@@ -72,14 +72,29 @@
         update: (scale: ScaleSettings) => void
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         name: "SizeLegend",
         props: {
-            "indicatorRange": Object,
-            "minRadius": Number,
-            "maxRadius": Number,
-            "metadata": Object,
-            "sizeScale": Object
+            indicatorRange: {
+                type: Object,
+                required: true
+            },
+            minRadius: {
+                type: Number,
+                required: true
+            },
+            maxRadius: {
+                type: Number,
+                required: true
+            },
+            metadata: {
+                type: Object,
+                required: true
+            },
+            sizeScale: {
+                type: Object,
+                required: true
+            }
         },
         components: {
             LControl,

@@ -1,7 +1,7 @@
 <template>
     <table-view :fields="generatedFields" :filtered-data="labelledData">
-        <template v-for="column in columnsWithHierarchy" v-slot:[`cell(${column.data.columnId})`]="data">
-            <div :key="column.data.columnId">
+        <template v-for="column in columnsWithHierarchy" v-slot:[`cell(${column.data.columnId})`]="data" :key="column.data.columnId">
+            <div>
                 <div class="column-data">{{ data.item[column.data.columnId] }}</div>
                 <div class="small">{{ data.item[`${column.data.columnId}_hierarchy`] }}</div>
             </div>
@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
     import {FilterOption, NestedFilterOption} from "../../generated";
     import {Dict, Field, GenericChartColumn, GenericChartTableColumnConfig, GenericChartTableConfig} from "../../types";
     import TableView from "../plots/table/Table.vue";
@@ -31,27 +31,30 @@
         hierarchyColumnPaths: Dict<Dict<string>>
     }
 
-    const props = {
-        filteredData: {
-            type: Array
-        },
-        columns: {
-            type: Array
-        },
-        selectedFilterOptions: {
-            type: Object
-        },
-        tableConfig: {
-            type: Object
-        },
-        valueFormat: {
-            type: String
-        }
-    };
-
-    export default Vue.extend<unknown, unknown, Computed, Props>({
+    export default defineComponentVue2WithProps<unknown, unknown, Computed, Props>({
         name: "GenericChartTable",
-        props: props,
+        props: {
+            filteredData: {
+                type: Array,
+                required: true
+            },
+            columns: {
+                type: Array,
+                required: true
+            },
+            selectedFilterOptions: {
+                type: Object,
+                required: true
+            },
+            tableConfig: {
+                type: Object,
+                required: true
+            },
+            valueFormat: {
+                type: String,
+                required: true
+            }
+        },
         computed: {
             generatedFields() {
                 return this.tableConfig.columns.map(column => {

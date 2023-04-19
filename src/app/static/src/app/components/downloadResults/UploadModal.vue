@@ -10,7 +10,7 @@
                 <div class="pt-3 form-check form-check-inline">
                     <input type="radio"
                            id="createRelease"
-                           :disabled="outputFileError"
+                           :disabled="!!outputFileError"
                            value="createRelease"
                            v-model="choiceUpload"
                            class="form-check-input"/>
@@ -75,7 +75,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponentVue2} from "../../defineComponentVue2/defineComponentVue2";
     import Modal from "../Modal.vue";
     import {
         Dict, DownloadResultsDependency,
@@ -127,7 +127,7 @@
     const outputFileTypes = ["outputZip", "outputSummary", "outputComparison"];
     const inputFileTypes = ["anc", "programme", "pjnz", "population", "shape", "survey"];
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponentVue2<Data, Methods, Computed>({
         name: "UploadModal",
         data(): Data {
             return {

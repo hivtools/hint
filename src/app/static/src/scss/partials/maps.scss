@@ -126,6 +126,6 @@
 }
 
 .geojson-grey {
-  @extend .geojson;
+  @extend .geojson !optional;
   fill: rgb(200, 200, 200);
 }

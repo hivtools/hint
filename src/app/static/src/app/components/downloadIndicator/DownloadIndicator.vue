@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
     import DownloadButton from "./DownloadButton.vue";
     import {DownloadIndicatorPayload} from "../../types";
     import {appendCurrentDateTime, mapActionByName, mapStateProps} from "../../utils";
@@ -33,14 +33,20 @@
         downloadingIndicator: boolean
     }
 
-    export default Vue.extend<unknown, Methods, Computed, Props>({
+    export default defineComponentVue2WithProps<unknown, Methods, Computed, Props>({
         name: "downloadIndicator",
         components: {
             DownloadButton
         },
         props: {
-            unfilteredData: Array,
-            filteredData: Array
+            unfilteredData: {
+                type: Array,
+                required: true
+            },
+            filteredData: {
+                type: Array,
+                required: true
+            }
         },
         computed: {
             ...mapStateProps<BaselineState, keyof Computed>("baseline", {

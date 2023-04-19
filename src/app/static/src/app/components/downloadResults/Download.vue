@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
     import DownloadStatus from "./DownloadStatus.vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import {DownloadIcon} from "vue-feather";
@@ -38,7 +38,7 @@
         download: () => void
     }
 
-    export default Vue.extend<unknown, Methods, unknown, Props>({
+    export default defineComponentVue2WithProps<unknown, Methods, unknown, Props>({
         name: "Download",
         components: {
             DownloadIcon,

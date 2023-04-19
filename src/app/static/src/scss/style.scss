@@ -1,9 +1,10 @@
 @import "partials/variables";
-@import "../../node_modules/bootstrap/scss/bootstrap";
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+@import "../../node_modules/bootstrap/scss//mixins";
 @import "../../node_modules/bootstrap-vue/src/index.scss";
-@import "../../node_modules/leaflet/dist/leaflet";
-@import "../../node_modules/@riophae/vue-treeselect/dist/vue-treeselect";
-@import "../../node_modules/@reside-ic/vue-dynamic-form/src/style-partial.scss";
+@import "../../node_modules/leaflet/dist/leaflet.css";
+@import "../../node_modules/vue3-treeselect/dist/vue3-treeselect.css";
+@import "../app/vue-dynamic-form/src/style-partial.scss";
 @import "partials/maps";
 @import "partials/stepper";
 @import "partials/header";
@@ -47,7 +48,7 @@ a {
 }
 
 #model-options .btn-submit {
-  @extend .btn-red
+  @extend .btn-red !optional
 }
 
 .btn-white {

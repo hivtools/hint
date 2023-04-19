@@ -9,11 +9,11 @@ import {
 } from "../../utils";
 import {Dict, LocalSessionFile, VersionDetails} from "../../types";
 import {localStorageManager} from "../../localStorageManager";
-import {router} from "../../router";
+import {router} from "../../index";
 import {currentHintVersion} from "../../hintVersion";
 import {initialStepperState} from "../stepper/stepper";
 import {ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generated";
-import {DynamicFormData} from "@reside-ic/vue-dynamic-form";
+import {DynamicFormData} from "../../vue-dynamic-form/src/types";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult" | "SetProjectName" | "RehydrateCancel"
@@ -85,9 +85,11 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         const {commit} = context;
         commit({type: "SettingFiles", payload: null});
 
-       router.push("/", () => {
-            getFilesAndLoad(context, versionDetails.files, JSON.parse(versionDetails.state));
-        });
+       router.push("/") 
+       // TODO fix this, it was second argument
+    //    () => {
+    //         getFilesAndLoad(context, versionDetails.files, JSON.parse(versionDetails.state));
+    //     });
 
     },
 

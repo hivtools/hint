@@ -13,9 +13,8 @@
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
     import {mapActionByName, mapStateProp, mapGetterByName} from "../../utils";
-    import adrKey from "./ADRKey.vue";
+    import AdrKey from "./ADRKey.vue";
     import SelectDataset from "./SelectDataset.vue";
     import {ADRState} from "../../store/adr/adr";
     import {VTooltip} from "floating-vue";
@@ -24,6 +23,7 @@
     import {Language} from "../../store/translations/locales";
     import {BaselineState} from "../../store/baseline/baseline";
     import {Dataset} from "../../types";
+    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
 
     interface Methods {
         getDatasets: () => void
@@ -44,8 +44,8 @@
 
     const namespace = "adr";
 
-    export default Vue.extend<unknown, Methods, Computed, unknown>({
-        components: {adrKey, SelectDataset},
+    export default defineComponentVue2<unknown, Methods, Computed>({
+        components: {AdrKey, SelectDataset},
         computed: {
             isGuest: mapGetterByName(null, "isGuest"),
             loggedIn() {
@@ -93,7 +93,7 @@
                 });
             }
         },
-        created() {
+        beforeMount() {
             if (this.loggedIn) {
                 this.fetchADRKey();
             }

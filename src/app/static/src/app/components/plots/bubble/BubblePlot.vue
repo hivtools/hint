@@ -40,15 +40,14 @@
         </div>
         <div id="chart" class="col-md-9">
             <l-map ref="map" style="height: 800px; width: 100%">
-                <template v-for="feature in currentFeatures">
-                    <l-geo-json :key="feature.id"
-                                ref=""
+                <template v-for="feature in currentFeatures" :key="feature.id">
+                    <l-geo-json  ref=""
                                 :geojson="feature"
                                 :optionsStyle="style">
                     </l-geo-json>
                     <l-circle-marker v-if="showBubble(feature)"
                                      :key="feature.id"
-                                     :lat-lng="[feature.properties.center_y, feature.properties.center_x]"
+                                     :lat-lng="[feature.properties?.center_y, feature.properties?.center_x]"
                                      :radius="getRadius(feature)"
                                      :fill-opacity="0.75"
                                      :opacity="0.75"
@@ -83,7 +82,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponentVue2WithProps} from "../../../defineComponentVue2/defineComponentVue2"
     import Treeselect from "vue3-treeselect";
     import {Feature} from "geojson";
     import {LCircleMarker, LGeoJson, LMap, LTooltip} from "@vue-leaflet/vue-leaflet";
@@ -202,7 +201,7 @@
         }
     };
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         name: "BubblePlot",
         components: {
             LMap,
@@ -217,7 +216,44 @@
             MapEmptyFeature,
             ResetMap
         },
-        props: props,
+        props: {
+            features: {
+                type: Array,
+                required: true
+            },
+            featureLevels: {
+                type: Array,
+                required: true
+            },
+            indicators: {
+                type: Array,
+                required: true
+            },
+            chartdata: {
+                type: Array,
+                required: true
+            },
+            filters: {
+                type: Array,
+                required: true
+            },
+            selections: {
+                type: Object,
+                required: true
+            },
+            areaFilterId: {
+                type: String,
+                required: true
+            },
+            colourScales: {
+                type: Object,
+                required: true
+            },
+            sizeScales: {
+                type: Object,
+                required: true
+            }
+        },
         data(): Data {
             return {
                 style: {
@@ -361,7 +397,7 @@
         methods: {
             updateBounds: function () {
                 if (this.initialised) {
-                    const map = this.$refs.map as LMap;
+                    const map = this.$refs.map as typeof LMap;
                     if (map && map.fitBounds) {
                         map.fitBounds(this.selectedAreaFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
                     }
@@ -500,7 +536,7 @@
         mounted() {
             this.updateBounds();
         },
-        created() {
+        beforeMount() {
             //If selections have not been initialised, refresh them
             if (this.selections.detail < 0) {
                 this.onDetailChange(this.maxLevel);

@@ -6,6 +6,7 @@ import i18next from "i18next";
 import {Language} from "../../store/translations/locales";
 import {BarchartSelections} from "../../store/plottingSelections/plottingSelections";
 import {flattenOptionsIdsByHierarchy} from "../../utils"
+import { BarchartIndicator } from "../../vue-chart/src/bar/types";
 
 export const getColor = (value: number,
                          metadata: ChoroplethIndicatorMetadata,

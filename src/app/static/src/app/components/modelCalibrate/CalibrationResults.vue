@@ -23,17 +23,15 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
     import i18next from "i18next";
     import { Language, Translations } from "../../store/translations/locales";
     import {
         BarchartIndicator,
         Filter,
         FilterConfig
-    } from "@reside-ic/vue-charts/src/bar/types";
-    import {
-        BarChartWithFilters
-    } from "@reside-ic/vue-charts";
+    } from "../../vue-chart/src/bar/types";
+    import BarChartWithFilters from "../../vue-chart/src/bar/BarChartWithFilters.vue";
     import {
         mapGettersByNames,
         mapMutationByName,
@@ -72,7 +70,7 @@
         currentLanguage: Language;
     }
 
-    export default Vue.extend<unknown, Methods, Computed, unknown>({
+    export default defineComponentVue2<unknown, Methods, Computed>({
         name: "CalibrationResults",
         components: {
             BarChartWithFilters,
@@ -108,7 +106,7 @@
             ),
         },
         methods: {
-            ...mapMutationsByNames("plottingSelections", [
+            ...mapMutationsByNames<"updateCalibratePlotSelections">("plottingSelections", [
                 "updateCalibratePlotSelections",
             ]),
             formatBarchartValue: (

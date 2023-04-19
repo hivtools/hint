@@ -77,7 +77,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2"
     import {mapActionByName, mapStateProp, mapMutationByName, mapStateProps} from "../../utils";
     import {UploadIcon} from "vue-feather";
     import UploadModal from "./UploadModal.vue";
@@ -138,7 +138,7 @@
         comparisonSwitch: boolean
     }
 
-    export default Vue.extend<Data, Methods, Computed>({
+    export default defineComponentVue2<Data, Methods, Computed>({
         name: "downloadResults",
         data() {
             return {

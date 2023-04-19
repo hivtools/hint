@@ -12,8 +12,7 @@
     </drop-down>
 </template>
 <script lang="ts">
-
-    import Vue from "vue";
+    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
     import {mapActionByName, mapStateProp} from "../../utils";
     import DropDown from "./DropDown.vue";
     import {DataExplorationState} from "../../store/dataExploration/dataExploration";
@@ -26,7 +25,7 @@
         currentLanguage: string
     }
 
-    export default Vue.extend<unknown, Methods, Computed, unknown>({
+    export default defineComponentVue2<unknown, Methods, Computed>({
         computed: {
             currentLanguage: mapStateProp<DataExplorationState, string>(null,
                 (state: DataExplorationState) => state.language.toUpperCase())

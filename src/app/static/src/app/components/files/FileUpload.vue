@@ -26,6 +26,8 @@
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin"
     import {Step} from "../../types";
+    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
+import { PropType } from "vue";
 
     interface Methods {
         handleFileSelect: () => void
@@ -45,12 +47,25 @@
         uploading: boolean
     }
 
-    export default ResetConfirmationMixin.extend<Data, Methods, unknown, Props>({
+    export default defineComponentVue2WithProps<Data, Methods, unknown, Props>({
+        extends: ResetConfirmationMixin,
         props: {
-            "upload": Function,
-            "accept": String,
-            "name": String,
-            "uploading": Boolean
+            upload: {
+                type: Function as PropType<Props["upload"]>,
+                required: true
+            },
+            accept: {
+                type: String,
+                required: true
+            },
+            name: {
+                type: String,
+                required: true
+            },
+            uploading: {
+                type: Boolean,
+                required: true
+            }
         },
         data(): Data {
             return {

@@ -17,7 +17,8 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue"
+    import { PropType } from "vue";
+import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
     import Modal from "../Modal.vue";
 
     interface Props {
@@ -26,12 +27,21 @@
         clearLoadError: () => void
     }
 
-    export default Vue.extend<unknown, unknown, unknown, Props>({
+    export default defineComponentVue2WithProps<unknown, unknown, unknown, Props>({
         name: "LoadErrorModal",
         props: {
-            hasError: Boolean,
-            loadError: String,
-            clearLoadError: Function
+            hasError: {
+                type: Boolean,
+                required: true
+            },
+            loadError: {
+                type: String,
+                required: true
+            },
+            clearLoadError: {
+                type: Function as PropType<Props["clearLoadError"]>,
+                required: true
+            }
         },
         components: {
             Modal

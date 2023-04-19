@@ -92,7 +92,6 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue"
     import {mapActionByName, mapGetterByName, mapStateProp, validateEmail, emailRegex} from "../utils";
     import Modal from "./Modal.vue";
     import {ErrorReportManualDetails} from "../types";
@@ -104,6 +103,7 @@
     import { ErrorsState } from "../store/errors/errors";
     import LoadingSpinner from "./LoadingSpinner.vue";
     import {DataExplorationState} from "../store/dataExploration/dataExploration";
+    import { defineComponentVue2WithProps } from "../defineComponentVue2/defineComponentVue2";
 
 
     interface Methods {
@@ -133,7 +133,7 @@
         validEmail: boolean
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         components: {
             ErrorAlert,
             Modal,
@@ -141,7 +141,10 @@
         },
         directives: {tooltip: VTooltip},
         props: {
-            open: Boolean
+            open: {
+                type: Boolean,
+                required: true
+            }
         },
         name: "ErrorReport",
         data: function () {

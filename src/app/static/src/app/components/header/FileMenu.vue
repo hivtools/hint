@@ -2,7 +2,7 @@
     <div style="flex:auto">
         <drop-down text="file">
             <a class="dropdown-item" href="#"
-               @mousedown="$refs.loadZip.click()">
+               @mousedown="handleLoadZip">
                 <span v-translate="'loadZip'"></span>
                 <upload-icon size="20" class="icon"></upload-icon>
             </a>
@@ -17,7 +17,7 @@
                     <download-icon size="20" class="icon"></download-icon>
                 </a>
                 <a style="display:none" ref="save"></a>
-                <a class="dropdown-item" ref="load" href="#" v-on:mousedown="$refs.loadJson.click()">
+                <a class="dropdown-item" ref="load" href="#" v-on:mousedown="handleLoadJson">
                     <span><span class="pr-1" v-translate="'load'"></span>JSON</span>
                     <upload-icon size="20" class="icon"></upload-icon>
                 </a>
@@ -42,8 +42,7 @@
     </div>
 </template>
 <script lang="ts">
-
-    import Vue from "vue";
+    import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
     import {serialiseState} from "../../localStorageManager";
     import {BaselineState} from "../../store/baseline/baseline";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
@@ -95,13 +94,30 @@
         anc: LocalSessionFile | null
     }
 
+    interface Props {
+        title: string
+    }
+
     const localSessionFile = function (file: ValidateInputResponse | null) {
         return file ? {hash: file.hash, filename: file.filename} : null
     };
 
-    export default Vue.extend<Data, Methods, Computed, "title">({
-        props: ["title"],
-        data(): Data {
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+        props: {
+            title: {
+                type: String,
+                required: true
+            }
+        },
+        mounted() {
+            const handleLoadJson = () => {
+                (this.$refs.loadJson as any).click()
+            };
+            return {
+                handleLoadJson
+            }
+        },
+        data() {
             return {
                 projectNameJson: false,
                 projectNameZip: false,

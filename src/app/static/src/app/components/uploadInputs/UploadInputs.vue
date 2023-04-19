@@ -84,7 +84,6 @@
 
 <script lang="ts">
 
-    import Vue from "vue";
     import {mapActions, mapState} from "vuex";
     import {BaselineState} from "../../store/baseline/baseline";
     import {PartialFileUploadProps} from "../../types";
@@ -94,14 +93,53 @@
     import ManageFile from "../files/ManageFile.vue";
     import {RootState} from "../../root";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
-    import {mapStatePropByName} from "../../utils";
+    import {mapStatePropByName, mapStateProps} from "../../utils";
+    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
+    import { Error } from "../../generated";
 
     const namespace = 'baseline';
 
-    export default Vue.extend({
+    interface ADRResponse {
+        valid: boolean,
+        error: Error | null,
+        fromADR?: boolean,
+        existingFileName: string
+    }
+
+    interface Computed {
+        country: string,
+        pjnz: ADRResponse,
+        shape: ADRResponse,
+        population: ADRResponse,
+        hasBaselineError: boolean,
+        baselineError: Error | null,
+        validating: boolean,
+        plottingMetadataError: Error | null,
+        anc: ADRResponse,
+        survey: ADRResponse,
+        programme: ADRResponse,
+        dataExplorationMode: boolean
+    }
+
+    interface Methods {
+        uploadPJNZ: (formData: FormData) => void,
+        uploadShape: (formData: FormData) => void,
+        uploadPopulation: (formData: FormData) => void,
+        deletePJNZ: () => void,
+        deleteShape: () => void,
+        deletePopulation: () => void,
+        uploadSurvey: (formData: FormData) => void,
+        uploadProgram: (formData: FormData) => void,
+        uploadANC: (formData: FormData) => void,
+        deleteSurvey: () => void,
+        deleteProgram: () => void,
+        deleteANC: () => void
+    }
+
+    export default defineComponentVue2<unknown, Methods, Computed>({
         name: "UploadInputs",
         computed: {
-            ...mapState<BaselineState>(namespace, {
+            ...mapStateProps(namespace, {
                 country: (state: BaselineState) => state.country,
                 pjnz: (state: BaselineState) => ({
                     valid: !!state.country,

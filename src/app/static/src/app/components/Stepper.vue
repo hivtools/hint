@@ -1,9 +1,8 @@
 <template>
     <div>
         <div class="row">
-            <template v-for="step in steps">
-                <step :key="step.number"
-                      :active="isActive(step.number)"
+            <template v-for="step in steps" :key="step.number">
+                <step :active="isActive(step.number)"
                       :number="step.number"
                       :text-key="step.textKey"
                       :enabled="isEnabled(step.number)"
@@ -48,8 +47,6 @@
 </template>
 
 <script lang="ts">
-
-    import Vue from "vue";
     import {mapActions, mapGetters} from "vuex";
     import AdrIntegration from "./adr/ADRIntegration.vue";
     import Step from "./Step.vue";
@@ -75,6 +72,7 @@
     import {ModelCalibrateMutation} from "../store/modelCalibrate/mutations";
     import {GenericChartMutation} from "../store/genericChart/mutations";
     import {SurveyAndProgramMutation} from "../store/surveyAndProgram/mutations";
+    import { defineComponentVue2 } from "../defineComponentVue2/defineComponentVue2";
 
     interface ComputedState {
         activeStep: number,
@@ -89,15 +87,32 @@
 
     interface ComputedGetters {
         ready: boolean,
-        complete: boolean,
+        complete: boolean[],
         loadingFromFile: boolean,
         loading: boolean,
         warnings: (stepName: string) => StepWarnings,
     }
 
+    interface Methods {
+        jump: (num: number) => void,
+        next: () => void,
+        back: () => void,
+        isActive: (num: number) => boolean,
+        isEnabled: (num: number) => boolean,
+        isComplete: (num: number) => boolean,
+        activeContinue: (num: number) => boolean,
+        clearReviewInputsWarnings: () => void,
+        clearWarnings: () => void,
+        clearModelRunWarnings: () => void,
+        clearModelCalibrateWarnings: () => void,
+        clearModelOptionsWarnings: () => void,
+        clearGenericChartWarnings: () => void,
+        clearSurveyAndProgramWarnings: () => void,
+    }
+
     const namespace = 'stepper';
 
-    export default Vue.extend<unknown, any, ComputedState & ComputedGetters, unknown>({
+    export default defineComponentVue2<unknown, Methods, ComputedState & ComputedGetters>({
         computed: {
             ...mapStateProps<StepperState, keyof ComputedState>(namespace, {
                 activeStep: state => state.activeStep,
@@ -127,14 +142,14 @@
                 };
             },
             activeStepTextKey: function() {
-                return this.steps.find((step: StepDescription) => step.number === this.activeStep).textKey;
+                return this.steps.find((step: StepDescription) => step.number === this.activeStep)!.textKey;
             },
             activeStepWarnings: function() {
                 return this.warnings(this.activeStepTextKey);
             }
         },
         methods: {
-            ...mapActions(namespace, ["jump", "next"]),
+            ...mapActions<keyof Methods>(namespace, ["jump", "next"]),
             ...mapActions(["validate"]),
             back() {
                 this.jump(this.activeStep - 1);
@@ -183,7 +198,7 @@
             clearGenericChartWarnings: mapMutationByName("genericChart", GenericChartMutation.ClearWarnings),
             clearSurveyAndProgramWarnings: mapMutationByName("surveyAndProgram", SurveyAndProgramMutation.ClearWarnings)
         },
-        created() {
+        beforeMount() {
             //redirect to Projects if logged in with no currentProject
             if ((!this.isGuest) && (this.currentProject == null) && (!this.projectLoading)) {
                 this.$router.push('/projects');

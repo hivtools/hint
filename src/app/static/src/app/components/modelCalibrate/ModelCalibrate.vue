@@ -5,6 +5,7 @@
             <h2 id="loading-message" v-translate="'loadingOptions'"></h2>
         </div>
         <dynamic-form
+            :form-meta="calibrateOptions"
             ref="form"
             v-if="!loading"
             v-model="calibrateOptions"
@@ -49,17 +50,15 @@
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
     import i18next from "i18next";
     import {
         DynamicFormData,
-        DynamicFormMeta,
-        DynamicForm,
-    } from "@reside-ic/vue-dynamic-form";
-
+        DynamicFormMeta
+    } from "../../vue-dynamic-form/src/types";
+    import { DynamicForm } from "../../vue-dynamic-form/src";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
-
+    import {defineComponentVue2, defineComponentVue2GetSet} from "../../defineComponentVue2/defineComponentVue2"
     import {
         mapActionByName,
         mapMutationByName,
@@ -72,6 +71,8 @@
     import { ModelCalibrateState } from "../../store/modelCalibrate/modelCalibrate";
     import ErrorAlert from "../ErrorAlert.vue";
     import CalibrationResults from "./CalibrationResults.vue";
+    import { Error } from "../../generated";
+    import { ComputedGetter, ComputedOptions } from "vue";
 
     interface Methods {
         fetchOptions: () => void;
@@ -80,22 +81,32 @@
         submitForm: (e: Event) => void;
     }
 
-    interface Computed {
-        calibrateOptions: DynamicFormMeta;
-        loading: boolean;
-        calibrating: boolean;
-        complete: boolean;
-        generatingCalibrationPlot: boolean;
-        calibrationPlotGenerated: boolean;
-        currentLanguage: Language;
-        selectText: string;
-        requiredText: string;
-        submitText: string;
-        hasError: boolean;
-        error: Error;
-        progressMessage: string;
-        showCalibrateResults: boolean
+    interface Computed extends Record<string, any> {
+        calibrateOptions: {
+            get: ComputedGetter<DynamicFormMeta>,
+            set: (value: DynamicFormMeta) => void
+        };
+        loading: ComputedGetter<boolean>;
+        calibrating: ComputedGetter<boolean>;
+        complete: ComputedGetter<boolean>;
+        generatingCalibrationPlot: ComputedGetter<boolean>;
+        calibrationPlotGenerated: ComputedGetter<boolean>;
+        currentLanguage: ComputedGetter<Language>;
+        selectText: ComputedGetter<string>;
+        requiredText: ComputedGetter<string>;
+        submitText: ComputedGetter<string>;
+        hasError: ComputedGetter<boolean>;
+        error: ComputedGetter<Error>;
+        progressMessage: ComputedGetter<string>;
+        showCalibrateResults: ComputedGetter<boolean>
     }
+
+    type ModelCalibrateStateKeys = "loading" |
+        "calibrating" |
+        "generatingCalibrationPlot" |
+        "calibrationPlotGenerated" |
+        "error" |
+        "progressMessage"
 
     interface Data {
         showConfirmation: boolean;
@@ -103,7 +114,7 @@
 
     const namespace = "modelCalibrate";
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponentVue2GetSet<Data, Methods, Computed>({
         name: "ModelCalibrate",
         data() {
             return {
@@ -111,7 +122,7 @@
             };
         },
         computed: {
-            ...mapStateProps<ModelCalibrateState, keyof Computed>(namespace, {
+            ...mapStateProps<ModelCalibrateState, ModelCalibrateStateKeys>(namespace, {
                 loading: (state) => state.fetching,
                 calibrating: (state) => state.calibrating,
                 generatingCalibrationPlot: (state) => state.generatingCalibrationPlot,

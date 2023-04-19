@@ -8,7 +8,7 @@
         full window of warnings (the warningBox), which is always rendered as html but with 
         its overflow hidden by the outer box. The size of the outer box dynamically adjusts 
         depending on the size of the warningBox and whether the user has clicked show more or less. -->
-        <div :style="{ overflowY: 'hidden', height: `${this.renderedBoxHeight}px` }">
+        <div :style="{ overflowY: 'hidden', height: `${renderedBoxHeight}px` }">
             <ul class="mb-0" ref="warningBox" id="warningBox">
                 <li v-for="warning in warnings" :key="warning.text"><div :style="lineStyling">{{ warning.text }}</div></li>
             </ul>
@@ -21,7 +21,6 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import { AlertTriangleIcon } from "vue-feather";
     import i18next from "i18next";
     import { mapStateProp } from "../utils";
@@ -29,11 +28,13 @@
     import { Language } from "../store/translations/locales";
     import { Warning } from "../generated";
     import { Dict } from "../types";
+    import { defineComponentVue2WithProps } from "../defineComponentVue2/defineComponentVue2";
+import { nextTick } from "vue";
 
     interface Props {
         origin: string;
         warnings: Warning[];
-        maxLines: number;
+        maxLines?: number;
     }
 
     interface Data {
@@ -57,11 +58,17 @@
         lineStyling: Dict<string | number | undefined>;
     }
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         name: "Warning",
         props: {
-            origin: String,
-            warnings: Array,
+            origin: {
+                type: String,
+                required: true
+            },
+            warnings: {
+                type: Array,
+                required: true
+            },
             maxLines: {
                 default: 2,
                 required: false,
@@ -84,7 +91,8 @@
                 }
             },
             maxBoxHeight(){
-                return this.maxLines * this.lineHeight
+                const maxLinesDefault = this.maxLines || 2
+                return maxLinesDefault * this.lineHeight
             },
             warningsLengthy(){
                 return this.fullBoxHeight > this.maxBoxHeight
@@ -132,7 +140,7 @@
             },
             async updateDimensions(){
                 this.fullBoxHeight = 0;
-                await Vue.nextTick();
+                await nextTick();
                 if (this.$refs.warningBox) {
                     this.lineHeight = (this.$refs.line as HTMLElement).clientHeight;
                     this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;

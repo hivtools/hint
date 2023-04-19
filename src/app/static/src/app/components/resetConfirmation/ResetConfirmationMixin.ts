@@ -1,4 +1,4 @@
-import Vue from "vue";
+import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
 import {mapStatePropByName} from "../../utils";
 
 interface Computed {
@@ -6,7 +6,7 @@ interface Computed {
     dataExplorationMode: boolean
 }
 
-export default Vue.extend<unknown, unknown, Computed, unknown>({
+export default defineComponentVue2<unknown, unknown, Computed>({
     computed: {
         dataExplorationMode: mapStatePropByName(null, "dataExplorationMode"),
         editsRequireConfirmation() {

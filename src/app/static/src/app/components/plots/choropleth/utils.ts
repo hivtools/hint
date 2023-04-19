@@ -1,3 +1,4 @@
+import { BarchartIndicator } from './../../../generated.d';
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../../generated";
 import {Dict, Filter, IndicatorValuesDict, NumericRange} from "../../../types";
 import {getColor, iterateDataValues} from "../utils";

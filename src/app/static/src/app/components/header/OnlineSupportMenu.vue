@@ -56,7 +56,7 @@
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponentVue2, defineComponentVue2GetSet } from "../../defineComponentVue2/defineComponentVue2";
     import DropDown from "./DropDown.vue";
     import i18next from "i18next";
     import {mapActionByName, mapStateProp} from "../../utils";
@@ -66,16 +66,20 @@
     import {ProjectsState} from "../../store/projects/projects";
     import {StepDescription, StepperState} from "../../store/stepper/stepper";
     import {ErrorReportManualDetails} from "../../types";
+    import { ComputedGetter } from "vue";
 
-    interface Computed {
-        support: string
-        currentLanguage: Language
-        troubleFilename: string
-        faqLocation: string
-        projectName: string | undefined
-        currentSection: string
-        currentSectionKey: string
-        steps: StepDescription[]
+    interface Computed extends Record<string, any> {
+        support: ComputedGetter<string>
+        currentLanguage: ComputedGetter<Language>
+        troubleFilename: ComputedGetter<string>
+        faqLocation: ComputedGetter<string>
+        projectName: ComputedGetter<string | undefined>
+        currentSection: {
+            get: ComputedGetter<string>,
+            set: (newVal: string) => void
+        }
+        currentSectionKey: ComputedGetter<string>
+        steps: ComputedGetter<StepDescription[]>
     }
 
     interface Data {
@@ -90,7 +94,7 @@
         projectSection: () => void
     }
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponentVue2GetSet<Data, Methods, Computed>({
         data: function () {
             return {
                 errorReportOpen: false,
@@ -131,7 +135,7 @@
         methods: {
             generateErrorReport: mapActionByName(null,
                 "generateErrorReport"),
-            async sendErrorReport(errorReport) {
+            async sendErrorReport(errorReport: ErrorReportManualDetails) {
                 await this.generateErrorReport({
                     section: this.currentSection,
                     ...errorReport

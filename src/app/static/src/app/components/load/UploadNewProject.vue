@@ -41,6 +41,8 @@
     import {LoadingState, LoadState} from "../../store/load/state";
     import LoadErrorModal from "./LoadErrorModal.vue";
     import ProjectsMixin from "../projects/ProjectsMixin";
+    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
+    import { PropType } from "vue";
 
     interface Props {
         openModal: boolean
@@ -70,12 +72,22 @@
         isGuest: boolean
     }
 
-    export default ProjectsMixin.extend<Data, Methods, Computed, Props>({
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+        extends: ProjectsMixin,
         name: "UploadNewProject",
         props: {
-            openModal: Boolean,
-            submitLoad: Function,
-            cancelLoad: Function
+            openModal: {
+                type: Boolean,
+                required: true
+            },
+            submitLoad: {
+                type: Function as PropType<Props["submitLoad"]>,
+                required: true
+            },
+            cancelLoad: {
+                type: Function as PropType<Props["cancelLoad"]>,
+                required: true
+            }
         },
         data(): Data {
             return {
@@ -105,7 +117,7 @@
             LoadErrorModal
         },
         watch: {
-            uploadProjectName(newValue) {
+            uploadProjectName(newValue) {ProjectsMixin
                 this.setProjectName(newValue)
             }
         },

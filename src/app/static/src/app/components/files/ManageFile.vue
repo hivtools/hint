@@ -41,6 +41,8 @@
     import {Error} from "../../generated";
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
     import {Step} from "../../types";
+    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
+    import { PropType } from "vue";
 
     interface Data {
         uploading: boolean
@@ -65,26 +67,57 @@
         accept: string,
         label: string,
         valid: boolean,
-        error: Error,
+        error: Error | null,
         existingFileName: string,
-        fromADR: boolean,
+        fromADR?: boolean,
         name: string,
         required: boolean
     }
 
-    export default ResetConfirmationMixin.extend<Data, Methods, Computed, Props>({
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+        extends: ResetConfirmationMixin,
         name: "FileSelect",
         props: {
-            "upload": Function,
-            "deleteFile": Function,
-            "accept": String,
-            "label": String,
-            "valid": Boolean,
-            "error": Object,
-            "existingFileName": String,
-            "fromADR": Boolean,
-            "name": String,
-            "required": Boolean
+            upload: {
+                type: Function as PropType<Props["upload"]>,
+                required: true
+            },
+            deleteFile: {
+                type: Function as PropType<Props["deleteFile"]>,
+                required: true
+            },
+            accept: {
+                type: String,
+                required: true
+            },
+            label: {
+                type: String,
+                required: true
+            },
+            valid: {
+                type: Boolean,
+                required: true
+            },
+            error: {
+                type: Object,
+                required: true
+            },
+            existingFileName: {
+                type: String,
+                required: true
+            },
+            fromADR: {
+                type: Boolean,
+                required: false
+            },
+            name: {
+                type: String,
+                required: true
+            },
+            required: {
+                type: Boolean,
+                required: true
+            }
         },
         data(): Data {
             return {

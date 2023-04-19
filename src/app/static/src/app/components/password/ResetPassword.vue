@@ -34,27 +34,60 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
     import ErrorAlert from "../ErrorAlert.vue";
     import {mapActions, mapState} from "vuex";
     import {PasswordState} from "../../store/password/password";
     import LoggedOutHeader from "../header/LoggedOutHeader.vue";
     import {Language} from "../../store/translations/locales";
+import { mapStateProps } from "../../utils";
 
-    export default Vue.extend({
+    interface Data {
+        password: string
+    }
+
+    interface Computed {
+        error: Error | null
+        hasError: boolean
+        passwordWasReset: boolean,
+        language: Language
+    }
+
+    interface Methods {
+        resetPassword: (input: object) => void
+        handleResetPassword: (email: Event) => void
+    }
+
+    interface Props {
+        title: string,
+        token: string
+    }
+
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         name: "ResetPassword",
-        props: ["token", "title"],
+        props: {
+            title: {
+                type: String,
+                required: true
+            },
+            token: {
+                type: String,
+                required: true
+            }
+        },
         data: () => {
             return {
                 password: ""
             };
         },
-        computed: mapState<PasswordState>({
-            error: (state: PasswordState) => state.resetPasswordError,
-            hasError: (state: PasswordState) => !!state.resetPasswordError,
-            passwordWasReset: (state: PasswordState) => state.passwordWasReset,
-            language: (state: PasswordState) => state.language
-        }),
+        computed: {
+            ...mapStateProps( "password", {
+                error: (state: PasswordState) => state.resetPasswordError,
+                hasError: (state: PasswordState) => !!state.resetPasswordError,
+                passwordWasReset: (state: PasswordState) => state.passwordWasReset,
+                language: (state: PasswordState) => state.language
+            })
+        },
         components: {
             ErrorAlert,
             LoggedOutHeader

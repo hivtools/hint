@@ -34,18 +34,18 @@
             <p v-if="loading" v-translate="'importingFiles'"></p>
             <div v-if="!loading">
                 <label for="datasetSelector" class="font-weight-bold" v-translate="'datasets'"></label>
-                <tree-select id="datasetSelector"
+                <treeselect id="datasetSelector"
                              :multiple="false"
                              :searchable="true"
                              :options="datasetOptions"
                              :placeholder="select"
                              :disabled="fetchingDatasets"
                              v-model="newDatasetId">
-                    <label slot="option-label"
-                           slot-scope="{ node }"
-                           v-html="node.raw.customLabel">
-                    </label>
-                </tree-select>
+                    <template v-slot:option-label="{node}">
+                        <label v-html="node.raw.customLabel">
+                        </label>
+                    </template>
+                </treeselect>
                 <select-release :dataset-id="newDatasetId" :open="open"
                                 @selected-dataset-release="updateDatasetRelease"
                                 @valid="updateValid">
@@ -93,8 +93,9 @@
 </template>
 <script lang="ts">
     import i18next from "i18next";
+    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2"
     import {Language} from "../../store/translations/locales";
-    import TreeSelect from "vue3-treeselect";
+    import Treeselect from "vue3-treeselect";
     import {
         mapActionByName,
         mapGetterByName,
@@ -190,7 +191,8 @@
 
     const namespace = "adr";
 
-    export default ResetConfirmationMixin.extend<Data, Methods, Computed, unknown>({
+    export default defineComponentVue2<Data, Methods, Computed>({
+        extends: ResetConfirmationMixin,
         data() {
             return {
                 open: false,
@@ -205,7 +207,7 @@
         },
         components: {
             Modal,
-            TreeSelect,
+            Treeselect,
             LoadingSpinner,
             InfoIcon,
             ResetConfirmation,
@@ -476,7 +478,7 @@
             this.refreshDatasetMetadata();
             this.startPolling();
         },
-        beforeDestroy() {
+        beforeUnmount() {
             this.stopPolling();
         },
     });

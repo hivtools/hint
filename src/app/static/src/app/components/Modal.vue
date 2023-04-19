@@ -16,11 +16,25 @@
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue"
+    import { StyleValue } from "vue";
+    import { defineComponentVue2WithProps } from "../defineComponentVue2/defineComponentVue2";
 
-    export default Vue.extend({
+    interface Props {
+        open: boolean
+    }
+
+    interface Computed {
+        style: StyleValue
+    }
+
+    export default defineComponentVue2WithProps<unknown, unknown, Computed, Props>({
         name: "Modal",
-        props: ["open"],
+        props: {
+            open: {
+                type: Boolean,
+                required: true
+            }
+        },
         computed: {
             style: function () {
                 return {display: this.open ? "block" : "none"}

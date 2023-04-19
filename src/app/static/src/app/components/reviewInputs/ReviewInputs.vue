@@ -16,63 +16,64 @@
                 </li>
             </ul>
         </div>
-        <div v-if="selectedTab === 0" class="row">
-            <div :class="showChoropleth ? 'col-md-3' : 'col-sm-6 col-md-8'" class="upload-section">
-                <div v-if="showChoropleth" id="data-source" class="form-group">
-                    <h4 id="data-source-header" v-translate="'dataSource'"></h4>
-                    <tree-select
-                            :multiple="false"
-                            :clearable="false"
-                            :options="dataSourceOptions"
-                            :value="selectedDataType"
-                            @select="selectDataSource">
-                    </tree-select>
-                </div>
-                <filters v-if="showChoropleth"
-                         :filters="filters"
-                         :selectedFilterOptions="plottingSelections.selectedFilterOptions"
-                         @update="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"></filters>
-            </div>
-            <div v-if="showChoropleth" class="col-md-9">
-                <choropleth :chartdata="data"
+        <template v-if="isFirstTab">
+            <div class="row">
+                <div :class="showChoropleth ? 'col-md-3' : 'col-sm-6 col-md-8'" class="upload-section">
+                    <div v-if="showChoropleth" id="data-source" class="form-group">
+                        <h4 id="data-source-header" v-translate="'dataSource'"></h4>
+                        <treeselect
+                                :multiple="false"
+                                :clearable="false"
+                                :options="dataSourceOptions"
+                                :value="selectedDataType"
+                                @select="selectDataSource">
+                        </treeselect>
+                    </div>
+                    <filters v-if="showChoropleth"
                             :filters="filters"
-                            :features="features"
-                            :feature-levels="featureLevels"
-                            :indicators="sapIndicatorsMetadata"
-                            :selections="plottingSelections"
-                            @format="handleFormatOutput($event)"
-                            :include-filters="false"
-                            :round-format-output="false"
-                            :area-filter-id="areaFilterId"
-                            :colour-scales="selectedSAPColourScales"
-                            @update="updateChoroplethSelections({payload: $event})"
-                            @update-colour-scales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
-                <div>
-                    <area-indicators-table :table-data="data"
-                                           :area-filter-id="areaFilterId"
-                                           :filters="filters"
-                                           :countryAreaFilterOption="countryAreaFilterOption"
-                                           :indicators="filterTableIndicators"
-                                           :selections="plottingSelections"
-                                           :round-format-output="false"
-                                           :selectedFilterOptions="plottingSelections.selectedFilterOptions"
-                    ></area-indicators-table>
+                            :selectedFilterOptions="plottingSelections.selectedFilterOptions"
+                            @update="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"></filters>
+                </div>
+                <div v-if="showChoropleth" class="col-md-9">
+                    <choropleth :chartdata="data"
+                                :filters="filters"
+                                :features="features"
+                                :feature-levels="featureLevels"
+                                :indicators="sapIndicatorsMetadata"
+                                :selections="plottingSelections"
+                                @format="handleFormatOutput($event)"
+                                :include-filters="false"
+                                :round-format-output="false"
+                                :area-filter-id="areaFilterId"
+                                :colour-scales="selectedSAPColourScales"
+                                @update="updateChoroplethSelections({payload: $event})"
+                                @update-colour-scales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
+                    <div>
+                        <area-indicators-table :table-data="data"
+                                            :area-filter-id="areaFilterId"
+                                            :filters="filters"
+                                            :countryAreaFilterOption="countryAreaFilterOption"
+                                            :indicators="filterTableIndicators"
+                                            :selections="plottingSelections"
+                                            :round-format-output="false"
+                                            :selectedFilterOptions="plottingSelections.selectedFilterOptions"
+                        ></area-indicators-table>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div v-if="selectedTab === 1">
+        </template>
+        <template v-else-if="!isFirstTab">
             <generic-chart v-if="genericChartMetadata"
                            chart-id="input-time-series"
                            chart-height="600px"
                            :available-dataset-ids="availableDatasetIds"
                            :metadata="genericChartMetadata"></generic-chart>
-        </div>
+        </template>
     </div>
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import TreeSelect from "vue3-treeselect";
+    import Treeselect from "vue3-treeselect";
     import i18next from "i18next";
     import {mapGetters, mapMutations, mapState} from "vuex";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
@@ -91,12 +92,14 @@
     import {mapActionByName, mapGettersByNames, mapStateProp} from "../../utils";
     import {
         ChoroplethSelections,
-        PlottingSelectionsState
+        PlottingSelectionsState,
+        ScaleSelections
     } from "../../store/plottingSelections/plottingSelections";
     import {BaselineState} from "../../store/baseline/baseline";
     import {Language} from "../../store/translations/locales";
     import GenericChart from "../genericChart/GenericChart.vue";
     import {GenericChartState} from "../../store/genericChart/genericChart";
+    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
 
     const namespace = 'surveyAndProgram';
 
@@ -131,18 +134,22 @@
         filterTableIndicators: ChoroplethIndicatorMetadata[],
         currentLanguage: Language,
         dataSourceOptions: FilterOption[],
-        genericChartMetadata: GenericChartMetadataResponse | null
+        genericChartMetadata: GenericChartMetadataResponse | null,
+        selectedSAPColourScales: ScaleSelections,
+        isFirstTab: boolean
     }
 
     interface Methods {
+        updateChoroplethSelections: (data: {payload: Partial<ChoroplethSelections>}) => void,
+        updateSAPColourScales: (data: {payload: [DataType, ScaleSelections]}) => void,
         selectDataType: (payload: DataType) => void,
         selectDataSource: (option: FilterOption) => void,
         selectTab: (tab: Tab) => void
     }
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponentVue2<Data, Methods, Computed>({
         name: "ReviewInputs",
-        data: () => {
+        data() {
             return {
                 areaFilterId: "area",
                 selectedTab: Tab.Map
@@ -153,7 +160,7 @@
                 selectedDataType: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => {
                     return surveyAndProgram.selectedDataType;
                 },
-                showChoropleth: ({surveyAndProgram, baseline}: {surveyAndProgram: SurveyAndProgramState, baseline: BaselineState}) => {
+                showChoropleth: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => {
                     return surveyAndProgram.selectedDataType != null;
                 },
                 anc: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
@@ -205,6 +212,9 @@
                 }
 
                 return data;
+            },
+            isFirstTab() {
+                return this.selectedTab === 0
             }
         },
         methods: {
@@ -224,7 +234,7 @@
             Choropleth,
             Filters,
             AreaIndicatorsTable,
-            TreeSelect,
+            Treeselect,
             GenericChart
         }
     })

@@ -62,7 +62,7 @@
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
     import {mapActionsByNames, mapStateProp} from "../../utils";
     import {Error} from "../../generated"
     import {RootState} from "../../root";
@@ -97,7 +97,7 @@
 
     const namespace = "adr";
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponentVue2<Data, Methods, Computed>({
         data() {
             return {
                 editableKey: "",

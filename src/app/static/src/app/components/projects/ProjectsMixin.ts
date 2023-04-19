@@ -1,6 +1,7 @@
-import Vue from "vue";
+import { defineComponent } from "vue";
 import {mapStatePropByName} from "../../utils";
 import {Project} from "../../types";
+import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
 
 interface Data {
     newProjectName: string
@@ -14,7 +15,7 @@ interface Methods {
     invalidName: (projectName: string) => boolean
 }
 
-export default Vue.extend<Data, Methods, Computed, unknown>({
+export default defineComponent({
     data() {
         return {
             newProjectName: ""
@@ -24,7 +25,7 @@ export default Vue.extend<Data, Methods, Computed, unknown>({
         projects: mapStatePropByName<Project[]>("projects", "previousProjects")
     },
     methods: {
-        invalidName(projectName) {
+        invalidName(projectName: string) {
             return this.projects.map(p => p.name).indexOf(projectName) > -1
         }
     }

@@ -1,8 +1,7 @@
-import Vue from "vue";
 import {MutationTree} from 'vuex';
 import {GenericChartState} from "./genericChart";
 import {GenericChartDataset, GenericChartMetadataResponse, PayloadWithType} from "../../types";
-import {Warning} from "../../generated";
+import {Error, Warning} from "../../generated";
 
 export enum GenericChartMutation {
     GenericChartMetadataFetched = "GenericChartMetadataFetched",
@@ -23,7 +22,7 @@ export const mutations: MutationTree<GenericChartState> = {
         state.genericChartMetadata = action.payload;
     },
     [GenericChartMutation.SetDataset](state: GenericChartState, action: PayloadWithType<SetDatasetPayload>) {
-        Vue.set(state.datasets, action.payload.datasetId, action.payload.dataset);
+        state.datasets[action.payload.datasetId] = action.payload.dataset;
         state.selectionDatasetId = action.payload.datasetId;
     },
     [GenericChartMutation.ClearDataset](state: GenericChartState, action: PayloadWithType<string>) {

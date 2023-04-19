@@ -24,7 +24,7 @@
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
     import DropDown from "./DropDown.vue";
     import i18next from "i18next";
     import {mapActionByName, mapStateProp} from "../../utils";
@@ -48,7 +48,7 @@
         generateErrorReport: (payload: ErrorReportManualDetails) => void
     }
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponentVue2<Data, Methods, Computed>({
         data: function () {
             return {
                 errorReportOpen: false

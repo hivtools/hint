@@ -97,7 +97,7 @@
                     <share-project :project="p"></share-project>
                 </div>
             </div>
-            <b-collapse :id="`versions-${p.id}`">
+            <div :id="`versions-${p.id}`">
                 <div v-for="v in p.versions"
                      :id="`v-${v.id}`"
                      :key="v.id"
@@ -150,9 +150,9 @@
                         </button>
                     </div>
                 </div>
-            </b-collapse>
+            </div>
         </div>
-        <modal :open="projectToDelete || versionToDelete">
+        <modal :open="!!projectToDelete || !!versionToDelete">
             <h4 v-if="projectToDelete" v-translate="'deleteProject'"></h4>
             <h4 v-if="versionToDelete" v-translate="'deleteVersion'"></h4>
             <template v-slot:footer>
@@ -168,7 +168,7 @@
                     v-translate="'cancel'"></button>
             </template>
         </modal>
-        <modal :open="versionToPromote">
+        <modal :open="!!versionToPromote">
             <h4 v-html="promoteVersionHeader" id="promoteVersionHeader"></h4>
             <label class="h5" for="new-project-name" v-translate="'enterProjectName'"></label>
             <input type="text"
@@ -193,7 +193,7 @@
                         v-translate="'cancel'"></button>
             </template>
         </modal>
-        <modal :open="projectToRename">
+        <modal :open="!!projectToRename">
             <label class="h4" for="rename-project" v-translate="'renameProjectHeader'"></label>
             <input type="text"
                    id="rename-project"
@@ -223,7 +223,7 @@
             </template>
         </modal>
 
-        <modal :open="versionNoteToEdit || projectNoteToEdit">
+        <modal :open="!!versionNoteToEdit || !!projectNoteToEdit">
             <div v-if="versionNoteToEdit">
                 <label class="h4" for="edit-note-id"
                        v-html="editVersionNoteHeader"
@@ -264,7 +264,7 @@
 <script lang="ts">
     import i18next from "i18next";
     import {Project, Version, VersionIds} from "../../types";
-    import {BCollapse, VBToggle} from "bootstrap-vue";
+    // import {BCollapse, VBToggle} from "bootstrap-vue";
     import {
         ChevronDownIcon,
         ChevronRightIcon,
@@ -283,6 +283,7 @@
     import ShareProject from "./ShareProject.vue";
     import {VTooltip} from "floating-vue";
     import {projects} from "../../store/projects/projects";
+    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
 
     const namespace = "projects";
 
@@ -349,7 +350,9 @@
         updateProjectNoteAction: (payload: projectPayload) => void
     }
 
-    export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
+    export default defineComponentVue2<Data, Methods, Computed, typeof ProjectsMixin>({
+        // ! Needs more work on mixins
+        extends: ProjectsMixin,
         data() {
             return {
                 projectToDelete: null,
@@ -576,7 +579,7 @@
             }
         },
         components: {
-            BCollapse,
+            // BCollapse,
             ChevronDownIcon,
             ChevronRightIcon,
             CopyIcon,
@@ -588,7 +591,7 @@
             ShareProject,
         },
         directives: {
-            "b-toggle": VBToggle,
+            // "b-toggle": VBToggle,
             "tooltip": VTooltip
         }
     });

@@ -1,4 +1,4 @@
-import Vue from "vue";
+import { createApp } from "vue";
 import Vuex, {StoreOptions} from "vuex";
 import ForgotPassword from "./components/password/ForgotPassword.vue";
 import {initialPasswordState, PasswordState} from "./store/password/password";
@@ -6,7 +6,7 @@ import {actions} from './store/password/actions';
 import {mutations} from './store/password/mutations';
 import registerTranslations from "./store/translations/registerTranslations";
 
-Vue.use(Vuex);
+// Vue.use(Vuex);
 
 const passwordStoreOptions: StoreOptions<PasswordState> = {
     state: initialPasswordState,
@@ -17,14 +17,14 @@ const passwordStoreOptions: StoreOptions<PasswordState> = {
 const store = new Vuex.Store<PasswordState>(passwordStoreOptions);
 registerTranslations(store);
 
-export const forgotPasswordApp = new Vue({
+export const forgotPasswordApp = createApp({
     el: "#app",
     store,
     props: ["title"],
     components: {
         ForgotPassword
     },
-    render: function (h) {
+    render: function (h: any) {
         return h(ForgotPassword, {
             props: {
                 "title": this.$el.getAttribute("title")

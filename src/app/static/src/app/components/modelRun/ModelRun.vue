@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponentVue2} from "../../defineComponentVue2/defineComponentVue2"
     import {ModelRunState} from "../../store/modelRun/modelRun";
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
@@ -82,7 +82,7 @@
 
     const namespace = 'modelRun';
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponentVue2<Data, Methods, Computed>({
         name: "ModelRun",
         data(): Data {
             return {
@@ -126,7 +126,7 @@
                 }
             }
         },
-        created() {
+        beforeMount() {
             if (this.runId && this.pollId == -1 && this.running) {
                 this.poll(this.runId);
             }

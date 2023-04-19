@@ -45,18 +45,16 @@
             :disabled="!useRelease"
             v-model="releaseId"
         >
-            <label
-                slot="option-label"
-                slot-scope="{ node }"
-                v-html="node.raw.customLabel"
-            >
-            </label>
+            <template v-slot:option-label="{node}">
+                <label v-html="node.raw.customLabel">
+                </label>
+            </template>
         </tree-select>
     </div>
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2"
     import { mapActionByName, mapStateProp, mapMutationByName } from "../../utils";
     import TreeSelect from "vue3-treeselect";
     import { ADRState } from "../../store/adr/adr";
@@ -97,14 +95,20 @@
 
     const namespace = "adr";
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         components: {
             TreeSelect,
             HelpCircleIcon,
         },
         props: {
-            datasetId: String,
-            open: Boolean
+            datasetId: {
+                type: String,
+                required: true
+            },
+            open: {
+                type: Boolean,
+                required: true
+            }
         },
         data() {
             return {

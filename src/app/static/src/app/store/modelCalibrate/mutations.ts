@@ -1,6 +1,6 @@
 import {MutationTree} from 'vuex';
 import {ModelCalibrateState} from "./modelCalibrate";
-import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {DynamicFormData, DynamicFormMeta} from "../../vue-dynamic-form/src/types";
 import {PayloadWithType} from "../../types";
 import {updateForm} from "../../utils";
 import {

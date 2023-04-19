@@ -28,7 +28,6 @@
 </template>
 <script lang="ts">
 
-    import Vue from "vue";
     import {mapGetters} from 'vuex';
     import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";
@@ -36,6 +35,7 @@
     import HintrVersionMenu from "./HintrVersionMenu.vue";
     import {DataExplorationState} from "../../store/dataExploration/dataExploration";
     import DataExplorationSupportMenu from "./DataExplorationSupportMenu.vue";
+    import { defineComponentVue2WithProps } from '../../defineComponentVue2/defineComponentVue2';
 
     interface Props {
         title: string,
@@ -46,7 +46,7 @@
         helpFilename: string
     }
 
-    export default Vue.extend<unknown, unknown, Computed, Props>({
+    export default defineComponentVue2WithProps<unknown, unknown, Computed, Props>({
         computed: {
             helpFilename: mapStateProp<DataExplorationState, string>(null,
                 (state: DataExplorationState) => {
@@ -58,8 +58,14 @@
             ...mapGetters(["isGuest"])
         },
         props: {
-            title: String,
-            user: String
+            title: {
+                type: String,
+                required: true
+            },
+            user: {
+                type: String,
+                required: true
+            }
         },
         components: {
             LanguageMenu,

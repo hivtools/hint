@@ -18,15 +18,28 @@
 
 <script lang="ts">
 
-    import Vue from "vue";
+    import {PropType} from "vue";
+    import { defineComponentVue2WithProps } from "../defineComponentVue2/defineComponentVue2";
     import {StepperNavigationProps} from "../types";
 
-    export default Vue.extend<void, void, void, StepperNavigationProps>({
+    export default defineComponentVue2WithProps<unknown, unknown, unknown, StepperNavigationProps>({
         props: {
-            back: Function,
-            backDisabled: Boolean,
-            next: Function,
-            nextDisabled: Boolean
+            back: {
+                type: Function as PropType<() => void>,
+                required: true
+            },
+            backDisabled: {
+                type: Boolean,
+                required: true
+            },
+            next: {
+                type: Function as PropType<() => void>,
+                required: true
+            },
+            nextDisabled: {
+                type: Boolean,
+                required: true
+            }
         }
     });
 

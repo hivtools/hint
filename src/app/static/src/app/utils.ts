@@ -16,7 +16,7 @@ import {
     DynamicControlGroup,
     DynamicControlSection,
     DynamicFormMeta
-} from "@reside-ic/vue-dynamic-form";
+} from "./vue-dynamic-form/src/types";
 import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
 import {ModelOptionsState} from "./store/modelOptions/modelOptions";
 import {RootState} from "./root";
@@ -298,7 +298,7 @@ export const versionLabel = (version: Version) => `v${version.versionNumber}`;
 
 export const updateForm = (oldForm: DynamicFormMeta, newForm: DynamicFormMeta): DynamicFormMeta => {
     const selectedOptions = {} as Dict<string | string[] | number | null | undefined>;
-    oldForm.controlSections.forEach(oldSection => {
+    oldForm.controlSections.forEach((oldSection) => {
         oldSection.controlGroups.forEach(oldGroup => {
             oldGroup.controls.forEach(oldControl => {
                 selectedOptions[oldControl.name] = oldControl.value;

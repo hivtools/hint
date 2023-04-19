@@ -12,7 +12,7 @@
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
 
     interface Methods {
         toggle: () => void
@@ -25,12 +25,25 @@
 
     interface Props {
         text: string
-        right: boolean
-        delay: boolean
+        right?: boolean
+        delay?: boolean
     }
 
-    export default Vue.extend<Data, Methods, unknown, keyof Props>({
-        props: ["text", "right", "delay"],
+    export default defineComponentVue2WithProps<Data, Methods, unknown, Props>({
+        props: {
+            text: {
+                type: String,
+                required: true
+            },
+            right: {
+                type: Boolean,
+                required: false
+            },
+            delay: {
+                type: Boolean,
+                required: false
+            }
+        },
         data(): Data {
             return {
                 show: false

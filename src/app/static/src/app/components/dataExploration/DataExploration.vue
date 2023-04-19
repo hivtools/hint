@@ -18,7 +18,7 @@
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import AdrIntegration from "../adr/ADRIntegration.vue";
     import UploadInputs from "../uploadInputs/UploadInputs.vue";
@@ -53,7 +53,7 @@
         getPlottingMetadata: (country: string) => void
     }
 
-    export default Vue.extend<unknown, Methods, Computed, unknown>({
+    export default defineComponentVue2<unknown, Methods, Computed>({
         computed: {
             step: mapStateProp<StepperState, number>("stepper", state => state.activeStep),
             canProgress() {

@@ -72,7 +72,7 @@
                              area-filter-id="area"
                              :colour-scales="colourScales"
                              :size-scales="bubbleSizeScales"
-                             @update="updateBubblePlotSelections({payload: $event})"
+                             @update="updateBubblePlotSelections($event)"
                              @update-colour-scales="updateOutputColourScales({payload: $event})"
                              @update-size-scales="updateOutputBubbleSizeScales({payload: $event})"></bubble-plot>
                 <div class="row mt-2">
@@ -120,14 +120,13 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import BubblePlot from "../plots/bubble/BubblePlot.vue";
     import AreaIndicatorsTable from "../plots/table/AreaIndicatorsTable.vue";
-    import {BarchartIndicator, Filter, FilterConfig, FilterOption} from "@reside-ic/vue-charts/src/bar/types";
-    import {BarChartWithFilters} from "@reside-ic/vue-charts";
+    import {BarchartIndicator, Filter, FilterConfig, FilterOption} from "../../vue-chart/src/bar/types";
+    import {BarChartWithFilters} from "../../vue-chart/src";
     import ErrorAlert from "../ErrorAlert.vue";
-
+    import {defineComponentVue2} from "../../defineComponentVue2/defineComponentVue2"
     import {
         mapGettersByNames,
         mapMutationByName,
@@ -149,7 +148,7 @@
     import {inactiveFeatures} from "../../main";
     import {RootState} from "../../root";
     import {LevelLabel} from "../../types";
-    import {ChoroplethIndicatorMetadata,} from "../../generated";
+    import {ChoroplethIndicatorMetadata, Error,} from "../../generated";
     import {
         formatOutput, 
         filterConfig,
@@ -162,7 +161,8 @@
     const namespace = 'filteredData';
 
     interface Data {
-        tabs: string[]
+        tabs: string[],
+        areaFilterId: string
     }
 
     interface Methods {
@@ -188,8 +188,8 @@
         comparisonPlotIndicators: BarchartIndicator[],
         chartdata: any,
         comparisonPlotData: any
-        barchartSelections: BarchartSelections,
-        comparisonPlotSelections: BarchartSelections,
+        barchartSelections: BarchartSelections& {detail: null},
+        comparisonPlotSelections: BarchartSelections & {detail: null},
         bubblePlotSelections: BubblePlotSelections,
         choroplethSelections: ChoroplethSelections,
         selectedTab: string,
@@ -213,9 +213,9 @@
         comparisonPlotDefaultSelections: UnadjustedBarchartSelections[]
     }
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponentVue2<Data, Methods, Computed>({
         name: "ModelOutput",
-        created() {
+        beforeMount() {
             if (!this.selectedTab) {
                 this.tabSelected(this.tabs[0]);
             }
@@ -279,7 +279,7 @@
                 return state.comparisonPlotResult ? state.comparisonPlotResult.data : [];
             }),
             barchartSelections() {
-                return this.$store.state.plottingSelections.barchart
+                return {...this.$store.state.plottingSelections.barchart, detail: null}
             },
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),

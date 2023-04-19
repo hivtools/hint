@@ -19,11 +19,12 @@
     import {mapMutationByName, mapStateProps} from "../utils";
     import {ErrorsMutation} from "../store/errors/mutations";
     import {Error} from "../generated"
+    import { defineComponentVue2WithProps } from "../defineComponentVue2/defineComponentVue2";
 
     const namespace = "errors";
 
     interface Props {
-        title: string
+        title?: string
     }
 
     interface Methods {
@@ -39,10 +40,13 @@
 
     }
 
-    export default Vue.extend<unknown, Methods, Computed, Props>({
+    export default defineComponentVue2WithProps<unknown, Methods, Computed, Props>({
         name: "Errors",
         props: {
-            title: String
+            title: {
+                type: String,
+                required: false
+            }
         },
         computed: {
             ...mapStateProps<ErrorsState, keyof ComputedState>(namespace, {

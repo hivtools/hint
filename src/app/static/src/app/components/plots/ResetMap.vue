@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import {defineComponentVue2} from "../../defineComponentVue2/defineComponentVue2"
     import {LControl} from "@vue-leaflet/vue-leaflet";
     import {mapStateProp} from "../../utils";
     import {RootState} from "../../root";
@@ -29,7 +29,7 @@
         tooltipContent: (tooltipValue: string) => string
     }
 
-    export default Vue.extend<unknown, Methods, Computed>({
+    export default defineComponentVue2<unknown, Methods, Computed>({
         components: {
             RefreshCwIcon,
             LControl

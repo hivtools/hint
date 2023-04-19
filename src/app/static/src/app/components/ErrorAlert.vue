@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponentVue2WithProps } from "../defineComponentVue2/defineComponentVue2";
     import {Error} from "../generated";
 
     interface Props {
@@ -17,9 +17,12 @@
         message: string
     }
 
-    export default Vue.extend<unknown, unknown, Computed, Props>({
+    export default defineComponentVue2WithProps<unknown, unknown, Computed, Props>({
         props: {
-            "error": Object
+            error: {
+                type: Object,
+                required: true
+            }
         },
         computed: {
             message: function () {
