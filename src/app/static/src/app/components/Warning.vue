@@ -1,7 +1,7 @@
 <template>
     <div v-if="warnings.length > 0">
         <h5 class="alert-heading pt-2">
-            <alert-triangle-icon size="1.0x" class="custom-class mr-1 mb-1"></alert-triangle-icon>
+            <vue-feather type="alert-triangle" size="1.0x" class="custom-class mr-1 mb-1"></vue-feather>
             <span v-translate="headerText(origin)"></span>
         </h5>
         <!-- The outer styled divs are the visible window of warnings and inside them are the 
@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-    import { AlertTriangleIcon } from "vue-feather";
+    import VueFeather from "vue-feather";
     import i18next from "i18next";
     import { mapStateProp } from "../utils";
     import { RootState } from "../root";
@@ -165,7 +165,8 @@ import { nextTick } from "vue";
             this.updateDimensions()
         },
         components: {
-            AlertTriangleIcon
+            VueFeather
+            // AlertTriangleIcon
         }
     })
 </script>

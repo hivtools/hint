@@ -6,9 +6,9 @@
                 <treeselect :multiple=false
                             :clearable="false"
                             :options="indicators"
-                            v-model="selections.colorIndicatorId"
+                            :modelValue="selections.colorIndicatorId"
                             :normalizer="normalizeIndicators"
-                            @input="onColorIndicatorSelect($event)">
+                            @update:modelValue="onColorIndicatorSelect($event)">
                 </treeselect>
             </div>
             <div id="size-indicator" class="form-group">
@@ -16,9 +16,9 @@
                 <treeselect :multiple=false
                             :clearable="false"
                             :options="indicators"
-                            v-model="selections.sizeIndicatorId"
+                            :modelValue="selections.sizeIndicatorId"
                             :normalizer="normalizeIndicators"
-                            @input="onSizeIndicatorSelect($event)">
+                            @update:modelValue="onSizeIndicatorSelect($event)">
                 </treeselect>
             </div>
             <h4 v-translate="'filters'"></h4>
@@ -41,11 +41,11 @@
         <div id="chart" class="col-md-9">
             <l-map ref="map" style="height: 800px; width: 100%">
                 <template v-for="feature in currentFeatures" :key="feature.id">
-                    <l-geo-json  ref=""
-                                :geojson="feature"
+                    <l-geo-json :geojson="feature"
+                                :options="options"
                                 :optionsStyle="style">
                     </l-geo-json>
-                    <l-circle-marker v-if="showBubble(feature)"
+                    <!-- <l-circle-marker v-if="showBubble(feature)"
                                      :key="feature.id"
                                      :lat-lng="[feature.properties?.center_y, feature.properties?.center_x]"
                                      :radius="getRadius(feature)"
@@ -54,14 +54,17 @@
                                      :color="getColor(feature)"
                                      :fill-color="getColor(feature)">
                         <l-tooltip :content="getTooltip(feature)"/>
-                    </l-circle-marker>
+                    </l-circle-marker> -->
+                    <!-- <l-circle-marker
+                    :lat-lng="[33.64, -9.61]"
+                    ></l-circle-marker> -->
                 </template>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
                 <reset-map v-else @reset-view="updateBounds"></reset-map>
                 <map-control :initialDetail=selections.detail
                              :show-indicators="false"
                              :level-labels="featureLevels"
-                             @detail-changed="onDetailChange"></map-control>
+                             @detailChanged="onDetailChange($event)"></map-control>
                 <map-legend v-show="!emptyFeature"
                             :metadata="colorIndicator"
                             :colour-range="colourRange"
@@ -89,7 +92,7 @@
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
     import FilterSelect from "../FilterSelect.vue";
-    import {GeoJSON} from "leaflet";
+    import {CircleMarker, GeoJSON, GeoJSONOptions, Layer, circleMarker} from "leaflet";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {
         BubblePlotSelections,
@@ -123,7 +126,8 @@
         style: any,
         maxRadius: number,
         minRadius: number,
-        fullIndicatorRanges: Dict<NumericRange>
+        fullIndicatorRanges: Dict<NumericRange>,
+        previousCircles: CircleMarker[]
     }
 
     interface Methods {
@@ -170,36 +174,6 @@
         selectedAreaIds: string[]
         emptyFeature: boolean
     }
-
-    const props = {
-        features: {
-            type: Array
-        },
-        featureLevels: {
-            type: Array
-        },
-        indicators: {
-            type: Array
-        },
-        chartdata: {
-            type: Array
-        },
-        filters: {
-            type: Array
-        },
-        selections: {
-            type: Object
-        },
-        areaFilterId: {
-            type: String
-        },
-        colourScales: {
-            type: Object
-        },
-        sizeScales: {
-            type: Object
-        }
-    };
 
     export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         name: "BubblePlot",
@@ -254,14 +228,15 @@
                 required: true
             }
         },
-        data(): Data {
+        data() {
             return {
                 style: {
                     className: "geojson-grey",
                 },
                 maxRadius: 70,
                 minRadius: 10,
-                fullIndicatorRanges: {}
+                fullIndicatorRanges: {},
+                previousCircles: []
             }
         },
         computed: {
@@ -397,9 +372,28 @@
         methods: {
             updateBounds: function () {
                 if (this.initialised) {
-                    const map = this.$refs.map as typeof LMap;
-                    if (map && map.fitBounds) {
-                        map.fitBounds(this.selectedAreaFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
+                    let map = this.$refs.map as any;
+                    if (this.previousCircles.length != 0) {
+                        this.previousCircles.forEach(circle => circle.remove())
+                        this.previousCircles = []
+                    }
+                    let circlesArray: CircleMarker[] = [];
+                    this.currentFeatures.forEach((feature) => {
+                        let circle = circleMarker([feature.properties?.center_y, feature.properties?.center_x], {
+                            radius: this.getRadius(feature),
+                            fillOpacity: 0.75,
+                            opacity: 0.75,
+                            color: this.getColor(feature),
+                            fillColor: this.getColor(feature),
+                        })
+                        circlesArray.push(circle)
+                    })
+                    this.previousCircles = circlesArray
+
+
+                    if (map && map.leafletObject) {
+                        map.leafletObject.fitBounds(this.selectedAreaFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
+                        circlesArray.forEach(circle => circle.addTo(map.leafletObject))
                     }
                 }
             },
@@ -505,7 +499,7 @@
                 this.changeSelections({sizeIndicatorId: newValue});
             },
             changeSelections(newSelections: Partial<BubblePlotSelections>) {
-                this.$emit("update", newSelections)
+                this.$emit("update:selections", newSelections)
             },
             getFeatureFromAreaId(areaId: string): Feature {
                 return this.features.find((f: Feature) => f.properties!.area_id == areaId)!;
@@ -536,7 +530,7 @@
         mounted() {
             this.updateBounds();
         },
-        beforeMount() {
+        async beforeMount() {
             //If selections have not been initialised, refresh them
             if (this.selections.detail < 0) {
                 this.onDetailChange(this.maxLevel);
@@ -550,7 +544,7 @@
                 const sizeIndicator = this.indicatorNameLookup.plhiv ? "plhiv" : this.indicators[0].indicator;
                 this.changeSelections({sizeIndicatorId: sizeIndicator});
             }
-
+            
             if (Object.keys(this.selections.selectedFilterOptions).length < 1) {
                 const defaultSelected = this.nonAreaFilters.reduce((obj: any, current: Filter) => {
                     obj[current.id] = current.options.length > 0 ? [current.options[0]] : [];
@@ -558,6 +552,6 @@
                 }, {} as Dict<FilterOption[]>);
                 this.changeSelections({selectedFilterOptions: defaultSelected});
             }
-        },
+        }
     });
 </script>

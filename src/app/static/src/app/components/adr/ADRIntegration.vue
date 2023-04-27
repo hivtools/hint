@@ -17,7 +17,6 @@
     import AdrKey from "./ADRKey.vue";
     import SelectDataset from "./SelectDataset.vue";
     import {ADRState} from "../../store/adr/adr";
-    import {VTooltip} from "floating-vue";
     import i18next from "i18next";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
@@ -110,9 +109,6 @@
             if(this.selectedDataset) {
                 this.getUserCanUpload();
             }
-        },
-        directives: {
-            "tooltip": VTooltip
         }
     })
 </script>

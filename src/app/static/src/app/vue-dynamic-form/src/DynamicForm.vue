@@ -1,12 +1,12 @@
 <template>
-    <form :ref="id" :id="id" class="dynamic-form" novalidate>
+    <b-form :ref="id" :id="id" class="dynamic-form" novalidate>
         <dynamic-form-control-section v-for="(section, index) in formMeta.controlSections"
                                       :key="index"
                                       :control-section="section"
                                       @confirm="confirm"
                                       :required-text="requiredText"
                                       :select-text="selectText"
-                                      @change="change($event, index)">
+                                      @updateControlSection="change($event, index)">
         </dynamic-form-control-section>
         <button v-if="includeSubmitButton"
                 class="btn"
@@ -14,11 +14,11 @@
                 :disabled="disabled"
                 v-on:click="submit">{{submitText}}
         </button>
-    </form>
+    </b-form>
 </template>
 
 <script lang="ts">
-    // import {BForm} from "bootstrap-vue";
+    import {BForm} from "bootstrap-vue-next";
     import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
     import DynamicFormControlSection from "./DynamicFormControlSection.vue";
     import {
@@ -84,12 +84,8 @@
                 default: "Select..."
             }
         },
-        // model: {
-        //     prop: "formMeta",
-        //     event: "change"
-        // },
         components: {
-            // BForm,
+            BForm,
             DynamicFormControlGroup,
             DynamicFormControlSection
         },
@@ -124,7 +120,6 @@
             change(newVal: DynamicControlSection, index: number) {
                 const controlSections = [...this.formMeta.controlSections];
                 controlSections[index] = newVal;
-                console.log(["dynamicForm", {...this.formMeta, controlSections}])
                 this.$emit("update:formMeta", {...this.formMeta, controlSections})
             },
             buildValue(control: DynamicControl) {

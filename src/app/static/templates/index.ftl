@@ -7,9 +7,6 @@
     <!-- inject:css -->
     <link href="/public/css/app.css" rel="stylesheet">
     <#--  <link href="/public/css/leaflet.css" rel="stylesheet">  -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-    integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
-    crossorigin=""/>
     <#--  <link href="/public/css/bootstrap.css" rel="stylesheet">  -->
     <!-- endinject -->
     <script defer src="/public/js/app.js"></script>
@@ -20,11 +17,7 @@
 </head>
 <body>
 <div id="app" :class="language">
-    <user-header title="${title}" user="${user}"></user-header>
-    <div class="container mb-5">
-        <router-view></router-view>
-    </div>
-    <errors title="${title}"></errors>
+    <hint title="${title}" user="${user}"></hint>
 </div>
 <script>
     var currentUser = "${user}"

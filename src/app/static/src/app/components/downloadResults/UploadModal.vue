@@ -17,7 +17,7 @@
                     <span class="form-check-label pl-2">
                         <label for="createRelease" v-translate="'createRelease'" class="d-inline"></label>
                         <span class="icon-small d-inline" v-tooltip="translate('createReleaseTooltip')">
-                            <help-circle-icon></help-circle-icon>
+                            <vue-feather type="help-circle"></vue-feather>
                         </span>
                     </span>
                     <br/>
@@ -31,7 +31,7 @@
                     <span class="form-check-label pl-2">
                         <label for="uploadFiles" v-translate="'uploadFiles'" class="d-inline"></label>
                         <span class="icon-small d-inline" v-tooltip="translate('uploadFilesTooltip')">
-                            <help-circle-icon></help-circle-icon>
+                            <vue-feather type="help-circle"></vue-feather>
                         </span>
                     </span>
                     <br/>
@@ -84,8 +84,7 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
-    import {HelpCircleIcon} from "vue-feather";
-    import {VTooltip} from "floating-vue";
+    import VueFeather from "vue-feather";
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
@@ -237,7 +236,7 @@
         },
         components: {
             Modal,
-            HelpCircleIcon
+            VueFeather
         },
         watch: {
             choiceUpload() {
@@ -245,9 +244,6 @@
                     this.setDefaultCheckedItems()
                 }
             }
-        },
-        directives: {
-            tooltip: VTooltip,
         },
         mounted() {
             if (this.outputFileError) {

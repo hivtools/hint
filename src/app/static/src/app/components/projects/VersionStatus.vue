@@ -5,7 +5,7 @@
         </span><br/>
         <span v-if="time" class="float-right">
             <span v-translate="'lastSaved'"></span> {{ formattedTime }}
-            <check-icon size="14" class="mb-1"></check-icon>
+            <vue-feather type="check" size="14" class="mb-1"></vue-feather>
         </span>
     </div>
 </template>
@@ -13,7 +13,7 @@
 <script lang="ts">
     import {ProjectsState} from "../../store/projects/projects";
     import {mapStateProp} from "../../utils";
-    import {CheckIcon} from "vue-feather";
+    import VueFeather from "vue-feather";
     import moment from 'moment';
     import {versionLabel} from "../../utils";
 import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
@@ -43,7 +43,7 @@ import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVu
                 state.currentVersion ? versionLabel(state.currentVersion) : null)
         },
         components: {
-            CheckIcon
+            VueFeather
         }
     });
 </script>

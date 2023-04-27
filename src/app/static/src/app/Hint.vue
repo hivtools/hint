@@ -1,11 +1,9 @@
 <template>
-    <div id="app">
-        <user-header/>
-        <errors/>
-        <main>
-        <router-view />
-        </main>
+    <user-header :title="title" :user="user"></user-header>
+    <div id="app" class="container mb-5">
+        <router-view></router-view>
     </div>
+    <errors title="title"></errors>
 </template>
 
 <script lang="ts">
@@ -17,6 +15,14 @@ import { RootState } from './root';
 import { Language } from './store/translations/locales';
 
     export default defineComponent({
+        props: {
+            title: {
+                type: String
+            },
+            user: {
+                type: String
+            }
+        },
         components: {
             UserHeader,
             Errors

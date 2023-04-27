@@ -45,7 +45,7 @@
                     :chart-data="chartdata"
                     :filter-config="barchartFilterConfig"
                     :indicators="barchartIndicators"
-                    :selections="barchartSelections"
+                    v-model:selections="barchartSelections"
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
                     :no-data-message="noChartData"
@@ -72,7 +72,7 @@
                              area-filter-id="area"
                              :colour-scales="colourScales"
                              :size-scales="bubbleSizeScales"
-                             @update="updateBubblePlotSelections($event)"
+                             @update:selections="updateBubblePlotSelections({payload: $event})"
                              @update-colour-scales="updateOutputColourScales({payload: $event})"
                              @update-size-scales="updateOutputBubbleSizeScales({payload: $event})"></bubble-plot>
                 <div class="row mt-2">
@@ -95,7 +95,7 @@
                     :filter-config="comparisonPlotFilterConfig"
                     :disaggregate-by-config="{ fixed: true, hideFilter: true }"
                     :indicators="comparisonPlotIndicators"
-                    :selections="comparisonPlotSelections"
+                    v-model:selections="comparisonPlotSelections"
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
                     :no-data-message="noChartData"
@@ -169,7 +169,7 @@
         tabSelected: (tab: string) => void
         updateBarchartSelections: (data: { payload: BarchartSelections }) => void
         updateComparisonPlotSelections: (data: { payload: BarchartSelections }) => void
-        updateBubblePlotSelections: (data: BubblePlotSelections) => void
+        updateBubblePlotSelections: (data: { payload: BubblePlotSelections}) => void
         updateOutputColourScales: (colourScales: ScaleSelections) => void
         updateOutputBubbleSizeScales: (colourScales: ScaleSelections) => void
         formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => string

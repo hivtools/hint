@@ -28,10 +28,6 @@
 
     export default defineComponentVue2GetSetWithProps<unknown, unknown, Computed, Props>({
         name: "DynamicFormMultiSelect",
-        model: {
-            prop: "formControl",
-            event: "change"
-        },
         props: {
             formControl: {
                 type: Object,
@@ -54,8 +50,7 @@
                     return []
                 },
                 set(newVal: string[]) {
-                    console.log(["multi select comp", {...this.formControl, value: newVal}])
-                    this.$emit("change", {...this.formControl, value: newVal});
+                    this.$emit("update:formControl", {...this.formControl, value: newVal});
                 }
             },
         },

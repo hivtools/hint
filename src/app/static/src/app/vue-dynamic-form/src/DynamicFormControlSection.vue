@@ -1,6 +1,6 @@
 <template>
     <div>
-        <!-- <h3 @click="toggleSection" :class="{'cursor-pointer': controlSection.collapsible}">
+        <h3 @click="toggleSection" :class="{'cursor-pointer': controlSection.collapsible}">
             {{controlSection.label}}
             <component v-if="controlSection.collapsible"
                        style="vertical-align: initial"
@@ -14,11 +14,11 @@
                                         @confirm="confirm"
                                         :required-text="requiredText"
                                         :select-text="selectText"
-                                        @change="change($event, index)"></dynamic-form-control-group>
+                                        @updateControlGroup="change($event, index)"></dynamic-form-control-group>
             <b-row v-if="controlSection.documentation" class="documentation mb-4">
                 <b-col>
                     <a href="#" @click="toggleDocumentation">
-                        <info-icon></info-icon>
+                        <vue-feather type="info"></vue-feather>
                         How to use these settings
                         <component style="vertical-align: top"
                                    :is="documentationChevronComponent"></component>
@@ -28,9 +28,9 @@
                     </b-collapse>
                 </b-col>
             </b-row>
-        </b-collapse> -->
+        </b-collapse>
         
-        <h3 @click="toggleSection" :class="{'cursor-pointer': controlSection.collapsible}">
+        <!-- <h3 @click="toggleSection" :class="{'cursor-pointer': controlSection.collapsible}">
             {{controlSection.label}}
             <component v-if="controlSection.collapsible"
                        style="vertical-align: initial"
@@ -44,7 +44,7 @@
                                         @confirm="confirm"
                                         :required-text="requiredText"
                                         :select-text="selectText"
-                                        @change="change($event, index)"></dynamic-form-control-group>
+                                        @updateControlGroup="change($event, index)"></dynamic-form-control-group>
             <div v-if="controlSection.documentation" class="documentation mb-4">
                 <div>
                     <a href="#" @click="toggleDocumentation">
@@ -58,7 +58,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>
 
@@ -67,10 +67,8 @@
     import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
     import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
     import {DynamicControlGroup, DynamicControlSection} from "./types";
-    import InfoIcon from "vue-feather";
-    import ChevronDownIcon from "vue-feather";
-    import ChevronUpIcon from "vue-feather";
-    // import {BCollapse, BRow, BCol} from "bootstrap-vue";
+    import VueFeather from "vue-feather";
+    import {BCollapse, BRow, BCol} from "bootstrap-vue-next";
 
     interface Methods {
         change: (newVal: DynamicControlGroup, index: number) => void
@@ -112,10 +110,6 @@
                 required: false
             }
         },
-        model: {
-            prop: "controlSection",
-            event: "change"
-        },
         computed: {
             chevronComponent() {
                 if (this.open) {
@@ -134,8 +128,7 @@
             change(newVal: DynamicControlGroup, index: number) {
                 const controlGroups = [...this.controlSection.controlGroups];
                 controlGroups[index] = newVal;
-                console.log(["controlGroup", {...this.controlSection, controlGroups}])
-                this.$emit("change", {...this.controlSection, controlGroups})
+                this.$emit("updateControlSection", {...this.controlSection, controlGroups})
             },
             toggleDocumentation(e: Event) {
                 e.preventDefault();
@@ -152,12 +145,10 @@
         },
         components: {
             DynamicFormControlGroup,
-            InfoIcon,
-            ChevronDownIcon,
-            ChevronUpIcon,
-            // BCollapse,
-            // BRow,
-            // BCol
+            VueFeather,
+            BCollapse,
+            BRow,
+            BCol
         },
         mounted() {
             if (this.controlSection.collapsible && this.controlSection.collapsed) {

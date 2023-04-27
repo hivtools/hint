@@ -1,7 +1,6 @@
 <template>
-    <select class="form-control"
-            :value="value"
-            @change="value = ($event.target as HTMLSelectElement).value"
+    <b-form-select class="form-control"
+            v-model="value"
             :name="formControl.name"
             :required="formControl.required">
         <option v-if="!formControl.excludeNullOption" value>{{selectText}}</option>
@@ -10,35 +9,19 @@
                 :value="opt.id">
             {{opt.label}}
         </option>
-    </select>
+    </b-form-select>
 </template>
 
 <script lang="ts">
-import { defineComponentVue2GetSetWithProps } from "../../defineComponentVue2/defineComponentVue2";
-    // import {BFormSelect} from "bootstrap-vue";
+    import { PropType, defineComponent } from "vue";
+    import {BFormSelect} from "bootstrap-vue-next";
     import {SelectControl} from "./types";
 
-    interface Props {
-        formControl: SelectControl
-        selectText?: string
-    }
-
-    interface Computed extends Record<string, any> {
-        value: {
-            get(): string,
-            set: (newVal: string) => void
-        }
-    }
-
-    export default defineComponentVue2GetSetWithProps<unknown, unknown, Computed, Props>({
+    export default defineComponent({
         name: "DynamicFormSelect",
-        model: {
-            prop: "formControl",
-            event: "change"
-        },
         props: {
             formControl: {
-                type: Object,
+                type: Object as PropType<SelectControl>,
                 required: true
             },
             selectText: {
@@ -52,13 +35,12 @@ import { defineComponentVue2GetSetWithProps } from "../../defineComponentVue2/de
                     return this.formControl.value || ""
                 },
                 set(newVal: string) {
-                    console.log(["select comp", {...this.formControl, value: newVal}])
-                    this.$emit("change", {...this.formControl, value: newVal});
+                    this.$emit("update:formControl", {...this.formControl, value: newVal});
                 }
             }
         },
         components: {
-            // BFormSelect
+            BFormSelect
         },
         mounted() {
             if (this.formControl.excludeNullOption && !this.formControl.value) {

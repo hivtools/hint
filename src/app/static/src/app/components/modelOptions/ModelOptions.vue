@@ -5,8 +5,7 @@
             <h2 id="loading-message" v-translate="'loadingOptions'"></h2>
         </div>
         <dynamic-form v-if="!loading && !hasOptionsError"
-                      :formMeta="modelOptions"
-                      @update:formMeta="newOptions => modelOptions = newOptions"
+                      v-model:formMeta="modelOptions"
                       :submit-text="validateText"
                       @confirm="confirmEditing"
                       @submit="handleValidation"
@@ -124,7 +123,6 @@
                     return this.$store.state.modelOptions.optionsFormMeta
                 },
                 set(newVal: DynamicFormMeta) {
-                    console.log(["set", newVal])
                     this.update(newVal)
                 }
             }

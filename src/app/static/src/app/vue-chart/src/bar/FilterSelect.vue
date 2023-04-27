@@ -1,14 +1,14 @@
 <template>
     <div>
         <label class="font-weight-bold">{{label}}</label>
-        <tree-select :instanceId="id"
+        <treeselect :instanceId="id"
                      :multiple=isXAxisOrDisagg
                      :clearable="false"
                      :flat=isXAxisOrDisagg
                      :options="options"
                      :value="selectedValues"
                      @select="select"
-                     @deselect="deselect"></tree-select>
+                     @deselect="deselect"></treeselect>
         <span v-if="isXAxisOrDisagg" class="text-muted">
                         <small>{{badge}}</small>
                     </span>
@@ -16,9 +16,10 @@
 </template>
 
 <script lang="ts">
-    import {defineComponent, Prop} from "vue";
+    import {defineComponent, Prop, PropType} from "vue";
     import {FilterOption} from "./types";
-    import TreeSelect from 'vue3-treeselect';
+    import Treeselect from 'vue3-treeselect';
+import { string } from "yargs";
 
     interface Props {
         id?: string
@@ -46,7 +47,33 @@
         deselect: (node: FilterOption) => void
     }
 
-    export default defineComponent<Props, unknown, Data, Computed, Methods>({
+    export default defineComponent({
+        props: {
+            id: {
+                type: String,
+                required: false
+            },
+            options: {
+                type: Array as PropType<FilterOption[]>,
+                required: true
+            },
+            isXAxis: {
+                type: Boolean,
+                required: true
+            },
+            isDisaggregateBy: {
+                type: Boolean,
+                required: true
+            },
+            value: {
+                type: Array as PropType<any[]>,
+                required: true
+            },
+            label: {
+                type: String,
+                required: true
+            }
+        },
         data() {
             return {
                 selected: (this.isXAxis || this.isDisaggregateBy) ? this.value : [this.value[0]]
@@ -99,7 +126,7 @@
             }
         },
         components: {
-            TreeSelect
+            Treeselect
         }
     })
 </script>

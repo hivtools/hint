@@ -96,7 +96,6 @@
     import Modal from "./Modal.vue";
     import {ErrorReportManualDetails} from "../types";
     import ErrorAlert from "./ErrorAlert.vue";
-    import {VTooltip} from "floating-vue";
     import i18next from "i18next";
     import {Language} from "../store/translations/locales";
     import {Error} from "../generated";
@@ -139,7 +138,6 @@
             Modal,
             LoadingSpinner
         },
-        directives: {tooltip: VTooltip},
         props: {
             open: {
                 type: Boolean,

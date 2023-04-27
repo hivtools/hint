@@ -16,7 +16,7 @@
                 </li>
             </ul>
         </div>
-        <template v-if="isFirstTab">
+        <template v-if="selectedTab === 0">
             <div class="row">
                 <div :class="showChoropleth ? 'col-md-3' : 'col-sm-6 col-md-8'" class="upload-section">
                     <div v-if="showChoropleth" id="data-source" class="form-group">
@@ -25,8 +25,8 @@
                                 :multiple="false"
                                 :clearable="false"
                                 :options="dataSourceOptions"
-                                :value="selectedDataType"
-                                @select="selectDataSource">
+                                :model-value="selectedDataType"
+                                @update:model-value="selectDataSource">
                         </treeselect>
                     </div>
                     <filters v-if="showChoropleth"
@@ -62,7 +62,7 @@
                 </div>
             </div>
         </template>
-        <template v-else-if="!isFirstTab">
+        <template v-else-if="selectedTab === 1">
             <generic-chart v-if="genericChartMetadata"
                            chart-id="input-time-series"
                            chart-height="600px"
@@ -136,7 +136,6 @@
         dataSourceOptions: FilterOption[],
         genericChartMetadata: GenericChartMetadataResponse | null,
         selectedSAPColourScales: ScaleSelections,
-        isFirstTab: boolean
     }
 
     interface Methods {
@@ -212,9 +211,6 @@
                 }
 
                 return data;
-            },
-            isFirstTab() {
-                return this.selectedTab === 0
             }
         },
         methods: {
@@ -236,6 +232,10 @@
             AreaIndicatorsTable,
             Treeselect,
             GenericChart
-        }
+        },
+        // TODO choropleth map doesn't show up because this doesn't get set for some reason! need to fix
+        created() {
+            this.selectDataSource({label: "whatever", id: "1"});
+        },
     })
 </script>

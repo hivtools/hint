@@ -17,17 +17,20 @@
             <div :id="`p-${p.id}`" class="row py-2">
                 <div class="col-md-1 project-cell">
                     <button
+                        id="version-toggle"
                         v-b-toggle="`versions-${p.id}`"
                         :aria-label="`toggle ${getTranslatedValue('versionCountLabelSingle')} ${p.id}`"
                         class="btn btn-xs bg-transparent shadow-none py-0">
-                        <chevron-right-icon
+                        <vue-feather
+                            type="chevron-right"
                             size="20"
                             class="icon when-closed"
-                        ></chevron-right-icon>
-                        <chevron-down-icon
+                        ></vue-feather>
+                        <vue-feather
+                            type="chevron-down"
                             size="20"
                             class="icon when-open"
-                        ></chevron-down-icon>
+                        ></vue-feather>
                     </button>
                 </div>
                 <div class="col-md-3 project-cell name-cell">
@@ -40,7 +43,7 @@
                             v-tooltip="getTranslatedValue('editProjectNote')"
                             @click.prevent="handleEditProjectNote(p.id)"
                             v-translate:aria-label="'editProjectNote'">
-                        <file-text-icon size="20"></file-text-icon>
+                        <vue-feather type="file-text" size="20"></vue-feather>
                     </button>
                     </span>
                     <small v-if="p.sharedBy" class="text-muted d-flex">
@@ -61,7 +64,7 @@
                     <button class=" btn btn-sm btn-red-icons"
                             v-translate:aria-label="'load'"
                             @click="loadVersion($event, p.id, p.versions[0].id)">
-                        <refresh-cw-icon size="20"></refresh-cw-icon>
+                        <vue-feather type="refresh-cw" size="20"></vue-feather>
                     </button>
                 </div>
                 <div class="col-md-1 project-cell rename-cell"
@@ -69,7 +72,7 @@
                     <button class="btn btn-sm btn-red-icons"
                             v-translate:aria-label="'renameProject'"
                             @click="renameProject($event, p.id)">
-                        <edit-icon size="20"></edit-icon>
+                        <vue-feather type="edit" size="20"></vue-feather>
                     </button>
                 </div>
                 <div class="col-md-1 project-cell delete-cell"
@@ -77,7 +80,7 @@
                     <button class=" btn btn-sm btn-red-icons"
                             v-translate:aria-label="'delete'"
                             @click="deleteProject($event, p.id)">
-                        <trash-2-icon size="20"></trash-2-icon>
+                        <vue-feather type="trash-2" size="20"></vue-feather>
                     </button>
                 </div>
                 <div class="col-md-1 project-cell copy-cell"
@@ -89,7 +92,7 @@
                                 p.id,
                                 p.versions[0].id,
                                 p.versions[0].versionNumber)">
-                        <copy-icon size="20"></copy-icon>
+                        <vue-feather type="copy" size="20"></vue-feather>
                     </button>
                 </div>
 
@@ -97,7 +100,7 @@
                     <share-project :project="p"></share-project>
                 </div>
             </div>
-            <div :id="`versions-${p.id}`">
+            <b-collapse :id="`versions-${p.id}`">
                 <div v-for="v in p.versions"
                      :id="`v-${v.id}`"
                      :key="v.id"
@@ -109,7 +112,7 @@
                                     v-tooltip="getTranslatedValue('editVersionNote')"
                                     v-translate:aria-label="'editVersionNote'"
                                     @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
-                            <file-text-icon size="20"></file-text-icon>
+                            <vue-feather type="file-text" size="20"></vue-feather>
                             </button>
                         </span>
                     </div>
@@ -124,7 +127,7 @@
                         <button class=" btn btn-sm btn-red-icons"
                                 v-translate:aria-label="'load'"
                                 @click="loadVersion($event, p.id, v.id)">
-                            <refresh-cw-icon size="20"></refresh-cw-icon>
+                            <vue-feather type="refresh-cw" size="20"></vue-feather>
                         </button>
                     </div>
                     <div class="col-md-1 version-cell">
@@ -134,7 +137,7 @@
                         <button class=" btn btn-sm btn-red-icons"
                                 v-translate:aria-label="'delete'"
                                 @click="deleteVersion($event, p.id, v.id)">
-                            <trash-2-icon size="20"></trash-2-icon>
+                        <vue-feather type="trash-2" size="20"></vue-feather>
                         </button>
                     </div>
                     <div class="col-md-1 version-cell copy-cell"
@@ -146,11 +149,11 @@
                                     p.id,
                                     v.id,
                                     v.versionNumber)">
-                            <copy-icon size="20"></copy-icon>
+                            <vue-feather type="copy" size="20"></vue-feather>
                         </button>
                     </div>
                 </div>
-            </div>
+            </b-collapse>
         </div>
         <modal :open="!!projectToDelete || !!versionToDelete">
             <h4 v-if="projectToDelete" v-translate="'deleteProject'"></h4>
@@ -264,16 +267,8 @@
 <script lang="ts">
     import i18next from "i18next";
     import {Project, Version, VersionIds} from "../../types";
-    // import {BCollapse, VBToggle} from "bootstrap-vue";
-    import {
-        ChevronDownIcon,
-        ChevronRightIcon,
-        CopyIcon,
-        EditIcon,
-        FileTextIcon,
-        RefreshCwIcon,
-        Trash2Icon
-    } from "vue-feather";
+    import {BCollapse, vBToggle} from "bootstrap-vue-next";
+    import VueFeather from "vue-feather";
     import Modal from "../Modal.vue";
     import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
     import {CreateProjectPayload, projectPayload, versionPayload} from "../../store/projects/actions";
@@ -281,7 +276,6 @@
     import {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
-    import {VTooltip} from "floating-vue";
     import {projects} from "../../store/projects/projects";
     import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
 
@@ -579,21 +573,20 @@
             }
         },
         components: {
-            // BCollapse,
-            ChevronDownIcon,
-            ChevronRightIcon,
-            CopyIcon,
-            Trash2Icon,
-            FileTextIcon,
-            RefreshCwIcon,
-            EditIcon,
+            BCollapse,
+            VueFeather,
             Modal,
             ShareProject,
         },
         directives: {
-            // "b-toggle": VBToggle,
-            "tooltip": VTooltip
+            "b-toggle": vBToggle
         }
     });
 </script>
 
+<style>
+    #version-toggle[aria-expanded="true"] > .when-closed,
+    #version-toggle[aria-expanded="false"] > .when-open {
+        display: none;
+    }
+</style>

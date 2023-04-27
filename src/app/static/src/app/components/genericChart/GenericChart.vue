@@ -43,7 +43,7 @@
                             v-translate:aria-label="'previousPage'"
                             :disabled="!prevPageEnabled"
                             @click="currentPage--">
-                        <chevron-left-icon size="20"></chevron-left-icon>
+                        <vue-feather type="chevron-left" size="20"></vue-feather>
                     </button>
                     <span id="page-number">
                         {{pageNumberText}}
@@ -54,7 +54,7 @@
                             v-translate:aria-label="'nextPage'"
                             :disabled="!nextPageEnabled"
                             @click="currentPage++">
-                        <chevron-right-icon size="20"></chevron-right-icon>
+                        <vue-feather type="chevron-right" size="20"></vue-feather>
                     </button>
                     <hr/>
                 </div>
@@ -85,7 +85,7 @@
 
 <script lang="ts">
     import i18next from "i18next";
-    import {ChevronLeftIcon, ChevronRightIcon} from "vue-feather";
+    import VueFeather from "vue-feather";
     import {
         DataSourceConfig,
         Dict, DisplayFilter, GenericChartColumn, GenericChartColumnValue,
@@ -196,8 +196,7 @@
         },
         components: {
             DownloadIndicator,
-            ChevronLeftIcon,
-            ChevronRightIcon,
+            VueFeather,
             DataSource,
             Filters,
             Plotly,

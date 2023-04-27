@@ -5,7 +5,7 @@
                  :selectedFilterOptions="selections.selectedFilterOptions"
                  @update="onFilterSelectionsChange"></filters>
         <div id="chart" :class="includeFilters ? 'col-md-9' : 'col-md-12'">
-            <l-map ref="map" style="height: 800px; width: 100%">
+            <l-map ref="map" style="height: 800px; width: 100%" @ready="() => updateBounds()">
                 <template v-for="feature in currentFeatures" :key="feature.id">
                     <l-geo-json :geojson="feature"
                                 :options="options"
@@ -170,7 +170,7 @@
         },
         computed: {
             initialised() {
-                const unsetFilters = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
+                const unsetFilters: Filter[] = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
                     !!this.selections.indicatorId && !!this.colorIndicator;
             },
@@ -374,7 +374,7 @@
             updateBounds: function () {
                 if (this.initialised) {
                     let map = this.$refs.map as any;
-
+                    
                     if (map && map.leafletObject) {
                         map.leafletObject.fitBounds(this.selectedAreaFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
                     }
@@ -432,11 +432,8 @@
                     this.initialise();
                 },
             },
-        beforeMount() {
+        created() {
             this.initialise();
-        },
-        mounted() {
-            this.updateBounds();
         }
     });
 </script>

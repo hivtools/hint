@@ -8,15 +8,15 @@
                     autoHide: false
                 }"
               class="icon-small">
-            <help-circle-icon></help-circle-icon>
+            <vue-feather type="help-circle"></vue-feather>
         </span>
-        <treeselect :multiple=multiple
+        <treeselect :multiple="multiple"
                     :clearable="false"
-                    :options=options
-                    :value=treeselectValue
-                    :disabled=disabled
-                    :placeholder=placeholder
-                    @input="input"
+                    :options="options"
+                    :modelValue="treeselectValue"
+                    :disabled="disabled"
+                    :placeholder="placeholder"
+                    @update:modelValue="input"
                     @select="select"
                     @deselect="deselect"></treeselect>
     </div>
@@ -30,8 +30,7 @@
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import {FilterOption} from "../../generated";
-    import {HelpCircleIcon} from "vue-feather";
-    import {VTooltip} from "floating-vue";
+    import VueFeather from "vue-feather";
 
     interface Methods {
         input: (value: string[]) => void
@@ -49,7 +48,7 @@
     interface Props {
         multiple?: boolean,
         label: string,
-        disabled?: boolean,
+        disabled: boolean,
         options: FilterOption[],
         value: string[] | string
     }
@@ -71,7 +70,7 @@
             },
             disabled: {
                 type: Boolean,
-                required: false
+                required: true
             },
             options: {
                 type: Array,
@@ -128,10 +127,7 @@
         },
         components: {
             Treeselect,
-            HelpCircleIcon
-        },
-        directives: {
-            tooltip: VTooltip
+            VueFeather
         }
     });
 </script>

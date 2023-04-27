@@ -4,7 +4,7 @@
                 v-tooltip="tooltipShare"
                 @click="shareProject"
                 v-translate:aria-label="'share'">
-            <share-2-icon size="20"></share-2-icon>
+            <vue-feather type="share-2" size="20"></vue-feather>
         </button>
         <modal :open="open">
             <h4 v-translate="'shareProject'"></h4>
@@ -65,8 +65,7 @@
     import {Language} from "../../store/translations/locales";
     import ErrorAlert from "../ErrorAlert.vue";
     import {CloneProjectPayload} from "../../store/projects/actions";
-    import {Share2Icon} from "vue-feather";
-    import {VTooltip} from "floating-vue";
+    import VueFeather from "vue-feather";
     import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
 
     interface EmailToShareWith {
@@ -202,10 +201,7 @@
             Modal,
             LoadingSpinner,
             ErrorAlert,
-            Share2Icon
-        },
-        directives: {
-            tooltip: VTooltip
+            VueFeather
         },
         watch: {
             cloningProject(newVal: boolean) {

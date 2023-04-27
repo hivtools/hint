@@ -12,11 +12,12 @@
                 {{ selectedDataset.title }}
             </a>
             <span class="color-red">
-                <info-icon size="20"
+                <vue-feather type="info"
+                           size="20"
                            v-if="outOfDateMessage"
                            v-tooltip="outOfDateMessage"
                            style="vertical-align: text-bottom">
-                </info-icon>
+                </vue-feather>
             </span>
         </div>
         <button v-if="outOfDateMessage"
@@ -113,8 +114,7 @@
         DatasetResourceSet,
         Release, Step
     } from "../../types";
-    import {InfoIcon} from "vue-feather";
-    import {VTooltip} from "floating-vue";
+    import VueFeather from "vue-feather";
     import {ADRState} from "../../store/adr/adr";
     import {Error} from "../../generated";
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
@@ -209,11 +209,10 @@
             Modal,
             Treeselect,
             LoadingSpinner,
-            InfoIcon,
+            VueFeather,
             ResetConfirmation,
             SelectRelease
         },
-        directives: {tooltip: VTooltip},
         computed: {
             hasShapeFile: mapStateProp<BaselineState, boolean>(
                 "baseline",

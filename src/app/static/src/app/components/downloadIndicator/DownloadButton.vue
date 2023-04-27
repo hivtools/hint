@@ -4,14 +4,14 @@
                 :disabled="disabled"
                 @click="download">
             <span v-translate="name"></span>
-            <download-icon size="20" class="icon ml-2"></download-icon>
+            <vue-feather type="download" size="20" class="icon ml-2"></vue-feather>
         </button>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
-    import {DownloadIcon} from "vue-feather";
+    import VueFeather from "vue-feather";
 
     interface Props {
         disabled: boolean
@@ -25,7 +25,7 @@
     export default defineComponentVue2WithProps<unknown, Method, unknown, Props>({
         name: "downloadButton",
         components: {
-            DownloadIcon
+            VueFeather
         },
         props: {
             name: {

@@ -4,35 +4,35 @@
             <div class="col-md-3">
                 <div id="indicator-fg" class="form-group">
                     <label class="font-weight-bold">{{filterConfig.indicatorLabel || "Indicator"}}</label>
-                    <tree-select :multiple=false
+                    <treeselect :multiple=false
                                  :clearable="false"
                                  :options="indicators"
                                  v-model="indicatorId"
-                                 :normalizer="normalizeIndicators"></tree-select>
+                                 :normalizer="normalizeIndicators"></treeselect>
                 </div>
                 <div v-if="!xAxisIsFixed" id="x-axis-fg" class="form-group">
                     <label class="font-weight-bold">{{filterConfig.xAxisLabel || "X Axis"}}</label>
-                    <tree-select :multiple=false
+                    <treeselect :multiple=false
                                  :clearable="false"
                                  :options="filterXaxisOptions"
-                                 v-model="xAxisId"></tree-select>
+                                 v-model="xAxisId"></treeselect>
                 </div>
                 <div v-if="!disaggregateIsFixed" id="disagg-fg" class="form-group">
                     <label class="font-weight-bold">{{filterConfig.disaggLabel || "Disaggregate by"}}</label>
-                    <tree-select :multiple=false
+                    <treeselect :multiple=false
                                  :clearable="false"
                                  :options="filterDisaggregateOptions"
-                                 v-model="disaggregateById"></tree-select>
+                                 v-model="disaggregateById"></treeselect>
                 </div>
                 <hr/>
                 <h3 v-if="anyFiltersShown">{{filterConfig.filterLabel || "Filters"}}</h3>
 
+                <template
+                v-for="filter, index in filterConfig.filters"
+                :key="index">
                 <div v-if="filterIsShown(filter.id)">
                     <div :id="'filter-' + filter.id"
                     class="form-group">
-                    <template
-                    v-for="filter, index in filterConfig.filters"
-                    :key="index">
                         <filter-select 
                         :value="getSelectedFilterOptions(filter.id)"
                         :is-disaggregate-by="filter.id === selections.disaggregateById"
@@ -40,12 +40,13 @@
                         :label="filter.label"
                         :options="filter.options"
                         @input="changeFilter(filter.id, $event)"></filter-select>
-                    </template>
                     </div>
                 </div>
+            </template>
             </div>
             <div v-if="!!xAxisLabel" id="chart" class="col-md-9">
                 <bar-chart-with-errors
+                        :data="processedOutputData"
                         :chart-data="processedOutputData"
                         :xLabel="xAxisLabel"
                         :yLabel="indicatorLabel"
@@ -63,28 +64,27 @@
 </template>
 
 <script lang="ts">
-    import {defineComponent} from "vue";
-    import TreeSelect from 'vue3-treeselect';
-    import BarChartWithErrors from "./BarChartWithErrors";
+    import {defineComponentVue2GetSetWithProps} from "../../../defineComponentVue2/defineComponentVue2"
+    import Treeselect from 'vue3-treeselect';
+    import BarChartWithErrors from "./BarChartWithErrors.vue";
     import FilterSelect from "./FilterSelect.vue";
     import {AxisConfig, BarchartIndicator, BarchartSelections, Dict, Filter, FilterConfig, FilterOption} from "./types";
     import {getProcessedOutputData, toFilterLabelLookup} from "./utils";
+    import { ComputedGetter, PropType, defineComponent } from "vue";
 
     interface Props {
-        [key:string]: any
         chartData: any[],
         filterConfig: FilterConfig,
         indicators: BarchartIndicator[],
         selections: BarchartSelections,
         formatFunction: (value: string | number, indicator: BarchartIndicator) => string,
-        showRangesInTooltips: boolean,
-        xAxisConfig: AxisConfig | null,
-        disaggregateByConfig: AxisConfig | null
-        noDataMessage: string | null
+        showRangesInTooltips?: boolean,
+        xAxisConfig?: AxisConfig | null,
+        disaggregateByConfig?: AxisConfig | null
+        noDataMessage?: string | null
     }
 
     interface Methods {
-        [key:string]: any
         normalizeIndicators: (node: BarchartIndicator) => FilterOption,
         changeSelections: (newSelections: Partial<BarchartSelections>) => void,
         changeFilter: (filterId: any, selectedOptions: any) => void,
@@ -93,78 +93,84 @@
     }
 
     interface Computed {
-        [key:string]: any
         indicatorId: {
-            get(): string
+            get: ComputedGetter<string>
             set: (newVal: string) => void
         },
         xAxisId: {
-            get(): string
+            get: ComputedGetter<string>
             set: (newVal: string) => void
         },
         disaggregateById: {
-            get(): string
+            get: ComputedGetter<string>
             set: (newVal: string) => void
         },
-        xAxisLabel(): string,
-        indicatorLabel(): string,
-        filtersAsOptions(): FilterOption[]
-        indicator(): BarchartIndicator
-        processedOutputData(): any
-        xAxisLabels(): string[]
-        xAxisValues(): string[]
-        xAxisLabelLookup(): { [key: string]: string }
-        barLabelLookup(): { [key: string]: string }
-        initialised(): boolean,
-        formatValueFunction(): (value: string | number) => string,
-        anyFiltersShown(): boolean
-        showNoDataMessage(): boolean,
-        filterDisaggregateOptions(): FilterOption[]
-        filterXaxisOptions(): FilterOption[],
-        xAxisIsFixed(): boolean | null,
-        disaggregateIsFixed(): boolean | null
+        xAxisLabel: ComputedGetter<string>
+        indicatorLabel: ComputedGetter<string>
+        filtersAsOptions: ComputedGetter<FilterOption[]>
+        indicator: ComputedGetter<BarchartIndicator>
+        processedOutputData: ComputedGetter<any>
+        xAxisLabels: ComputedGetter<string[]>
+        xAxisValues: ComputedGetter<string[]>
+        xAxisLabelLookup: ComputedGetter<Dict<string>>
+        barLabelLookup: ComputedGetter<Dict<string>>
+        initialised: ComputedGetter<boolean>
+        formatValueFunction: ComputedGetter<(value: string | number) => string>
+        anyFiltersShown: ComputedGetter<boolean>
+        showNoDataMessage: ComputedGetter<boolean>
+        filterDisaggregateOptions: ComputedGetter<FilterOption[]>
+        filterXaxisOptions: ComputedGetter<FilterOption[]>
+        xAxisIsFixed: ComputedGetter<boolean | null>
+        disaggregateIsFixed: ComputedGetter<boolean | null>
     }
 
-    const props = {
-        chartData: {
-            type: Array
-        },
-        filterConfig: {
-            type: Object
-        },
-        indicators: {
-            type: Array
-        },
-        selections: {
-            type: Object
-        },
-        formatFunction: {
-            type: Function
-        },
-        xAxisConfig: {
-            type: Object,
-            default: null
-        },
-        disaggregateByConfig: {
-            type: Object,
-            default: null
-        },
-        showRangesInTooltips: {
-            type: Boolean,
-            default: false
-        },
-        noDataMessage: {
-            type: String || null,
-            default: null
-        }
-    };
+    type ComputedExtends<T> = {
+        [K in keyof T]: T[K]
+    }
 
-    export default defineComponent<any, unknown, unknown, Computed, Methods>({
+    export default defineComponent({
         name: "BarChart",
-        props: props,
-        model: {
-            prop: "selections",
-            event: "change"
+        props: {
+            chartData: {
+                type: Array as PropType<any[]>,
+                required: true
+            },
+            filterConfig: {
+                type: Object as PropType<FilterConfig>,
+                required: true
+            },
+            indicators: {
+                type: Array as PropType<BarchartIndicator[]>,
+                required: true
+            },
+            selections: {
+                type: Object as PropType<BarchartSelections>,
+                required: true
+            },
+            formatFunction: {
+                type: Function as PropType<(value: string | number, indicator: BarchartIndicator) => string>,
+                required: true
+            },
+            xAxisConfig: {
+                type: Object as PropType<AxisConfig | null>,
+                required: false,
+                default: null
+            },
+            disaggregateByConfig: {
+                type: Object as PropType<AxisConfig | null>,
+                required: false,
+                default: null
+            },
+            showRangesInTooltips: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
+            noDataMessage: {
+                type: String as PropType<string | null>,
+                required: false,
+                default: null
+            }
         },
         computed: {
             disaggregateIsFixed() {
@@ -244,7 +250,7 @@
                     this.barLabelLookup,
                     this.xAxisLabelLookup,
                     this.xAxisLabels,
-                    this.xAxisValues) : {};
+                    this.xAxisValues) : null;
             },
             indicator() {
                 return this.indicators.find((i: BarchartIndicator) => i.indicator == this.selections.indicatorId)!
@@ -265,7 +271,7 @@
                 return this.filterConfig.filters.some((f: Filter) => this.filterIsShown(f.id));
             },
             showNoDataMessage() {
-                return this.noDataMessage && this.processedOutputData  && !this.processedOutputData.datasets.length
+                return this.noDataMessage && this.processedOutputData  && !this.processedOutputData?.datasets.length
             }
         },
         methods: {
@@ -273,7 +279,7 @@
                 return {id: node.indicator, label: node.name};
             },
             changeSelections(newSelections: Partial<BarchartSelections>) {
-                this.$emit("change", {...this.selections, ...newSelections});
+                this.$emit("update:selections", {...this.selections, ...newSelections});
                 this.$emit("update", newSelections)
             },
             changeFilter(filterId: any, selectedOptions: any) {
@@ -316,7 +322,7 @@
         },
         components: {
             BarChartWithErrors,
-            TreeSelect,
+            Treeselect,
             FilterSelect
         }
     });

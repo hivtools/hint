@@ -2,15 +2,15 @@
     <div class="my-2" :class="cssClass">
         <span class="title">{{ title }}</span>
         <tick color="#e31837" v-if="phase.complete" width="20px"></tick>
-        <!-- <b-progress :max="1" v-if="!phase.complete" :animated="!isDeterminate">
+        <b-progress :max="1" v-if="!phase.complete" :animated="!isDeterminate">
             <b-progress-bar :value="value"></b-progress-bar>
-        </b-progress> -->
+        </b-progress>
     </div>
 </template>
 
 <script lang="ts">
 
-    // import {BProgress, BProgressBar} from "bootstrap-vue";
+    import {BProgress, BProgressBar} from "bootstrap-vue-next";
     import Tick from "../Tick.vue";
     import {ProgressPhase} from "../../generated";
     import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
@@ -58,8 +58,8 @@
             }
         },
         components: {
-            // BProgress,
-            // BProgressBar,
+            BProgress,
+            BProgressBar,
             Tick
         }
     });

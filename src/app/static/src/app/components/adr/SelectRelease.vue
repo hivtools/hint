@@ -9,7 +9,7 @@
             />
             <label for="useLatest" v-translate="'useLatest'" class="pr-1"></label>
             <span class="icon-small" v-tooltip="translate('datasetTooltip')">
-                <help-circle-icon></help-circle-icon>
+                <vue-feather type="help-circle"></vue-feather>
             </span>
             <br />
         </div>
@@ -26,7 +26,7 @@
                 class="pr-1"
             ></label>
             <span class="icon-small" v-tooltip="translate('releaseTooltip')">
-                <help-circle-icon></help-circle-icon>
+                <vue-feather type="help-circle"></vue-feather>
             </span>
             <br />
         </div>
@@ -36,7 +36,7 @@
             class="font-weight-bold"
             v-translate="'releases'"
         ></label>
-        <tree-select
+        <treeselect
             id="releaseSelector"
             :multiple="false"
             :searchable="true"
@@ -49,17 +49,16 @@
                 <label v-html="node.raw.customLabel">
                 </label>
             </template>
-        </tree-select>
+        </treeselect>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2"
     import { mapActionByName, mapStateProp, mapMutationByName } from "../../utils";
-    import TreeSelect from "vue3-treeselect";
+    import Treeselect from "vue3-treeselect";
     import { ADRState } from "../../store/adr/adr";
-    import { HelpCircleIcon } from "vue-feather";
-    import { VTooltip } from "floating-vue";
+    import VueFeather from "vue-feather";
     import i18next from "i18next";
     import { Language } from "../../store/translations/locales";
     import { RootState } from "../../root";
@@ -97,8 +96,8 @@
 
     export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         components: {
-            TreeSelect,
-            HelpCircleIcon,
+            Treeselect,
+            VueFeather,
         },
         props: {
             datasetId: {
@@ -194,9 +193,6 @@
             this.preSelectRelease();
             this.$emit("selected-dataset-release", this.releaseId);
             this.$emit("valid", this.valid);
-        },
-        directives: {
-            tooltip: VTooltip,
-        },
+        }
     });
 </script>

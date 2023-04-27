@@ -6,24 +6,24 @@
                     <label class="col-3 col-form-label" v-translate="'indicator'">
                     </label>
                     <div class="col">
-                        <tree-select :value="indicator"
+                        <treeselect  :modelValue="indicator"
                                      :multiple="false"
                                      :clearable="false"
                                      :searchable="false"
                                      :options="indicatorOptions"
-                                     @input="indicatorChanged"></tree-select>
+                                     @update:modelValue="indicatorChanged"></treeselect>
                     </div>
                 </div>
                 <div class="row form-group">
                     <label class="col-3 col-form-label" v-translate="'detail'">
                     </label>
                     <div class="col">
-                        <tree-select v-model="detail"
+                        <treeselect  :modelValue="detail"
                                      :multiple="false"
                                      :clearable="false"
                                      :searchable="false"
                                      :options="detailOptions"
-                                     @input="$emit('detail-changed', detail)"></tree-select>
+                                     @update:modelValue="detailChanged"></treeselect>
                     </div>
                 </div>
             </form>
@@ -33,7 +33,7 @@
 
 <script lang="ts">
     import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
-    import TreeSelect from "vue3-treeselect"
+    import Treeselect from "vue3-treeselect"
     import {LControl} from "@vue-leaflet/vue-leaflet";
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {LevelLabel} from "../../types";
@@ -63,12 +63,13 @@
 
     interface Methods {
         indicatorChanged: (newVal: string) => void;
+        detailChanged: (newVal: number) => void;
     }
 
     export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         name: 'MapControl',
         components: {
-            TreeSelect,
+            Treeselect,
             LControl
         },
         props: {
@@ -117,7 +118,10 @@
         },
         methods: {
             indicatorChanged: function (newVal: string) {
-                this.$emit("indicator-changed", newVal);
+                this.$emit("indicatorChanged", newVal);
+            },
+            detailChanged: function (newVal: number) {
+                this.$emit("detailChanged", newVal);
             }
         }
     });

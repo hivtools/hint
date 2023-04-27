@@ -5,7 +5,7 @@
                 :disabled="disabled"
                 @click="download">
             <span v-translate="translateKey.button"></span>
-            <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
+            <vue-feather type="download" size="20" class="icon ml-2" style="margin-top: -4px;"></vue-feather>
         </button>
         <div>
             <download-status id="progress"
@@ -20,7 +20,7 @@
     import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
     import DownloadStatus from "./DownloadStatus.vue";
     import ErrorAlert from "../ErrorAlert.vue";
-    import {DownloadIcon} from "vue-feather";
+    import VueFeather from "vue-feather";
     import {DownloadResultsDependency} from "../../types";
 
     interface downloadTranslate {
@@ -41,7 +41,7 @@
     export default defineComponentVue2WithProps<unknown, Methods, unknown, Props>({
         name: "Download",
         components: {
-            DownloadIcon,
+            VueFeather,
             ErrorAlert,
             DownloadStatus
         },

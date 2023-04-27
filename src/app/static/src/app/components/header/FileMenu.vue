@@ -4,7 +4,7 @@
             <a class="dropdown-item" href="#"
                @mousedown="handleLoadZip">
                 <span v-translate="'loadZip'"></span>
-                <upload-icon size="20" class="icon"></upload-icon>
+                <vue-feather type="upload" size="20" class="icon"></vue-feather>
             </a>
             <input id="upload-zip" v-translate:aria-label="'selectFile'"
                    type="file"
@@ -14,12 +14,12 @@
             <span v-if="loadJsonFeatureSwitch">
                 <a class="dropdown-item" tabindex="0" v-on:mousedown="save">
                     <span><span class="pr-1" v-translate="'save'"></span>JSON</span>
-                    <download-icon size="20" class="icon"></download-icon>
+                    <vue-feather type="download" size="20" class="icon"></vue-feather>
                 </a>
                 <a style="display:none" ref="save"></a>
                 <a class="dropdown-item" ref="load" href="#" v-on:mousedown="handleLoadJson">
                     <span><span class="pr-1" v-translate="'load'"></span>JSON</span>
-                    <upload-icon size="20" class="icon"></upload-icon>
+                    <vue-feather type="upload" size="20" class="icon"></vue-feather>
                 </a>
                 <input id="upload-file" v-translate:aria-label="'selectFile'"
                        type="file"
@@ -46,7 +46,7 @@
     import {serialiseState} from "../../localStorageManager";
     import {BaselineState} from "../../store/baseline/baseline";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
-    import {DownloadIcon, UploadIcon} from "vue-feather";
+    import VueFeather from "vue-feather";
     import {LocalSessionFile} from "../../types";
     import {addCheckSum, getFormData, mapActionByName, mapStateProp} from "../../utils";
     import {ValidateInputResponse} from "../../generated";
@@ -219,8 +219,7 @@
             }
         },
         components: {
-            UploadIcon,
-            DownloadIcon,
+            VueFeather,
             DropDown,
             UploadNewProject
         }

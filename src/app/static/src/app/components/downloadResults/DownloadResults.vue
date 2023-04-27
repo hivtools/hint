@@ -44,7 +44,7 @@
                         :class="uploading || isPreparing ? 'btn-secondary' : 'btn-red'"
                         :disabled="uploading || isPreparing">
                     <span v-translate="'upload'"></span>
-                    <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
+                    <vue-feather type="upload" size="20" class="icon ml-2" style="margin-top: -4px;"></vue-feather>
                 </button>
                 <div id="uploading" v-if="uploading" class="d-flex align-items-end">
                     <loading-spinner size="xs"></loading-spinner>
@@ -79,7 +79,7 @@
 <script lang="ts">
     import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2"
     import {mapActionByName, mapStateProp, mapMutationByName, mapStateProps} from "../../utils";
-    import {UploadIcon} from "vue-feather";
+    import VueFeather from "vue-feather";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
     import LoadingSpinner from "../LoadingSpinner.vue";
@@ -208,7 +208,7 @@
             this.clearStatus();
         },
         components: {
-            UploadIcon,
+            VueFeather,
             LoadingSpinner,
             Tick,
             Cross,

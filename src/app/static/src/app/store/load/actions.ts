@@ -84,13 +84,8 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
     async loadFromVersion(context, versionDetails) {
         const {commit} = context;
         commit({type: "SettingFiles", payload: null});
-
-       router.push("/") 
-       // TODO fix this, it was second argument
-    //    () => {
-    //         getFilesAndLoad(context, versionDetails.files, JSON.parse(versionDetails.state));
-    //     });
-
+        getFilesAndLoad(context, versionDetails.files, JSON.parse(versionDetails.state));
+        router.push("/");
     },
 
     async updateStoreState(context, savedState) {

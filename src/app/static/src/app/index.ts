@@ -16,6 +16,8 @@ import Hint from "./Hint.vue"
 import "../scss/style.scss"
 import "leaflet/dist/leaflet.css"
 import translate from "./directives/translate";
+import FloatingVue from "floating-vue";
+import 'floating-vue/dist/style.css';
 
 // export const beforeEnter = (to: Route, from: Route, next: NavigationGuardNext) => {
 //     if (store.state.currentUser === "guest" && !sessionStorage.getItem("asGuest")) {
@@ -45,7 +47,7 @@ const app = createApp(Hint);
 
 app.use(store);
 app.use(router);
-
+app.use(FloatingVue);
 
 app.directive("translate", translate)
 app.config.globalProperties.$store = store;

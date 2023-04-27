@@ -1,10 +1,10 @@
 const path = require("path");
 const { defineConfig } = require("@vue/cli-service");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = defineConfig({
     // transpileDependencies: true,
-    outputDir: path.resolve(__dirname, './dist'),
-    publicPath: '/dist/',
+    outputDir: path.resolve(__dirname, './public'),
     css: {
         extract: {
             filename: "css/app.css"
@@ -24,8 +24,7 @@ module.exports = defineConfig({
         // plugins: [
         //     new HtmlWebpackPlugin({
         //         template: 'templates/index.ftl',
-        //         filename: 'index.ftl',
-        //         inject: 'head'
+        //         filename: 'index.ftl'
         //     })
         // ],
         // noInfo: true,
