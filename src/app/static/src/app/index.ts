@@ -49,7 +49,7 @@ app.use(store);
 app.use(router);
 app.use(FloatingVue);
 
-app.directive("translate", translate)
+app.directive("translate", translate(store));
 app.config.globalProperties.$store = store;
 
 app.mount('#app');
