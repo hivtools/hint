@@ -9,7 +9,7 @@
   "scripts": {
     "sass": "gulp sass && gulp inject",
     "js": "webpack",
-    "build": "rm -r public && vue-cli-service build ./src/app/index.ts && cp -r ./templates/*.ftl ./public",
+    "build": "rm -rf public && vue-cli-service build ./src/app/index.ts && cp -r ./templates/*.ftl ./public",
     "test": "jest -c jest.config.js",
     "browser-test": "npx playwright test",
     "integration-test": "jest --testPathIgnorePatterns adr-dataset -c jest.integration.config.js",
