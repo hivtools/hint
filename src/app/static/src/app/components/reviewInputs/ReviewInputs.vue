@@ -234,7 +234,7 @@
             GenericChart
         },
         // TODO choropleth map doesn't show up because this doesn't get set for some reason! need to fix
-        created() {
+        beforeMount() {
             this.selectDataSource({label: "whatever", id: "1"});
         },
     })
