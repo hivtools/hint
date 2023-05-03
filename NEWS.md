@@ -1,3 +1,7 @@
+# hint 2.35.0
+
+* Auth0 single sign on authorization integration 
+
 # hint 2.34.0
 
 * Change download approach for remaining download files

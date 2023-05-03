@@ -12,12 +12,17 @@ export enum ADRMutation {
     ClearReleases = "ClearReleases",
     SetFetchingDatasets = "SetFetchingDatasets",
     SetSchemas = "SetSchemas",
-    SetUserCanUpload = "SetUserCanUpload"
+    SetUserCanUpload = "SetUserCanUpload",
+    SetSSOLogin = "SetSSOLogin"
 }
 
 export const mutations: MutationTree<ADRState> = {
     [ADRMutation.UpdateKey](state: ADRState, action: PayloadWithType<string | null>) {
         state.key = action.payload;
+    },
+
+    [ADRMutation.SetSSOLogin](state: ADRState, action: PayloadWithType<boolean>) {
+        state.ssoLogin = action.payload;
     },
 
     [ADRMutation.SetKeyError](state: ADRState, action: PayloadWithType<Error | null>) {

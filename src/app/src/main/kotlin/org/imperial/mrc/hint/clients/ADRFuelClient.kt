@@ -13,6 +13,11 @@ import java.io.File
 import java.io.InputStream
 import java.net.http.HttpResponse
 
+/**
+ * This class should be depreciated and removed in January 2025
+ * as we will be sure of supporting only SSO
+ *
+ */
 @Component
 class ADRClientBuilder(val appProperties: AppProperties,
                        val encryption: Encryption,
@@ -27,6 +32,11 @@ class ADRClientBuilder(val appProperties: AppProperties,
         val encryptedKey = this.userRepository.getADRKey(userId) ?: throw UserException("noADRKey")
         val apiKey = this.encryption.decrypt(encryptedKey)
         return ADRFuelClient(this.appProperties, apiKey, this.logger)
+    }
+
+    fun buildSSO(): ADRClient
+    {
+        return ADRFuelClient(this.appProperties, "", this.logger)
     }
 }
 
@@ -43,7 +53,14 @@ class ADRFuelClient(appProperties: AppProperties,
                     private val logger: GenericLogger)
     : FuelClient(appProperties.adrUrl + "api/3/action"), ADRClient
 {
-    private val header = Pair("Authorization", apiKey)
+    //private val header = Pair("Authorization", apiKey)
+    private val header = if (apiKey.isNotEmpty())
+    {
+        Pair("Authorization", apiKey)
+    } else
+    {
+        Pair("", "")
+    }
 
     override fun get(url: String): ResponseEntity<String>
     {

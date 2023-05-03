@@ -23,7 +23,7 @@ class OAuth2AuthenticationRedirection(
             .queryParam("response_type", "code")
             .queryParam("client_id", appProperties.oauth2ClientId)
             .queryParam("state", session?.generateStateParameter())
-            .queryParam("scope", "openid+profile+email+read:dataset")
+            .queryParam("scope", appProperties.oauth2ClientScope)
             .queryParam("audience", appProperties.oauth2ClientAudience)
             .queryParam("redirect_uri", "${appProperties.applicationUrl}/callback/oauth2Client")
     }

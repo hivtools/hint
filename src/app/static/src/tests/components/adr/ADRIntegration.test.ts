@@ -20,13 +20,13 @@ import {prefixNamespace} from "../../../app/utils";
 import {Language} from "../../../app/store/translations/locales";
 import {expectTranslated} from "../../testHelpers";
 import {BaselineState} from "../../../app/store/baseline/baseline";
-import Vue from "vue";
 
 describe("adr integration", () => {
 
     const fetchKeyStub = jest.fn();
     const getDataStub = jest.fn();
-    const getUserCanUploadStub = jest.fn()
+    const getUserCanUploadStub = jest.fn();
+    const ssoLoginMethodStud = jest.fn();
 
     const fakeDataset = {
         id: "id1",
@@ -61,6 +61,7 @@ describe("adr integration", () => {
                         getDatasets: getDataStub,
                         fetchKey: fetchKeyStub,
                         getUserCanUpload: getUserCanUploadStub,
+                        ssoLoginMethod: ssoLoginMethodStud,
                     } as Partial<ADRActions> & ActionTree<ADRState, RootState>,
                     mutations
                 },

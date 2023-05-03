@@ -1,7 +1,7 @@
 <template>
     <div v-if="loggedIn" class="mb-5">
-        <adr-key></adr-key>
-        <div v-if="key">
+        <adr-key v-if="!ssoLogin"></adr-key>
+        <div v-if="ssoLogin || key">
             <select-dataset></select-dataset>
             <div class="pt-3" id="adr-capacity" v-if="selectedDataset">
                 <span class="font-weight-bold align-self-stretch" v-translate="'adrAccessLevel'"></span>
@@ -31,6 +31,7 @@
         getUserCanUpload: () => void
         handleUploadPermission: (isADRWriter: boolean, isTooltip: boolean) => string | null
         getTranslation: (key: string) => string
+        ssoLoginMethod: () => void
     }
 
     interface Computed {
@@ -40,6 +41,7 @@
         hasUploadPermission: boolean,
         currentLanguage: Language
         selectedDataset: Dataset | null
+        ssoLogin: boolean
     }
 
     const namespace = "adr";
@@ -51,6 +53,9 @@
             loggedIn() {
                 return !this.isGuest
             },
+            ssoLogin: mapStateProp<ADRState, boolean>(namespace,
+                (state: ADRState) => state.ssoLogin),
+
             key: mapStateProp<ADRState, string | null>(namespace,
                 (state: ADRState) => state.key),
 
@@ -68,6 +73,7 @@
             getDatasets: mapActionByName(namespace, 'getDatasets'),
             fetchADRKey: mapActionByName(namespace, "fetchKey"),
             getUserCanUpload: mapActionByName(namespace, 'getUserCanUpload'),
+            ssoLoginMethod: mapActionByName(namespace, "ssoLoginMethod"),
             handleUploadPermission: function (isADRWriter: boolean, isTooltip: boolean) {
                 let displayText = null;
                 switch (isADRWriter) {
@@ -95,7 +101,10 @@
         },
         created() {
             if (this.loggedIn) {
-                this.fetchADRKey();
+
+                if (!this.ssoLogin) {
+                    this.fetchADRKey();
+                }
             }
         },
         watch: {
@@ -109,6 +118,10 @@
         mounted() {
             if(this.selectedDataset) {
                 this.getUserCanUpload();
+            }
+
+            if (this.loggedIn) {
+                this.ssoLoginMethod()
             }
         },
         directives: {
