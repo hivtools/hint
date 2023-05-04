@@ -1,3 +1,5 @@
+/** @type {import('ts-jest').JestConfigWithTsJest} */
+
 module.exports = {
     testEnvironment: "jsdom",
     setupFiles: [
@@ -18,8 +20,8 @@ module.exports = {
         'vue',
     ],
     transform: {
-        '.*\\.(vue)$': 'vue-jest',
-        '^.+\\.ts?$': [
+        '.*\\.vue?$': 'vue3-jest',
+        '^.+\\.tsx?$': [
             'ts-jest',
             {
                 tsconfig: 'tsconfig.json',
@@ -28,7 +30,8 @@ module.exports = {
                 }
             }
         ],
-        '^.+\\.js$': '<rootDir>/node_modules/babel-jest',
+        '^.+\\.js?$': '<rootDir>/node_modules/babel-jest',
+        // '^.+\\.ts$': 'ts-jest',
     },
     moduleNameMapper: {
         'd3-format': '<rootDir>/node_modules/d3-format/dist/d3-format.min.js',
@@ -37,6 +40,7 @@ module.exports = {
         'd3-color': '<rootDir>/node_modules/d3-color/dist/d3-color.min.js',
 
     },
+    moduleDirectories: ["node_modules", "src"],
     coverageDirectory: './coverage/',
     collectCoverage: true,
     coveragePathIgnorePatterns: [
@@ -45,5 +49,8 @@ module.exports = {
         './tests/testHelpers.ts',
         './tests/.*/helpers.ts',
     ],
-    preset: 'ts-jest/presets/js-with-babel',
+    preset: 'ts-jest',
+    modulePaths: [
+        "<rootDir>"
+    ],
 }

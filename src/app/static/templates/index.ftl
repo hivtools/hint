@@ -6,14 +6,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <!-- inject:css -->
     <link href="/public/css/app.css" rel="stylesheet">
-    <#--  <link href="/public/css/leaflet.css" rel="stylesheet">  -->
-    <#--  <link href="/public/css/bootstrap.css" rel="stylesheet">  -->
     <!-- endinject -->
     <script defer src="/public/js/app.js"></script>
-    <script defer src="/public/js/93.chunk.js"></script>
-    <script defer src="/public/js/431.chunk.js"></script>
-    <script defer src="/public/js/633.chunk.js"></script>
-    <script defer src="/public/js/858.chunk.js"></script>
+    <script defer src="/public/js/node_modules_leaflet_dist_images_marker-icon_png.chunk.js"></script>
+    <script defer src="/public/js/node_modules_leaflet_dist_images_marker-icon-2x_png.chunk.js"></script>
+    <script defer src="/public/js/node_modules_leaflet_dist_images_marker-shadow_png.chunk.js"></script>
+    <script defer src="/public/js/node_modules_leaflet_dist_leaflet-src_esm_js.chunk.js"></script>
 </head>
 <body>
 <div id="app" :class="language">

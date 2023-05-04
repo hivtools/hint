@@ -1,7 +1,6 @@
 @import "partials/variables";
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 @import "../../node_modules/bootstrap/scss//mixins";
-// @import "../../node_modules/bootstrap-vue-next/src/styles/styles.scss";
 @import "../../node_modules/leaflet/dist/leaflet.css";
 @import "../../node_modules/vue3-treeselect/dist/vue3-treeselect.css";
 @import "../app/vue-dynamic-form/src/style-partial.scss";
@@ -34,13 +33,6 @@ a {
 .color-red {
   color: $theme-red;
 }
-
-// .container {
-//   padding-left: 5rem;
-//   padding-right: 5rem;
-//   max-width: 100%;
-//   width: 100vw;
-// }
 
 .btn-red {
   @include button-variant($theme-red, darken($theme-red, 10%))

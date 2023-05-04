@@ -1,6 +1,5 @@
 const path = require("path");
 const { defineConfig } = require("@vue/cli-service");
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = defineConfig({
     // transpileDependencies: true,
@@ -14,13 +13,40 @@ module.exports = defineConfig({
         optimization: {
             splitChunks: false
         },
-        // mode: "development",
+        mode: "development",
         output: {
             filename: 'js/app.js',
-            chunkFilename: "js/[name].chunk.js",
-        // hotUpdateChunkFilename: "hot/[name].hot-update.js",
-        // hotUpdateMainFilename: "hot/hot-update.json"
+            chunkFilename: 'js/[name].chunk.js',
+            hotUpdateChunkFilename: "hot/[name].hot-update.js",
+            hotUpdateMainFilename: "hot/hot-update.json"
         },
+        devServer: {
+            devMiddleware: {
+                writeToDisk: true
+            },
+            watchFiles: {
+                options: {
+                    ignored: ["node_modules", "public", "src/tests"]
+                }
+            },
+            port: 3000,
+        },
+        // plugins: [new MiniCssExtractPlugin({
+        //     filename: "css/app.css"
+        // })],
+        // module: {
+        //     rules: [
+        //         {
+        //             test: /\.s[ac]ss$/i,
+        //             use: [
+        //                 "style-loader",
+        //                 MiniCssExtractPlugin.loader,
+        //                 "css-loader",
+        //                 "sass-loader",
+        //             ]
+        //         }
+        //     ]
+        // },
         // plugins: [
         //     new HtmlWebpackPlugin({
         //         template: 'templates/index.ftl',
@@ -32,6 +58,7 @@ module.exports = defineConfig({
             hints: false
         },
         devtool: 'eval-source-map',
+
         // module: {
         //     rules: [
         //       {

@@ -1,7 +1,9 @@
+import { RootState } from './../app/root';
 import i18next from "i18next";
-import Vue from "vue";
+import { createApp } from "vue";
 import Vuex from "vuex";
 import {Language, locales} from "../app/store/translations/locales";
+import {Hint} from "../app/Hint.vue";
 
 // create mock element for app to attach to
 const app = document.createElement('div');
@@ -30,8 +32,12 @@ i18next.init({
     fallbackLng: Language.en
 });
 
-Vue.use(Vuex);
-Vue.config.productionTip = false;
+const vueApp = createApp(Hint);
+const store = new Vuex.Store<RootState>({});
+vueApp.use(store);
+
+// Vue.use(Vuex);
+// vueApp.config.performance = false;
 
 global.console.error = (message: any) => {
     throw (message instanceof Error ? message : new Error(message))
