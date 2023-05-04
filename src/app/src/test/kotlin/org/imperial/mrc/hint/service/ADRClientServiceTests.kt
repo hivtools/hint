@@ -37,7 +37,7 @@ class ADRClientServiceTests
 
         verify(mockBuilder).buildSSO()
 
-        verifyNoMoreInteractions(mockBuilder.build())
+        verifyNoMoreInteractions(mockBuilder)
 
         assertThat(result).isInstanceOf(ADRClient::class.java)
     }
@@ -64,7 +64,7 @@ class ADRClientServiceTests
 
         verify(mockBuilder).build()
 
-        verifyNoMoreInteractions(mockBuilder.buildSSO())
+        verifyNoMoreInteractions(mockBuilder)
 
         assertThat(result).isInstanceOf(ADRClient::class.java)
     }

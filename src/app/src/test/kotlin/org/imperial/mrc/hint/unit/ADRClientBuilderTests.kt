@@ -40,13 +40,23 @@ class ADRClientBuilderTests
     }
 
     @Test
-    fun `creates client with correct auth header`()
+    fun `build basic client with correct auth header`()
     {
         val sut = ADRClientBuilder(ConfiguredAppProperties(), encryption, mockSession, mockRepo, mock())
         val result = sut.build() as ADRFuelClient
         val headers = result.standardHeaders()
         Assertions.assertThat(headers["Authorization"]).isEqualTo(TEST_KEY)
         Assertions.assertThat(result.httpRequestHeaders()).isEqualTo(arrayOf("Authorization", TEST_KEY))
+    }
+
+    @Test
+    fun `build sso client with correct auth header`()
+    {
+        val sut = ADRClientBuilder(ConfiguredAppProperties(), encryption, mockSession, mockRepo, mock())
+        val result = sut.buildSSO() as ADRFuelClient
+        val headers = result.standardHeaders()
+        Assertions.assertThat(headers["Authorization"]).isEqualTo("")
+        Assertions.assertThat(result.httpRequestHeaders()).isEqualTo(arrayOf("Authorization", ""))
     }
 
 }
