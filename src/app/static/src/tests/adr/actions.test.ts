@@ -28,6 +28,25 @@ describe("ADR actions", () => {
             });
     });
 
+    it("fetches sso login method", async () => {
+        mockAxios.onGet(`/sso`)
+            .reply(200, mockSuccess(true));
+
+        const commit = jest.fn();
+        const dispatch = jest.fn()
+
+        await actions.ssoLoginMethod({commit, dispatch, state, rootState} as any);
+
+        expect(commit).toHaveBeenCalledTimes(1)
+        expect(commit).toHaveBeenCalledWith({
+            type: ADRMutation.SetSSOLogin,
+            payload: true
+        });
+
+        expect(dispatch).toHaveBeenCalledTimes(1)
+        expect(dispatch).toHaveBeenCalledWith("getDatasets");
+    });
+
     it("saves key", async () => {
         mockAxios.onPost(`/adr/key/`)
             .reply(200, mockSuccess("1234"));

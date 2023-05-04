@@ -9,8 +9,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
-@Component
-class OAuth2AuthenticationRedirection(
+open class OAuth2AuthenticationRedirection(
     protected val appProperties: AppProperties,
     protected val session: Session? = null,
 )
