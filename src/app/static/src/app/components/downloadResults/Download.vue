@@ -61,7 +61,7 @@
         },
         methods: {
             download() {
-                this.$emit("click")
+                this.$emit("trigger-download")
             }
         }
     })
