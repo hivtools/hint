@@ -7,7 +7,6 @@
         @blur="close">
         </p>
         <div class="dropdown-menu" :class="{'show':show, 'dropdown-menu-right': right}"
-        tabindex="0"
         @mouseenter="menuFocused"
         @mouseleave="menuUnfocused">
             <slot></slot>
