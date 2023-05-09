@@ -51,7 +51,21 @@ app.config.warnHandler = () => null;
 
 app.use(store);
 app.use(router);
-app.use(FloatingVue);
+
+const options = {
+    distance: 12,
+    themes: {
+        'tooltip': {
+            html: true,
+            delay: {
+                show: 0,
+                hide: 0,
+            },
+        },
+    }
+}
+
+app.use(FloatingVue, options);
 
 app.directive("translate", translate(store));
 app.config.globalProperties.$store = store;
