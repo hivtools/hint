@@ -53,6 +53,9 @@ app.use(store);
 app.use(router);
 
 const options = {
+    // Set float distance so that the arrow does not overlap
+    // the tooltip icon. This was causing multiple mouse
+    // events to be triggered causing the tooltip to flicker
     distance: 12,
     themes: {
         'tooltip': {
