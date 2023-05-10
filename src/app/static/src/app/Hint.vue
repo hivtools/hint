@@ -1,6 +1,6 @@
 <template>
     <user-header :title="title" :user="user"></user-header>
-    <div id="app" class="container mb-5">
+    <div class="container mb-5">
         <router-view></router-view>
     </div>
     <errors title="title"></errors>
@@ -17,10 +17,12 @@ import { Language } from './store/translations/locales';
     export default defineComponent({
         props: {
             title: {
-                type: String
+                type: String,
+                required: true
             },
             user: {
-                type: String
+                type: String,
+                required: true
             }
         },
         components: {

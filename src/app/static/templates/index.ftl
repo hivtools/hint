@@ -14,9 +14,7 @@
     <script defer src="/public/js/node_modules_leaflet_dist_leaflet-src_esm_js.chunk.js"></script>
 </head>
 <body>
-<div id="app" :class="language">
-    <hint title="${title}" user="${user}"></hint>
-</div>
+<div id="app" :class="language" data-user="${user}" data-title="${title}"></div>
 <script>
     var currentUser = "${user}"
 </script>
