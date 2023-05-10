@@ -39,7 +39,7 @@
             </div>
         </div>
         <div id="chart" class="col-md-9">
-            <l-map ref="map" style="height: 800px; width: 100%">
+            <l-map ref="map" style="height: 800px; width: 100%" @vnode-updated="updateBounds" @ready="updateBounds">
                 <template v-for="feature in currentFeatures" :key="feature.id">
                     <l-geo-json :geojson="feature"
                                 :options="options"
@@ -250,7 +250,7 @@
             },
             emptyFeature() {
                 const nonEmptyFeature = (this.currentFeatures.filter(filtered => !!this.featureIndicators[filtered.properties!.area_id]))
-                return nonEmptyFeature.length == 0
+                return nonEmptyFeature.length == 0 && this.selections.detail !== 0
             },
             sizeRange() {
                 const sizeScale = this.sizeScales[this.selections.sizeIndicatorId];
@@ -377,8 +377,12 @@
                         this.previousCircles.forEach(circle => circle.remove())
                         this.previousCircles = []
                     }
+                    console.log(this.currentFeatures)
                     let circlesArray: CircleMarker[] = [];
                     this.currentFeatures.forEach((feature) => {
+                        if (!this.showBubble(feature)) {
+                            return
+                        }
                         let circle = circleMarker([feature.properties?.center_y, feature.properties?.center_x], {
                             radius: this.getRadius(feature),
                             fillOpacity: 0.75,
@@ -524,6 +528,12 @@
                     this.updateBounds();
                 },
                 selectedAreaFeatures: function (newVal) {
+                    this.updateBounds();
+                },
+                colourIndicatorScale: function (newVal) {
+                    this.updateBounds();
+                },
+                sizeIndicatorScale: function (newVal) {
                     this.updateBounds();
                 }
             },
