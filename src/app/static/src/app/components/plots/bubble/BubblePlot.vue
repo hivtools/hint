@@ -515,21 +515,6 @@
                 this.$emit("update-size-scales", newSizeScales);
             },
         },
-        watch:
-            {
-                initialised: function (newVal: boolean) {
-                    this.updateBounds();
-                },
-                selectedAreaFeatures: function (newVal) {
-                    this.updateBounds();
-                },
-                colourIndicatorScale: function (newVal) {
-                    this.updateBounds();
-                },
-                sizeIndicatorScale: function (newVal) {
-                    this.updateBounds();
-                }
-            },
         mounted() {
             this.updateBounds();
         },
