@@ -7,6 +7,7 @@ import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.logging.logADRRequestDuration
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
+import org.imperial.mrc.hint.security.oauth2.ProfileDefinition.Companion.token
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import java.io.File
@@ -31,7 +32,7 @@ class ADRClientBuilder(val appProperties: AppProperties,
 
     fun buildSSO(): ADRClient
     {
-        return ADRFuelClient(this.appProperties, "", this.logger)
+        return ADRFuelClient(this.appProperties, "Bearer $token", this.logger)
     }
 }
 

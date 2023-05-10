@@ -55,8 +55,8 @@ class ADRClientBuilderTests
         val sut = ADRClientBuilder(ConfiguredAppProperties(), encryption, mockSession, mockRepo, mock())
         val result = sut.buildSSO() as ADRFuelClient
         val headers = result.standardHeaders()
-        Assertions.assertThat(headers["Authorization"]).isEqualTo("")
-        Assertions.assertThat(result.httpRequestHeaders()).isEqualTo(arrayOf("Authorization", ""))
+        Assertions.assertThat(headers["Authorization"]).isEqualTo("Bearer ")
+        Assertions.assertThat(result.httpRequestHeaders()).isEqualTo(arrayOf("Authorization", "Bearer "))
     }
 
 }
