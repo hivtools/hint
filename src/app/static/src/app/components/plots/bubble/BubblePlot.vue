@@ -50,20 +50,18 @@
                     <map-empty-feature></map-empty-feature>
                 </div>
                 <div v-if="!emptyFeature">
-                    <reset-map v-if="!emptyFeature" @reset-view="updateBounds"></reset-map>
-                    <map-legend v-show="!emptyFeature"
-                                :metadata="colorIndicator"
+                    <reset-map @reset-view="updateBounds"></reset-map>
+                    <map-legend :metadata="colorIndicator"
                                 :colour-range="colourRange"
                                 :colour-scale="colourIndicatorScale"
                                 @update="updateColourScale"
                     ></map-legend>
-                    <size-legend v-show="!emptyFeature"
-                                :indicatorRange="sizeRange"
-                                :max-radius="maxRadius"
-                                :min-radius="minRadius"
-                                :metadata="sizeIndicator"
-                                :size-scale="sizeIndicatorScale"
-                                @update="updateSizeScale"
+                    <size-legend :indicatorRange="sizeRange"
+                                 :max-radius="maxRadius"
+                                 :min-radius="minRadius"
+                                 :metadata="sizeIndicator"
+                                 :size-scale="sizeIndicatorScale"
+                                 @update="updateSizeScale"
                     ></size-legend>
                 </div>
                 <div>
