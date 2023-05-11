@@ -7,12 +7,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import UserHeader from "./components/header/UserHeader.vue";
-import Errors from "./components/Errors.vue";
+import {computed, defineComponent} from 'vue';
+import UserHeader from "./header/UserHeader.vue";
+import Errors from "./Errors.vue";
 import {mapActions, mapState} from "vuex";
-import { RootState } from './root';
-import { Language } from './store/translations/locales';
+import { RootState } from '../root';
+import { Language } from '../store/translations/locales';
 
     export default defineComponent({
         props: {

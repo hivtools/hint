@@ -12,7 +12,7 @@ import Privacy from "./components/Privacy.vue";
 import {createRouter, createWebHashHistory, NavigationGuardNext} from "vue-router";
 // import {Route} from "vue-router/types/router";
 // import {Language} from "./store/translations/locales";
-import Hint from "./Hint.vue"
+import Hint from "./components/Hint.vue"
 import "../scss/style.scss"
 import "leaflet/dist/leaflet.css"
 import translate from "./directives/translate";

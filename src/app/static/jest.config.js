@@ -20,8 +20,8 @@ module.exports = {
         'vue',
     ],
     transform: {
-        '.*\\.vue?$': 'vue3-jest',
-        '^.+\\.tsx?$': [
+        '.*\\.(vue)$': 'vue3-jest',
+        '^.+\\.ts?$': [
             'ts-jest',
             {
                 tsconfig: 'tsconfig.json',
@@ -31,7 +31,7 @@ module.exports = {
             }
         ],
         '^.+\\.js?$': '<rootDir>/node_modules/babel-jest',
-        // '^.+\\.ts$': 'ts-jest',
+        //'^.+\\.ts$': 'ts-jest',
     },
     moduleNameMapper: {
         'd3-format': '<rootDir>/node_modules/d3-format/dist/d3-format.min.js',
