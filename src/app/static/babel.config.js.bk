@@ -1,0 +1,40 @@
+module.exports = {
+    /*
+    presets: ["@vue/cli-plugin-babel/preset"],
+
+     */
+     plugins: [
+    [
+      '@babel/plugin-proposal-decorators',
+      {
+        legacy: true,
+      },
+    ],
+  ],
+    env: {
+        development: {
+            presets: [
+                [
+                    "@babel/preset-env",
+                    {
+                        modules: false,
+                    },
+                ],
+            ],
+        },
+        test: {
+            presets: [
+                [
+                    "@babel/preset-env",
+                    {
+                        targets: {
+                            node: "current",
+                        },
+                    },
+                ],
+            ],
+        },
+    }
+
+
+};
