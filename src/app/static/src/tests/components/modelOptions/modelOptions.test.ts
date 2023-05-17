@@ -70,79 +70,79 @@ describe("Model options component", () => {
     it("displays dynamic form when fetching is false", () => {
         const store = createStore({optionsFormMeta: {controlSections: []}});
         const rendered = shallowMount(ModelOptions, {store});
-        expect(rendered.findAll(DynamicForm).length).toBe(1);
-        const form = rendered.find(DynamicForm);
+        expect(rendered.findAllComponents(DynamicForm).length).toBe(1);
+        const form = rendered.findComponent(DynamicForm);
         expect(form.props("requiredText")).toBe("required");
         expect(form.props("selectText")).toBe("Select...");
         expect(form.props("submitText")).toBe("Validate");
-        expect(rendered.findAll(LoadingSpinner).length).toBe(0);
-        expect(rendered.find("#validating").exists()).toBe(false);
+        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(0);
+        expect(rendered.findComponent("#validating").exists()).toBe(false);
     });
 
     it("translates required, select and validate text into French", () => {
         const store = createStore({}, mockMutations, mockActions, {language: Language.fr});
         const wrapper = shallowMount(ModelOptions, {store});
-        expect(wrapper.find(DynamicForm).props("requiredText")).toBe("obligatoire");
-        expect(wrapper.find(DynamicForm).props("selectText")).toBe("Sélectionner...");
-        expect(wrapper.find(DynamicForm).props("submitText")).toBe("Valider");
+        expect(wrapper.findComponent(DynamicForm).props("requiredText")).toBe("obligatoire");
+        expect(wrapper.findComponent(DynamicForm).props("selectText")).toBe("Sélectionner...");
+        expect(wrapper.findComponent(DynamicForm).props("submitText")).toBe("Valider");
     });
 
     it("translates required, select and validate text into Portuguese", () => {
         const store = createStore({}, mockMutations, mockActions, {language: Language.pt});
         const wrapper = shallowMount(ModelOptions, {store});
-        expect(wrapper.find(DynamicForm).props("requiredText")).toBe("necessário");
-        expect(wrapper.find(DynamicForm).props("selectText")).toBe("Selecionar...");
-        expect(wrapper.find(DynamicForm).props("submitText")).toBe("Validar");
+        expect(wrapper.findComponent(DynamicForm).props("requiredText")).toBe("necessário");
+        expect(wrapper.findComponent(DynamicForm).props("selectText")).toBe("Selecionar...");
+        expect(wrapper.findComponent(DynamicForm).props("submitText")).toBe("Validar");
     });
 
     it("displays loading spinner while fetching is true", () => {
         const store = createStore({fetching: true});
         const rendered = shallowMount(ModelOptions, {store});
-        expect(rendered.findAll(DynamicForm).length).toBe(0);
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
-        expectTranslated(rendered.find("#loading-message"), "Loading options",
+        expect(rendered.findAllComponents(DynamicForm).length).toBe(0);
+        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
+        expectTranslated(rendered.findComponent("#loading-message"), "Loading options",
             "Chargement de vos options.", "Opções de carregamento", store);
     });
 
     it("renders as expected while validating", () => {
         const store = createStore({validating: true});
         const rendered = shallowMount(ModelOptions, {store});
-        expect(rendered.find("#validating").find(LoadingSpinner).exists()).toBe(true);
-        expectTranslated(rendered.find("#validating"), "Validating...",
+        expect(rendered.findComponent("#validating").findComponent(LoadingSpinner).exists()).toBe(true);
+        expectTranslated(rendered.findComponent("#validating"), "Validating...",
             "Validation en cours...", "A validar...", store);
     });
 
     it("displays tick and message if valid is true", () => {
         const store = createStore({valid: true});
         const rendered = shallowMount(ModelOptions, {store});
-        expectTranslated(rendered.find("h4"), "Options are valid",
+        expectTranslated(rendered.findComponent("h4"), "Options are valid",
             "Les options sont valides", "As opções são válidas", store);
-        expect(rendered.findAll(Tick).length).toBe(1);
-        expect(rendered.find("#validating").exists()).toBe(false);
+        expect(rendered.findAllComponents(Tick).length).toBe(1);
+        expect(rendered.findComponent("#validating").exists()).toBe(false);
     });
 
 
     it("does not display tick or message if valid is false", () => {
         const store = createStore({valid: false});
         const rendered = shallowMount(ModelOptions, {store});
-        expect(rendered.findAll("h4").length).toBe(0);
-        expect(rendered.findAll(Tick).length).toBe(0);
+        expect(rendered.findAllComponents("h4").length).toBe(0);
+        expect(rendered.findAllComponents(Tick).length).toBe(0);
     });
 
     it("does display error message when error occurred", () => {
         const error = mockError("validation error occurred")
         const store = createStore({validateError: error});
         const rendered = shallowMount(ModelOptions, {store});
-        expect(rendered.findAll(ErrorAlert).length).toBe(1);
-        expect(rendered.find(ErrorAlert).props().error).toBe(error);
+        expect(rendered.findAllComponents(ErrorAlert).length).toBe(1);
+        expect(rendered.findComponent(ErrorAlert).props().error).toBe(error);
     })
 
     it("does display error message when model option encounter Errors", () => {
         const error = mockError("Errors")
         const store = createStore({optionsError: error});
         const rendered = shallowMount(ModelOptions, {store});
-        expect(rendered.findAll(ErrorAlert).length).toBe(1);
-        expect(rendered.find(ErrorAlert).props().error).toBe(error);
+        expect(rendered.findAllComponents(ErrorAlert).length).toBe(1);
+        expect(rendered.findComponent(ErrorAlert).props().error).toBe(error);
     })
 
     it("triggers update mutation when dynamic form changes", async () => {
@@ -167,7 +167,7 @@ describe("Model options component", () => {
             controlGroups: []
         };
 
-        rendered.find(DynamicForm).vm.$emit("change", {controlSections: [newControlSection]});
+        rendered.findComponent(DynamicForm).vm.$emit("change", {controlSections: [newControlSection]});
 
         await Vue.nextTick();
         expect(updateMock.mock.calls[0][1]).toStrictEqual({
@@ -202,7 +202,7 @@ describe("Model options component", () => {
         const rendered = shallowMount(ModelOptions, {
             store
         });
-        rendered.find(DynamicForm).vm.$emit("submit", options);
+        rendered.findComponent(DynamicForm).vm.$emit("submit", options);
 
         await Vue.nextTick();
         expect(validateMock.mock.calls.length).toBe(1);
@@ -220,7 +220,7 @@ describe("Model options component", () => {
         const rendered = shallowMount(ModelOptions, {
             store
         });
-        rendered.find(DynamicForm).vm.$emit("submit");
+        rendered.findComponent(DynamicForm).vm.$emit("submit");
 
         await Vue.nextTick();
         expect(validateMock.mock.calls.length).toBe(0);

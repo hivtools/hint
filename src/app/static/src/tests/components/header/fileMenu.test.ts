@@ -1,4 +1,4 @@
-import {mount, shallowMount, Wrapper} from "@vue/test-utils";
+import {mount, shallowMount, VueWrapper} from "@vue/test-utils";
 import Vuex, {Store} from "vuex";
 import {
     mockAncResponse,
@@ -97,16 +97,16 @@ describe("File menu", () => {
         const store = createStore();
         const wrapper = mount(FileMenu,
             {
-                propsData: {title: "naomi"},
+                props: {title: "naomi"},
                 store
             });
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
-        let link = wrapper.findAll(".dropdown-item").at(1);
+        wrapper.findComponent(".dropdown-toggle").trigger("click");
+        expect(wrapper.findComponent(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+        let link = wrapper.findAllComponents(".dropdown-item")[1];
         link.trigger("mousedown");
         expectTranslated(link, "SaveJSON", "SauvegarderJSON", "GuardarJSON", store as any);
 
-        const hiddenLink = wrapper.find({ref: "save"});
+        const hiddenLink = wrapper.findComponent({ref: "save"});
         expect(hiddenLink.attributes("href")).toBe("http://localhost#1234");
 
         const re = new RegExp("naomi-(.*)\.json");
@@ -147,9 +147,9 @@ describe("File menu", () => {
         switches.loadJson = true
         const store = createStore();
         const wrapper = mount(FileMenu, {store});
-        const link = wrapper.findAll(".dropdown-item").at(2);
+        const link = wrapper.findAllComponents(".dropdown-item")[2];
         expectTranslated(link, "LoadJSON", "ChargerJSON", "CarregarJSON", store as any);
-        const input = wrapper.find("#upload-file")
+        const input = wrapper.findComponent("#upload-file")
         expectTranslated(input,
             "Select file",
             "Sélectionner un fichier",
@@ -161,12 +161,12 @@ describe("File menu", () => {
     it("aria-label and link text are translated for outputZip load", () => {
         const store = createStore();
         const wrapper = mount(FileMenu, {store});
-        const link = wrapper.findAll(".dropdown-item").at(0);
+        const link = wrapper.findAllComponents(".dropdown-item")[0];
         expectTranslated(link,
             "Load Model Outputs",
             "Charger les sorties du modèle",
             "Carregar Saídas do Modelo", store as any);
-        const input = wrapper.find("#upload-zip")
+        const input = wrapper.findComponent("#upload-zip")
         expectTranslated(input,
             "Select file",
             "Sélectionner un fichier",
@@ -180,12 +180,12 @@ describe("File menu", () => {
         const store = createStore();
         const wrapper = mount(FileMenu, {store});
 
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
-        const link = wrapper.findAll(".dropdown-item").at(2);
+        wrapper.findComponent(".dropdown-toggle").trigger("click");
+        expect(wrapper.findComponent(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+        const link = wrapper.findAllComponents(".dropdown-item")[2];
         expectTranslated(link, "LoadJSON", "ChargerJSON", "CarregarJSON", store as any);
 
-        const input = wrapper.find("#upload-file").element as HTMLInputElement
+        const input = wrapper.findComponent("#upload-file").element as HTMLInputElement
         input.addEventListener("click", function () {
             //file dialog was opened
             done();
@@ -216,7 +216,7 @@ describe("File menu", () => {
         triggerSelectFile(wrapper, testFile, "#upload-file");
         expect(mockLoadAction.mock.calls.length).toEqual(1);
         expect(mockLoadAction.mock.calls[0][1]).toBe(testFile);
-        expect(wrapper.find("#project-json #load").props("open")).toBe(false);
+        expect((wrapper.findComponent("#project-json #load") as VueWrapper).props("open")).toBe(false);
         expect(clearLoadJsonInput).toHaveBeenCalledTimes(1)
     });
 
@@ -238,9 +238,9 @@ describe("File menu", () => {
                 methods: { clearLoadJsonInput }
             });
 
-        wrapper.find("#upload-file").trigger("change")
+        wrapper.findComponent("#upload-file").trigger("change")
         expect(mockLoadAction.mock.calls.length).toEqual(0);
-        expect(wrapper.find("#load").props("open")).toBe(false);
+        expect((wrapper.findComponent("#load") as VueWrapper).props("open")).toBe(false);
         expect(clearLoadJsonInput).not.toHaveBeenCalled()
     });
 
@@ -261,9 +261,9 @@ describe("File menu", () => {
                 methods: { clearLoadZipInput }
             });
 
-        wrapper.find("#upload-zip").trigger("change")
+        wrapper.findComponent("#upload-zip").trigger("change")
         expect(mockPreparingRehydrate.mock.calls.length).toEqual(0);
-        expect(wrapper.find("#load").props("open")).toBe(false);
+        expect((wrapper.findComponent("#load") as VueWrapper).props("open")).toBe(false);
         expect(clearLoadZipInput).not.toHaveBeenCalled()
     });
 
@@ -287,7 +287,7 @@ describe("File menu", () => {
         const testFile = mockFile("test filename", "test file contents", "application/zip");
         triggerSelectFile(wrapper, testFile, "#upload-zip");
         expect(mockPreparingRehydrate.mock.calls.length).toBe(1);
-        expect(wrapper.find("#project-zip #load").props("open")).toBe(false);
+        expect((wrapper.findComponent("#project-zip #load") as VueWrapper).props("open")).toBe(false);
         expect(clearLoadZipInput).toHaveBeenCalledTimes(1)
     });
 
@@ -297,7 +297,7 @@ describe("File menu", () => {
                 store: createStore()
             });
 
-        expect(wrapper.find(UploadNewProject).attributes("open")).toBeFalsy();
+        expect(wrapper.findComponent(UploadNewProject).attributes("open")).toBeFalsy();
     });
 
     it("error modal can be dismissed", () => {
@@ -317,12 +317,12 @@ describe("File menu", () => {
 
         const wrapper = mount(FileMenu, {store});
 
-        const projectModal = wrapper.find(UploadNewProject);
+        const projectModal = wrapper.findComponent(UploadNewProject);
 
-        const modal = projectModal.findAll(".modal")
+        const modal = projectModal.findAllComponents(".modal")
 
-        modal.at(1).find(".btn").trigger("click");
-        expectTranslated(modal.at(1).find(".btn"), "OK", "OK", "OK", store as any);
+        modal[1].findComponent(".btn").trigger("click");
+        expectTranslated(modal[1].findComponent(".btn"), "OK", "OK", "OK", store as any);
         expect(clearErrorMock.mock.calls.length).toBe(1);
     });
 
@@ -340,7 +340,7 @@ describe("File menu", () => {
         });
         const projectModal = openUploadNewProject(store, "#upload-file")
         expect(projectModal.props().openModal).toBe(false)
-        projectModal.find(".btn").trigger("click");
+        projectModal.findComponent(".btn").trigger("click");
         expect(mockLoadAction.mock.calls.length).toBe(1);
         expect(projectModal.props().openModal).toBe(false)
     });
@@ -353,7 +353,7 @@ describe("File menu", () => {
             }
         }, false);
         const projectModal = openUploadNewProject(store, "#upload-zip", "application/zip")
-        projectModal.find(".btn").trigger("click");
+        projectModal.findComponent(".btn").trigger("click");
         expect(mockGetProjects).toHaveBeenCalled()
     });
 
@@ -369,7 +369,7 @@ describe("File menu", () => {
             }
         });
         const projectModal = openUploadNewProject(store, "#upload-zip", "application/zip")
-        projectModal.find(".btn").trigger("click");
+        projectModal.findComponent(".btn").trigger("click");
         expect(mockGetProjects).not.toHaveBeenCalled()
         expect(mockPreparingRehydrate.mock.calls.length).toBe(1);
         expect(projectModal.props().openModal).toBe(false)
@@ -394,18 +394,18 @@ describe("File menu", () => {
         const wrapper = mount(FileMenu, {store});
         const testFile = mockFile("test.zip", "test file contents", "application/zip");
         triggerSelectFile(wrapper, testFile, "#upload-zip");
-        const projectZip = wrapper.find("#project-zip")
-        expect(projectZip.find("#load").props("open")).toBe(true);
+        const projectZip = wrapper.findComponent("#project-zip")
+        expect((projectZip.findComponent("#load") as VueWrapper).props("open")).toBe(true);
 
-        const confirmLoad = projectZip.find("#confirm-load-project")
-        projectZip.find("#project-name-input").setValue("new uploaded project")
+        const confirmLoad = projectZip.findComponent("#confirm-load-project")
+        projectZip.findComponent("#project-name-input").setValue("new uploaded project")
         confirmLoad.trigger("click")
 
         expect(mockProjectName.mock.calls.length).toBe(1);
         expect(mockProjectName.mock.calls[0][1]).toBe("new uploaded project");
         expect((wrapper.vm as any).fileToLoad).toBe(testFile);
         expect(mockPreparingRehydrate.mock.calls.length).toBe(1);
-        expect(projectZip.find(UploadNewProject).props().openModal).toBe(false);
+        expect(projectZip.findComponent(UploadNewProject).props().openModal).toBe(false);
     });
 
     it("triggers load action as non-guest when JSON file is uploaded", () => {
@@ -428,17 +428,17 @@ describe("File menu", () => {
         const wrapper = mount(FileMenu, {store});
         const testFile = mockFile("test.json", "test file contents", "application/json");
         triggerSelectFile(wrapper, testFile, "#upload-file");
-        const jsonProject = wrapper.find("#project-json");
-        expect(jsonProject.find("#load").props("open")).toBe(true);
-        const confirmLoad = jsonProject.find("#confirm-load-project")
-        jsonProject.find("#project-name-input").setValue("new uploaded project")
+        const jsonProject = wrapper.findComponent("#project-json");
+        expect((jsonProject.findComponent("#load") as VueWrapper).props("open")).toBe(true);
+        const confirmLoad = jsonProject.findComponent("#confirm-load-project")
+        jsonProject.findComponent("#project-name-input").setValue("new uploaded project")
         confirmLoad.trigger("click")
 
         expect(mockProjectName.mock.calls.length).toBe(1);
         expect(mockProjectName.mock.calls[0][1]).toBe("new uploaded project");
         expect((wrapper.vm as any).fileToLoad).toBe(testFile);
         expect(mockLoadAction.mock.calls.length).toBe(1);
-        expect(jsonProject.find(UploadNewProject).props().openModal).toBe(false);
+        expect(jsonProject.findComponent(UploadNewProject).props().openModal).toBe(false);
     });
 
     it("can render project upload zip props", async() => {
@@ -451,7 +451,7 @@ describe("File menu", () => {
 
         const wrapper = mount(FileMenu, {store});
 
-        const projectModal = wrapper.find(UploadNewProject);
+        const projectModal = wrapper.findComponent(UploadNewProject);
 
         expect(projectModal.exists()).toBeTruthy()
         expect(projectModal.props("cancelLoad")).toBeInstanceOf(Function)
@@ -465,7 +465,7 @@ describe("File menu", () => {
         const testFile = mockFile("filename.json", "test file contents", "application/json");
         triggerSelectFile(wrapper, testFile, "#upload-file");
 
-        expect(wrapper.find("#project-json #load").props("open")).toBe(true);
+        expect((wrapper.findComponent("#project-json #load") as VueWrapper).props("open")).toBe(true);
         expect((wrapper.vm as any).fileToLoad).toBe(testFile);
     });
 
@@ -473,7 +473,7 @@ describe("File menu", () => {
         const wrapper = mount(FileMenu, {store: createStore({}, false)});
         const testFile = mockFile("test filename", "test file contents", "application/zip");
         triggerSelectFile(wrapper, testFile, "#upload-zip");
-        expect(wrapper.find("#project-zip #load").props("open")).toBe(true);
+        expect((wrapper.findComponent("#project-zip #load") as VueWrapper).props("open")).toBe(true);
         expect((wrapper.vm as any).fileToLoad).toBe(testFile);
     });
 
@@ -488,10 +488,10 @@ describe("File menu", () => {
                 methods: { clearLoadJsonInput }
             });
 
-        const modal = wrapper.find("#project-json #load");
-        expect(modal.props("open")).toBe(true);
-        modal.find("#cancel-load-project").trigger("click");
-        expect(modal.props("open")).toBe(false);
+        const modal = wrapper.findComponent("#project-json #load");
+        expect((modal as VueWrapper).props("open")).toBe(true);
+        modal.findComponent("#cancel-load-project").trigger("click");
+        expect((modal as VueWrapper).props("open")).toBe(false);
         expect(clearLoadJsonInput).toHaveBeenCalledTimes(1)
     });
 
@@ -506,10 +506,10 @@ describe("File menu", () => {
                 methods: { clearLoadZipInput }
             });
 
-        const modal = wrapper.find("#project-zip #load");
-        expect(modal.props("open")).toBe(true);
-        modal.find("#cancel-load-project").trigger("click");
-        expect(modal.props("open")).toBe(false);
+        const modal = wrapper.findComponent("#project-zip #load");
+        expect((modal as VueWrapper).props("open")).toBe(true);
+        modal.findComponent("#cancel-load-project").trigger("click");
+        expect((modal as VueWrapper).props("open")).toBe(false);
         expect(clearLoadZipInput).toHaveBeenCalledTimes(1)
     });
 
@@ -532,10 +532,10 @@ describe("File menu", () => {
         const wrapper = mount(FileMenu, {store});
         const testFile = mockFile("test.zip", "test file contents", "application/zip");
         triggerSelectFile(wrapper, testFile, "#upload-zip");
-        const projectZip = wrapper.find("#project-zip")
-        const confirmLoad = projectZip.find("#confirm-load-project")
+        const projectZip = wrapper.findComponent("#project-zip")
+        const confirmLoad = projectZip.findComponent("#confirm-load-project")
         expect(confirmLoad.attributes("disabled")).toBe("disabled")
-        projectZip.find("#project-name-input").setValue("new uploaded project")
+        projectZip.findComponent("#project-name-input").setValue("new uploaded project")
         expect(confirmLoad.attributes("disabled")).toBeUndefined()
     });
 
@@ -543,10 +543,10 @@ describe("File menu", () => {
         switches.loadJson = false
         const store = createStore();
         const wrapper = mount(FileMenu, {store});
-        const link = wrapper.findAll(".dropdown-item");
+        const link = wrapper.findAllComponents(".dropdown-item");
 
         expect(link.length).toBe(1)
-        expect(link.at(0).text()).toBe("Load Model Outputs")
+        expect(link[0].text()).toBe("Load Model Outputs")
     });
 });
 
@@ -554,14 +554,14 @@ const openUploadNewProject = (store: Store<any>, inputId= "#upload-file", fileTy
     const wrapper = mount(FileMenu, {store});
     const testFile = mockFile("test filename", "test file contents", fileType);
     triggerSelectFile(wrapper, testFile, inputId);
-    const projectModal = wrapper.find(UploadNewProject);
+    const projectModal = wrapper.findComponent(UploadNewProject);
     expect(projectModal.exists()).toBeTruthy()
     return projectModal
 }
 
-const triggerSelectFile = (wrapper: Wrapper<any>, testFile: File, id: string) => {
+const triggerSelectFile = (wrapper: VueWrapper, testFile: File, id: string) => {
     const vm = wrapper.vm;
-    const input = wrapper.find(id);
+    const input = wrapper.findComponent(id);
 
     //Can't programmatically construct a FileList to give to the real rendered input element, so we need to trick
     //the component with a mocked ref

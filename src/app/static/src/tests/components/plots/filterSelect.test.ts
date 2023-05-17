@@ -15,15 +15,15 @@ describe("FilterSelect component", () => {
     registerTranslations(store);
 
     it("renders label", () => {
-        const wrapper = shallowMount(FilterSelect, {store, propsData: {options: testOptions, label: "testLabel"}});
-        expect(wrapper.find("label").text()).toBe("testLabel");
+        const wrapper = shallowMount(FilterSelect, {store, props: {options: testOptions, label: "testLabel"}});
+        expect(wrapper.findComponent("label").text()).toBe("testLabel");
     });
 
     it("renders tooltip if any options have descriptions", () => {
         const tooltip = jest.fn();
         const wrapper = shallowMount(FilterSelect, {
             store,
-            propsData: {
+            props: {
                 options: [
                     ...testOptions,
                     {id: "3", label: "three", description: "Third option"},
@@ -34,19 +34,19 @@ describe("FilterSelect component", () => {
                 tooltip
             }
         });
-        expect(wrapper.find(HelpCircleIcon).exists()).toBe(true);
+        expect(wrapper.findComponent(HelpCircleIcon).exists()).toBe(true);
         expect(tooltip.mock.calls[0][1].value.content).toBe("<dl><dt>three</dt><dd>Third option</dd><dt>four</dt><dd>Fourth option</dd></dl>");
     });
 
     it("does not render tooltip unless any options have descriptions", () => {
-        const wrapper = shallowMount(FilterSelect, {store, propsData: {options: testOptions, label: "testLabel"}});
-        expect(wrapper.find("span.filter-select").exists()).toBe(false);
+        const wrapper = shallowMount(FilterSelect, {store, props: {options: testOptions, label: "testLabel"}});
+        expect(wrapper.findComponent("span.filter-select").exists()).toBe(false);
     });
 
     it("renders TreeSelect", () => {
         const wrapper = shallowMount(FilterSelect, {
             store,
-            propsData:
+            props:
                 {
                     label: "label",
                     options: testOptions,
@@ -55,7 +55,7 @@ describe("FilterSelect component", () => {
                 }
         });
 
-        const treeSelect = wrapper.find(TreeSelect);
+        const treeSelect = wrapper.findComponent(TreeSelect);
         expect(treeSelect.props("value")).toBe("2");
         expect(treeSelect.props("disabled")).toBe(false);
         expect(treeSelect.props("options")).toStrictEqual(testOptions);
@@ -63,14 +63,14 @@ describe("FilterSelect component", () => {
         expect(treeSelect.props("clearable")).toBe(false);
         expect(treeSelect.props("multiple")).toBe(false);
 
-        const label = wrapper.find("label");
+        const label = wrapper.findComponent("label");
         expect(label.classes().indexOf("disabled-label")).toBe(-1);
     });
 
     it("renders TreeSelect with null value and placeholder if disabled", () => {
         const wrapper = shallowMount(FilterSelect, {
             store,
-            propsData:
+            props:
                 {
                     label: "label",
                     options: testOptions,
@@ -79,7 +79,7 @@ describe("FilterSelect component", () => {
                 }
         });
 
-        const treeSelect = wrapper.find(TreeSelect);
+        const treeSelect = wrapper.findComponent(TreeSelect);
         expect(treeSelect.props("value")).toBeNull();
         expect(treeSelect.props("disabled")).toBe(true);
         expect(treeSelect.props("options")).toStrictEqual(testOptions);
@@ -88,56 +88,56 @@ describe("FilterSelect component", () => {
         expect(treeSelect.props("clearable")).toBe(false);
         expect(treeSelect.props("multiple")).toBe(false);
 
-        const label = wrapper.find("label");
+        const label = wrapper.findComponent("label");
         expect(label.classes()).toContain("disabled-label");
     });
 
     it("emits indicator-changed event with indicator", () => {
-        const wrapper = shallowMount(FilterSelect, {store, propsData: {label: "label", options: testOptions}});
-        wrapper.findAll(TreeSelect).at(0).vm.$emit("input", "2");
-        expect(wrapper.emitted("input")[0][0]).toBe("2");
+        const wrapper = shallowMount(FilterSelect, {store, props: {label: "label", options: testOptions}});
+        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("input", "2");
+        expect(wrapper.emitted("input")![0][0]).toBe("2");
     });
 
     it("does not emit input event if disabled", () => {
         const wrapper = shallowMount(FilterSelect, {
             store,
-            propsData: {label: "label", options: testOptions, disabled: true}
+            props: {label: "label", options: testOptions, disabled: true}
         });
-        wrapper.findAll(TreeSelect).at(0).vm.$emit("input", "2");
-        expect(wrapper.emitted("input")).toBeUndefined();
+        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("input", "2");
+        expect(wrapper.emitted("input")!).toBeUndefined();
     });
 
     it("emits select event with added value when multi-select", () => {
         const wrapper = shallowMount(FilterSelect, {
             store,
-            propsData: {label: "Label", options: testOptions, multiple: true, value: []}
+            props: {label: "Label", options: testOptions, multiple: true, value: []}
         });
-        wrapper.findAll(TreeSelect).at(0).vm.$emit("select", {id: "1", label: "one"});
-        expect(wrapper.emitted("select")[0][0]).toStrictEqual([{id: "1", label: "one"}]);
+        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("select", {id: "1", label: "one"});
+        expect(wrapper.emitted("select")![0][0]).toStrictEqual([{id: "1", label: "one"}]);
 
-        wrapper.findAll(TreeSelect).at(0).vm.$emit("select", {id: "2", label: "two"});
-        expect(wrapper.emitted("select")[1][0]).toStrictEqual([{id: "1", label: "one"}, {id: "2", label: "two"}]);
+        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("select", {id: "2", label: "two"});
+        expect(wrapper.emitted("select")![1][0]).toStrictEqual([{id: "1", label: "one"}, {id: "2", label: "two"}]);
     });
 
     it("emits select event with replaced value when not multi-select", () => {
         const wrapper = shallowMount(FilterSelect, {
             store,
-            propsData: {label: "Label", options: testOptions, multiple: false}
+            props: {label: "Label", options: testOptions, multiple: false}
         });
-        wrapper.findAll(TreeSelect).at(0).vm.$emit("select", {id: "1", label: "one"});
-        expect(wrapper.emitted("select")[0][0]).toStrictEqual([{id: "1", label: "one"}]);
+        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("select", {id: "1", label: "one"});
+        expect(wrapper.emitted("select")![0][0]).toStrictEqual([{id: "1", label: "one"}]);
 
-        wrapper.findAll(TreeSelect).at(0).vm.$emit("select", {id: "2", label: "two"});
-        expect(wrapper.emitted("select")[1][0]).toStrictEqual([{id: "2", label: "two"}]);
+        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("select", {id: "2", label: "two"});
+        expect(wrapper.emitted("select")![1][0]).toStrictEqual([{id: "2", label: "two"}]);
     });
 
     it("emits select even when deselect", () => {
         const wrapper = shallowMount(FilterSelect, {
             store,
-            propsData: {label: "Label", options: testOptions, multiple: true, value: ["1", "2"]}
+            props: {label: "Label", options: testOptions, multiple: true, value: ["1", "2"]}
         });
 
-        wrapper.findAll(TreeSelect).at(0).vm.$emit("deselect", {id: "1", label: "one"});
-        expect(wrapper.emitted("select")[0][0]).toStrictEqual([{id: "2", label: "two"}]);
+        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("deselect", {id: "1", label: "one"});
+        expect(wrapper.emitted("select")![0][0]).toStrictEqual([{id: "2", label: "two"}]);
     });
 });

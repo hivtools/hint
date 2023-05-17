@@ -1,4 +1,4 @@
-import {createLocalVue, shallowMount, mount} from '@vue/test-utils';
+import {shallowMount, mount, VueWrapper} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
 import {
     mockADRState,
@@ -16,8 +16,6 @@ import Download from "../../../app/components/downloadResults/Download.vue";
 import {ADRState} from "../../../app/store/adr/adr";
 import {ADRUploadState} from "../../../app/store/adrUpload/adrUpload";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
-
-const localVue = createLocalVue();
 
 describe("Download Results component", () => {
 
@@ -88,7 +86,7 @@ describe("Download Results component", () => {
         const store = createStore();
         const wrapper = mount(DownloadResults,
             {
-                store, localVue, stubs: ["upload-modal"],
+                store, stubs: ["upload-modal"],
                 data() {
                     return {
                         comparisonSwitch: true
@@ -96,26 +94,26 @@ describe("Download Results component", () => {
                 }
             });
 
-        const headers = wrapper.findAll("h4");
-        expectTranslated(headers.at(0), "Export model outputs for Spectrum",
+        const headers = wrapper.findAllComponents("h4");
+        expectTranslated(headers[0], "Export model outputs for Spectrum",
             "Exporter des sorties de modèles pour Spectrum", "Exportação de saídas modelo para Spectrum", store);
-        expectTranslated(headers.at(1), "Download coarse age group outputs",
+        expectTranslated(headers[1], "Download coarse age group outputs",
             "Télécharger les résultats grossiers du groupe d'âge",
             "Descarregar resultados de grupos etários grosseiros", store);
-        expectTranslated(headers.at(2), "Download summary report",
+        expectTranslated(headers[2], "Download summary report",
             "Télécharger le rapport de synthèse", "Descarregar relatório de síntese", store);
-        expectTranslated(headers.at(3), "Download comparison report",
+        expectTranslated(headers[3], "Download comparison report",
             "Télécharger le rapport de comparaison", "Baixar relatório de comparação", store);
-        expectTranslated(headers.at(4), "Upload to ADR",
+        expectTranslated(headers[4], "Upload to ADR",
             "Télécharger vers ADR", "Carregar para o ADR", store);
 
-        const buttons = wrapper.findAll("button");
+        const buttons = wrapper.findAllComponents("button");
         expect(buttons.length).toBe(5);
-        expectTranslated(buttons.at(0), "Export", "Exporter", "Exportação", store);
-        expectTranslated(buttons.at(1), "Download", "Télécharger", "Descarregar", store);
-        expectTranslated(buttons.at(2), "Download", "Télécharger", "Descarregar", store);
-        expectTranslated(buttons.at(3), "Download", "Télécharger", "Descarregar", store);
-        expectTranslated(buttons.at(4), "Upload", "Télécharger", "Carregar", store);
+        expectTranslated(buttons[0], "Export", "Exporter", "Exportação", store);
+        expectTranslated(buttons[1], "Download", "Télécharger", "Descarregar", store);
+        expectTranslated(buttons[2], "Download", "Télécharger", "Descarregar", store);
+        expectTranslated(buttons[3], "Download", "Télécharger", "Descarregar", store);
+        expectTranslated(buttons[4], "Upload", "Télécharger", "Carregar", store);
     });
 
     it(`renders, opens and closes dialog as expected`, async () => {
@@ -123,7 +121,6 @@ describe("Download Results component", () => {
         const wrapper = mount(DownloadResults,
             {
                 store,
-                localVue,
                 stubs: ["upload-modal"],
                 data() {
                     return {
@@ -132,15 +129,15 @@ describe("Download Results component", () => {
                 }
             });
 
-        expect(wrapper.find(UploadModal).exists()).toBe(false)
+        expect(wrapper.findComponent(UploadModal).exists()).toBe(false)
         expect(wrapper.vm.$data.uploadModalOpen).toBe(false)
 
-        const upload = wrapper.find("#upload").find("button")
+        const upload = wrapper.findComponent("#upload").findComponent("button")
         await upload.trigger("click")
-        expect(wrapper.find(UploadModal).exists()).toBe(true)
+        expect(wrapper.findComponent(UploadModal).exists()).toBe(true)
         expect(wrapper.vm.$data.uploadModalOpen).toBe(true)
 
-        const modal = wrapper.find(UploadModal)
+        const modal = wrapper.findComponent(UploadModal)
         await modal.vm.$emit("close")
         expect(modal.emitted().close.length).toBe(1)
         expect(wrapper.vm.$data.uploadModalOpen).toBe(false)
@@ -164,82 +161,82 @@ describe("Download Results component", () => {
                     }
                 }
             });
-        const headers = wrapper.findAll("h4");
+        const headers = wrapper.findAllComponents("h4");
         expect(headers.length).toBe(4)
     });
 
     it("does not render status messages or error alerts without appropriate states", () => {
         const store = createStore({userCanUpload: true}, jest.fn());
-        const wrapper = shallowMount(DownloadResults, {store, localVue});
+        const wrapper = shallowMount(DownloadResults, {store});
 
-        expect(wrapper.find("#uploading").exists()).toBe(false);
-        expect(wrapper.find("#uploadComplete").exists()).toBe(false);
-        expect(wrapper.find("error-alert-stub").exists()).toBe(false);
+        expect(wrapper.findComponent("#uploading").exists()).toBe(false);
+        expect(wrapper.findComponent("#uploadComplete").exists()).toBe(false);
+        expect(wrapper.findComponent("error-alert-stub").exists()).toBe(false);
     });
 
     it("renders uploading status messages as expected and disables upload button", () => {
         const store = createStore({userCanUpload: true}, jest.fn(), {uploading: true});
-        const wrapper = shallowMount(DownloadResults, {store, localVue});
+        const wrapper = shallowMount(DownloadResults, {store});
 
-        const statusMessage = wrapper.find("#uploading");
-        expect(statusMessage.find("loading-spinner-stub").exists()).toBe(true)
-        expectTranslated(statusMessage.find("span"), "Uploading 1 of 2 (this may take a while)",
+        const statusMessage = wrapper.findComponent("#uploading");
+        expect(statusMessage.findComponent("loading-spinner-stub").exists()).toBe(true)
+        expectTranslated(statusMessage.findComponent("span"), "Uploading 1 of 2 (this may take a while)",
             "Téléchargement de 1 sur 2 (cela peut prendre un certain temps)",
             "A carregar 1 de 2 (este processo poderá demorar um pouco)", store);
 
-        const uploadButton = wrapper.find("#upload").find("button");
+        const uploadButton = wrapper.findComponent("#upload").findComponent("button");
         expect(uploadButton.attributes("disabled")).toBe("disabled")
     });
 
     it("renders upload complete and release created status messages as expected", () => {
         const store = createStore({userCanUpload: true}, jest.fn(), {uploadComplete: true, releaseCreated: true});
-        const wrapper = shallowMount(DownloadResults, {store, localVue});
+        const wrapper = shallowMount(DownloadResults, {store});
 
-        const statusMessage = wrapper.find("#uploadComplete");
-        expectTranslated(statusMessage.find("span"), "Upload complete",
+        const statusMessage = wrapper.findComponent("#uploadComplete");
+        expectTranslated(statusMessage.findComponent("span"), "Upload complete",
             "Téléchargement complet", "Carregamento concluído", store);
-        expect(statusMessage.find("tick-stub").exists()).toBe(true)
+        expect(statusMessage.findComponent("tick-stub").exists()).toBe(true)
 
-        const statusMessage2 = wrapper.find("#releaseCreated");
-        expectTranslated(statusMessage2.find("span"), "Release created",
+        const statusMessage2 = wrapper.findComponent("#releaseCreated");
+        expectTranslated(statusMessage2.findComponent("span"), "Release created",
             "Version créée", "Lançamento criado", store);
-        expect(statusMessage2.find("tick-stub").exists()).toBe(true)
+        expect(statusMessage2.findComponent("tick-stub").exists()).toBe(true)
 
-        const uploadButton = wrapper.find("button");
+        const uploadButton = wrapper.findComponent("button");
         expect(uploadButton.attributes("disabled")).toBeUndefined();
     });
 
     it("renders release not created status messages as expected", () => {
         const store = createStore({userCanUpload: true}, jest.fn(), {uploadComplete: true, releaseFailed: true});
-        const wrapper = shallowMount(DownloadResults, {store, localVue});
+        const wrapper = shallowMount(DownloadResults, {store});
 
-        const statusMessage = wrapper.find("#releaseCreated");
-        expectTranslated(statusMessage.find("span"), "Could not create new release",
+        const statusMessage = wrapper.findComponent("#releaseCreated");
+        expectTranslated(statusMessage.findComponent("span"), "Could not create new release",
             "Impossible de créer une nouvelle version", "Não foi possível criar um novo lançamento", store);
-        expect(statusMessage.find("cross-stub").exists()).toBe(true)
+        expect(statusMessage.findComponent("cross-stub").exists()).toBe(true)
 
-        const uploadButton = wrapper.find("button");
+        const uploadButton = wrapper.findComponent("button");
         expect(uploadButton.attributes("disabled")).toBeUndefined();
     });
 
     it("renders upload error alert as expected", () => {
         const error = {error: "ERR", detail: "there was an error"}
         const store = createStore({userCanUpload: true}, jest.fn(), {uploadError: error});
-        const wrapper = shallowMount(DownloadResults, {store, localVue});
+        const wrapper = shallowMount(DownloadResults, {store});
 
-        const errorAlert = wrapper.find("error-alert-stub");
-        expect(errorAlert.props("error")).toEqual(error)
+        const errorAlert = wrapper.findComponent("error-alert-stub");
+        expect((errorAlert as VueWrapper).props("error")).toEqual(error)
 
-        const uploadButton = wrapper.find("button");
+        const uploadButton = wrapper.findComponent("button");
         expect(uploadButton.attributes("disabled")).toBeUndefined();
         expect(uploadButton.classes()).toEqual(["btn", "btn-lg", "my-3", "btn-red"]);
     });
 
     it("disables upload button when upload in progress", () => {
         const store = createStore({userCanUpload: true}, jest.fn(), {uploading: true});
-        const wrapper = shallowMount(DownloadResults, {store, localVue});
+        const wrapper = shallowMount(DownloadResults, {store});
 
-        const uploadButton = wrapper.find("button");
+        const uploadButton = wrapper.findComponent("button");
         expect(uploadButton.attributes("disabled")).toBe("disabled");
         expect(uploadButton.classes()).toEqual(["btn", "btn-lg", "my-3", "btn-secondary"]);
     });
@@ -247,7 +244,7 @@ describe("Download Results component", () => {
     it("disables download buttons when upload in progress", () => {
         const store = createStore({userCanUpload: true}, jest.fn(), {uploading: true});
         const wrapper = shallowMount(DownloadResults, {
-            store, localVue,
+            store,
             data() {
                 return {
                     comparisonSwitch: true
@@ -255,12 +252,12 @@ describe("Download Results component", () => {
             }
         });
 
-        const downloadButtons = wrapper.findAll(Download);
+        const downloadButtons = wrapper.findAllComponents(Download);
         expect(downloadButtons.length).toBe(4)
-        expect(downloadButtons.at(0).props("disabled")).toBe(true)
-        expect(downloadButtons.at(1).props("disabled")).toBe(true)
-        expect(downloadButtons.at(2).props("disabled")).toBe(true)
-        expect(downloadButtons.at(3).props("disabled")).toBe(true)
+        expect(downloadButtons[0].props("disabled")).toBe(true)
+        expect(downloadButtons[1].props("disabled")).toBe(true)
+        expect(downloadButtons[2].props("disabled")).toBe(true)
+        expect(downloadButtons[3].props("disabled")).toBe(true)
     });
 
     it("calls prepareOutputs on mount", () => {
@@ -278,7 +275,7 @@ describe("Download Results component", () => {
         });
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
 
-        const button = wrapper.find("#spectrum-download").find("button")
+        const button = wrapper.findComponent("#spectrum-download").findComponent("button")
         expect(button.attributes().disabled).toBe("disabled");
     });
 
@@ -286,7 +283,7 @@ describe("Download Results component", () => {
         const store = createStore();
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
 
-        const button = wrapper.find("#spectrum-download").find("button")
+        const button = wrapper.findComponent("#spectrum-download").findComponent("button")
         expect(button.attributes().disabled).toBe("disabled");
     });
 
@@ -300,7 +297,7 @@ describe("Download Results component", () => {
             })
         });
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
-        const button = wrapper.find("#spectrum-download").find("button");
+        const button = wrapper.findComponent("#spectrum-download").findComponent("button");
         expect(button.attributes().disabled).toBeUndefined();
         button.trigger("click");
         expect(mockDownloadSpectrumReport).toHaveBeenCalled()
@@ -315,7 +312,7 @@ describe("Download Results component", () => {
         });
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
 
-        const button = wrapper.find("#summary-download").find("button")
+        const button = wrapper.findComponent("#summary-download").findComponent("button")
         expect(button.attributes().disabled).toBe("disabled");
     });
 
@@ -323,7 +320,7 @@ describe("Download Results component", () => {
         const store = createStore();
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
 
-        const button = wrapper.find("#summary-download").find("button")
+        const button = wrapper.findComponent("#summary-download").findComponent("button")
         expect(button.attributes().disabled).toBe("disabled");
     });
 
@@ -337,7 +334,7 @@ describe("Download Results component", () => {
             })
         });
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
-        const button = wrapper.find("#summary-download").find("button");
+        const button = wrapper.findComponent("#summary-download").findComponent("button");
         expect(button.attributes().disabled).toBeUndefined();
         button.trigger("click");
         expect(mockDownloadSummaryReport).toHaveBeenCalled()
@@ -352,7 +349,7 @@ describe("Download Results component", () => {
         });
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
 
-        const button = wrapper.find("#coarse-output-download").find("button")
+        const button = wrapper.findComponent("#coarse-output-download").findComponent("button")
         expect(button.attributes().disabled).toBe("disabled");
     });
 
@@ -360,7 +357,7 @@ describe("Download Results component", () => {
         const store = createStore();
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
 
-        const button = wrapper.find("#coarse-output-download").find("button")
+        const button = wrapper.findComponent("#coarse-output-download").findComponent("button")
         expect(button.attributes().disabled).toBe("disabled");
     });
 
@@ -374,7 +371,7 @@ describe("Download Results component", () => {
             })
         });
         const wrapper = mount(DownloadResults, {store, stubs: ["upload-modal"]});
-        const button = wrapper.find("#coarse-output-download").find("button");
+        const button = wrapper.findComponent("#coarse-output-download").findComponent("button");
         expect(button.attributes().disabled).toBeUndefined();
         button.trigger("click");
         expect(mockDownloadCoarseReport).toHaveBeenCalled()
@@ -398,7 +395,7 @@ describe("Download Results component", () => {
                 }
             });
 
-        const button = wrapper.find("#comparison-download").find("button")
+        const button = wrapper.findComponent("#comparison-download").findComponent("button")
         expect(button.attributes().disabled).toBe("disabled");
     });
 
@@ -414,7 +411,7 @@ describe("Download Results component", () => {
                 }
             });
 
-        const button = wrapper.find("#comparison-download").find("button")
+        const button = wrapper.findComponent("#comparison-download").findComponent("button")
         expect(button.attributes().disabled).toBe("disabled");
     });
 
@@ -436,7 +433,7 @@ describe("Download Results component", () => {
                     }
                 }
             });
-        const button = wrapper.find("#comparison-download").find("button");
+        const button = wrapper.findComponent("#comparison-download").findComponent("button");
         expect(button.attributes().disabled).toBeUndefined();
         await button.trigger("click")
         expect(mockDownloadComparisonReport).toHaveBeenCalledTimes(1)
@@ -461,10 +458,10 @@ describe("Download Results component", () => {
                     }
                 }
             });
-        const comparisonWrapper = wrapper.find("#comparison-download");
-        const button = comparisonWrapper.find("#comparison-download").find("button");
+        const comparisonWrapper = wrapper.findComponent("#comparison-download");
+        const button = comparisonWrapper.findComponent("#comparison-download").findComponent("button");
         expect(button.attributes().disabled).toBeUndefined();
-        expect(comparisonWrapper.find(ErrorAlert).props("error")).toEqual(error)
+        expect(comparisonWrapper.findComponent(ErrorAlert).props("error")).toEqual(error)
     });
 
     it("calls clear status mutation before mount", () => {
@@ -520,9 +517,9 @@ const rendersReportDownloadErrors = (store: Store<RootState>, downloadType: stri
         {
             store, stubs: ["upload-modal"]
         });
-    const downloadComponent = wrapper.find(downloadType);
-    const button = downloadComponent.find(downloadType).find("button");
+    const downloadComponent = wrapper.findComponent(downloadType);
+    const button = downloadComponent.findComponent(downloadType).findComponent("button");
     expect(button.attributes().disabled).toBeUndefined();
-    expect(downloadComponent.find(ErrorAlert).exists()).toBeTruthy()
-    expect(downloadComponent.find(ErrorAlert).props("error")).toEqual(error)
+    expect(downloadComponent.findComponent(ErrorAlert).exists()).toBeTruthy()
+    expect(downloadComponent.findComponent(ErrorAlert).props("error")).toEqual(error)
 }

@@ -68,10 +68,10 @@ describe("CalibrateResults component", () => {
         const store = getStore();
         const wrapper = shallowMount(CalibrationResults, {localVue, store});
         await Vue.nextTick();
-        const title = wrapper.find("h3");
+        const title = wrapper.findComponent("h3");
         expectTranslated(title, "Review calibration results", "Examiner les résultats de l'étalonnage",
             "Revise os resultados da calibração", store);
-        const text = wrapper.find("p");
+        const text = wrapper.findComponent("p");
         expectTranslated(text, "Comparison of unadjusted estimates (uncalibrated) to model estimates calibrated to spectrum results as specified in calibration options above.",
             "Comparaison des estimations non ajustées (non calibrées) aux estimations du modèle calées sur les résultats du spectre comme spécifié dans les options de calage ci-dessus.",
             "Comparação de estimativas não ajustadas (não calibradas) com estimativas de modelo calibradas para resultados de espectro, conforme especificado nas opções de calibração acima.",
@@ -81,7 +81,7 @@ describe("CalibrateResults component", () => {
     it("renders barchart", async () => {
         const store = getStore();
         const wrapper = shallowMount(CalibrationResults, {localVue, store});
-        const barchart = wrapper.find(BarChartWithFilters);
+        const barchart = wrapper.findComponent(BarChartWithFilters);
         await Vue.nextTick();
         const vm = wrapper.vm as any;
         expect(barchart.props().chartData).toStrictEqual(["TEST DATA"]);

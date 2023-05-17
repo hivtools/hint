@@ -164,9 +164,9 @@ describe(`uploadModal `, () => {
         const wrapper = getWrapper()
         const store = wrapper.vm.$store
 
-        const dialog = wrapper.find("#dialog")
+        const dialog = wrapper.findComponent("#dialog")
         expect(dialog.exists()).toBe(true)
-        const text = dialog.find("h4")
+        const text = dialog.findComponent("h4")
         await Vue.nextTick()
         expectTranslated(text, "Upload to ADR", "Télécharger vers ADR", "Carregar para o ADR", store)
     })
@@ -175,7 +175,7 @@ describe(`uploadModal `, () => {
         const wrapper = getWrapper()
         const store = wrapper.vm.$store
 
-        const dataset = wrapper.find("#dialog").find("#dataset-id")
+        const dataset = wrapper.findComponent("#dialog").findComponent("#dataset-id")
         expectTranslated(dataset, "Dataset: test title",
             "Base de données: test title", "Conjunto de dados: test title", store)
     })
@@ -184,14 +184,14 @@ describe(`uploadModal `, () => {
         const wrapper = getWrapper()
         const store = wrapper.vm.$store
 
-        expect(wrapper.find("#createRelease").exists()).toBe(true)
-        expect(wrapper.find("#uploadFiles").exists()).toBe(true)
-        const labels = wrapper.findAll('label')
-        expectTranslated(labels.at(0), "Create a new ADR release (upload all files)",
+        expect(wrapper.findComponent("#createRelease").exists()).toBe(true)
+        expect(wrapper.findComponent("#uploadFiles").exists()).toBe(true)
+        const labels = wrapper.findAllComponents('label')
+        expectTranslated(labels[0], "Create a new ADR release (upload all files)",
             "Créer une nouvelle version ADR (télécharger tous les fichiers)", "Crie uma nova versão ADR (carregue todos os arquivos)", store)
-        expectTranslated(labels.at(1), "Upload specific files",
+        expectTranslated(labels[1], "Upload specific files",
             "Télécharger des fichiers spécifiques", "Faça upload de arquivos específicos", store)
-        const circleIcons = wrapper.findAll('help-circle-icon-stub')
+        const circleIcons = wrapper.findAllComponents('help-circle-icon-stub')
         expect(circleIcons.length).toBe(2)
     })
 
@@ -216,54 +216,54 @@ describe(`uploadModal `, () => {
         const wrapper = getWrapper()
         const store = wrapper.vm.$store
 
-        const inputs = wrapper.findAll("input[type='checkbox']")
+        const inputs = wrapper.findAllComponents("input[type='checkbox']")
         expect(inputs.length).toBe(3)
-        expect(inputs.at(0).attributes("disabled")).toBe("disabled");
-        expect(inputs.at(0).attributes("id")).toBe("id-0-0");
-        expect(inputs.at(1).attributes("id")).toBe("id-0-1");
-        expect(inputs.at(2).attributes("id")).toBe("id-0-2");
+        expect(inputs[0].attributes("disabled")).toBe("disabled");
+        expect(inputs[0].attributes("id")).toBe("id-0-0");
+        expect(inputs[1].attributes("id")).toBe("id-0-1");
+        expect(inputs[2].attributes("id")).toBe("id-0-2");
 
-        const label = wrapper.findAll("label.form-check-label")
+        const label = wrapper.findAllComponents("label.form-check-label")
         expect(label.length).toBe(3)
-        expect(label.at(0).attributes("for")).toBe("id-0-0");
-        expect(label.at(1).attributes("for")).toBe("id-0-1");
-        expect(label.at(2).attributes("for")).toBe("id-0-2");
+        expect(label[0].attributes("for")).toBe("id-0-0");
+        expect(label[1].attributes("for")).toBe("id-0-1");
+        expect(label[2].attributes("for")).toBe("id-0-2");
 
-        expectTranslated(label.at(0), "Model outputs", "Résultats du modèle", "Saídas modelo", store)
-        expectTranslated(label.at(1), "Summary report", "Rapport sommaire", "Relatório de síntese", store)
-        expectTranslated(label.at(2), "Comparison report", "Rapport de comparaison", "Relatório de comparação", store)
+        expectTranslated(label[0], "Model outputs", "Résultats du modèle", "Saídas modelo", store)
+        expectTranslated(label[1], "Summary report", "Rapport sommaire", "Relatório de síntese", store)
+        expectTranslated(label[2], "Comparison report", "Rapport de comparaison", "Relatório de comparação", store)
     })
 
     it(`checkboxes are set by default`, async () => {
         const store = createStore(metadataWithInput)
         const wrapper = shallowMount(UploadModal, {store})
-        const inputs = wrapper.findAll("input[type='checkbox']")
+        const inputs = wrapper.findAllComponents("input[type='checkbox']")
         expect(inputs.length).toBe(4)
 
-        const input1 = inputs.at(0).element as HTMLInputElement
+        const input1 = inputs[0].element as HTMLInputElement
         expect(input1.checked).toBe(true)
 
-        const input2 = inputs.at(1).element as HTMLInputElement
+        const input2 = inputs[1].element as HTMLInputElement
         expect(input2.checked).toBe(true)
 
-        const input3 = inputs.at(2).element as HTMLInputElement
+        const input3 = inputs[2].element as HTMLInputElement
         expect(input3.checked).toBe(true)
 
-        const input4 = inputs.at(3).element as HTMLInputElement
+        const input4 = inputs[3].element as HTMLInputElement
         expect(input4.checked).toBe(true)
     })
 
     it(`can check and get values from check boxes`, async () => {
         const wrapper = getWrapper()
-        const radialInput = wrapper.find("#uploadFiles")
+        const radialInput = wrapper.findComponent("#uploadFiles")
         await radialInput.trigger("click")
-        const inputs = wrapper.findAll("input[type='checkbox']")
+        const inputs = wrapper.findAllComponents("input[type='checkbox']")
         expect(inputs.length).toBe(3)
-        inputs.at(0).setChecked(true)
-        inputs.at(1).setChecked(true)
-        inputs.at(2).setChecked(true)
+        inputs[0].setChecked(true)
+        inputs[1].setChecked(true)
+        inputs[2].setChecked(true)
 
-        expect(wrapper.find("#dialog").exists()).toBe(true)
+        expect(wrapper.findComponent("#dialog").exists()).toBe(true)
         expect(wrapper.vm.$data.uploadFilesToAdr).toMatchObject(["outputZip", "outputSummary", "outputComparison"])
     })
 
@@ -272,19 +272,19 @@ describe(`uploadModal `, () => {
         const wrapper = shallowMount(UploadModal, {store})
         store.state.adrUpload.uploadFiles = metadataWithInput
         await Vue.nextTick()
-        const radialInput = wrapper.find("#uploadFiles")
+        const radialInput = wrapper.findComponent("#uploadFiles")
         await radialInput.trigger("change")
-        const inputs = wrapper.findAll("input[type='checkbox']")
-        inputs.at(0).setChecked(false)
-        inputs.at(1).setChecked(false)
-        inputs.at(2).setChecked(false)
-        const input1 = inputs.at(0).element as HTMLInputElement
+        const inputs = wrapper.findAllComponents("input[type='checkbox']")
+        inputs[0].setChecked(false)
+        inputs[1].setChecked(false)
+        inputs[2].setChecked(false)
+        const input1 = inputs[0].element as HTMLInputElement
         expect(input1.checked).toBe(false)
-        const input2 = inputs.at(1).element as HTMLInputElement
+        const input2 = inputs[1].element as HTMLInputElement
         expect(input2.checked).toBe(false)
-        const input3 = inputs.at(2).element as HTMLInputElement
+        const input3 = inputs[2].element as HTMLInputElement
         expect(input3.checked).toBe(false)
-        const radialInput2 = wrapper.find("#createRelease")
+        const radialInput2 = wrapper.findComponent("#createRelease")
         await radialInput2.trigger("change")
         expect(input1.checked).toBe(true)
         expect(input2.checked).toBe(true)
@@ -294,12 +294,12 @@ describe(`uploadModal `, () => {
     it(`can trigger close modal as expected`, async () => {
         const wrapper = mount(UploadModal, {store: createStore()})
 
-        const modal = wrapper.find(".modal");
+        const modal = wrapper.findComponent(".modal");
         expect(modal.classes()).toContain("show");
 
-        const buttons = modal.find(".modal-footer").findAll("button");
-        await buttons.at(1).trigger("click")
-        expect(wrapper.emitted("close").length).toBe(1)
+        const buttons = modal.findComponent(".modal-footer").findAllComponents("button");
+        await buttons[1].trigger("click")
+        expect(wrapper.emitted("close")!?.length).toBe(1)
     })
 
     it(`can send upload files to ADR when download status is complete`, async () => {
@@ -311,10 +311,10 @@ describe(`uploadModal `, () => {
         const wrapper = mount(UploadModal, {store})
 
         await wrapper.setProps({open: true})
-        const modal = wrapper.find(".modal");
+        const modal = wrapper.findComponent(".modal");
         expect(modal.classes()).toContain("show");
 
-        const okBtn = modal.find("button.btn-red");
+        const okBtn = modal.findComponent("button.btn-red");
         expect(okBtn.attributes().disabled).toBeUndefined();
         await okBtn.trigger("click");
         expect(mockUploadFilesToADR.mock.calls.length).toBe(1);
@@ -330,9 +330,9 @@ describe(`uploadModal `, () => {
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
 
-        const modal = wrapper.find(".modal");
+        const modal = wrapper.findComponent(".modal");
         store.state.adrUpload.uploadFiles = {...metadataWithInput};
-        const okBtn = modal.find("button.btn-red");
+        const okBtn = modal.findComponent("button.btn-red");
         await okBtn.trigger("click");
 
         await Vue.nextTick()
@@ -357,11 +357,11 @@ describe(`uploadModal `, () => {
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
 
-        const modal = wrapper.find(".modal");
+        const modal = wrapper.findComponent(".modal");
         store.state.adrUpload.uploadFiles = {...metadataWithInput};
-        const radialInput = wrapper.find("#uploadFiles")
+        const radialInput = wrapper.findComponent("#uploadFiles")
         await radialInput.trigger("change")
-        const okBtn = modal.find("button.btn-red");
+        const okBtn = modal.findComponent("button.btn-red");
         await okBtn.trigger("click");
 
         await Vue.nextTick()
@@ -387,16 +387,16 @@ describe(`uploadModal `, () => {
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
 
-        const modal = wrapper.find(".modal");
+        const modal = wrapper.findComponent(".modal");
         store.state.adrUpload.uploadFiles = {...metadataWithInput};
-        const radialInput = wrapper.find("#uploadFiles")
+        const radialInput = wrapper.findComponent("#uploadFiles")
         await radialInput.trigger("change")
 
-        const checkInputs = wrapper.findAll("input[type='checkbox']")
-        await checkInputs.at(1).setChecked(false)
-        await checkInputs.at(2).setChecked(false)
-        await checkInputs.at(3).setChecked(false)
-        const okBtn = modal.find("button.btn-red");
+        const checkInputs = wrapper.findAllComponents("input[type='checkbox']")
+        await checkInputs[1].setChecked(false)
+        await checkInputs[2].setChecked(false)
+        await checkInputs[3].setChecked(false)
+        const okBtn = modal.findComponent("button.btn-red");
         await okBtn.trigger("click");
 
         await Vue.nextTick()
@@ -415,62 +415,62 @@ describe(`uploadModal `, () => {
         }
         const wrapper = mount(UploadModal, {store: createStore(fakeMetadata, downloadResults)})
 
-        const radialInput = wrapper.find("#uploadFiles")
+        const radialInput = wrapper.findComponent("#uploadFiles")
         await radialInput.trigger("click")
 
-        const okBtn = wrapper.find("button");
+        const okBtn = wrapper.findComponent("button");
 
-        const inputs = wrapper.findAll("input[type='checkbox']")
+        const inputs = wrapper.findAllComponents("input[type='checkbox']")
         expect(inputs.length).toBe(3)
 
         expect(okBtn.attributes("disabled")).toBeUndefined();
         expect(okBtn.text()).toBe("OK")
         await okBtn.trigger("click")
-        expect(wrapper.emitted("close").length).toBe(1)
+        expect(wrapper.emitted("close")!?.length).toBe(1)
     });
 
     it("does not render file section header when no input files", () => {
         const wrapper = mount(UploadModal, {store: createStore()});
-        expect(wrapper.find("h5").exists()).toBe(false);
+        expect(wrapper.findComponent("h5").exists()).toBe(false);
     });
 
     it("renders file section headers when there are input files", () => {
         const store = createStore(metadataWithInput);
         const wrapper = mount(UploadModal, {store});
-        const headers = wrapper.findAll("h5");
+        const headers = wrapper.findAllComponents("h5");
         expect(headers.length).toBe(2);
-        expectTranslated(headers.at(0), "Output Files", "Fichiers de sortie", "Ficheiros de saída", store);
-        expectTranslated(headers.at(1), "Input Files", "Fichiers d'entrée", "Ficheiros de entrada", store);
+        expectTranslated(headers[0], "Output Files", "Fichiers de sortie", "Ficheiros de saída", store);
+        expectTranslated(headers[1], "Input Files", "Fichiers d'entrée", "Ficheiros de entrada", store);
     });
 
     it("renders input controls as expected when there are input files", () => {
         const store = createStore(metadataWithInput);
         const wrapper = mount(UploadModal, {store});
 
-        const inputs = wrapper.findAll("input[type='checkbox']");
+        const inputs = wrapper.findAllComponents("input[type='checkbox']");
         expect(inputs.length).toBe(4);
-        expect(inputs.at(0).attributes("id")).toBe("id-0-0");
-        expect(inputs.at(0).attributes("value")).toBe("outputZip");
-        expect(inputs.at(1).attributes("id")).toBe("id-0-1");
-        expect(inputs.at(1).attributes("value")).toBe("outputSummary");
-        expect(inputs.at(2).attributes("id")).toBe("id-0-2");
-        expect(inputs.at(2).attributes("value")).toBe("outputComparison");
-        expect(inputs.at(3).attributes("id")).toBe("id-1-0");
-        expect(inputs.at(3).attributes("value")).toBe("population");
+        expect(inputs[0].attributes("id")).toBe("id-0-0");
+        expect(inputs[0].attributes("value")).toBe("outputZip");
+        expect(inputs[1].attributes("id")).toBe("id-0-1");
+        expect(inputs[1].attributes("value")).toBe("outputSummary");
+        expect(inputs[2].attributes("id")).toBe("id-0-2");
+        expect(inputs[2].attributes("value")).toBe("outputComparison");
+        expect(inputs[3].attributes("id")).toBe("id-1-0");
+        expect(inputs[3].attributes("value")).toBe("population");
 
-        const labels = wrapper.findAll("label.form-check-label");
+        const labels = wrapper.findAllComponents("label.form-check-label");
         expect(labels.length).toBe(4);
-        expect(labels.at(0).attributes("for")).toBe("id-0-0");
-        expect(labels.at(1).attributes("for")).toBe("id-0-1");
-        expect(labels.at(2).attributes("for")).toBe("id-0-2");
-        expect(labels.at(3).attributes("for")).toBe("id-1-0");
+        expect(labels[0].attributes("for")).toBe("id-0-0");
+        expect(labels[1].attributes("for")).toBe("id-0-1");
+        expect(labels[2].attributes("for")).toBe("id-0-2");
+        expect(labels[3].attributes("for")).toBe("id-1-0");
     });
 
     it(`ok button is disabled if there are no uploadable files`, async () => {
         const wrapper = mount(UploadModal, {store: createStore({})})
 
-        const btn = wrapper.findAll("button");
-        expect(btn.at(0).attributes("disabled")).toBe("disabled");
+        const btn = wrapper.findAllComponents("button");
+        expect(btn[0].attributes("disabled")).toBe("disabled");
     });
 
     it(`ok button is enabled when there are uploadable files`, async () => {
@@ -479,8 +479,8 @@ describe(`uploadModal `, () => {
                 store: createStore(fakeMetadata)
             })
 
-        const btn = wrapper.findAll("button");
-        expect(btn.at(0).attributes("disabled")).toBeUndefined();
+        const btn = wrapper.findAllComponents("button");
+        expect(btn[0].attributes("disabled")).toBeUndefined();
     });
 
     it(`does not render output files and headers when not available for upload`, () => {
@@ -492,16 +492,16 @@ describe(`uploadModal `, () => {
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
 
-        const inputs = wrapper.findAll("input[type='checkbox']")
+        const inputs = wrapper.findAllComponents("input[type='checkbox']")
         expect(inputs.length).toBe(1)
-        expect(inputs.at(0).attributes("disabled")).toBeUndefined()
-        expect(inputs.at(0).attributes("id")).toBe("id-1-0");
-        expect(inputs.at(0).attributes("value")).toBe("population");
+        expect(inputs[0].attributes("disabled")).toBeUndefined()
+        expect(inputs[0].attributes("id")).toBe("id-1-0");
+        expect(inputs[0].attributes("value")).toBe("population");
 
-        const headers = wrapper.findAll("h5");
+        const headers = wrapper.findAllComponents("h5");
         expect(headers.length).toBe(2);
-        expect(headers.at(0).text()).toBe("")
-        expectTranslated(headers.at(1), "Input Files", "Fichiers d'entrée", "Ficheiros de entrada", store);
+        expect(headers[0].text()).toBe("")
+        expectTranslated(headers[1], "Input Files", "Fichiers d'entrée", "Ficheiros de entrada", store);
     })
 
     it(`does not render output files and headers when metadata request failed`, () => {
@@ -529,22 +529,22 @@ describe(`uploadModal `, () => {
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
 
-        const inputs = wrapper.findAll("input[type='checkbox']")
+        const inputs = wrapper.findAllComponents("input[type='checkbox']")
         expect(inputs.length).toBe(1)
-        expect(inputs.at(0).attributes("disabled")).toBeUndefined()
-        expect(inputs.at(0).attributes("id")).toBe("id-1-0");
-        expect(inputs.at(0).attributes("value")).toBe("population");
+        expect(inputs[0].attributes("disabled")).toBeUndefined()
+        expect(inputs[0].attributes("id")).toBe("id-1-0");
+        expect(inputs[0].attributes("value")).toBe("population");
 
-        const headers = wrapper.findAll("h5");
+        const headers = wrapper.findAllComponents("h5");
         expect(headers.length).toBe(2);
-        expect(headers.at(0).text()).toBe("")
-        expectTranslated(headers.at(1),
+        expect(headers[0].text()).toBe("")
+        expectTranslated(headers[1],
             "Input Files",
             "Fichiers d'entrée",
             "Ficheiros de entrada",
             store);
 
-        expectTranslated(wrapper.find("#output-file-error"),
+        expectTranslated(wrapper.findComponent("#output-file-error"),
             "Output files are not available for upload.",
             "Les fichiers de sortie ne sont pas disponibles pour le téléchargement.",
             "Os arquivos de saída não estão disponíveis para upload.",
@@ -574,26 +574,26 @@ describe(`uploadModal `, () => {
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
 
-        const inputs = wrapper.findAll("input[type='checkbox']")
+        const inputs = wrapper.findAllComponents("input[type='checkbox']")
         expect(inputs.length).toBe(3)
-        expect(inputs.at(0).attributes("disabled")).toBeUndefined()
+        expect(inputs[0].attributes("disabled")).toBeUndefined()
 
-        expect(inputs.at(0).attributes("id")).toBe("id-0-0");
-        expect(inputs.at(0).attributes("value")).toBe("outputZip");
+        expect(inputs[0].attributes("id")).toBe("id-0-0");
+        expect(inputs[0].attributes("value")).toBe("outputZip");
 
-        expect(inputs.at(1).attributes("id")).toBe("id-0-1");
-        expect(inputs.at(1).attributes("value")).toBe("outputComparison");
+        expect(inputs[1].attributes("id")).toBe("id-0-1");
+        expect(inputs[1].attributes("value")).toBe("outputComparison");
 
-        expect(inputs.at(2).attributes("id")).toBe("id-1-0");
-        expect(inputs.at(2).attributes("value")).toBe("population");
+        expect(inputs[2].attributes("id")).toBe("id-1-0");
+        expect(inputs[2].attributes("value")).toBe("population");
 
-        const headers = wrapper.findAll("h5");
+        const headers = wrapper.findAllComponents("h5");
 
         expect(headers.length).toBe(2);
-        expect(headers.at(0).text()).toBe("Output Files")
-        expect(headers.at(1).text()).toBe("Input Files")
+        expect(headers[0].text()).toBe("Output Files")
+        expect(headers[1].text()).toBe("Input Files")
 
-        expectTranslated(wrapper.find("#output-file-error"),
+        expectTranslated(wrapper.findComponent("#output-file-error"),
             "Summary output file is not available for upload.",
             "Le fichier de sortie résumé n'est pas disponible pour le téléchargement",
             "O arquivo de saída do resumo não está disponível para upload",
@@ -623,26 +623,26 @@ describe(`uploadModal `, () => {
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
 
-        const inputs = wrapper.findAll("input[type='checkbox']")
+        const inputs = wrapper.findAllComponents("input[type='checkbox']")
         expect(inputs.length).toBe(3)
-        expect(inputs.at(0).attributes("disabled")).toBeUndefined()
+        expect(inputs[0].attributes("disabled")).toBeUndefined()
 
-        expect(inputs.at(0).attributes("id")).toBe("id-0-0");
-        expect(inputs.at(0).attributes("value")).toBe("outputSummary");
+        expect(inputs[0].attributes("id")).toBe("id-0-0");
+        expect(inputs[0].attributes("value")).toBe("outputSummary");
 
-        expect(inputs.at(1).attributes("id")).toBe("id-0-1");
-        expect(inputs.at(1).attributes("value")).toBe("outputComparison");
+        expect(inputs[1].attributes("id")).toBe("id-0-1");
+        expect(inputs[1].attributes("value")).toBe("outputComparison");
 
-        expect(inputs.at(2).attributes("id")).toBe("id-1-0");
-        expect(inputs.at(2).attributes("value")).toBe("population");
+        expect(inputs[2].attributes("id")).toBe("id-1-0");
+        expect(inputs[2].attributes("value")).toBe("population");
 
-        const headers = wrapper.findAll("h5");
+        const headers = wrapper.findAllComponents("h5");
 
         expect(headers.length).toBe(2);
-        expect(headers.at(0).text()).toBe("Output Files")
-        expect(headers.at(1).text()).toBe("Input Files")
+        expect(headers[0].text()).toBe("Output Files")
+        expect(headers[1].text()).toBe("Input Files")
 
-        expectTranslated(wrapper.find("#output-file-error"),
+        expectTranslated(wrapper.findComponent("#output-file-error"),
             "Spectrum output file is not available for upload.",
             "Le fichier de sortie spectre n'est pas disponible pour le téléchargement",
             "O arquivo de saída do espectro não está disponível para upload",
@@ -672,26 +672,26 @@ describe(`uploadModal `, () => {
         const store = createStore(metadataWithInput, downloadResults)
         const wrapper = mount(UploadModal, {store})
 
-        const inputs = wrapper.findAll("input[type='checkbox']")
+        const inputs = wrapper.findAllComponents("input[type='checkbox']")
         expect(inputs.length).toBe(3)
-        expect(inputs.at(0).attributes("disabled")).toBeUndefined()
+        expect(inputs[0].attributes("disabled")).toBeUndefined()
 
-        expect(inputs.at(0).attributes("id")).toBe("id-0-0");
-        expect(inputs.at(0).attributes("value")).toBe("outputZip");
+        expect(inputs[0].attributes("id")).toBe("id-0-0");
+        expect(inputs[0].attributes("value")).toBe("outputZip");
 
-        expect(inputs.at(1).attributes("id")).toBe("id-0-1");
-        expect(inputs.at(1).attributes("value")).toBe("outputSummary");
+        expect(inputs[1].attributes("id")).toBe("id-0-1");
+        expect(inputs[1].attributes("value")).toBe("outputSummary");
 
-        expect(inputs.at(2).attributes("id")).toBe("id-1-0");
-        expect(inputs.at(2).attributes("value")).toBe("population");
+        expect(inputs[2].attributes("id")).toBe("id-1-0");
+        expect(inputs[2].attributes("value")).toBe("population");
 
-        const headers = wrapper.findAll("h5");
+        const headers = wrapper.findAllComponents("h5");
 
         expect(headers.length).toBe(2);
-        expect(headers.at(0).text()).toBe("Output Files")
-        expect(headers.at(1).text()).toBe("Input Files")
+        expect(headers[0].text()).toBe("Output Files")
+        expect(headers[1].text()).toBe("Input Files")
 
-        expectTranslated(wrapper.find("#output-file-error"),
+        expectTranslated(wrapper.findComponent("#output-file-error"),
             "Comparison output file is not available for upload.",
             "Le fichier de sortie Comparaison n'est pas disponible pour le téléchargement",
             "O arquivo de saída do Comparação não está disponível para upload",

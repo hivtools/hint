@@ -42,56 +42,56 @@ describe("ShareProject", () => {
     it("button has aria-label", () => {
         const store = createStore();
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store
         });
 
-        expectTranslated(wrapper.find("button"), "Share", "Partager", "Partilhar", store, "aria-label");
+        expectTranslated(wrapper.findComponent("button"), "Share", "Partager", "Partilhar", store, "aria-label");
     });
 
     it("input has aria-label", () => {
         const store = createStore();
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store
         });
 
-        expectTranslated(wrapper.find("input"), "Enter email address to share with", "Entrez l'e-mail à partager",
+        expectTranslated(wrapper.findComponent("input"), "Enter email address to share with", "Entrez l'e-mail à partager",
             "Insira o e-mail para compartilhar", store, "aria-label");
     });
 
     it("opens modal on click", () => {
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: createStore()
         });
 
-        expect(wrapper.find(Modal).props("open")).toBe(false);
-        const link = wrapper.find("button");
+        expect(wrapper.findComponent(Modal).props("open")).toBe(false);
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        expect(wrapper.find(Modal).props("open")).toBe(true);
+        expect(wrapper.findComponent(Modal).props("open")).toBe(true);
     });
     
     it("can cancel sharing", () => {
         const wrapper = mount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: createStore()
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        expect(wrapper.find(Modal).props("open")).toBe(true);
-        const input = wrapper.find(Modal).find("input");
-        wrapper.find(Modal).findAll("button").at(1).trigger("mousedown");
-        expect(wrapper.find(Modal).props("open")).toBe(false);
+        expect(wrapper.findComponent(Modal).props("open")).toBe(true);
+        const input = wrapper.findComponent(Modal).findComponent("input");
+        wrapper.findComponent(Modal).findAllComponents("button")[1].trigger("mousedown");
+        expect(wrapper.findComponent(Modal).props("open")).toBe(false);
 
         const vm = wrapper.vm as any
         expect(vm.emailsToShareWith).toMatchObject([{value: "", valid: null}])
@@ -100,105 +100,105 @@ describe("ShareProject", () => {
     it("if email is invalid, validation feedback is shown and button disabled", async () => {
         const store = createStore(jest.fn().mockResolvedValue(false))
         const wrapper = mount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store,
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const input = wrapper.find(Modal).find("input");
+        const input = wrapper.findComponent(Modal).findComponent("input");
         input.setValue("bademail");
         input.trigger("blur");
         await Vue.nextTick();
         await Vue.nextTick();
-        const modal = wrapper.find(Modal);
-        expect(modal.find("input").classes()).toContain("is-invalid");
+        const modal = wrapper.findComponent(Modal);
+        expect(modal.findComponent("input").classes()).toContain("is-invalid");
 
-        const text = modal.find(".text-danger")
+        const text = modal.findComponent(".text-danger")
         expect(text.classes()).not.toContain("d-none");
         expectTranslated(text, "This email address is not registered with Naomi",
             "Cette adresse e-mail n'est pas enregistrée dans Naomi",
             "Este endereço de e-mail não está registado na Naomi", store as any)
-        expect(modal.find("button").attributes("disabled")).toBe("disabled");
-        expect(modal.find(".help-text").isVisible()).toBe(true);
+        expect(modal.findComponent("button").attributes("disabled")).toBe("disabled");
+        expect(modal.findComponent(".help-text").isVisible()).toBe(true);
     });
 
     it("if email is same as user's email, it is invalid, appropriate validation feedback is shown, and button is disabled", async () => {
         const store = createStore(jest.fn().mockResolvedValue(false))
         const wrapper = mount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store,
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const input = wrapper.find(Modal).find("input");
+        const input = wrapper.findComponent(Modal).findComponent("input");
         input.setValue("test.user@example.com");
         input.trigger("blur");
         await Vue.nextTick();
-        const modal = wrapper.find(Modal);
-        expect(modal.find("input").classes()).toContain("is-invalid");
+        const modal = wrapper.findComponent(Modal);
+        expect(modal.findComponent("input").classes()).toContain("is-invalid");
 
-        const text = modal.find(".text-danger")
+        const text = modal.findComponent(".text-danger")
         expect(text.classes()).not.toContain("d-none");
         expectTranslated(text, "Projects cannot be shared with the user's own account",
             "Les projets ne peuvent pas être partagés avec le propre compte de l'utilisateur",
             "Os projetos não podem ser partilhados com a conta do próprio utilizador", store as any)
-        expect(modal.find("button").attributes("disabled")).toBe("disabled");
-        expect(modal.find(".help-text").isVisible()).toBe(true);
+        expect(modal.findComponent("button").attributes("disabled")).toBe("disabled");
+        expect(modal.findComponent(".help-text").isVisible()).toBe(true);
     });
 
     it("if email is same as user's email but cased differently, it is invalid, appropriate validation feedback is shown, and button is disabled", async () => {
         const store = createStore(jest.fn().mockResolvedValue(false))
         const wrapper = mount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store,
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const input = wrapper.find(Modal).find("input");
+        const input = wrapper.findComponent(Modal).findComponent("input");
         input.setValue("Test.user@Example.com");
         input.trigger("blur");
         await Vue.nextTick();
-        const modal = wrapper.find(Modal);
-        expect(modal.find("input").classes()).toContain("is-invalid");
+        const modal = wrapper.findComponent(Modal);
+        expect(modal.findComponent("input").classes()).toContain("is-invalid");
 
-        const text = modal.find(".text-danger")
+        const text = modal.findComponent(".text-danger")
         expect(text.classes()).not.toContain("d-none");
         expectTranslated(text, "Projects cannot be shared with the user's own account",
             "Les projets ne peuvent pas être partagés avec le propre compte de l'utilisateur",
             "Os projetos não podem ser partilhados com a conta do próprio utilizador", store as any)
-        expect(modal.find("button").attributes("disabled")).toBe("disabled");
-        expect(modal.find(".help-text").isVisible()).toBe(true);
+        expect(modal.findComponent("button").attributes("disabled")).toBe("disabled");
+        expect(modal.findComponent(".help-text").isVisible()).toBe(true);
     });
 
     it("if a valid email is entered twice, it is invalid, appropriate validation feedback is shown, and button is disabled", async () => {
         const store = createStore(jest.fn().mockResolvedValue(true))
         const wrapper = mount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store,
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const modal = wrapper.find(Modal);
-        expect(modal.findAll("input").length).toBe(1);
-        const input = modal.find("input");
+        const modal = wrapper.findComponent(Modal);
+        expect(modal.findAllComponents("input").length).toBe(1);
+        const input = modal.findComponent("input");
         input.setValue("goodemail");
         input.trigger("blur");
         await Vue.nextTick();
 
-        expect(modal.findAll("input").length).toBe(2);
-        const input2 = wrapper.find(Modal).findAll("input").at(1);
+        expect(modal.findAllComponents("input").length).toBe(2);
+        const input2 = wrapper.findComponent(Modal).findAllComponents("input")[1];
         input2.setValue("goodemail");
         input2.trigger("blur");
 
@@ -206,36 +206,36 @@ describe("ShareProject", () => {
             expect(input.classes()).toContain("is-invalid");
             expect(input2.classes()).toContain("is-invalid");
 
-            const text = modal.find(".text-danger");
+            const text = modal.findComponent(".text-danger");
             expect(text.classes()).not.toContain("d-none");
             expectTranslated(text, "Please remove duplicate emails from the list",
                 "Veuillez supprimer les e-mails en double de la liste",
                 "Por favor, remova os e-mails duplicados da lista", store as any)
-            expect(modal.find("button").attributes("disabled")).toBe("disabled");
-            expect(modal.find(".help-text").isVisible()).toBe(true);
+            expect(modal.findComponent("button").attributes("disabled")).toBe("disabled");
+            expect(modal.findComponent(".help-text").isVisible()).toBe(true);
         });
     });
 
     it("if a valid email is entered twice but cased differently, it is invalid, appropriate validation feedback is shown, and button is disabled", async () => {
         const store = createStore(jest.fn().mockResolvedValue(true))
         const wrapper = mount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store,
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const modal = wrapper.find(Modal);
-        expect(modal.findAll("input").length).toBe(1);
-        const input = modal.find("input");
+        const modal = wrapper.findComponent(Modal);
+        expect(modal.findAllComponents("input").length).toBe(1);
+        const input = modal.findComponent("input");
         input.setValue("goodemail");
         input.trigger("blur");
         await Vue.nextTick();
 
-        expect(modal.findAll("input").length).toBe(2);
-        const input2 = wrapper.find(Modal).findAll("input").at(1);
+        expect(modal.findAllComponents("input").length).toBe(2);
+        const input2 = wrapper.findComponent(Modal).findAllComponents("input")[1];
         input2.setValue("GOODEMAIL");
         input2.trigger("blur");
 
@@ -243,74 +243,74 @@ describe("ShareProject", () => {
             expect(input.classes()).toContain("is-invalid");
             expect(input2.classes()).toContain("is-invalid");
 
-            const text = modal.find(".text-danger");
+            const text = modal.findComponent(".text-danger");
             expect(text.classes()).not.toContain("d-none");
             expectTranslated(text, "Please remove duplicate emails from the list",
                 "Veuillez supprimer les e-mails en double de la liste",
                 "Por favor, remova os e-mails duplicados da lista", store as any)
-            expect(modal.find("button").attributes("disabled")).toBe("disabled");
-            expect(modal.find(".help-text").isVisible()).toBe(true);
+            expect(modal.findComponent("button").attributes("disabled")).toBe("disabled");
+            expect(modal.findComponent(".help-text").isVisible()).toBe(true);
         });
     });
 
     it("if email is valid, validation feedback is not shown and button enabled", async () => {
         const wrapper = mount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: createStore(jest.fn().mockResolvedValue(true)),
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const input = wrapper.find(Modal).find("input");
+        const input = wrapper.findComponent(Modal).findComponent("input");
         input.setValue("goodemail");
         input.trigger("blur");
 
         setTimeout(() => {
-            const modal = wrapper.find(Modal);
-            expect(modal.find("input").classes()).not.toContain("is-invalid");
-            expect(modal.find(".text-danger").classes()).toContain("d-none");
-            expect(modal.find("button").attributes("disabled")).toBeUndefined();
-            expect(modal.find(".help-text").isVisible()).toBe(false);
+            const modal = wrapper.findComponent(Modal);
+            expect(modal.findComponent("input").classes()).not.toContain("is-invalid");
+            expect(modal.findComponent(".text-danger").classes()).toContain("d-none");
+            expect(modal.findComponent("button").attributes("disabled")).toBeUndefined();
+            expect(modal.findComponent(".help-text").isVisible()).toBe(false);
         });
     });
 
     it("if email is valid but cased differently, validation feedback is not shown and button enabled", async () => {
         const wrapper = mount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: createStore(jest.fn().mockResolvedValue(true)),
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const input = wrapper.find(Modal).find("input");
+        const input = wrapper.findComponent(Modal).findComponent("input");
         input.setValue("GOODEMAIL");
         input.trigger("blur");
 
         setTimeout(() => {
-            const modal = wrapper.find(Modal);
-            expect(modal.find("input").classes()).not.toContain("is-invalid");
-            expect(modal.find(".text-danger").classes()).toContain("d-none");
-            expect(modal.find("button").attributes("disabled")).toBeUndefined();
-            expect(modal.find(".help-text").isVisible()).toBe(false);
+            const modal = wrapper.findComponent(Modal);
+            expect(modal.findComponent("input").classes()).not.toContain("is-invalid");
+            expect(modal.findComponent(".text-danger").classes()).toContain("d-none");
+            expect(modal.findComponent("button").attributes("disabled")).toBeUndefined();
+            expect(modal.findComponent(".help-text").isVisible()).toBe(false);
         });
     });
 
     it("user validation fires on blur if value is provided", async () => {
         const userExists = jest.fn();
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: createStore(userExists),
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const input = wrapper.find(Modal).find("input");
+        const input = wrapper.findComponent(Modal).findComponent("input");
         input.setValue("testingblurevent");
         input.trigger("blur");
         await Vue.nextTick();
@@ -320,15 +320,15 @@ describe("ShareProject", () => {
     it("user validation does not fire on blur if no value is provided", async () => {
         const userExists = jest.fn();
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: createStore(userExists),
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const input = wrapper.find(Modal).find("input");
+        const input = wrapper.findComponent(Modal).findComponent("input");
         input.trigger("blur");
         await Vue.nextTick();
         expect(userExists.mock.calls.length).toBe(0);
@@ -336,203 +336,203 @@ describe("ShareProject", () => {
 
     it("if blur fires on last input and value is provided, a new input is added", async () => {
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: createStore(),
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const inputs = wrapper.find(Modal).findAll("input");
+        const inputs = wrapper.findComponent(Modal).findAllComponents("input");
         expect(inputs.length).toBe(1);
-        inputs.at(0).setValue("testing");
-        inputs.at(0).trigger("blur");
+        inputs[0].setValue("testing");
+        inputs[0].trigger("blur");
         await Vue.nextTick();
-        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+        expect(wrapper.findComponent(Modal).findAllComponents("input").length).toBe(2);
     });
 
     it("if blur fires on last input but no value is provided, no new input is added", async () => {
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: createStore(),
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const inputs = wrapper.find(Modal).findAll("input");
+        const inputs = wrapper.findComponent(Modal).findAllComponents("input");
         expect(inputs.length).toBe(1);
-        inputs.at(0).trigger("blur");
+        inputs[0].trigger("blur");
         await Vue.nextTick();
-        expect(wrapper.find(Modal).findAll("input").length).toBe(1);
+        expect(wrapper.findComponent(Modal).findAllComponents("input").length).toBe(1);
     });
 
     it("if blur fires on non-last input, no new input is added", async () => {
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: createStore(),
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const inputs = wrapper.find(Modal).findAll("input");
+        const inputs = wrapper.findComponent(Modal).findAllComponents("input");
         expect(inputs.length).toBe(1);
-        inputs.at(0).setValue("testing");
-        inputs.at(0).trigger("blur");
+        inputs[0].setValue("testing");
+        inputs[0].trigger("blur");
         await Vue.nextTick();
-        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+        expect(wrapper.findComponent(Modal).findAllComponents("input").length).toBe(2);
 
-        inputs.at(0).setValue("newvalue");
-        inputs.at(0).trigger("blur");
-        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+        inputs[0].setValue("newvalue");
+        inputs[0].trigger("blur");
+        expect(wrapper.findComponent(Modal).findAllComponents("input").length).toBe(2);
     });
 
     it("if email is deleted , input is removed from list and validation message refreshed",
         async () => {
             const wrapper = mount(ShareProject, {
-                propsData: {
+                props: {
                     project: {id: 1, name: "p1"}
                 },
                 store: createStore(jest.fn().mockResolvedValue(false)),
             });
 
-            const link = wrapper.find("button");
+            const link = wrapper.findComponent("button");
             link.trigger("click");
-            const inputs = wrapper.find(Modal).findAll("input");
+            const inputs = wrapper.findComponent(Modal).findAllComponents("input");
             expect(inputs.length).toBe(1);
-            inputs.at(0).setValue("testing");
-            inputs.at(0).trigger("blur");
+            inputs[0].setValue("testing");
+            inputs[0].trigger("blur");
 
             setTimeout(async () => {
-                expect(wrapper.find(Modal).findAll("input").length).toBe(2);
-                expect(wrapper.find(Modal).find(".help-text").isVisible()).toBe(true);
+                expect(wrapper.findComponent(Modal).findAllComponents("input").length).toBe(2);
+                expect(wrapper.findComponent(Modal).findComponent(".help-text").isVisible()).toBe(true);
 
-                inputs.at(0).setValue("");
-                inputs.at(0).trigger("keyup.delete");
+                inputs[0].setValue("");
+                inputs[0].trigger("keyup.delete");
                 await Vue.nextTick();
-                expect(wrapper.find(Modal).findAll("input").length).toBe(1);
-                expect(wrapper.find(Modal).find(".help-text").isVisible()).toBe(false);
+                expect(wrapper.findComponent(Modal).findAllComponents("input").length).toBe(1);
+                expect(wrapper.findComponent(Modal).findComponent(".help-text").isVisible()).toBe(false);
             });
         });
 
     it("if email characters are deleted nothing happens", async () => {
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: createStore(),
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const inputs = wrapper.find(Modal).findAll("input");
+        const inputs = wrapper.findComponent(Modal).findAllComponents("input");
         expect(inputs.length).toBe(1);
-        inputs.at(0).setValue("testing");
-        inputs.at(0).trigger("blur");
+        inputs[0].setValue("testing");
+        inputs[0].trigger("blur");
         await Vue.nextTick();
-        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+        expect(wrapper.findComponent(Modal).findAllComponents("input").length).toBe(2);
 
-        inputs.at(0).setValue("testin");
-        inputs.at(0).trigger("keyup.delete");
+        inputs[0].setValue("testin");
+        inputs[0].trigger("keyup.delete");
         await Vue.nextTick();
-        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+        expect(wrapper.findComponent(Modal).findAllComponents("input").length).toBe(2);
     });
 
     it("if last email in list is deleted, empty input remains visible", async () => {
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: createStore(),
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        let inputs = wrapper.find(Modal).findAll("input");
+        let inputs = wrapper.findComponent(Modal).findAllComponents("input");
         expect(inputs.length).toBe(1);
-        inputs.at(0).setValue("testing");
-        inputs.at(0).trigger("blur");
+        inputs[0].setValue("testing");
+        inputs[0].trigger("blur");
         await Vue.nextTick();
-        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+        expect(wrapper.findComponent(Modal).findAllComponents("input").length).toBe(2);
 
-        inputs = wrapper.find(Modal).findAll("input");
-        inputs.at(1).setValue("somevalue");
-        inputs.at(1).trigger("blur");
-        await Vue.nextTick();
-
-        inputs.at(1).setValue("");
-        inputs.at(1).trigger("keyup.delete");
+        inputs = wrapper.findComponent(Modal).findAllComponents("input");
+        inputs[1].setValue("somevalue");
+        inputs[1].trigger("blur");
         await Vue.nextTick();
 
-        expect(wrapper.find(Modal).findAll("input").length).toBe(2);
+        inputs[1].setValue("");
+        inputs[1].trigger("keyup.delete");
+        await Vue.nextTick();
+
+        expect(wrapper.findComponent(Modal).findAllComponents("input").length).toBe(2);
     });
 
     it("can share project", async () => {
         const cloneProject = jest.fn();
         const wrapper = mount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: createStore(jest.fn().mockResolvedValue(true), cloneProject),
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const input = wrapper.find(Modal).find("input");
+        const input = wrapper.findComponent(Modal).findComponent("input");
         input.setValue("testing");
         input.trigger("blur");
 
         setTimeout(() => {
-            wrapper.find(Modal).find("button").trigger("click");
+            wrapper.findComponent(Modal).findComponent("button").trigger("click");
             expect(cloneProject.mock.calls[0][1]).toEqual({projectId: 1, emails: ["testing"]});
         });
     });
 
     it("shows loading spinner when cloningProject is true", () => {
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: createStore(jest.fn(), jest.fn(), mockProjectsState({cloningProject: true})),
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(1);
+        expect(wrapper.findComponent(Modal).findAllComponents(LoadingSpinner).length).toBe(1);
     });
 
     it("does not show loading spinner when cloningProject is false", () => {
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: createStore(jest.fn(), jest.fn()),
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(0);
+        expect(wrapper.findComponent(Modal).findAllComponents(LoadingSpinner).length).toBe(0);
     });
 
     it("closes modal when cloningProject changes from true to false, if there is not an error",
          () => {
             const store = createStore(jest.fn(), jest.fn(), mockProjectsState({cloningProject: true}));
             const wrapper = shallowMount(ShareProject, {
-                propsData: {
+                props: {
                     project: {id: 1, name: "p1"}
                 },
                 store
             });
 
-            const link = wrapper.find("button");
+            const link = wrapper.findComponent("button");
             link.trigger("click");
-            expect(wrapper.find(Modal).props("open")).toBe(true);
+            expect(wrapper.findComponent(Modal).props("open")).toBe(true);
             store.commit("projects/" + ProjectsMutations.CloningProject, {payload: false});
-            expect(wrapper.find(Modal).props("open")).toBe(false);
+            expect(wrapper.findComponent(Modal).props("open")).toBe(false);
         });
 
     it("does not close modal when cloningProject changes from true to false if there is an error",
@@ -542,46 +542,46 @@ describe("ShareProject", () => {
                 mockProjectsState({cloningProject: true}));
 
             const wrapper = mount(ShareProject, {
-                propsData: {
+                props: {
                     project: {id: 1, name: "p1"}
                 },
                 store
             });
 
-            const link = wrapper.find("button");
+            const link = wrapper.findComponent("button");
             link.trigger("click");
-            expect(wrapper.find(Modal).props("open")).toBe(true);
+            expect(wrapper.findComponent(Modal).props("open")).toBe(true);
             store.commit("projects/" + ProjectsMutations.CloneProjectError, {payload: {error: "E"}});
-            expect(wrapper.find(Modal).props("open")).toBe(true);
-            expect(wrapper.find(Modal).findAll(ErrorAlert).length).toBe(1);
-            expect(wrapper.find(Modal).find(ErrorAlert).props("error")).toEqual({error: "E"});
+            expect(wrapper.findComponent(Modal).props("open")).toBe(true);
+            expect(wrapper.findComponent(Modal).findAllComponents(ErrorAlert).length).toBe(1);
+            expect(wrapper.findComponent(Modal).findComponent(ErrorAlert).props("error")).toEqual({error: "E"});
         });
 
     it("translates header", () => {
         const store = createStore();
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: store
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        expectTranslated(wrapper.find(Modal).find("h4"), "Share project",
+        expectTranslated(wrapper.findComponent(Modal).findComponent("h4"), "Share project",
             "Partager ce project", "Partilhar projeto", store);
     });
 
     it("translates instructions", () => {
         const store = createStore();
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: store
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
         const expectedEnglish = "This will create a copy of p1 for the given users." +
             "Please enter the email addresses you would like to share " +
@@ -596,38 +596,38 @@ describe("ShareProject", () => {
             "Prima Enter para adicionar um novo endereço. Estes endereços de e-mail já devem estar registados na Naomi.";
 
 
-        expectTranslated(wrapper.find(Modal).find("#instructions"), expectedEnglish, expectedFrench, expectedPortuguese, store);
+        expectTranslated(wrapper.findComponent(Modal).findComponent("#instructions"), expectedEnglish, expectedFrench, expectedPortuguese, store);
     });
 
     it("translates button text", () => {
         const store = createStore();
         const wrapper = mount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: store
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const buttons = wrapper.find(Modal).findAll("button");
+        const buttons = wrapper.findComponent(Modal).findAllComponents("button");
 
-        expectTranslated(buttons.at(0), "OK", "OK", "OK", store);
-        expectTranslated(buttons.at(1), "Cancel", "Annuler", "Cancelar", store);
+        expectTranslated(buttons[0], "OK", "OK", "OK", store);
+        expectTranslated(buttons[1], "Cancel", "Annuler", "Cancelar", store);
     });
 
     it("translates help text", () => {
         const store = createStore();
         const wrapper = mount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: store
         });
 
-        const link = wrapper.find("button");
+        const link = wrapper.findComponent("button");
         link.trigger("click");
-        const helpText = wrapper.find(Modal).find(".help-text");
+        const helpText = wrapper.findComponent(Modal).findComponent(".help-text");
 
         expectTranslated(helpText, "Please correct or remove invalid email addresses",
             "Veuillez corriger ou supprimer les adresses e-mails non-valides",
@@ -637,14 +637,14 @@ describe("ShareProject", () => {
     it("can render tooltips without an error", () => {
         const mockTooltip = jest.fn();
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: createStore(),
             directives: {"tooltip": mockTooltip}
         });
 
-        expect(wrapper.find("share-2-icon").exists).toBeTruthy();
+        expect(wrapper.findComponent("share-2-icon").exists).toBeTruthy();
         expect(mockTooltip.mock.calls[0][1].value).toBe("Share");
     });
 
@@ -654,14 +654,14 @@ describe("ShareProject", () => {
         store.state.language = Language.fr
 
         const wrapper = shallowMount(ShareProject, {
-            propsData: {
+            props: {
                 project: {id: 1, name: "p1"}
             },
             store: store,
             directives: {"tooltip": mockTooltip}
         });
 
-        expect(wrapper.find("share-2-icon").exists).toBeTruthy();
+        expect(wrapper.findComponent("share-2-icon").exists).toBeTruthy();
         expect(mockTooltip.mock.calls[0][1].value).toBe("Partager");
     });
 

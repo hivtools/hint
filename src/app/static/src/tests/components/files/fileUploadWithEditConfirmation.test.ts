@@ -1,5 +1,5 @@
 import Vuex from "vuex";
-import {mount, Wrapper} from '@vue/test-utils';
+import {mount, VueWrapper} from '@vue/test-utils';
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import ResetConfirmation from "../../../app/components/resetConfirmation/ResetConfirmation.vue";
 import {mockFile, mockRootState} from "../../mocks";
@@ -38,7 +38,7 @@ describe("File upload component", () => {
     const createSut = (props?: any, partialRootState: Partial<RootState> = {}) => {
         return mount(FileUpload, {
             store: createStore(partialRootState),
-            propsData: {
+            props: {
                 upload: jest.fn(),
                 name: "pjnz",
                 accept: "csv",
@@ -49,8 +49,8 @@ describe("File upload component", () => {
 
     const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
 
-    function uploadConfirmationModal(wrapper: Wrapper<FileUpload>) {
-        return wrapper.findAll(ResetConfirmation).at(0)
+    function uploadConfirmationModal(wrapper: VueWrapper) {
+        return wrapper.findAllComponents(ResetConfirmation)[0]
     }
 
     it("opens confirmation modal when new file is selected", () => {
@@ -75,7 +75,7 @@ describe("File upload component", () => {
         };
 
         (wrapper.vm as any).handleFileSelect();
-        uploadConfirmationModal(wrapper).find(".btn-red").trigger("click");
+        uploadConfirmationModal(wrapper).findComponent(".btn-red").trigger("click");
 
         setTimeout(() => {
             expect(uploader.mock.calls.length).toBe(1);
@@ -95,7 +95,7 @@ describe("File upload component", () => {
         };
 
         (wrapper.vm as any).handleFileSelect();
-        uploadConfirmationModal(wrapper).find(".btn-white").trigger("click");
+        uploadConfirmationModal(wrapper).findComponent(".btn-white").trigger("click");
 
         setTimeout(() => {
             expect(uploader.mock.calls.length).toBe(0);

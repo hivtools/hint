@@ -1,5 +1,5 @@
 import Vuex from "vuex";
-import {mount, Slots, Wrapper} from '@vue/test-utils';
+import {mount, VueWrapper} from '@vue/test-utils';
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import ManageFile from "../../../app/components/files/ManageFile.vue";
 import ResetConfirmation from "../../../app/components/resetConfirmation/ResetConfirmation.vue";
@@ -39,10 +39,10 @@ describe("File upload component", () => {
         return store;
     };
 
-    const createSut = (props?: any, slots?: Slots, partialRootState: Partial<RootState> = {}) => {
+    const createSut = (props?: any, slots?: any, partialRootState: Partial<RootState> = {}) => {
         return mount(ManageFile, {
             store: createStore(partialRootState),
-            propsData: {
+            props: {
                 error: null,
                 label: "PJNZ",
                 valid: true,
@@ -58,8 +58,8 @@ describe("File upload component", () => {
 
     const testFile = mockFile("TEST FILE NAME", "TEST CONTENTS");
 
-    function deleteConfirmationModal(wrapper: Wrapper<FileUpload>) {
-        return wrapper.findAll(ResetConfirmation).at(1)
+    function deleteConfirmationModal(wrapper: VueWrapper) {
+        return wrapper.findAllComponents(ResetConfirmation)[1]
     }
 
     it("opens confirmation modal when remove is clicked", () => {
@@ -68,7 +68,7 @@ describe("File upload component", () => {
             existingFileName: "test.pjnz",
             deleteFile: removeHandler
         });
-        const removeLink = wrapper.find("a");
+        const removeLink = wrapper.findComponent("a");
         expect(removeLink.text()).toBe("remove");
         removeLink.trigger("click");
         expect(deleteConfirmationModal(wrapper).props("open")).toBe(true);
@@ -82,10 +82,10 @@ describe("File upload component", () => {
         }, {
             currentUser: 'guest'
         });
-        const removeLink = wrapper.find("a");
+        const removeLink = wrapper.findComponent("a");
         expect(removeLink.text()).toBe("remove");
         removeLink.trigger("click");
-        deleteConfirmationModal(wrapper).find(".btn-red").trigger("click");
+        deleteConfirmationModal(wrapper).findComponent(".btn-red").trigger("click");
         expect(removeHandler.mock.calls.length).toBe(1);
         expect(deleteConfirmationModal(wrapper).props("open")).toBe(false);
     });
@@ -96,10 +96,10 @@ describe("File upload component", () => {
             existingFileName: "test.pjnz",
             deleteFile: removeHandler
         });
-        const removeLink = wrapper.find("a");
+        const removeLink = wrapper.findComponent("a");
         expect(removeLink.text()).toBe("remove");
         removeLink.trigger("click");
-        deleteConfirmationModal(wrapper).find(".btn-white").trigger("click");
+        deleteConfirmationModal(wrapper).findComponent(".btn-white").trigger("click");
         expect(removeHandler.mock.calls.length).toBe(0);
         expect(deleteConfirmationModal(wrapper).props("open")).toBe(false);
     });

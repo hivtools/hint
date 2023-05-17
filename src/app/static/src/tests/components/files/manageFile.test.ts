@@ -1,4 +1,4 @@
-import {shallowMount, Slots} from '@vue/test-utils';
+import {shallowMount} from '@vue/test-utils';
 
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import Tick from "../../../app/components/Tick.vue";
@@ -27,10 +27,10 @@ describe("Manage file component", () => {
         return store;
     };
 
-    const createSut = (props?: any, slots?: Slots, store?: Store<DataExplorationState>) => {
+    const createSut = (props?: any, slots?: any, store?: Store<DataExplorationState>) => {
         return shallowMount(ManageFile, {
             store: store || createStore(),
-            propsData: {
+            props: {
                 required: false,
                 error: null,
                 label: "PJNZ",
@@ -50,7 +50,7 @@ describe("Manage file component", () => {
         const wrapper = createSut({
             label: "Some title"
         });
-        expect(wrapper.find("label").text()).toBe("Some title");
+        expect(wrapper.findComponent("label").text()).toBe("Some title");
     });
 
     it("renders file upload", () => {
@@ -59,7 +59,7 @@ describe("Manage file component", () => {
             name: "test-name",
             upload: uploadFn
         });
-        const input = wrapper.find(FileUpload);
+        const input = wrapper.findComponent(FileUpload);
         expect(input.props().accept).toBe("csv");
         expect(input.props().name).toBe("test-name");
         expect(input.props().upload).toBe(uploadFn);
@@ -73,7 +73,7 @@ describe("Manage file component", () => {
             upload: uploadFn,
             fromADR: true
         });
-        const spans = wrapper.find("span");
+        const spans = wrapper.findComponent("span");
         expect(spans.text()).toBe("ADR");
     });
 
@@ -82,8 +82,8 @@ describe("Manage file component", () => {
         const wrapper = createSut({
             existingFileName: "existing-name.csv"
         }, undefined, store);
-        expectTranslatedWithStoreType(wrapper.find("label.file-name strong"), "File", "Fichier", "Ficheiro", store);
-        expect(wrapper.find("label.file-name").text()).toContain("existing-name.csv");
+        expectTranslatedWithStoreType(wrapper.findComponent("label.file-name strong"), "File", "Fichier", "Ficheiro", store);
+        expect(wrapper.findComponent("label.file-name").text()).toContain("existing-name.csv");
     });
 
     it("can translate required text", () => {
@@ -91,7 +91,7 @@ describe("Manage file component", () => {
             required: true
         });
 
-        expectTranslated(wrapper.find("#required"),
+        expectTranslated(wrapper.findComponent("#required"),
             "(required)",
             "(obligatoire)",
             "(necessário)",
@@ -102,9 +102,9 @@ describe("Manage file component", () => {
         const wrapper = createSut({
             required: true
         });
-        expect(wrapper.find("#required").exists()).toBe(true);
-        expect(wrapper.find("#required").text()).toBe("(required)");
-        expect(wrapper.find("#required").attributes("class")).toBe("small text-danger");
+        expect(wrapper.findComponent("#required").exists()).toBe(true);
+        expect(wrapper.findComponent("#required").text()).toBe("(required)");
+        expect(wrapper.findComponent("#required").attributes("class")).toBe("small text-danger");
     });
 
     it("renders text for filled form if required is true", () => {
@@ -112,28 +112,28 @@ describe("Manage file component", () => {
             required: true,
             existingFileName: "file.csv"
         });
-        expect(wrapper.find("#required").exists()).toBe(true);
-        expect(wrapper.find("#required").text()).toBe("(required)");
-        expect(wrapper.find("#required").attributes("class")).toBe("small");
+        expect(wrapper.findComponent("#required").exists()).toBe(true);
+        expect(wrapper.findComponent("#required").text()).toBe("(required)");
+        expect(wrapper.findComponent("#required").attributes("class")).toBe("small");
     });
 
     it("does not render text if required is false", () => {
         const wrapper = createSut();
-        expect(wrapper.find("#required").exists()).toBe(false);
+        expect(wrapper.findComponent("#required").exists()).toBe(false);
     });
 
     it("does not render tick if valid is false", () => {
         const wrapper = createSut({
             valid: false
         });
-        expect(wrapper.findAll(Tick).length).toBe(0);
+        expect(wrapper.findAllComponents(Tick).length).toBe(0);
     });
 
     it("renders tick if valid is true", () => {
         const wrapper = createSut({
             valid: true
         });
-        expect(wrapper.findAll(Tick).length).toBe(1);
+        expect(wrapper.findAllComponents(Tick).length).toBe(1);
     });
 
     it("does not render remove link if filename is not present and error is not present", () => {
@@ -141,7 +141,7 @@ describe("Manage file component", () => {
             existingFileName: null,
             error: null
         });
-        expect(wrapper.findAll("a").length).toBe(0);
+        expect(wrapper.findAllComponents("a").length).toBe(0);
     });
 
     it("renders remove link if existing filename is present", () => {
@@ -150,7 +150,7 @@ describe("Manage file component", () => {
             existingFileName: "File.csv",
             deleteFile: removeHandler
         });
-        const removeLink = wrapper.find("a");
+        const removeLink = wrapper.findComponent("a");
         expect(removeLink.text()).toBe("remove");
 
         removeLink.trigger("click");
@@ -163,7 +163,7 @@ describe("Manage file component", () => {
 
         const wrapper = shallowMount(ManageFile, {
             store: createStore(mockDataExplorationState(), true),
-            propsData: {
+            props: {
                 error: null,
                 label: "PJNZ",
                 valid: true,
@@ -175,7 +175,7 @@ describe("Manage file component", () => {
             }
         });
 
-        const removeLink = wrapper.find("a");
+        const removeLink = wrapper.findComponent("a");
         expect(removeLink.text()).toBe("remove");
 
         removeLink.trigger("click");
@@ -190,11 +190,11 @@ describe("Manage file component", () => {
             error: mockError("test error"),
             deleteFile: removeHandler
         });
-        const removeLink = wrapper.find("a");
+        const removeLink = wrapper.findComponent("a");
         expect(removeLink.text()).toBe("remove");
 
         //should not render File label if no existing filename
-        expectTranslated(wrapper.find(".file-name"), "remove", "supprimer", "remover", wrapper.vm.$store);
+        expectTranslated(wrapper.findComponent(".file-name"), "remove", "supprimer", "remover", wrapper.vm.$store);
 
         removeLink.trigger("click");
 
@@ -204,12 +204,12 @@ describe("Manage file component", () => {
     it("renders error message if error is present", () => {
         const error = mockError("File upload went wrong");
         const wrapper = createSut({error});
-        expect(wrapper.find(ErrorAlert).props().error).toBe(error);
+        expect(wrapper.findComponent(ErrorAlert).props().error).toBe(error);
     });
 
     it("does not render error message if no error is present", () => {
         const wrapper = createSut();
-        expect(wrapper.findAll(ErrorAlert).length).toBe(0);
+        expect(wrapper.findAllComponents(ErrorAlert).length).toBe(0);
     });
 
     it("renders slot before filename", () => {
@@ -219,7 +219,7 @@ describe("Manage file component", () => {
         }, {
             default: '<div class="fake-slot"></div>'
         });
-        const slot = wrapper.find(".fake-slot");
+        const slot = wrapper.findComponent(".fake-slot");
         expect(slot.element!!.nextElementSibling!!.classList[0]).toBe("file-name");
     });
 
@@ -230,18 +230,18 @@ describe("Manage file component", () => {
             valid: false
         });
 
-        expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
-        expect(wrapper.findAll(Tick).length).toBe(0);
+        expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(0);
+        expect(wrapper.findAllComponents(Tick).length).toBe(0);
 
-        wrapper.find(FileUpload).vm.$emit("uploading")
+        wrapper.findComponent(FileUpload).vm.$emit("uploading")
 
-        expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
-        expect(wrapper.findAll(Tick).length).toBe(0);
+        expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
+        expect(wrapper.findAllComponents(Tick).length).toBe(0);
 
         wrapper.setProps({valid: true});
 
-        expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
-        expect(wrapper.findAll(Tick).length).toBe(1);
+        expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(0);
+        expect(wrapper.findAllComponents(Tick).length).toBe(1);
     });
 
     it("renders loading spinner while uploading with error", async () => {
@@ -252,17 +252,17 @@ describe("Manage file component", () => {
             error: null
         });
 
-        expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
-        expect(wrapper.findAll(Tick).length).toBe(0);
+        expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(0);
+        expect(wrapper.findAllComponents(Tick).length).toBe(0);
 
-        wrapper.find(FileUpload).vm.$emit("uploading")
+        wrapper.findComponent(FileUpload).vm.$emit("uploading")
 
-        expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
-        expect(wrapper.findAll(Tick).length).toBe(0);
+        expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
+        expect(wrapper.findAllComponents(Tick).length).toBe(0);
 
         wrapper.setProps({error: "Some error"});
 
-        expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
-        expect(wrapper.findAll(Tick).length).toBe(0);
+        expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(0);
+        expect(wrapper.findAllComponents(Tick).length).toBe(0);
     });
 });

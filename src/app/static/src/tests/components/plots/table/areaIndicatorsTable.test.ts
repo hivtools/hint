@@ -6,7 +6,7 @@ import Vuex from "vuex";
 import {Language} from "../../../../app/store/translations/locales";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
 
-const propsData = {
+const props = {
     ...testData,
     selections: {
         indicatorId: "prevalence",
@@ -51,19 +51,19 @@ const createStore = (language: Language = Language.en) => {
 
 const getWrapper = (customPropsData: any = {}, language: Language = Language.en) => {
     const store = createStore(language);
-    return shallowMount(AreaIndicatorsTable, {store, propsData: {...propsData, ...customPropsData}});
+    return shallowMount(AreaIndicatorsTable, {store, props: {...props, ...customPropsData}});
 };
 
 describe("areaIndicatorsTable", () => {
     it('mount test', () => {
         const store = createStore();
-        mount(AreaIndicatorsTable, {store, propsData});
+        mount(AreaIndicatorsTable, {store, props});
     });
 
 
     it('renders Table with correct fields', () => {
         const wrapper = getWrapper();
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
 
         const expectedFields = [
             {key: "areaLabel", label: "Area", sortable: true, sortByFormatted: true},
@@ -76,7 +76,7 @@ describe("areaIndicatorsTable", () => {
 
     it('renders Table with correct fields in French', () => {
         const wrapper = getWrapper({}, Language.fr);
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
 
         const expectedFields = [
             {key: "areaLabel", label: "Zone", sortable: true, sortByFormatted: true},
@@ -107,7 +107,7 @@ describe("areaIndicatorsTable", () => {
                 }
             ]
         });
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
 
         const expectedFields = [
             {key: "areaLabel", label: "Area", sortable: true, sortByFormatted: true},
@@ -120,7 +120,7 @@ describe("areaIndicatorsTable", () => {
 
     it('renders Table with correct data', () => {
         const wrapper = getWrapper();
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
 
         const expectedFilteredData = [
             {
@@ -148,14 +148,14 @@ describe("areaIndicatorsTable", () => {
     it('renders Table with correct data when male selected', () => {
         const wrapper = getWrapper({
             selections: {
-                ...propsData.selections,
+                ...props.selections,
                 selectedFilterOptions: {
-                    ...propsData.selections.selectedFilterOptions,
+                    ...props.selections.selectedFilterOptions,
                     sex: [{id: "male", label: "Male"}]
                 }
             }
         });
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
 
         const expectedFilteredData = [
             {
@@ -183,11 +183,11 @@ describe("areaIndicatorsTable", () => {
     it('renders Table with correct data when detail set to 3', () => {
         const wrapper = getWrapper({
             selections: {
-                ...propsData.selections,
+                ...props.selections,
                 detail: 3,
             }
         });
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
 
         const expectedFilteredData = [
             {
@@ -215,7 +215,7 @@ describe("areaIndicatorsTable", () => {
     it('renders Table correctly when no data are available for selected filters', () => {
         const wrapper = getWrapper({
             selections: {
-                ...propsData.selections,
+                ...props.selections,
                 selectedFilterOptions: {
                     age: [{id: "15:30", label: "15-30"}],
                     sex: [{id: "male", label: "Male"}],
@@ -223,18 +223,18 @@ describe("areaIndicatorsTable", () => {
                 }
             }
         });
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
         expect(table.props("filteredData")).toStrictEqual([]);
     });
 
     it('renders Table data correctly when plhiv indicator is selected', () => {
         const wrapper = getWrapper({
             selections: {
-                ...propsData.selections,
+                ...props.selections,
                 indicatorId: "plhiv"
             },
             indicators: [{
-                ...propsData.indicators,
+                ...props.indicators,
                 indicator: "plhiv", value_column: "plhiv", name: "PLHIV", format: "0,0", scale: 10
             }]
         });
@@ -258,16 +258,16 @@ describe("areaIndicatorsTable", () => {
                 plhiv_upper: ""
             }
         ];
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
         expect(table.props("filteredData")).toStrictEqual(expectedFilteredData);
     });
 
     it('renders Table data correctly when 3.2 is selected only', () => {
         const wrapper = getWrapper({
             selections: {
-                ...propsData.selections,
+                ...props.selections,
                 selectedFilterOptions: {
-                    ...propsData.selections.selectedFilterOptions,
+                    ...props.selections.selectedFilterOptions,
                     area: [{
                         "id": "MWI_3_2",
                         "label": "3.2",
@@ -277,7 +277,7 @@ describe("areaIndicatorsTable", () => {
             },
             filters: [
                 {
-                    ...propsData.filters[0],
+                    ...props.filters[0],
                     options: [
                         {
                             "id": "MWI_3_1",
@@ -291,11 +291,11 @@ describe("areaIndicatorsTable", () => {
                         }
                     ]
                 },
-                {...propsData.filters[1]},
-                {...propsData.filters[2]}
+                {...props.filters[1]},
+                {...props.filters[2]}
             ]
         });
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
 
         const expectedFilteredData = [
             {
@@ -314,10 +314,10 @@ describe("areaIndicatorsTable", () => {
     it('renders Table data correctly when 3.2 is selected only and detail is set to 3', () => {
         const wrapper = getWrapper({
             selections: {
-                ...propsData.selections,
+                ...props.selections,
                 detail: 3,
                 selectedFilterOptions: {
-                    ...propsData.selections.selectedFilterOptions,
+                    ...props.selections.selectedFilterOptions,
                     area: [{
                         "id": "MWI_3_2",
                         "label": "3.2",
@@ -327,7 +327,7 @@ describe("areaIndicatorsTable", () => {
             },
             filters: [
                 {
-                    ...propsData.filters[0],
+                    ...props.filters[0],
                     options: [
                         {
                             "id": "MWI_3_1",
@@ -341,11 +341,11 @@ describe("areaIndicatorsTable", () => {
                         }
                     ]
                 },
-                {...propsData.filters[1]},
-                {...propsData.filters[2]}
+                {...props.filters[1]},
+                {...props.filters[2]}
             ]
         });
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
 
         const expectedFilteredData = [
             {
@@ -362,7 +362,7 @@ describe("areaIndicatorsTable", () => {
     });
 
     const countryLevelAreaFilter = {
-        ...propsData.filters[0],
+        ...props.filters[0],
         options: [
             {
                 id: "MWI", label: "Malawi", children: [
@@ -381,7 +381,7 @@ describe("areaIndicatorsTable", () => {
         ]
     };
     const tableDataWithCountryValue = [
-        ...propsData.tableData,
+        ...props.tableData,
         {
             area_id: "MWI", plhiv: 25, prevalence: 0.5, age: "0:15", sex: "female"
         }
@@ -402,17 +402,17 @@ describe("areaIndicatorsTable", () => {
     it('renders Table data correctly when detail set to 0', () => {
         const wrapper = getWrapper({
             selections: {
-                ...propsData.selections,
+                ...props.selections,
                 detail: 0
             },
             tableData: tableDataWithCountryValue,
             filters: [
                 countryLevelAreaFilter,
-                {...propsData.filters[1]},
-                {...propsData.filters[2]}
+                {...props.filters[1]},
+                {...props.filters[2]}
             ]
         });
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
 
         expect(table.props("filteredData")).toStrictEqual(expectedCountryLevelData);
     });
@@ -420,10 +420,10 @@ describe("areaIndicatorsTable", () => {
     it('renders Table with country level data when detail set to null', () => {
         const wrapper = getWrapper({
             selections: {
-                ...propsData.selections,
+                ...props.selections,
                 detail: null,
                 selectedFilterOptions: {
-                    ...propsData.selections.selectedFilterOptions,
+                    ...props.selections.selectedFilterOptions,
                     area: [
                         {
                             id: "MWI", label: "Malawi", children: [
@@ -445,11 +445,11 @@ describe("areaIndicatorsTable", () => {
             tableData: tableDataWithCountryValue,
             filters: [
                 countryLevelAreaFilter,
-                {...propsData.filters[1]},
-                {...propsData.filters[2]}
+                {...props.filters[1]},
+                {...props.filters[2]}
             ]
         });
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
 
         expect(table.props("filteredData")).toStrictEqual(expectedCountryLevelData);
     });
@@ -457,10 +457,10 @@ describe("areaIndicatorsTable", () => {
     it('renders Table with country level data when detail set to 0 but 3.2 is selected', () => {
         const wrapper = getWrapper({
             selections: {
-                ...propsData.selections,
+                ...props.selections,
                 detail: 0,
                 selectedFilterOptions: {
-                    ...propsData.selections.selectedFilterOptions,
+                    ...props.selections.selectedFilterOptions,
                     area: [{
                         "id": "MWI_3_2",
                         "label": "3.2",
@@ -471,36 +471,36 @@ describe("areaIndicatorsTable", () => {
             tableData: tableDataWithCountryValue,
             filters: [
                 countryLevelAreaFilter,
-                {...propsData.filters[1]},
-                {...propsData.filters[2]}
+                {...props.filters[1]},
+                {...props.filters[2]}
             ]
         });
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
 
         expect(table.props("filteredData")).toStrictEqual(expectedCountryLevelData);
     });
 
     it('area hierarchy is rendered in child Table component', () => {
         const store = createStore();
-        const wrapper = mount(AreaIndicatorsTable, {store, propsData});
+        const wrapper = mount(AreaIndicatorsTable, {store, props});
 
-        expect(wrapper.findAll('td').at(0).findAll("div").at(0).text()).toBe('4.1');
-        expect(wrapper.findAll('td').at(0).find(".small").text()).toBe('3.1');
+        expect(wrapper.findAllComponents('td')[0].findAllComponents("div")[0].text()).toBe('4.1');
+        expect(wrapper.findAllComponents('td')[0].findComponent(".small").text()).toBe('3.1');
     });
 
     it('uncertainty is rendered in child Table component', () => {
         const customPropsData = {
             selections: {
-                ...propsData.selections,
+                ...props.selections,
                 detail: 3,
             }
         };
 
         const store = createStore();
-        const wrapper = mount(AreaIndicatorsTable, {store, propsData: {...propsData, ...customPropsData}});
+        const wrapper = mount(AreaIndicatorsTable, {store, props: {...props, ...customPropsData}});
 
-        expect(wrapper.findAll('td').at(3).find(".value").text()).toBe('1.00%');
-        expect(wrapper.findAll('td').at(3).find(".small").text()).toBe('(1.00% – 10.00%)');
+        expect(wrapper.findAllComponents('td')[3].findComponent(".value").text()).toBe('1.00%');
+        expect(wrapper.findAllComponents('td')[3].findComponent(".small").text()).toBe('(1.00% – 10.00%)');
     })
 
     it('render format output props correctly', () => {

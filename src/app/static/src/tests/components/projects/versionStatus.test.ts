@@ -37,15 +37,15 @@ describe("Version status component", () => {
         });
         const store = wrapper.vm.$store;
 
-        const spans = wrapper.findAll(".float-right");
-        const projectLabel = spans.at(0);
+        const spans = wrapper.findAllComponents(".float-right");
+        const projectLabel = spans[0];
         expectTranslated(projectLabel, "Project: Test Project v2", "Projet: Test Project v2",
             "Projeto: Test Project v2", store);
 
-        const savedLabel = spans.at(1);
+        const savedLabel = spans[1];
         expectTranslated(savedLabel, "Last saved 12:45", "Dernier enregistré 12:45",
             "Último projeto guardada 12:45", store);
-        expect(savedLabel.find(CheckIcon).exists()).toBe(true);
+        expect(savedLabel.findComponent(CheckIcon).exists()).toBe(true);
     });
 
     it("renders as expected when currentProject and no versionTime are set", () => {
@@ -56,9 +56,9 @@ describe("Version status component", () => {
         });
         const store = wrapper.vm.$store;
 
-        const spans = wrapper.findAll(".float-right");
+        const spans = wrapper.findAllComponents(".float-right");
         expect(spans.length).toBe(1);
-        const projectLabel = spans.at(0);
+        const projectLabel = spans[0];
         expectTranslated(projectLabel, "Project: Test Project v2", "Projet: Test Project v2",
             "Projeto: Test Project v2", store);
     });

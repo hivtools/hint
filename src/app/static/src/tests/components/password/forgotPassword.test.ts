@@ -33,7 +33,7 @@ describe("Forgot password component", () => {
     };
 
     const createSut = (store: Store<PasswordState>) => {
-        return shallowMount(ForgotPassword, {store, propsData: {title: "Naomi"}});
+        return shallowMount(ForgotPassword, {store, props: {title: "Naomi"}});
     };
 
     it("renders form with no error", () => {
@@ -44,16 +44,16 @@ describe("Forgot password component", () => {
 
         const wrapper = createSut(store);
 
-        expectTranslatedWithStoreType<PasswordState>(wrapper.find("h3"), "Forgotten your password?",
+        expectTranslatedWithStoreType<PasswordState>(wrapper.findComponent("h3"), "Forgotten your password?",
             "Vous avez oublié votre mot de passe ?", "Esqueceu-se da sua palavra-passe?", store);
-        expect((wrapper.find("input[type='email']").element as HTMLInputElement).value).toEqual("");
-        expectTranslatedWithStoreType<PasswordState>(wrapper.find("input[type='email']"), "Email address",
+        expect((wrapper.findComponent("input[type='email']").element as HTMLInputElement).value).toEqual("");
+        expectTranslatedWithStoreType<PasswordState>(wrapper.findComponent("input[type='email']"), "Email address",
             "Adresse e-mail", "Endereço de e-mail", store, "placeholder");
-        expectTranslatedWithStoreType<PasswordState>(wrapper.find("input[type='submit']"),
+        expectTranslatedWithStoreType<PasswordState>(wrapper.findComponent("input[type='submit']"),
             "Request password reset email", "Demande de réinitialisation du mot de passe par e-mail",
             "Solicitar e-mail de reposição de palavra-passe", store, "value");
-        expect(wrapper.findAll("error-alert-stub").length).toEqual(0);
-        expect(wrapper.findAll(".alert-success").length).toEqual(0);
+        expect(wrapper.findAllComponents("error-alert-stub").length).toEqual(0);
+        expect(wrapper.findAllComponents(".alert-success").length).toEqual(0);
     });
 
     it("renders form with error", () => {
@@ -65,15 +65,15 @@ describe("Forgot password component", () => {
 
         const wrapper = createSut(store);
 
-        expectTranslatedWithStoreType<PasswordState>(wrapper.find("h3"), "Forgotten your password?",
+        expectTranslatedWithStoreType<PasswordState>(wrapper.findComponent("h3"), "Forgotten your password?",
             "Vous avez oublié votre mot de passe ?", "Esqueceu-se da sua palavra-passe?", store);
-        expect((wrapper.find("input[type='email']").element as HTMLInputElement).value).toEqual("");
-        expectTranslatedWithStoreType<PasswordState>(wrapper.find("input[type='submit']"),
+        expect((wrapper.findComponent("input[type='email']").element as HTMLInputElement).value).toEqual("");
+        expectTranslatedWithStoreType<PasswordState>(wrapper.findComponent("input[type='submit']"),
             "Request password reset email", "Demande de réinitialisation du mot de passe par e-mail",
             "Solicitar e-mail de reposição de palavra-passe", store, "value");
-        expect(wrapper.findAll("error-alert-stub").length).toEqual(1);
-        expect(wrapper.find(ErrorAlert).props().error).toBe(error);
-        expect(wrapper.findAll(".alert-success").length).toEqual(0);
+        expect(wrapper.findAllComponents("error-alert-stub").length).toEqual(1);
+        expect(wrapper.findComponent(ErrorAlert).props().error).toBe(error);
+        expect(wrapper.findAllComponents(".alert-success").length).toEqual(0);
     });
 
     it("renders form with request success message", () => {
@@ -84,15 +84,15 @@ describe("Forgot password component", () => {
 
         const wrapper = createSut(store);
 
-        expectTranslatedWithStoreType<PasswordState>(wrapper.find("h3"), "Forgotten your password?",
+        expectTranslatedWithStoreType<PasswordState>(wrapper.findComponent("h3"), "Forgotten your password?",
             "Vous avez oublié votre mot de passe ?", "Esqueceu-se da sua palavra-passe?", store);
-        expect((wrapper.find("input[type='email']").element as HTMLInputElement).value).toEqual("");
-        expectTranslatedWithStoreType<PasswordState>(wrapper.find("input[type='submit']"),
+        expect((wrapper.findComponent("input[type='email']").element as HTMLInputElement).value).toEqual("");
+        expectTranslatedWithStoreType<PasswordState>(wrapper.findComponent("input[type='submit']"),
             "Request password reset email", "Demande de réinitialisation du mot de passe par e-mail",
             "Solicitar e-mail de reposição de palavra-passe", store, "value");
-        expect(wrapper.findAll("error-alert-stub").length).toEqual(0);
-        expect(wrapper.findAll(".alert-success").length).toEqual(1);
-        expectTranslatedWithStoreType<PasswordState>(wrapper.find(".alert-success"),
+        expect(wrapper.findAllComponents("error-alert-stub").length).toEqual(0);
+        expect(wrapper.findAllComponents(".alert-success").length).toEqual(1);
+        expectTranslatedWithStoreType<PasswordState>(wrapper.findComponent(".alert-success"),
             "Thank you. If we have an account registered for this email address, you will receive a password reset link.",
             "Merci. Si un compte est enregistré pour cette adresse e-mail, vous recevrez un lien de réinitialisation du mot de passe.",
             "Obrigado. Se tivermos uma conta registada para este endereço de e-mail, receberá uma ligação de reposição de palavra-passe.",
@@ -104,13 +104,13 @@ describe("Forgot password component", () => {
         const store = createStore();
         const wrapper = createSut(store);
 
-        wrapper.find("input[type='email']").setValue("test@email.com");
-        wrapper.find("input[type='submit']").trigger("click");
+        wrapper.findComponent("input[type='email']").setValue("test@email.com");
+        wrapper.findComponent("input[type='submit']").trigger("click");
 
         setTimeout(() => {
             expect(actions.requestResetLink.mock.calls.length).toEqual(1);
             expect(actions.requestResetLink.mock.calls[0][1]).toEqual("test@email.com");
-            expect(wrapper.find("form").classes()).toContain("was-validated");
+            expect(wrapper.findComponent("form").classes()).toContain("was-validated");
             done();
         });
 
@@ -121,11 +121,11 @@ describe("Forgot password component", () => {
         const store = createStore();
         const wrapper = createSut(store);
 
-        wrapper.find("input[type='submit']").trigger("click");
+        wrapper.findComponent("input[type='submit']").trigger("click");
 
         setTimeout(() => {
             expect(actions.requestResetLink.mock.calls.length).toEqual(0);
-            expect(wrapper.find("form").classes()).toContain("was-validated");
+            expect(wrapper.findComponent("form").classes()).toContain("was-validated");
             done();
         });
 
@@ -136,12 +136,12 @@ describe("Forgot password component", () => {
         const store = createStore();
         const wrapper = createSut(store);
 
-        wrapper.find("input[type='email']").setValue("test");
-        wrapper.find("input[type='submit']").trigger("click");
+        wrapper.findComponent("input[type='email']").setValue("test");
+        wrapper.findComponent("input[type='submit']").trigger("click");
 
         setTimeout(() => {
             expect(actions.requestResetLink.mock.calls.length).toEqual(0);
-            expect(wrapper.find("form").classes()).toContain("was-validated");
+            expect(wrapper.findComponent("form").classes()).toContain("was-validated");
             done();
         });
 
@@ -150,7 +150,7 @@ describe("Forgot password component", () => {
     it("passes title to logged out header", () => {
         const store = createStore();
         const wrapper = createSut(store);
-        expect(wrapper.find(LoggedOutHeader).props("title")).toBe("Naomi")
+        expect(wrapper.findComponent(LoggedOutHeader).props("title")).toBe("Naomi")
     });
 
     it("updates html lang when language changes", () => {

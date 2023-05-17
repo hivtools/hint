@@ -1,4 +1,4 @@
-import {shallowMount, Wrapper} from "@vue/test-utils";
+import {shallowMount, VueWrapper} from "@vue/test-utils";
 import DataExploration from "../../../app/components/dataExploration/DataExploration.vue"
 import Vuex from "vuex";
 import {
@@ -91,21 +91,21 @@ describe(`data exploration component`, () => {
     it(`renders components as expect`, () => {
         const store = createStore()
         const wrapper = shallowMount(DataExploration, {store});
-        expect(wrapper.find("adr-integration-stub").exists()).toBe(true)
-        expect(wrapper.find("upload-inputs-stub").exists()).toBe(true)
-        expect(wrapper.findAll("stepper-navigation-stub").exists()).toBe(true)
+        expect(wrapper.findComponent("adr-integration-stub").exists()).toBe(true)
+        expect(wrapper.findComponent("upload-inputs-stub").exists()).toBe(true)
+        expect(wrapper.findAllComponents("stepper-navigation-stub").exists()).toBe(true)
     })
 
     it(`disables back navigation when on upload step`, () => {
         const store = createStore()
         const wrapper = shallowMount(DataExploration, {store});
-        expect(wrapper.find("stepper-navigation-stub").props("backDisabled")).toBe(true)
+        expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).props("backDisabled")).toBe(true)
     })
 
     it(`disables forward navigation when inputs are not valid`, () => {
         const store = createStore()
         const wrapper = shallowMount(DataExploration, {store});
-        expect(wrapper.find("stepper-navigation-stub").props("nextDisabled")).toBe(true)
+        expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).props("nextDisabled")).toBe(true)
     })
 
     it(`enables forward navigation when inputs are valid`, () => {
@@ -120,7 +120,7 @@ describe(`data exploration component`, () => {
                 program: mockProgramResponse()
             })
         const wrapper = shallowMount(DataExploration, {store});
-        expect(wrapper.find("stepper-navigation-stub").props("nextDisabled")).toBe(false)
+        expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).props("nextDisabled")).toBe(false)
     })
 
     it(`disables continue navigation when on review step`, () => {
@@ -132,27 +132,27 @@ describe(`data exploration component`, () => {
         );
         const wrapper = shallowMount(DataExploration, {store});
 
-        expect(wrapper.find("stepper-navigation-stub").props("backDisabled")).toBe(false)
-        expect(wrapper.find("stepper-navigation-stub").props("nextDisabled")).toBe(true)
+        expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).props("backDisabled")).toBe(false)
+        expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).props("nextDisabled")).toBe(true)
     })
 
     it(`can navigate to reviewInputs`, () => {
         const store = createStore()
         const wrapper = shallowMount(DataExploration, {store});
-        expect(wrapper.find("review-inputs-stub").exists()).toBe(false)
+        expect(wrapper.findComponent("review-inputs-stub").exists()).toBe(false)
         const vm = wrapper.vm as any
         vm.next()
-        expect(wrapper.find("review-inputs-stub").exists()).toBe(true)
+        expect(wrapper.findComponent("review-inputs-stub").exists()).toBe(true)
     })
 
     it(`can navigate to uploadInputs`, () => {
         const store = createStore(defaultBaselineState, defaultSAPState, jest.fn(), {activeStep: 2});
         const wrapper = shallowMount(DataExploration, {store});
 
-        expect(wrapper.find("upload-inputs-stub").exists()).toBe(false)
+        expect(wrapper.findComponent("upload-inputs-stub").exists()).toBe(false)
         const vm = wrapper.vm as any
         vm.back()
-        expect(wrapper.find("upload-inputs-stub").exists()).toBe(true)
+        expect(wrapper.findComponent("upload-inputs-stub").exists()).toBe(true)
     });
 
     it("requests plotting metadata on mount", () => {
@@ -163,15 +163,15 @@ describe(`data exploration component`, () => {
     });
 
     const expectLoadingView = (wrapper: Wrapper<any>) => {
-        expect(wrapper.find("adr-integration-stub").exists()).toBe(false);
-        expect(wrapper.find("upload-inputs-stub").exists()).toBe(false);
-        expect(wrapper.find("review-inputs-stub").exists()).toBe(false);
-        expect(wrapper.find(LoadingSpinner).props("size")).toBe("lg");
-        expectTranslated(wrapper.find("#loading-message"),
+        expect(wrapper.findComponent("adr-integration-stub").exists()).toBe(false);
+        expect(wrapper.findComponent("upload-inputs-stub").exists()).toBe(false);
+        expect(wrapper.findComponent("review-inputs-stub").exists()).toBe(false);
+        expect(wrapper.findComponent(LoadingSpinner).props("size")).toBe("lg");
+        expectTranslated(wrapper.findComponent("#loading-message"),
             "Loading your data", "Chargement de vos données",
             "A carregar os seus dados", wrapper.vm.$store);
-        expect(wrapper.find(StepperNavigation).props("backDisabled")).toBe(true);
-        expect(wrapper.find(StepperNavigation).props("nextDisabled")).toBe(true);
+        expect(wrapper.findComponent(StepperNavigation).props("backDisabled")).toBe(true);
+        expect(wrapper.findComponent(StepperNavigation).props("nextDisabled")).toBe(true);
     };
 
     it("shows loading spinner and disabled navigation when baseline not ready", () => {

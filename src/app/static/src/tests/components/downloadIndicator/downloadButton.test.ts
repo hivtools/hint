@@ -14,7 +14,7 @@ describe("download button", () => {
             directives: {
                 translate: mockTranslate
             },
-            propsData: props
+            props: props
         })
     }
 
@@ -24,26 +24,26 @@ describe("download button", () => {
             disabled: false,
             name: "downloadIndicator"
         })
-        expect(wrapper.find(".btn").attributes("disabled")).toBeUndefined()
+        expect(wrapper.findComponent(".btn").attributes("disabled")).toBeUndefined()
         expect(mockTranslate.mock.calls.length).toBe(1)
         expect(mockTranslate.mock.calls[0][1].value).toBe("downloadIndicator")
     });
 
     it('it does not render button when disabled prop is true ', () => {
         const wrapper = getWrapper({disabled: true, name: "downloadIndicator"})
-        expect(wrapper.find(".btn").attributes("disabled")).toBe("disabled")
+        expect(wrapper.findComponent(".btn").attributes("disabled")).toBe("disabled")
     });
 
     it('it can emit click event ', async() => {
         const wrapper = getWrapper()
-        await wrapper.find(".btn").trigger("click")
-        expect(wrapper.emitted("click").length).toBe(1)
+        await wrapper.findComponent(".btn").trigger("click")
+        expect(wrapper.emitted("click")!?.length).toBe(1)
     });
 
     it('it can render download icon', () => {
         const wrapper = getWrapper()
-        expect(wrapper.find(DownloadIcon).exists()).toBe(true)
-        expect(wrapper.find(DownloadIcon).attributes("size")).toBe("20")
-        expect(wrapper.find(DownloadIcon).classes()).toEqual(["icon", "ml-2"])
+        expect(wrapper.findComponent(DownloadIcon).exists()).toBe(true)
+        expect(wrapper.findComponent(DownloadIcon).attributes("size")).toBe("20")
+        expect(wrapper.findComponent(DownloadIcon).classes()).toEqual(["icon", "ml-2"])
     });
 })

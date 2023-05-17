@@ -25,7 +25,7 @@ describe("Language menu", () => {
         const wrapper = shallowMount(LanguageMenu, {
             store
         });
-        expect(wrapper.find(DropDown).props("text")).toBe("EN");
+        expect(wrapper.findComponent(DropDown).props("text")).toBe("EN");
     });
 
     it("changes language to French", (done) => {
@@ -34,11 +34,11 @@ describe("Language menu", () => {
             store
         });
 
-        wrapper.findAll(".dropdown-item").at(1).trigger("mousedown");
+        wrapper.findAllComponents(".dropdown-item")[1].trigger("mousedown");
 
         setTimeout(() => {
             expect(store.state.language).toBe(Language.fr);
-            expect(wrapper.find(DropDown).props("text")).toBe("FR");
+            expect(wrapper.findComponent(DropDown).props("text")).toBe("FR");
             done();
         })
     });
@@ -49,11 +49,11 @@ describe("Language menu", () => {
             store
         });
 
-        wrapper.findAll(".dropdown-item").at(2).trigger("mousedown");
+        wrapper.findAllComponents(".dropdown-item")[2].trigger("mousedown");
 
         setTimeout(() => {
             expect(store.state.language).toBe(Language.pt);
-            expect(wrapper.find(DropDown).props("text")).toBe("PT");
+            expect(wrapper.findComponent(DropDown).props("text")).toBe("PT");
             done();
         })
     });

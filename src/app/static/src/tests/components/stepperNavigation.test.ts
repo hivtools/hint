@@ -12,18 +12,18 @@ describe("Stepper navigation component", () => {
         const back = jest.fn();
         const next = jest.fn();
         const wrapper = shallowMount(StepperNavigation, {
-            propsData: {
+            props: {
                 backDisabled: false, back,
                 nextDisabled: false, next
             }
         });
 
-        const backLink = wrapper.find("#back");
+        const backLink = wrapper.findComponent("#back");
         expect(backLink.classes("disabled")).toBe(false);
         backLink.trigger("click");
         expect(back.mock.calls.length).toBe(1);
 
-        const continueLink = wrapper.find("#continue");
+        const continueLink = wrapper.findComponent("#continue");
         expect(continueLink.classes("disabled")).toBe(false);
         continueLink.trigger("click");
         expect(next.mock.calls.length).toBe(1);
@@ -33,18 +33,18 @@ describe("Stepper navigation component", () => {
         const back = jest.fn();
         const next = jest.fn();
         const wrapper = shallowMount(StepperNavigation, {
-            propsData: {
+            props: {
                 backDisabled: true, back,
                 nextDisabled: true, next
             }
         });
 
-        const backLink = wrapper.find("#back");
+        const backLink = wrapper.findComponent("#back");
         expect(backLink.classes("disabled")).toBe(true);
         backLink.trigger("click");
         expect(back.mock.calls.length).toBe(0);
 
-        const continueLink = wrapper.find("#continue");
+        const continueLink = wrapper.findComponent("#continue");
         expect(continueLink.classes("disabled")).toBe(true);
         continueLink.trigger("click");
         expect(next.mock.calls.length).toBe(0);

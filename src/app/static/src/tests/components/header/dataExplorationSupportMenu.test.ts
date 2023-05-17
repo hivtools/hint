@@ -48,7 +48,7 @@ describe("Data exploration online support menu", () => {
             router
         });
 
-        const dropDown = wrapper.find(DropDown);
+        const dropDown = wrapper.findComponent(DropDown);
         expect(dropDown.props("delay")).toBe(true);
     });
 
@@ -59,33 +59,33 @@ describe("Data exploration online support menu", () => {
             localVue,
             router
         });
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes())
+        wrapper.findComponent(".dropdown-toggle").trigger("click");
+        expect(wrapper.findComponent(".dropdown-menu").classes())
             .toStrictEqual(["dropdown-menu", "show", "dropdown-menu-right"]);
 
-        const link = wrapper.find(".dropdown").findAll("a");
+        const link = wrapper.findComponent(".dropdown").findAllComponents("a");
 
         expect(link.length).toBe(4)
 
-        expectTranslated(link.at(0),
+        expectTranslated(link[0],
             "Online support",
             "Support en ligne",
             "Apoio online",
             store as any);
 
-        expectTranslated(link.at(1),
+        expectTranslated(link[1],
             "Troubleshooting request",
             "Demande de dépannage",
             "Solicitação de solução de problemas",
             store as any);
 
-        expectTranslated(link.at(2),
+        expectTranslated(link[2],
             "Privacy",
             "Vie privée",
             "Privacidade",
             store as any);
 
-        expectTranslated(link.at(3),
+        expectTranslated(link[3],
             "Accessibility",
             "Accessibilité",
             "Acessibilidade",
@@ -100,10 +100,10 @@ describe("Data exploration online support menu", () => {
             router
         });
 
-        const links = wrapper.findAll("router-link-stub");
+        const links = wrapper.findAllComponents("router-link-stub");
         expect(links.length).toBe(2)
 
-        const link = links.at(1)
+        const link = links[1]
         expect(link.attributes("to")).toBe("/accessibility");
     });
 
@@ -115,10 +115,10 @@ describe("Data exploration online support menu", () => {
             router
         });
 
-        const links = wrapper.findAll("router-link-stub");
+        const links = wrapper.findAllComponents("router-link-stub");
         expect(links.length).toBe(2)
 
-        const link = links.at(0)
+        const link = links[0]
         expect(link.attributes("to")).toBe("/privacy");
     });
 
@@ -131,10 +131,10 @@ describe("Data exploration online support menu", () => {
             router
         });
 
-        expect(wrapper.findAll(ErrorReport).length).toBe(1);
-        expect(wrapper.find(ErrorReport).props("open")).toBe(false);
+        expect(wrapper.findAllComponents(ErrorReport).length).toBe(1);
+        expect(wrapper.findComponent(ErrorReport).props("open")).toBe(false);
 
-        const link = wrapper.findAll(".dropdown-item").at(0);
+        const link = wrapper.findAllComponents(".dropdown-item")[0];
 
         expectErrorReportOpen(wrapper)
     });
@@ -161,7 +161,7 @@ describe("Data exploration online support menu", () => {
 
         expectErrorReportOpen(wrapper)
 
-        await wrapper.find(ErrorReport).vm.$emit("send",
+        await wrapper.findComponent(ErrorReport).vm.$emit("send",
             {
                 description: "something",
                 stepsToReproduce: "reproduce steps",

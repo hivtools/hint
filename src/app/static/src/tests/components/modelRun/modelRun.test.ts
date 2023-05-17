@@ -88,23 +88,23 @@ describe("Model run component", () => {
 
         const store = createStore();
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        const button = wrapper.find("button");
+        const button = wrapper.findComponent("button");
         expect(button.text()).toBe("Fit model");
         button.trigger("click");
 
         setTimeout(() => {
-            expect(wrapper.find("button").attributes().disabled).toBe("disabled");
+            expect(wrapper.findComponent("button").attributes().disabled).toBe("disabled");
             expect(store.state.modelRun.status).toStrictEqual({id: "1234"});
             expect(store.state.modelRun.modelRunId).toBe("1234");
             expect(store.state.modelRun.statusPollId).not.toBe(-1);
-            expect(wrapper.find(Modal).props().open).toBe(true);
+            expect(wrapper.findComponent(Modal).props().open).toBe(true);
 
             setTimeout(() => {
-                expect(wrapper.find("button").attributes().disabled).toBeUndefined();
+                expect(wrapper.findComponent("button").attributes().disabled).toBeUndefined();
                 expect(store.state.modelRun.status).toStrictEqual(mockStatus);
                 expect(store.state.modelRun.modelRunId).toBe("1234");
                 expect(store.state.modelRun.statusPollId).toBe(-1);
-                expect(wrapper.find(Modal).props().open).toBe(false);
+                expect(wrapper.findComponent(Modal).props().open).toBe(false);
                 done();
             }, 2500);
         });
@@ -114,17 +114,17 @@ describe("Model run component", () => {
 
         const store = createStore({}, {}, {...stepperGetters, editsRequireConfirmation: () => true});
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        const button = wrapper.find("button");
+        const button = wrapper.findComponent("button");
         expect(button.text()).toBe("Fit model");
         button.trigger("click");
 
         setTimeout(() => {
             expect(wrapper.vm.$data.showReRunConfirmation).toStrictEqual(true);
-            expect(wrapper.find("button").attributes().disabled).toBeUndefined();
+            expect(wrapper.findComponent("button").attributes().disabled).toBeUndefined();
             expect(store.state.modelRun.status).toStrictEqual({});
             expect(store.state.modelRun.modelRunId).toBe("");
             expect(store.state.modelRun.statusPollId).toBe(-1);
-            expect(wrapper.find(Modal).props().open).toBe(false);
+            expect(wrapper.findComponent(Modal).props().open).toBe(false);
             done();
         });
     });
@@ -146,11 +146,11 @@ describe("Model run component", () => {
         setTimeout(() => {
             expect(mockAxios.history.get[0].url).toBe(`/model/status/1234`);
 
-            expect(wrapper.find("button").attributes().disabled).toBeUndefined();
+            expect(wrapper.findComponent("button").attributes().disabled).toBeUndefined();
             expect(store.state.modelRun.status).toStrictEqual(mockStatus);
             expect(store.state.modelRun.modelRunId).toBe("1234");
             expect(store.state.modelRun.statusPollId).toBe(-1);
-            expect(wrapper.find(Modal).props().open).toBe(false);
+            expect(wrapper.findComponent(Modal).props().open).toBe(false);
             done();
         }, 2500);
     });
@@ -171,8 +171,8 @@ describe("Model run component", () => {
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(0);
 
-            expect(wrapper.find("button").attributes().disabled).toBeUndefined();
-            expect(wrapper.find(Modal).props().open).toBe(false);
+            expect(wrapper.findComponent("button").attributes().disabled).toBeUndefined();
+            expect(wrapper.findComponent(Modal).props().open).toBe(false);
             done();
         }, 2500);
     });
@@ -193,8 +193,8 @@ describe("Model run component", () => {
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(0);
 
-            expect(wrapper.find("button").attributes().disabled).toBeUndefined();
-            expect(wrapper.find(Modal).props().open).toBe(false);
+            expect(wrapper.findComponent("button").attributes().disabled).toBeUndefined();
+            expect(wrapper.findComponent(Modal).props().open).toBe(false);
             done();
         }, 2500);
     });
@@ -204,21 +204,21 @@ describe("Model run component", () => {
         const getResultMock = jest.fn();
         const store = createStore({}, {...actions, getResult: getResultMock});
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        wrapper.find("button").trigger("click");
+        wrapper.findComponent("button").trigger("click");
 
         setTimeout(() => {
-            expect(wrapper.find("button").attributes().disabled).toBe("disabled");
+            expect(wrapper.findComponent("button").attributes().disabled).toBe("disabled");
             expect(store.state.modelRun.status).toStrictEqual({id: "1234"});
             expect(store.state.modelRun.modelRunId).toBe("1234");
             expect(store.state.modelRun.statusPollId).not.toBe(-1);
-            expect(wrapper.find(Modal).props().open).toBe(true);
+            expect(wrapper.findComponent(Modal).props().open).toBe(true);
 
             setTimeout(() => {
                 // it should still be open because the result is missing
-                expect(wrapper.find("button").attributes().disabled).toBe("disabled");
+                expect(wrapper.findComponent("button").attributes().disabled).toBe("disabled");
                 expect(store.state.modelRun.result).toBe(null);
                 expect(store.state.modelRun.status.success).toBe(true);
-                expect(wrapper.find(Modal).props().open).toBe(true);
+                expect(wrapper.findComponent(Modal).props().open).toBe(true);
                 clearInterval(store.state.modelRun.statusPollId);
                 done();
             }, 2500);
@@ -243,8 +243,8 @@ describe("Model run component", () => {
         });
 
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        expect(wrapper.find("button").attributes().disabled).toBe("disabled");
-        expect(wrapper.find(Modal).props().open).toBe(true);
+        expect(wrapper.findComponent("button").attributes().disabled).toBe("disabled");
+        expect(wrapper.findComponent(Modal).props().open).toBe(true);
     });
 
     it("loading spinner is shown until progress bars appear", () => {
@@ -255,12 +255,12 @@ describe("Model run component", () => {
         });
 
         const wrapper = mount(ModelRun, {store, localVue});
-        expect(wrapper.find(Modal).props().open).toBe(true);
-        expectTranslated(wrapper.find(Modal).find("h4"), "Initialising model fitting",
+        expect(wrapper.findComponent(Modal).props().open).toBe(true);
+        expectTranslated(wrapper.findComponent(Modal).findComponent("h4"), "Initialising model fitting",
             "Initialisation de l'ajustement du modèle",
             "Inicialização do ajuste do modelo", store);
-        expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(1);
-        expect(wrapper.find(Modal).findAll(ProgressBar).length).toBe(0);
+        expect(wrapper.findComponent(Modal).findAllComponents(LoadingSpinner).length).toBe(1);
+        expect(wrapper.findComponent(Modal).findAllComponents(ProgressBar).length).toBe(0);
     });
 
     it("loading spinner is not shown once progress bars appear", () => {
@@ -275,10 +275,10 @@ describe("Model run component", () => {
         });
 
         const wrapper = mount(ModelRun, {store, localVue});
-        expect(wrapper.find(Modal).props().open).toBe(true);
-        expect(wrapper.find(Modal).findAll("h4").length).toBe(0);
-        expect(wrapper.find(Modal).findAll(LoadingSpinner).length).toBe(0);
-        expect(wrapper.find(Modal).findAll(ProgressBar).length).toBe(1);
+        expect(wrapper.findComponent(Modal).props().open).toBe(true);
+        expect(wrapper.findComponent(Modal).findAllComponents("h4").length).toBe(0);
+        expect(wrapper.findComponent(Modal).findAllComponents(LoadingSpinner).length).toBe(0);
+        expect(wrapper.findComponent(Modal).findAllComponents(ProgressBar).length).toBe(1);
     });
 
     it("renders progress phases with numbers in titles", () => {
@@ -294,13 +294,13 @@ describe("Model run component", () => {
         });
 
         const wrapper = mount(ModelRun, {store, localVue});
-        expect(wrapper.find(Modal).props().open).toBe(true);
-        expect(wrapper.find(Modal).findAll(ProgressBar).length).toBe(2);
-        expect(wrapper.find(Modal).findAll(ProgressBar).at(0).props("phase"))
+        expect(wrapper.findComponent(Modal).props().open).toBe(true);
+        expect(wrapper.findComponent(Modal).findAllComponents(ProgressBar).length).toBe(2);
+        expect(wrapper.findComponent(Modal).findAllComponents(ProgressBar)[0].props("phase"))
             .toStrictEqual({
                 started: true, complete: false, name: "1. phase 1"
             });
-        expect(wrapper.find(Modal).findAll(ProgressBar).at(1).props("phase"))
+        expect(wrapper.findComponent(Modal).findAllComponents(ProgressBar)[1].props("phase"))
             .toStrictEqual({
                 started: true, complete: false, name: "2. phase 2"
             });
@@ -314,8 +314,8 @@ describe("Model run component", () => {
         });
 
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        expect(wrapper.find("button").attributes().disabled).toBe("disabled");
-        expect(wrapper.find(Modal).props().open).toBe(true);
+        expect(wrapper.findComponent("button").attributes().disabled).toBe("disabled");
+        expect(wrapper.findComponent(Modal).props().open).toBe(true);
     });
 
     it("button is enabled once status is success and result exists", () => {
@@ -326,8 +326,8 @@ describe("Model run component", () => {
         });
 
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        expect(wrapper.find("button").attributes().disabled).toBeUndefined();
-        expect(wrapper.find(Modal).props().open).toBe(false);
+        expect(wrapper.findComponent("button").attributes().disabled).toBeUndefined();
+        expect(wrapper.findComponent(Modal).props().open).toBe(false);
     });
 
     it("button is enabled once status is done without success", () => {
@@ -338,8 +338,8 @@ describe("Model run component", () => {
         });
 
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        expect(wrapper.find("button").attributes().disabled).toBeUndefined();
-        expect(wrapper.find(Modal).props().open).toBe(false);
+        expect(wrapper.findComponent("button").attributes().disabled).toBeUndefined();
+        expect(wrapper.findComponent(Modal).props().open).toBe(false);
     });
 
     it("displays message and tick if step is complete", () => {
@@ -348,9 +348,9 @@ describe("Model run component", () => {
             status: {id: "1234", success: true, done: true} as ModelStatusResponse
         });
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        expectTranslated(wrapper.find("#model-run-complete"), "Model fitting complete",
+        expectTranslated(wrapper.findComponent("#model-run-complete"), "Model fitting complete",
             "Ajustement du modèle terminé", "Ajuste de modelo concluído", store);
-        expect(wrapper.findAll(Tick).length).toBe(1);
+        expect(wrapper.findAllComponents(Tick).length).toBe(1);
     });
 
     it("does not display message or tick if result is not fetched", () => {
@@ -358,15 +358,15 @@ describe("Model run component", () => {
             status: {id: "1234", success: true, done: true} as ModelStatusResponse
         });
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        expect(wrapper.findAll("#model-run-complete").length).toBe(0);
-        expect(wrapper.findAll(Tick).length).toBe(0);
+        expect(wrapper.findAllComponents("#model-run-complete").length).toBe(0);
+        expect(wrapper.findAllComponents(Tick).length).toBe(0);
     });
 
     it("does not display message or tick if run was successful but error fetching result", () => {
         const store = createStore({status: {success: true} as ModelStatusResponse, errors: [mockError("fetch error")]});
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        expect(wrapper.findAll("#model-run-complete").length).toBe(0);
-        expect(wrapper.findAll(Tick).length).toBe(0);
+        expect(wrapper.findAllComponents("#model-run-complete").length).toBe(0);
+        expect(wrapper.findAllComponents(Tick).length).toBe(0);
     });
 
     it("displays error alerts for errors", () => {
@@ -375,16 +375,16 @@ describe("Model run component", () => {
         const store = createStore({errors: [firstError, secondError]});
         const wrapper = shallowMount(ModelRun, {store, localVue});
 
-        const errorAlerts = wrapper.findAll(ErrorAlert);
+        const errorAlerts = wrapper.findAllComponents(ErrorAlert);
         expect(errorAlerts.length).toBe(2);
-        expect(errorAlerts.at(0).props().error).toBe(firstError);
-        expect(errorAlerts.at(1).props().error).toBe(secondError);
+        expect(errorAlerts[0].props().error).toBe(firstError);
+        expect(errorAlerts[1].props().error).toBe(secondError);
     });
 
     it("displays no error alerts if no errors", () => {
         const store = createStore();
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        const errorAlerts = wrapper.findAll("error-alert-stub");
+        const errorAlerts = wrapper.findAllComponents("error-alert-stub");
         expect(errorAlerts.length).toBe(0);
     });
 
@@ -397,10 +397,10 @@ describe("Model run component", () => {
         });
 
         const wrapper = shallowMount(ModelRun, {store, localVue});
-        wrapper.find("#cancel-model-run").trigger("click");
+        wrapper.findComponent("#cancel-model-run").trigger("click");
 
         setTimeout(() => {
-            expect(wrapper.find(Modal).props().open).toBe(false);
+            expect(wrapper.findComponent(Modal).props().open).toBe(false);
             expect(store.state.modelRun.modelRunId).toBe("");
             expect(store.state.modelRun.statusPollId).toBe(-1);
             expect(store.state.modelRun.status).toStrictEqual({});

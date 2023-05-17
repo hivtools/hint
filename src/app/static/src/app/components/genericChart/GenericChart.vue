@@ -141,7 +141,7 @@
     interface Props {
         metadata: GenericChartMetadataResponse
         chartId: string
-        chartHeight: string
+        chartHeight?: string
         availableDatasetIds: string[]
     }
 
@@ -187,7 +187,7 @@
             },
             chartHeight: {
                 type: String,
-                required: true
+                required: false
             },
             availableDatasetIds: {
                 type: Array,

@@ -1,12 +1,12 @@
-import Vue from "vue";
-import {shallowMount, Slots} from '@vue/test-utils';
+import Vue, { defineComponent } from "vue";
+import {shallowMount} from '@vue/test-utils';
 
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import {mockDataExplorationState, mockFile} from "../../mocks";
 import Vuex, {Store} from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {BDropdown} from "bootstrap-vue";
+import {BDropdown} from "bootstrap-vue-next";
 import {expectTranslatedWithStoreType} from "../../testHelpers";
 import {DataExplorationState, initialDataExplorationState} from "../../../app/store/dataExploration/dataExploration";
 
@@ -27,12 +27,12 @@ describe("File upload component", () => {
     };
 
     const mockHideDropDown = jest.fn();
-    const dropdownWithMockedHideMethod = Vue.extend({mixins: [BDropdown], methods: {hide: mockHideDropDown}});
+    const dropdownWithMockedHideMethod = defineComponent({mixins: [BDropdown], methods: {hide: mockHideDropDown}});
 
-    const createSut = (props?: any, slots?: Slots, store?: Store<DataExplorationState>) => {
+    const createSut = (props?: any, slots?: any, store?: Store<DataExplorationState>) => {
         return shallowMount(FileUpload, {
             store: store || createStore(),
-            propsData: {
+            props: {
                 uploading: false,
                 upload: jest.fn(),
                 name: "pjnz",
@@ -56,10 +56,10 @@ describe("File upload component", () => {
         const wrapper = createSut({
             name: "test-name"
         });
-        const input = wrapper.find("input");
+        const input = wrapper.findComponent("input");
         expect(input.attributes().accept).toBe("csv");
         expect(input.attributes().id).toBe("test-name");
-        expect(wrapper.find({ref: "test-name"})).toStrictEqual(input);
+        expect(wrapper.findComponent({ref: "test-name"})).toStrictEqual(input);
     });
 
     it("renders label", () => {
@@ -67,7 +67,7 @@ describe("File upload component", () => {
         const wrapper = createSut({
             name: "test-name"
         }, undefined, store);
-        expectTranslatedWithStoreType(wrapper.find(".custom-file-label"), "Select new file",
+        expectTranslatedWithStoreType(wrapper.findComponent(".custom-file-label"), "Select new file",
             "Sélectionner un nouveau fichier", "Selecionar novo ficheiro", store);
     });
 
@@ -83,7 +83,7 @@ describe("File upload component", () => {
             files: [testFile]
         };
 
-        wrapper.find("input").trigger("change");
+        wrapper.findComponent("input").trigger("change");
 
         await Vue.nextTick();
 
@@ -124,7 +124,7 @@ describe("File upload component", () => {
     it("does not trigger confirmation dialog when on data exploration mode", async () => {
         const wrapper = shallowMount(FileUpload, {
             store: createStore(mockDataExplorationState(), true),
-            propsData: {
+            props: {
                 uploading: false,
                 upload: jest.fn(),
                 name: "pjnz",
@@ -145,7 +145,7 @@ describe("File upload component", () => {
     it("can trigger confirmation dialog when not on data exploration mode", async () => {
         const wrapper = shallowMount(FileUpload, {
             store: createStore(emptyState(), true),
-            propsData: {
+            props: {
                 uploading: false,
                 upload: jest.fn(),
                 name: "pjnz",
@@ -160,16 +160,16 @@ describe("File upload component", () => {
 
         await Vue.nextTick();
 
-        expect(wrapper.emitted("uploading")).toBeUndefined();
+        expect(wrapper.emitted("uploading")!).toBeUndefined();
     });
 
     it("file input is disabled and label has uploading class when uploading is true", async () => {
         let wrapper = createSut();
-        expect(wrapper.find("input").attributes("disabled")).toBeUndefined();
-        expect(wrapper.find(".custom-file-label").classes()).not.toContain("uploading");
+        expect(wrapper.findComponent("input").attributes("disabled")).toBeUndefined();
+        expect(wrapper.findComponent(".custom-file-label").classes()).not.toContain("uploading");
 
         wrapper = createSut({uploading: true});
-        expect(wrapper.find("input").attributes("disabled")).toBe("disabled");
-        expect(wrapper.find(".custom-file-label").classes()).toContain("uploading");
+        expect(wrapper.findComponent("input").attributes("disabled")).toBe("disabled");
+        expect(wrapper.findComponent(".custom-file-label").classes()).toContain("uploading");
     });
 });

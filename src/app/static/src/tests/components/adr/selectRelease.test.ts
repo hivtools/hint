@@ -80,18 +80,18 @@ describe("select release", () => {
         const rendered = shallowMount(SelectRelease, {store});
         rendered.setProps({datasetId: "datasetId"})
         expect(getReleasesMock.mock.calls.length).toBe(1);
-        expect(rendered.find("#selectRelease").exists()).toBe(true);
-        expect(rendered.findAll("input").length).toBe(2);
-        const labels = rendered.findAll("label")
+        expect(rendered.findComponent("#selectRelease").exists()).toBe(true);
+        expect(rendered.findAllComponents("input").length).toBe(2);
+        const labels = rendered.findAllComponents("label")
         expect(labels.length).toBe(3);
-        expectTranslated(labels.at(0), "Use latest data", "Utiliser les dernières données",
+        expectTranslated(labels[0], "Use latest data", "Utiliser les dernières données",
             "Use os dados mais recentes", store);
-        expectTranslated(labels.at(1), "Select a release", "Sélectionnez une version",
+        expectTranslated(labels[1], "Select a release", "Sélectionnez une version",
             "Selecione um lançamento", store);
-        expectTranslated(labels.at(2), "Releases", "Versions",
+        expectTranslated(labels[2], "Releases", "Versions",
             "Lançamentos", store);
-        expect(rendered.findAll("help-circle-icon-stub").length).toBe(2);
-        const select = rendered.find(TreeSelect);
+        expect(rendered.findAllComponents("help-circle-icon-stub").length).toBe(2);
+        const select = rendered.findComponent(TreeSelect);
         expect(select.props("multiple")).toBe(false);
         expect(select.props("searchable")).toBe(true);
         expect(rendered.vm.$data.releaseId).toBeUndefined();
@@ -121,12 +121,12 @@ describe("select release", () => {
     it("does not render select release if there are no releases", () => {
         const rendered = shallowMount(SelectRelease, {store: getStore([])});
         rendered.setProps({datasetId: "datasetId"})
-        expect(rendered.find("#selectRelease").exists()).toBe(false);
+        expect(rendered.findComponent("#selectRelease").exists()).toBe(false);
     });
 
     it("does not render select release if no dataset is selected", () => {
         const rendered = shallowMount(SelectRelease, {store: getStore()});
-        expect(rendered.find("#selectRelease").exists()).toBe(false);
+        expect(rendered.findComponent("#selectRelease").exists()).toBe(false);
     });
 
     it("does not get releases if dataset id is cleared", () => {
@@ -179,25 +179,25 @@ describe("select release", () => {
         let store = getStore()
         const rendered = shallowMount(SelectRelease, {store});
         rendered.setProps({datasetId: "datasetId"})
-        const select = rendered.find(TreeSelect);
+        const select = rendered.findComponent(TreeSelect);
         expect(select.attributes("disabled")).toBe("true");
-        const selectRelease = rendered.findAll("input").at(1)
+        const selectRelease = rendered.findAllComponents("input")[1]
         await selectRelease.trigger("change")
         expect(select.attributes("disabled")).toBeUndefined();
     });
 
     it("radial toggles automatically toggles and selects release if selectedDataset has an appropriate releaseId", () => {
         let store = getStore(releasesArray, fakeDataset)
-        const rendered = shallowMount(SelectRelease, {store, propsData: {datasetId: "datasetId"}});
-        const select = rendered.find(TreeSelect);
+        const rendered = shallowMount(SelectRelease, {store, props: {datasetId: "datasetId"}});
+        const select = rendered.findComponent(TreeSelect);
         expect(select.attributes("disabled")).toBeUndefined();
         expect(rendered.vm.$data.releaseId).toBe("releaseId");
     });
 
     it("preselect release occurs if releases are updated", () => {
         let store = getStore([releasesArray[1]], fakeDataset)
-        const rendered = shallowMount(SelectRelease, {store, propsData: {datasetId: "datasetId"}});
-        const select = rendered.find(TreeSelect);
+        const rendered = shallowMount(SelectRelease, {store, props: {datasetId: "datasetId"}});
+        const select = rendered.findComponent(TreeSelect);
         expect(select.attributes("disabled")).toBe("true");
         expect(rendered.vm.$data.releaseId).toBeUndefined();
         store.state.adr.releases = releasesArray
@@ -207,8 +207,8 @@ describe("select release", () => {
 
     it("does not automatically select release if no matching release and reverts to use latest", () => {
         let store = getStore([releasesArray[1]], fakeDataset)
-        const rendered = shallowMount(SelectRelease, {store, propsData: {datasetId: "datasetId", choiceADR: "useRelease"}});
-        const select = rendered.find(TreeSelect);
+        const rendered = shallowMount(SelectRelease, {store, props: {datasetId: "datasetId", choiceADR: "useRelease"}});
+        const select = rendered.findComponent(TreeSelect);
         expect(select.attributes("disabled")).toBe("true");
         expect(rendered.vm.$data.releaseId).toBeUndefined();
     });
@@ -230,7 +230,7 @@ describe("select release", () => {
         let store = getStore()
         const rendered = shallowMount(SelectRelease, {store});
         rendered.setProps({datasetId: "datasetId"})
-        const selectRelease = rendered.findAll("input").at(1)
+        const selectRelease = rendered.findAllComponents("input")[1]
         await selectRelease.trigger("click")
         rendered.setData({releaseId: "releaseId"})
         expect(rendered.emitted("selected-dataset-release")).toStrictEqual([[undefined], [releasesArray[0]]])
@@ -240,7 +240,7 @@ describe("select release", () => {
         let store = getStore()
         const rendered = shallowMount(SelectRelease, {store});
         rendered.setProps({datasetId: "datasetId"})
-        const selectRelease = rendered.findAll("input").at(1)
+        const selectRelease = rendered.findAllComponents("input")[1]
         await selectRelease.trigger("change")
         expect(rendered.emitted("valid")).toStrictEqual([[true], [false]])
         rendered.setData({releaseId: "releaseId"})
@@ -251,7 +251,7 @@ describe("select release", () => {
         let store = getStore()
         const rendered = shallowMount(SelectRelease, {store});
         rendered.setProps({datasetId: "datasetId"})
-        const selectRelease = rendered.findAll("input").at(1);
+        const selectRelease = rendered.findAllComponents("input")[1];
         await selectRelease.trigger("change")
         rendered.setData({releaseId: "releaseId"})
         expect(rendered.vm.$data.releaseId).toBe("releaseId");
@@ -259,7 +259,7 @@ describe("select release", () => {
 
         rendered.setProps({datasetId: "datasetId2"})
         expect(clearReleasesMock.mock.calls.length).toBe(2);
-        const select = rendered.find(TreeSelect);
+        const select = rendered.findComponent(TreeSelect);
         expect(select.attributes("disabled")).toBe("true");
         expect(rendered.vm.$data.releaseId).toBe(undefined);
         expect(rendered.vm.$data.choiceADR).toBe("useLatest");

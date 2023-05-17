@@ -62,7 +62,7 @@ describe("Online support menu", () => {
             router
         });
 
-        const dropDown = wrapper.find(DropDown);
+        const dropDown = wrapper.findComponent(DropDown);
         expect(dropDown.props("delay")).toBe(true);
     });
 
@@ -73,11 +73,11 @@ describe("Online support menu", () => {
             localVue,
             router
         });
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes())
+        wrapper.findComponent(".dropdown-toggle").trigger("click");
+        expect(wrapper.findComponent(".dropdown-menu").classes())
             .toStrictEqual(["dropdown-menu", "show", "dropdown-menu-right"]);
 
-        const link = wrapper.find(".dropdown").find("a");
+        const link = wrapper.findComponent(".dropdown").findComponent("a");
         expectTranslated(link, "Online support", "Support en ligne",
             "Apoio online", store as any);
     });
@@ -90,7 +90,7 @@ describe("Online support menu", () => {
             router
         });
 
-        const link = wrapper.findAll(".dropdown-item").at(0);
+        const link = wrapper.findAllComponents(".dropdown-item")[0];
         expectTranslated(link, "FAQ", "FAQ", "Perguntas Frequentes", store as any);
         expect(link.attributes("target")).toBe("_blank");
     });
@@ -103,7 +103,7 @@ describe("Online support menu", () => {
             router
         });
 
-        const link = wrapper.findAll(".dropdown-item").at(0);
+        const link = wrapper.findAllComponents(".dropdown-item")[0];
         expect(link.attributes("href")).toBe("https://mrc-ide.github.io/naomi-troubleshooting/index-en.html");
     });
 
@@ -116,7 +116,7 @@ describe("Online support menu", () => {
             router
         });
 
-        const link = wrapper.findAll(".dropdown-item").at(0);
+        const link = wrapper.findAllComponents(".dropdown-item")[0];
         expect(link.attributes("href")).toBe("https://mrc-ide.github.io/naomi-troubleshooting/index-fr.html");
     });
 
@@ -129,7 +129,7 @@ describe("Online support menu", () => {
             router
         });
 
-        const link = wrapper.findAll(".dropdown-item").at(0);
+        const link = wrapper.findAllComponents(".dropdown-item")[0];
         // This will eventually link to Portuguese language FAQ doc, but using English doc for now
         expect(link.attributes("href")).toBe("https://mrc-ide.github.io/naomi-troubleshooting/index-en.html");
     });
@@ -143,10 +143,10 @@ describe("Online support menu", () => {
             router
         });
 
-        expect(wrapper.findAll(ErrorReport).length).toBe(1);
-        expect(wrapper.find(ErrorReport).props("open")).toBe(false);
+        expect(wrapper.findAllComponents(ErrorReport).length).toBe(1);
+        expect(wrapper.findComponent(ErrorReport).props("open")).toBe(false);
 
-        const link = wrapper.findAll(".dropdown-item").at(1);
+        const link = wrapper.findAllComponents(".dropdown-item")[1];
 
         expectTranslated(link, "Troubleshooting request", "Demande de dépannage", "Solicitação de solução de problemas", store as any);
 
@@ -161,72 +161,72 @@ describe("Online support menu", () => {
             router
         });
 
-        expect(wrapper.findAll(ErrorReport).length).toBe(1);
+        expect(wrapper.findAllComponents(ErrorReport).length).toBe(1);
 
-        expect(wrapper.find(ErrorReport).props("open")).toBe(false);
+        expect(wrapper.findComponent(ErrorReport).props("open")).toBe(false);
 
         expectErrorReportOpen(wrapper, 1)
 
-        const options = wrapper.find(ErrorReport).findAll("option")
+        const options = wrapper.findComponent(ErrorReport).findAllComponents("option")
         expect(options.length).toBe(10)
 
-        expect((options.at(0).element as HTMLOptionElement).value).toBe("uploadInputs");
+        expect((options[0].element as HTMLOptionElement).value).toBe("uploadInputs");
 
-        expectTranslated(options.at(0),
+        expectTranslated(options[0],
             "Upload inputs",
             "Télécharger les entrées",
             "Carregar entradas",
             store)
 
-        expectTranslated(options.at(1),
+        expectTranslated(options[1],
             "Review inputs",
             "Examiner les entrées",
             "Analise as entradas",
             store)
 
-        expectTranslated(options.at(2),
+        expectTranslated(options[2],
             "Model options",
             "Options des modèles",
             "Opções de modelos",
             store)
 
-        expectTranslated(options.at(3),
+        expectTranslated(options[3],
             "Fit model",
             "Ajuster le modèle",
             "Ajustar modelo",
             store)
 
-        expectTranslated(options.at(4),
+        expectTranslated(options[4],
             "Calibrate model",
             "Calibrer le modèle",
             "Calibrar modelo",
             store)
 
-        expectTranslated(options.at(5),
+        expectTranslated(options[5],
             "Review output",
             "Résultat de l'examen",
             "Rever os resultados",
             store)
 
-        expectTranslated(options.at(6),
+        expectTranslated(options[6],
             "Save results",
             "Enregistrer les résultats",
             "Guardar resultados",
             store)
 
-        expectTranslated(options.at(7),
+        expectTranslated(options[7],
             "Login",
             "Connexion",
             "Conecte-se",
             store)
 
-        expectTranslated(options.at(8),
+        expectTranslated(options[8],
             "Projects",
             "Projets",
             "Projetos",
             store)
 
-        expectTranslated(options.at(9),
+        expectTranslated(options[9],
             "Other",
             "Autre",
             "De outros",
@@ -243,7 +243,7 @@ describe("Online support menu", () => {
 
         expectErrorReportOpen(wrapper, 1)
 
-        expect((wrapper.find(ErrorReport).find("select#section").element as HTMLSelectElement).value)
+        expect((wrapper.findComponent(ErrorReport).findComponent("select#section").element as HTMLSelectElement).value)
             .toBe("uploadInputs")
     });
 
@@ -257,7 +257,7 @@ describe("Online support menu", () => {
 
         expectErrorReportOpen(wrapper, 1)
 
-        await wrapper.find(ErrorReport).vm.$emit("send",
+        await wrapper.findComponent(ErrorReport).vm.$emit("send",
             {
                 description: "something",
                 stepsToReproduce: "reproduce steps",
@@ -285,12 +285,12 @@ describe("Online support menu", () => {
             router
         });
 
-        expect((wrapper.find("select#section").element as HTMLSelectElement).value)
+        expect((wrapper.findComponent("select#section").element as HTMLSelectElement).value)
             .toBe("reviewInputs");
 
-        wrapper.find("#section").setValue("downloadResults");
+        wrapper.findComponent("#section").setValue("downloadResults");
 
-        expect((wrapper.find("select#section").element as HTMLSelectElement).value)
+        expect((wrapper.findComponent("select#section").element as HTMLSelectElement).value)
             .toBe("downloadResults");
         expect(wrapper.vm.$data.section).toBe("downloadResults");
         expect((wrapper.vm as any).currentSection).toBe("downloadResults");
@@ -321,13 +321,13 @@ describe("Online support menu", () => {
             })
         expect(wrapper.vm.$route.path).toBe("/");
         wrapper.setData({errorReportOpen: true});
-        expect((wrapper.find(ErrorReport).find("#section").element as HTMLSelectElement).value).toBe("uploadInputs");
+        expect((wrapper.findComponent(ErrorReport).findComponent("#section").element as HTMLSelectElement).value).toBe("uploadInputs");
 
         wrapper.setData({errorReportOpen: false});
         router.push("/projects");
         expectErrorReportOpen(wrapper, 1)
-        expect(wrapper.find(ErrorReport).props("open")).toBe(true);
-        expect((wrapper.find("#section").element as HTMLSelectElement).value).toBe("projects")
+        expect(wrapper.findComponent(ErrorReport).props("open")).toBe(true);
+        expect((wrapper.findComponent("#section").element as HTMLSelectElement).value).toBe("projects")
     });
 
     it("renders accessibility menu-item text and link", () => {
@@ -338,10 +338,10 @@ describe("Online support menu", () => {
             router
         });
 
-        const links = wrapper.findAll("router-link-stub");
+        const links = wrapper.findAllComponents("router-link-stub");
         expect(links.length).toBe(2)
 
-        const link = links.at(1)
+        const link = links[1]
         expect(link.attributes("to")).toBe("/accessibility");
         expectTranslated(link, "Accessibility", "Accessibilité", "Acessibilidade", store as any);
     });
@@ -354,10 +354,10 @@ describe("Online support menu", () => {
             router
         });
 
-        const links = wrapper.findAll("router-link-stub");
+        const links = wrapper.findAllComponents("router-link-stub");
         expect(links.length).toBe(2)
 
-        const link = links.at(0)
+        const link = links[0]
         expect(link.attributes("to")).toBe("/privacy");
         expectTranslated(link, "Privacy", "Vie privée", "Privacidade", store as any);
     });

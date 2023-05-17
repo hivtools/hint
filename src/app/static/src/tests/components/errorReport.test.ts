@@ -1,5 +1,5 @@
 import Vue from "vue";
-import {shallowMount, mount, createLocalVue} from '@vue/test-utils';
+import {shallowMount, mount} from '@vue/test-utils';
 import ErrorReport from "../../app/components/ErrorReport.vue";
 import Modal from "../../app/components/Modal.vue";
 import Vuex from "vuex";
@@ -8,7 +8,7 @@ import registerTranslations from "../../app/store/translations/registerTranslati
 import {StepDescription, StepperState} from "../../app/store/stepper/stepper";
 import {ProjectsState} from "../../app/store/projects/projects";
 import {expectTranslated} from "../testHelpers";
-import VueRouter from "vue-router";
+import VueRouter, { createRouter, createWebHashHistory } from "vue-router";
 import {Language} from "../../app/store/translations/locales";
 import ErrorAlert from "../../app/components/ErrorAlert.vue";
 import {RootState} from "../../app/root";
@@ -114,30 +114,30 @@ describe("Error report component", () => {
 
     it("modal is open when prop is true", () => {
         const wrapper = shallowMount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore()
         });
 
-        expect(wrapper.find(Modal).props("open")).toBe(true);
+        expect(wrapper.findComponent(Modal).props("open")).toBe(true);
     });
 
     it("modal is closed when prop is false", () => {
         const wrapper = shallowMount(ErrorReport, {
-            propsData: {
+            props: {
                 open: false
             },
             store: createStore()
         });
 
-        expect(wrapper.find(Modal).props("open")).toBe(false);
+        expect(wrapper.findComponent(Modal).props("open")).toBe(false);
     });
 
     it("renders steps as options with project, login and other as extra sections", () => {
         const store = createStore()
         const wrapper = shallowMount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store,
@@ -145,20 +145,20 @@ describe("Error report component", () => {
                 sectionView: rootSectionSlot
             }
         });
-        const options = wrapper.findAll("option");
+        const options = wrapper.findAllComponents("option");
 
-        expect((options.at(0).element as HTMLOptionElement).value).toBe("uploadInputs");
-        expect((options.at(1).element as HTMLOptionElement).value).toBe("reviewInputs");
-        expect((options.at(6).element as HTMLOptionElement).value).toBe("downloadResults");
-        expect((options.at(7).element as HTMLOptionElement).value).toBe("login");
-        expect((options.at(8).element as HTMLOptionElement).value).toBe("projects");
-        expect((options.at(9).element as HTMLOptionElement).value).toBe("other");
+        expect((options[0].element as HTMLOptionElement).value).toBe("uploadInputs");
+        expect((options[1].element as HTMLOptionElement).value).toBe("reviewInputs");
+        expect((options[6].element as HTMLOptionElement).value).toBe("downloadResults");
+        expect((options[7].element as HTMLOptionElement).value).toBe("login");
+        expect((options[8].element as HTMLOptionElement).value).toBe("projects");
+        expect((options[9].element as HTMLOptionElement).value).toBe("other");
     });
 
     it(`renders modal text in English, French and Portuguese`, () => {
         const store = createStore({}, {currentProject: {name: "p1", id: 1, versions: []}}, {}, true)
         const wrapper = shallowMount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store,
@@ -168,56 +168,56 @@ describe("Error report component", () => {
             }
         });
 
-        expectTranslated(wrapper.find("h4"),
+        expectTranslated(wrapper.findComponent("h4"),
             "Troubleshooting request",
             "Demande de dépannage",
             "Solicitação de solução de problemas",
             store)
 
-        const labels = wrapper.findAll("label")
+        const labels = wrapper.findAllComponents("label")
         expect(labels.length).toBe(5)
 
-        expectTranslated(labels.at(0),
+        expectTranslated(labels[0],
             "Project",
             "Projet",
             "Projeto",
             store)
 
-        expectTranslated(labels.at(1),
+        expectTranslated(labels[1],
             "Email address",
             "Adresse e-mail",
             "Endereço de e-mail",
             store)
 
-        expectTranslated(labels.at(2),
+        expectTranslated(labels[2],
             "Section",
             "Section",
             "Seção",
             store)
 
-        expectTranslated(labels.at(3),
+        expectTranslated(labels[3],
             "Description",
             "La description",
             "Descrição",
             store)
 
-        expectTranslated(labels.at(4),
+        expectTranslated(labels[4],
             "Steps to reproduce",
             "Étapes à reproduire",
             "Passos para reproduzir",
             store)
 
-        const mutedText = wrapper.findAll("div.small.text-muted")
+        const mutedText = wrapper.findAllComponents("div.small.text-muted")
 
         expect(mutedText.length).toBe(2)
 
-        expectTranslated(mutedText.at(0),
+        expectTranslated(mutedText[0],
             "Please include details about what you were trying to do, the expected result and what actually happened.",
             "Veuillez inclure des détails sur ce que vous essayiez de faire, le résultat attendu et ce qui s'est réellement passé.",
             "Inclua detalhes sobre o que você estava tentando fazer, o resultado esperado e o que realmente aconteceu.",
             store)
 
-        expectTranslated(mutedText.at(1),
+        expectTranslated(mutedText[1],
             "Describe how to reproduce the error so another person could follow your steps.",
             "Décrivez comment reproduire l'erreur afin qu'une autre personne puisse suivre vos étapes.",
             "Descreva como reproduzir o erro para que outra pessoa possa seguir seus passos.",
@@ -228,23 +228,23 @@ describe("Error report component", () => {
         const store = createStore()
 
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store
         });
 
-        const buttons = wrapper.findAll("button")
+        const buttons = wrapper.findAllComponents("button")
 
         expect(buttons.length).toBe(2)
 
-        expectTranslated(buttons.at(0),
+        expectTranslated(buttons[0],
             "Send",
             "Envoyer",
             "Mandar",
             store)
 
-        expectTranslated(buttons.at(1),
+        expectTranslated(buttons[1],
             "Cancel",
             "Annuler",
             "Cancelar",
@@ -255,7 +255,7 @@ describe("Error report component", () => {
         const store = createStore()
 
         const wrapper = shallowMount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store,
@@ -263,98 +263,98 @@ describe("Error report component", () => {
                 sectionView: rootSectionSlot
             }
         });
-        const options = wrapper.findAll("option");
+        const options = wrapper.findAllComponents("option");
         expect(options.length).toBe(10);
     })
 
     it("shows email field if user is guest", () => {
         const wrapper = shallowMount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore({}, {}, {}, true)
         });
 
-        expect(wrapper.findAll("input#email").length).toBe(1);
+        expect(wrapper.findAllComponents("input#email").length).toBe(1);
     });
 
     it("does not shows email field if user is logged in", () => {
         const wrapper = shallowMount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore({}, {}, {}, false)
         });
 
-        expect(wrapper.findAll("input#email").length).toBe(0);
+        expect(wrapper.findAllComponents("input#email").length).toBe(0);
     });
 
     it("email field is not required if user is logged in", () => {
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore({}, {}, {}, false)
         });
 
-        wrapper.find("#description").setValue("something");
-        wrapper.find("#reproduce").setValue("reproduce steps");
+        wrapper.findComponent("#description").setValue("something");
+        wrapper.findComponent("#reproduce").setValue("reproduce steps");
 
-        expect(wrapper.findAll("button").length).toBe(2);
-        expect(wrapper.findAll("button").at(0).attributes().disabled).toBeUndefined();
+        expect(wrapper.findAllComponents("button").length).toBe(2);
+        expect(wrapper.findAllComponents("button")[0].attributes().disabled).toBeUndefined();
     });
 
     it("email field is required if user is not logged in", () => {
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore({}, {}, {}, true)
         });
 
-        wrapper.find("#description").setValue("something");
-        wrapper.find("#reproduce").setValue("reproduce steps");
+        wrapper.findComponent("#description").setValue("something");
+        wrapper.findComponent("#reproduce").setValue("reproduce steps");
 
-        expect(wrapper.findAll("input#email").length).toBe(1);
-        expect(wrapper.findAll("button").length).toBe(2);
-        expect(wrapper.findAll("button").at(0).attributes().disabled).toBe("disabled");
+        expect(wrapper.findAllComponents("input#email").length).toBe(1);
+        expect(wrapper.findAllComponents("button").length).toBe(2);
+        expect(wrapper.findAllComponents("button")[0].attributes().disabled).toBe("disabled");
     });
 
     it("description field is required", () => {
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore({}, {}, {}, true)
         });
 
-        wrapper.find("#reproduce").setValue("reproduce steps");
-        wrapper.find("#email").setValue("test@test.com");
+        wrapper.findComponent("#reproduce").setValue("reproduce steps");
+        wrapper.findComponent("#email").setValue("test@test.com");
 
-        expect(wrapper.findAll("button").length).toBe(2);
-        expect(wrapper.findAll("button").at(0).attributes().disabled).toBe("disabled");
+        expect(wrapper.findAllComponents("button").length).toBe(2);
+        expect(wrapper.findAllComponents("button")[0].attributes().disabled).toBe("disabled");
     });
 
     it("reproduce steps field is required", () => {
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore({}, {}, {}, true)
         });
 
-        wrapper.find("#description").setValue("desc");
-        wrapper.find("#email").setValue("test@test.com");
+        wrapper.findComponent("#description").setValue("desc");
+        wrapper.findComponent("#email").setValue("test@test.com");
 
-        expect(wrapper.findAll("button").length).toBe(2);
-        expect(wrapper.findAll("button").at(0).attributes().disabled).toBe("disabled");
+        expect(wrapper.findAllComponents("button").length).toBe(2);
+        expect(wrapper.findAllComponents("button")[0].attributes().disabled).toBe("disabled");
     });
 
     it("translates button tooltip", () => {
         const store = createStore({}, {}, {}, true);
         const mockTooltip = jest.fn();
         mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store,
@@ -374,7 +374,7 @@ describe("Error report component", () => {
 
     it("shows disabled, auto-populated project field if there is a current project", () => {
         const wrapper = shallowMount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore({}, {currentProject: {name: "p1", id: 1, versions: []}}, {}, false),
@@ -383,15 +383,15 @@ describe("Error report component", () => {
             }
         });
 
-        expect(wrapper.findAll("input#project").length).toBe(1);
-        const el = wrapper.find("input#project").element as HTMLInputElement
+        expect(wrapper.findAllComponents("input#project").length).toBe(1);
+        const el = wrapper.findComponent("input#project").element as HTMLInputElement
         expect(el.value).toBe("p1");
         expect(el.disabled).toBe(true);
     });
 
     it("does not show project field if there is no current project", () => {
         const wrapper = shallowMount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore({}, {}, {}, true),
@@ -400,48 +400,48 @@ describe("Error report component", () => {
             }
         });
 
-        expect(wrapper.findAll("input#project").length).toBe(0);
+        expect(wrapper.findAllComponents("input#project").length).toBe(0);
     });
 
     it("does not show project field", () => {
         const wrapper = shallowMount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore({}, {}, {}, true)
         });
 
-        expect(wrapper.find("input#project").exists()).toBe(false);
+        expect(wrapper.findComponent("input#project").exists()).toBe(false);
     });
 
     it("does not show section field by default", () => {
         const wrapper = shallowMount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore({}, {}, {}, true)
         });
 
-        expect(wrapper.find("#section").exists()).toBe(false);
+        expect(wrapper.findComponent("#section").exists()).toBe(false);
     });
 
     it("emits close event on cancel", () => {
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore()
         });
 
-        expect(wrapper.find(".btn-white").text()).toBe("Cancel");
-        wrapper.find(".btn-white").trigger("click");
+        expect(wrapper.findComponent(".btn-white").text()).toBe("Cancel");
+        wrapper.findComponent(".btn-white").trigger("click");
 
         expect(wrapper.emitted().close).toBeDefined();
     });
 
     it("resets data on cancel", () => {
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore({}, {}, {}, true),
@@ -450,16 +450,16 @@ describe("Error report component", () => {
             }
         });
 
-        wrapper.find("#description").setValue("something");
-        wrapper.find("#reproduce").setValue("reproduce steps");
-        wrapper.find("#section").setValue("downloadResults");
-        wrapper.find("#email").setValue("test@email.com");
+        wrapper.findComponent("#description").setValue("something");
+        wrapper.findComponent("#reproduce").setValue("reproduce steps");
+        wrapper.findComponent("#section").setValue("downloadResults");
+        wrapper.findComponent("#email").setValue("test@email.com");
 
         expect(wrapper.vm.$data.description).toBe("something");
         expect(wrapper.vm.$data.stepsToReproduce).toBe("reproduce steps");
         expect(wrapper.vm.$data.email).toBe("test@email.com");
 
-        wrapper.find(".btn-white").trigger("click");
+        wrapper.findComponent(".btn-white").trigger("click");
 
         expect(wrapper.vm.$data.description).toBe("");
         expect(wrapper.vm.$data.stepsToReproduce).toBe("");
@@ -468,21 +468,21 @@ describe("Error report component", () => {
 
     it("resets data on send", async () => {
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore({}, {}, {}, true)
         });
 
-        wrapper.find("#description").setValue("something");
-        wrapper.find("#reproduce").setValue("reproduce steps");
-        wrapper.find("#email").setValue("test@email.com");
+        wrapper.findComponent("#description").setValue("something");
+        wrapper.findComponent("#reproduce").setValue("reproduce steps");
+        wrapper.findComponent("#email").setValue("test@email.com");
 
         expect(wrapper.vm.$data.description).toBe("something");
         expect(wrapper.vm.$data.stepsToReproduce).toBe("reproduce steps");
         expect(wrapper.vm.$data.email).toBe("test@email.com");
 
-        wrapper.find(".btn-red").trigger("click");
+        wrapper.findComponent(".btn-red").trigger("click");
         await Vue.nextTick();
 
         expect(wrapper.vm.$data.description).toBe("");
@@ -493,21 +493,21 @@ describe("Error report component", () => {
     it("can validate email with whitespace", async () => {
         const store = createStore({}, {}, {}, true)
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store
         });
 
-        wrapper.find("#email").setValue("tes t@email.com ");
+        wrapper.findComponent("#email").setValue("tes t@email.com ");
         expect(wrapper.vm.$data.email).toBe("test@email.com");
-        expect(wrapper.find(".invalid-feedback").exists()).toBe(false)
+        expect(wrapper.findComponent(".invalid-feedback").exists()).toBe(false)
     });
 
     it("does not validate email with one letter postfix", async () => {
         const store = createStore({}, {}, {}, true)
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store,
@@ -516,15 +516,15 @@ describe("Error report component", () => {
             }
         });
 
-        wrapper.find("#description").setValue("something");
-        wrapper.find("#reproduce").setValue("reproduce steps");
-        wrapper.find("#section").setValue("downloadResults");
-        wrapper.find("#email").setValue("test@email.c");
+        wrapper.findComponent("#description").setValue("something");
+        wrapper.findComponent("#reproduce").setValue("reproduce steps");
+        wrapper.findComponent("#section").setValue("downloadResults");
+        wrapper.findComponent("#email").setValue("test@email.c");
 
-        expect(wrapper.find(".btn-red").text()).toBe("Send");
-        expect(wrapper.find(".btn-red").attributes("disabled")).toBe("disabled")
+        expect(wrapper.findComponent(".btn-red").text()).toBe("Send");
+        expect(wrapper.findComponent(".btn-red").attributes("disabled")).toBe("disabled")
 
-        const invalidFeedback = wrapper.find(".invalid-feedback");
+        const invalidFeedback = wrapper.findComponent(".invalid-feedback");
         expectTranslated(invalidFeedback,
             "Please enter a valid email address",
             "S'il vous plaît, mettez une adresse email valide",
@@ -534,7 +534,7 @@ describe("Error report component", () => {
     it("does not validate email without @ symbol", async () => {
         const store = createStore({}, {}, {}, true)
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store,
@@ -543,15 +543,15 @@ describe("Error report component", () => {
             }
         });
 
-        wrapper.find("#description").setValue("something");
-        wrapper.find("#reproduce").setValue("reproduce steps");
-        wrapper.find("#section").setValue("downloadResults");
-        wrapper.find("#email").setValue("testemail.com");
+        wrapper.findComponent("#description").setValue("something");
+        wrapper.findComponent("#reproduce").setValue("reproduce steps");
+        wrapper.findComponent("#section").setValue("downloadResults");
+        wrapper.findComponent("#email").setValue("testemail.com");
 
-        expect(wrapper.find(".btn-red").text()).toBe("Send");
-        expect(wrapper.find(".btn-red").attributes("disabled")).toBe("disabled")
+        expect(wrapper.findComponent(".btn-red").text()).toBe("Send");
+        expect(wrapper.findComponent(".btn-red").attributes("disabled")).toBe("disabled")
 
-        const invalidFeedback = wrapper.find(".invalid-feedback");
+        const invalidFeedback = wrapper.findComponent(".invalid-feedback");
         expectTranslated(invalidFeedback,
             "Please enter a valid email address",
             "S'il vous plaît, mettez une adresse email valide",
@@ -561,7 +561,7 @@ describe("Error report component", () => {
     it("disables button and display email validation message when invalid email address", async () => {
         const store = createStore({}, {}, {}, true)
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store,
@@ -570,16 +570,16 @@ describe("Error report component", () => {
             }
         });
 
-        wrapper.find("#description").setValue("something");
-        wrapper.find("#reproduce").setValue("reproduce steps");
-        wrapper.find("#section").setValue("downloadResults");
-        wrapper.find("#email").setValue("test@email.c");
+        wrapper.findComponent("#description").setValue("something");
+        wrapper.findComponent("#reproduce").setValue("reproduce steps");
+        wrapper.findComponent("#section").setValue("downloadResults");
+        wrapper.findComponent("#email").setValue("test@email.c");
 
-        expect(wrapper.find("#email").attributes("pattern")).toBe(emailRegex.source)
-        expect(wrapper.find(".btn-red").text()).toBe("Send");
-        expect(wrapper.find(".btn-red").attributes("disabled")).toBe("disabled")
+        expect(wrapper.findComponent("#email").attributes("pattern")).toBe(emailRegex.source)
+        expect(wrapper.findComponent(".btn-red").text()).toBe("Send");
+        expect(wrapper.findComponent(".btn-red").attributes("disabled")).toBe("disabled")
 
-        const invalidFeedback = wrapper.find(".invalid-feedback");
+        const invalidFeedback = wrapper.findComponent(".invalid-feedback");
         expectTranslated(invalidFeedback,
             "Please enter a valid email address",
             "S'il vous plaît, mettez une adresse email valide",
@@ -590,7 +590,7 @@ describe("Error report component", () => {
     it("validates email and enables send button ", async () => {
         const store = createStore({}, {}, {}, true)
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store,
@@ -599,20 +599,20 @@ describe("Error report component", () => {
             }
         });
 
-        wrapper.find("#description").setValue("something");
-        wrapper.find("#reproduce").setValue("reproduce steps");
-        wrapper.find("#section").setValue("downloadResults");
-        wrapper.find("#email").setValue("test@email.com");
+        wrapper.findComponent("#description").setValue("something");
+        wrapper.findComponent("#reproduce").setValue("reproduce steps");
+        wrapper.findComponent("#section").setValue("downloadResults");
+        wrapper.findComponent("#email").setValue("test@email.com");
 
-        expect(wrapper.find("#email").attributes("pattern")).toBe(emailRegex.source)
-        expect(wrapper.find(".btn-red").text()).toBe("Send");
-        expect(wrapper.find(".btn-red").attributes("disabled")).toBeUndefined()
-        expect(wrapper.find(".invalid-feedback").exists()).toBe(false)
+        expect(wrapper.findComponent("#email").attributes("pattern")).toBe(emailRegex.source)
+        expect(wrapper.findComponent(".btn-red").text()).toBe("Send");
+        expect(wrapper.findComponent(".btn-red").attributes("disabled")).toBeUndefined()
+        expect(wrapper.findComponent(".invalid-feedback").exists()).toBe(false)
     });
 
     it("emits action and sets showFeedback on send", async () => {
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore(),
@@ -621,16 +621,16 @@ describe("Error report component", () => {
             }
         });
 
-        wrapper.find("#description").setValue("something");
-        wrapper.find("#reproduce").setValue("reproduce steps");
-        wrapper.find("#section").setValue("downloadResults");
+        wrapper.findComponent("#description").setValue("something");
+        wrapper.findComponent("#reproduce").setValue("reproduce steps");
+        wrapper.findComponent("#section").setValue("downloadResults");
 
-        expect(wrapper.find(".btn-red").text()).toBe("Send");
-        wrapper.find(".btn-red").trigger("click");
+        expect(wrapper.findComponent(".btn-red").text()).toBe("Send");
+        wrapper.findComponent(".btn-red").trigger("click");
         await Vue.nextTick();
 
-        expect(wrapper.emitted("send").length).toBe(1)
-        expect(wrapper.emitted("send")[0][0]).toStrictEqual(
+        expect(wrapper.emitted("send")!.length).toBe(1)
+        expect(wrapper.emitted("send")![0][0]).toStrictEqual(
             {
                 description: "something",
                 stepsToReproduce: "reproduce steps",
@@ -645,7 +645,7 @@ describe("Error report component", () => {
     it("disables send button and render spinner when sending error report",  () => {
         const store = createStore({}, {}, {}, false, {sendingErrorReport: true})
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true,
                 email: "something"
             },
@@ -655,19 +655,19 @@ describe("Error report component", () => {
             }
         });
 
-        wrapper.find("#description").setValue("something");
-        wrapper.find("#reproduce").setValue("reproduce steps");
-        wrapper.find("#section").setValue("downloadResults");
+        wrapper.findComponent("#description").setValue("something");
+        wrapper.findComponent("#reproduce").setValue("reproduce steps");
+        wrapper.findComponent("#section").setValue("downloadResults");
 
-        expect(wrapper.find(LoadingSpinner).exists()).toBe(true)
-        expectTranslated(wrapper.find("#sending-error-report"),
+        expect(wrapper.findComponent(LoadingSpinner).exists()).toBe(true)
+        expectTranslated(wrapper.findComponent("#sending-error-report"),
             "Sending request...", "Envoyer une requete...", "Enviando pedido ...", store)
-        expect(wrapper.find("#send").attributes("disabled")).toBe("disabled")
+        expect(wrapper.findComponent("#send").attributes("disabled")).toBe("disabled")
     });
 
     it("does not disable send button or render spinner when sending error report is not in progress",  () => {
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true,
                 email: "something"
             },
@@ -677,59 +677,59 @@ describe("Error report component", () => {
             }
         });
 
-        wrapper.find("#description").setValue("something");
-        wrapper.find("#reproduce").setValue("reproduce steps");
-        wrapper.find("#section").setValue("downloadResults");
+        wrapper.findComponent("#description").setValue("something");
+        wrapper.findComponent("#reproduce").setValue("reproduce steps");
+        wrapper.findComponent("#section").setValue("downloadResults");
 
-        expect(wrapper.find(LoadingSpinner).exists()).toBe(false)
-        expect(wrapper.find("#send").attributes("disabled")).toBeUndefined()
+        expect(wrapper.findComponent(LoadingSpinner).exists()).toBe(false)
+        expect(wrapper.findComponent("#send").attributes("disabled")).toBeUndefined()
     });
 
     it("does not emit action on cancel", () => {
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore()
         });
         
-        expect(wrapper.find(".btn-white").text()).toBe("Cancel");
-        wrapper.find(".btn-white").trigger("click");
+        expect(wrapper.findComponent(".btn-white").text()).toBe("Cancel");
+        wrapper.findComponent(".btn-white").trigger("click");
 
-        expect(wrapper.emitted("send")).toBeUndefined()
+        expect(wrapper.emitted("send")!).toBeUndefined()
     });
 
     it("renders no feedback by default", () => {
         const wrapper = shallowMount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore()
         });
-        expect(wrapper.find("#report-success").exists()).toBe(false);
-        expect(wrapper.find("#report-error").exists()).toBe(false);
-        expect(wrapper.find(ErrorAlert).exists()).toBe(false);
+        expect(wrapper.findComponent("#report-success").exists()).toBe(false);
+        expect(wrapper.findComponent("#report-error").exists()).toBe(false);
+        expect(wrapper.findComponent(ErrorAlert).exists()).toBe(false);
     });
 
     it("renders success feedback when no error report error", () => {
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore()
         });
         wrapper.setData({showFeedback: true});
 
-        expectTranslated(wrapper.find("#report-success"),
+        expectTranslated(wrapper.findComponent("#report-success"),
             "Thank you, your request has been sent. We will respond as soon as possible.",
             "Merci, votre demande a été envoyé. Nous vous répondrons dans les plus brefs délais.",
             "Obrigado, sua solicitação foi enviada. Nós responderemos o mais rapidamente possível.",
             wrapper.vm.$store
         );
-        expectTranslated(wrapper.find(".btn-red"), "Close", "Fermer", "Fechar",
+        expectTranslated(wrapper.findComponent(".btn-red"), "Close", "Fermer", "Fechar",
             wrapper.vm.$store);
-        expect(wrapper.find("#report-error").exists()).toBe(false);
-        expect(wrapper.find(ErrorAlert).exists()).toBe(false);
+        expect(wrapper.findComponent("#report-error").exists()).toBe(false);
+        expect(wrapper.findComponent(ErrorAlert).exists()).toBe(false);
     });
 
     it("renders error feedback when there is an error report error", () => {
@@ -738,44 +738,42 @@ describe("Error report component", () => {
             detail: "TEST DETAIL"
         };
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore({}, {}, {}, false, {errorReportError})
         });
         wrapper.setData({showFeedback: true});
-        expectTranslated(wrapper.find("#report-error"),
+        expectTranslated(wrapper.findComponent("#report-error"),
             "An error occurred while sending your request:",
             "Une erreur s'est produite lors de l'envoi de votre demande :",
             "Ocorreu um erro ao enviar sua solicitação:",
             wrapper.vm.$store
         );
-        expect(wrapper.find(ErrorAlert).props("error")).toBe(errorReportError);
-        expectTranslated(wrapper.find(".btn-red"), "Close", "Fermer", "Fechar",
+        expect(wrapper.findComponent(ErrorAlert).props("error")).toBe(errorReportError);
+        expectTranslated(wrapper.findComponent(".btn-red"), "Close", "Fermer", "Fechar",
             wrapper.vm.$store);
-        expect(wrapper.find("#report-success").exists()).toBe(false);
+        expect(wrapper.findComponent("#report-success").exists()).toBe(false);
     });
 
     it("emits close event on click close button", () => {
         const wrapper = mount(ErrorReport, {
-            propsData: {
+            props: {
                 open: true
             },
             store: createStore()
         });
         wrapper.setData({showFeedback: true});
 
-        expect(wrapper.find(".btn-red").text()).toBe("Close");
-        wrapper.find(".btn-red").trigger("click");
+        expect(wrapper.findComponent(".btn-red").text()).toBe("Close");
+        wrapper.findComponent(".btn-red").trigger("click");
 
         expect(wrapper.emitted().close).toBeDefined();
     });
 
     it("resets showFeedback on open", () => {
-        const localVue = createLocalVue()
-        localVue.use(VueRouter);
-        const router = new VueRouter({routes: []});
-        const wrapper = mount(ErrorReport, { localVue, router, store: createStore() });
+        const router = createRouter({routes: [], history: createWebHashHistory() });
+        const wrapper = mount(ErrorReport, { router, store: createStore() });
         wrapper.setData({showFeedback: true});
 
         wrapper.setProps({open: true});

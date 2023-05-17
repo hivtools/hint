@@ -13,14 +13,14 @@ describe("logged out header", () => {
     registerTranslations(store);
 
     it("contains title", () => {
-        const wrapper = shallowMount(LoggedOutHeader, {store, propsData: {title: "AppTitle"}});
-        const title = wrapper.find(".navbar-header");
+        const wrapper = shallowMount(LoggedOutHeader, {store, props: {title: "AppTitle"}});
+        const title = wrapper.findComponent(".navbar-header");
         expect(title.text()).toBe("AppTitle");
     });
 
     it("renders language menu", () => {
         const wrapper = shallowMount(LoggedOutHeader);
-        expect(wrapper.findAll(LanguageMenu).length).toBe(1);
+        expect(wrapper.findAllComponents(LanguageMenu).length).toBe(1);
     });
 
 });

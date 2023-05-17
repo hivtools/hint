@@ -20,15 +20,15 @@ describe("MapEmptyFeature component", () => {
 
     it("render can display message in the middle of the map", () => {
         const wrapper = getWrapper();
-        expect(wrapper.findAll(LControl).length).toBe(1)
-        expect(wrapper.find(LControl).classes("empty-feature-center")).toBe(true)
-        expect(wrapper.find("div").classes("empty-feature-size")).toBe(true)
+        expect(wrapper.findAllComponents(LControl).length).toBe(1)
+        expect(wrapper.findComponent(LControl).classes("empty-feature-center")).toBe(true)
+        expect(wrapper.findComponent("div").classes("empty-feature-size")).toBe(true)
     });
 
     it("render can display translated message on map", () => {
         const wrapper = getWrapper();
-        expect(wrapper.findAll(LControl).length).toBe(1)
-        const noMapData = wrapper.find(LControl).find("span")
+        expect(wrapper.findAllComponents(LControl).length).toBe(1)
+        const noMapData = wrapper.findComponent(LControl).findComponent("span")
         expectTranslated(noMapData, "No data are available for the selected combination. Please review the combination of filter values selected.",
             "Aucune donnée n'est disponible pour la combinaison sélectionnée. Veuillez examiner la combinaison de valeurs de filtre sélectionnée.",
             "Não existem dados disponíveis para a combinação selecionada. Por favor, reveja a combinação dos valores de filtro selecionados.", store as any)

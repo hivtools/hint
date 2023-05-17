@@ -315,7 +315,7 @@ describe("select dataset", () => {
     it("renders select dataset button when no dataset is selected", () => {
         let store = getStore()
         const rendered = shallowMount(SelectDataset, {store});
-        expectTranslatedWithStoreType(rendered.find("button"), "Select ADR dataset",
+        expectTranslatedWithStoreType(rendered.findComponent("button"), "Select ADR dataset",
             "Sélectionner l’ensemble de données ADR", "Selecionar conjunto de dados do ADR", store);
     });
 
@@ -324,7 +324,7 @@ describe("select dataset", () => {
             selectedDataset: fakeDataset
         })
         const rendered = shallowMount(SelectDataset, {store});
-        expectTranslatedWithStoreType(rendered.find("button"), "Edit", "Éditer", "Editar", store);
+        expectTranslatedWithStoreType(rendered.findComponent("button"), "Edit", "Éditer", "Editar", store);
     });
 
     it("does not render refresh button or info icon when no resources are out of date", () => {
@@ -333,8 +333,8 @@ describe("select dataset", () => {
                 selectedDataset: fakeDataset
             })
         });
-        expect(rendered.findAll("button").length).toBe(1);
-        expect(rendered.findAll(InfoIcon).length).toBe(0);
+        expect(rendered.findAllComponents("button").length).toBe(1);
+        expect(rendered.findAllComponents(InfoIcon).length).toBe(0);
     });
 
     it("shows refresh button and info icon if any resource is out of date", () => {
@@ -347,11 +347,11 @@ describe("select dataset", () => {
             directives: {"tooltip": mockTooltipDirective},
             stubs: ["tree-select"]
         });
-        const buttons = rendered.findAll("button");
-        expectTranslatedWithStoreType(buttons.at(0), "Refresh", "Rafraîchir", "Atualizar", store);
-        expectTranslatedWithStoreType(buttons.at(1), "Edit", "Éditer", "Editar", store);
+        const buttons = rendered.findAllComponents("button");
+        expectTranslatedWithStoreType(buttons[0], "Refresh", "Rafraîchir", "Atualizar", store);
+        expectTranslatedWithStoreType(buttons[1], "Edit", "Éditer", "Editar", store);
 
-        expect(rendered.findAll(InfoIcon).length).toBe(1);
+        expect(rendered.findAllComponents(InfoIcon).length).toBe(1);
 
         expect(mockTooltipDirective.mock.calls[0][0].innerHTML)
             .toContain("<circle cx=\"12\" cy=\"12\" r=\"10\"></circle>"); // tooltip should be on the icon
@@ -367,10 +367,10 @@ describe("select dataset", () => {
 
         const store = getStore({selectedDataset: fakeDataset});
         const rendered = shallowMount(SelectDataset, {store, sync: false});
-        rendered.findAll("button").at(0).trigger("click");
+        rendered.findAllComponents("button")[0].trigger("click");
         await Vue.nextTick();
-        expect(rendered.find(Modal).props("open")).toBe(true);
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.findComponent(Modal).props("open")).toBe(true);
+        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
         expect((baselineActions.importPJNZ as Mock).mock.calls[0][1]).toBe("pjnz.url");
         expect((baselineActions.importPopulation as Mock).mock.calls[0][1]).toBe("pop.url");
         expect((baselineActions.importShape as Mock).mock.calls[0][1]).toBe("shape.url");
@@ -381,7 +381,7 @@ describe("select dataset", () => {
         fakeDataset.resources.pjnz = mockDatasetResource({outOfDate: true, url: "pjnz.url"})
         const store = getStore({selectedDataset: fakeDataset});
         const rendered = shallowMount(SelectDataset, {store, sync: false});
-        rendered.findAll("button").at(0).trigger("click");
+        rendered.findAllComponents("button")[0].trigger("click");
 
         await Vue.nextTick();
         await Vue.nextTick();
@@ -399,7 +399,7 @@ describe("select dataset", () => {
         const clearIntervalSpy = jest.spyOn(window, "clearInterval");
         const setIntervalSpy = jest.spyOn(window, "setInterval");
 
-        rendered.findAll("button").at(0).trigger("click");
+        rendered.findAllComponents("button")[0].trigger("click");
 
         await Vue.nextTick();
         await Vue.nextTick();
@@ -415,46 +415,46 @@ describe("select dataset", () => {
         fakeDataset.resources.pjnz = mockDatasetResource({outOfDate: true, url: "pjnz.url"})
         const store = getStore({selectedDataset: fakeDataset});
         const rendered = shallowMount(SelectDataset, {store, sync: false});
-        rendered.findAll("button").at(0).trigger("click");
+        rendered.findAllComponents("button")[0].trigger("click");
 
         await Vue.nextTick();
 
-        expect(rendered.find(Modal).props("open")).toBe(true);
-        expect(rendered.find("#loading-dataset").findAll(LoadingSpinner).length).toBe(1);
-        expect(rendered.find("#fetch-error").exists()).toBe(false);
+        expect(rendered.findComponent(Modal).props("open")).toBe(true);
+        expect(rendered.findComponent("#loading-dataset").findAllComponents(LoadingSpinner).length).toBe(1);
+        expect(rendered.findComponent("#fetch-error").exists()).toBe(false);
 
         await Vue.nextTick();
         await Vue.nextTick();
 
-        expect(rendered.find(Modal).props("open")).toBe(false);
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        expect(rendered.findComponent("#loading-dataset").exists()).toBe(false);
     });
 
     it("renders message and button on error fetching datasets", async () => {
         const store = getStore({}, {adrError: mockError("test error")});
         const rendered = shallowMount(SelectDataset, {store});
-        rendered.findAll("button").at(0).trigger("click");
+        rendered.findAllComponents("button")[0].trigger("click");
 
         await Vue.nextTick();
 
-        const modal = rendered.find(Modal);
+        const modal = rendered.findComponent(Modal);
         expect(modal.props("open")).toBe(true);
-        expectTranslatedWithStoreType(modal.find("#fetch-error div"),
+        expectTranslatedWithStoreType(modal.findComponent("#fetch-error div"),
             "There was an error fetching datasets from ADR",
             "Une erreur s'est produite lors de la récupération des ensembles de données à partir d'ADR",
             "Ocorreu um erro ao obter conjuntos de dados do ADR", store);
-        expectTranslatedWithStoreType(modal.find("#fetch-error button"), "Try again", "Réessayer",
+        expectTranslatedWithStoreType(modal.findComponent("#fetch-error button"), "Try again", "Réessayer",
             "Tente novamente", store);
     });
 
     it("Try again button invokes getDatasets action", async () => {
         const store = getStore({}, {adrError: mockError("test error")});
         const rendered = shallowMount(SelectDataset, {store});
-        rendered.findAll("button").at(0).trigger("click");
+        rendered.findAllComponents("button")[0].trigger("click");
 
         await Vue.nextTick();
         expect(getDatasetsMock.mock.calls.length).toBe(0);
-        rendered.find("#fetch-error button").trigger("click");
+        rendered.findComponent("#fetch-error button").trigger("click");
 
         await Vue.nextTick();
         expect(getDatasetsMock.mock.calls.length).toBe(1);
@@ -470,7 +470,7 @@ describe("select dataset", () => {
             fakeDataset.resources.anc = mockDatasetResource({url: "anc.url"});
             const store = getStore({selectedDataset: fakeDataset, shape: mockShapeResponse()});
             const rendered = shallowMount(SelectDataset, {store, sync: false});
-            rendered.findAll("button").at(0).trigger("click");
+            rendered.findAllComponents("button")[0].trigger("click");
             await Vue.nextTick();
             await Vue.nextTick();
             await Vue.nextTick();
@@ -489,7 +489,7 @@ describe("select dataset", () => {
             fakeDataset.resources.shape = mockDatasetResource();
             const store = getStore({selectedDataset: fakeDataset});
             const rendered = shallowMount(SelectDataset, {store, sync: false});
-            rendered.findAll("button").at(0).trigger("click");
+            rendered.findAllComponents("button")[0].trigger("click");
             await Vue.nextTick();
             await Vue.nextTick();
             await Vue.nextTick();
@@ -507,7 +507,7 @@ describe("select dataset", () => {
             fakeDataset.resources.shape = mockDatasetResource();
             const store = getStore({ selectedDataset: fakeDataset });
             const rendered = shallowMount(SelectDataset, {store, sync: false});
-            rendered.findAll("button").at(0).trigger("click");
+            rendered.findAllComponents("button")[0].trigger("click");
             await Vue.nextTick();
             await Vue.nextTick();
             await Vue.nextTick();
@@ -521,10 +521,10 @@ describe("select dataset", () => {
             selectedDataset: fakeDataset
         })
         const rendered = shallowMount(SelectDataset, {store});
-        expectTranslatedWithStoreType(rendered.find(".font-weight-bold"), "Selected dataset:",
+        expectTranslatedWithStoreType(rendered.findComponent(".font-weight-bold"), "Selected dataset:",
             "Ensemble de données sélectionné :", "Conjunto de dados selecionado:", store);
-        expect(rendered.find("a").text()).toBe("Some data");
-        expect(rendered.find("a").attributes("href")).toBe("www.adr.com/naomi-data/some-data");
+        expect(rendered.findComponent("a").text()).toBe("Some data");
+        expect(rendered.findComponent("a").attributes("href")).toBe("www.adr.com/naomi-data/some-data");
     });
 
     it("renders selected dataset and selected release with url pointing to release's activity page", () => {
@@ -533,38 +533,38 @@ describe("select dataset", () => {
             selectedRelease: fakeRelease
         })
         const rendered = shallowMount(SelectDataset, {store});
-        expectTranslatedWithStoreType(rendered.find(".font-weight-bold"), "Selected dataset:",
+        expectTranslatedWithStoreType(rendered.findComponent(".font-weight-bold"), "Selected dataset:",
             "Ensemble de données sélectionné :", "Conjunto de dados selecionado:", store);
 
-        expect(rendered.find("a").text()).toBe("Some data — release1");
-        expect(rendered.find("a").attributes("href")).toBe("https://adr.com/dataset/id1?activity_id=activityId");
+        expect(rendered.findComponent("a").text()).toBe("Some data — release1");
+        expect(rendered.findComponent("a").attributes("href")).toBe("https://adr.com/dataset/id1?activity_id=activityId");
     });
 
     it("does not render selected dataset if it doesn't exist", () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});
-        expect(rendered.findAll("#selectedDatasetSpan").length).toBe(0);
-        expect(rendered.findAll("a").length).toBe(0);
+        expect(rendered.findAllComponents("#selectedDatasetSpan").length).toBe(0);
+        expect(rendered.findAllComponents("a").length).toBe(0);
     });
 
     it("can open modal", () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});
-        expect(rendered.find(Modal).props("open")).toBe(false);
-        rendered.find("button").trigger("click");
-        expect(rendered.find(Modal).props("open")).toBe(true);
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
+        rendered.findComponent("button").trigger("click");
+        expect(rendered.findComponent(Modal).props("open")).toBe(true);
     });
 
     it("can close modal", () => {
         const rendered = mount(SelectDataset, {store: getStore(), stubs: ["tree-select"]});
-        rendered.find("button").trigger("click");
-        expect(rendered.find(Modal).props("open")).toBe(true);
-        rendered.find(Modal).findAll("button").at(1).trigger("click");
-        expect(rendered.find(Modal).props("open")).toBe(false);
+        rendered.findComponent("button").trigger("click");
+        expect(rendered.findComponent(Modal).props("open")).toBe(true);
+        rendered.findComponent(Modal).findAllComponents("button")[1].trigger("click");
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
     });
 
     it("renders select", async () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});
-        rendered.find("button").trigger("click");
-        const select = rendered.find(TreeSelect);
+        rendered.findComponent("button").trigger("click");
+        const select = rendered.findComponent(TreeSelect);
         expect(select.props("multiple")).toBe(false);
         expect(select.props("searchable")).toBe(true);
 
@@ -594,18 +594,18 @@ describe("select dataset", () => {
 
     it("hides fetching dataset controls, and enables TreeSelect, when not fetching", () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});
-        expect(rendered.find("#fetching-datasets").classes()).toStrictEqual(["invisible"]);
-        expect(rendered.find(TreeSelect).attributes("disabled")).toBeUndefined();
+        expect(rendered.findComponent("#fetching-datasets").classes()).toStrictEqual(["invisible"]);
+        expect(rendered.findComponent(TreeSelect).attributes("disabled")).toBeUndefined();
     });
 
     it("shows fetching dataset controls, and disables TreeSelect, when fetching", () => {
         const store = getStore({}, {fetchingDatasets: true});
         const rendered = shallowMount(SelectDataset, {store});
-        expect(rendered.find("#fetching-datasets").classes()).toStrictEqual(["visible"]);
-        expect(rendered.find(TreeSelect).attributes("disabled")).toBe("true");
+        expect(rendered.findComponent("#fetching-datasets").classes()).toStrictEqual(["visible"]);
+        expect(rendered.findComponent(TreeSelect).attributes("disabled")).toBe("true");
 
-        expect(rendered.find("#fetching-datasets").find(LoadingSpinner).attributes("size")).toBe("xs");
-        expectTranslatedWithStoreType(rendered.find("#fetching-datasets span"),
+        expect(rendered.findComponent("#fetching-datasets").findComponent(LoadingSpinner).attributes("size")).toBe("xs");
+        expectTranslatedWithStoreType(rendered.findComponent("#fetching-datasets span"),
             "Loading datasets", "Chargement de vos ensembles de données", "A carregar conjuntos de dados", store);
     });
 
@@ -617,28 +617,28 @@ describe("select dataset", () => {
         });
         expect(rendered.vm.$data.newDatasetId).toBe(null);
         // open modal
-        rendered.find("button").trigger("click");
+        rendered.findComponent("button").trigger("click");
 
-        expect(rendered.findAll(TreeSelect).length).toBe(1);
-        expect(rendered.find(Modal).findAll("button").length).toBe(2);
-        expect(rendered.findAll("p").length).toBe(0);
+        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
+        expect(rendered.findComponent(Modal).findAllComponents("button").length).toBe(2);
+        expect(rendered.findAllComponents("p").length).toBe(0);
 
-        expectTranslatedWithStoreType(rendered.find("h4"), "Browse ADR", "Parcourir ADR", "Procurar no ADR", store);
-        expectTranslatedWithStoreType(rendered.find("div > label"), "Datasets", "Ensembles de données",
+        expectTranslatedWithStoreType(rendered.findComponent("h4"), "Browse ADR", "Parcourir ADR", "Procurar no ADR", store);
+        expectTranslatedWithStoreType(rendered.findComponent("div > label"), "Datasets", "Ensembles de données",
             "Conjuntos de dados", store);
 
         // dataset is preselected in dropdown and click button to import
         expect(rendered.vm.$data.newDatasetId).toBe("id2");
-        const selectRelease = rendered.find(SelectRelease)
+        const selectRelease = rendered.findComponent(SelectRelease)
         await selectRelease.vm.$emit("selected-dataset-release", fakeRelease);
-        rendered.find(Modal).find("button").trigger("click");
+        rendered.findComponent(Modal).findComponent("button").trigger("click");
 
         await Vue.nextTick();
-        expect(rendered.find("#loading-dataset").find(LoadingSpinner).exists()).toBe(true);
-        expect(rendered.findAll(TreeSelect).length).toBe(0);
-        expect(rendered.find(Modal).findAll("button").length).toBe(0);
-        expect(rendered.findAll("h4").length).toBe(0);
-        expectTranslatedWithStoreType(rendered.find("p"),
+        expect(rendered.findComponent("#loading-dataset").findComponent(LoadingSpinner).exists()).toBe(true);
+        expect(rendered.findAllComponents(TreeSelect).length).toBe(0);
+        expect(rendered.findComponent(Modal).findAllComponents("button").length).toBe(0);
+        expect(rendered.findAllComponents("h4").length).toBe(0);
+        expectTranslatedWithStoreType(rendered.findComponent("p"),
             "Importing files - this may take several minutes. Please do not close your browser.",
             "Importation de fichiers - cela peut prendre plusieurs minutes. Veuillez ne pas fermer votre navigateur.",
             "Importação de ficheiros - isto pode demorar vários minutos. Por favor, não feche o seu navegador.",
@@ -651,8 +651,8 @@ describe("select dataset", () => {
         await Vue.nextTick();
         await Vue.nextTick();
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.findComponent("#loading-dataset").exists()).toBe(false);
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
     });
 
     it("current dataset is not preselected if there is no selectedDataset", async () => {
@@ -662,7 +662,7 @@ describe("select dataset", () => {
             stubs: ["tree-select"]
         });
         
-        rendered.find("button").trigger("click");
+        rendered.findComponent("button").trigger("click");
         expect(rendered.vm.$data.newDatasetId).toBe(null);
     });
 
@@ -674,7 +674,7 @@ describe("select dataset", () => {
         });
         store.state.adr.datasets = [fakeRawDatasets[0]]
         
-        rendered.find("button").trigger("click");
+        rendered.findComponent("button").trigger("click");
         expect(rendered.vm.$data.newDatasetId).toBe(null);
         store.state.adr.datasets = fakeRawDatasets
         expect(rendered.vm.$data.newDatasetId).toBe("id2");
@@ -687,10 +687,10 @@ describe("select dataset", () => {
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]
         });
-        await rendered.find("button").trigger("click");
+        await rendered.findComponent("button").trigger("click");
 
         rendered.setData({newDatasetId: "id2"});
-        const selectRelease = rendered.find(SelectRelease)
+        const selectRelease = rendered.findComponent(SelectRelease)
         expect(selectRelease.props("datasetId")).toBe("id2");
         expect(selectRelease.props("open")).toBe(true);
     });
@@ -702,11 +702,11 @@ describe("select dataset", () => {
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]
         });
-        await rendered.find("button").trigger("click");
+        await rendered.findComponent("button").trigger("click");
 
         rendered.setData({newDatasetId: "id2", valid: false});
-        const selectRelease = rendered.find(SelectRelease)
-        const importBtn = rendered.find("#importBtn")
+        const selectRelease = rendered.findComponent(SelectRelease)
+        const importBtn = rendered.findComponent("#importBtn")
         expect(importBtn.attributes("disabled")).toBe("disabled");
         await selectRelease.vm.$emit("valid", true);
         expect(importBtn.attributes("disabled")).toBeUndefined();
@@ -719,10 +719,10 @@ describe("select dataset", () => {
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]
         });
-        await rendered.find("button").trigger("click");
+        await rendered.findComponent("button").trigger("click");
 
         rendered.setData({newDatasetId: "id2"});
-        const selectRelease = rendered.find(SelectRelease)
+        const selectRelease = rendered.findComponent(SelectRelease)
         await selectRelease.vm.$emit("selected-dataset-release", fakeRelease);
         expect(rendered.vm.$data.newDatasetRelease).toStrictEqual(fakeRelease)
     });
@@ -732,28 +732,28 @@ describe("select dataset", () => {
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]
         });
-        const editBtn = rendered.find("button")
+        const editBtn = rendered.findComponent("button")
         editBtn.trigger("click");
-        expect(rendered.find(Modal).props("open")).toBe(true);
+        expect(rendered.findComponent(Modal).props("open")).toBe(true);
         rendered.setData({newDatasetId: "id2"});
-        const importBtn = rendered.find(Modal).find("button")
+        const importBtn = rendered.findComponent(Modal).findComponent("button")
         importBtn.trigger("click");
-        expect(rendered.find(ResetConfirmation).props("open")).toBe(true);
-        const saveBtn = rendered.find(ResetConfirmation).find("button");
+        expect(rendered.findComponent(ResetConfirmation).props("open")).toBe(true);
+        const saveBtn = rendered.findComponent(ResetConfirmation).findComponent("button");
         expectTranslatedWithStoreType(saveBtn, "Save version and keep editing",
             "Sauvegarder la version et continuer à modifier", "Guardar versão e continuar a editar",
             store);
         saveBtn.trigger("click");
         store.state.projects.currentVersion = {id: "id1"} as any;
-        expect(rendered.find(ResetConfirmation).exists()).toBe(false);
-        expect(rendered.find("#loading-dataset").find(LoadingSpinner).exists()).toBe(true);
+        expect(rendered.findComponent(ResetConfirmation).exists()).toBe(false);
+        expect(rendered.findComponent("#loading-dataset").findComponent(LoadingSpinner).exists()).toBe(true);
         await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.findComponent("#loading-dataset").exists()).toBe(false);
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
     });
 
     it("renders reset confirmation dialog when changing selected dataset and closes if click cancel", async () => {
@@ -761,20 +761,20 @@ describe("select dataset", () => {
         const rendered = mount(SelectDataset, {
             store, stubs: ["tree-select"]
         });
-        const editBtn = rendered.find("button")
+        const editBtn = rendered.findComponent("button")
         await editBtn.trigger("click");
-        expect(rendered.find(Modal).props("open")).toBe(true);
+        expect(rendered.findComponent(Modal).props("open")).toBe(true);
         rendered.setData({newDatasetId: "id2"});
-        const importBtn = rendered.find(Modal).find("button")
+        const importBtn = rendered.findComponent(Modal).findComponent("button")
         await importBtn.trigger("click");
-        expect(rendered.find(ResetConfirmation).props("open")).toBe(true);
-        const cancelBtn = rendered.find(ResetConfirmation).findAll("button").at(1);
+        expect(rendered.findComponent(ResetConfirmation).props("open")).toBe(true);
+        const cancelBtn = rendered.findComponent(ResetConfirmation).findAllComponents("button")[1];
         expectTranslatedWithStoreType(cancelBtn, "Cancel editing",
             "Annuler l'édition", "Cancelar edição", store);
         await cancelBtn.trigger("click");
-        expect(rendered.find(ResetConfirmation).exists()).toBe(false);
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.findComponent(ResetConfirmation).exists()).toBe(false);
+        expect(rendered.findComponent("#loading-dataset").exists()).toBe(false);
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
     });
 
     it("imports baseline files if they exist", async () => {
@@ -788,17 +788,17 @@ describe("select dataset", () => {
             }
         });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
-        rendered.find("button").trigger("click");
+        rendered.findComponent("button").trigger("click");
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
         rendered.setData({newDatasetId: "id1"})
-        rendered.find(Modal).find("button").trigger("click");
+        rendered.findComponent(Modal).findComponent("button").trigger("click");
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
 
         await Vue.nextTick();
 
@@ -809,8 +809,8 @@ describe("select dataset", () => {
         await Vue.nextTick(); // once for baseline actions to return
         await Vue.nextTick(); // once for survey actions to return
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.findComponent("#loading-dataset").exists()).toBe(false);
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
     });
 
     it("imports baseline files does not trigger confirmation dialog when on data exploration mode", async () => {
@@ -824,17 +824,17 @@ describe("select dataset", () => {
             }
         });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
-        rendered.find("button").trigger("click");
+        rendered.findComponent("button").trigger("click");
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
         rendered.setData({newDatasetId: "id1"})
-        rendered.find(Modal).find("button").trigger("click");
+        rendered.findComponent(Modal).findComponent("button").trigger("click");
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
 
         await Vue.nextTick();
 
@@ -845,8 +845,8 @@ describe("select dataset", () => {
         await Vue.nextTick(); // once for baseline actions to return
         await Vue.nextTick(); // once for survey actions to return
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.findComponent("#loading-dataset").exists()).toBe(false);
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
     });
 
     it("does not import baseline file if it doesn't exist", async () => {
@@ -858,17 +858,17 @@ describe("select dataset", () => {
             }
         });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
-        rendered.find("button").trigger("click");
+        rendered.findComponent("button").trigger("click");
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
         rendered.setData({newDatasetId: "id1"});
-        rendered.find(Modal).find("button").trigger("click");
+        rendered.findComponent(Modal).findComponent("button").trigger("click");
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
 
         await Vue.nextTick();
 
@@ -880,8 +880,8 @@ describe("select dataset", () => {
         // await just one tick for baseline actions to return, survey actions will not fire
         // because shape is not present
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.findComponent("#loading-dataset").exists()).toBe(false);
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
     });
 
     it("does not import baseline file if user does not have permission (ie, relevant dataset in datasets has no resources)", async () => {
@@ -894,17 +894,17 @@ describe("select dataset", () => {
             }
         );
         const rendered = mount(SelectDataset, { store, stubs: ["tree-select"] });
-        rendered.find("button").trigger("click");
+        rendered.findComponent("button").trigger("click");
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
         rendered.setData({ newDatasetId: "id1" })
-        rendered.find(Modal).find("button").trigger("click");
+        rendered.findComponent(Modal).findComponent("button").trigger("click");
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
 
         await Vue.nextTick();
 
@@ -915,8 +915,8 @@ describe("select dataset", () => {
         await Vue.nextTick(); // once for baseline actions to return
         await Vue.nextTick(); // once for survey actions to return
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.findComponent("#loading-dataset").exists()).toBe(false);
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
     });
 
     it("imports survey and program files if they exist and shape file exists", async () => {
@@ -932,13 +932,13 @@ describe("select dataset", () => {
         });
 
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
-        rendered.find("button").trigger("click");
+        rendered.findComponent("button").trigger("click");
 
-        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
         rendered.setData({newDatasetId: "id1"});
-        rendered.find(Modal).find("button").trigger("click");
+        rendered.findComponent(Modal).findComponent("button").trigger("click");
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
 
         await Vue.nextTick();
         await Vue.nextTick();
@@ -950,8 +950,8 @@ describe("select dataset", () => {
 
         await Vue.nextTick();
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.findComponent("#loading-dataset").exists()).toBe(false);
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
     });
 
     it("does not import survey and program file if it doesn't exist", async () => {
@@ -964,13 +964,13 @@ describe("select dataset", () => {
             }
         });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
-        rendered.find("button").trigger("click");
+        rendered.findComponent("button").trigger("click");
 
-        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
         rendered.setData({newDatasetId: "id1"});
-        rendered.find(Modal).find("button").trigger("click");
+        rendered.findComponent(Modal).findComponent("button").trigger("click");
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
 
         await Vue.nextTick();
         await Vue.nextTick();
@@ -982,8 +982,8 @@ describe("select dataset", () => {
 
         await Vue.nextTick();
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.findComponent("#loading-dataset").exists()).toBe(false);
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
     });
 
     it("does not import any survey and program files if shape file doesn't exist", async () => {
@@ -997,15 +997,15 @@ describe("select dataset", () => {
             }
         });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
-        rendered.find("button").trigger("click");
+        rendered.findComponent("button").trigger("click");
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
         rendered.setData({newDatasetId: "id1"});
-        rendered.find(Modal).find("button").trigger("click");
+        rendered.findComponent(Modal).findComponent("button").trigger("click");
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
 
         await Vue.nextTick();
 
@@ -1017,8 +1017,8 @@ describe("select dataset", () => {
         // await just one tick for baseline actions to return, survey actions will not fire
         // because shape is not present
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.findComponent("#loading-dataset").exists()).toBe(false);
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
     });
 
     it("imports survey and program files if pre-existing shape file is present", async () => {
@@ -1034,15 +1034,15 @@ describe("select dataset", () => {
         });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
 
-        rendered.find("button").trigger("click");
+        rendered.findComponent("button").trigger("click");
 
-        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
         rendered.setData({newDatasetId: "id1"});
-        rendered.find(Modal).find("button").trigger("click");
+        rendered.findComponent(Modal).findComponent("button").trigger("click");
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
 
         await Vue.nextTick();
         await Vue.nextTick();
@@ -1053,15 +1053,15 @@ describe("select dataset", () => {
 
         await Vue.nextTick();
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.findComponent("#loading-dataset").exists()).toBe(false);
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
     });
 
     it("stops polling dataset metadata on beforeDestroy", () => {
         const rendered = shallowMount(SelectDataset, {store: getStore()});
         const pollingId = (rendered.vm as any).pollingId;
         const spy = jest.spyOn(window, "clearInterval");
-        rendered.destroy();
+        rendered.unmount();
         expect(spy.mock.calls[0][0]).toBe(pollingId);
     });
 
@@ -1070,13 +1070,13 @@ describe("select dataset", () => {
             datasets: [{...fakeRawDatasets[0], resources: [shape, survey]}]
         });
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
-        rendered.find("button").trigger("click");
+        rendered.findComponent("button").trigger("click");
         await Vue.nextTick();
 
-        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
         rendered.setData({newDatasetId: ""});
 
-        expect(rendered.find(Modal).find("button").attributes("disabled")).toBe("disabled");
+        expect(rendered.findComponent(Modal).findComponent("button").attributes("disabled")).toBe("disabled");
     });
 
     it("does not start polling if release is selected", async () => {
@@ -1092,22 +1092,22 @@ describe("select dataset", () => {
         const clearInterval = jest.spyOn(window, "clearInterval");
         const setInterval = jest.spyOn(window, "setInterval");
 
-        rendered.find("button").trigger("click");
+        rendered.findComponent("button").trigger("click");
 
-        const treeSelect = rendered.find(TreeSelect)
+        const treeSelect = rendered.findComponent(TreeSelect)
         expect(treeSelect.exists()).toBe(true);
         treeSelect.vm.$emit("select", "id1")
 
-        await rendered.find(Modal).find("button").trigger("click");
+        await rendered.findComponent(Modal).findComponent("button").trigger("click");
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
 
         await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.findComponent("#loading-dataset").exists()).toBe(false);
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
         expect(clearInterval.mock.calls.length).toBe(0);
         expect(setInterval.mock.calls.length).toBe(0);
 
@@ -1127,20 +1127,20 @@ describe("select dataset", () => {
         const setInterval = jest.spyOn(window, "setInterval");
         const pollingId = (rendered.vm as any).pollingId;
 
-        rendered.find("button").trigger("click");
+        rendered.findComponent("button").trigger("click");
 
-        const treeSelect = rendered.find(TreeSelect)
+        const treeSelect = rendered.findComponent(TreeSelect)
         expect(treeSelect.exists()).toBe(true);
         treeSelect.vm.$emit("select", "id1")
 
-        await rendered.find(Modal).find("button").trigger("click");
+        await rendered.findComponent(Modal).findComponent("button").trigger("click");
 
         await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
 
-        expect(rendered.find("#loading-dataset").exists()).toBe(false);
-        expect(rendered.find(Modal).props("open")).toBe(false);
+        expect(rendered.findComponent("#loading-dataset").exists()).toBe(false);
+        expect(rendered.findComponent(Modal).props("open")).toBe(false);
         expect(clearInterval.mock.calls[0][0]).toBe(pollingId);
         expect(setInterval.mock.calls[0][0]).toBe((rendered.vm as any).refreshDatasetMetadata);
         expect(setInterval.mock.calls[0][1]).toBe(10000);
@@ -1187,13 +1187,13 @@ describe("select dataset", () => {
         );
 
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
-        await rendered.find("button").trigger("click");
+        await rendered.findComponent("button").trigger("click");
 
-        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
         rendered.setData({newDatasetId: "id1"})
-        await rendered.find(Modal).find("button").trigger("click");
+        await rendered.findComponent(Modal).findComponent("button").trigger("click");
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
         expect((baselineActions.deleteAll as Mock)).not.toHaveBeenCalled()
     });
 
@@ -1212,13 +1212,13 @@ describe("select dataset", () => {
         );
 
         const rendered = mount(SelectDataset, {store, stubs: ["tree-select"]});
-        await rendered.find("button").trigger("click");
+        await rendered.findComponent("button").trigger("click");
 
-        expect(rendered.findAll(TreeSelect).length).toBe(1);
+        expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
         rendered.setData({newDatasetId: "id1"})
-        await rendered.find(Modal).find("button").trigger("click");
+        await rendered.findComponent(Modal).findComponent("button").trigger("click");
 
-        expect(rendered.findAll(LoadingSpinner).length).toBe(1);
+        expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
         expect((baselineActions.deleteAll as Mock)).toHaveBeenCalled()
     }
 

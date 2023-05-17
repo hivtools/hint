@@ -82,7 +82,7 @@ describe("adr integration", () => {
     it("does not render if not logged in", () => {
         const store = createStore('', null, {currentUser: 'guest'});
         const rendered = shallowMount(ADRIntegration, {store});
-        expect(rendered.findAll("div").length).toBe(0);
+        expect(rendered.findAllComponents("div").length).toBe(0);
     });
 
     it("fetches ADR key if logged in", () => {
@@ -98,17 +98,17 @@ describe("adr integration", () => {
 
     it("renders adr-key widget", () => {
         const rendered = shallowMount(ADRIntegration, {store: createStore()});
-        expect(rendered.findAll(ADRKey).length).toBe(1);
+        expect(rendered.findAllComponents(ADRKey).length).toBe(1);
     });
 
     it("does not render select dataset widget if key is not present", () => {
         const rendered = shallowMount(ADRIntegration, {store: createStore()});
-        expect(rendered.findAll(SelectDataset).length).toBe(0);
+        expect(rendered.findAllComponents(SelectDataset).length).toBe(0);
     });
 
     it("renders select dataset widget if key is present", () => {
         const rendered = shallowMount(ADRIntegration, {store: createStore("123")});
-        expect(rendered.findAll(SelectDataset).length).toBe(1);
+        expect(rendered.findAllComponents(SelectDataset).length).toBe(1);
     });
 
     it("fetches datasets when key changes", () => {
@@ -127,11 +127,11 @@ describe("adr integration", () => {
                 directives: {"tooltip": mockTooltip}
             });
         const store = renders.vm.$store
-        expect(renders.findAll(ADRKey).length).toBe(1);
-        const spans = (renders.find("#adr-capacity").findAll("span"))
+        expect(renders.findAllComponents(ADRKey).length).toBe(1);
+        const spans = (renders.findComponent("#adr-capacity").findAllComponents("span"))
 
-        expectTranslated(spans.at(0), "ADR access level:", "Niveau d'accès ADR:", "Nível de acesso ADR:", store)
-        expectTranslated(spans.at(1), "Read & Write", "Lecture et écriture", "Leitura e Escrita", store)
+        expectTranslated(spans[0], "ADR access level:", "Niveau d'accès ADR:", "Nível de acesso ADR:", store)
+        expectTranslated(spans[1], "Read & Write", "Lecture et écriture", "Leitura e Escrita", store)
         expect(mockTooltip.mock.calls[0][1].value).toBe("You have read and write permissions for this dataset and may push output files to ADR");
     });
 
@@ -144,11 +144,11 @@ describe("adr integration", () => {
                 directives: {"tooltip": mockTooltip}
             });
         const store = renders.vm.$store
-        expect(renders.findAll(ADRKey).length).toBe(1);
-        const spans = (renders.find("#adr-capacity").findAll("span"))
+        expect(renders.findAllComponents(ADRKey).length).toBe(1);
+        const spans = (renders.findComponent("#adr-capacity").findAllComponents("span"))
 
-        expectTranslated(spans.at(0), "ADR access level:", "Niveau d'accès ADR:","Nível de acesso ADR:", store)
-        expectTranslated(spans.at(1), "Read only", "Lecture seule", "Apenas leitura", store)
+        expectTranslated(spans[0], "ADR access level:", "Niveau d'accès ADR:","Nível de acesso ADR:", store)
+        expectTranslated(spans[1], "Read only", "Lecture seule", "Apenas leitura", store)
         expect(mockTooltip.mock.calls[0][1].value).toBe("You do not currently have write permissions for this dataset and will be unable to upload files to ADR");
     });
 
@@ -226,6 +226,6 @@ describe("adr integration", () => {
     it("does not render permission displayText if dataset is not selected", () => {
         const store = createStore("123", null, {})
         const renders = shallowMount(ADRIntegration, {store});
-        expect(renders.find("#adr-capacity").exists()).toBeFalsy()
+        expect(renders.findComponent("#adr-capacity").exists()).toBeFalsy()
     });
 });

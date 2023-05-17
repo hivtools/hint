@@ -22,24 +22,24 @@ describe("Map legend component", () => {
 
     const expectLevels = (levels: WrapperArray<Vue>) => {
         expect(levels.length).toBe(6);
-        expect(levels.at(0).text()).toBe("2");
-        expect(levels.at(1).text()).toBe("1.8");
-        expect(levels.at(2).text()).toBe("1.6");
-        expect(levels.at(3).text()).toBe("1.4");
-        expect(levels.at(4).text()).toBe("1.2");
-        expect(levels.at(5).text()).toBe("1");
+        expect(levels[0].text()).toBe("2");
+        expect(levels[1].text()).toBe("1.8");
+        expect(levels[2].text()).toBe("1.6");
+        expect(levels[3].text()).toBe("1.4");
+        expect(levels[4].text()).toBe("1.2");
+        expect(levels[5].text()).toBe("1");
     };
 
     const expectIcons = (icons: WrapperArray<Vue>) => {
-        expect(icons.at(5).element.style
+        expect((icons[5].element as HTMLElement).style
             .getPropertyValue("background")).toBe("rgb(255, 255, 255)");
-        expect(icons.at(1).element.style
+        expect((icons[1].element as HTMLElement).style
             .getPropertyValue("background")).toBe("rgb(64, 64, 64)");
-        expect(icons.at(0).element.style
+        expect((icons[0].element as HTMLElement).style
             .getPropertyValue("background")).toBe("rgb(0, 0, 0)");
     };
 
-    const propsData = {
+    const props = {
         metadata: {
             max: 2,
             min: 1,
@@ -58,35 +58,35 @@ describe("Map legend component", () => {
         colourRange
     };
 
-    const wrapper = shallowMount(MapLegend, {propsData});
+    const wrapper = shallowMount(MapLegend, {props});
 
     it("renders the label", () => {
-        const label = wrapper.find("label");
+        const label = wrapper.findComponent("label");
         expect(label.text()).toBe("indicator");
     });
 
     it("calculates 6 levels from min to max", () => {
-        const levels = wrapper.findAll(".level");
+        const levels = wrapper.findAllComponents(".level");
         expectLevels(levels);
     });
 
     it("renders icons with colors", () => {
-        const icons = wrapper.findAll("i");
+        const icons = wrapper.findAllComponents("i");
         expectIcons(icons);
     });
 
     it("renders MapAdjustScale as expected", () => {
-        const adjust = wrapper.find(MapAdjustScale);
+        const adjust = wrapper.findComponent(MapAdjustScale);
         expect(adjust.props("name")).toBe("colour");
         expect(adjust.props("show")).toBe(false);
-        expect(adjust.props("scale")).toBe(propsData.colourScale);
-        expect(adjust.props("metadata")).toBe(propsData.metadata);
+        expect(adjust.props("scale")).toBe(props.colourScale);
+        expect(adjust.props("metadata")).toBe(props.metadata);
         expect(adjust.props("step")).toBe(0.1);
     });
 
     it("calculates 6 levels from min to max with negative min", () => {
         const rangeWrapper = shallowMount(MapLegend, {
-            propsData: {
+            props: {
                 metadata: {
                     max: 2,
                     min: 1,
@@ -100,20 +100,20 @@ describe("Map legend component", () => {
                 colourRange: {min: -0.45, max: 0}
             }
         });
-        const levels = rangeWrapper.findAll(".level");
+        const levels = rangeWrapper.findAllComponents(".level");
         expect(levels.length).toBe(6);
 
-        expect(levels.at(0).text()).toBe("0");
-        expect(levels.at(1).text()).toBe("-0.09");
-        expect(levels.at(2).text()).toBe("-0.18");
-        expect(levels.at(3).text()).toBe("-0.27");
-        expect(levels.at(4).text()).toBe("-0.36");
-        expect(levels.at(5).text()).toBe("-0.45");
+        expect(levels[0].text()).toBe("0");
+        expect(levels[1].text()).toBe("-0.09");
+        expect(levels[2].text()).toBe("-0.18");
+        expect(levels[3].text()).toBe("-0.27");
+        expect(levels[4].text()).toBe("-0.36");
+        expect(levels[5].text()).toBe("-0.45");
     });
 
     it("calculates 6 levels from min to max with percentage format", () => {
         const rangeWrapper = shallowMount(MapLegend, {
-            propsData: {
+            props: {
                 metadata: {
                     max: 2,
                     min: 1,
@@ -126,20 +126,20 @@ describe("Map legend component", () => {
                 colourRange: {min: 1, max: 2}
             }
         });
-        const levels = rangeWrapper.findAll(".level");
+        const levels = rangeWrapper.findAllComponents(".level");
         expect(levels.length).toBe(6);
 
-        expect(levels.at(0).text()).toBe("200.00%");
-        expect(levels.at(1).text()).toBe("180.00%");
-        expect(levels.at(2).text()).toBe("160.00%");
-        expect(levels.at(3).text()).toBe("140.00%");
-        expect(levels.at(4).text()).toBe("120.00%");
-        expect(levels.at(5).text()).toBe("100.00%");
+        expect(levels[0].text()).toBe("200.00%");
+        expect(levels[1].text()).toBe("180.00%");
+        expect(levels[2].text()).toBe("160.00%");
+        expect(levels[3].text()).toBe("140.00%");
+        expect(levels[4].text()).toBe("120.00%");
+        expect(levels[5].text()).toBe("100.00%");
     });
 
     it("calculates 6 levels from min to max with 500 scale", () => {
         const rangeWrapper = shallowMount(MapLegend, {
-            propsData: {
+            props: {
                 metadata: {
                     max: 2,
                     min: 1,
@@ -152,20 +152,20 @@ describe("Map legend component", () => {
                 colourRange: {min: 1, max: 2}
             }
         });
-        const levels = rangeWrapper.findAll(".level");
+        const levels = rangeWrapper.findAllComponents(".level");
         expect(levels.length).toBe(6);
 
-        expect(levels.at(0).text()).toBe("1.0k");
-        expect(levels.at(1).text()).toBe("900");
-        expect(levels.at(2).text()).toBe("800");
-        expect(levels.at(3).text()).toBe("700");
-        expect(levels.at(4).text()).toBe("600");
-        expect(levels.at(5).text()).toBe("500");
+        expect(levels[0].text()).toBe("1.0k");
+        expect(levels[1].text()).toBe("900");
+        expect(levels[2].text()).toBe("800");
+        expect(levels[3].text()).toBe("700");
+        expect(levels[4].text()).toBe("600");
+        expect(levels[5].text()).toBe("500");
     });
 
     it("calculates single level when max equals min", () => {
         const rangeWrapper = shallowMount(MapLegend, {
-            propsData: {
+            props: {
                 metadata: {
                     max: 2,
                     min: 1,
@@ -179,21 +179,21 @@ describe("Map legend component", () => {
                 colourRange: {min: 3, max: 3}
             }
         });
-        const levels = rangeWrapper.findAll(".level");
+        const levels = rangeWrapper.findAllComponents(".level");
         expect(levels.length).toBe(1);
-        expect(levels.at(0).text()).toBe("3");
+        expect(levels[0].text()).toBe("3");
 
-        const icons = rangeWrapper.findAll("i");
+        const icons = rangeWrapper.findAllComponents("i");
         expect(icons.length).toBe(1);
-        expect(icons.at(0).element.style
+        expect((icons[0].element as HTMLElement).style
             .getPropertyValue("background")).toBe("rgb(255, 255, 255)");
     });
 
     it("does not render adjust link if no colour scale", () => {
-        expect(wrapper.find(".adjust-scale").exists()).toBe(true);
+        expect(wrapper.findComponent(".adjust-scale").exists()).toBe(true);
 
         const noScaleWrapper = shallowMount(MapLegend, {
-            propsData: {
+            props: {
                 metadata: {
                     max: 10,
                     min: 0,
@@ -208,12 +208,12 @@ describe("Map legend component", () => {
                 colourRange
             },
         });
-        expect(noScaleWrapper.find("#adjust-scale").exists()).toBe(false);
+        expect(noScaleWrapper.findComponent("#adjust-scale").exists()).toBe(false);
     });
 
     it("renders icons with colors, with scale inverted", () => {
         const invertedWrapper = shallowMount(MapLegend, {
-            propsData: {
+            props: {
                 metadata: {
                     max: 2,
                     min: 1,
@@ -231,29 +231,29 @@ describe("Map legend component", () => {
             }
         });
 
-        const icons = invertedWrapper.findAll("i");
-        expect(icons.at(5).element.style
+        const icons = invertedWrapper.findAllComponents("i");
+        expect((icons[5].element as HTMLElement).style
             .getPropertyValue("background")).toBe("rgb(0, 0, 0)");
-        expect(icons.at(1).element.style
+        expect((icons[1].element as HTMLElement).style
             .getPropertyValue("background")).toBe("rgb(226, 226, 226)");
-        expect(icons.at(0).element.style
+        expect((icons[0].element as HTMLElement).style
             .getPropertyValue("background")).toBe("rgb(255, 255, 255)");
 
     });
 
     it("returns no levels if no metadata", () => {
         const emptyWrapper = shallowMount(MapLegend, {
-            propsData: {
+            props: {
                 metadata: null
             }
         });
-        expect(emptyWrapper.findAll("i").length).toBe(0);
-        expect(emptyWrapper.findAll(".level").length).toBe(0);
+        expect(emptyWrapper.findAllComponents("i").length).toBe(0);
+        expect(emptyWrapper.findAllComponents(".level").length).toBe(0);
     });
 
     it("formats big numbers", () => {
         const wrapper = shallowMount(MapLegend, {
-            propsData: {
+            props: {
                 metadata: {
                     max: 60000,
                     min: 1000,
@@ -270,9 +270,9 @@ describe("Map legend component", () => {
                 colourRange: {max: 60000, min: 1000}
             }
         });
-        const levels = wrapper.findAll(".level");
-        expect(levels.at(0).text()).toBe("60k");
-        expect(levels.at(5).text()).toBe("1.0k");
+        const levels = wrapper.findAllComponents(".level");
+        expect(levels[0].text()).toBe("60k");
+        expect(levels[5].text()).toBe("1.0k");
     });
 
     it("toggles show adjust scale", () => {
@@ -281,7 +281,7 @@ describe("Map legend component", () => {
         };
 
         const wrapper = shallowMount(MapLegend, {
-            propsData: {
+            props: {
                 metadata: {
                     max: 20,
                     min: 0,
@@ -298,25 +298,25 @@ describe("Map legend component", () => {
             store
         });
 
-        const adjust = wrapper.find(MapAdjustScale);
+        const adjust = wrapper.findComponent(MapAdjustScale);
 
-        const showAdjust = wrapper.find(".adjust-scale a");
-        expectTranslated(showAdjust.find("span"), "Adjust scale", "Ajuster l'échelle",
+        const showAdjust = wrapper.findComponent(".adjust-scale a");
+        expectTranslated(showAdjust.findComponent("span"), "Adjust scale", "Ajuster l'échelle",
             "Ajustar a escala", store);
 
         showAdjust.trigger("click");
         expect(adjust.props().show).toBe(true);
-        expectTranslated(showAdjust.find("span"), "Done", "Terminé","Concluído", store);
+        expectTranslated(showAdjust.findComponent("span"), "Done", "Terminé","Concluído", store);
 
         showAdjust.trigger("click");
         expect(adjust.props().show).toBe(false);
-        expectTranslated(showAdjust.find("span"), "Adjust scale", "Ajuster l'échelle",
+        expectTranslated(showAdjust.findComponent("span"), "Adjust scale", "Ajuster l'échelle",
             "Ajustar a escala", store);
     });
 
     it("emits update event when scale changes", () => {
         const wrapper = shallowMount(MapLegend, {
-            propsData: {
+            props: {
                 metadata: {
                     max: 20,
                     min: 1,
@@ -338,10 +338,10 @@ describe("Map legend component", () => {
             customMax: 1
         };
 
-        const adjust = wrapper.find(MapAdjustScale);
+        const adjust = wrapper.findComponent(MapAdjustScale);
         adjust.vm.$emit("update", newColourScale);
 
-        expect(wrapper.emitted("update").length).toBe(1);
-        expect(wrapper.emitted("update")[0][0]).toBe(newColourScale);
+        expect(wrapper.emitted("update")!.length).toBe(1);
+        expect(wrapper.emitted("update")![0][0]).toBe(newColourScale);
     });
 });

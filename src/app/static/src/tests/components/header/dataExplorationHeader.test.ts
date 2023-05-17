@@ -23,14 +23,14 @@ describe(`Data Exploration header`, () => {
 
     const getWrapper = (user: string = "someone@email.com", store?: Store<DataExplorationState>) => {
         return shallowMount(DataExplorationHeader, {
-            propsData: {user, title: "Naomi Data Exploration"},
+            props: {user, title: "Naomi Data Exploration"},
             store: store || createStore({currentUser: user})
         })
     }
 
     it('can render header title', () => {
         const wrapper = getWrapper()
-        const title = wrapper.find(".navbar-header-secondary")
+        const title = wrapper.findComponent(".navbar-header-secondary")
         expect(title.classes()).toEqual(["navbar-header-secondary"])
         expect(title.text()).toBe("Naomi Data Exploration")
     });
@@ -39,7 +39,7 @@ describe(`Data Exploration header`, () => {
         const currentUser = "someone@email.com";
         const store = createStore({currentUser});
         const wrapper = getWrapper(currentUser, store);
-        const helpFile = wrapper.find("#helpFile")
+        const helpFile = wrapper.findComponent("#helpFile")
         expect(helpFile.attributes("href")).toBe(
             "https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf")
         wrapper.vm.$store.state.language = Language.fr
@@ -52,8 +52,8 @@ describe(`Data Exploration header`, () => {
         const currentUser = "someone@email.com";
         const store = createStore({currentUser});
         const wrapper = getWrapper(currentUser, store);
-        const logoutLink = wrapper.find("a[href='/logout']");
-        const loginLink = wrapper.findAll("a[href='/login?redirectTo=explore']");
+        const logoutLink = wrapper.findComponent("a[href='/logout']");
+        const loginLink = wrapper.findAllComponents("a[href='/login?redirectTo=explore']");
         expectTranslatedWithStoreType(logoutLink, "Logout", "Fermer une session", "Sair", store);
         expect(loginLink.length).toBe(0);
     });
@@ -62,27 +62,27 @@ describe(`Data Exploration header`, () => {
         const currentUser = "someone@email.com";
         const store = createStore({currentUser});
         const wrapper = getWrapper(currentUser, store);
-        const loginInfo = wrapper.find("span");
+        const loginInfo = wrapper.findComponent("span");
         expectTranslatedWithStoreType(loginInfo, "Logged in as someone@email.com",
             "Connecté en tant que someone@email.com", "Sessão iniciada como someone@email.com", store);
     });
 
     it("renders language menu", () => {
         const wrapper = getWrapper()
-        expect(wrapper.find(LanguageMenu).exists()).toBe(true)
+        expect(wrapper.findComponent(LanguageMenu).exists()).toBe(true)
     });
 
     it("renders hintr version", () => {
         const wrapper = getWrapper()
-        expect(wrapper.find(HintrVersionMenu).exists()).toBe(true);
+        expect(wrapper.findComponent(HintrVersionMenu).exists()).toBe(true);
     })
 
     it("renders Run model link as expected", () => {
         const store = createStore();
         const wrapper = getWrapper("someone@email.com", store);
 
-        expect(wrapper.find("a").attributes("href")).toBe("/")
-        expectTranslatedWithStoreType(wrapper.find("a"),
+        expect(wrapper.findComponent("a").attributes("href")).toBe("/")
+        expectTranslatedWithStoreType(wrapper.findComponent("a"),
             "Run model", "Exécuter le modèle",
             "Executar modelo", store)
     });

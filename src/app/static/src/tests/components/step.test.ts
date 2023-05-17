@@ -1,12 +1,10 @@
-import {createLocalVue, shallowMount} from '@vue/test-utils';
+import {shallowMount} from '@vue/test-utils';
 import Vuex from "vuex";
 import Vue from 'vue';
 import Step from "../../app/components/Step.vue";
 import {emptyState} from "../../app/root";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../testHelpers";
-
-const localVue = createLocalVue();
 
 describe("Step component", () => {
 
@@ -15,14 +13,13 @@ describe("Step component", () => {
 
     it("renders step", () => {
         const wrapper = shallowMount(Step, {
-            localVue,
             store,
-            propsData: {
+            props: {
                 textKey: "uploadInputs"
             }
         });
 
-        expectTranslated(wrapper.find("div"),
+        expectTranslated(wrapper.findComponent("div"),
             "Upload inputs",
             "Télécharger les entrées",
             "Carregar entradas", store);
@@ -30,8 +27,7 @@ describe("Step component", () => {
 
     it("renders enabled step", () => {
         const wrapper = shallowMount(Step, {
-            localVue,
-            propsData: {
+            props: {
                 textKey: "uploadInputs",
                 enabled: true
             }
@@ -42,8 +38,7 @@ describe("Step component", () => {
 
     it("renders active step", () => {
         const wrapper = shallowMount(Step, {
-            localVue,
-            propsData: {
+            props: {
                 textKey: "uploadInputs",
                 active: true,
                 enabled: true
@@ -51,26 +46,24 @@ describe("Step component", () => {
         });
 
         expect(wrapper.classes()).toStrictEqual(["col", "step", "active", "enabled"]);
-        expect(wrapper.find("button").classes()).toStrictEqual(["btn", "btn-white"]);
+        expect(wrapper.findComponent("button").classes()).toStrictEqual(["btn", "btn-white"]);
     });
 
     it("renders inactive step", () => {
         const wrapper = shallowMount(Step, {
-            localVue,
-            propsData: {
+            props: {
                 textKey: "uploadInputs",
                 active: false
             }
         });
 
         expect(wrapper.classes()).toStrictEqual(["col", "step"]);
-        expect(wrapper.find("button").classes()).toStrictEqual(["btn"]);
+        expect(wrapper.findComponent("button").classes()).toStrictEqual(["btn"]);
     });
 
     it("renders enabled step", () => {
         const wrapper = shallowMount(Step, {
-            localVue,
-            propsData: {
+            props: {
                 textKey: "uploadInputs",
                 enabled: true,
                 number: 2
@@ -78,18 +71,17 @@ describe("Step component", () => {
         });
 
         expect(wrapper.classes()).toStrictEqual(["col", "step", "enabled"]);
-        expect(wrapper.find("button").classes()).toStrictEqual(["btn", "btn-white"]);
-        expect(wrapper.find("button").attributes().disabled).toBeUndefined();
-        wrapper.find("button").trigger("click");
+        expect(wrapper.findComponent("button").classes()).toStrictEqual(["btn", "btn-white"]);
+        expect(wrapper.findComponent("button").attributes().disabled).toBeUndefined();
+        wrapper.findComponent("button").trigger("click");
         Vue.nextTick();
 
-        expect(wrapper.emitted().jump[0][0]).toBe(2);
+        expect(wrapper.emitted("jump")![0][0]).toBe(2);
     });
 
     it("renders complete step", () => {
         const wrapper = shallowMount(Step, {
-            localVue,
-            propsData: {
+            props: {
                 textKey: "uploadInputs",
                 enabled: true,
                 complete: true
@@ -97,19 +89,18 @@ describe("Step component", () => {
         });
 
         expect(wrapper.classes()).toStrictEqual(["col", "step", "complete", "enabled"]);
-        expect(wrapper.find("button").classes()).toStrictEqual(["btn", "btn-red"]);
+        expect(wrapper.findComponent("button").classes()).toStrictEqual(["btn", "btn-red"]);
     });
 
     it("renders disabled step", () => {
         const wrapper = shallowMount(Step, {
-            localVue,
-            propsData: {
+            props: {
                 textKey: "uploadInputs",
                 enabled: false
             }
         });
-        expect(wrapper.find("button").attributes().disabled).toBeDefined();
-        wrapper.find("button").trigger("click");
+        expect(wrapper.findComponent("button").attributes().disabled).toBeDefined();
+        wrapper.findComponent("button").trigger("click");
 
         Vue.nextTick();
         expect(wrapper.emitted().jump).toBeUndefined();

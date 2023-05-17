@@ -27,19 +27,19 @@ describe("Error alert component", () => {
 
     it("renders error message", () => {
         const wrapper = shallowMount(ErrorAlert, {
-            propsData: noJobIdProps,
+            props: noJobIdProps,
             store
         });
 
-        expect(wrapper.find(".error-message").text()).toBe("Error text");
-        expect(wrapper.find("div").classes()).toStrictEqual(["pt-1", "text-danger"])
-        expect(wrapper.findAll("a").length).toBe(0);
-        expect(wrapper.findAll(".error-job-id").length).toBe(0);
+        expect(wrapper.findComponent(".error-message").text()).toBe("Error text");
+        expect(wrapper.findComponent("div").classes()).toStrictEqual(["pt-1", "text-danger"])
+        expect(wrapper.findAllComponents("a").length).toBe(0);
+        expect(wrapper.findAllComponents(".error-job-id").length).toBe(0);
     });
 
     it("renders error value if detail is not present", () => {
         const wrapper = shallowMount(ErrorAlert, {
-            propsData: {
+            props: {
                 error: {
                     error: "TEST ERROR TYPE",
                     detail: null
@@ -48,19 +48,19 @@ describe("Error alert component", () => {
             store
         });
 
-        expect(wrapper.find(".error-message").text()).toBe("TEST ERROR TYPE");
+        expect(wrapper.findComponent(".error-message").text()).toBe("TEST ERROR TYPE");
     });
 
     it("shows job ID if present", () => {
         const wrapper = shallowMount(ErrorAlert, {
-            propsData: jobIdProps,
+            props: jobIdProps,
             store
         });
 
-        expect(wrapper.find(".error-message").text()).toBe("Error text");
-        expect(wrapper.find("div").classes()).toStrictEqual(["pt-1", "text-danger"]);
-        expect(wrapper.find(".error-job-id").text()).toBe("Job ID: 12345abc");
-        const jobId = wrapper.find(".error-job-id").find("span");
+        expect(wrapper.findComponent(".error-message").text()).toBe("Error text");
+        expect(wrapper.findComponent("div").classes()).toStrictEqual(["pt-1", "text-danger"]);
+        expect(wrapper.findComponent(".error-job-id").text()).toBe("Job ID: 12345abc");
+        const jobId = wrapper.findComponent(".error-job-id").findComponent("span");
         expectTranslated(jobId, "Job ID", "ID du job",
             "ID de job", store as any);
     });

@@ -74,8 +74,8 @@ describe("Plotly", () => {
     };
 
     it("invokes Plotly on render with expected parameters", (done) => {
-        const propsData = { chartMetadata, chartData, layoutData };
-        const wrapper = shallowMount(Plotly, { propsData, store });
+        const props = { chartMetadata, chartData, layoutData };
+        const wrapper = shallowMount(Plotly, { props, store });
 
         // Rendering flag should be set while rendering proceeds
         expect((wrapper.vm as any).rendering).toBe(true);
@@ -90,8 +90,8 @@ describe("Plotly", () => {
     });
 
     it("invokes Plotly newPlot when layout subplot rows has changed", (done) => {
-        const propsData = { chartMetadata, chartData, layoutData };
-        const wrapper = shallowMount(Plotly, { propsData, store });
+        const props = { chartMetadata, chartData, layoutData };
+        const wrapper = shallowMount(Plotly, { props, store });
         setTimeout(() => {
             expect(mockPlotlyNewPlot.mock.calls.length).toBe(0);
             wrapper.setProps({
@@ -115,8 +115,8 @@ describe("Plotly", () => {
     });
 
     it("invokes plotly again on data change", (done) => {
-       const propsData = { chartMetadata, chartData, layoutData };
-       const wrapper = shallowMount(Plotly, { propsData, store });
+       const props = { chartMetadata, chartData, layoutData };
+       const wrapper = shallowMount(Plotly, { props, store });
 
        setTimeout(() => {
            wrapper.setProps({
@@ -151,8 +151,8 @@ describe("Plotly", () => {
     });
 
     it("invokes plotly again on layout change", (done) => {
-        const propsData = { chartMetadata, chartData, layoutData };
-        const wrapper = shallowMount(Plotly, { propsData, store });
+        const props = { chartMetadata, chartData, layoutData };
+        const wrapper = shallowMount(Plotly, { props, store });
         setTimeout(() => {
             wrapper.setProps({
                 layoutData: {
@@ -186,23 +186,23 @@ describe("Plotly", () => {
     });
 
     it("does not render loading spinner when rendering flag is false", () => {
-        const propsData = { chartMetadata, chartData, layoutData };
-        const wrapper = shallowMount(Plotly, { propsData, store });
+        const props = { chartMetadata, chartData, layoutData };
+        const wrapper = shallowMount(Plotly, { props, store });
         (wrapper.vm as any).rendering = false;
-        expect( wrapper.find("div.text-center").exists()).toBe(false);
-        expect(wrapper.find("#chart").element.style.visibility).toBe("visible");
+        expect( wrapper.findComponent("div.text-center").exists()).toBe(false);
+        expect((wrapper.findComponent("#chart").element as HTMLElement).style.visibility).toBe("visible");
     });
 
     it("renders loading spinner when rendering flag is true", async () => {
-        const propsData = { chartMetadata, chartData, layoutData };
-        const wrapper = shallowMount(Plotly, { propsData, store });
+        const props = { chartMetadata, chartData, layoutData };
+        const wrapper = shallowMount(Plotly, { props, store });
         (wrapper.vm as any).rendering = true;
         await Vue.nextTick();
-        const spinnerDiv = wrapper.find("div.text-center");
-        expect(spinnerDiv.find(LoadingSpinner).props("size")).toBe("lg");
-        expectTranslated(spinnerDiv.find("h2"), "Loading chart",
+        const spinnerDiv = wrapper.findComponent("div.text-center");
+        expect(spinnerDiv.findComponent(LoadingSpinner).props("size")).toBe("lg");
+        expectTranslated(spinnerDiv.findComponent("h2"), "Loading chart",
             "Chargement du graphique", "Carregando o gráfico", store);
         const html = wrapper.html()
-        expect(wrapper.find("#chart").element.style.visibility).toBe("hidden");
+        expect((wrapper.findComponent("#chart").element as HTMLElement).style.visibility).toBe("hidden");
     });
 });

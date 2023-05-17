@@ -16,33 +16,33 @@ describe("DataSource component", () => {
     const getWrapper = () => {
         const store = new Vuex.Store({state: emptyState()});
         registerTranslations(store);
-        const propsData = {config, datasets, value};
-        return shallowMount(DataSource, {store, propsData});
+        const props = {config, datasets, value};
+        return shallowMount(DataSource, {store, props});
     };
 
     it("renders as expected", () => {
         const wrapper = getWrapper();
-        expectTranslated(wrapper.find("label"), "Data source", "Source de données",
+        expectTranslated(wrapper.findComponent("label"), "Data source", "Source de données",
             "Fonte de dados", wrapper.vm.$store);
-        expect(wrapper.find("label").attributes("for")).toBe("data-source-test-datasource");
+        expect(wrapper.findComponent("label").attributes("for")).toBe("data-source-test-datasource");
 
-        expect(wrapper.find("select").attributes("id")).toBe("data-source-test-datasource");
-        expect((wrapper.find("select").element as HTMLSelectElement).value).toBe("dataset2");
+        expect(wrapper.findComponent("select").attributes("id")).toBe("data-source-test-datasource");
+        expect((wrapper.findComponent("select").element as HTMLSelectElement).value).toBe("dataset2");
 
-        const options = wrapper.find("select").findAll("option");
+        const options = wrapper.findComponent("select").findAllComponents("option");
         expect(options.length).toBe(2);
-        expect(options.at(0).attributes("value")).toBe("dataset1");
-        expectTranslated(options.at(0), "ANC Testing", "Test de clinique prénatale",
+        expect(options[0].attributes("value")).toBe("dataset1");
+        expectTranslated(options[0], "ANC Testing", "Test de clinique prénatale",
             "Teste da CPN", wrapper.vm.$store);
 
-        expect(options.at(1).attributes("value")).toBe("dataset2");
-        expectTranslated(options.at(1), "ART", "TARV", "TARV", wrapper.vm.$store);
+        expect(options[1].attributes("value")).toBe("dataset2");
+        expectTranslated(options[1], "ART", "TARV", "TARV", wrapper.vm.$store);
     });
 
     it("emits update when value changes", async () => {
         const wrapper = getWrapper();
-        await wrapper.find("select").findAll("option").at(0).setSelected();
-        expect(wrapper.emitted("update").length).toBe(1);
-        expect(wrapper.emitted("update")[0]).toStrictEqual(["dataset1"]);
+        await wrapper.findComponent("select").findAllComponents("option")[0].setSelected();
+        expect(wrapper.emitted("update")!?.length).toBe(1);
+        expect(wrapper.emitted("update")![0]).toStrictEqual(["dataset1"]);
     });
 });

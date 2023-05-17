@@ -49,83 +49,83 @@ describe("translate directive", () => {
     it("initialises the attribute with the translated text", () => {
         const store = createStore();
         const rendered = shallowMount(TranslateAttributeTest, {store});
-        expect((rendered.find("input").element as HTMLInputElement).value).toBe("Validate");
+        expect((rendered.findComponent("input").element as HTMLInputElement).value).toBe("Validate");
     });
 
     it("makes translated text lowercase if modifier specified", () => {
         const store = createStore();
         const rendered = shallowMount(TranslateLowercaseAttributeTest, {store});
-        expect((rendered.find("input").element as HTMLInputElement).value).toBe("validate");
+        expect((rendered.findComponent("input").element as HTMLInputElement).value).toBe("validate");
     });
 
     it("translates the attribute when the store language changes", () => {
         const store = createStore();
         const rendered = shallowMount(TranslateAttributeTest, {store});
-        expect((rendered.find("input").element as HTMLInputElement).value).toBe("Validate");
+        expect((rendered.findComponent("input").element as HTMLInputElement).value).toBe("Validate");
         store.state.language = Language.fr;
-        expect((rendered.find("input").element as HTMLInputElement).value).toBe("Valider");
+        expect((rendered.findComponent("input").element as HTMLInputElement).value).toBe("Valider");
     });
 
     it("initialises inner text with translated text", () => {
         const store = createStore();
         const renderedStatic = mount(TranslateInnerTextTestStatic, {store});
-        expect(renderedStatic.find("h4").text()).toBe("Validate");
+        expect(renderedStatic.findComponent("h4").text()).toBe("Validate");
 
         const renderedDynamic = mount(TranslateInnerTextTestDynamic, {store});
-        expect(renderedDynamic.find("h4").text()).toBe("Validate");
+        expect(renderedDynamic.findComponent("h4").text()).toBe("Validate");
     });
 
     it("translates static inner text when the store language changes", () => {
         const store = createStore();
         const rendered = shallowMount(TranslateInnerTextTestStatic, {store});
-        expect(rendered.find("h4").text()).toBe("Validate");
+        expect(rendered.findComponent("h4").text()).toBe("Validate");
         store.state.language = Language.fr;
-        expect(rendered.find("h4").text()).toBe("Valider");
+        expect(rendered.findComponent("h4").text()).toBe("Valider");
     });
 
     it("translates dynamic inner text when the store language changes", () => {
         const store = createStore();
         const rendered = shallowMount(TranslateInnerTextTestDynamic, {store});
-        expect(rendered.find("h4").text()).toBe("Validate");
+        expect(rendered.findComponent("h4").text()).toBe("Validate");
         store.state.language = Language.fr;
-        expect(rendered.find("h4").text()).toBe("Valider");
+        expect(rendered.findComponent("h4").text()).toBe("Valider");
     });
 
     it("updates dynamic inner text when the key changes", () => {
         const store = createStore();
         const rendered = shallowMount(TranslateInnerTextTestDynamic, {store});
-        expect(rendered.find("h4").text()).toBe("Validate");
+        expect(rendered.findComponent("h4").text()).toBe("Validate");
         rendered.setData({
             text: "email"
         });
-        expect(rendered.find("h4").text()).toBe("Email address");
+        expect(rendered.findComponent("h4").text()).toBe("Email address");
     });
 
     it("can update language and key in any order", () => {
         const store = createStore();
         const rendered = shallowMount(TranslateInnerTextTestDynamic, {store});
-        expect(rendered.find("h4").text()).toBe("Validate");
+        expect(rendered.findComponent("h4").text()).toBe("Validate");
         store.state.language = Language.fr;
-        expect(rendered.find("h4").text()).toBe("Valider");
+        expect(rendered.findComponent("h4").text()).toBe("Valider");
         rendered.setData({
             text: "email"
         });
-        expect(rendered.find("h4").text()).toBe("Adresse e-mail");
+        expect(rendered.findComponent("h4").text()).toBe("Adresse e-mail");
         store.state.language = Language.en;
-        expect(rendered.find("h4").text()).toBe("Email address");
+        expect(rendered.findComponent("h4").text()).toBe("Email address");
     });
 
     it("can support multiple directives for different attributes on the same element", () => {
         const store = createStore();
         const rendered = shallowMount(TranslateMultiple, {store});
-        let input = (rendered.find("input").element as HTMLInputElement);
+        let input = (rendered.findComponent("input").element as HTMLInputElement);
         expect(input.value).toBe("Validate");
         expect(input.placeholder).toBe("Email address");
         expect(input.innerText).toBe("Logout");
 
         store.state.language = Language.fr;
 
-        input = (rendered.find("input").element as HTMLInputElement);
+        input = (rendered.findComponent("input").element as HTMLInputElement);
         expect(input.value).toBe("Valider");
         expect(input.placeholder).toBe("Adresse e-mail");
         expect(input.innerText).toBe("Fermer une session");
@@ -137,7 +137,7 @@ describe("translate directive", () => {
         };
         const store = createStore();
         const rendered = shallowMount(InvalidBinding, {store});
-        expect(rendered.find("h4").text()).toBe("");
+        expect(rendered.findComponent("h4").text()).toBe("");
         expect((console.warn as jest.Mock).mock.calls[0][0])
             .toBe("v-translate directive declared without a value");
     });
@@ -148,11 +148,11 @@ describe("translate directive", () => {
         const renderedText = shallowMount(TranslateInnerTextTestDynamic, {store});
         const renderedMultiple = shallowMount(TranslateMultiple, {store});
         expect((store._watcherVM as any)._watchers.length).toBe(5);
-        renderedAttribute.destroy();
+        renderedAttribute.unmount();
         expect((store._watcherVM as any)._watchers.length).toBe(4);
-        renderedText.destroy();
+        renderedText.unmount();
         expect((store._watcherVM as any)._watchers.length).toBe(3);
-        renderedMultiple.destroy();
+        renderedMultiple.unmount();
         expect((store._watcherVM as any)._watchers.length).toBe(0);
     });
 

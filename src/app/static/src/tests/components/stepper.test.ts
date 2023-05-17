@@ -1,4 +1,4 @@
-import {createLocalVue, shallowMount, Wrapper} from '@vue/test-utils';
+import {shallowMount, Wrapper} from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
@@ -53,8 +53,6 @@ import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {ModelRunMutation} from "../../app/store/modelRun/mutations";
 import {GenericChartState} from "../../app/store/genericChart/genericChart";
 import {GenericChartMutation} from "../../app/store/genericChart/mutations";
-
-const localVue = createLocalVue();
 
 describe("Stepper component", () => {
 
@@ -167,7 +165,7 @@ describe("Stepper component", () => {
             }
         };
 
-        return shallowMount(Stepper, {store, localVue, mocks});
+        return shallowMount(Stepper, {store, mocks});
     };
 
     const createReadySut = (baselineState?: Partial<BaselineState>,
@@ -216,9 +214,9 @@ describe("Stepper component", () => {
     it("renders loading spinner while states are not ready", () => {
         const wrapper = createSut();
         const store = wrapper.vm.$store;
-        expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
-        expect(wrapper.findAll(".content").length).toBe(0);
-        expectTranslated(wrapper.find("#loading-message"), "Loading your data",
+        expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
+        expect(wrapper.findAllComponents(".content").length).toBe(0);
+        expectTranslated(wrapper.findComponent("#loading-message"), "Loading your data",
             "Chargement de vos données", "A carregar os seus dados", store);
     });
 
@@ -233,9 +231,9 @@ describe("Stepper component", () => {
             {loadingState: LoadingState.SettingFiles});
         const store = wrapper.vm.$store;
 
-        expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
-        expect(wrapper.findAll(".content").length).toBe(0);
-        expectTranslated(wrapper.find("#loading-message"), "Loading your data",
+        expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
+        expect(wrapper.findAllComponents(".content").length).toBe(0);
+        expectTranslated(wrapper.findComponent("#loading-message"), "Loading your data",
             "Chargement de vos données","A carregar os seus dados", store);
     });
 
@@ -253,70 +251,70 @@ describe("Stepper component", () => {
 
         const store = wrapper.vm.$store;
 
-        expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
-        expect(wrapper.findAll(".content").length).toBe(0);
-        expectTranslated(wrapper.find("#loading-message"), "Loading your data",
+        expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
+        expect(wrapper.findAllComponents(".content").length).toBe(0);
+        expectTranslated(wrapper.findComponent("#loading-message"), "Loading your data",
             "Chargement de vos données","A carregar os seus dados", store);
     });
 
     it("does not render loading spinner once states are ready", () => {
         const wrapper = createReadySut();
-        expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
-        expect(wrapper.findAll(".content").length).toBe(1);
-        expect(wrapper.findAll("#loading-message").length).toBe(0);
+        expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(0);
+        expect(wrapper.findAllComponents(".content").length).toBe(1);
+        expect(wrapper.findAllComponents("#loading-message").length).toBe(0);
     });
 
     it("renders steps", () => {
         const wrapper = createReadySut();
-        const steps = wrapper.findAll(Step);
+        const steps = wrapper.findAllComponents(Step);
 
-        expect(wrapper.findAll(Step).length).toBe(7);
-        expect(steps.at(0).props().textKey).toBe("uploadInputs");
-        expect(steps.at(0).props().active).toBe(true);
-        expect(steps.at(0).props().number).toBe(1);
-        expect(steps.at(0).props().complete).toBe(false);
-        expect(steps.at(0).props().enabled).toBe(true);
+        expect(wrapper.findAllComponents(Step).length).toBe(7);
+        expect(steps[0].props().textKey).toBe("uploadInputs");
+        expect(steps[0].props().active).toBe(true);
+        expect(steps[0].props().number).toBe(1);
+        expect(steps[0].props().complete).toBe(false);
+        expect(steps[0].props().enabled).toBe(true);
 
-        expect(steps.at(1).props().textKey).toBe("reviewInputs");
-        expect(steps.at(1).props().active).toBe(false);
-        expect(steps.at(1).props().number).toBe(2);
-        expect(steps.at(1).props().complete).toBe(false);
-        expect(steps.at(1).props().enabled).toBe(false);
+        expect(steps[1].props().textKey).toBe("reviewInputs");
+        expect(steps[1].props().active).toBe(false);
+        expect(steps[1].props().number).toBe(2);
+        expect(steps[1].props().complete).toBe(false);
+        expect(steps[1].props().enabled).toBe(false);
 
-        expect(steps.at(2).props().textKey).toBe("modelOptions");
-        expect(steps.at(2).props().active).toBe(false);
-        expect(steps.at(2).props().number).toBe(3);
-        expect(steps.at(2).props().complete).toBe(false);
-        expect(steps.at(2).props().enabled).toBe(false);
+        expect(steps[2].props().textKey).toBe("modelOptions");
+        expect(steps[2].props().active).toBe(false);
+        expect(steps[2].props().number).toBe(3);
+        expect(steps[2].props().complete).toBe(false);
+        expect(steps[2].props().enabled).toBe(false);
 
-        expect(steps.at(3).props().textKey).toBe("fitModel");
-        expect(steps.at(3).props().active).toBe(false);
-        expect(steps.at(3).props().number).toBe(4);
-        expect(steps.at(3).props().complete).toBe(false);
-        expect(steps.at(3).props().enabled).toBe(false);
+        expect(steps[3].props().textKey).toBe("fitModel");
+        expect(steps[3].props().active).toBe(false);
+        expect(steps[3].props().number).toBe(4);
+        expect(steps[3].props().complete).toBe(false);
+        expect(steps[3].props().enabled).toBe(false);
 
-        expect(steps.at(4).props().textKey).toBe("calibrateModel");
-        expect(steps.at(4).props().active).toBe(false);
-        expect(steps.at(4).props().number).toBe(5);
-        expect(steps.at(4).props().complete).toBe(false);
-        expect(steps.at(4).props().enabled).toBe(false);
+        expect(steps[4].props().textKey).toBe("calibrateModel");
+        expect(steps[4].props().active).toBe(false);
+        expect(steps[4].props().number).toBe(5);
+        expect(steps[4].props().complete).toBe(false);
+        expect(steps[4].props().enabled).toBe(false);
 
-        expect(steps.at(5).props().textKey).toBe("reviewOutput");
-        expect(steps.at(5).props().active).toBe(false);
-        expect(steps.at(5).props().number).toBe(6);
-        expect(steps.at(5).props().complete).toBe(false);
-        expect(steps.at(5).props().enabled).toBe(false);
+        expect(steps[5].props().textKey).toBe("reviewOutput");
+        expect(steps[5].props().active).toBe(false);
+        expect(steps[5].props().number).toBe(6);
+        expect(steps[5].props().complete).toBe(false);
+        expect(steps[5].props().enabled).toBe(false);
 
-        expect(steps.at(6).props().textKey).toBe("downloadResults");
-        expect(steps.at(6).props().active).toBe(false);
-        expect(steps.at(6).props().number).toBe(7);
-        expect(steps.at(6).props().complete).toBe(false);
-        expect(steps.at(6).props().enabled).toBe(false);
+        expect(steps[6].props().textKey).toBe("downloadResults");
+        expect(steps[6].props().active).toBe(false);
+        expect(steps[6].props().number).toBe(7);
+        expect(steps[6].props().complete).toBe(false);
+        expect(steps[6].props().enabled).toBe(false);
     });
 
     it("renders step connectors", () => {
         const wrapper = createReadySut();
-        const connectors = wrapper.findAll(".step-connector");
+        const connectors = wrapper.findAllComponents(".step-connector");
 
         expect(connectors.length).toBe(6);
         // all should not be enabled at first
@@ -325,76 +323,76 @@ describe("Stepper component", () => {
 
     it("renders version status", () => {
         const wrapper = createReadySut();
-        expect(wrapper.find(VersionStatus).exists()).toBe(true);
+        expect(wrapper.findComponent(VersionStatus).exists()).toBe(true);
     });
 
     it("step connector is enabled if next step is", () => {
         const wrapper = createReadySut(completedBaselineState,
             completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any});
-        const connectors = wrapper.findAll(".step-connector");
+        const connectors = wrapper.findAllComponents(".step-connector");
 
-        expect(connectors.at(0).classes()).toContain("enabled");
+        expect(connectors[0].classes()).toContain("enabled");
         expect(connectors.filter(c => c.classes().indexOf("enabled") > -1).length).toBe(2);
     });
 
     it("step connector is not enabled for review inputs step if survey is not valid", () => {
         const wrapper = createReadySut(completedBaselineState,
             {survey: false, program: true, shape: true} as any);
-        const connectors = wrapper.findAll(".step-connector");
+        const connectors = wrapper.findAllComponents(".step-connector");
 
-        expect(connectors.at(0).classes()).not.toContain("enabled");
+        expect(connectors[0].classes()).not.toContain("enabled");
         expect(connectors.filter(c => c.classes().indexOf("enabled") > -1).length).toBe(0);
     });
 
     it("all steps except baseline are disabled initially", () => {
         const wrapper = createReadySut();
-        const steps = wrapper.findAll(Step);
-        expect(steps.at(0).props().enabled).toBe(true);
-        expect([1, 2, 3, 4, 5].filter(i => steps.at(i).props().enabled).length).toBe(0);
+        const steps = wrapper.findAllComponents(Step);
+        expect(steps[0].props().enabled).toBe(true);
+        expect([1, 2, 3, 4, 5].filter(i => steps[i].props().enabled).length).toBe(0);
     });
 
     it("Review inputs step is enabled when baseline step is complete", () => {
         const wrapper = createReadySut(completedBaselineState,
             completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any});
-        const steps = wrapper.findAll(Step);
-        expect(steps.at(0).props().enabled).toBe(true);
-        expect(steps.at(1).props().enabled).toBe(true);
-        expect(steps.at(0).props().complete).toBe(true);
-        expect(steps.at(2).props().enabled).toBe(true);
-        expect([3, 4, 5].filter(i => steps.at(i).props().enabled).length).toBe(0);
+        const steps = wrapper.findAllComponents(Step);
+        expect(steps[0].props().enabled).toBe(true);
+        expect(steps[1].props().enabled).toBe(true);
+        expect(steps[0].props().complete).toBe(true);
+        expect(steps[2].props().enabled).toBe(true);
+        expect([3, 4, 5].filter(i => steps[i].props().enabled).length).toBe(0);
     });
 
     it("Review inputs step is not enabled when baseline step is not complete", () => {
         const wrapper = createReadySut(completedBaselineState);
-        const steps = wrapper.findAll(Step);
-        expect(steps.at(0).props().enabled).toBe(true);
-        expect(steps.at(1).props().enabled).toBe(false);
-        expect(steps.at(0).props().complete).toBe(false);
-        expect(steps.at(2).props().enabled).toBe(false);
-        expect([3, 4, 5].filter(i => steps.at(i).props().enabled).length).toBe(0);
+        const steps = wrapper.findAllComponents(Step);
+        expect(steps[0].props().enabled).toBe(true);
+        expect(steps[1].props().enabled).toBe(false);
+        expect(steps[0].props().complete).toBe(false);
+        expect(steps[2].props().enabled).toBe(false);
+        expect([3, 4, 5].filter(i => steps[i].props().enabled).length).toBe(0);
     });
 
     it("Review inputs step is not enabled if metadata state is not complete", () => {
         const wrapper = createReadySut(completedBaselineState,
             completedSurveyAndProgramState,
             {plottingMetadata: null});
-        const steps = wrapper.findAll(Step);
-        expect(steps.at(0).props().enabled).toBe(true);
-        expect(steps.at(1).props().enabled).toBe(false);
-        expect(steps.at(0).props().complete).toBe(false);
-        expect([1, 2, 3, 4, 5].filter(i => steps.at(i).props().enabled).length).toBe(0);
+        const steps = wrapper.findAllComponents(Step);
+        expect(steps[0].props().enabled).toBe(true);
+        expect(steps[1].props().enabled).toBe(false);
+        expect(steps[0].props().complete).toBe(false);
+        expect([1, 2, 3, 4, 5].filter(i => steps[i].props().enabled).length).toBe(0);
     });
 
     it("updates active step when jump event is emitted", () => {
         const wrapper = createReadySut(completedBaselineState,
             completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any});
-        const steps = wrapper.findAll(Step);
-        steps.at(1).vm.$emit("jump", 2);
-        expect(steps.at(0).props().complete).toBe(true);
-        expect(steps.at(1).props().active).toBe(true);
+        const steps = wrapper.findAllComponents(Step);
+        steps[1].vm.$emit("jump", 2);
+        expect(steps[0].props().complete).toBe(true);
+        expect(steps[1].props().active).toBe(true);
     });
 
     it("cannot continue when the active step is not complete", () => {
@@ -403,8 +401,8 @@ describe("Stepper component", () => {
         expect(vm.navigationProps.nextDisabled).toBe(true);
 
         vm.navigationProps.next();
-        const steps = wrapper.findAll(Step);
-        expect(steps.at(0).props().active).toBe(true);
+        const steps = wrapper.findAllComponents(Step);
+        expect(steps[0].props().active).toBe(true);
     });
 
 
@@ -416,8 +414,8 @@ describe("Stepper component", () => {
         expect(vm.navigationProps.nextDisabled).toBe(false);
 
         vm.navigationProps.next();
-        const steps = wrapper.findAll(Step);
-        expect(steps.at(1).props().active).toBe(true);
+        const steps = wrapper.findAllComponents(Step);
+        expect(steps[1].props().active).toBe(true);
     });
 
     it("cannot go back from the first step", () => {
@@ -441,8 +439,8 @@ describe("Stepper component", () => {
         expect(vm.navigationProps.backDisabled).toBe(false);
 
         vm.navigationProps.back();
-        const steps = wrapper.findAll(Step);
-        expect(steps.at(0).props().active).toBe(true);
+        const steps = wrapper.findAllComponents(Step);
+        expect(steps[0].props().active).toBe(true);
     });
 
     it("updates from completed state when active step data is populated", (done) => {
@@ -479,12 +477,12 @@ describe("Stepper component", () => {
             {ready: true},
             {activeStep: 2});
 
-        let steps = wrapper.findAll(Step);
+        let steps = wrapper.findAllComponents(Step);
         expect(steps.filter(s => s.props().active).length).toBe(0);
 
         await makeReady(wrapper);
-        steps = wrapper.findAll(Step);
-        expect(steps.at(1).props().active).toBe(true);
+        steps = wrapper.findAllComponents(Step);
+        expect(steps[1].props().active).toBe(true);
     });
 
     it("complete steps only shown as complete once state becomes ready", async () => {
@@ -497,12 +495,12 @@ describe("Stepper component", () => {
             },
             {ready: true});
 
-        let steps = wrapper.findAll(Step);
+        let steps = wrapper.findAllComponents(Step);
         expect(steps.filter(s => s.props().complete).length).toBe(0);
 
         await makeReady(wrapper);
-        steps = wrapper.findAll(Step);
-        expect(steps.at(0).props().complete).toBe(true);
+        steps = wrapper.findAllComponents(Step);
+        expect(steps[0].props().complete).toBe(true);
     });
 
     it("steps only shown as enabled once state becomes ready, and not loading", async () => {
@@ -511,12 +509,12 @@ describe("Stepper component", () => {
             completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
-        let steps = wrapper.findAll(Step);
+        let steps = wrapper.findAllComponents(Step);
         expect(steps.filter(s => s.props().enabled).length).toBe(0);
 
         await makeReady(wrapper);
-        steps = wrapper.findAll(Step);
-        expect(steps.at(1).props().enabled).toBe(true);
+        steps = wrapper.findAllComponents(Step);
+        expect(steps[1].props().enabled).toBe(true);
     });
 
     it("steps not shown as enabled if state becomes ready, but is also loading", async () => {
@@ -526,13 +524,13 @@ describe("Stepper component", () => {
             {plottingMetadata: "TEST DATA" as any},
             {ready: true});
 
-        let steps = wrapper.findAll(Step);
+        let steps = wrapper.findAllComponents(Step);
         expect(steps.filter(s => s.props().enabled).length).toBe(0);
 
         await makeReady(wrapper);
         await makeLoading(wrapper);
-        steps = wrapper.findAll(Step);
-        expect(steps.at(1).props().enabled).toBe(false);
+        steps = wrapper.findAllComponents(Step);
+        expect(steps[1].props().enabled).toBe(false);
     });
 
     async function makeReady(wrapper: Wrapper<any>) {
@@ -548,7 +546,7 @@ describe("Stepper component", () => {
         });
 
         await Vue.nextTick();
-        expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
+        expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(0);
     }
 
     async function makeLoading(wrapper: Wrapper<any>) {
@@ -559,19 +557,19 @@ describe("Stepper component", () => {
         });
 
         await Vue.nextTick();
-        expect(wrapper.findAll(LoadingSpinner).length).toBe(1);
+        expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
     }
 
     it("model run step is not complete without success", () => {
         const wrapper = createReadySut({}, {}, {}, {result: "TEST" as any});
-        const steps = wrapper.findAll(Step);
-        expect(steps.at(3).props().complete).toBe(false);
+        const steps = wrapper.findAllComponents(Step);
+        expect(steps[3].props().complete).toBe(false);
     });
 
     it("model run step is not complete without result", () => {
         const wrapper = createReadySut({}, {}, {}, {status: {success: true} as any});
-        const steps = wrapper.findAll(Step);
-        expect(steps.at(3).props().complete).toBe(false);
+        const steps = wrapper.findAllComponents(Step);
+        expect(steps[3].props().complete).toBe(false);
     });
 
     it("model run step is not complete with errors", () => {
@@ -581,8 +579,8 @@ describe("Stepper component", () => {
             errors: ["TEST" as any]
         };
         const wrapper = createReadySut({}, {}, {}, modelRunState);
-        const steps = wrapper.findAll(Step);
-        expect(steps.at(3).props().complete).toBe(false);
+        const steps = wrapper.findAllComponents(Step);
+        expect(steps[3].props().complete).toBe(false);
     });
 
     it("model run step is complete on success and result", () => {
@@ -591,8 +589,8 @@ describe("Stepper component", () => {
             status: {success: true} as ModelStatusResponse
         };
         const wrapper = createReadySut({}, {}, {}, modelRunState);
-        const steps = wrapper.findAll(Step);
-        expect(steps.at(3).props().complete).toBe(true);
+        const steps = wrapper.findAllComponents(Step);
+        expect(steps[3].props().complete).toBe(true);
     });
 
     const testModelRunCompletion = async (modelRunWarnings: Warning[], expectAdvanceToCalibrate: boolean)=> {
@@ -617,10 +615,10 @@ describe("Stepper component", () => {
             {},
             {valid: true},
         );
-        const steps = wrapper.findAll(Step);
-        expect(steps.at(3).props().complete).toBe(false);
-        expect(steps.at(3).props().active).toBe(true);
-        expect(steps.at(4).props().active).toBe(false);
+        const steps = wrapper.findAllComponents(Step);
+        expect(steps[3].props().complete).toBe(false);
+        expect(steps[3].props().active).toBe(true);
+        expect(steps[4].props().active).toBe(false);
 
         wrapper.vm.$store.commit("modelRun/RunStatusUpdated", {
             "type": "RunStatusUpdated",
@@ -646,13 +644,13 @@ describe("Stepper component", () => {
         });
 
         await Vue.nextTick();
-        expect(steps.at(3).props().complete).toBe(true);
+        expect(steps[3].props().complete).toBe(true);
         if (expectAdvanceToCalibrate) {
-            expect(steps.at(3).props().active).toBe(false);
-            expect(steps.at(4).props().active).toBe(true);
+            expect(steps[3].props().active).toBe(false);
+            expect(steps[4].props().active).toBe(true);
         } else {
-            expect(steps.at(3).props().active).toBe(true);
-            expect(steps.at(4).props().active).toBe(false);
+            expect(steps[3].props().active).toBe(true);
+            expect(steps[4].props().active).toBe(false);
         }
     };
 
@@ -711,40 +709,40 @@ describe("Stepper component", () => {
 
     it("show ADR integration if on step 1", () => {
         const wrapper = getStepperOnStep(1);
-        expect(wrapper.findAll(ADRIntegration).length).toBe(1);
+        expect(wrapper.findAllComponents(ADRIntegration).length).toBe(1);
     });
 
     it("does not show ADR integration on step 2", () => {
         const wrapper = getStepperOnStep(2);
-        expect(wrapper.findAll(ADRIntegration).length).toBe(0);
+        expect(wrapper.findAllComponents(ADRIntegration).length).toBe(0);
     });
 
     it("does not show ADR integration on step 3", () => {
         const wrapper = getStepperOnStep(3);
-        expect(wrapper.findAll(ADRIntegration).length).toBe(0);
+        expect(wrapper.findAllComponents(ADRIntegration).length).toBe(0);
     });
 
     it("does not show ADR integration on step 4", () => {
         const wrapper = getStepperOnStep(4);
-        expect(wrapper.findAll(ADRIntegration).length).toBe(0);
+        expect(wrapper.findAllComponents(ADRIntegration).length).toBe(0);
     });
 
     it("does not show ADR integration on step 5", () => {
         const wrapper = getStepperOnStep(5);
-        expect(wrapper.findAll(ADRIntegration).length).toBe(0);
+        expect(wrapper.findAllComponents(ADRIntegration).length).toBe(0);
     });
 
     it("does not show ADR integration on step 6", () => {
         const wrapper = getStepperOnStep(6);
-        expect(wrapper.findAll(ADRIntegration).length).toBe(0);
+        expect(wrapper.findAllComponents(ADRIntegration).length).toBe(0);
     });
 
     it("renders model calibrate component on step 5", () => {
         let wrapper = getStepperOnStep(5);
-        expect(wrapper.findAll(ModelCalibrate).length).toBe(1);
+        expect(wrapper.findAllComponents(ModelCalibrate).length).toBe(1);
 
         wrapper = getStepperOnStep(1);
-        expect(wrapper.findAll(ModelCalibrate).length).toBe(0);
+        expect(wrapper.findAllComponents(ModelCalibrate).length).toBe(0);
     });
 
     const getStepperOnStep = (step: number) => {
@@ -771,24 +769,24 @@ describe("Stepper component", () => {
             {complete: true}
             );
 
-        let steps = wrapper.findAll(Step);
+        let steps = wrapper.findAllComponents(Step);
         expect(steps.filter(s => s.props().active).length).toBe(0);
 
         await makeReady(wrapper);
-        steps = wrapper.findAll(Step);
-        expect(steps.at(6).props().active).toBe(true);
-        expect(steps.at(6).props().complete).toBe(true);
+        steps = wrapper.findAllComponents(Step);
+        expect(steps[6].props().active).toBe(true);
+        expect(steps[6].props().complete).toBe(true);
 
         expect((wrapper.vm as any).navigationProps.nextDisabled).toBe(true);
     });
 
     it("displays Back/Continue twice except model run step", () => {
-        expect(getStepperOnStep(1).findAll(StepperNavigation).length).toBe(2);
-        expect(getStepperOnStep(2).findAll(StepperNavigation).length).toBe(2);
-        expect(getStepperOnStep(3).findAll(StepperNavigation).length).toBe(2);
-        expect(getStepperOnStep(4).findAll(StepperNavigation).length).toBe(1);
-        expect(getStepperOnStep(5).findAll(StepperNavigation).length).toBe(2);
-        expect(getStepperOnStep(6).findAll(StepperNavigation).length).toBe(2);
+        expect(getStepperOnStep(1).findAllComponents(StepperNavigation).length).toBe(2);
+        expect(getStepperOnStep(2).findAllComponents(StepperNavigation).length).toBe(2);
+        expect(getStepperOnStep(3).findAllComponents(StepperNavigation).length).toBe(2);
+        expect(getStepperOnStep(4).findAllComponents(StepperNavigation).length).toBe(1);
+        expect(getStepperOnStep(5).findAllComponents(StepperNavigation).length).toBe(2);
+        expect(getStepperOnStep(6).findAllComponents(StepperNavigation).length).toBe(2);
     });
 
     const createWarningAlertWrapper = (activeStep = 4) => {
@@ -828,8 +826,8 @@ describe("Stepper component", () => {
     it("renders warning alert with warnings for current step", () => {
         const wrapper = createWarningAlertWrapper()
 
-        expect(wrapper.findAll(WarningAlert).length).toBe(1)
-        const warnings = wrapper.find(WarningAlert).props("warnings");
+        expect(wrapper.findAllComponents(WarningAlert).length).toBe(1)
+        const warnings = wrapper.findComponent(WarningAlert).props("warnings");
 
         expect(warnings).toStrictEqual({
             modelOptions: [{
@@ -844,8 +842,8 @@ describe("Stepper component", () => {
             reviewInputs: []
         });
         //Expect warnings component to be at top, immediately before content div, not at bottom immediately after content
-        expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(true);
-        expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(false);
+        expect(wrapper.findComponent("warning-alert-stub + div.content").exists()).toBe(true);
+        expect(wrapper.findComponent("div.content + warning-alert-stub ").exists()).toBe(false);
     });
 
     it("renders warning alert for model options after step content", () => {
@@ -875,8 +873,8 @@ describe("Stepper component", () => {
                 }]
             }
         );
-        expect(wrapper.findAll(WarningAlert).length).toBe(1)
-        const warnings = wrapper.find(WarningAlert).props("warnings");
+        expect(wrapper.findAllComponents(WarningAlert).length).toBe(1)
+        const warnings = wrapper.findComponent(WarningAlert).props("warnings");
 
         expect(warnings).toStrictEqual({
             modelOptions: [{
@@ -888,8 +886,8 @@ describe("Stepper component", () => {
             reviewInputs: []
         });
         //Expect warnings component to be at bottom, immediately after content div, not at top immediately before content
-        expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(false);
-        expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(true);
+        expect(wrapper.findComponent("warning-alert-stub + div.content").exists()).toBe(false);
+        expect(wrapper.findComponent("div.content + warning-alert-stub ").exists()).toBe(true);
     });
 
     it("renders warning alert for review inputs", () => {
@@ -920,8 +918,8 @@ describe("Stepper component", () => {
                 }]
             }
         );
-        expect(wrapper.findAll(WarningAlert).length).toBe(1)
-        const warnings = wrapper.find(WarningAlert).props("warnings");
+        expect(wrapper.findAllComponents(WarningAlert).length).toBe(1)
+        const warnings = wrapper.findComponent(WarningAlert).props("warnings");
 
         expect(warnings).toStrictEqual({
             modelOptions: [],
@@ -933,43 +931,43 @@ describe("Stepper component", () => {
             }]
         });
         //Expect warnings component to be at top, immediately before content div, not at bottom immediately after content
-        expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(true);
-        expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(false);
+        expect(wrapper.findComponent("warning-alert-stub + div.content").exists()).toBe(true);
+        expect(wrapper.findComponent("div.content + warning-alert-stub ").exists()).toBe(false);
     });
 
     it("clear-warnings emit when in modelOptions triggers clear warnings mutation in modelOptions store", async () => {
         const wrapper = createWarningAlertWrapper(3)
-        await wrapper.find(WarningAlert).vm.$emit("clear-warnings")
+        await wrapper.findComponent(WarningAlert).vm.$emit("clear-warnings")
         expect(clearOptionsWarnings.mock.calls.length).toBe(1);
     });
 
     it("clear-warnings emit when in modelRun triggers clear warnings mutation in modelRun store", async () => {
         const wrapper = createWarningAlertWrapper(4)
-        await wrapper.find(WarningAlert).vm.$emit("clear-warnings")
+        await wrapper.findComponent(WarningAlert).vm.$emit("clear-warnings")
         expect(clearRunWarnings.mock.calls.length).toBe(1);
     });
 
     it("clear-warnings emit when in modelCalibrate triggers clear warnings mutation in modelCalibrate store", async () => {
         const wrapper = createWarningAlertWrapper(5)
-        await wrapper.find(WarningAlert).vm.$emit("clear-warnings")
+        await wrapper.findComponent(WarningAlert).vm.$emit("clear-warnings")
         expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
     });
 
     it("clear-warnings emit when in reviewOutput triggers clear warnings mutation in modelCalibrate store", async () => {
         const wrapper = createWarningAlertWrapper(6)
-        await wrapper.find(WarningAlert).vm.$emit("clear-warnings")
+        await wrapper.findComponent(WarningAlert).vm.$emit("clear-warnings")
         expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
     });
 
     it("clear-warnings emit when in reviewInputs triggers clear warnings mutation in genericChart store", async () => {
         const wrapper = createWarningAlertWrapper(2)
-        await wrapper.find(WarningAlert).vm.$emit("clear-warnings")
+        await wrapper.findComponent(WarningAlert).vm.$emit("clear-warnings")
         expect(clearReviewInputsWarnings.mock.calls.length).toBe(1);
     });
 
     it("clear-warnings emit when in downloadResults triggers clear warnings mutation in modelCalibrate store", async () => {
         const wrapper = createWarningAlertWrapper(7)
-        await wrapper.find(WarningAlert).vm.$emit("clear-warnings")
+        await wrapper.findComponent(WarningAlert).vm.$emit("clear-warnings")
         expect(clearCalibrateWarnings.mock.calls.length).toBe(1);
     });
 });

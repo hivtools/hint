@@ -1,4 +1,4 @@
-import {createLocalVue, shallowMount} from '@vue/test-utils';
+import {VueWrapper, createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import {
@@ -130,7 +130,7 @@ describe("ModelOutput component", () => {
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const choro = wrapper.find("choropleth-stub");
+        const choro = wrapper.findComponent("choropleth-stub") as VueWrapper;
         expect(choro.props().includeFilters).toBe(true);
         expect(choro.props().areaFilterId).toBe("area");
         expect(choro.props().filters).toStrictEqual(["TEST CHORO FILTERS"]);
@@ -143,7 +143,7 @@ describe("ModelOutput component", () => {
         const store = getStore({selectedTab: "bubble"});
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const bubble = wrapper.find(BubblePlot);
+        const bubble = wrapper.findComponent(BubblePlot);
         expect(bubble.props().areaFilterId).toBe("area");
         expect(bubble.props().filters).toStrictEqual(["TEST BUBBLE FILTERS"]);
         expect(bubble.props().selections).toStrictEqual({test: "TEST BUBBLE SELECTIONS"});
@@ -157,7 +157,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {localVue, store});
         const vm = wrapper.vm as any;
 
-        const barchart = wrapper.find(BarChartWithFilters);
+        const barchart = wrapper.findComponent(BarChartWithFilters);
         expect(barchart.props().chartData).toStrictEqual(["TEST DATA"]);
         expect(barchart.props().filterConfig).toBe(vm.barchartFilterConfig);
         expect(barchart.props().indicators).toStrictEqual(["TEST BARCHART INDICATORS"]);
@@ -173,8 +173,8 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {localVue, store});
         const vm = wrapper.vm as any;
 
-        expect(wrapper.findAll(BarChartWithFilters).length).toBe(1);
-        const comparisonPlot = wrapper.find(BarChartWithFilters);
+        expect(wrapper.findAllComponents(BarChartWithFilters).length).toBe(1);
+        const comparisonPlot = wrapper.findComponent(BarChartWithFilters);
         expect(comparisonPlot.props().chartData).toStrictEqual(["TEST COMPARISON DATA"]);
         expect(comparisonPlot.props().filterConfig).toBe(vm.comparisonPlotFilterConfig);
         expect(comparisonPlot.props().indicators).toStrictEqual(["TEST COMPARISON INDICATORS"]);
@@ -190,21 +190,21 @@ describe("ModelOutput component", () => {
         const error = mockError("comparison plot error occurred")
         const store = getStore({selectedTab: "comparison"}, {}, {}, [], [], error);
         const wrapper = shallowMount(ModelOutput, {localVue, store});
-        expect(wrapper.findAll(ErrorAlert).length).toBe(1);
-        expect(wrapper.find(ErrorAlert).props().error).toBe(error);
+        expect(wrapper.findAllComponents(ErrorAlert).length).toBe(1);
+        expect(wrapper.findComponent(ErrorAlert).props().error).toBe(error);
     });
 
     it("does not render comparison plot if no there are no comparison plot indicators", () => {
         const store = getStore({selectedTab: "comparison"}, {comparisonPlotIndicators: jest.fn().mockReturnValue([])});
         const wrapper = shallowMount(ModelOutput, {localVue, store});
-        expect(wrapper.findAll(BarChartWithFilters).length).toBe(1);
+        expect(wrapper.findAllComponents(BarChartWithFilters).length).toBe(1);
     });
 
     it("if no selected tab in state, defaults to select Map tab", () => {
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const activeTab = wrapper.find("a.active");
+        const activeTab = wrapper.findComponent("a.active");
         expectTranslated(activeTab, "Map", "Carte", "Mapa", store);
     });
 
@@ -212,62 +212,62 @@ describe("ModelOutput component", () => {
         const store = getStore({selectedTab: "bar"});
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const activeTab = wrapper.find("a.active");
+        const activeTab = wrapper.findComponent("a.active");
         expectTranslated(activeTab, "Bar", "Barre", "Bar", store);
     });
 
     it("can change tabs", () => {
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {store, localVue});
-        expect(wrapper.findAll(".nav-link").length).toBe(4);
+        expect(wrapper.findAllComponents(".nav-link").length).toBe(4);
 
-        expect(wrapper.find(".nav-link.active").text()).toBe("Map");
-        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+        expect(wrapper.findComponent(".nav-link.active").text()).toBe("Map");
+        expect(wrapper.findAllComponents("choropleth-stub").length).toBe(1);
 
-        expect(wrapper.find("#barchart-container").exists()).toBe(false);
-        expect(wrapper.find("#comparison-container").exists()).toBe(false);
+        expect(wrapper.findComponent("#barchart-container").exists()).toBe(false);
+        expect(wrapper.findComponent("#comparison-container").exists()).toBe(false);
 
-        expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
-        expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
+        expect(wrapper.findAllComponents("#bubble-plot-container").length).toBe(0);
+        expect(wrapper.findAllComponents("bubble-plot-stub").length).toBe(0);
 
         //should invoke mutation
-        wrapper.findAll(".nav-link").at(1).trigger("click");
+        wrapper.findAllComponents(".nav-link")[1].trigger("click");
 
-        expect(wrapper.find(".nav-link.active").text()).toBe("Bar");
-        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
-        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
+        expect(wrapper.findComponent(".nav-link.active").text()).toBe("Bar");
+        expect(wrapper.findAllComponents("choropleth-filters-stub").length).toBe(0);
+        expect(wrapper.findAllComponents("choropleth-stub").length).toBe(0);
 
-        expect(wrapper.find("#barchart-container").classes()).toEqual(["col-md-12"]);
-        expect(wrapper.findAll(BarChartWithFilters).length).toBe(1);
-        expect(wrapper.find("#comparison-container").exists()).toBe(false);
+        expect(wrapper.findComponent("#barchart-container").classes()).toEqual(["col-md-12"]);
+        expect(wrapper.findAllComponents(BarChartWithFilters).length).toBe(1);
+        expect(wrapper.findComponent("#comparison-container").exists()).toBe(false);
 
-        expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
-        expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
+        expect(wrapper.findAllComponents("#bubble-plot-container").length).toBe(0);
+        expect(wrapper.findAllComponents("bubble-plot-stub").length).toBe(0);
 
-        wrapper.findAll(".nav-link").at(2).trigger("click");
+        wrapper.findAllComponents(".nav-link")[2].trigger("click");
 
-        expect(wrapper.find(".nav-link.active").text()).toBe("Bubble Plot");
-        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
-        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
+        expect(wrapper.findComponent(".nav-link.active").text()).toBe("Bubble Plot");
+        expect(wrapper.findAllComponents("choropleth-filters-stub").length).toBe(0);
+        expect(wrapper.findAllComponents("choropleth-stub").length).toBe(0);
 
-        expect(wrapper.find("#barchart-container").exists()).toBe(false);
-        expect(wrapper.find("#comparison-container").exists()).toBe(false);
+        expect(wrapper.findComponent("#barchart-container").exists()).toBe(false);
+        expect(wrapper.findComponent("#comparison-container").exists()).toBe(false);
 
-        expect(wrapper.findAll("#bubble-plot-container").length).toBe(1);
-        expect(wrapper.findAll("bubble-plot-stub").length).toBe(1);
+        expect(wrapper.findAllComponents("#bubble-plot-container").length).toBe(1);
+        expect(wrapper.findAllComponents("bubble-plot-stub").length).toBe(1);
 
-        wrapper.findAll(".nav-link").at(3).trigger("click");
+        wrapper.findAllComponents(".nav-link")[3].trigger("click");
 
-        expect(wrapper.find(".nav-link.active").text()).toBe("Comparison");
-        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
-        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
+        expect(wrapper.findComponent(".nav-link.active").text()).toBe("Comparison");
+        expect(wrapper.findAllComponents("choropleth-filters-stub").length).toBe(0);
+        expect(wrapper.findAllComponents("choropleth-stub").length).toBe(0);
 
-        expect(wrapper.find("#barchart-container").exists()).toBe(false);
-        expect(wrapper.find("#comparison-container").classes()).toEqual(["col-md-12"]);
-        expect(wrapper.findAll(BarChartWithFilters).length).toBe(1);
+        expect(wrapper.findComponent("#barchart-container").exists()).toBe(false);
+        expect(wrapper.findComponent("#comparison-container").classes()).toEqual(["col-md-12"]);
+        expect(wrapper.findAllComponents(BarChartWithFilters).length).toBe(1);
 
-        expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
-        expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
+        expect(wrapper.findAllComponents("#bubble-plot-container").length).toBe(0);
+        expect(wrapper.findAllComponents("bubble-plot-stub").length).toBe(0);
     });
 
     it("computes chartdata", () => {
@@ -391,7 +391,7 @@ describe("ModelOutput component", () => {
         const store = getStore();
         const wrapper = shallowMount(ModelOutput, {store, localVue});
 
-        const choro = wrapper.find(Choropleth);
+        const choro = wrapper.findComponent(Choropleth);
         const newColourScales = {test: "NEW COLOUR SCALES"};
         choro.vm.$emit("update-colour-scales", newColourScales);
         expect(store.state.plottingSelections.colourScales.output).toBe(newColourScales);
@@ -401,7 +401,7 @@ describe("ModelOutput component", () => {
         const store = getStore({selectedTab: "bubble"});
         const wrapper = shallowMount(ModelOutput, {store, localVue});
 
-        const bubble = wrapper.find(BubblePlot);
+        const bubble = wrapper.findComponent(BubblePlot);
         const bubbleColourScales = {test: "NEW BUBBLE COLOUR SCALES"};
         bubble.vm.$emit("update-colour-scales", bubbleColourScales);
         expect(store.state.plottingSelections.colourScales.output).toBe(bubbleColourScales);
@@ -411,7 +411,7 @@ describe("ModelOutput component", () => {
         const store = getStore({selectedTab: "bubble"});
         const wrapper = shallowMount(ModelOutput, {store, localVue});
 
-        const bubble = wrapper.find(BubblePlot);
+        const bubble = wrapper.findComponent(BubblePlot);
         const bubbleSizeScales = {test: "NEW BUBBLE SIZE SCALES"};
         bubble.vm.$emit("update-colour-scales", bubbleSizeScales);
         expect(store.state.plottingSelections.colourScales.output).toBe(bubbleSizeScales);
@@ -432,7 +432,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         const currentBarchartSelections = store.state.plottingSelections.barchart
 
-        const barchart = wrapper.find(BarChartWithFilters);
+        const barchart = wrapper.findComponent(BarChartWithFilters);
         const barchartSelections = {
             selectedFilterOptions: {
                 region: [
@@ -469,7 +469,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
 
-        const comparisonPlot = wrapper.find(BarChartWithFilters);
+        const comparisonPlot = wrapper.findComponent(BarChartWithFilters);
         const comparisonPlotSelections = {
             selectedFilterOptions: {
                 region: [
@@ -506,7 +506,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         const currentBarchartSelections = store.state.plottingSelections.barchart
 
-        const barchart = wrapper.find(BarChartWithFilters);
+        const barchart = wrapper.findComponent(BarChartWithFilters);
         const barchartSelections = {
             selectedFilterOptions: {
                 region: [
@@ -542,7 +542,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
 
-        const comparisonPlot = wrapper.find(BarChartWithFilters);
+        const comparisonPlot = wrapper.findComponent(BarChartWithFilters);
         const comparisonPlotSelections = {
             selectedFilterOptions: {
                 region: [
@@ -569,7 +569,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         const currentBarchartSelections = store.state.plottingSelections.barchart
 
-        const barchart = wrapper.find(BarChartWithFilters);
+        const barchart = wrapper.findComponent(BarChartWithFilters);
         const barchartSelections = {
             selectedFilterOptions: {
                 region: [
@@ -597,7 +597,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
 
-        const comparisonPlot = wrapper.find(BarChartWithFilters);
+        const comparisonPlot = wrapper.findComponent(BarChartWithFilters);
         const comparisonPlotSelections = {
             selectedFilterOptions: {
                 region: [
@@ -642,7 +642,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
 
-        const comparisonPlot = wrapper.find(BarChartWithFilters);
+        const comparisonPlot = wrapper.findComponent(BarChartWithFilters);
         const comparisonPlotSelections = {
             indicatorId: "prevalence"
         };
@@ -675,7 +675,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
 
-        const comparisonPlot = wrapper.find(BarChartWithFilters);
+        const comparisonPlot = wrapper.findComponent(BarChartWithFilters);
         const comparisonPlotSelections = {
             indicatorId: "TestIndicator"
         };
@@ -701,7 +701,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         const currentBarchartSelections = store.state.plottingSelections.barchart
 
-        const barchart = wrapper.find(BarChartWithFilters);
+        const barchart = wrapper.findComponent(BarChartWithFilters);
         const barchartSelections = {
             selectedFilterOptions: {
                 region: [
@@ -748,7 +748,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMount(ModelOutput, {store, localVue});
         const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
 
-        const comparisonPlot = wrapper.find(BarChartWithFilters);
+        const comparisonPlot = wrapper.findComponent(BarChartWithFilters);
         const comparisonPlotSelections = {
             selectedFilterOptions: {
                 region: [
@@ -782,7 +782,7 @@ describe("ModelOutput component", () => {
         const store = getStore({selectedTab: "map"});
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.find(AreaIndicatorsTable);
+        const table = wrapper.findComponent(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
         expect(table.props().filters).toStrictEqual(["TEST CHORO FILTERS"]);
         expect(table.props().selections).toStrictEqual({test: "TEST CHORO SELECTIONS"});
@@ -805,7 +805,7 @@ describe("ModelOutput component", () => {
             });
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.find(AreaIndicatorsTable);
+        const table = wrapper.findComponent(AreaIndicatorsTable);
         expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
         expect(table.props().indicators).toStrictEqual([{"indicator": "art_coverage", "indicator_value": "4"}]);
     });
@@ -814,7 +814,7 @@ describe("ModelOutput component", () => {
         const store = getStore({selectedTab: "bubble"});
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.find(AreaIndicatorsTable);
+        const table = wrapper.findComponent(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
         expect(table.props().filters).toStrictEqual(["TEST BUBBLE FILTERS"]);
         expect(table.props().selections).toStrictEqual({test: "TEST BUBBLE SELECTIONS"});
@@ -842,7 +842,7 @@ describe("ModelOutput component", () => {
             });
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.find(AreaIndicatorsTable);
+        const table = wrapper.findComponent(AreaIndicatorsTable);
         expect(table.props().selections).toStrictEqual({
             colorIndicatorId: "art_coverage",
             sizeIndicatorId: "current_art"
@@ -865,7 +865,7 @@ describe("ModelOutput component", () => {
         const store = getStore({selectedTab: "bar"});
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.find(AreaIndicatorsTable);
+        const table = wrapper.findComponent(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
         expect(table.props().filters).toStrictEqual(["TEST BAR FILTERS"]);
         expect(table.props().selections).toStrictEqual({
@@ -896,7 +896,7 @@ describe("ModelOutput component", () => {
             });
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.find(AreaIndicatorsTable);
+        const table = wrapper.findComponent(AreaIndicatorsTable);
         expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
         expect(table.props().indicators).toStrictEqual(
             [
@@ -909,7 +909,7 @@ describe("ModelOutput component", () => {
         const store = getStore({selectedTab: "comparison"});
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.find(AreaIndicatorsTable);
+        const table = wrapper.findComponent(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
         expect(table.props().filters).toStrictEqual(["TEST COMPARISON FILTERS"]);
         expect(table.props().selections).toStrictEqual({
@@ -940,7 +940,7 @@ describe("ModelOutput component", () => {
             });
         const wrapper = shallowMount(ModelOutput, {localVue, store});
 
-        const table = wrapper.find(AreaIndicatorsTable)
+        const table = wrapper.findComponent(AreaIndicatorsTable)
         expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
         expect(table.props().indicators).toStrictEqual(
             [

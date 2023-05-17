@@ -20,15 +20,15 @@ describe("ResetMap component", () => {
 
     it("render can display button on map and emit reset view when button clicked", () => {
         const wrapper = getWrapper();
-        expect(wrapper.findAll(LControl).length).toBe(1)
-        const button = wrapper.find(LControl).find('div').find('a')
+        expect(wrapper.findAllComponents(LControl).length).toBe(1)
+        const button = wrapper.findComponent(LControl).findComponent('div').findComponent('a')
         expectTranslated(button, 'Reset view', 'Réinitialiser la vue',
             "Repor vista", store, "aria-label");
         expectTranslated(button, 'Reset view', 'Réinitialiser la vue',
             "Repor vista", store, "title");
         
         button.trigger("click")
-        expect(wrapper.emitted("reset-view")).toBeTruthy();
+        expect(wrapper.emitted("reset-view")!).toBeTruthy();
     });
 
 });

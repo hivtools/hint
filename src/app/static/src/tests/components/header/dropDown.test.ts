@@ -11,31 +11,31 @@ describe("Drop down", () => {
     registerTranslations(store);
 
     it("toggles dropdown on click", () => {
-        const wrapper = shallowMount(DropDown, {store, propsData: {text: "text"}});
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
+        const wrapper = shallowMount(DropDown, {store, props: {text: "text"}});
+        expect(wrapper.findComponent(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
+        wrapper.findComponent(".dropdown-toggle").trigger("click");
+        expect(wrapper.findComponent(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+        wrapper.findComponent(".dropdown-toggle").trigger("click");
+        expect(wrapper.findComponent(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
     });
 
     it("closes dropdown on blur", () => {
-        const wrapper = shallowMount(DropDown, {store, propsData: {text: "text", delay: false}});
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
-        wrapper.find(".dropdown-toggle").trigger("blur");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
+        const wrapper = shallowMount(DropDown, {store, props: {text: "text", delay: false}});
+        wrapper.findComponent(".dropdown-toggle").trigger("click");
+        expect(wrapper.findComponent(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+        wrapper.findComponent(".dropdown-toggle").trigger("blur");
+        expect(wrapper.findComponent(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
     });
 
     it("closes dropdown on blur after delay when 'delay' prop is true", (done) => {
-        const wrapper = shallowMount(DropDown, {store, propsData: {text: "text", delay: true}});
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
-        wrapper.find(".dropdown-toggle").trigger("blur");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+        const wrapper = shallowMount(DropDown, {store, props: {text: "text", delay: true}});
+        wrapper.findComponent(".dropdown-toggle").trigger("click");
+        expect(wrapper.findComponent(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+        wrapper.findComponent(".dropdown-toggle").trigger("blur");
+        expect(wrapper.findComponent(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
 
         setTimeout(() => {
-            expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
+            expect(wrapper.findComponent(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
             done();
         }, 1100);
     });

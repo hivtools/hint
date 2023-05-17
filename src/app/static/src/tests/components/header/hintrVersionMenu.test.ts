@@ -34,7 +34,7 @@ describe("Hintr Menu Version", () => {
             store
         });
 
-        expect(wrapper.findAll("span").length).toBe(5);
+        expect(wrapper.findAllComponents("span").length).toBe(5);
     });
 
     it("renders drop down with delay property true", () => {
@@ -43,7 +43,7 @@ describe("Hintr Menu Version", () => {
             store
         });
 
-        const dropDown = wrapper.find(DropDown);
+        const dropDown = wrapper.findComponent(DropDown);
         expect(dropDown.props("delay")).toBe(true);
     });
 
@@ -53,9 +53,9 @@ describe("Hintr Menu Version", () => {
             store
         });
 
-        const links = wrapper.findAll("a");
+        const links = wrapper.findAllComponents("a");
         expect(links.length).toBe(1);
-        const link = links.at(0);
+        const link = links[0];
         expectTranslated(link, "News", "Nouvelles", "Notícias", store);
         expect(link.attributes("href")).toBe("https://naomi.unaids.org/news");
         expect(link.attributes("target")).toBe("_blank");
@@ -67,7 +67,7 @@ describe("Hintr Menu Version", () => {
             store
         });
 
-        expect(wrapper.findAll("span").at(4).text()).toBe(`hint : v${currentHintVersion}`);
+        expect(wrapper.findAllComponents("span")[4].text()).toBe(`hint : v${currentHintVersion}`);
     });
 
     it("hintr version menu gets initial version placeholder before getter ", async() => {
@@ -76,7 +76,7 @@ describe("Hintr Menu Version", () => {
             store
         });
 
-        expect(wrapper.find(DropDown).props("text")).toBe("vunknown");
+        expect(wrapper.findComponent(DropDown).props("text")).toBe("vunknown");
     });
 
     it("expect get method to have been called", () => {
