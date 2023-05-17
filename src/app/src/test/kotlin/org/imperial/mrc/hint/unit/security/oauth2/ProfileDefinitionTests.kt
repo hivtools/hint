@@ -28,7 +28,7 @@ class ProfileDefinitionTests
 
         assertEquals(userInfoUrl, "https://fakeUrl/userinfo")
 
-        assertEquals(ProfileDefinition.token, "token123")
+        assertEquals(sut.getToken(), "token123")
     }
 
     @Test

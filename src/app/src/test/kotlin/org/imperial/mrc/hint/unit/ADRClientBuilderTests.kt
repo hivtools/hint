@@ -10,6 +10,7 @@ import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.UserException
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
+import org.imperial.mrc.hint.security.oauth2.UserAccessToken
 import org.junit.jupiter.api.Test
 import org.pac4j.core.profile.CommonProfile
 
@@ -34,7 +35,7 @@ class ADRClientBuilderTests
     fun `throws error if user does not have a key`()
     {
         Assertions.assertThatThrownBy {
-            ADRClientBuilder(ConfiguredAppProperties(), encryption, mockSession, mock(), mock())
+            ADRClientBuilder(ConfiguredAppProperties(), encryption, mockSession, mock(), mock(), mock())
                     .build()
         }.isInstanceOf(UserException::class.java)
     }
@@ -42,7 +43,7 @@ class ADRClientBuilderTests
     @Test
     fun `build basic client with correct auth header`()
     {
-        val sut = ADRClientBuilder(ConfiguredAppProperties(), encryption, mockSession, mockRepo, mock())
+        val sut = ADRClientBuilder(ConfiguredAppProperties(), encryption, mockSession, mockRepo, mock(), mock())
         val result = sut.build() as ADRFuelClient
         val headers = result.standardHeaders()
         Assertions.assertThat(headers["Authorization"]).isEqualTo(TEST_KEY)
@@ -52,11 +53,21 @@ class ADRClientBuilderTests
     @Test
     fun `build sso client with correct auth header`()
     {
-        val sut = ADRClientBuilder(ConfiguredAppProperties(), encryption, mockSession, mockRepo, mock())
+        val mockUserAccessToken = mock<UserAccessToken> {
+            on { getToken() } doReturn "FAKE_TOKEN"
+        }
+        val sut = ADRClientBuilder(
+            ConfiguredAppProperties(),
+            encryption,
+            mockSession,
+            mockRepo,
+            mock(),
+            mockUserAccessToken
+        )
         val result = sut.buildSSO() as ADRFuelClient
         val headers = result.standardHeaders()
-        Assertions.assertThat(headers["Authorization"]).isEqualTo("Bearer ")
-        Assertions.assertThat(result.httpRequestHeaders()).isEqualTo(arrayOf("Authorization", "Bearer "))
+        Assertions.assertThat(headers["Authorization"]).isEqualTo("Bearer FAKE_TOKEN")
+        Assertions.assertThat(result.httpRequestHeaders()).isEqualTo(arrayOf("Authorization", "Bearer FAKE_TOKEN"))
     }
 
 }
