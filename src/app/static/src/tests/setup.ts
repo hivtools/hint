@@ -3,11 +3,15 @@ import { createApp } from "vue";
 import Vuex from "vuex";
 import { Language, locales } from "../app/store/translations/locales";
 import { RootState } from "../app/root";
+import Hint from "../app/components/Hint.vue";
 
+// This needs to be replaced
+/*
 // Create a mock element for the app to attach to
 const main = document.createElement('div');
 main.setAttribute('id', 'app');
 document.body.appendChild(main);
+*/
 
 // Implement innerText as it's not implemented in Jest/jsdom
 // Reference: https://github.com/jsdom/jsdom/issues/1245
@@ -31,7 +35,7 @@ i18next.init({
     fallbackLng: Language.en,
 });
 
-const app = createApp({});
+const app = createApp(Hint);
 const store = new Vuex.Store<RootState>({});
 app.use(store);
 
