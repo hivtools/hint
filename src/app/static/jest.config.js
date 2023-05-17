@@ -1,4 +1,3 @@
-// /** @type {import('ts-jest').JestConfigWithTsJest} */
 
 module.exports = {
     testEnvironment: "jsdom",
@@ -16,24 +15,7 @@ module.exports = {
         "**/tests/**/*.test.{j,t}s"
     ],
    testResultsProcessor: 'jest-teamcity-reporter',
-    /*
-         transform: {
-             '.*\\.(vue)$': 'vue3-jest',
-             '^.+\\.ts?$': [
-                 'ts-jest',
-                 {
-                     tsconfig: 'tsconfig.json',
-                     diagnostics: {
-                         warnOnly: false,
-                     }
-                 }
-             ],
-             '^.+\\.js?$': '<rootDir>/node_modules/babel-jest',
-             //'^.+\\.ts$': 'ts-jest',
-         },
-           */
-
-    "transformIgnorePatterns": [
+    transformIgnorePatterns: [
         "/node_modules/(?!d3-format|d3-scale-chromatic|d3-interpolate|d3-color)/"
     ],
     moduleDirectories: ["node_modules", "src"],
