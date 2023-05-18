@@ -76,6 +76,7 @@
     interface Methods {
         fetchOptions: () => void;
         submitCalibrate: (data: DynamicFormData) => void;
+        resumeCalibrate: () => void;
         update: (data: DynamicFormMeta) => void;
         submitForm: (e: Event) => void;
     }
@@ -167,6 +168,7 @@
         methods: {
             update: mapMutationByName(namespace, ModelCalibrateMutation.Update),
             submitCalibrate: mapActionByName(namespace, "submit"),
+            resumeCalibrate: mapActionByName(namespace, "resumeCalibrate"),
             fetchOptions: mapActionByName(namespace, "fetchModelCalibrateOptions"),
             submitForm() {
                 (this.$refs.form as any).submit();
@@ -181,6 +183,7 @@
         },
         mounted() {
             this.fetchOptions();
+            this.resumeCalibrate();
         }
     });
 </script>

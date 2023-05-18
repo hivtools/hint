@@ -12,11 +12,15 @@ import {expectTranslated} from "../../testHelpers";
 import Tick from "../../../app/components/Tick.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import {ModelCalibrateMutation} from "../../../app/store/modelCalibrate/mutations";
-import { Language } from "../../../app/store/translations/locales";
+import {Language} from "../../../app/store/translations/locales";
 
 describe("Model calibrate component", () => {
-    const getStore = (state: Partial<ModelCalibrateState> = {}, fetchAction = jest.fn(), submitAction = jest.fn(),
-                      updateMutation = jest.fn(), rootState: Partial<RootState> = {}) => {
+    const getStore = (state: Partial<ModelCalibrateState> = {},
+                      fetchAction = jest.fn(),
+                      submitAction = jest.fn(),
+                      resumeCalibrateAction = jest.fn(),
+                      updateMutation = jest.fn(),
+                      rootState: Partial<RootState> = {}) => {
         const store = new Vuex.Store({
             state: mockRootState(rootState),
             modules: {
@@ -25,7 +29,8 @@ describe("Model calibrate component", () => {
                     state: mockModelCalibrateState(state),
                     actions: {
                         fetchModelCalibrateOptions: fetchAction,
-                        submit: submitAction
+                        submit: submitAction,
+                        resumeCalibrate: resumeCalibrateAction
                     },
                     mutations: {
                         [ModelCalibrateMutation.Update]: updateMutation
@@ -83,13 +88,13 @@ describe("Model calibrate component", () => {
     });
 
     it("translates required text", () => {
-        const store = getStore({}, jest.fn(), jest.fn(), jest.fn(), {language: Language.fr});
+        const store = getStore({}, jest.fn(), jest.fn(), jest.fn(), jest.fn(), {language: Language.fr});
         const wrapper = shallowMount(ModelCalibrate, {store});
         expect(wrapper.find(DynamicForm).props("requiredText")).toBe("obligatoire");
     });
 
     it("translates select text", () => {
-        const store = getStore({}, jest.fn(), jest.fn(), jest.fn(), {language: Language.fr});
+        const store = getStore({}, jest.fn(), jest.fn(), jest.fn(), jest.fn(), {language: Language.fr});
         const wrapper = shallowMount(ModelCalibrate, {store});
         expect(wrapper.find(DynamicForm).props("selectText")).toBe("Sélectionner...");
     });
@@ -134,7 +139,7 @@ describe("Model calibrate component", () => {
 
     it("setting options value commits update mutation", () => {
         const mockUpdate = jest.fn();
-        const store = getStore({optionsFormMeta: mockOptionsFormMeta()}, jest.fn(), jest.fn(), mockUpdate);
+        const store = getStore({optionsFormMeta: mockOptionsFormMeta()}, jest.fn(), jest.fn(), jest.fn(), mockUpdate);
         const wrapper = mount(ModelCalibrate, {store});
 
         wrapper.find(DynamicForm).find("input").setValue("6");
@@ -173,5 +178,12 @@ describe("Model calibrate component", () => {
         const wrapper = getWrapper(store);
         expect(wrapper.find(CalibrationResults).exists()).toBe(false);
         expect(wrapper.find("#reviewResults").exists()).toBe(false)
+    });
+
+    it("calls resume calibrate on mount", () => {
+        const mockResumeCalibrate = jest.fn();
+        const store = getStore({}, jest.fn(), jest.fn(), mockResumeCalibrate, jest.fn());
+        getWrapper(store);
+        expect(mockResumeCalibrate.mock.calls.length).toBe(1);
     });
 });
