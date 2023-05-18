@@ -45,6 +45,11 @@ describe("Root mutations", () => {
         router.push('/login')
     })
 
+    afterEach(() => {
+        // restore the spy created with spyOn
+        jest.restoreAllMocks();
+    });
+
     const populatedState = function () {
         return mockRootState({
             adr: mockADRState({
