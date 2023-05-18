@@ -85,10 +85,17 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         const {commit} = context;
         commit({type: "SettingFiles", payload: null});
 
-       router.push("/", () => {
+        const completeLoad = () => {
             getFilesAndLoad(context, versionDetails.files, JSON.parse(versionDetails.state));
-        });
+        }
 
+        if (router.currentRoute.path === "/") {
+            completeLoad();
+        } else {
+            router.push("/", () => {
+                completeLoad();
+            })
+        }
     },
 
     async updateStoreState(context, savedState) {
@@ -182,6 +189,7 @@ const getRehydrateStatus = async (context: ActionContext<LoadState, RootState>) 
 async function getFilesAndLoad(context: ActionContext<LoadState, RootState>,
                                files: any,
                                savedState: Partial<RootState>) {
+    console.log("DOING GET FILES AND LOAD")
     savedState.stepper!.steps = initialStepperState().steps
     const {dispatch, state} = context;
     await api<LoadActionTypes, LoadErrorActionTypes>(context)

@@ -17,6 +17,7 @@ export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
     generateErrorReport: (store: ActionContext<RootState, RootState>,
         payload: ErrorReportManualDetails) => void;
+    repairInvalidState: (store: ActionContext<RootState, RootState>) => void;
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -29,6 +30,20 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         const invalidSteps = state.stepper.steps.map((s: StepDescription) => s.number)
             .filter((i: number) => i < maxCompleteOrActive && !completeSteps.includes(i));
 
+        commit({type: RootMutation.SetInvalidSteps, payload: invalidSteps});
+        if (invalidSteps.length > 0) {
+            commit({
+                type: "load/LoadFailed",
+                payload: {
+                    detail: i18next.t("loadFailedErrorDetail")
+                }
+            });
+        }
+    },
+
+    async repairInvalidState(store){
+        const {state, dispatch, commit} = store;
+        const {invalidSteps} = state;
         if (invalidSteps.length > 0) {
 
             //Invalidate any steps which come after the first invalid step
@@ -49,13 +64,6 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
 
             commit({type: RootMutation.Reset, payload: maxValidStep});
             commit({type: RootMutation.ResetSelectedDataType});
-
-            commit({
-                type: "load/LoadFailed",
-                payload: {
-                    detail: i18next.t("loadFailedErrorDetail")
-                }
-            });
         }
     },
 

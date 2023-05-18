@@ -28,7 +28,10 @@
         </modal>
         <load-error-modal :has-error="hasError"
                           :load-error="loadError"
-                          :clear-load-error="clearLoadError"/>
+                          :invalid-steps="invalidSteps"
+                          :clear-load-error="clearLoadError"
+                          :repair-invalid-state="repairInvalidState"
+                          :retry-load="retryLoad"/>
 
         <upload-progress :open-modal="preparing" :cancel="cancelRehydration"/>
     </div>
@@ -36,11 +39,14 @@
 
 <script lang="ts">
     import Modal from "../Modal.vue";
-    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProps} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProps, mapStateProp} from "../../utils";
     import UploadProgress from "./UploadProgress.vue";
     import {LoadingState, LoadState} from "../../store/load/state";
     import LoadErrorModal from "./LoadErrorModal.vue";
     import ProjectsMixin from "../projects/ProjectsMixin";
+    import {RootState} from "../../root";
+    import {ProjectsState} from "../../store/projects/projects";
+    import {Project, Version, VersionIds} from "../../types";
 
     interface Props {
         openModal: boolean
@@ -57,6 +63,9 @@
         clearLoadError: () => void;
         setProjectName: (name: string) => void;
         getProjects: () => void;
+        repairInvalidState: () => void;
+        loadVersion: (ids: VersionIds) => void,
+        retryLoad: () => void
     }
 
     interface LoadComputed {
@@ -65,9 +74,15 @@
         preparing: boolean
     }
 
-    interface Computed extends  LoadComputed{
+    interface ProjectComputed {
+        currentProject: Project,
+        currentVersion: Version
+    }
+
+    interface Computed extends  LoadComputed, ProjectComputed {
         disableCreate: boolean
         isGuest: boolean
+        invalidSteps: number[]
     }
 
     export default ProjectsMixin.extend<Data, Methods, Computed, Props>({
@@ -86,7 +101,18 @@
             cancelRehydration: mapMutationByName("load", "RehydrateCancel"),
             clearLoadError: mapActionByName("load", "clearLoadState"),
             setProjectName: mapMutationByName("load", "SetProjectName"),
-            getProjects: mapActionByName("projects", "getProjects")
+            getProjects: mapActionByName("projects", "getProjects"),
+            repairInvalidState: mapActionByName(null, "repairInvalidState"),
+            loadVersion: mapActionByName("projects", "loadVersion"),
+            retryLoad() {
+              const versionId = this.currentVersion!.id;
+              const projectId = this.currentProject!.id;
+              console.log(`Loading proj with version ${versionId} and project ${projectId}`);
+              this.loadVersion({
+                versionId,
+                projectId
+              })
+            }
         },
         computed: {
             ...mapStateProps<LoadState, keyof LoadComputed>("load", {
@@ -94,6 +120,11 @@
                 loadError: state => state.loadError && state.loadError.detail,
                 preparing: state => state.preparing
             }),
+            ...mapStateProps<ProjectsState, keyof ProjectComputed>("projects", {
+                currentProject: state => state.currentProject,
+                currentVersion: state => state.currentVersion
+            }),
+            invalidSteps: mapStateProp<RootState, number[]>(null, (state) => state.invalidSteps),
             disableCreate() {
                 return !this.uploadProjectName || this.invalidName(this.uploadProjectName)
             },
