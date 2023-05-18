@@ -3,30 +3,31 @@ import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 import {initialModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 
 import {
+    mockADRState,
     mockAncResponse,
     mockBaselineState,
+    mockDownloadResultsState,
     mockError,
     mockErrorsState,
+    mockGenericChartState,
     mockLoadState,
     mockMetadataState,
+    mockModelCalibrateState,
     mockModelOptionsState,
     mockModelOutputState,
     mockModelRunState,
-    mockModelCalibrateState,
     mockPlottingSelections,
     mockRootState,
     mockStepperState,
     mockSurveyAndProgramState,
-    mockDownloadResultsState,
-    mockSurveyResponse, mockADRState, mockGenericChartState
-
+    mockSurveyResponse
 } from "../mocks";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {RootState} from "../../app/root";
 import {
     BarchartSelections,
-    ScaleType,
-    initialPlottingSelectionsState
+    initialPlottingSelectionsState,
+    ScaleType
 } from "../../app/store/plottingSelections/plottingSelections";
 import {initialMetadataState} from "../../app/store/metadata/metadata";
 import {initialModelOutputState} from "../../app/store/modelOutput/modelOutput";
