@@ -7,8 +7,14 @@
               <ul>
                 <li v-for="step in invalidSteps" :key="step" v-translate="stepTextKey(step)"></li>
               </ul>
-              Retry load or rollback to the last valid step (<span v-translate="stepTextKey(lastValidStep)" />)?
-              Rollback will result in a loss of all project data from subsequent steps.
+              <template v-if="lastValidStep >= 1">
+                Retry load or rollback to the last valid step (<span v-translate="stepTextKey(lastValidStep)" />)?
+                Rollback will result in a loss of all project data from subsequent steps.
+              </template>
+              <template v-else>
+                Retry load or rollback?
+                Rollback will result in a loss of all project data.
+              </template>
             </p>
             <p v-else>{{ loadError }}</p>
             <template v-slot:footer>
