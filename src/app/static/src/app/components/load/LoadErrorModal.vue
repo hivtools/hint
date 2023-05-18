@@ -3,7 +3,12 @@
         <modal :open="hasError">
             <h4 v-translate="'loadError'"></h4>
             <p v-if="showInvalidSteps">
-              There are invalid steps in the loaded state. Repair state or retry load? If you repair some data may be lost.
+              There was a problem loading the following steps:
+              <ul>
+                <li v-for="step in invalidSteps" :key="step" v-translate="stepTextKey(step)"></li>
+              </ul>
+              Retry load or rollback to the last valid step (<span v-translate="stepTextKey(lastValidStep)" />)?
+              Rollback will result in a loss of all project data from subsequent steps.
             </p>
             <p v-else>{{ loadError }}</p>
             <template v-slot:footer>
@@ -48,6 +53,7 @@
     import {RootState} from "../../root";
     import {Project, Version, VersionIds} from "../../types";
     import {ProjectsState} from "../../store/projects/projects";
+    import {StepDescription, StepperState} from "../../store/stepper/stepper";
 
     interface LoadComputed  {
         loadError: string
@@ -59,16 +65,22 @@
       currentVersion: Version
     }
 
-    interface Computed extends LoadComputed, ProjectComputed {
+    interface StepperComputed {
+        steps: StepDescription[]
+    }
+
+    interface Computed extends LoadComputed, ProjectComputed, StepperComputed {
         invalidSteps: number[],
-        showInvalidSteps: boolean
+        showInvalidSteps: boolean,
+        lastValidStep: number
     }
 
     interface Methods {
         clearLoadError: () => void,
         rollbackInvalidState: () => void,
         loadVersion: (versionIds: VersionIds) => void,
-        retryLoad: () => void
+        retryLoad: () => void,
+        stepTextKey: (stepNumber: number) => string
     }
 
     export default Vue.extend<unknown, Methods, Computed>({
@@ -82,8 +94,12 @@
               currentProject: state => state.currentProject,
               currentVersion: state => state.currentVersion
             }),
+            ...mapStateProps<StepperState, keyof StepperComputed>("stepper", {
+              steps: state => state.steps
+            }),
             invalidSteps: mapStateProp<RootState, number[]>(null, (state) => state.invalidSteps),
-            showInvalidSteps: function() { return this.invalidSteps?.length > 0; }
+            showInvalidSteps: function() { return this.invalidSteps?.length > 0; },
+            lastValidStep: function() { return Math.min(...this.invalidSteps!) - 1; }
         },
         methods: {
             clearLoadError: mapActionByName("load", "clearLoadState"),
@@ -97,6 +113,9 @@
                 versionId,
                 projectId
               })
+            },
+            stepTextKey(stepNumber: number) {
+                return this.steps.find(step => step.number === stepNumber)?.textKey || stepNumber.toString();
             }
         },
         components: {
