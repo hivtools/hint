@@ -3,18 +3,16 @@
         <modal :open="hasError">
             <h4 v-translate="'loadError'"></h4>
             <p v-if="showInvalidSteps">
-              There was a problem loading the following steps:
+              <span v-translate="'loadErrorSteps'" />
               <ul>
                 <li v-for="step in invalidSteps" :key="step" v-translate="stepTextKey(step)"></li>
               </ul>
               <template v-if="lastValidStep >= 1">
-                Retry load or rollback to the last valid step (<span v-translate="stepTextKey(lastValidStep)" />)?
-                Rollback will result in a loss of all project data from subsequent steps.
+                <span v-translate="'loadErrorStepsFromValidAction'" />
+                <span v-translate="stepTextKey(lastValidStep)" />.
+                <span v-translate="'loadErrorStepsFromValidWarning'" />
               </template>
-              <template v-else>
-                Retry load or rollback?
-                Rollback will result in a loss of all project data.
-              </template>
+              <span v-else v-translate="'loadErrorStepsAllAction'" />
             </p>
             <p v-else>{{ loadError }}</p>
             <template v-slot:footer>
@@ -114,7 +112,6 @@
             retryLoad() {
               const versionId = this.currentVersion!.id;
               const projectId = this.currentProject!.id;
-              console.log(`Loading proj with version ${versionId} and project ${projectId}`);
               this.loadVersion({
                 versionId,
                 projectId
