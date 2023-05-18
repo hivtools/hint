@@ -37,7 +37,6 @@ import {Language} from "../../app/store/translations/locales";
 import {router} from '../../app/router';
 import {initialModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
 import {initialDownloadResultsState} from "../../app/store/downloadResults/downloadResults";
-import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 
 describe("Root mutations", () => {
 
