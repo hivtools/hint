@@ -26,27 +26,18 @@
                 </button>
             </template>
         </modal>
-        <load-error-modal :has-error="hasError"
-                          :load-error="loadError"
-                          :invalid-steps="invalidSteps"
-                          :clear-load-error="clearLoadError"
-                          :rollback-invalid-state="rollbackInvalidState"
-                          :retry-load="retryLoad"/>
-
+        <load-error-modal />
         <upload-progress :open-modal="preparing" :cancel="cancelRehydration"/>
     </div>
 </template>
 
 <script lang="ts">
     import Modal from "../Modal.vue";
-    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProps, mapStateProp} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProps} from "../../utils";
     import UploadProgress from "./UploadProgress.vue";
     import {LoadingState, LoadState} from "../../store/load/state";
     import LoadErrorModal from "./LoadErrorModal.vue";
     import ProjectsMixin from "../projects/ProjectsMixin";
-    import {RootState} from "../../root";
-    import {ProjectsState} from "../../store/projects/projects";
-    import {Project, Version, VersionIds} from "../../types";
 
     interface Props {
         openModal: boolean
@@ -60,29 +51,17 @@
 
     interface Methods {
         cancelRehydration: () => void;
-        clearLoadError: () => void;
         setProjectName: (name: string) => void;
         getProjects: () => void;
-        rollbackInvalidState: () => void;
-        loadVersion: (ids: VersionIds) => void,
-        retryLoad: () => void
     }
 
     interface LoadComputed {
-        loadError: string
-        hasError: boolean
         preparing: boolean
     }
 
-    interface ProjectComputed {
-        currentProject: Project,
-        currentVersion: Version
-    }
-
-    interface Computed extends  LoadComputed, ProjectComputed {
+    interface Computed extends  LoadComputed {
         disableCreate: boolean
         isGuest: boolean
-        invalidSteps: number[]
     }
 
     export default ProjectsMixin.extend<Data, Methods, Computed, Props>({
@@ -99,32 +78,13 @@
         },
         methods: {
             cancelRehydration: mapMutationByName("load", "RehydrateCancel"),
-            clearLoadError: mapActionByName("load", "clearLoadState"),
             setProjectName: mapMutationByName("load", "SetProjectName"),
-            getProjects: mapActionByName("projects", "getProjects"),
-            rollbackInvalidState: mapActionByName(null, "rollbackInvalidState"),
-            loadVersion: mapActionByName("projects", "loadVersion"),
-            retryLoad() {
-              const versionId = this.currentVersion!.id;
-              const projectId = this.currentProject!.id;
-              console.log(`Loading proj with version ${versionId} and project ${projectId}`);
-              this.loadVersion({
-                versionId,
-                projectId
-              })
-            }
+            getProjects: mapActionByName("projects", "getProjects")
         },
         computed: {
             ...mapStateProps<LoadState, keyof LoadComputed>("load", {
-                hasError: state => state.loadingState === LoadingState.LoadFailed,
-                loadError: state => state.loadError && state.loadError.detail,
                 preparing: state => state.preparing
             }),
-            ...mapStateProps<ProjectsState, keyof ProjectComputed>("projects", {
-                currentProject: state => state.currentProject,
-                currentVersion: state => state.currentVersion
-            }),
-            invalidSteps: mapStateProp<RootState, number[]>(null, (state) => state.invalidSteps),
             disableCreate() {
                 return !this.uploadProjectName || this.invalidName(this.uploadProjectName)
             },

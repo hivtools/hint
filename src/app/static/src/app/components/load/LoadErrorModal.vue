@@ -43,28 +43,61 @@
 <script lang="ts">
     import Vue from "vue"
     import Modal from "../Modal.vue";
+    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+    import {LoadingState, LoadState} from "../../store/load/state";
+    import {RootState} from "../../root";
+    import {Project, Version, VersionIds} from "../../types";
+    import {ProjectsState} from "../../store/projects/projects";
 
-    interface Props {
-        hasError: boolean
+    interface LoadComputed  {
         loadError: string
-        invalidSteps: number[]
-        clearLoadError: () => void
-        rollbackInvalidState: () => void
+        hasError: boolean
+    }
+
+    interface ProjectComputed {
+      currentProject: Project,
+      currentVersion: Version
+    }
+
+    interface Computed extends LoadComputed, ProjectComputed {
+        invalidSteps: number[],
+        showInvalidSteps: boolean
+    }
+
+    interface Methods {
+        clearLoadError: () => void,
+        rollbackInvalidState: () => void,
+        loadVersion: (versionIds: VersionIds) => void,
         retryLoad: () => void
     }
 
-    export default Vue.extend<unknown, unknown, unknown, Props>({
+    export default Vue.extend<unknown, Methods, Computed>({
         name: "LoadErrorModal",
-        props: {
-            hasError: Boolean,
-            loadError: String,
-            invalidSteps: Array,
-            clearLoadError: Function,
-            rollbackInvalidState: Function,
-            retryLoad: Function
-        },
         computed: {
-          showInvalidSteps: function() { return this.invalidSteps?.length > 0; }
+            ...mapStateProps<LoadState, keyof LoadComputed>("load", {
+              hasError: state => state.loadingState === LoadingState.LoadFailed,
+              loadError: state => state.loadError && state.loadError.detail
+            }),
+            ...mapStateProps<ProjectsState, keyof ProjectComputed>("projects", {
+              currentProject: state => state.currentProject,
+              currentVersion: state => state.currentVersion
+            }),
+            invalidSteps: mapStateProp<RootState, number[]>(null, (state) => state.invalidSteps),
+            showInvalidSteps: function() { return this.invalidSteps?.length > 0; }
+        },
+        methods: {
+            clearLoadError: mapActionByName("load", "clearLoadState"),
+            rollbackInvalidState: mapActionByName(null, "rollbackInvalidState"),
+            loadVersion: mapActionByName("projects", "loadVersion"),
+            retryLoad() {
+              const versionId = this.currentVersion!.id;
+              const projectId = this.currentProject!.id;
+              console.log(`Loading proj with version ${versionId} and project ${projectId}`);
+              this.loadVersion({
+                versionId,
+                projectId
+              })
+            }
         },
         components: {
             Modal
