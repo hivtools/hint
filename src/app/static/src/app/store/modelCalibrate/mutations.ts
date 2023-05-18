@@ -116,6 +116,9 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.error = action.payload;
         state.calibrating = false;
         state.generatingCalibrationPlot = false;
+        console.log("Handling error from model calibrate")
+        console.log(JSON.stringify(action))
+        console.log(JSON.stringify(state))
         if (state.statusPollId > -1) {
             stopPolling(state);
         }
@@ -126,7 +129,11 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     },
 
     [ModelCalibrateMutation.PollingForStatusStarted](state: ModelCalibrateState, action: PayloadWithType<number>) {
+        console.log("Setting status poll ID with payload");
+        console.log(action);
+        console.log(state.statusPollId);
         state.statusPollId = action.payload;
+        console.log(state.statusPollId);
     },
 
     [ModelCalibrateMutation.WarningsFetched](state: ModelCalibrateState, action: PayloadWithType<Warning[]>) {
@@ -147,6 +154,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
 };
 
 const stopPolling = (state: ModelCalibrateState) => {
+    console.log("Stopping polling "+ state.statusPollId)
     clearInterval(state.statusPollId);
     state.statusPollId = -1;
 };

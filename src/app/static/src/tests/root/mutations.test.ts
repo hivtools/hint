@@ -37,6 +37,7 @@ import {Language} from "../../app/store/translations/locales";
 import {router} from '../../app/router';
 import {initialModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
 import {initialDownloadResultsState} from "../../app/store/downloadResults/downloadResults";
+import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 
 describe("Root mutations", () => {
 
@@ -328,5 +329,42 @@ describe("Root mutations", () => {
 
         mutations.SetUpdatingLanguage(state, {payload: false});
         expect(state.updatingLanguage).toBe(false);
+    });
+
+    it("resetOutput stops any polling", () => {
+        const state = mockRootState({
+            modelRun: mockModelRunState({statusPollId: 98}),
+            modelCalibrate: mockModelCalibrateState({statusPollId: 99})
+        });
+        const spy = jest.spyOn(window, "clearInterval");
+
+        mutations.ResetOutputs(state);
+
+        expect(state.modelRun.statusPollId).toBe(-1);
+        expect(state.modelCalibrate.statusPollId).toBe(-1);
+        expect(spy).toHaveBeenCalledTimes(2);
+        expect(spy).toHaveBeenNthCalledWith(1, 98);
+        expect(spy).toHaveBeenNthCalledWith(2, 99);
+    });
+
+    it("resetOutput stops any download polling", () => {
+        const state = populatedState();
+        state.downloadResults.spectrum.statusPollId = 96;
+        state.downloadResults.coarseOutput.statusPollId = 97;
+        state.downloadResults.summary.statusPollId = 98;
+        state.downloadResults.comparison.statusPollId = 99;
+        const spy = jest.spyOn(window, "clearInterval");
+
+        mutations.ResetDownload(state);
+
+        expect(state.downloadResults.spectrum.statusPollId).toBe(-1);
+        expect(state.downloadResults.summary.statusPollId).toBe(-1);
+        expect(state.downloadResults.coarseOutput.statusPollId).toBe(-1);
+        expect(state.downloadResults.comparison.statusPollId).toBe(-1);
+        expect(spy).toHaveBeenCalledTimes(4);
+        expect(spy).toHaveBeenNthCalledWith(1, 96);
+        expect(spy).toHaveBeenNthCalledWith(2, 97);
+        expect(spy).toHaveBeenNthCalledWith(3, 98);
+        expect(spy).toHaveBeenNthCalledWith(4, 99);
     });
 });

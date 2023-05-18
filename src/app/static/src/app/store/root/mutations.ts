@@ -13,7 +13,7 @@ import {PayloadWithType, Project} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialProjectsState} from "../projects/projects";
 import {router} from '../../router';
-import {initialModelCalibrateState} from "../modelCalibrate/modelCalibrate";
+import {initialModelCalibrateState, ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {initialADRUploadState} from "../adrUpload/adrUpload";
 import {initialDownloadResultsState} from "../downloadResults/downloadResults";
 import {initialGenericChartState} from "../genericChart/genericChart";
@@ -136,10 +136,16 @@ export const mutations: MutationTree<RootState> = {
     },
 
     [RootMutation.ResetDownload](state: RootState) {
+        stopPolling(state.downloadResults.spectrum);
+        stopPolling(state.downloadResults.coarseOutput);
+        stopPolling(state.downloadResults.summary);
+        stopPolling(state.downloadResults.comparison);
         Object.assign(state.downloadResults, initialDownloadResultsState());
     },
 
     [RootMutation.ResetOutputs](state: RootState) {
+        stopPolling(state.modelRun);
+        stopPolling(state.modelCalibrate);
         Object.assign(state.modelRun, initialModelRunState());
         state.modelRun.ready = true;
         Object.assign(state.modelCalibrate, initialModelCalibrateState());
@@ -157,4 +163,9 @@ export const mutations: MutationTree<RootState> = {
     },
     ...languageMutations
 
+};
+
+const stopPolling = (state: any) => {
+    clearInterval(state.statusPollId);
+    state.statusPollId = -1;
 };
