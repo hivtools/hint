@@ -1,5 +1,12 @@
-import {router} from '../app/router';
+import {router} from '../app/index';
 import {storeOptions} from "../app/root";
+// only import the app after we have replaced action with mocks
+// as the app will call these actions on import
+import {app, beforeEnter} from "../app";
+import Stepper from "../app/components/Stepper.vue";
+import Projects from "../app/components/projects/Projects.vue";
+import {store} from "../app/main";
+import {Route, RouteLocationNormalized} from "vue-router";
 
 const baselineActions = {
     getBaselineData: jest.fn()
@@ -82,7 +89,7 @@ describe("Router", () => {
         store.state.currentUser = "guest";
         Storage.prototype.getItem = jest.fn();
 
-        beforeEnter({} as Route, {} as Route, next);
+        beforeEnter({} as RouteLocationNormalized, {} as RouteLocationNormalized, next);
 
         expect(window.location.assign).toHaveBeenCalledTimes(1);
         expect(window.location.assign).toHaveBeenCalledWith("/login");
