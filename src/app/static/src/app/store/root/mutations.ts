@@ -166,6 +166,9 @@ export const mutations: MutationTree<RootState> = {
 };
 
 const stopPolling = (state: any) => {
+    if (state.statusPollId == -1) {
+        return
+    }
     clearInterval(state.statusPollId);
     state.statusPollId = -1;
 };
