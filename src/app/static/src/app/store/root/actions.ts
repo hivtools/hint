@@ -17,7 +17,7 @@ export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
     generateErrorReport: (store: ActionContext<RootState, RootState>,
         payload: ErrorReportManualDetails) => void;
-    repairInvalidState: (store: ActionContext<RootState, RootState>) => void;
+    rollbackInvalidState: (store: ActionContext<RootState, RootState>) => void;
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -41,7 +41,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         }
     },
 
-    async repairInvalidState(store){
+    async rollbackInvalidState(store){
         const {state, dispatch, commit} = store;
         const {invalidSteps} = state;
         if (invalidSteps.length > 0) {

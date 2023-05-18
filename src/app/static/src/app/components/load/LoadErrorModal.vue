@@ -2,31 +2,39 @@
     <div id="load-error-modal">
         <modal :open="hasError">
             <h4 v-translate="'loadError'"></h4>
-            <p>{{ loadError }}</p>
-            <template v-if="invalidSteps && invalidSteps.length">
+            <p v-if="showInvalidSteps">
               There are invalid steps in the loaded state. Repair state or retry load? If you repair some data may be lost.
-              // TODO: translate all this!!
-              <button type="button"
-                      class="btn btn-red"
-                      data-dismiss="modal"
-                      aria-label="Retry"
-                      @click="retryLoad">Retry
-              </button>
-              <button type="button"
-                      class="btn btn-red"
-                      data-dismiss="modal"
-                      aria-label="Repair"
-                      @click="repairInvalidState">Repair
-              </button>
-            </template>
-            <template v-else>
-                <button type="button"
+            </p>
+            <p v-else>{{ loadError }}</p>
+            <template v-slot:footer>
+              <template v-if="showInvalidSteps">
+                <button id="retry-load"
+                        type="button"
                         class="btn btn-red"
                         data-dismiss="modal"
-                        aria-label="Close"
-                        @click="clearLoadError"
-                        v-translate="'ok'">
+                        aria-label="Retry"
+                        @click="retryLoad"
+                        v-translate="'retry'">
                 </button>
+                <button id="rollback-load"
+                        type="button"
+                        class="btn btn-red"
+                        data-dismiss="modal"
+                        aria-label="Rollback"
+                        @click="rollbackInvalidState"
+                        v-translate="'rollback'">
+                </button>
+              </template>
+              <template v-else>
+                  <button id="ok-load-error"
+                          type="button"
+                          class="btn btn-red"
+                          data-dismiss="modal"
+                          aria-label="Close"
+                          @click="clearLoadError"
+                          v-translate="'ok'">
+                  </button>
+              </template>
             </template>
         </modal>
     </div>
@@ -41,7 +49,7 @@
         loadError: string
         invalidSteps: number[]
         clearLoadError: () => void
-        repairInvalidState: () => void
+        rollbackInvalidState: () => void
         retryLoad: () => void
     }
 
@@ -52,8 +60,11 @@
             loadError: String,
             invalidSteps: Array,
             clearLoadError: Function,
-            repairInvalidState: Function,
+            rollbackInvalidState: Function,
             retryLoad: Function
+        },
+        computed: {
+          showInvalidSteps: function() { return this.invalidSteps?.length > 0; }
         },
         components: {
             Modal

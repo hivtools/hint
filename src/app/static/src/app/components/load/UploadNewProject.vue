@@ -30,7 +30,7 @@
                           :load-error="loadError"
                           :invalid-steps="invalidSteps"
                           :clear-load-error="clearLoadError"
-                          :repair-invalid-state="repairInvalidState"
+                          :rollback-invalid-state="rollbackInvalidState"
                           :retry-load="retryLoad"/>
 
         <upload-progress :open-modal="preparing" :cancel="cancelRehydration"/>
@@ -63,7 +63,7 @@
         clearLoadError: () => void;
         setProjectName: (name: string) => void;
         getProjects: () => void;
-        repairInvalidState: () => void;
+        rollbackInvalidState: () => void;
         loadVersion: (ids: VersionIds) => void,
         retryLoad: () => void
     }
@@ -102,7 +102,7 @@
             clearLoadError: mapActionByName("load", "clearLoadState"),
             setProjectName: mapMutationByName("load", "SetProjectName"),
             getProjects: mapActionByName("projects", "getProjects"),
-            repairInvalidState: mapActionByName(null, "repairInvalidState"),
+            rollbackInvalidState: mapActionByName(null, "rollbackInvalidState"),
             loadVersion: mapActionByName("projects", "loadVersion"),
             retryLoad() {
               const versionId = this.currentVersion!.id;
