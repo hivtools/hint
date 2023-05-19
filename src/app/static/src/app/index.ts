@@ -1,45 +1,9 @@
 import {createApp} from "vue";
 import {store} from "./main"
-// import UserHeader from "./components/header/UserHeader.vue";
-// import Errors from "./components/Errors.vue";
-import Stepper from "./components/Stepper.vue";
-import Projects from "./components/projects/Projects.vue";
-import Accessibility from "./components/Accessibility.vue";
-import Privacy from "./components/Privacy.vue";
-// import {mapActions, mapState} from "vuex";
-// import {RootState} from "./root";
-import {createRouter, createWebHashHistory, RouteLocationNormalized} from "vue-router";
-// import {Language} from "./store/translations/locales";
+import {router} from "./router"
 import Hint from "./components/Hint.vue"
-import "../scss/style.scss"
-import "leaflet/dist/leaflet.css"
 import translate from "./directives/translate";
 import FloatingVue from "floating-vue";
-import 'floating-vue/dist/style.css';
-
-export const beforeEnter = (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
-    if (store.state.currentUser === "guest" && !sessionStorage.getItem("asGuest")) {
-        return {name: 'login'};
-        // window.location.assign("/login");
-    }
-    return true;
-}
-
-const routes = [
-    {
-        path: "/",
-        component: Stepper,
-        beforeEnter
-    },
-    {path: "/accessibility", component: Accessibility},
-    {path: "/privacy", component: Privacy},
-    {path: "/projects", component: Projects}
-];
-
-export const router = createRouter({
-    history: createWebHashHistory(),
-    routes,
-});
 
 const app = createApp(Hint);
 

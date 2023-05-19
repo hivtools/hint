@@ -31,7 +31,7 @@ module.exports = {
     modulePaths: [
         "<rootDir>"
     ],
-    "testPathIgnorePatterns" : [
+    testPathIgnorePatterns : [
         "src/tests/components"
     ],
 }

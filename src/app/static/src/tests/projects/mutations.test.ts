@@ -1,6 +1,6 @@
 import {mockProjectsState} from "../mocks";
 import {mutations, ProjectsMutations} from "../../app/store/projects/mutations";
-import {router} from '../../app/router';
+import {router} from "../../app/router";
 
 describe("Projects mutations", () => {
     const testNow = Date.now();
