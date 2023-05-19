@@ -160,7 +160,6 @@ export const mutations: MutationTree<RootState> = {
 
     [RootMutation.SetInvalidSteps](state: RootState, action: PayloadWithType<number[]>) {
         state.invalidSteps = action.payload;
-        console.log(`SetInvalidSteps: ${JSON.stringify(action.payload)}`)
     },
 
     ...languageMutations

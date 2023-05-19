@@ -199,8 +199,6 @@ export const actions: ActionTree<ProjectsState, RootState> & ProjectsActions = {
             .then((response: any) => {
                 if (state.error === null) {
                     dispatch("load/loadFromVersion", response.data, {root: true})
-                } else {
-                    console.log("NOT LOADING BECAUSE PROJECT HAS ERROR: " + JSON.stringify(state.error))
                 }
             });
     },
