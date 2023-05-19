@@ -7,7 +7,6 @@ import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.logging.logADRRequestDuration
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
-import org.imperial.mrc.hint.security.oauth2.UserAccessToken
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import java.io.File
@@ -19,8 +18,7 @@ class ADRClientBuilder(val appProperties: AppProperties,
                        val encryption: Encryption,
                        val session: Session,
                        val userRepository: UserRepository,
-                       val logger: GenericLogger,
-                       val userAccessToken: UserAccessToken)
+                       val logger: GenericLogger)
 {
 
     fun build(): ADRClient
@@ -28,12 +26,16 @@ class ADRClientBuilder(val appProperties: AppProperties,
         val userId = this.session.getUserProfile().id
         val encryptedKey = this.userRepository.getADRKey(userId) ?: throw UserException("noADRKey")
         val apiKey = this.encryption.decrypt(encryptedKey)
-        return ADRFuelClient(this.appProperties, apiKey, this.logger)
+        return ADRFuelClient(this.appProperties.adrUrl, apiKey, this.logger)
     }
 
     fun buildSSO(): ADRClient
     {
-        return ADRFuelClient(this.appProperties, "Bearer ${userAccessToken.getToken()}", this.logger)
+        return ADRFuelClient(
+            this.appProperties.oauth2ClientAdrServerUrl,
+            "Bearer ${this.session.getAccessToken()}",
+            this.logger
+        )
     }
 }
 
@@ -45,10 +47,10 @@ interface ADRClient
     fun postFile(url: String, parameters: List<Pair<String, Any?>>, file: Pair<String, File>): ResponseEntity<String>
 }
 
-class ADRFuelClient(appProperties: AppProperties,
+class ADRFuelClient(baseUrl: String,
                     private val apiKey: String,
                     private val logger: GenericLogger)
-    : FuelClient(appProperties.adrUrl + "api/3/action"), ADRClient
+    : FuelClient(baseUrl + "api/3/action"), ADRClient
 {
     private val header = Pair("Authorization", apiKey)
 

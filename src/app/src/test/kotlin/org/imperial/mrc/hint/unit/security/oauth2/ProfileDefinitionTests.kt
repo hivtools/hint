@@ -13,7 +13,7 @@ import org.pac4j.oauth.config.OAuthConfiguration
 class ProfileDefinitionTests
 {
     @Test
-    fun `can retrieve access token and user profile url`()
+    fun `can user profile url`()
     {
         val mockToken = mock<OAuth2AccessToken>
         {
@@ -27,8 +27,6 @@ class ProfileDefinitionTests
         val userInfoUrl = sut.getProfileUrl(mockToken, mockOAuthConfig)
 
         assertEquals(userInfoUrl, "https://fakeUrl/userinfo")
-
-        assertEquals(sut.getToken(), "token123")
     }
 
     @Test

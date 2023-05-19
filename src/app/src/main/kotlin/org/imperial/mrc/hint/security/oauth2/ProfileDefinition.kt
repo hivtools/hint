@@ -1,7 +1,6 @@
 package org.imperial.mrc.hint.security.oauth2
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.scribejava.core.model.OAuth2AccessToken
 import com.github.scribejava.core.model.Token
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.ConfiguredAppProperties
@@ -10,24 +9,13 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.oauth.config.OAuthConfiguration
 import org.pac4j.oauth.profile.OAuth20Profile
 import org.pac4j.oauth.profile.definition.OAuthProfileDefinition
-import org.springframework.stereotype.Component
 
-interface UserAccessToken {
-    fun getToken(): String
-}
-@Component
 class ProfileDefinition(
     private val userRepository: UserRepository,
     private val appProperties: AppProperties = ConfiguredAppProperties(),
     private val objectMapper: ObjectMapper = ObjectMapper()
-) : OAuthProfileDefinition(), UserAccessToken
+) : OAuthProfileDefinition()
 {
-    private lateinit var token: String
-
-    override fun getToken(): String
-    {
-        return token
-    }
 
     override fun extractUserProfile(body: String?): CommonProfile
     {
@@ -45,9 +33,6 @@ class ProfileDefinition(
 
     override fun getProfileUrl(accessToken: Token?, configuration: OAuthConfiguration?): String
     {
-        accessToken.let {
-            token = (accessToken as OAuth2AccessToken).accessToken
-        }
         return "https://${appProperties.oauth2ClientUrl}/userinfo"
     }
 }
