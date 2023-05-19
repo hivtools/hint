@@ -1,5 +1,6 @@
 package org.imperial.mrc.hint.security
 
+import com.github.scribejava.core.model.OAuth2AccessToken
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic.Companion.GUEST_USER
 import org.pac4j.core.config.Config
@@ -48,6 +49,7 @@ class Session(
     {
         private const val VERSION_ID = "version_id"
         private const val MODE = "mode"
+        private const val ACCESS_TOKEN = "access_token"
     }
 
     fun generateStateParameter(): String
@@ -69,8 +71,12 @@ class Session(
     fun getAccessToken(): String
     {
         val manager = ProfileManager(webContext, sessionStore)
+
         val profile = manager.profiles.singleOrNull() ?: OAuth20Profile()
-        return profile.getAttribute("access_token").toString()
+
+        val token = profile.getAttribute(ACCESS_TOKEN) ?: ""
+
+        return token.toString()
     }
 
     fun userIsGuest(): Boolean

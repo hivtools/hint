@@ -6,12 +6,9 @@ import org.junit.jupiter.api.Test
 import org.pac4j.core.config.Config
 import org.pac4j.core.context.session.SessionStore
 import org.imperial.mrc.hint.security.Session
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.mockito.ArgumentMatchers.anyString
 import org.pac4j.core.context.WebContext
-import org.pac4j.core.profile.CommonProfile
-import org.pac4j.core.profile.ProfileManager
 import java.util.*
 
 class SessionTests
@@ -141,5 +138,16 @@ class SessionTests
         assertTrue(sut.generateStateParameter().isNotEmpty())
 
         verify(mockSessionStore).set(any(), anyString(), anyString())
+    }
+
+    @Test
+    fun `gets empty string when token is empty`()
+    {
+        val mockWebContext = mock<WebContext>()
+        val mockSessionStore = mock<SessionStore>()
+        val mockConfig = mock<Config>()
+        val sut = Session(mockWebContext, mockConfig, mockSessionStore)
+        val accessToken = sut.getAccessToken()
+        assertThat(accessToken).isEqualTo("")
     }
 }
