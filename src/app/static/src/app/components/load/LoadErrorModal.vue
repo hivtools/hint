@@ -3,24 +3,23 @@
         <modal :open="hasError">
             <h4 v-translate="'loadError'"></h4>
             <p v-if="showInvalidSteps">
-              <span v-translate="'loadErrorSteps'" />
-              <ul>
+              <span id="load-error-steps" v-translate="'loadErrorSteps'" />
+              <ul id="load-error-steps-list">
                 <li v-for="step in invalidSteps" :key="step" v-translate="stepTextKey(step)"></li>
               </ul>
               <template v-if="lastValidStep >= 1">
-                <span v-translate="'loadErrorStepsFromValidAction'" />
-                <span v-translate="stepTextKey(lastValidStep)" />.
-                <span v-translate="'loadErrorStepsFromValidWarning'" />
+                <span id="load-error-steps-from-valid-action" v-translate="'loadErrorStepsFromValidAction'" />
+                <span id="load-error-last-valid" v-translate="stepTextKey(lastValidStep)" />.
+                <span id="load-error-steps-from-valid-warning" v-translate="'loadErrorStepsFromValidWarning'" />
               </template>
-              <span v-else v-translate="'loadErrorStepsAllAction'" />
+              <span v-else id="load-error-steps-all-action" v-translate="'loadErrorStepsAllAction'" />
             </p>
-            <p v-else>{{ loadError }}</p>
+            <p v-else id="load-error-error">{{ loadError }}</p>
             <template v-slot:footer>
               <template v-if="showInvalidSteps">
                 <button id="retry-load"
                         type="button"
                         class="btn btn-red"
-                        data-dismiss="modal"
                         aria-label="Retry"
                         @click="retryLoad"
                         v-translate="'retry'">
@@ -28,7 +27,6 @@
                 <button id="rollback-load"
                         type="button"
                         class="btn btn-red"
-                        data-dismiss="modal"
                         aria-label="Rollback"
                         @click="rollbackInvalidState"
                         v-translate="'rollback'">

@@ -1,5 +1,10 @@
 import {mount} from "@vue/test-utils";
 import LoadErrorModal from "../../../app/components/load/LoadErrorModal.vue"
+import Vuex from "vuex";
+import {RootState} from "../../../app/root";
+import {initialStepperState} from "../../../app/store/stepper/stepper";
+import {LoadingState} from "../../../app/store/load/state";
+import {expectHasTranslationKey} from "../../testHelpers";
 
 describe("loadErrorModal", () => {
 
@@ -7,72 +12,155 @@ describe("loadErrorModal", () => {
         jest.resetAllMocks()
     })
 
-    const mockFunction = jest.fn()
-    const mockTranslate = jest.fn()
+    const mockClearLoadError = jest.fn();
+    const mockRollbackInvalidState = jest.fn();
+    const mockLoadVersion = jest.fn();
+    const mockTranslate = jest.fn();
 
-    const errorProps = {
-        hasError: false,
-        loadError: "",
-        clearLoadError: mockFunction,
-    }
+    const getWrapper = (hasError: boolean =  true, loadError: string = "Test Error Message", invalidSteps: number[] = []) => {
+        const store = new Vuex.Store<RootState>({
+            state: {
+                invalidSteps
+            } as any,
+            actions: {
+                rollbackInvalidState: mockRollbackInvalidState
+            },
+            modules: {
+                load: {
+                    namespaced: true,
+                    state: {
+                        loadingState: hasError ? LoadingState.LoadFailed : LoadingState.NotLoading,
+                        loadError: {
+                            detail: loadError
+                        }
+                    },
+                    actions: {
+                        clearLoadState: mockClearLoadError
+                    }
+                },
+                projects: {
+                    namespaced: true,
+                    state: {
+                        currentProject: {
+                            id: "testProjectId"
+                        },
+                        currentVersion: {
+                            id: "testVersionId"
+                        }
+                    },
+                    actions: {
+                        loadVersion: mockLoadVersion
+                    }
+                },
+                stepper: {
+                    namespaced: true,
+                    state: initialStepperState()
+                }
+            }
+        });
 
-    const openErrorProps = {
-        hasError: true,
-        loadError: "Test Error Message",
-        clearLoadError: mockFunction,
-    }
-
-    const getWrapper = (props = errorProps) => {
         return mount(LoadErrorModal, {
-            propsData: props,
+            store,
             directives: {
                 translate: mockTranslate
             }
         })
     }
 
-    it("can render error modal as expected", () => {
-        const wrapper = getWrapper()
+    it("can render error modal as expected when there is no load error", () => {
+        const wrapper = getWrapper(false);
         const modal = wrapper.find(".modal")
         expect(modal.attributes()).toEqual({
             class: "modal",
             style: "display: none;"
         })
-    })
+    });
 
-    it("opens error modal", () => {
-        const wrapper = getWrapper(openErrorProps)
+   it("can render error modal as expected when there is load error and no invalid steps", () => {
+        const wrapper = getWrapper();
         const modal = wrapper.find(".modal")
         expect(modal.attributes()).toEqual({
             class: "modal show",
             style: "display: block;",
         })
-        expect(mockFunction.mock.calls.length).toBe(0)
-    })
+        expect(mockClearLoadError.mock.calls.length).toBe(0)
+    });
 
-    it("can display error text and translates elements", () => {
-        const wrapper = getWrapper(openErrorProps)
+
+   it("can display error text and translates elements when there is load error and no invalid steps", () => {
+        const wrapper = getWrapper()
         const modal = wrapper.find(".modal")
-        expect(mockFunction.mock.calls.length).toBe(0)
+        expect(mockClearLoadError.mock.calls.length).toBe(0)
         expect(modal.find("p").text()).toBe("Test Error Message")
 
         expect(mockTranslate.mock.calls.length).toBe(2)
         expect(mockTranslate.mock.calls[0][1].value).toBe("loadError")
         expect(mockTranslate.mock.calls[1][1].value).toBe("ok")
-    })
 
-    it("trigger can invoke clearLoadError modal", async () => {
-        const wrapper = getWrapper(openErrorProps)
+        expect(wrapper.find("#load-error-steps").exists()).toBe(false);
+    });
+
+    it("click OK can invoke clearLoadError modal", async () => {
+        const wrapper = getWrapper()
         const okButton = wrapper.find(".modal button")
         expect(okButton.attributes()).toEqual(
             {
                 "aria-label": "Close",
                 "class": "btn btn-red",
                 "data-dismiss": "modal",
+                "id": "ok-load-error",
                 "type": "button"
             })
-        expect(mockFunction.mock.calls.length).toBe(0)
+        expect(mockClearLoadError.mock.calls.length).toBe(0)
         await okButton.trigger("click")
-        expect(mockFunction.mock.calls.length).toBe(1)
-    })
+        expect(mockClearLoadError.mock.calls.length).toBe(1)
+    });
+
+    it("can render error modal as expected where there are invalid steps after first step", () => {
+        const wrapper = getWrapper(true, "test error", [2, 3]);
+        expectHasTranslationKey(wrapper.find("span#load-error-steps"), "loadErrorSteps");
+        const stepsListItems = wrapper.findAll("ul#load-error-steps-list li");
+        expect(stepsListItems.length).toBe(2);
+        expectHasTranslationKey(stepsListItems.at(0), "reviewInputs");
+        expectHasTranslationKey(stepsListItems.at(1), "modelOptions");
+        expectHasTranslationKey(wrapper.find("span#load-error-steps-from-valid-action"), "loadErrorStepsFromValidAction");
+        expectHasTranslationKey(wrapper.find("span#load-error-last-valid"), "uploadInputs");
+        expectHasTranslationKey(wrapper.find("span#load-error-steps-from-valid-warning"), "loadErrorStepsFromValidWarning");
+        expect(wrapper.find("#load-error-error").exists()).toBe(false);
+        expect(wrapper.find("#load-error-steps-all-action").exists()).toBe(false);
+
+        expectHasTranslationKey(wrapper.find("button#retry-load"), "retry");
+        expectHasTranslationKey(wrapper.find("button#rollback-load"), "rollback");
+        expect(wrapper.find("button#ok-load-error").exists()).toBe(false);
+    });
+
+    it("can render error modal as expected where first step is invalid", () => {
+        const wrapper = getWrapper(true, "test error", [1, 4]);
+        expectHasTranslationKey(wrapper.find("span#load-error-steps"), "loadErrorSteps");
+        const stepsListItems = wrapper.findAll("ul#load-error-steps-list li");
+        expect(stepsListItems.length).toBe(2);
+        expectHasTranslationKey(stepsListItems.at(0), "uploadInputs");
+        expectHasTranslationKey(stepsListItems.at(1), "fitModel");
+        expectHasTranslationKey(wrapper.find("#load-error-steps-all-action"), "loadErrorStepsAllAction");
+        expect(wrapper.find("#load-error-error").exists()).toBe(false);
+        expect(wrapper.find("#load-error-steps-from-valid-action").exists()).toBe(false)
+        expect(wrapper.find("#load-error-last-valid").exists()).toBe(false);
+        expect(wrapper.find("#load-error-steps-from-valid-warning").exists()).toBe(false);
+
+        expectHasTranslationKey(wrapper.find("button#retry-load"), "retry");
+        expectHasTranslationKey(wrapper.find("button#rollback-load"), "rollback");
+        expect(wrapper.find("button#ok-load-error").exists()).toBe(false);
+    });
+
+    it("click Retry invokes loadVersion action", async () => {
+        const wrapper = getWrapper(true, "test error", [1]);
+        await wrapper.find("button#retry-load").trigger("click");
+        expect(mockLoadVersion.mock.calls[0][1]).toStrictEqual({versionId:  "testVersionId", projectId: "testProjectId"});
+    });
+
+    it("click Rollback invokes rollbackInvalidState action", async () => {
+        const wrapper = getWrapper(true, "test error", [1]);
+        await wrapper.find("button#rollback-load").trigger("click");
+        expect(mockRollbackInvalidState).toHaveBeenCalledTimes(1);
+    });
 })

@@ -3,12 +3,13 @@ import {ActionContext, MutationTree, Store} from "vuex";
 import {PayloadWithType, TranslatableState} from "../app/types";
 import {Wrapper} from "@vue/test-utils";
 import {RootState} from "../app/root";
-import {Language} from "../app/store/translations/locales";
+import {Language, Translations} from "../app/store/translations/locales";
 import registerTranslations from "../app/store/translations/registerTranslations";
 import {LanguageMutation} from "../app/store/language/mutations";
 import Mock = jest.Mock;
 import ErrorReport from "../app/components/ErrorReport.vue";
 import {DataExplorationState} from "../app/store/dataExploration/dataExploration";
+import {VNode} from "vue";
 
 export function expectEqualsFrozen(args: PayloadWithType<any>, expected: PayloadWithType<any>) {
     expect(Object.isFrozen(args["payload"])).toBe(true);
@@ -95,6 +96,11 @@ export const expectTranslated = (element: Wrapper<any>,
                                  store: Store<DataExplorationState>,
                                  attribute?: string) =>
     expectTranslatedWithStoreType<DataExplorationState>(element, englishText, frenchText, portugueseText, store, attribute);
+
+export const expectHasTranslationKey = (element: Wrapper<any>, translationKey: keyof Translations) => {
+    const elTranslationKey = ((element as any).vnode as VNode).data?.directives?.find(dir => dir.name === "translate")?.value;
+    expect(elTranslationKey).toBe(translationKey);
+};
 
 export const expectChangeLanguageMutations = (commit: Mock) => {
     expect(commit.mock.calls[0][0]).toStrictEqual({
