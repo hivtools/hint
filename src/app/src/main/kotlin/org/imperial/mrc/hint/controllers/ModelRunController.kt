@@ -39,12 +39,6 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
     @ResponseBody
     fun result(@PathVariable("id") id: String): ResponseEntity<String>
     {
-        val lines = java.io.File("/home/emma/dev/hint/test_succeed.txt").readLines()
-        val success = (lines.count() > 0) && (lines[0] == "1")
-
-        if (!success) {
-            throw Exception("BOOM")
-        }
         return apiClient.getResult(id)
     }
 
