@@ -172,16 +172,16 @@ describe("Load actions", () => {
         const dispatch = jest.fn();
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
 
-        router.push("/projects");
         const routerSpy = jest.spyOn(router, "push");
+        router.push("/projects");
 
         actions.loadFromVersion({commit, dispatch, state, rootState} as any, {
             files: "files",
             state: JSON.stringify({stepper: {}})
         });
         setTimeout(() => {
-            expect(routerSpy).toHaveBeenCalled();
-            expect(routerSpy.mock.calls[0][0]).toBe("/");
+            expect(routerSpy).toHaveBeenCalledTimes(2);
+            expect(routerSpy.mock.calls[1][0]).toBe("/");
             done();
         });
     });
