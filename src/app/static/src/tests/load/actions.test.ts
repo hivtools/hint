@@ -15,6 +15,7 @@ import {currentHintVersion} from "../../app/hintVersion";
 import {ProjectRehydrateStatusResponse} from "../../app/generated";
 import {DynamicControlType} from "@reside-ic/vue-dynamic-form";
 import {RootState} from "../../app/root";
+import {router} from "../../app/router";
 
 const rootState = mockRootState();
 
@@ -109,6 +110,8 @@ describe("Load actions", () => {
         const dispatch = jest.fn();
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
 
+        const routerSpy = jest.spyOn(router, "push");
+
         actions.loadFromVersion({commit, dispatch, state, rootState} as any, {
             files: "files",
             state: JSON.stringify({stepper: {}})
@@ -155,6 +158,30 @@ describe("Load actions", () => {
                     ]
                 }
             });
+
+            expect(routerSpy).not.toHaveBeenCalled();
+
+            done();
+        });
+    });
+
+    it("loadVersion pushes home route if not already there", (done) => {
+        mockAxios.onPost(`/session/files/`)
+            .reply(200, mockSuccess({}));
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const state = mockLoadState({loadingState: LoadingState.UpdatingState});
+
+        router.push("/projects");
+        const routerSpy = jest.spyOn(router, "push");
+
+        actions.loadFromVersion({commit, dispatch, state, rootState} as any, {
+            files: "files",
+            state: JSON.stringify({stepper: {}})
+        });
+        setTimeout(() => {
+            expect(routerSpy).toHaveBeenCalled();
+            expect(routerSpy.mock.calls[0][0]).toBe("/");
             done();
         });
     });

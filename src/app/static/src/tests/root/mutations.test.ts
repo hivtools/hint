@@ -329,4 +329,10 @@ describe("Root mutations", () => {
         mutations.SetUpdatingLanguage(state, {payload: false});
         expect(state.updatingLanguage).toBe(false);
     });
+
+    it("can set invalidSteps", () => {
+        const state = mockRootState();
+        mutations.SetInvalidSteps(state, {payload: [2]});
+        expect(state.invalidSteps).toStrictEqual([2]);
+    });
 });

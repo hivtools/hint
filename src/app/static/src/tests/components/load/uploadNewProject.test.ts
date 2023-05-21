@@ -73,8 +73,8 @@ describe("uploadNewProject", () => {
     it("renders modals as expected", () => {
         const wrapper = getWrapper()
 
-        expect(wrapper.find(".modal").exists()).toBe(true)
-        expect(wrapper.find(".modal").attributes()).toEqual({
+        expect(wrapper.find("#load-project-name .modal").exists()).toBe(true)
+        expect(wrapper.find("#load-project-name .modal").attributes()).toEqual({
             "class": "modal",
             "style": "display: none;"
         })
@@ -93,17 +93,6 @@ describe("uploadNewProject", () => {
         expect(uploadProject.find(UploadProgress).exists()).toBe(true)
         expect(uploadProject.find(UploadProgress).props("cancel")).toBeInstanceOf(Function)
         expect(uploadProject.find(UploadProgress).props("openModal")).toBe(false)
-    })
-
-    it("should render loadErrorModal props", () => {
-        const wrapper = getWrapper()
-
-        const uploadProject = wrapper.find("#load-project-name");
-        expect(uploadProject.exists()).toBe(true)
-        expect(uploadProject.find(LoadErrorModal).exists()).toBe(true)
-        expect(uploadProject.find(LoadErrorModal).props("clearLoadError")).toBeInstanceOf(Function)
-        expect(uploadProject.find(LoadErrorModal).props("hasError")).toBe(false)
-        expect(uploadProject.find(LoadErrorModal).props("loadError")).toBe(null)
     })
 
     it("should render translated text", () => {
@@ -167,7 +156,6 @@ describe("uploadNewProject", () => {
             "Veuillez choisire un nom unique",
             "Por favor, escolha um nome único",
             store)
-        expect(wrapper.find(LoadErrorModal).props("hasError")).toBe(false)
     });
 
     it("should translate text and display error modal when error occurred while uploading", () => {
@@ -177,7 +165,6 @@ describe("uploadNewProject", () => {
         })
         const wrapper = getWrapper({openModal: true}, store)
 
-        expect(wrapper.find(LoadErrorModal).props("hasError")).toBe(true)
         expectTranslated(wrapper.find(LoadErrorModal).find("h4"),
             "Load Error",
             "Erreur de chargement",
@@ -188,24 +175,11 @@ describe("uploadNewProject", () => {
         expect(wrapper.find(LoadErrorModal).find("button").exists()).toBe(true)
     })
 
-    it("should close error modal when close handler is triggered", () => {
-        const store = getStore({
-            loadingState: LoadingState.LoadFailed,
-            loadError: mockError("Testing Error")
-        })
-        const wrapper = getWrapper({openModal: true}, store)
-
-        expect(wrapper.find(LoadErrorModal).props("hasError")).toBe(true)
-        wrapper.find(LoadErrorModal).find("button").trigger("click")
-        expect(mockActions.clearLoadState.mock.calls.length).toBe(1)
-    })
-
-    it("should translate text and ender upload progress bar when upload in progress", () => {
+    it("should translate text and end upload progress bar when upload in progress", () => {
         const store = getStore({
             preparing: true
         })
         const wrapper = getWrapper({openModal: true}, store)
-        expect(wrapper.find(LoadErrorModal).props("hasError")).toBe(false)
         expect(wrapper.find(UploadProgress).props("openModal")).toBe(true)
         expect(wrapper.find(LoadingSpinner).exists()).toBe(true)
         expect(wrapper.find(UploadProgress).find(".progress").exists()).toBe(true)

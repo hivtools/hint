@@ -4,7 +4,8 @@ import Vuex from "vuex";
 import {RootState} from "../../../app/root";
 import {initialStepperState} from "../../../app/store/stepper/stepper";
 import {LoadingState} from "../../../app/store/load/state";
-import {expectHasTranslationKey} from "../../testHelpers";
+import {expectHasTranslationKey, expectTranslated} from "../../testHelpers";
+import {mockError} from "../../mocks";
 
 describe("loadErrorModal", () => {
 

@@ -89,12 +89,11 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
             getFilesAndLoad(context, versionDetails.files, JSON.parse(versionDetails.state));
         }
 
-        if (router.currentRoute.path === "/") {
+        const home = "/";
+        if (router.currentRoute.path === home) {
             completeLoad();
         } else {
-            router.push("/", () => {
-                completeLoad();
-            })
+            router.push(home, completeLoad);
         }
     },
 
@@ -168,7 +167,6 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
 
             Object.assign(rootState, newRootState);
         }
-
 
         await getFilesAndLoad(context, files, savedState)
     }

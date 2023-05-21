@@ -17,6 +17,7 @@ import {
 import {Language} from "../../app/store/translations/locales";
 import {currentHintVersion} from "../../app/hintVersion";
 import {expectChangeLanguageMutations} from "../testHelpers";
+import {RootMutation} from "../../app/store/root/mutations";
 
 
 describe("root actions", () => {
@@ -28,7 +29,7 @@ describe("root actions", () => {
     //NB in these tests 'valid' means complete with no preceding incomplete steps, or incomplete with no subsequent
     //complete steps
 
-    it("does not reset state if all steps are valid", async () => {
+    it("validate commits empty invalid steps if all steps are valid", async () => {
 
         const mockContext = {
             commit: jest.fn(),
@@ -47,13 +48,12 @@ describe("root actions", () => {
         };
 
         await actions.validate(mockContext as any);
-        expect(mockContext.commit).not.toHaveBeenCalled();
+        expect(mockContext.commit).toHaveBeenCalledTimes(1);
+        expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: RootMutation.SetInvalidSteps, payload: []});
         expect(mockContext.dispatch).not.toHaveBeenCalled();
     });
 
-    it("resets state if not all steps are valid", async () => {
-
-
+    it("validate commits invalid steps and error if not all steps are valid", async () => {
         const mockContext = {
             commit: jest.fn(),
             dispatch: jest.fn(),
@@ -72,17 +72,19 @@ describe("root actions", () => {
 
         await actions.validate(mockContext as any);
 
-        expect(mockContext.dispatch).toHaveBeenCalled();
-        expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "Reset", payload: 1});
-        expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({type: "ResetSelectedDataType"});
-
-        expect(mockContext.commit.mock.calls[2][0]).toStrictEqual({
+        expect(mockContext.dispatch).not.toHaveBeenCalled();
+        expect(mockContext.commit).toHaveBeenCalledTimes(2);
+        expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({
+            type: RootMutation.SetInvalidSteps,
+            payload: [2]
+        });
+        expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({
             type: "load/LoadFailed",
             payload: {detail: "There was a problem loading your data. Some data may have been invalid. Please contact support if this issue persists."}
         });
     });
 
-    it("resets state if a step following current step is not valid", async () => {
+    it("validate can include steps following current in invalid steps", async () => {
         const mockContext = {
             commit: jest.fn(),
             dispatch: jest.fn(),
@@ -101,13 +103,15 @@ describe("root actions", () => {
         };
 
         await actions.validate(mockContext as any);
-        expect(mockContext.dispatch).toHaveBeenCalled();
-
-        expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "Reset", payload: 1});
-        expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({type: "ResetSelectedDataType"});
+        expect(mockContext.commit).toHaveBeenCalledTimes(2);
+        expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({
+            type: RootMutation.SetInvalidSteps,
+            payload: [2]
+        });
+        expect(mockContext.commit.mock.calls[1][0].type).toBe("load/LoadFailed");
     });
 
-    it("does not reset state if later steps than current are complete and incomplete, but all are valid", async () => {
+    it("validate commits empty invalid steps if later steps than current are complete and incomplete, but all are valid", async () => {
         const mockContext = {
             commit: jest.fn(),
             dispatch: jest.fn(),
@@ -126,73 +130,75 @@ describe("root actions", () => {
         };
 
         await actions.validate(mockContext as any);
-        expect(mockContext.commit).not.toHaveBeenCalled();
-        expect(mockContext.dispatch).not.toHaveBeenCalled();
+        expect(mockContext.commit).toHaveBeenCalledTimes(1);
+        expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({
+            type: RootMutation.SetInvalidSteps,
+            payload: []
+        });
     });
 
-    it("dispatches delete baseline and surveyAndProgram action if baseline step is not valid", async () => {
+    it("rollbackInvalidSate resets state if not all steps are valid", async () => {
         const mockContext = {
             commit: jest.fn(),
             dispatch: jest.fn(),
-            getters: {
-                "stepper/complete": {
-                    1: false,
-                    2: false
-                }
-            },
             state: {
-                stepper: mockStepperState({
-                    activeStep: 3
-                })
+                invalidSteps: [2]
             }
         };
 
-        await actions.validate(mockContext as any);
+        await actions.rollbackInvalidState(mockContext as any);
+
+        expect(mockContext.dispatch).toHaveBeenCalledTimes(1);
+        expect(mockContext.dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+
+        expect(mockContext.commit).toHaveBeenCalledTimes(2);
+        expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "Reset", payload: 1});
+        expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({type: "ResetSelectedDataType"});
+    });
+
+    it("rollbackInvalidState dispatches delete baseline and surveyAndProgram action if baseline step is not valid", async () => {
+        const mockContext = {
+            commit: jest.fn(),
+            dispatch: jest.fn(),
+            state: {
+                invalidSteps: [1, 2]
+            }
+        };
+
+        await actions.rollbackInvalidState(mockContext as any);
         expect(mockContext.dispatch.mock.calls[0][0]).toBe("baseline/deleteAll");
         expect(mockContext.dispatch.mock.calls[1][0]).toBe("surveyAndProgram/deleteAll");
-    });
-
-    it("dispatches delete surveyAndProgram action if surveyAndProgram step is not valid", async () => {
-        const mockContext = {
-            commit: jest.fn(),
-            dispatch: jest.fn(),
-            getters: {
-                "stepper/complete": {
-                    1: true,
-                    2: false
-                }
-            },
-            state: {
-                stepper: mockStepperState({
-                    activeStep: 3
-                })
-            }
-        };
-
-        await actions.validate(mockContext as any);
-        expect(mockContext.dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
     });
 
     it("dispatches no delete action if baseline and surveyAndProgram steps are valid", async () => {
         const mockContext = {
             commit: jest.fn(),
             dispatch: jest.fn(),
-            getters: {
-                "stepper/complete": {
-                    1: true,
-                    2: true,
-                    3: false
-                }
-            },
             state: {
-                stepper: mockStepperState({
-                    activeStep: 4
-                })
+                invalidSteps: [3]
             }
         };
 
-        await actions.validate(mockContext as any);
+        await actions.rollbackInvalidState(mockContext as any);
         expect(mockContext.dispatch).not.toHaveBeenCalled();
+
+        expect(mockContext.commit).toHaveBeenCalledTimes(2);
+        expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "Reset", payload: 2});
+        expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({type: "ResetSelectedDataType"});
+    });
+
+    it("rollbackInvalidState does nothing if no invalid steps", async () => {
+        const mockContext = {
+            commit: jest.fn(),
+            dispatch: jest.fn(),
+            state: {
+                invalidSteps: []
+            }
+        };
+
+        await actions.rollbackInvalidState(mockContext as any);
+        expect(mockContext.dispatch).not.toHaveBeenCalled();
+        expect(mockContext.commit).not.toHaveBeenCalled();
     });
 
     it("posts error report to teams", async () => {
