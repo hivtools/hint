@@ -436,15 +436,25 @@ describe("ModelCalibrate actions", () => {
 
         expect(dispatch.mock.calls.length).toBe(0);
 
-        const completeState = mockModelCalibrateState({calibrating: false, complete: true});
+        const completeState = mockModelCalibrateState(
+            {calibrating: false, complete: true, calibrateId: "123"});
         await actions.resumeCalibrate({dispatch, state: completeState} as any);
 
         expect(dispatch.mock.calls.length).toBe(0);
 
-        const incompleteState = mockModelCalibrateState({calibrating: true, complete: false});
+        const incompleteState = mockModelCalibrateState(
+            {calibrating: true, complete: false, calibrateId: "123"});
         await actions.resumeCalibrate({dispatch, state: incompleteState} as any);
 
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("poll");
+
+        // Following state should not be possible but checking for completeness
+        const brokenState = mockModelCalibrateState(
+            {calibrating: true, complete: false, calibrateId: ""});
+        await actions.resumeCalibrate({dispatch, state: completeState} as any);
+
+        // No new polls
+        expect(dispatch.mock.calls.length).toBe(1);
     });
 });

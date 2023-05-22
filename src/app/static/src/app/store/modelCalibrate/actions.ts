@@ -132,7 +132,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
 
     async resumeCalibrate(context) {
         const {dispatch, state} = context;
-        if (state.calibrating && !state.complete) {
+        if (state.calibrating && !state.complete && state.calibrateId) {
             await dispatch("poll");
         }
     }
