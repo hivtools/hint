@@ -155,6 +155,8 @@ export const getSummaryReportStatus = async function (context: ActionContext<Dow
     const {state, dispatch, rootState, commit} = context;
     const downloadId = state.summary.downloadId;
     if (!downloadId) {
+        console.log("Failed to poll for summary report download status with missing ID, state is\n" +
+            JSON.stringify(state))
         return;
     }
 
@@ -179,6 +181,7 @@ export const getSpectrumOutputStatus = async function (context: ActionContext<Do
     const {state, dispatch, rootState, commit} = context;
     const downloadId = state.spectrum.downloadId;
     if (!downloadId) {
+        console.log("Failed to poll for spectrum download status with missing ID, state is\n" + JSON.stringify(state))
         return;
     }
 
@@ -203,6 +206,8 @@ export const getCoarseOutputStatus = async function (context: ActionContext<Down
     const {state, dispatch, rootState, commit} = context;
     const downloadId = state.coarseOutput.downloadId;
     if (!downloadId) {
+        console.log("Failed to poll for coarse output download status with missing ID, state is\n" +
+            JSON.stringify(state))
         return;
     }
 
@@ -227,6 +232,8 @@ export const getComparisonOutputStatus = async function (context: ActionContext<
     const {state, dispatch, rootState, commit} = context;
     const downloadId = state.comparison.downloadId;
     if (!downloadId) {
+        console.log("Failed to poll for comparison report download status with missing ID, state is\n" +
+            JSON.stringify(state))
         return;
     }
 

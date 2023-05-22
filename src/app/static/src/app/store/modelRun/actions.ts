@@ -72,6 +72,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
 export const getRunStatus = async function (context: ActionContext<ModelRunState, RootState>, runId: string) {
     const {dispatch, state} = context;
     if (!runId) {
+        console.log("Failed to poll for run status with missing ID, state is\n" + JSON.stringify(state))
         return;
     }
 
