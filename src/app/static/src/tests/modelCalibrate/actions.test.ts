@@ -431,18 +431,18 @@ describe("ModelCalibrate actions", () => {
 
     it("resume calibrate starts polling if calibration started but no result fetched", async () => {
         const dispatch = jest.fn();
-        const initial_state = mockModelCalibrateState();
-        await actions.resumeCalibrate({dispatch, state: initial_state} as any);
+        const initialState = mockModelCalibrateState();
+        await actions.resumeCalibrate({dispatch, state: initialState} as any);
 
         expect(dispatch.mock.calls.length).toBe(0);
 
-        const complete_state = mockModelCalibrateState({calibrating: false, complete: true});
-        await actions.resumeCalibrate({dispatch, state: complete_state} as any);
+        const completeState = mockModelCalibrateState({calibrating: false, complete: true});
+        await actions.resumeCalibrate({dispatch, state: completeState} as any);
 
         expect(dispatch.mock.calls.length).toBe(0);
 
-        const incomplete_state = mockModelCalibrateState({calibrating: true, complete: false});
-        await actions.resumeCalibrate({dispatch, state: incomplete_state} as any);
+        const incompleteState = mockModelCalibrateState({calibrating: true, complete: false});
+        await actions.resumeCalibrate({dispatch, state: incompleteState} as any);
 
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("poll");
