@@ -134,7 +134,7 @@ export const getCalibrateStatus = async function (context: ActionContext<ModelCa
     const {dispatch, state} = context;
     const calibrateId = state.calibrateId;
     if (!calibrateId) {
-        console.log("Failed to poll for calibrate status with missing ID, state is\n" + JSON.stringify(state))
+        console.warn("Failed to poll for calibrate status with missing ID, state is\n" + JSON.stringify(state))
         return;
     }
     return api<ModelCalibrateMutation, ModelCalibrateMutation>(context)

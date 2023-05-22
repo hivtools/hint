@@ -20,11 +20,13 @@ describe("ModelCalibrate actions", () => {
     beforeEach(() => {
         // stop apiService logging to console
         console.log = jest.fn();
+        console.warn = jest.fn();
         mockAxios.reset();
     });
 
     afterEach(() => {
         (console.log as jest.Mock).mockClear();
+        (console.warn as jest.Mock).mockClear();
     });
 
     it("fetchModelCalibrateOptions fetches options and commits mutations", async () => {
@@ -437,5 +439,8 @@ describe("ModelCalibrate actions", () => {
 
         await getCalibrateStatus({commit, state} as any);
         expect(mockAxios.history.get.length).toBe(0);
+
+        const warnings = (console.warn as jest.Mock).mock.calls;
+        expect(warnings[0][0]).toContain("Failed to poll for calibrate status with missing ID");
     });
 });

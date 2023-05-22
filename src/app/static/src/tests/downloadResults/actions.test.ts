@@ -42,7 +42,13 @@ describe(`download Results actions`, () => {
     beforeEach(() => {
         // stop apiService logging to console
         console.log = jest.fn();
+        console.warn = jest.fn();
         mockAxios.reset();
+    });
+
+    afterEach(() => {
+        (console.log as jest.Mock).mockClear();
+        (console.warn as jest.Mock).mockClear();
     });
 
     it("prepare summary commits download id and starts polling for status", async () => {
@@ -274,6 +280,9 @@ describe(`download Results actions`, () => {
 
         await getSummaryReportStatus({commit, state, dispatch, rootState: mockRootState()} as any);
         expect(mockAxios.history.get.length).toBe(0);
+
+        const warnings = (console.warn as jest.Mock).mock.calls;
+        expect(warnings[0][0]).toContain("Failed to poll for summary report download status with missing ID");
     });
 
     it("can submit spectrum download request, commits and starts polling", async () => {
@@ -541,6 +550,9 @@ describe(`download Results actions`, () => {
 
         await getSpectrumOutputStatus({commit, state, dispatch, rootState: mockRootState()} as any);
         expect(mockAxios.history.get.length).toBe(0);
+
+        const warnings = (console.warn as jest.Mock).mock.calls;
+        expect(warnings[0][0]).toContain("Failed to poll for spectrum download status with missing ID");
     });
 
     it("can prepare coarse output, commits and starts polling", async () => {
@@ -797,6 +809,9 @@ describe(`download Results actions`, () => {
 
         await getCoarseOutputStatus({commit, state, dispatch, rootState: mockRootState()} as any);
         expect(mockAxios.history.get.length).toBe(0);
+
+        const warnings = (console.warn as jest.Mock).mock.calls;
+        expect(warnings[0][0]).toContain("Failed to poll for coarse output download status with missing ID");
     });
 
     it("can submit comparison download request, commits and starts polling", async () => {
@@ -1060,6 +1075,10 @@ describe(`download Results actions`, () => {
 
         await getComparisonOutputStatus({commit, state, dispatch, rootState: mockRootState()} as any);
         expect(mockAxios.history.get.length).toBe(0);
+
+        const warnings = (console.warn as jest.Mock).mock.calls;
+        expect(warnings[0][0])
+            .toContain("Failed to poll for comparison report download status with missing ID");
     });
 
     it("can prepare all outputs", async () => {
