@@ -36,12 +36,13 @@ console.error = jest.fn();
 
 // only import the app after we have replaced action with mocks
 // as the app will call these actions on import
-import {app} from "../app";
+import app from "../app";
 import {beforeEnter} from "../app/router"
 import Stepper from "../app/components/Stepper.vue";
 import Projects from "../app/components/projects/Projects.vue";
 import {store} from "../app/main";
 import {RouteLocationNormalized} from "vue-router";
+import { mount } from '@vue/test-utils'
 
 describe("Router", () => {
 
@@ -66,7 +67,7 @@ describe("Router", () => {
         store.state.currentUser = "guest";
         Storage.prototype.getItem = jest.fn((key) => key === "asGuest" ? "continueAsGuest" : null);
 
-        beforeEnter({} as RouteLocationNormalized, {} as RouteLocationNormalized, next);
+        beforeEnter({} as RouteLocationNormalized, {} as RouteLocationNormalized);
 
         expect(window.location.assign).not.toHaveBeenCalled();
         expect(next).toBeCalled();
@@ -83,7 +84,7 @@ describe("Router", () => {
         store.state.currentUser = "guest";
         Storage.prototype.getItem = jest.fn();
 
-        beforeEnter({} as RouteLocationNormalized, {} as RouteLocationNormalized, next);
+        beforeEnter({} as RouteLocationNormalized, {} as RouteLocationNormalized);
 
         expect(window.location.assign).toHaveBeenCalledTimes(1);
         expect(window.location.assign).toHaveBeenCalledWith("/login");
@@ -100,7 +101,7 @@ describe("Router", () => {
         const next = jest.fn();
         store.state.currentUser = "test.user@example.com";
 
-        beforeEnter({} as Route, {} as Route, next);
+        beforeEnter({} as RouteLocationNormalized, {} as RouteLocationNormalized);
 
         expect(window.location.assign).not.toHaveBeenCalled();
         expect(next).toBeCalled();

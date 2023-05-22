@@ -7,8 +7,7 @@ import {store} from "./main";
 
 export const beforeEnter = (to: RouteLocationNormalized, from: RouteLocationNormalized) => {
     if (store.state.currentUser === "guest" && !sessionStorage.getItem("asGuest")) {
-        return {name: 'login'};
-        // window.location.assign("/login");
+        window.location.assign("/login");
     }
     return true;
 }
