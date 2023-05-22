@@ -133,6 +133,9 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
 export const getCalibrateStatus = async function (context: ActionContext<ModelCalibrateState, RootState>) {
     const {dispatch, state} = context;
     const calibrateId = state.calibrateId;
+    if (!calibrateId) {
+        return;
+    }
     return api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
         .withSuccess(ModelCalibrateMutation.CalibrateStatusUpdated)
         .withError(ModelCalibrateMutation.SetError)

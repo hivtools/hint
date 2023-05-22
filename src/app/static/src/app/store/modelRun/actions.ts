@@ -30,17 +30,9 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
     },
 
     poll(context, runId) {
-        const {commit, dispatch, state} = context;
+        const {commit} = context;
         const id = setInterval(() => {
-            api<ModelRunMutation, ModelRunMutation>(context)
-                .withSuccess(ModelRunMutation.RunStatusUpdated)
-                .withError(ModelRunMutation.RunStatusError)
-                .get<ModelStatusResponse>(`/model/status/${runId}`)
-                .then(() => {
-                    if (state.status.done) {
-                        dispatch("getResult", runId);
-                    }
-                });
+            getRunStatus(context, runId)
         }, 2000);
 
         commit({type: "PollingForStatusStarted", payload: id})
@@ -75,6 +67,23 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
 
         await makeCancelRunRequest(apiService, modelRunId)
     }
+};
+
+export const getRunStatus = async function (context: ActionContext<ModelRunState, RootState>, runId: string) {
+    const {dispatch, state} = context;
+    if (!runId) {
+        return;
+    }
+
+    return api<ModelRunMutation, ModelRunMutation>(context)
+        .withSuccess(ModelRunMutation.RunStatusUpdated)
+        .withError(ModelRunMutation.RunStatusError)
+        .get<ModelStatusResponse>(`/model/status/${runId}`)
+        .then(() => {
+            if (state.status.done) {
+                dispatch("getResult", runId);
+            }
+        });
 };
 
 export async function makeCancelRunRequest(api: APIService<ModelRunMutation, ModelRunMutation>, modelRunId: string) {

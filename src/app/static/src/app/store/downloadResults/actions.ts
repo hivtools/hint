@@ -154,6 +154,10 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 export const getSummaryReportStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch, rootState, commit} = context;
     const downloadId = state.summary.downloadId;
+    if (!downloadId) {
+        return;
+    }
+
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.SummaryReportStatusUpdated)
         .withError(DownloadResultsMutation.SummaryError)
@@ -174,6 +178,10 @@ export const getSummaryReportStatus = async function (context: ActionContext<Dow
 export const getSpectrumOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch, rootState, commit} = context;
     const downloadId = state.spectrum.downloadId;
+    if (!downloadId) {
+        return;
+    }
+
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.SpectrumOutputStatusUpdated)
         .withError(DownloadResultsMutation.SpectrumError)
@@ -194,6 +202,10 @@ export const getSpectrumOutputStatus = async function (context: ActionContext<Do
 export const getCoarseOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch, rootState, commit} = context;
     const downloadId = state.coarseOutput.downloadId;
+    if (!downloadId) {
+        return;
+    }
+
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.CoarseOutputStatusUpdated)
         .withError(DownloadResultsMutation.CoarseOutputError)
@@ -214,6 +226,10 @@ export const getCoarseOutputStatus = async function (context: ActionContext<Down
 export const getComparisonOutputStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
     const {state, dispatch, rootState, commit} = context;
     const downloadId = state.comparison.downloadId;
+    if (!downloadId) {
+        return;
+    }
+
     const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.ComparisonOutputStatusUpdated)
         .withError(DownloadResultsMutation.ComparisonError)

@@ -1,10 +1,21 @@
 import {
-    mockAxios, mockDownloadResultsDependency,
-    mockDownloadResultsState, mockError, mockFailure, mockMetadataState, mockModelCalibrateState,
+    mockAxios,
+    mockDownloadResultsDependency,
+    mockDownloadResultsState,
+    mockError,
+    mockFailure,
+    mockMetadataState,
+    mockModelCalibrateState,
     mockRootState,
     mockSuccess
 } from "../mocks";
-import {actions} from "../../app/store/downloadResults/actions";
+import {
+    actions,
+    getCoarseOutputStatus,
+    getComparisonOutputStatus,
+    getSpectrumOutputStatus,
+    getSummaryReportStatus
+} from "../../app/store/downloadResults/actions";
 import {DOWNLOAD_TYPE} from "../../app/types";
 import {DownloadStatusResponse} from "../../app/generated";
 
@@ -250,6 +261,19 @@ describe(`download Results actions`, () => {
             });
             done()
         }, 2100)
+    });
+
+    it("doesn't request summary report status if id is not set", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            summary: mockDownloadResultsDependency()
+        });
+        mockAxios.onGet(new RegExp(`download/status/*`));
+
+        await getSummaryReportStatus({commit, state, dispatch, rootState: mockRootState()} as any);
+        expect(mockAxios.history.get.length).toBe(0);
     });
 
     it("can submit spectrum download request, commits and starts polling", async () => {
@@ -506,6 +530,19 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
+    it("doesn't request spectrum output status if id is not set", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            spectrum: mockDownloadResultsDependency()
+        });
+        mockAxios.onGet(new RegExp(`download/status/*`));
+
+        await getSpectrumOutputStatus({commit, state, dispatch, rootState: mockRootState()} as any);
+        expect(mockAxios.history.get.length).toBe(0);
+    });
+
     it("can prepare coarse output, commits and starts polling", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -747,6 +784,19 @@ describe(`download Results actions`, () => {
 
             done()
         }, 2100)
+    });
+
+    it("doesn't request coarse output status if id is not set", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            coarseOutput: mockDownloadResultsDependency()
+        });
+        mockAxios.onGet(new RegExp(`download/status/*`));
+
+        await getCoarseOutputStatus({commit, state, dispatch, rootState: mockRootState()} as any);
+        expect(mockAxios.history.get.length).toBe(0);
     });
 
     it("can submit comparison download request, commits and starts polling", async () => {
@@ -997,6 +1047,19 @@ describe(`download Results actions`, () => {
             done()
 
         }, 2100)
+    });
+
+    it("doesn't request comparison report status if id is not set", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            comparison: mockDownloadResultsDependency()
+        });
+        mockAxios.onGet(new RegExp(`download/status/*`));
+
+        await getComparisonOutputStatus({commit, state, dispatch, rootState: mockRootState()} as any);
+        expect(mockAxios.history.get.length).toBe(0);
     });
 
     it("can prepare all outputs", async () => {

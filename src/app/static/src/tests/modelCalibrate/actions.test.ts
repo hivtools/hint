@@ -1,13 +1,15 @@
 import {
-    mockAxios, mockBaselineState,
+    mockAxios,
+    mockBaselineState,
     mockError,
     mockFailure,
     mockModelCalibrateState,
     mockModelRunState,
     mockRootState,
-    mockSuccess, mockWarning
+    mockSuccess,
+    mockWarning
 } from "../mocks";
-import {actions} from "../../app/store/modelCalibrate/actions";
+import {actions, getCalibrateStatus} from "../../app/store/modelCalibrate/actions";
 import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {freezer} from "../../app/utils";
 import {switches} from "../../app/featureSwitches";
@@ -425,5 +427,15 @@ describe("ModelCalibrate actions", () => {
             payload: mockError("Test Error")
         });
         expect(mockAxios.history.get.length).toBe(1);
+    });
+
+    it("doesn't request spectrum output status if id is not set", async () => {
+        mockAxios.onGet(new RegExp(`/model/calibrate/status/*`));
+
+        const commit = jest.fn();
+        const state = mockModelCalibrateState();
+
+        await getCalibrateStatus({commit, state} as any);
+        expect(mockAxios.history.get.length).toBe(0);
     });
 });

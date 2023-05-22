@@ -2,12 +2,14 @@ import {
     mockAxios,
     mockError,
     mockFailure,
-    mockModelOptionsState, mockModelResultResponse,
+    mockModelOptionsState,
+    mockModelResultResponse,
     mockModelRunState,
     mockRootState,
-    mockSuccess, mockWarning
+    mockSuccess,
+    mockWarning
 } from "../mocks";
-import {actions} from "../../app/store/modelRun/actions";
+import {actions, getRunStatus} from "../../app/store/modelRun/actions";
 import {ModelStatusResponse} from "../../app/generated";
 import {expectEqualsFrozen} from "../testHelpers";
 import {ModelRunMutation} from "../../app/store/modelRun/mutations";
@@ -266,5 +268,15 @@ describe("Model run actions", () => {
             type: "RunCancelled",
             payload: null
         });
+    });
+
+    it("doesn't request spectrum output status if id is not set", async () => {
+        mockAxios.onGet(new RegExp(`/model/result/status/*`));
+
+        const commit = jest.fn();
+        const state = mockModelRunState();
+
+        await getRunStatus({commit, state} as any, "");
+        expect(mockAxios.history.get.length).toBe(0);
     });
 });
