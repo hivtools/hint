@@ -45,6 +45,8 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         const {state, dispatch, commit} = store;
         const {invalidSteps} = state;
         if (invalidSteps.length > 0) {
+            // Always roll back in a new version so invalid state is available for inspection
+            await dispatch("projects/newVersion");
 
             //Invalidate any steps which come after the first invalid step
             const maxValidStep = Math.min(...invalidSteps) - 1;
@@ -63,6 +65,7 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             }
 
             commit({type: RootMutation.Reset, payload: maxValidStep});
+
             commit({type: RootMutation.ResetSelectedDataType});
         }
     },

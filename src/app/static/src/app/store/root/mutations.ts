@@ -59,7 +59,11 @@ export const mutations: MutationTree<RootState> = {
             stepper: state.stepper,
             load: initialLoadState(),
             errors: initialErrorsState(),
-            projects: initialProjectsState(),
+            projects: {
+                ...initialProjectsState(),
+                currentProject: state.projects.currentProject,
+                currentVersion: state.projects.currentVersion
+            },
             currentUser: state.currentUser,
             downloadResults: initialDownloadResultsState(),
             dataExplorationMode: false,
