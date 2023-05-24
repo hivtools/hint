@@ -9,7 +9,7 @@ import {initialMetadataState} from "../metadata/metadata";
 import {initialErrorsState} from "../errors/errors";
 import {initialBaselineState} from "../baseline/baseline";
 import {DataType, initialSurveyAndProgramState} from "../surveyAndProgram/surveyAndProgram";
-import {PayloadWithType, Project} from "../../types";
+import {PayloadWithType, PollingState, Project} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialProjectsState} from "../projects/projects";
 import {router} from '../../router';
