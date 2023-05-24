@@ -23,6 +23,7 @@ export interface ModelCalibrateActions {
     getResult: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getCalibratePlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getComparisonPlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
+    resumeCalibrate: (store: ActionContext<ModelCalibrateState, RootState>) => void
 }
 
 export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrateActions = {
@@ -126,6 +127,13 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                 selectFilterDefaults(response.data, commit, PlottingSelectionsMutations.updateComparisonPlotSelections)
             }
             commit(ModelCalibrateMutation.SetComparisonPlotData, response.data);
+        }
+    },
+
+    async resumeCalibrate(context) {
+        const {dispatch, state} = context;
+        if (state.calibrating && !state.complete && state.calibrateId) {
+            await dispatch("poll");
         }
     }
 };
