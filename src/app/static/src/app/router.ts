@@ -9,7 +9,6 @@ export const beforeEnter = (to: RouteLocationNormalized, from: RouteLocationNorm
     if (store.state.currentUser === "guest" && !sessionStorage.getItem("asGuest")) {
         window.location.assign("/login");
     }
-    return true;
 }
 
 const routes = [
