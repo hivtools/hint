@@ -5,7 +5,7 @@ import {emptyState} from "../../../app/root";
 import {mockBaselineState, mockDownloadIndicatorData} from "../../mocks";
 import DownloadButton from "../../../app/components/downloadIndicator/DownloadButton.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, mountWithTranslate} from "../../testHelpers";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 
 describe("download indicator", () => {
@@ -42,8 +42,10 @@ describe("download indicator", () => {
     }
 
     const getWrapper = (store = createSut(), props = {}) => {
-        return mount(DownloadIndicator, {
-            store,
+        return mountWithTranslate(DownloadIndicator, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 unfilteredData,
                 filteredData,
@@ -60,7 +62,7 @@ describe("download indicator", () => {
                 "name": "downloadIndicator"
             }
         )
-        const span = wrapper.findComponent("span")
+        const span = wrapper.find("span")
         expectTranslated(span,
             "Download indicator",
             "Indicateur de téléchargement",
