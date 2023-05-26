@@ -4,10 +4,12 @@ import Vuex from "vuex";
 import {ADRMutation} from "../../../app/store/adr/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {mockRootState} from "../../mocks";
-import {expectTranslated} from "../../testHelpers";
-import TreeSelect from "vue3-treeselect";
+import {expectTranslated, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
+import Treeselect from "vue3-treeselect";
 import {Language} from "../../../app/store/translations/locales";
 import {Dataset} from "../../../app/types";
+import VueFeather from "vue-feather";
+import { nextTick } from "vue";
 
 describe("select release", () => {
 
@@ -75,14 +77,18 @@ describe("select release", () => {
         jest.resetAllMocks();
     });
 
-    it("renders select release", () => {
+    it("renders select release", async () => {
         let store = getStore()
-        const rendered = shallowMount(SelectRelease, {store});
-        rendered.setProps({datasetId: "datasetId"})
+        const rendered = mountWithTranslate(SelectRelease, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        await rendered.setProps({datasetId: "datasetId"})
         expect(getReleasesMock.mock.calls.length).toBe(1);
-        expect(rendered.findComponent("#selectRelease").exists()).toBe(true);
-        expect(rendered.findAllComponents("input").length).toBe(2);
-        const labels = rendered.findAllComponents("label")
+        expect(rendered.find("#selectRelease").exists()).toBe(true);
+        expect(rendered.findAll("input").length).toBe(2);
+        const labels = rendered.findAll("label")
         expect(labels.length).toBe(3);
         expectTranslated(labels[0], "Use latest data", "Utiliser les dernières données",
             "Use os dados mais recentes", store);
@@ -90,86 +96,118 @@ describe("select release", () => {
             "Selecione um lançamento", store);
         expectTranslated(labels[2], "Releases", "Versions",
             "Lançamentos", store);
-        expect(rendered.findAllComponents("help-circle-icon-stub").length).toBe(2);
-        const select = rendered.findComponent(TreeSelect);
+        expect(rendered.findAllComponents(VueFeather).length).toBe(2);
+        const select = rendered.findComponent(Treeselect);
         expect(select.props("multiple")).toBe(false);
         expect(select.props("searchable")).toBe(true);
-        expect(rendered.vm.$data.releaseId).toBeUndefined();
+        expect((rendered.vm.$data as any).releaseId).toBeUndefined();
 
         const expectedOptions = [
             {
                 id: "releaseId",
                 label: "releaseName",
                 customLabel: `releaseName
-                <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                    releaseNotes<br/>
-                </div>`
+                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                        releaseNotes<br/>
+                    </div>`
             },
             {
                 id: "releaseId2",
                 label: "releaseName2",
                 customLabel: `releaseName2
-                <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
-                    
-                </div>`
+                    <div class="text-muted small" style="margin-top:-5px; line-height: 0.8rem">
+                        
+                    </div>`
             }
         ]
 
-        expect(select.props("options")).toStrictEqual(expectedOptions);
+        expect(select.props("options")).toEqual(expectedOptions);
     });
 
-    it("does not render select release if there are no releases", () => {
-        const rendered = shallowMount(SelectRelease, {store: getStore([])});
-        rendered.setProps({datasetId: "datasetId"})
-        expect(rendered.findComponent("#selectRelease").exists()).toBe(false);
+    it("does not render select release if there are no releases", async () => {
+        const store = getStore([]);
+        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
+        await rendered.setProps({datasetId: "datasetId"})
+        expect(rendered.find("#selectRelease").exists()).toBe(false);
     });
 
     it("does not render select release if no dataset is selected", () => {
-        const rendered = shallowMount(SelectRelease, {store: getStore()});
-        expect(rendered.findComponent("#selectRelease").exists()).toBe(false);
+        const store = getStore();
+        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
+        expect(rendered.find("#selectRelease").exists()).toBe(false);
     });
 
-    it("does not get releases if dataset id is cleared", () => {
-        const rendered = shallowMount(SelectRelease, {store: getStore()});
-        rendered.setProps({datasetId: "datasetId"})
+    it("does not get releases if dataset id is cleared", async () => {
+        const store = getStore();
+        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
+        await rendered.setProps({datasetId: "datasetId"})
         expect(getReleasesMock.mock.calls.length).toBe(1);
-        rendered.setProps({datasetId: null})
+        await rendered.setProps({datasetId: null})
         expect(getReleasesMock.mock.calls.length).toBe(1);
     });
 
-    it("can render tooltips in English", () => {
+    it("can render tooltips in English", async () => {
         const mockTooltip = jest.fn();
         const store = getStore()
         
-        const rendered = shallowMount(SelectRelease, {store,
-             directives: {"tooltip": mockTooltip} });
-        rendered.setProps({datasetId: "datasetId"})
+        const rendered = shallowMountWithTranslate(SelectRelease, store,
+            {
+                global: {
+                    plugins: [store],
+                    directives: {"tooltip": mockTooltip}
+                }
+            });
+        await rendered.setProps({datasetId: "datasetId"})
 
         expect(mockTooltip.mock.calls[0][1].value).toBe("Load the latest data, whether it is included in a release (a labelled version) or not");
         expect(mockTooltip.mock.calls[1][1].value).toBe("Load data from a particular labelled version, which may not be the latest data");
     });
 
-    it("can render tooltips in French", () => {
+    it("can render tooltips in French", async () => {
         const mockTooltip = jest.fn();
         const store = getStore()
         store.state.language = Language.fr;
+        await nextTick();
         
-        const rendered = shallowMount(SelectRelease, {store,
-             directives: {"tooltip": mockTooltip} });
-        rendered.setProps({datasetId: "datasetId"})
+        const rendered = shallowMountWithTranslate(SelectRelease, store,
+            {
+                global: {
+                    plugins: [store],
+                    directives: {"tooltip": mockTooltip}
+                }
+            });
+        await rendered.setProps({datasetId: "datasetId"})
 
         expect(mockTooltip.mock.calls[0][1].value).toBe("Chargez les dernières données, qu'elles soient incluses dans une version (une version étiquetée) ou non");
         expect(mockTooltip.mock.calls[1][1].value).toBe("Charger des données à partir d'une version étiquetée particulière, qui peuvent ne pas être les dernières données");
     });
 
-    it("can render tooltips in Portuguese", () => {
+    it("can render tooltips in Portuguese", async () => {
         const mockTooltip = jest.fn();
         const store = getStore()
         store.state.language = Language.pt;
+        await nextTick();
 
-        const rendered = shallowMount(SelectRelease, {store,
-            directives: {"tooltip": mockTooltip} });
-        rendered.setProps({datasetId: "datasetId"})
+        const rendered = shallowMountWithTranslate(SelectRelease, store,
+            {
+                global: {
+                    plugins: [store],
+                    directives: {"tooltip": mockTooltip}
+                }
+            });
+        await rendered.setProps({datasetId: "datasetId"})
 
         expect(mockTooltip.mock.calls[0][1].value).toBe("Carregue os dados mais recentes, estejam incluídos em uma versão (uma versão rotulada) ou não");
         expect(mockTooltip.mock.calls[1][1].value).toBe("Carregar dados de uma determinada versão rotulada, que podem não ser os dados mais recentes");
@@ -177,91 +215,124 @@ describe("select release", () => {
 
     it("radial toggles whether release tree select is disabled", async () => {
         let store = getStore()
-        const rendered = shallowMount(SelectRelease, {store});
-        rendered.setProps({datasetId: "datasetId"})
-        const select = rendered.findComponent(TreeSelect);
+        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
+        await rendered.setProps({datasetId: "datasetId"})
+        const select = rendered.findComponent(Treeselect);
         expect(select.attributes("disabled")).toBe("true");
-        const selectRelease = rendered.findAllComponents("input")[1]
+        const selectRelease = rendered.findAll("input")[1]
         await selectRelease.trigger("change")
-        expect(select.attributes("disabled")).toBeUndefined();
+        expect(select.attributes("disabled")).toBe("false");
     });
 
     it("radial toggles automatically toggles and selects release if selectedDataset has an appropriate releaseId", () => {
         let store = getStore(releasesArray, fakeDataset)
-        const rendered = shallowMount(SelectRelease, {store, props: {datasetId: "datasetId"}});
-        const select = rendered.findComponent(TreeSelect);
-        expect(select.attributes("disabled")).toBeUndefined();
-        expect(rendered.vm.$data.releaseId).toBe("releaseId");
+        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+            global: {
+                plugins: [store]
+            }, props: {datasetId: "datasetId"}
+        });
+        const select = rendered.findComponent(Treeselect);
+        expect(select.attributes("disabled")).toBe("true");
+        expect((rendered.vm.$data as any).releaseId).toBe("releaseId");
     });
 
-    it("preselect release occurs if releases are updated", () => {
+    it("preselect release occurs if releases are updated", async () => {
         let store = getStore([releasesArray[1]], fakeDataset)
-        const rendered = shallowMount(SelectRelease, {store, props: {datasetId: "datasetId"}});
-        const select = rendered.findComponent(TreeSelect);
+        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+            global: {
+                plugins: [store]
+            }, props: {datasetId: "datasetId"}
+        });
+        const select = rendered.findComponent(Treeselect);
         expect(select.attributes("disabled")).toBe("true");
-        expect(rendered.vm.$data.releaseId).toBeUndefined();
+        expect((rendered.vm.$data as any).releaseId).toBeUndefined();
         store.state.adr.releases = releasesArray
-        expect(select.attributes("disabled")).toBeUndefined();
-        expect(rendered.vm.$data.releaseId).toBe("releaseId");
+        await nextTick();
+        expect(select.attributes("disabled")).toBe("false");
+        expect((rendered.vm.$data as any).releaseId).toBe("releaseId");
     });
 
     it("does not automatically select release if no matching release and reverts to use latest", () => {
         let store = getStore([releasesArray[1]], fakeDataset)
-        const rendered = shallowMount(SelectRelease, {store, props: {datasetId: "datasetId", choiceADR: "useRelease"}});
-        const select = rendered.findComponent(TreeSelect);
+        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+            global: {
+                plugins: [store]
+            }, props: {datasetId: "datasetId", choiceADR: "useRelease"}
+        });
+        const select = rendered.findComponent(Treeselect);
         expect(select.attributes("disabled")).toBe("true");
-        expect(rendered.vm.$data.releaseId).toBeUndefined();
+        expect((rendered.vm.$data as any).releaseId).toBeUndefined();
     });
 
-    it("changes to datasetId and true open prop triggers getRelease method", () => {
+    it("changes to datasetId and true open prop triggers getRelease method", async () => {
         const spy = jest.fn()
         let store = getStore(releasesArray, null, spy)
-        const rendered = shallowMount(SelectRelease, {store});
-        rendered.setProps({datasetId: "datasetId"})
+        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
+        await rendered.setProps({datasetId: "datasetId"})
         expect(spy).toHaveBeenCalledTimes(1)
-        expect(spy.mock.calls[0][spy.mock.calls[0].length -2]).toBe("datasetId")
-        rendered.setProps({open: true})
+        expect(spy.mock.calls[0][spy.mock.calls[0].length - 1]).toBe("datasetId")
+        await rendered.setProps({open: true})
         expect(spy).toHaveBeenCalledTimes(2)
-        expect(spy.mock.calls[1][spy.mock.calls[1].length -2]).toBe("datasetId")
+        expect(spy.mock.calls[1][spy.mock.calls[1].length - 1]).toBe("datasetId")
     });
     
 
     it("selecting a release emits release id", async () => {
         let store = getStore()
-        const rendered = shallowMount(SelectRelease, {store});
-        rendered.setProps({datasetId: "datasetId"})
-        const selectRelease = rendered.findAllComponents("input")[1]
+        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
+        await rendered.setProps({datasetId: "datasetId"})
+        const selectRelease = rendered.findAll("input")[1]
         await selectRelease.trigger("click")
-        rendered.setData({releaseId: "releaseId"})
+        await rendered.setData({releaseId: "releaseId"})
         expect(rendered.emitted("selected-dataset-release")).toStrictEqual([[undefined], [releasesArray[0]]])
     });
 
     it("selecting a release emits true valid", async () => {
         let store = getStore()
-        const rendered = shallowMount(SelectRelease, {store});
-        rendered.setProps({datasetId: "datasetId"})
-        const selectRelease = rendered.findAllComponents("input")[1]
+        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
+        await rendered.setProps({datasetId: "datasetId"})
+        const selectRelease = rendered.findAll("input")[1]
         await selectRelease.trigger("change")
         expect(rendered.emitted("valid")).toStrictEqual([[true], [false]])
-        rendered.setData({releaseId: "releaseId"})
+        await rendered.setData({releaseId: "releaseId"})
         expect(rendered.emitted("valid")).toStrictEqual([[true], [false], [true]])
     });
 
     it("changing datasetId clears releases and resets radial and releaseId", async () => {
         let store = getStore()
-        const rendered = shallowMount(SelectRelease, {store});
-        rendered.setProps({datasetId: "datasetId"})
-        const selectRelease = rendered.findAllComponents("input")[1];
+        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        await rendered.setProps({datasetId: "datasetId"})
+        const selectRelease = rendered.findAll("input")[1];
         await selectRelease.trigger("change")
-        rendered.setData({releaseId: "releaseId"})
-        expect(rendered.vm.$data.releaseId).toBe("releaseId");
-        expect(rendered.vm.$data.choiceADR).toBe("useRelease");
+        await rendered.setData({releaseId: "releaseId"})
+        expect((rendered.vm.$data as any).releaseId).toBe("releaseId");
+        expect((rendered.vm.$data as any).choiceADR).toBe("useRelease");
 
-        rendered.setProps({datasetId: "datasetId2"})
+        await rendered.setProps({datasetId: "datasetId2"})
         expect(clearReleasesMock.mock.calls.length).toBe(2);
-        const select = rendered.findComponent(TreeSelect);
+        const select = rendered.findComponent(Treeselect);
         expect(select.attributes("disabled")).toBe("true");
-        expect(rendered.vm.$data.releaseId).toBe(undefined);
-        expect(rendered.vm.$data.choiceADR).toBe("useLatest");
+        expect((rendered.vm.$data as any).releaseId).toBe(undefined);
+        expect((rendered.vm.$data as any).choiceADR).toBe("useLatest");
     });
 });

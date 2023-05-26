@@ -1,4 +1,4 @@
-import Vue from "vue";
+import Vue, { nextTick } from "vue";
 import {mount, shallowMount} from "@vue/test-utils";
 
 import ADRKey from "../../../app/components/adr/ADRKey.vue";
@@ -11,6 +11,7 @@ import {RootState} from "../../../app/root";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import {ADRActions} from "../../../app/store/adr/actions";
 import {ADRState} from "../../../app/store/adr/adr";
+import { mountWithTranslate, shallowMountWithTranslate } from "../../testHelpers";
 
 describe("ADR Key", function () {
 
@@ -41,38 +42,69 @@ describe("ADR Key", function () {
     });
 
     it("shows title", () => {
-        const rendered = shallowMount(ADRKey, {store: createStore()});
-        expect(rendered.findComponent("label").text()).toBe("ADR access key");
+        const store = createStore();
+        const rendered = shallowMountWithTranslate(ADRKey, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        expect(rendered.find("label").text()).toBe("ADR access key");
     });
 
     it("shows asterisks if key exists", () => {
-        const rendered = shallowMount(ADRKey, {store: createStore("123-abc")});
-        expect(rendered.findComponent("span").text()).toBe("*******");
+        const store = createStore("123-abc");
+        const rendered = shallowMountWithTranslate(ADRKey, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        expect(rendered.find("span").text()).toBe("*******");
     });
 
     it("shows none message if key does not exists", () => {
-        const rendered = shallowMount(ADRKey, {store: createStore()});
-        expect(rendered.findComponent("span").text()).toBe("none provided");
+        const store = createStore()
+        const rendered = shallowMountWithTranslate(ADRKey, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        expect(rendered.find("span").text()).toBe("none provided");
     });
 
     it("shows remove button if key exists", () => {
-        const rendered = shallowMount(ADRKey, {store: createStore("123-abc")});
-        const links = rendered.findAllComponents(".btn")
+        const store = createStore("123-abc");
+        const rendered = shallowMountWithTranslate(ADRKey, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        const links = rendered.findAll(".btn")
         expect(links.length).toBe(1);
         expect(links[0].text()).toBe("Remove");
     });
 
     it("shows add button if key does not exist", () => {
-        const rendered = shallowMount(ADRKey, {store: createStore()});
-        const links = rendered.findAllComponents(".btn");
+        const store = createStore()
+        const rendered = shallowMountWithTranslate(ADRKey, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        const links = rendered.findAll(".btn");
         expect(links.length).toBe(2);
         expect(links[0].text()).toBe("Add");
     });
 
     it("shows button to ADR with tooltip if key does not exist", () => {
         const mockTooltipDirective = jest.fn();
-        const rendered = shallowMount(ADRKey, {store: createStore(), directives: {"tooltip": mockTooltipDirective}});
-        const links = rendered.findAllComponents("a");
+        const store = createStore()
+        const rendered = shallowMountWithTranslate(ADRKey, store, {
+            global: {
+                plugins: [store]
+            },
+            directives: {"tooltip": mockTooltipDirective}
+        });
+        const links = rendered.findAll("a");
         expect(links.length).toBe(1);
         expect(links[0].text()).toBe("Get access key from ADR");
         expect(links[0].attributes("href")).toBe("www.adr.com/me");
@@ -84,100 +116,113 @@ describe("ADR Key", function () {
     });
 
     it("can add key", async () => {
-        const rendered = mount(ADRKey,
+        const store = createStore()
+        const rendered = mountWithTranslate(ADRKey, store,
             {
-                store: createStore(),
+                global: {
+                    plugins: [store],
+                    stubs: ["tree-select"]
+                },
                 attachToDocument: true,
-                stubs: ["tree-select"]
             });
-        expect(rendered.findAllComponents(".input-group").length).toBe(0);
-        const links = rendered.findAllComponents(".btn")
-        links[0].trigger("click");
+        expect(rendered.findAll(".input-group").length).toBe(0);
+        const links = rendered.findAll(".btn")
+        await links[0].trigger("click");
 
-        await Vue.nextTick();
-        expect(rendered.findComponent("button").text()).toBe("Save");
-        expect(rendered.findComponent("input").element).toBe(document.activeElement);
+        expect(rendered.find("input").element).toBe(document.activeElement);
+        expect(rendered.find("button").text()).toBe("Save");
 
-        expect((rendered.findComponent("input").element as HTMLInputElement).placeholder).toBe("Enter key");
-        rendered.findComponent("input").setValue("new-key-456");
-        rendered.findComponent("button").trigger("click");
-
-        await Vue.nextTick();
+        expect((rendered.find("input").element as HTMLInputElement).placeholder).toBe("Enter key");
+        rendered.find("input").setValue("new-key-456");
+        await rendered.find("button").trigger("click");
 
         expect(saveStub.mock.calls.length).toBe(1);
     });
 
     it("cannot save empty key", async () => {
-        const rendered = shallowMount(ADRKey, {store: createStore()});
-        expect(rendered.findAllComponents(".input-group").length).toBe(0);
-        const links = rendered.findAllComponents(".btn")
-        links[0].trigger("click");
+        const store = createStore();
+        const rendered = mountWithTranslate(ADRKey, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        expect(rendered.findAll(".input-group").length).toBe(0);
+        const links = rendered.findAll(".btn")
+        await links[0].trigger("click");
 
-        await Vue.nextTick();
+        await rendered.find("input").setValue("");
 
-        rendered.findComponent("input").setValue("");
+        await rendered.find("button").trigger("click");
 
-        await Vue.nextTick();
-
-        rendered.findComponent("button").trigger("click");
-
-        await Vue.nextTick();
-
-        expect(rendered.findComponent("button").attributes("disabled")).toBe("disabled");
+        expect(rendered.find("button").attributes("disabled")).toBe("");
         expect(saveStub.mock.calls.length).toBe(0);
     });
 
     it("can cancel editing", async () => {
-        const rendered = shallowMount(ADRKey, {store: createStore()});
-        expect(rendered.findAllComponents(".input-group").length).toBe(0);
-        const links = rendered.findAllComponents(".btn")
-        links[0].trigger("click");
+        const store = createStore();
+        const rendered = shallowMountWithTranslate(ADRKey, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        expect(rendered.findAll(".input-group").length).toBe(0);
+        const links = rendered.findAll(".btn")
+        await links[0].trigger("click");
 
-        await Vue.nextTick();
+        expect(rendered.findAll(".input-group").length).toBe(1);
 
-        expect(rendered.findAllComponents(".input-group").length).toBe(1);
-
-        const buttons = rendered.findAllComponents(".btn")
+        const buttons = rendered.findAll(".btn")
         expect(buttons[1].text()).toBe("Cancel");
-        buttons[1].trigger("click");
+        await buttons[1].trigger("click");
 
-        await Vue.nextTick();
-
-        expect(rendered.findAllComponents(".input-group").length).toBe(0);
+        expect(rendered.findAll(".input-group").length).toBe(0);
     });
 
     it("can remove key", async () => {
-        const rendered = shallowMount(ADRKey, {store: createStore("123-abc")});
-        expect(rendered.findAllComponents(".input-group").length).toBe(0);
-        const links = rendered.findAllComponents(".btn")
-        links[0].trigger("click");
-
-        await Vue.nextTick();
+        const store = createStore("123-abc");
+        const rendered = shallowMountWithTranslate(ADRKey, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        expect(rendered.findAll(".input-group").length).toBe(0);
+        const links = rendered.findAll(".btn")
+        await links[0].trigger("click");
 
         expect(deleteStub.mock.calls.length).toBe(1);
     });
 
     it("can add key", async () => {
-        const rendered = shallowMount(ADRKey, {store: createStore()});
-        expect(rendered.findAllComponents(".input-group").length).toBe(0);
-        rendered.findComponent(".btn").trigger("click");
+        const store = createStore();
+        const rendered = shallowMountWithTranslate(ADRKey, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        expect(rendered.findAll(".input-group").length).toBe(0);
+        await rendered.find(".btn").trigger("click");
 
-        await Vue.nextTick();
-
-        rendered.findComponent("input").setValue("new-key-456");
-        rendered.findComponent("button").trigger("click");
-
-        await Vue.nextTick();
+        await rendered.find("input").setValue("new-key-456");
+        await rendered.find("button").trigger("click");
 
         expect(saveStub.mock.calls.length).toBe(1);
     });
 
     it("displays error if it exists", () => {
-        let rendered = shallowMount(ADRKey, {store: createStore("", null)});
+        const store = createStore("", null);
+        let rendered = shallowMountWithTranslate(ADRKey, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         expect(rendered.findAllComponents(ErrorAlert).length).toBe(0);
 
         const fakeError = mockError("whatevs")
-        rendered = shallowMount(ADRKey, {store: createStore("", fakeError)});
+        rendered = shallowMountWithTranslate(ADRKey, store, {
+            global: {
+                plugins: [createStore("", fakeError)]
+            }
+        });
         expect(rendered.findAllComponents(ErrorAlert).length).toBe(1);
         expect(rendered.findComponent(ErrorAlert).props("error")).toEqual(fakeError);
     });

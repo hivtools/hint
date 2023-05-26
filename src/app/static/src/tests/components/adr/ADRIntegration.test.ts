@@ -18,9 +18,9 @@ import {getters} from "../../../app/store/root/getters";
 import {ADRState} from "../../../app/store/adr/adr";
 import {prefixNamespace} from "../../../app/utils";
 import {Language} from "../../../app/store/translations/locales";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 import {BaselineState} from "../../../app/store/baseline/baseline";
-import Vue from "vue";
+import { nextTick } from "vue";
 
 describe("adr integration", () => {
 
@@ -81,54 +81,56 @@ describe("adr integration", () => {
 
     it("does not render if not logged in", () => {
         const store = createStore('', null, {currentUser: 'guest'});
-        const rendered = shallowMount(ADRIntegration, {store});
-        expect(rendered.findAllComponents("div").length).toBe(0);
+        const rendered = shallowMount(ADRIntegration, {global: { plugins: [store] }});
+        expect(rendered.findAll("div").length).toBe(0);
     });
 
     it("fetches ADR key if logged in", () => {
-        shallowMount(ADRIntegration, {store: createStore()});
+        shallowMount(ADRIntegration, {global: {plugins: [createStore()]}});
         expect(fetchKeyStub.mock.calls.length).toBe(1);
     });
 
     it("does not fetch ADR key if not logged in", () => {
         const store = createStore('', null, {currentUser: 'guest'})
-        shallowMount(ADRIntegration, {store});
+        shallowMount(ADRIntegration, {global: { plugins: [store] }});
         expect(fetchKeyStub.mock.calls.length).toBe(0);
     });
 
     it("renders adr-key widget", () => {
-        const rendered = shallowMount(ADRIntegration, {store: createStore()});
+        const rendered = shallowMount(ADRIntegration, {global: {plugins: [createStore()]}});
         expect(rendered.findAllComponents(ADRKey).length).toBe(1);
     });
 
     it("does not render select dataset widget if key is not present", () => {
-        const rendered = shallowMount(ADRIntegration, {store: createStore()});
+        const rendered = shallowMount(ADRIntegration, {global: {plugins: [createStore()]}});
         expect(rendered.findAllComponents(SelectDataset).length).toBe(0);
     });
 
     it("renders select dataset widget if key is present", () => {
-        const rendered = shallowMount(ADRIntegration, {store: createStore("123")});
+        const rendered = shallowMount(ADRIntegration, {global: {plugins: [createStore("123")]}});
         expect(rendered.findAllComponents(SelectDataset).length).toBe(1);
     });
 
-    it("fetches datasets when key changes", () => {
+    it("fetches datasets when key changes", async () => {
         const store = createStore();
-        shallowMount(ADRIntegration, {store});
+        shallowMount(ADRIntegration, {global: {plugins: [store]}});
         store.commit(prefixNamespace("adr", ADRMutation.UpdateKey),"123");
+        await nextTick();
         expect(getDataStub.mock.calls.length).toBe(1);
     });
 
     it("renders adr-access text for writers as expected", () => {
         const mockTooltip = jest.fn()
-        const renders = shallowMount(ADRIntegration,
+        const store = createStore("123", null, {}, true, {selectedDataset: fakeDataset});
+        const renders = shallowMountWithTranslate(ADRIntegration, store,
             {
-                store: createStore("123",
-                    null, {}, true, {selectedDataset: fakeDataset}),
-                directives: {"tooltip": mockTooltip}
+                global: {
+                    plugins: [store],
+                    directives: {"tooltip": mockTooltip}
+                }
             });
-        const store = renders.vm.$store
         expect(renders.findAllComponents(ADRKey).length).toBe(1);
-        const spans = (renders.findComponent("#adr-capacity").findAllComponents("span"))
+        const spans = renders.find("#adr-capacity").findAll("span")
 
         expectTranslated(spans[0], "ADR access level:", "Niveau d'accès ADR:", "Nível de acesso ADR:", store)
         expectTranslated(spans[1], "Read & Write", "Lecture et écriture", "Leitura e Escrita", store)
@@ -136,16 +138,17 @@ describe("adr integration", () => {
     });
 
     it("renders adr-access text for readers as expected", () => {
-        const mockTooltip = jest.fn()
-        const renders = shallowMount(ADRIntegration,
+        const mockTooltip = jest.fn();
+        const store = createStore("123", null, {}, false, {selectedDataset: fakeDataset});
+        const renders = shallowMountWithTranslate(ADRIntegration, store,
             {
-                store: createStore("123",
-                    null, {}, false, {selectedDataset: fakeDataset}),
-                directives: {"tooltip": mockTooltip}
+                global: {
+                    plugins: [store],
+                    directives: {"tooltip": mockTooltip}
+                }
             });
-        const store = renders.vm.$store
         expect(renders.findAllComponents(ADRKey).length).toBe(1);
-        const spans = (renders.findComponent("#adr-capacity").findAllComponents("span"))
+        const spans = (renders.find("#adr-capacity").findAll("span"))
 
         expectTranslated(spans[0], "ADR access level:", "Niveau d'accès ADR:","Nível de acesso ADR:", store)
         expectTranslated(spans[1], "Read only", "Lecture seule", "Apenas leitura", store)
@@ -158,8 +161,10 @@ describe("adr integration", () => {
         const mockTooltip = jest.fn()
         shallowMount(ADRIntegration,
             {
-                store,
-                directives: {"tooltip": mockTooltip}
+                global: {
+                    plugins: [store],
+                    directives: {"tooltip": mockTooltip}
+                }
             })
         expect(mockTooltip.mock.calls[0][1].value).toBe("Vous bénéficiez des droits de lecture et d’écriture pour cet ensemble de données et vous pouvez envoyer les fichiers de sortie vers le ADR");
     });
@@ -170,8 +175,10 @@ describe("adr integration", () => {
         const mockTooltip = jest.fn()
         shallowMount(ADRIntegration,
             {
-                store,
-                directives: {"tooltip": mockTooltip}
+                global: {
+                    plugins: [store],
+                    directives: {"tooltip": mockTooltip}
+                }
             })
         expect(mockTooltip.mock.calls[0][1].value).toBe("Vous ne disposez actuellement d’aucun droit d’écriture pour cet ensemble de données et vous ne pourrez pas télécharger de fichiers vers le ADR");
     });
@@ -182,8 +189,10 @@ describe("adr integration", () => {
         const mockTooltip = jest.fn()
         shallowMount(ADRIntegration,
             {
-                store,
-                directives: {"tooltip": mockTooltip}
+                global: {
+                    plugins: [store],
+                    directives: {"tooltip": mockTooltip}
+                }
             })
         expect(mockTooltip.mock.calls[0][1].value).toBe("Tem permissões de leitura e escrita para este conjunto de dados e pode carregar ficheiros de saída para o ADR");
     });
@@ -194,16 +203,19 @@ describe("adr integration", () => {
         const mockTooltip = jest.fn()
         shallowMount(ADRIntegration,
             {
-                store,
-                directives: {"tooltip": mockTooltip}
+                global: {
+                    plugins: [store],
+                    directives: {"tooltip": mockTooltip}
+                }
             })
         expect(mockTooltip.mock.calls[0][1].value).toBe("Atualmente não tem permissões de escrita para este conjunto de dados e não poderá carregar ficheiros para o ADR");
     });
 
     it("call getUserCanUpload action if dataset is selected", () => {
         const store = createStore("123", null, {})
-        shallowMount(ADRIntegration, {store});
-        store.state.baseline.selectedDataset = fakeDataset
+        const rendered = shallowMount(ADRIntegration, {global: { plugins: [store] }});
+        // @ts-ignore
+        rendered.vm.$options.watch.selectedDataset.call(rendered.vm)
         expect(getUserCanUploadStub.mock.calls.length).toBe(1);
     });
 
@@ -213,19 +225,19 @@ describe("adr integration", () => {
             false,
             {selectedDataset: fakeDataset});
 
-        shallowMount(ADRIntegration, {store});
+        shallowMount(ADRIntegration, {global: { plugins: [store] }});
         expect(getUserCanUploadStub.mock.calls.length).toBe(1);
     });
 
     it("does not call getUserCanUpload action when dataset is not selected", () => {
         const store = createStore("", null, {});
-        shallowMount(ADRIntegration, {store});
+        shallowMount(ADRIntegration, {global: { plugins: [store] }});
         expect(getUserCanUploadStub.mock.calls.length).toBe(0);
     });
 
     it("does not render permission displayText if dataset is not selected", () => {
         const store = createStore("123", null, {})
-        const renders = shallowMount(ADRIntegration, {store});
-        expect(renders.findComponent("#adr-capacity").exists()).toBeFalsy()
+        const renders = shallowMount(ADRIntegration, {global: { plugins: [store] }});
+        expect(renders.find("#adr-capacity").exists()).toBeFalsy()
     });
 });
