@@ -1,10 +1,11 @@
-import {shallowMount, Wrapper} from '@vue/test-utils';
+import {shallowMount} from '@vue/test-utils';
 import Warning from "../../app/components/Warning.vue";
-import Vue from "vue";
+import Vue, { nextTick } from "vue";
 import Vuex from "vuex";
+import VueFeather from "vue-feather";
 import {emptyState} from "../../app/root";
 import registerTranslations from "../../app/store/translations/registerTranslations";
-import {expectTranslated} from "../testHelpers";
+import {expectTranslated, shallowMountWithTranslate} from "../testHelpers";
 
 describe("Warning component", () => {
 
@@ -32,14 +33,16 @@ describe("Warning component", () => {
     registerTranslations(store);
 
     const createWrapper = (props = mockPropsModelOptions) => {
-        const wrapper = shallowMount(Warning, {
+        const wrapper = shallowMountWithTranslate(Warning, store, {
             props,
-            store
+            global: {
+                plugins: [store]
+            }
         });
         return wrapper
     }
 
-    function setDivHeights(wrapper: Wrapper<Vue>, l: number, wb: number) {
+    function setDivHeights(wrapper: any, l: number, wb: number) {
         function internal(refName: string, height: number){
             const selDiv = wrapper.vm.$refs[refName] as HTMLDivElement;
             jest.spyOn(selDiv, "clientHeight", "get")
@@ -51,71 +54,79 @@ describe("Warning component", () => {
 
     it("empty warnings are not rendered and setIntervals are cleared", () => {
         const wrapper = createWrapper({origin: "anything", warnings: []})
-        expect(wrapper.findComponent("div").exists()).toBe(false);
+        expect(wrapper.find("div").exists()).toBe(false);
     });
 
-    it("renders warning messages", () => {
+    it("renders warning messages", async () => {
         const wrapper = createWrapper()
-        expectTranslated(wrapper.findComponent("h5"), 
+        await expectTranslated(wrapper.find("h5"), 
             "Model option validation raised the following warning(s)", 
             "La validation de l'option de modèle a généré le(s) avertissement(s) suivant(s)", 
             "A validação da opção de modelo gerou o (s) seguinte (s) aviso (s)", 
         store)
-        expect(wrapper.findComponent("h5").findComponent("alert-triangle-icon-stub").exists()).toBe(true);
-        expect(wrapper.findAllComponents("li").length).toBe(4);
-        expect(wrapper.findComponent("li > div").attributes("style")).toBeUndefined();
-        expect(wrapper.findAllComponents("li")[0].text()).toBe("a warning");
-        expect(wrapper.findAllComponents("li")[1].text()).toBe("another warning");
-        expect(wrapper.findAllComponents("li")[2].text()).toBe("third warning");
-        expect(wrapper.findAllComponents("li")[3].text()).toBe("final warning");
+        const alertIcon = wrapper.find("h5").findComponent(VueFeather);
+        expect(alertIcon.exists()).toBe(true);
+        expect(alertIcon.props("type")).toBe("alert-triangle");
+        expect(wrapper.findAll("li").length).toBe(4);
+        expect(wrapper.find("li > div").attributes("style")).toBeUndefined();
+        expect(wrapper.findAll("li")[0].text()).toBe("a warning");
+        expect(wrapper.findAll("li")[1].text()).toBe("another warning");
+        expect(wrapper.findAll("li")[2].text()).toBe("third warning");
+        expect(wrapper.findAll("li")[3].text()).toBe("final warning");
       
-        wrapper.setProps(mockPropsModelRun)
-        expectTranslated(wrapper.findComponent("h5"), 
+        await wrapper.setProps(mockPropsModelRun)
+        await expectTranslated(wrapper.find("h5"), 
             "Model fit raised the following warning(s)", 
             "L'ajustement du modèle a soulevé le(s) avertissement(s) suivant(s)", 
             "O ajuste do modelo gerou o seguinte aviso (s)", 
         store)
-        expect(wrapper.findComponent("h5").findComponent("alert-triangle-icon-stub").exists()).toBe(true);
-        expect(wrapper.findAllComponents("li").length).toBe(1);
-        expect(wrapper.findAllComponents("li")[0].text()).toBe("model run warning");
+        const alertIcon1 = wrapper.find("h5").findComponent(VueFeather);
+        expect(alertIcon1.exists()).toBe(true);
+        expect(alertIcon1.props("type")).toBe("alert-triangle");
+        expect(wrapper.findAll("li").length).toBe(1);
+        expect(wrapper.findAll("li")[0].text()).toBe("model run warning");
 
-        wrapper.setProps(mockPropsModelCalibrate)
-        expectTranslated(wrapper.findComponent("h5"), 
+        await wrapper.setProps(mockPropsModelCalibrate)
+        await expectTranslated(wrapper.find("h5"), 
             "Model calibration raised the following warning(s)", 
             "L'étalonnage du modèle a déclenché le(s) avertissement(s) suivant(s)", 
             "A calibração do modelo gerou o (s) seguinte (s) aviso (s)", 
         store)
-        expect(wrapper.findComponent("h5").findComponent("alert-triangle-icon-stub").exists()).toBe(true);
-        expect(wrapper.findAllComponents("li").length).toBe(1);
-        expect(wrapper.findAllComponents("li")[0].text()).toBe("calibrate warning");
+        const alertIcon2 = wrapper.find("h5").findComponent(VueFeather);
+        expect(alertIcon2.exists()).toBe(true);
+        expect(alertIcon2.props("type")).toBe("alert-triangle");
+        expect(wrapper.findAll("li").length).toBe(1);
+        expect(wrapper.findAll("li")[0].text()).toBe("calibrate warning");
 
-        wrapper.setProps(mockPropsReviewInputs)
-        expectTranslated(wrapper.findComponent("h5"),
+        await wrapper.setProps(mockPropsReviewInputs)
+        await expectTranslated(wrapper.find("h5"),
             "Review inputs raised the following warning(s)",
             "L'examen des entrées a généré le ou le(s) avertissements suivant(s)",
             "As entradas de revisão geraram o (s) seguintes aviso (s)",
             store)
-        expect(wrapper.findComponent("h5").findComponent("alert-triangle-icon-stub").exists()).toBe(true);
-        expect(wrapper.findAllComponents("li").length).toBe(1);
-        expect(wrapper.findAllComponents("li")[0].text()).toBe("review input warning");
+        const alertIcon3 = wrapper.find("h5").findComponent(VueFeather);
+        expect(alertIcon3.exists()).toBe(true);
+        expect(alertIcon3.props("type")).toBe("alert-triangle");
+        expect(wrapper.findAll("li").length).toBe(1);
+        expect(wrapper.findAll("li")[0].text()).toBe("review input warning");
 
-        const hiddenWarning = wrapper.findComponent(".invisible")
-        expect(hiddenWarning.findComponent("p").text()).toBe("Hidden line");
+        const hiddenWarning = wrapper.find(".invisible")
+        expect(hiddenWarning.text()).toBe("Hidden line");
     });
 
     it("renders show more/less buttons if warnings are lengthy", async () => {
         const wrapper = createWrapper()
         setDivHeights(wrapper, 24, 96)
-        wrapper.setProps(mockPropsModelRun)
-        await Vue.nextTick()
-        expectTranslated(wrapper.findComponent("button"), 
+        await wrapper.setProps(mockPropsModelRun)
+        await nextTick()
+        await expectTranslated(wrapper.find("button"), 
             "Show more", 
             "Montrer plus", 
             "Mostre mais", 
         store)
-        await wrapper.findComponent("button").trigger("click")
-        await Vue.nextTick();
-        expectTranslated(wrapper.findComponent("button"),
+        await wrapper.find("button").trigger("click")
+        await nextTick();
+        await expectTranslated(wrapper.find("button"),
             "Show less", 
             "Montrer moins", 
             "Mostre menos", 
@@ -125,27 +136,27 @@ describe("Warning component", () => {
     it("does not show more/less buttons if warnings are not lengthy", async () => {
         const wrapper = createWrapper()
         setDivHeights(wrapper, 24, 24)
-        wrapper.setProps(mockPropsModelRun)
-        await Vue.nextTick()
-        expect(wrapper.findComponent("button").exists()).toBe(false)
+        await wrapper.setProps(mockPropsModelRun)
+        await nextTick()
+        expect(wrapper.find("button").exists()).toBe(false)
     });
 
     it("multiple warnings get truncated to one line each if lengthy", async () => {
         const wrapper = createWrapper(mockPropsModelRun)
         setDivHeights(wrapper, 24, 96)
-        wrapper.setProps(mockPropsModelOptions)
-        await Vue.nextTick()
-        expect(wrapper.findAllComponents("li").length).toBe(4);
-        expect(wrapper.findComponent("li > div").attributes("style")).toBe("height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;");
+        await wrapper.setProps(mockPropsModelOptions)
+        await nextTick()
+        expect(wrapper.findAll("li").length).toBe(4);
+        expect(wrapper.find("li > div").attributes("style")).toBe("height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;");
     });
 
     it("single warnings get truncated to multiple lines if lengthy", async () => {
         const wrapper = createWrapper()
         setDivHeights(wrapper, 24, 96)
-        wrapper.setProps(mockPropsModelRun)
-        await Vue.nextTick()
-        expect(wrapper.findAllComponents("li").length).toBe(1);
-        expect(wrapper.findComponent("li > div").attributes("style")).toBe("height: 48px; overflow: hidden; display: -webkit-box;");
+        await wrapper.setProps(mockPropsModelRun)
+        await nextTick()
+        expect(wrapper.findAll("li").length).toBe(1);
+        expect(wrapper.find("li > div").attributes("style")).toBe("height: 48px; overflow: hidden; display: -webkit-box;");
     });
 
 })

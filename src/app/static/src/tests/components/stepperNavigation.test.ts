@@ -8,7 +8,7 @@ describe("Stepper navigation component", () => {
 
     beforeEach(() => registerTranslations(new Vuex.Store({state: mockRootState()})));
 
-    it("enables links and invokes callbacks", () => {
+    it("enables links and invokes callbacks", async () => {
         const back = jest.fn();
         const next = jest.fn();
         const wrapper = shallowMount(StepperNavigation, {
@@ -18,18 +18,18 @@ describe("Stepper navigation component", () => {
             }
         });
 
-        const backLink = wrapper.findComponent("#back");
+        const backLink = wrapper.find("#back");
         expect(backLink.classes("disabled")).toBe(false);
-        backLink.trigger("click");
+        await backLink.trigger("click");
         expect(back.mock.calls.length).toBe(1);
 
-        const continueLink = wrapper.findComponent("#continue");
+        const continueLink = wrapper.find("#continue");
         expect(continueLink.classes("disabled")).toBe(false);
-        continueLink.trigger("click");
+        await continueLink.trigger("click");
         expect(next.mock.calls.length).toBe(1);
     });
 
-    it("disables links", () => {
+    it("disables links", async () => {
         const back = jest.fn();
         const next = jest.fn();
         const wrapper = shallowMount(StepperNavigation, {
@@ -39,14 +39,14 @@ describe("Stepper navigation component", () => {
             }
         });
 
-        const backLink = wrapper.findComponent("#back");
+        const backLink = wrapper.find("#back");
         expect(backLink.classes("disabled")).toBe(true);
-        backLink.trigger("click");
+        await backLink.trigger("click");
         expect(back.mock.calls.length).toBe(0);
 
-        const continueLink = wrapper.findComponent("#continue");
+        const continueLink = wrapper.find("#continue");
         expect(continueLink.classes("disabled")).toBe(true);
-        continueLink.trigger("click");
+        await continueLink.trigger("click");
         expect(next.mock.calls.length).toBe(0);
     });
 

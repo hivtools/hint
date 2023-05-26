@@ -1,5 +1,4 @@
-import {shallowMount, Wrapper} from '@vue/test-utils';
-import Vue from 'vue';
+import {shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import {baselineGetters, BaselineState} from "../../app/store/baseline/baseline";
 import {
@@ -45,7 +44,7 @@ import VersionStatus from "../../app/components/projects/VersionStatus.vue";
 import {RootState} from "../../app/root";
 import ModelCalibrate from "../../app/components/modelCalibrate/ModelCalibrate.vue";
 import {getters as rootGetters} from "../../app/store/root/getters";
-import {expectTranslated} from "../testHelpers";
+import {expectTranslated, shallowMountWithTranslate} from "../testHelpers";
 import StepperNavigation from "../../app/components/StepperNavigation.vue";
 import WarningAlert from "../../app/components/WarningAlert.vue";
 import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
@@ -53,6 +52,7 @@ import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {ModelRunMutation} from "../../app/store/modelRun/mutations";
 import {GenericChartState} from "../../app/store/genericChart/genericChart";
 import {GenericChartMutation} from "../../app/store/genericChart/mutations";
+import { nextTick } from 'vue';
 
 describe("Stepper component", () => {
 
@@ -165,7 +165,7 @@ describe("Stepper component", () => {
             }
         };
 
-        return shallowMount(Stepper, {store, mocks});
+        return shallowMountWithTranslate(Stepper, store, {global: {plugins: [store], mocks}});
     };
 
     const createReadySut = (baselineState?: Partial<BaselineState>,
@@ -215,8 +215,8 @@ describe("Stepper component", () => {
         const wrapper = createSut();
         const store = wrapper.vm.$store;
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
-        expect(wrapper.findAllComponents(".content").length).toBe(0);
-        expectTranslated(wrapper.findComponent("#loading-message"), "Loading your data",
+        expect(wrapper.findAll(".content").length).toBe(0);
+        expectTranslated(wrapper.find("#loading-message"), "Loading your data",
             "Chargement de vos données", "A carregar os seus dados", store);
     });
 
@@ -232,8 +232,8 @@ describe("Stepper component", () => {
         const store = wrapper.vm.$store;
 
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
-        expect(wrapper.findAllComponents(".content").length).toBe(0);
-        expectTranslated(wrapper.findComponent("#loading-message"), "Loading your data",
+        expect(wrapper.findAll(".content").length).toBe(0);
+        expectTranslated(wrapper.find("#loading-message"), "Loading your data",
             "Chargement de vos données","A carregar os seus dados", store);
     });
 
@@ -252,16 +252,16 @@ describe("Stepper component", () => {
         const store = wrapper.vm.$store;
 
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
-        expect(wrapper.findAllComponents(".content").length).toBe(0);
-        expectTranslated(wrapper.findComponent("#loading-message"), "Loading your data",
+        expect(wrapper.findAll(".content").length).toBe(0);
+        expectTranslated(wrapper.find("#loading-message"), "Loading your data",
             "Chargement de vos données","A carregar os seus dados", store);
     });
 
     it("does not render loading spinner once states are ready", () => {
         const wrapper = createReadySut();
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(0);
-        expect(wrapper.findAllComponents(".content").length).toBe(1);
-        expect(wrapper.findAllComponents("#loading-message").length).toBe(0);
+        expect(wrapper.findAll(".content").length).toBe(1);
+        expect(wrapper.findAll("#loading-message").length).toBe(0);
     });
 
     it("renders steps", () => {
@@ -314,7 +314,7 @@ describe("Stepper component", () => {
 
     it("renders step connectors", () => {
         const wrapper = createReadySut();
-        const connectors = wrapper.findAllComponents(".step-connector");
+        const connectors = wrapper.findAll(".step-connector");
 
         expect(connectors.length).toBe(6);
         // all should not be enabled at first
@@ -330,7 +330,7 @@ describe("Stepper component", () => {
         const wrapper = createReadySut(completedBaselineState,
             completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any});
-        const connectors = wrapper.findAllComponents(".step-connector");
+        const connectors = wrapper.findAll(".step-connector");
 
         expect(connectors[0].classes()).toContain("enabled");
         expect(connectors.filter(c => c.classes().indexOf("enabled") > -1).length).toBe(2);
@@ -339,7 +339,7 @@ describe("Stepper component", () => {
     it("step connector is not enabled for review inputs step if survey is not valid", () => {
         const wrapper = createReadySut(completedBaselineState,
             {survey: false, program: true, shape: true} as any);
-        const connectors = wrapper.findAllComponents(".step-connector");
+        const connectors = wrapper.findAll(".step-connector");
 
         expect(connectors[0].classes()).not.toContain("enabled");
         expect(connectors.filter(c => c.classes().indexOf("enabled") > -1).length).toBe(0);
@@ -385,12 +385,13 @@ describe("Stepper component", () => {
         expect([1, 2, 3, 4, 5].filter(i => steps[i].props().enabled).length).toBe(0);
     });
 
-    it("updates active step when jump event is emitted", () => {
+    it("updates active step when jump event is emitted", async () => {
         const wrapper = createReadySut(completedBaselineState,
             completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any});
         const steps = wrapper.findAllComponents(Step);
         steps[1].vm.$emit("jump", 2);
+        await nextTick();
         expect(steps[0].props().complete).toBe(true);
         expect(steps[1].props().active).toBe(true);
     });
@@ -406,7 +407,7 @@ describe("Stepper component", () => {
     });
 
 
-    it("can continue when the active step is complete", () => {
+    it("can continue when the active step is complete", async () => {
         const wrapper = createReadySut(completedBaselineState,
             completedSurveyAndProgramState,
             {plottingMetadata: "TEST DATA" as any});
@@ -414,6 +415,7 @@ describe("Stepper component", () => {
         expect(vm.navigationProps.nextDisabled).toBe(false);
 
         vm.navigationProps.next();
+        await nextTick();
         const steps = wrapper.findAllComponents(Step);
         expect(steps[1].props().active).toBe(true);
     });
@@ -423,7 +425,7 @@ describe("Stepper component", () => {
         expect((wrapper.vm as any).navigationProps.backDisabled).toBe(true);
     });
 
-    it("can go back from later steps", () => {
+    it("can go back from later steps", async () => {
         const wrapper = createReadySut({
                 country: "testCountry",
                 iso3: "TTT",
@@ -439,6 +441,7 @@ describe("Stepper component", () => {
         expect(vm.navigationProps.backDisabled).toBe(false);
 
         vm.navigationProps.back();
+        await nextTick();
         const steps = wrapper.findAllComponents(Step);
         expect(steps[0].props().active).toBe(true);
     });
@@ -463,7 +466,7 @@ describe("Stepper component", () => {
             "payload": mockValidateBaselineResponse()
         });
 
-        Vue.nextTick().then(() => {
+        nextTick().then(() => {
             expect(vm.navigationProps.nextDisabled).toBe(false);
             done();
         });
@@ -533,7 +536,7 @@ describe("Stepper component", () => {
         expect(steps[1].props().enabled).toBe(false);
     });
 
-    async function makeReady(wrapper: Wrapper<any>) {
+    async function makeReady(wrapper: any) {
 
         wrapper.vm.$store.commit("surveyAndProgram/Ready", {
             "type": "Ready",
@@ -545,18 +548,18 @@ describe("Stepper component", () => {
             "payload": true
         });
 
-        await Vue.nextTick();
+        await nextTick();
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(0);
     }
 
-    async function makeLoading(wrapper: Wrapper<any>) {
+    async function makeLoading(wrapper: any) {
 
         wrapper.vm.$store.commit("load/SettingFiles", {
             "type": "SettingFiles",
             "payload": null
         });
 
-        await Vue.nextTick();
+        await nextTick();
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
     }
 
@@ -643,7 +646,7 @@ describe("Stepper component", () => {
             "payload": "TEST"
         });
 
-        await Vue.nextTick();
+        await nextTick();
         expect(steps[3].props().complete).toBe(true);
         if (expectAdvanceToCalibrate) {
             expect(steps[3].props().active).toBe(false);
@@ -842,8 +845,8 @@ describe("Stepper component", () => {
             reviewInputs: []
         });
         //Expect warnings component to be at top, immediately before content div, not at bottom immediately after content
-        expect(wrapper.findComponent("warning-alert-stub + div.content").exists()).toBe(true);
-        expect(wrapper.findComponent("div.content + warning-alert-stub ").exists()).toBe(false);
+        expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(true);
+        expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(false);
     });
 
     it("renders warning alert for model options after step content", () => {
@@ -886,8 +889,8 @@ describe("Stepper component", () => {
             reviewInputs: []
         });
         //Expect warnings component to be at bottom, immediately after content div, not at top immediately before content
-        expect(wrapper.findComponent("warning-alert-stub + div.content").exists()).toBe(false);
-        expect(wrapper.findComponent("div.content + warning-alert-stub ").exists()).toBe(true);
+        expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(false);
+        expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(true);
     });
 
     it("renders warning alert for review inputs", () => {
@@ -931,8 +934,8 @@ describe("Stepper component", () => {
             }]
         });
         //Expect warnings component to be at top, immediately before content div, not at bottom immediately after content
-        expect(wrapper.findComponent("warning-alert-stub + div.content").exists()).toBe(true);
-        expect(wrapper.findComponent("div.content + warning-alert-stub ").exists()).toBe(false);
+        expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(true);
+        expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(false);
     });
 
     it("clear-warnings emit when in modelOptions triggers clear warnings mutation in modelOptions store", async () => {

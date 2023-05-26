@@ -4,7 +4,7 @@ import Warning from "../../app/components/Warning.vue";
 import Vuex from "vuex";
 import {emptyState} from "../../app/root";
 import registerTranslations from "../../app/store/translations/registerTranslations";
-import {expectTranslated} from "../testHelpers";
+import {expectTranslated, shallowMountWithTranslate} from "../testHelpers";
 
 describe("Warning alert component", () => {
 
@@ -18,12 +18,14 @@ describe("Warning alert component", () => {
     registerTranslations(store);
 
     const createWrapper = (warnings = warningsMock, activeStep = 3) => {
-        const wrapper = shallowMount(WarningAlert, {
+        const wrapper = shallowMountWithTranslate(WarningAlert, store, {
             props: {
                 warnings: warnings,
                 activeStep
             },
-            store
+            global: {
+                plugins: [store]
+            }
         });
         return wrapper
     }
@@ -34,13 +36,13 @@ describe("Warning alert component", () => {
 
     it("renders no warning alert if there are no warnings", () => {
         const wrapper = createWrapper({ modelOptions: [], modelRun: [], modelCalibrate: []})
-        expect(wrapper.findComponent(".alert-warning").exists()).toBe(false);
+        expect(wrapper.find(".alert-warning").exists()).toBe(false);
     });
 
     it("renders warning messages", () => {
         const wrapper = createWrapper()
 
-        expect(wrapper.findComponent(".alert-warning").exists()).toBe(true);
+        expect(wrapper.find(".alert-warning").exists()).toBe(true);
         const warnings = wrapper.findAllComponents(Warning)
         expect(warnings.length).toBe(3);
         expect(warnings[0].props()).toStrictEqual({maxLines: 2, origin: "modelOptions", warnings: warningsMock["modelOptions"]});
@@ -50,14 +52,14 @@ describe("Warning alert component", () => {
 
     it("clicking close triggers clear warnings emit", async () => {
         const wrapper = createWrapper()
-        await wrapper.findComponent("button").trigger("click")
+        await wrapper.find("button").trigger("click")
         expect(wrapper.emitted("clear-warnings")!.length).toBe(1);
     });
 
-    it("close button has correct aria-label translations", () => {
+    it("close button has correct aria-label translations", async () => {
         const wrapper = createWrapper()
-        const button = wrapper.findComponent("button")
-        expectTranslated(button,
+        const button = wrapper.find("button")
+        await expectTranslated(button,
             "Close",
             "Fermer",
             "Fechar",
@@ -65,15 +67,15 @@ describe("Warning alert component", () => {
             "aria-label");
     });
 
-    it("only renders warning messages that have warnings and sets maxLines prop", () => {
+    it("only renders warning messages that have warnings and sets maxLines prop", async () => {
         const wrapper = createWrapper({
             modelOptions: [],
             modelRun: [{ text: 'model run warning', locations: []}],
             modelCalibrate: []
         })
-        wrapper.setProps({maxLines: 3})
+        await wrapper.setProps({maxLines: 3})
 
-        expect(wrapper.findComponent(".alert-warning").exists()).toBe(true);
+        expect(wrapper.find(".alert-warning").exists()).toBe(true);
         const warnings = wrapper.findAllComponents(Warning)
         expect(warnings.length).toBe(1);
         expect(warnings[0].props()).toStrictEqual({maxLines: 3, origin: "modelRun", warnings: warningsMock["modelRun"]});

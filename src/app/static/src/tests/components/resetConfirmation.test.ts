@@ -1,5 +1,4 @@
-import Vue from "vue";
-import {mount, Wrapper} from "@vue/test-utils";
+import {mount} from "@vue/test-utils";
 import ResetConfirmation from "../../app/components/resetConfirmation/ResetConfirmation.vue";
 import LoadingSpinner from "../../app/components/LoadingSpinner.vue";
 import Vuex from "vuex";
@@ -9,8 +8,9 @@ import {mockErrorsState, mockProjectsState, mockRootState} from "../mocks";
 import {mutations as versionsMutations} from "../../app/store/projects/mutations";
 import {mutations as errorMutations} from "../../app/store/errors/mutations";
 import {getters} from "../../app/store/root/getters";
-import {expectTranslated} from "../testHelpers";
+import {expectTranslated, mountWithTranslate} from "../testHelpers";
 import {Step} from "../../app/types";
+import { nextTick } from "vue";
 
 const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState> = {}, partialStepperGetters = {}) => {
     const store = new Vuex.Store({
@@ -48,89 +48,95 @@ const createStore = (newVersion = jest.fn(), partialRootState: Partial<RootState
 
 describe("Reset confirmation modal", () => {
 
-    it("renders as expected for guest user", () => {
+    it("renders as expected for guest user", async () => {
         const store = createStore(jest.fn(), {currentUser: 'guest'});
-        const rendered = mount(ResetConfirmation, {
+        const rendered = mountWithTranslate(ResetConfirmation, store, {
             props: {
                 continueEditing: jest.fn(),
                 cancelEditing: jest.fn()
             },
-            store
+            global: {
+                plugins: [store]
+            }
         });
 
-        expectTranslated(rendered.findComponent("h4"), "Have you saved your work?",
+        await expectTranslated(rendered.find("h4"), "Have you saved your work?",
             "Avez-vous sauvegardé votre travail ?", "Já guardou o seu trabalho?", store);
-        expectTranslated(rendered.findAllComponents("p")[0],
+        await expectTranslated(rendered.findAll("p")[0],
             "Changing this will result in the following steps being discarded:",
             "Si vous modifiez ce paramètre, les étapes suivantes seront abandonnées :",
             "Ao alterar isto, as etapas seguintes serão descartadas:", store);
-        expectTranslated(rendered.findAllComponents("p")[1],
+        await expectTranslated(rendered.findAll("p")[1],
             "You may want to save your work before continuing.",
             "Vous devriez peut-être sauvegarder votre travail avant de poursuivre.",
             "Poderá querer guardar o seu trabalho antes de continuar.", store);
 
-        expectRenderedSteps(rendered);
+        await expectRenderedSteps(rendered);
 
-        const buttons = rendered.findAllComponents("button");
-        expectTranslated(buttons[0], "Discard these steps and keep editing",
+        const buttons = rendered.findAll("button");
+        await expectTranslated(buttons[0], "Discard these steps and keep editing",
             "Ignorer ces étapes et poursuivre la modification",
             "Descartar estas etapas e continuar a editar", store);
-        expectTranslated(buttons[1], "Cancel editing so I can save my work",
+        await expectTranslated(buttons[1], "Cancel editing so I can save my work",
             "Annuler l'édition pour que je puisse sauvegarder mon travail",
             "Cancelar a edição para que eu possa guardar o meu trabalho", store);
 
         expect(rendered.findComponent(LoadingSpinner).exists()).toBe(false);
     });
 
-    it("renders as expected for logged in user", () => {
+    it("renders as expected for logged in user", async () => {
         const store = createStore();
-        const rendered = mount(ResetConfirmation, {
+        const rendered = mountWithTranslate(ResetConfirmation, store, {
             props: {
                 continueEditing: jest.fn(),
                 cancelEditing: jest.fn()
             },
-            store
+            global: {
+                plugins: [store]
+            }
         });
 
-        expectTranslated(rendered.findComponent("h4"), "Save version?",
+        await expectTranslated(rendered.find("h4"), "Save version?",
             "Sauvegarder la version?", "Guardar versão?", store);
-        expectTranslated(rendered.findAllComponents("p")[0],
+        await expectTranslated(rendered.findAll("p")[0],
             "Changing this will result in the following steps being discarded:",
             "Si vous modifiez ce paramètre, les étapes suivantes seront abandonnées :",
             "Ao alterar isto, as etapas seguintes serão descartadas:", store);
-        expectTranslated(rendered.findAllComponents("p")[1],
+        await expectTranslated(rendered.findAll("p")[1],
             "These steps will automatically be saved in a version. You will be able to reload this version from the Projects page.",
             "Ces étapes seront automatiquement sauvegardées dans une version. Vous pourrez recharger cette version depuis la page Projets.",
             "Estas etapas serão automaticamente guardadas numa versão. Poderá voltar a carregar esta versão a partir da página Projetos.",
             store);
 
-        expectRenderedSteps(rendered);
+        await expectRenderedSteps(rendered);
 
-        const buttons = rendered.findAllComponents("button");
-        expectTranslated(buttons[0], "Save version and keep editing",
+        const buttons = rendered.findAll("button");
+        await expectTranslated(buttons[0], "Save version and keep editing",
             "Sauvegarder la version et continuer à modifier", "Guardar versão e continuar a editar", store);
-        expectTranslated(buttons[1], "Cancel editing", "Annuler l'édition", "Cancelar edição", store);
+        await expectTranslated(buttons[1], "Cancel editing", "Annuler l'édition", "Cancelar edição", store);
 
         expect(rendered.findComponent(LoadingSpinner).exists()).toBe(false);
     });
 
-    it("renders as expected for someone rerunning the model", () => {
+    it("renders as expected for someone rerunning the model", async () => {
         const stepperGetter = {
             changesToRelevantSteps: () => [
                 {number: 4, textKey: "fitModel"}]}
         const store = createStore(jest.fn(), {}, stepperGetter);
-        const rendered = mount(ResetConfirmation, {
+        const rendered = mountWithTranslate(ResetConfirmation, store, {
             props: {
                 continueEditing: jest.fn(),
                 cancelEditing: jest.fn()
             },
-            store
+            global: {
+                plugins: [store]
+            }
         });
 
-        expectRenderedModelRunSteps(rendered);
+        await expectRenderedModelRunSteps(rendered);
     });
 
-    it("does not render discarded step when upload input changes", () => {
+    it("does not render discarded step when upload input changes", async () => {
         const stepperGetter = {
             changesToRelevantSteps: () => [
                 {number: 3, textKey: "modelOptions"},
@@ -138,61 +144,71 @@ describe("Reset confirmation modal", () => {
             ]
         }
         const store = createStore(jest.fn(), {}, stepperGetter);
-        const rendered = mount(ResetConfirmation, {
+        const rendered = mountWithTranslate(ResetConfirmation, store, {
             props: {
                 continueEditing: jest.fn(),
                 cancelEditing: jest.fn(),
                 discardStepWarning: Step.ModelOptions
             },
-            store
+            global: {
+                plugins: [store]
+            }
         });
 
-        expectRenderedModelRunSteps(rendered);
+        await expectRenderedModelRunSteps(rendered);
     });
 
-    it("cancel edit button invokes cancelEditing", () => {
+    it("cancel edit button invokes cancelEditing", async () => {
         const mockCancelEdit = jest.fn();
-        const rendered = mount(ResetConfirmation, {
+        const store = createStore();
+        const rendered = mountWithTranslate(ResetConfirmation, store, {
             props: {
                 continueEditing: jest.fn(),
                 cancelEditing: mockCancelEdit
             },
-            store: createStore()
+            global: {
+                plugins: [store]
+            }
         });
 
-        rendered.findAllComponents("button")[1].trigger("click");
+        await rendered.findAll("button")[1].trigger("click");
         expect(mockCancelEdit.mock.calls.length).toBe(1);
     });
 
-    it("continue button invokes continueEditing for guest user", () => {
+    it("continue button invokes continueEditing for guest user", async () => {
         const mockContinueEdit = jest.fn();
-        const rendered = mount(ResetConfirmation, {
+        const store = createStore(jest.fn(), {currentUser: 'guest'});
+        const rendered = mountWithTranslate(ResetConfirmation, store, {
             props: {
                 continueEditing: mockContinueEdit,
                 cancelEditing: jest.fn()
             },
-            store: createStore(jest.fn(), {currentUser: 'guest'})
+            global: {
+                plugins: [store]
+            } 
         });
 
-        rendered.findAllComponents("button")[0].trigger("click");
+        await rendered.findAll("button")[0].trigger("click");
         expect(mockContinueEdit.mock.calls.length).toBe(1);
     });
 
-    it("can render translated version note label", () => {
+    it("can render translated version note label", async () => {
 
         const mockContinueEdit = jest.fn();
         const mockNewVersion = jest.fn();
-        const rendered = mount(ResetConfirmation, {
+        const store = createStore(mockNewVersion, {currentUser: 'test.user@example.com'});
+        const rendered = mountWithTranslate(ResetConfirmation, store, {
             props: {
                 continueEditing: mockContinueEdit,
                 cancelEditing: jest.fn()
             },
-            store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
+            global: {
+                plugins: [store]
+            }
         });
 
-        const store = rendered.vm.$store
-        const noteLabel = rendered.findComponent("#noteHeader label")
-        expectTranslated(noteLabel, "Notes: (your reason for saving as a new version)",
+        const noteLabel = rendered.find("#noteHeader label")
+        await expectTranslated(noteLabel, "Notes: (your reason for saving as a new version)",
             "Notes : (votre motif pour sauvegarder en tant que nouvelle version)",
             "Notas: (a sua razão para guardar como nova versão)", store)
     });
@@ -201,32 +217,38 @@ describe("Reset confirmation modal", () => {
 
         const mockContinueEdit = jest.fn();
         const mockNewVersion = jest.fn();
-        const rendered = mount(ResetConfirmation, {
+        const store = createStore(mockNewVersion, {currentUser: 'test.user@example.com'});
+        const rendered = mountWithTranslate(ResetConfirmation, store, {
             props: {
                 continueEditing: mockContinueEdit,
                 cancelEditing: jest.fn()
             },
-            store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
+            global: {
+                plugins: [store]
+            }
         });
 
         await rendered.setProps({open: true});
-        const textarea = rendered.findComponent("textarea").element as HTMLTextAreaElement;
+        const textarea = rendered.find("textarea").element as HTMLTextAreaElement;
         expect(textarea.value).toBe("textarea value");
     });
 
     it("can set note value and invokes newVersion action for logged in user", async () => {
         const mockContinueEdit = jest.fn();
         const mockNewVersion = jest.fn();
-        const rendered = mount(ResetConfirmation, {
+        const store = createStore(mockNewVersion, {currentUser: 'test.user@example.com'});
+        const rendered = mountWithTranslate(ResetConfirmation, store, {
             props: {
                 continueEditing: mockContinueEdit,
                 cancelEditing: jest.fn()
             },
-            store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
+            global: {
+                plugins: [store]
+            }
         });
 
-        rendered.findComponent("textarea").setValue("new Value")
-        rendered.findAllComponents("button")[0].trigger("click");
+        rendered.find("textarea").setValue("new Value")
+        await rendered.findAll("button")[0].trigger("click");
 
         expect(mockContinueEdit.mock.calls.length).toBe(0);
         expect((rendered.vm as any).waitingForVersion).toBe(true);
@@ -234,21 +256,24 @@ describe("Reset confirmation modal", () => {
         expect(mockNewVersion.mock.calls[0][1]).toBe("new%20Value");
     });
 
-    it("continue button sets waitingForVersion to true and invokes newVersion action for logged in user", () => {
+    it("continue button sets waitingForVersion to true and invokes newVersion action for logged in user", async () => {
 
         const mockContinueEdit = jest.fn();
         const mockNewVersion = jest.fn();
-        const rendered = mount(ResetConfirmation, {
+        const store = createStore(mockNewVersion, {currentUser: 'test.user@example.com'});
+        const rendered = mountWithTranslate(ResetConfirmation, store, {
             props: {
                 continueEditing: mockContinueEdit,
                 cancelEditing: jest.fn()
             },
-            store: createStore(mockNewVersion, {currentUser: 'test.user@example.com'})
+            global: {
+                plugins: [store]
+            }
         });
 
         expect((rendered.vm as any).waitingForVersion).toBe(false);
 
-        rendered.findAllComponents("button")[0].trigger("click");
+        await rendered.findAll("button")[0].trigger("click");
 
         expect(mockContinueEdit.mock.calls.length).toBe(0);
         expect((rendered.vm as any).waitingForVersion).toBe(true);
@@ -257,7 +282,8 @@ describe("Reset confirmation modal", () => {
 
     it("when currentVersion changes, sets waitingForVersion to false and invokes continue editing, if waitingForVersion is true", async () => {
         const mockContinueEditing = jest.fn();
-        const rendered = mount(ResetConfirmation, {
+        const store = createStore();
+        const rendered = mountWithTranslate(ResetConfirmation, store, {
             data() {
                 return {
                     waitingForVersion: true
@@ -267,11 +293,13 @@ describe("Reset confirmation modal", () => {
                 continueEditing: mockContinueEditing,
                 cancelEditing: jest.fn()
             },
-            store: createStore()
+            global: {
+                plugins: [store]
+            }
         });
 
         rendered.vm.$store.commit("projects/VersionCreated", {id: "newVersionId"});
-        await Vue.nextTick();
+        await nextTick();
 
         expect((rendered.vm as any).waitingForVersion).toBe(false);
         expect(mockContinueEditing.mock.calls.length).toBe(1);
@@ -279,7 +307,8 @@ describe("Reset confirmation modal", () => {
 
     it("when error added, sets waitingForVersion to false and invokes cancel editing, if waitingForVersion is true", async () => {
         const mockCancelEditing = jest.fn();
-        const rendered = mount(ResetConfirmation, {
+        const store = createStore();
+        const rendered = mountWithTranslate(ResetConfirmation, store, {
             data() {
                 return {
                     waitingForVersion: true
@@ -289,11 +318,13 @@ describe("Reset confirmation modal", () => {
                 continueEditing: jest.fn(),
                 cancelEditing: mockCancelEditing
             },
-            store: createStore()
+            global: {
+                plugins: [store]
+            }
         });
 
         rendered.vm.$store.commit("errors/ErrorAdded", "TEST ERROR");
-        await Vue.nextTick();
+        await nextTick();
 
         expect((rendered.vm as any).waitingForVersion).toBe(false);
         expect(mockCancelEditing.mock.calls.length).toBe(1);
@@ -301,16 +332,19 @@ describe("Reset confirmation modal", () => {
 
     it("when currentVersion changes, does nothing if waitingForVersion is false", async () => {
         const mockContinueEditing = jest.fn();
-        const rendered = mount(ResetConfirmation, {
+        const store = createStore();
+        const rendered = mountWithTranslate(ResetConfirmation, store, {
             props: {
                 continueEditing: mockContinueEditing,
                 cancelEditing: jest.fn()
             },
-            store: createStore()
+            global: {
+                plugins: [store]
+            }
         });
 
         rendered.vm.$store.commit("projects/VersionCreated", {id: "newVersionId"});
-        await Vue.nextTick();
+        await nextTick();
 
         expect((rendered.vm as any).waitingForVersion).toBe(false);
         expect(mockContinueEditing.mock.calls.length).toBe(0);
@@ -318,23 +352,27 @@ describe("Reset confirmation modal", () => {
 
     it("when errorAdded, does nothing if waitingForVersion is false", async () => {
         const mockCancelEditing = jest.fn();
-        const rendered = mount(ResetConfirmation, {
+        const store = createStore();
+        const rendered = mountWithTranslate(ResetConfirmation, store, {
             props: {
                 continueEditing: jest.fn(),
                 cancelEditing: mockCancelEditing
             },
-            store: createStore()
+            global: {
+                plugins: [store]
+            }
         });
 
         rendered.vm.$store.commit("errors/ErrorAdded", "TEST ERROR");
-        await Vue.nextTick();
+        await nextTick();
 
         expect((rendered.vm as any).waitingForVersion).toBe(false);
         expect(mockCancelEditing.mock.calls.length).toBe(0);
     });
 
     it("renders spinner in place of buttons when waiting for version", () => {
-        const rendered = mount(ResetConfirmation, {
+        const store = createStore();
+        const rendered = mountWithTranslate(ResetConfirmation, store, {
             data() {
                 return {
                     waitingForVersion: true
@@ -344,37 +382,39 @@ describe("Reset confirmation modal", () => {
                 continueEditing: jest.fn(),
                 cancelEditing: jest.fn()
             },
-            store: createStore()
+            global: {
+                plugins: [store]
+            }
         });
 
-        expect(rendered.findComponent("button").exists()).toBe(false);
+        expect(rendered.find("button").exists()).toBe(false);
         expect(rendered.findComponent(LoadingSpinner).props("size")).toBe("sm");
-        expect(rendered.findComponent("#spinner-text").text()).toBe("Saving version");
+        expect(rendered.find("#spinner-text").text()).toBe("Saving version");
     });
 
-    const expectRenderedSteps = (rendered: Wrapper<any>) => {
+    const expectRenderedSteps = async (rendered: any) => {
         const store = rendered.vm.$store;
-        const steps = rendered.findAllComponents("li");
+        const steps = rendered.findAll("li");
         expect(steps.length).toBe(3);
 
-        expectTranslated(steps[0], "Step 2: Review inputs",
+        await expectTranslated(steps[0], "Step 2: Review inputs",
             "Étape 2: Examiner les entrées",
             "Etapa 2: Analise as entradas", store);
 
-        expectTranslated(steps[1], "Step 3: Model options",
+        await expectTranslated(steps[1], "Step 3: Model options",
             "Étape 3: Options des modèles",
             "Etapa 3: Opções de modelos", store);
 
-        expectTranslated(steps[2], "Step 4: Fit model",
+        await expectTranslated(steps[2], "Step 4: Fit model",
             "Étape 4: Ajuster le modèle",
             "Etapa 4: Ajustar modelo", store);
     };
 
-    const expectRenderedModelRunSteps = (rendered: Wrapper<any>) => {
+    const expectRenderedModelRunSteps = async (rendered: any) => {
         const store = rendered.vm.$store;
-        const steps = rendered.findAllComponents("li");
+        const steps = rendered.findAll("li");
         expect(steps.length).toBe(1);
-        expectTranslated(steps[0], "Step 4: Fit model",
+        await expectTranslated(steps[0], "Step 4: Fit model",
             "Étape 4: Ajuster le modèle", "Etapa 4: Ajustar modelo", store);
     };
 
