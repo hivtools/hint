@@ -5,6 +5,7 @@ import {mount, shallowMount} from "@vue/test-utils";
 import Vuex from "vuex";
 import {Language} from "../../../../app/store/translations/locales";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
+import { mountWithTranslate, shallowMountWithTranslate } from "../../../testHelpers";
 
 const props = {
     ...testData,
@@ -51,16 +52,15 @@ const createStore = (language: Language = Language.en) => {
 
 const getWrapper = (customPropsData: any = {}, language: Language = Language.en) => {
     const store = createStore(language);
-    return shallowMount(AreaIndicatorsTable, {store, props: {...props, ...customPropsData}});
+    return shallowMountWithTranslate(AreaIndicatorsTable, store, {
+        props: {...props, ...customPropsData},
+        global: {
+            plugins: [store]
+        }
+    });
 };
 
 describe("areaIndicatorsTable", () => {
-    it('mount test', () => {
-        const store = createStore();
-        mount(AreaIndicatorsTable, {store, props});
-    });
-
-
     it('renders Table with correct fields', () => {
         const wrapper = getWrapper();
         const table = wrapper.findComponent(Table);
@@ -482,10 +482,14 @@ describe("areaIndicatorsTable", () => {
 
     it('area hierarchy is rendered in child Table component', () => {
         const store = createStore();
-        const wrapper = mount(AreaIndicatorsTable, {store, props});
+        const wrapper = mountWithTranslate(AreaIndicatorsTable, store, {
+            global: {
+                plugins: [store]
+            }, props
+        });
 
-        expect(wrapper.findAllComponents('td')[0].findAllComponents("div")[0].text()).toBe('4.1');
-        expect(wrapper.findAllComponents('td')[0].findComponent(".small").text()).toBe('3.1');
+        expect(wrapper.findAll('td')[0].findAll("div")[0].text()).toBe('4.1');
+        expect(wrapper.findAll('td')[0].find(".small").text()).toBe('3.1');
     });
 
     it('uncertainty is rendered in child Table component', () => {
@@ -497,10 +501,14 @@ describe("areaIndicatorsTable", () => {
         };
 
         const store = createStore();
-        const wrapper = mount(AreaIndicatorsTable, {store, props: {...props, ...customPropsData}});
+        const wrapper = mountWithTranslate(AreaIndicatorsTable, store, {
+            global: {
+                plugins: [store]
+            }, props: {...props, ...customPropsData}
+        });
 
-        expect(wrapper.findAllComponents('td')[3].findComponent(".value").text()).toBe('1.00%');
-        expect(wrapper.findAllComponents('td')[3].findComponent(".small").text()).toBe('(1.00% – 10.00%)');
+        expect(wrapper.findAll('td')[3].find(".value").text()).toBe('1.00%');
+        expect(wrapper.findAll('td')[3].find(".small").text()).toBe('(1.00% – 10.00%)');
     })
 
     it('render format output props correctly', () => {

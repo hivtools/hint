@@ -1,12 +1,11 @@
-import {createLocalVue, shallowMount, WrapperArray} from '@vue/test-utils';
+import {shallowMount} from '@vue/test-utils';
 import MapLegend from "../../../app/components/plots/MapLegend.vue";
-import {Vue} from "vue/types/vue";
 import {ScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 import MapAdjustScale from "../../../app/components/plots/MapAdjustScale.vue";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
 
 const store = new Vuex.Store({
     state: emptyState()
@@ -20,7 +19,7 @@ describe("Map legend component", () => {
         min: 1
     };
 
-    const expectLevels = (levels: WrapperArray<Vue>) => {
+    const expectLevels = (levels: any) => {
         expect(levels.length).toBe(6);
         expect(levels[0].text()).toBe("2");
         expect(levels[1].text()).toBe("1.8");
@@ -30,7 +29,7 @@ describe("Map legend component", () => {
         expect(levels[5].text()).toBe("1");
     };
 
-    const expectIcons = (icons: WrapperArray<Vue>) => {
+    const expectIcons = (icons: any) => {
         expect((icons[5].element as HTMLElement).style
             .getPropertyValue("background")).toBe("rgb(255, 255, 255)");
         expect((icons[1].element as HTMLElement).style
@@ -58,20 +57,25 @@ describe("Map legend component", () => {
         colourRange
     };
 
-    const wrapper = shallowMount(MapLegend, {props});
+    const wrapper = mountWithTranslate(MapLegend, store, {
+        props,
+        global: {
+            plugins: [store]
+        }
+    });
 
     it("renders the label", () => {
-        const label = wrapper.findComponent("label");
+        const label = wrapper.find("label");
         expect(label.text()).toBe("indicator");
     });
 
     it("calculates 6 levels from min to max", () => {
-        const levels = wrapper.findAllComponents(".level");
+        const levels = wrapper.findAll(".level");
         expectLevels(levels);
     });
 
     it("renders icons with colors", () => {
-        const icons = wrapper.findAllComponents("i");
+        const icons = wrapper.findAll("i");
         expectIcons(icons);
     });
 
@@ -85,7 +89,10 @@ describe("Map legend component", () => {
     });
 
     it("calculates 6 levels from min to max with negative min", () => {
-        const rangeWrapper = shallowMount(MapLegend, {
+        const rangeWrapper = shallowMountWithTranslate(MapLegend, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 metadata: {
                     max: 2,
@@ -100,7 +107,7 @@ describe("Map legend component", () => {
                 colourRange: {min: -0.45, max: 0}
             }
         });
-        const levels = rangeWrapper.findAllComponents(".level");
+        const levels = rangeWrapper.findAll(".level");
         expect(levels.length).toBe(6);
 
         expect(levels[0].text()).toBe("0");
@@ -112,7 +119,10 @@ describe("Map legend component", () => {
     });
 
     it("calculates 6 levels from min to max with percentage format", () => {
-        const rangeWrapper = shallowMount(MapLegend, {
+        const rangeWrapper = shallowMountWithTranslate(MapLegend, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 metadata: {
                     max: 2,
@@ -126,7 +136,7 @@ describe("Map legend component", () => {
                 colourRange: {min: 1, max: 2}
             }
         });
-        const levels = rangeWrapper.findAllComponents(".level");
+        const levels = rangeWrapper.findAll(".level");
         expect(levels.length).toBe(6);
 
         expect(levels[0].text()).toBe("200.00%");
@@ -138,7 +148,10 @@ describe("Map legend component", () => {
     });
 
     it("calculates 6 levels from min to max with 500 scale", () => {
-        const rangeWrapper = shallowMount(MapLegend, {
+        const rangeWrapper = shallowMountWithTranslate(MapLegend, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 metadata: {
                     max: 2,
@@ -152,7 +165,7 @@ describe("Map legend component", () => {
                 colourRange: {min: 1, max: 2}
             }
         });
-        const levels = rangeWrapper.findAllComponents(".level");
+        const levels = rangeWrapper.findAll(".level");
         expect(levels.length).toBe(6);
 
         expect(levels[0].text()).toBe("1.0k");
@@ -164,7 +177,10 @@ describe("Map legend component", () => {
     });
 
     it("calculates single level when max equals min", () => {
-        const rangeWrapper = shallowMount(MapLegend, {
+        const rangeWrapper = shallowMountWithTranslate(MapLegend, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 metadata: {
                     max: 2,
@@ -179,20 +195,23 @@ describe("Map legend component", () => {
                 colourRange: {min: 3, max: 3}
             }
         });
-        const levels = rangeWrapper.findAllComponents(".level");
+        const levels = rangeWrapper.findAll(".level");
         expect(levels.length).toBe(1);
         expect(levels[0].text()).toBe("3");
 
-        const icons = rangeWrapper.findAllComponents("i");
+        const icons = rangeWrapper.findAll("i");
         expect(icons.length).toBe(1);
         expect((icons[0].element as HTMLElement).style
             .getPropertyValue("background")).toBe("rgb(255, 255, 255)");
     });
 
     it("does not render adjust link if no colour scale", () => {
-        expect(wrapper.findComponent(".adjust-scale").exists()).toBe(true);
+        expect(wrapper.find(".adjust-scale").exists()).toBe(true);
 
-        const noScaleWrapper = shallowMount(MapLegend, {
+        const noScaleWrapper = shallowMountWithTranslate(MapLegend, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 metadata: {
                     max: 10,
@@ -208,11 +227,14 @@ describe("Map legend component", () => {
                 colourRange
             },
         });
-        expect(noScaleWrapper.findComponent("#adjust-scale").exists()).toBe(false);
+        expect(noScaleWrapper.find("#adjust-scale").exists()).toBe(false);
     });
 
     it("renders icons with colors, with scale inverted", () => {
-        const invertedWrapper = shallowMount(MapLegend, {
+        const invertedWrapper = shallowMountWithTranslate(MapLegend, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 metadata: {
                     max: 2,
@@ -231,7 +253,7 @@ describe("Map legend component", () => {
             }
         });
 
-        const icons = invertedWrapper.findAllComponents("i");
+        const icons = invertedWrapper.findAll("i");
         expect((icons[5].element as HTMLElement).style
             .getPropertyValue("background")).toBe("rgb(0, 0, 0)");
         expect((icons[1].element as HTMLElement).style
@@ -242,17 +264,23 @@ describe("Map legend component", () => {
     });
 
     it("returns no levels if no metadata", () => {
-        const emptyWrapper = shallowMount(MapLegend, {
+        const emptyWrapper = shallowMountWithTranslate(MapLegend, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 metadata: null
             }
         });
-        expect(emptyWrapper.findAllComponents("i").length).toBe(0);
-        expect(emptyWrapper.findAllComponents(".level").length).toBe(0);
+        expect(emptyWrapper.findAll("i").length).toBe(0);
+        expect(emptyWrapper.findAll(".level").length).toBe(0);
     });
 
     it("formats big numbers", () => {
-        const wrapper = shallowMount(MapLegend, {
+        const wrapper = shallowMountWithTranslate(MapLegend, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 metadata: {
                     max: 60000,
@@ -270,17 +298,20 @@ describe("Map legend component", () => {
                 colourRange: {max: 60000, min: 1000}
             }
         });
-        const levels = wrapper.findAllComponents(".level");
+        const levels = wrapper.findAll(".level");
         expect(levels[0].text()).toBe("60k");
         expect(levels[5].text()).toBe("1.0k");
     });
 
-    it("toggles show adjust scale", () => {
+    it("toggles show adjust scale", async () => {
         const colourScale = {
             type: ScaleType.Default
         };
 
-        const wrapper = shallowMount(MapLegend, {
+        const wrapper = shallowMountWithTranslate(MapLegend, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 metadata: {
                     max: 20,
@@ -300,22 +331,25 @@ describe("Map legend component", () => {
 
         const adjust = wrapper.findComponent(MapAdjustScale);
 
-        const showAdjust = wrapper.findComponent(".adjust-scale a");
-        expectTranslated(showAdjust.findComponent("span"), "Adjust scale", "Ajuster l'échelle",
+        const showAdjust = wrapper.find(".adjust-scale a");
+        await expectTranslated(showAdjust.find("span"), "Adjust scale", "Ajuster l'échelle",
             "Ajustar a escala", store);
 
-        showAdjust.trigger("click");
+        await showAdjust.trigger("click");
         expect(adjust.props().show).toBe(true);
-        expectTranslated(showAdjust.findComponent("span"), "Done", "Terminé","Concluído", store);
+        await expectTranslated(showAdjust.find("span"), "Done", "Terminé","Concluído", store);
 
-        showAdjust.trigger("click");
+        await showAdjust.trigger("click");
         expect(adjust.props().show).toBe(false);
-        expectTranslated(showAdjust.findComponent("span"), "Adjust scale", "Ajuster l'échelle",
+        await expectTranslated(showAdjust.find("span"), "Adjust scale", "Ajuster l'échelle",
             "Ajustar a escala", store);
     });
 
     it("emits update event when scale changes", () => {
-        const wrapper = shallowMount(MapLegend, {
+        const wrapper = shallowMountWithTranslate(MapLegend, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 metadata: {
                     max: 20,

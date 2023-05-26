@@ -1,11 +1,10 @@
 import Filters from "../../../app/components/plots/Filters.vue";
-import {createLocalVue, shallowMount} from "@vue/test-utils";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectFilter} from "./testHelpers";
+import { shallowMountWithTranslate } from "../../testHelpers";
 
-const localVue = createLocalVue();
 const store = new Vuex.Store({
     state: emptyState()
 });
@@ -49,7 +48,12 @@ const props = {
 };
 
 const getWrapper = (customPropsData: any = {}) => {
-    return shallowMount(Filters, {props: {...props, ...customPropsData}, localVue});
+    return shallowMountWithTranslate(Filters, store, {
+        props: {...props, ...customPropsData},
+        global: {
+            plugins: [store]
+        }
+    });
 };
 
 describe("Filters component", () => {

@@ -1,4 +1,4 @@
-import {createLocalVue, shallowMount, Wrapper} from "@vue/test-utils";
+import {shallowMount} from "@vue/test-utils";
 import BubblePlot from "../../../../app/components/plots/bubble/BubblePlot.vue";
 import {LCircleMarker, LGeoJson, LTooltip} from "@vue-leaflet/vue-leaflet";
 import {getFeatureIndicators, getRadius} from "../../../../app/components/plots/bubble/utils";
@@ -9,15 +9,15 @@ import registerTranslations from "../../../../app/store/translations/registerTra
 import Vuex from "vuex";
 import Treeselect from "vue3-treeselect";
 import {emptyState} from "../../../../app/root";
-import Vue from "vue";
 import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 import {expectFilter, plhiv, prev, testData} from "../testHelpers"
 import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
 import ResetMap from "../../../../app/components/plots/ResetMap.vue";
+import { shallowMountWithTranslate } from "../../../testHelpers";
+import { nextTick } from "vue";
 
-const localVue = createLocalVue();
 const store = new Vuex.Store({
     state: emptyState()
 });
@@ -55,11 +55,16 @@ const allAreaIds = ["MWI", "MWI_3_1", "MWI_3_2", "MWI_4_1", "MWI_4_2"];
 
 const getWrapper = (customPropsData: any = {}) => {
 
-    return shallowMount(BubblePlot, {props: {...props, ...customPropsData}, localVue});
+    return shallowMountWithTranslate(BubblePlot, store, {
+        props: {...props, ...customPropsData},
+        global: {
+            plugins: [store]
+        }
+    });
 };
 
-export const expectIndicatorSelect = (wrapper: Wrapper<Vue>, divId: string, value: string) => {
-    const indDiv = wrapper.findComponent("#" + divId);
+export const expectIndicatorSelect = (wrapper: any, divId: string, value: string) => {
+    const indDiv = wrapper.find("#" + divId);
     expect(indDiv.classes()[0]).toBe("form-group");
     const indSelect = indDiv.findComponent(Treeselect);
     expect(indSelect.props().multiple).toBe(false);
@@ -201,23 +206,23 @@ describe("BubblePlot component", () => {
 
         expect(vm.sizeRange).toStrictEqual({min: 0, max: 100});
 
-        wrapper.setProps({
+        await wrapper.setProps({
             sizeScales: {
                 plhiv: {type: ScaleType.Custom, customMin: 0, customMax: 50}
             }
         });
-        await Vue.nextTick();
+        await nextTick();
         expect(vm.sizeRange).toStrictEqual({min: 0, max: 50});
 
-        wrapper.setProps({
+        await wrapper.setProps({
             sizeScales: {
                 plhiv: {type: ScaleType.DynamicFull}
             }
         });
-        await Vue.nextTick();
+        await nextTick();
         expect(vm.sizeRange).toStrictEqual({min: 1, max: 20});
 
-        wrapper.setProps({
+        await wrapper.setProps({
             sizeScales: {
                 plhiv: {type: ScaleType.DynamicFiltered}
             },
@@ -230,7 +235,7 @@ describe("BubblePlot component", () => {
                 }
             }
         });
-        await Vue.nextTick();
+        await nextTick();
         expect(vm.sizeRange).toStrictEqual({min: 19, max: 20});
     });
 
@@ -242,7 +247,7 @@ describe("BubblePlot component", () => {
             max: 0.8
         });
 
-        wrapper.setProps({
+        await wrapper.setProps({
             colourScales: {
                 prevalence: {
                     type: ScaleType.Custom,
@@ -252,13 +257,13 @@ describe("BubblePlot component", () => {
             }
         });
 
-        await Vue.nextTick();
+        await nextTick();
         expect(vm.colourRange).toStrictEqual({
             min: 1,
             max: 2
         });
 
-        wrapper.setProps({
+        await wrapper.setProps({
             colourScales: {
                 prevalence: {
                     type: ScaleType.DynamicFull,
@@ -268,13 +273,13 @@ describe("BubblePlot component", () => {
             }
         });
 
-        await Vue.nextTick();
+        await nextTick();
         expect(vm.colourRange).toStrictEqual({
             min: 0,
             max: 0.9
         });
 
-        wrapper.setProps({
+        await wrapper.setProps({
             colourScales: {
                 prevalence: {
                     type: ScaleType.DynamicFiltered,
@@ -294,7 +299,7 @@ describe("BubblePlot component", () => {
             }
         });
 
-        await Vue.nextTick();
+        await nextTick();
         expect(vm.colourRange).toStrictEqual({
             min: 0.1,
             max: 0.9
@@ -442,7 +447,7 @@ describe("BubblePlot component", () => {
 
     it("computes areaFilter", () => {
         const wrapper = getWrapper();
-        expect((wrapper.vm as any).areaFilter).toBe(props.filters[0]);
+        expect((wrapper.vm as any).areaFilter).toStrictEqual(props.filters[0]);
     });
 
     it("computes nonAreaFilters", () => {
@@ -452,7 +457,7 @@ describe("BubblePlot component", () => {
 
     it("computes areaFilterOptions", () => {
         const wrapper = getWrapper();
-        expect((wrapper.vm as any).areaFilterOptions).toBe((props.filters[0].options[0] as NestedFilterOption).children);
+        expect((wrapper.vm as any).areaFilterOptions).toStrictEqual((props.filters[0].options[0] as NestedFilterOption).children);
     });
 
     it("computes selectedAreaFilterOptions", () => {
@@ -503,17 +508,17 @@ describe("BubblePlot component", () => {
 
     it("computes countryFilterOption", () => {
         const wrapper = getWrapper();
-        expect((wrapper.vm as any).countryFilterOption).toBe(props.filters[0].options[0]);
+        expect((wrapper.vm as any).countryFilterOption).toStrictEqual(props.filters[0].options[0]);
     });
 
     it("computes countryFeature", () => {
         const wrapper = getWrapper();
-        expect((wrapper.vm as any).countryFeature).toBe(props.features[0]);
+        expect((wrapper.vm as any).countryFeature).toStrictEqual(props.features[0]);
     });
 
     it("computes colorIndicator", () => {
         const wrapper = getWrapper();
-        expect((wrapper.vm as any).colorIndicator).toBe(props.indicators[1]);
+        expect((wrapper.vm as any).colorIndicator).toStrictEqual(props.indicators[1]);
     });
 
     it("computes existing colourIndicatorScale", () => {
@@ -678,10 +683,10 @@ describe("BubblePlot component", () => {
         const vm = wrapper.vm as any;
         vm.onDetailChange(3);
 
-        expect(wrapper.emitted("update")![0][0].detail).toStrictEqual(3);
+        expect((wrapper.emitted("update")![0][0] as any).detail).toStrictEqual(3);
     });
 
-    it("updates bounds when becomes initialised", () => {
+    it("updates bounds when becomes initialised", async () => {
         const mockUpdateBounds = jest.fn();
         const wrapper = getWrapper({ //this cannot initialise
             features: [...props.features],
@@ -703,7 +708,7 @@ describe("BubblePlot component", () => {
         const vm = wrapper.vm as any;
         vm.updateBounds = mockUpdateBounds;
 
-        wrapper.setProps(props); //This should initialise and trigger the watcher
+        await wrapper.setProps(props); //This should initialise and trigger the watcher
         expect(mockUpdateBounds.mock.calls.length).toBeGreaterThan(0);
     });
 
@@ -811,7 +816,6 @@ describe("BubblePlot component", () => {
             }
         };
         const wrapper = getWrapper(customProps);
-        //const wrapper = getWrapper(customProps);
 
         const circles = wrapper.findAllComponents(LCircleMarker);
         expect(circles.length).toBe(1);

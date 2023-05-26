@@ -1,10 +1,11 @@
-import {shallowMount} from '@vue/test-utils';
 import FilterSelect from "../../../app/components/plots/FilterSelect.vue";
 import TreeSelect from "vue3-treeselect";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {HelpCircleIcon} from "vue-feather";
+import VueFeather from "vue-feather";
+import { mountWithTranslate, shallowMountWithTranslate } from '../../testHelpers';
+import { nextTick } from "vue";
 
 describe("FilterSelect component", () => {
     const testOptions = [{id: "1", label: "one"}, {id: "2", label: "two"}];
@@ -15,14 +16,23 @@ describe("FilterSelect component", () => {
     registerTranslations(store);
 
     it("renders label", () => {
-        const wrapper = shallowMount(FilterSelect, {store, props: {options: testOptions, label: "testLabel"}});
-        expect(wrapper.findComponent("label").text()).toBe("testLabel");
+        const wrapper = shallowMountWithTranslate(FilterSelect, store, {
+            global: {
+                plugins: [store]
+            }, props: {options: testOptions, label: "testLabel"}
+        });
+        expect(wrapper.find("label").text()).toBe("testLabel");
     });
 
     it("renders tooltip if any options have descriptions", () => {
         const tooltip = jest.fn();
-        const wrapper = shallowMount(FilterSelect, {
-            store,
+        const wrapper = shallowMountWithTranslate(FilterSelect, store, {
+            global: {
+                plugins: [store],
+                directives: {
+                    tooltip
+                }
+            },
             props: {
                 options: [
                     ...testOptions,
@@ -30,22 +40,25 @@ describe("FilterSelect component", () => {
                     {id: "4", label: "four", description: "Fourth option"}
                 ]
             },
-            directives: {
-                tooltip
-            }
         });
-        expect(wrapper.findComponent(HelpCircleIcon).exists()).toBe(true);
+        expect(wrapper.findComponent(VueFeather).exists()).toBe(true);
         expect(tooltip.mock.calls[0][1].value.content).toBe("<dl><dt>three</dt><dd>Third option</dd><dt>four</dt><dd>Fourth option</dd></dl>");
     });
 
     it("does not render tooltip unless any options have descriptions", () => {
-        const wrapper = shallowMount(FilterSelect, {store, props: {options: testOptions, label: "testLabel"}});
-        expect(wrapper.findComponent("span.filter-select").exists()).toBe(false);
+        const wrapper = shallowMountWithTranslate(FilterSelect, store, {
+            global: {
+                plugins: [store]
+            }, props: {options: testOptions, label: "testLabel"}
+        });
+        expect(wrapper.find("span.filter-select").exists()).toBe(false);
     });
 
     it("renders TreeSelect", () => {
-        const wrapper = shallowMount(FilterSelect, {
-            store,
+        const wrapper = mountWithTranslate(FilterSelect, store, {
+            global: {
+                plugins: [store]
+            },
             props:
                 {
                     label: "label",
@@ -56,20 +69,22 @@ describe("FilterSelect component", () => {
         });
 
         const treeSelect = wrapper.findComponent(TreeSelect);
-        expect(treeSelect.props("value")).toBe("2");
+        expect(treeSelect.props("modelValue")).toBe("2");
         expect(treeSelect.props("disabled")).toBe(false);
         expect(treeSelect.props("options")).toStrictEqual(testOptions);
 
         expect(treeSelect.props("clearable")).toBe(false);
         expect(treeSelect.props("multiple")).toBe(false);
 
-        const label = wrapper.findComponent("label");
+        const label = wrapper.find("label");
         expect(label.classes().indexOf("disabled-label")).toBe(-1);
     });
 
     it("renders TreeSelect with null value and placeholder if disabled", () => {
-        const wrapper = shallowMount(FilterSelect, {
-            store,
+        const wrapper = mountWithTranslate(FilterSelect, store, {
+            global: {
+                plugins: [store]
+            },
             props:
                 {
                     label: "label",
@@ -80,7 +95,7 @@ describe("FilterSelect component", () => {
         });
 
         const treeSelect = wrapper.findComponent(TreeSelect);
-        expect(treeSelect.props("value")).toBeNull();
+        expect(treeSelect.props("modelValue")).toBeNull();
         expect(treeSelect.props("disabled")).toBe(true);
         expect(treeSelect.props("options")).toStrictEqual(testOptions);
         expect(treeSelect.props("placeholder")).toEqual("Not used");
@@ -88,28 +103,36 @@ describe("FilterSelect component", () => {
         expect(treeSelect.props("clearable")).toBe(false);
         expect(treeSelect.props("multiple")).toBe(false);
 
-        const label = wrapper.findComponent("label");
+        const label = wrapper.find("label");
         expect(label.classes()).toContain("disabled-label");
     });
 
-    it("emits indicator-changed event with indicator", () => {
-        const wrapper = shallowMount(FilterSelect, {store, props: {label: "label", options: testOptions}});
-        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("input", "2");
+    it("emits indicator-changed event with indicator", async () => {
+        const wrapper = mountWithTranslate(FilterSelect, store, {
+            global: {
+                plugins: [store]
+            }, props: {label: "label", options: testOptions}
+        });
+        await wrapper.findAllComponents(TreeSelect)[0].vm.$emit("update:modelValue", "2");
         expect(wrapper.emitted("input")![0][0]).toBe("2");
     });
 
     it("does not emit input event if disabled", () => {
-        const wrapper = shallowMount(FilterSelect, {
-            store,
+        const wrapper = shallowMountWithTranslate(FilterSelect, store, {
+            global: {
+                plugins: [store]
+            },
             props: {label: "label", options: testOptions, disabled: true}
         });
-        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("input", "2");
+        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("update:modelValue", "2");
         expect(wrapper.emitted("input")!).toBeUndefined();
     });
 
     it("emits select event with added value when multi-select", () => {
-        const wrapper = shallowMount(FilterSelect, {
-            store,
+        const wrapper = shallowMountWithTranslate(FilterSelect, store, {
+            global: {
+                plugins: [store]
+            },
             props: {label: "Label", options: testOptions, multiple: true, value: []}
         });
         wrapper.findAllComponents(TreeSelect)[0].vm.$emit("select", {id: "1", label: "one"});
@@ -120,8 +143,10 @@ describe("FilterSelect component", () => {
     });
 
     it("emits select event with replaced value when not multi-select", () => {
-        const wrapper = shallowMount(FilterSelect, {
-            store,
+        const wrapper = shallowMountWithTranslate(FilterSelect, store, {
+            global: {
+                plugins: [store]
+            },
             props: {label: "Label", options: testOptions, multiple: false}
         });
         wrapper.findAllComponents(TreeSelect)[0].vm.$emit("select", {id: "1", label: "one"});
@@ -132,8 +157,10 @@ describe("FilterSelect component", () => {
     });
 
     it("emits select even when deselect", () => {
-        const wrapper = shallowMount(FilterSelect, {
-            store,
+        const wrapper = shallowMountWithTranslate(FilterSelect, store, {
+            global: {
+                plugins: [store]
+            },
             props: {label: "Label", options: testOptions, multiple: true, value: ["1", "2"]}
         });
 

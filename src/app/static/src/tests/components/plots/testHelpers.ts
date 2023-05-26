@@ -1,5 +1,3 @@
-import {Wrapper} from "@vue/test-utils";
-import {Vue} from "vue/types/vue";
 import {FilterOption} from "../../../app/generated";
 import FilterSelect from "../../../app/components/plots/FilterSelect.vue";
 
@@ -162,10 +160,10 @@ export const testData = {
     ]
 };
 
-export const expectFilter = (wrapper: Wrapper<Vue>, divId: string, value: string[], label: string, multiple: boolean, options: FilterOption[]) => {
+export const expectFilter = (wrapper: any, divId: string, value: string[], label: string, multiple: boolean, options: FilterOption[]) => {
     const filterDiv = wrapper.find("#" + divId);
     expect(filterDiv.classes()[0]).toBe("form-group");
-    const filter = filterDiv.find(FilterSelect);
+    const filter = filterDiv.findComponent(FilterSelect);
     expect(filter.props().value).toStrictEqual(value);
     expect(filter.props().multiple).toBe(multiple);
     expect(filter.props().label).toBe(label);

@@ -1,4 +1,4 @@
-import {createLocalVue, shallowMount} from "@vue/test-utils";
+import {shallowMount} from "@vue/test-utils";
 import Choropleth from "../../../../app/components/plots/choropleth/Choropleth.vue";
 import {LGeoJson} from "@vue-leaflet/vue-leaflet";
 import {getFeatureIndicator} from "../../../../app/components/plots/choropleth/utils";
@@ -14,8 +14,8 @@ import Vue from "vue";
 import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
 import ResetMap from "../../../../app/components/plots/ResetMap.vue";
 import {ChoroplethIndicatorMetadata} from "../../../../app/generated";
+import { shallowMountWithTranslate } from "../../../testHelpers";
 
-const localVue = createLocalVue();
 const store = new Vuex.Store({
     state: emptyState()
 });
@@ -45,7 +45,12 @@ const props = {
 const allAreaIds = ["MWI", "MWI_3_1", "MWI_3_2", "MWI_4_1", "MWI_4_2"];
 
 const getWrapper = (customPropsData: any = {}) => {
-    return shallowMount(Choropleth, {props: {...props, ...customPropsData}, localVue});
+    return shallowMountWithTranslate(Choropleth, store, {
+        props: {...props, ...customPropsData},
+        global: {
+            plugins: [store]
+        }
+    });
 };
 
 describe("Choropleth component", () => {
@@ -163,7 +168,7 @@ describe("Choropleth component", () => {
             max: props.colourScales["prevalence"].customMax
         });
 
-        wrapper.setProps({
+        await wrapper.setProps({
             colourScales: {
                 prevalence: {
                     type: ScaleType.Default,
@@ -179,7 +184,7 @@ describe("Choropleth component", () => {
             max: prev.max
         });
 
-        wrapper.setProps({
+        await wrapper.setProps({
             colourScales: {
                 prevalence: {
                     type: ScaleType.DynamicFull,
@@ -195,7 +200,7 @@ describe("Choropleth component", () => {
             max: 0.9
         });
 
-        wrapper.setProps({
+        await wrapper.setProps({
             colourScales: {
                 prevalence: {
                     type: ScaleType.DynamicFiltered,
@@ -504,7 +509,7 @@ describe("Choropleth component", () => {
         });
     });
 
-    it("updates bounds when becomes initialises", () => {
+    it("updates bounds when becomes initialises", async () => {
         const mockUpdateBounds = jest.fn();
         const wrapper = getWrapper({ //this cannot initialise
             features: [...props.features],
@@ -525,7 +530,7 @@ describe("Choropleth component", () => {
         const vm = wrapper.vm as any;
         vm.updateBounds = mockUpdateBounds;
 
-        wrapper.setProps(props); //This should initialise and trigger the watcher
+        await wrapper.setProps(props); //This should initialise and trigger the watcher
         expect(mockUpdateBounds.mock.calls.length).toBeGreaterThan(0);
     });
 
