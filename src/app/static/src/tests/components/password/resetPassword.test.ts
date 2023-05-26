@@ -1,4 +1,4 @@
-import {createLocalVue, shallowMount, VueWrapper} from "@vue/test-utils";
+import {shallowMount, VueWrapper} from "@vue/test-utils";
 import ResetPassword from "../../../app/components/password/ResetPassword.vue";
 import {PasswordState} from "../../../app/store/password/password";
 import {PasswordActions} from "../../../app/store/password/actions";
@@ -6,11 +6,9 @@ import Vuex, {Store} from "vuex";
 import {mockError, mockPasswordState} from "../../mocks";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import LoggedOutHeader from "../../../app/components/header/LoggedOutHeader.vue";
-import {expectTranslatedWithStoreType} from "../../testHelpers";
+import {expectTranslatedWithStoreType, shallowMountWithTranslate} from "../../testHelpers";
 import {LanguageMutation, mutations} from "../../../app/store/language/mutations";
 import {Language} from "../../../app/store/translations/locales";
-
-const localVue = createLocalVue();
 
 describe("Reset password component", () => {
 
@@ -24,7 +22,12 @@ describe("Reset password component", () => {
         };
 
         const store = new Vuex.Store({
-            state: mockPasswordState(passwordState),
+            modules: {
+                password: {
+                    namespaced: true,
+                    state: mockPasswordState(passwordState),
+                }
+            },
             actions: {...actions},
             mutations,
             getters: {}
@@ -34,16 +37,19 @@ describe("Reset password component", () => {
     };
 
     const createSut = (store: Store<PasswordState>) => {
-        return shallowMount(ResetPassword, {
-            store, localVue, props: {
+        return shallowMountWithTranslate(ResetPassword, store, {
+            props: {
                 token: "testToken",
                 title: "Naomi"
+            },
+            global: {
+                plugins: [store]
             }
         });
     };
 
 
-    it("renders form with no error", () => {
+    it("renders form with no error", async () => {
         const store = createStore({
             passwordWasReset: false,
             resetPasswordError: null
@@ -51,16 +57,16 @@ describe("Reset password component", () => {
 
         const wrapper = createSut(store);
 
-        expectTranslatedWithStoreType<PasswordState>(wrapper.findComponent("h3"), "Enter a new password",
+        await expectTranslatedWithStoreType<PasswordState>(wrapper.find("h3"), "Enter a new password",
             "Veuillez entrer un nouveau mot de passe", "Introduzir uma nova palavra-passe", store);
-        expect((wrapper.findComponent("input[type='password']").element as HTMLInputElement).value).toEqual("");
-        expectTranslatedWithStoreType<PasswordState>(wrapper.findComponent("input[type='submit']"),
+        expect((wrapper.find("input[type='password']").element as HTMLInputElement).value).toEqual("");
+        await expectTranslatedWithStoreType<PasswordState>(wrapper.find("input[type='submit']"),
             "Update password", "Mettre à jour le mot de passe", "Atualizar palavra-passe", store, "value");
-        expect(wrapper.findAllComponents("error-alert-stub").length).toEqual(0);
-        expect(wrapper.findAllComponents("#password-was-reset").length).toEqual(0);
+        expect(wrapper.findAll("error-alert-stub").length).toEqual(0);
+        expect(wrapper.findAll("#password-was-reset").length).toEqual(0);
     });
 
-    it("renders form with error", () => {
+    it("renders form with error", async () => {
         const error = mockError("test error");
         const store = createStore({
             passwordWasReset: false,
@@ -69,14 +75,14 @@ describe("Reset password component", () => {
 
         const wrapper = createSut(store);
 
-        expectTranslatedWithStoreType<PasswordState>(wrapper.findComponent("h3"), "Enter a new password",
+        await expectTranslatedWithStoreType<PasswordState>(wrapper.find("h3"), "Enter a new password",
             "Veuillez entrer un nouveau mot de passe", "Introduzir uma nova palavra-passe", store);
-        expect((wrapper.findComponent("input[type='password']").element as HTMLInputElement).value).toEqual("");
-        expectTranslatedWithStoreType<PasswordState>(wrapper.findComponent("input[type='submit']"),
+        expect((wrapper.find("input[type='password']").element as HTMLInputElement).value).toEqual("");
+        await expectTranslatedWithStoreType<PasswordState>(wrapper.find("input[type='submit']"),
             "Update password", "Mettre à jour le mot de passe","Atualizar palavra-passe", store, "value");
-        expect(wrapper.findAllComponents("error-alert-stub").length).toEqual(1);
-        expect((wrapper.findComponent("error-alert-stub") as VueWrapper).props().error).toBe(error);
-        expectTranslatedWithStoreType<PasswordState>(wrapper.findComponent("#request-new-link"),
+        expect(wrapper.findAll("error-alert-stub").length).toEqual(1);
+        expect((wrapper.findComponent("error-alert-stub") as VueWrapper).props().error).toStrictEqual(error);
+        await expectTranslatedWithStoreType<PasswordState>(wrapper.find("#request-new-link"),
             "This password reset link is not valid. It may have expired or already been used.\n" +
             "Please request another link here.",
             "Ce lien de réinitialisation du mot de passe n'est pas valide. Il peut avoir expiré ou avoir déjà été utilisé. " +
@@ -84,12 +90,12 @@ describe("Reset password component", () => {
             "Esta ligação de reposição de palavra-passe não é válida. Pode ter expirado ou já ter sido utilizada. " +
             "Por favor, solicite outra ligação aqui.",
             store);
-        expect((wrapper.findComponent("#request-new-link a").element as HTMLLinkElement).href)
+        expect((wrapper.find("#request-new-link a").element as HTMLLinkElement).href)
             .toEqual("http://localhost/password/forgot-password");
-        expect(wrapper.findAllComponents("#password-was-reset").length).toEqual(0);
+        expect(wrapper.findAll("#password-was-reset").length).toEqual(0);
     });
 
-    it("renders form with password reset success message and hides form", () => {
+    it("renders form with password reset success message and hides form", async () => {
         const store = createStore({
             passwordWasReset: true,
             resetPasswordError: null
@@ -97,64 +103,54 @@ describe("Reset password component", () => {
 
         const wrapper = createSut(store);
 
-        expectTranslatedWithStoreType<PasswordState>(wrapper.findComponent("h3"), "Enter a new password",
+        await expectTranslatedWithStoreType<PasswordState>(wrapper.find("h3"), "Enter a new password",
             "Veuillez entrer un nouveau mot de passe", "Introduzir uma nova palavra-passe", store);
-        expect(wrapper.findAllComponents("input[type='password']").length).toEqual(0);
-        expect(wrapper.findAllComponents("input[type='submit']").length).toEqual(0);
-        expect(wrapper.findAllComponents("error-alert-stub").length).toEqual(0);
-        expect(wrapper.findAllComponents("#password-was-reset").length).toEqual(1);
-        expectTranslatedWithStoreType<PasswordState>(wrapper.findComponent("#password-was-reset"),
+        expect(wrapper.findAll("input[type='password']").length).toEqual(0);
+        expect(wrapper.findAll("input[type='submit']").length).toEqual(0);
+        expect(wrapper.findAll("error-alert-stub").length).toEqual(0);
+        expect(wrapper.findAll("#password-was-reset").length).toEqual(1);
+        await expectTranslatedWithStoreType<PasswordState>(wrapper.find("#password-was-reset"),
             "Thank you, your password has been updated. Click here to login.",
             "Merci, votre mot de passe a été mis à jour. Cliquez ici pour vous connecter.",
             "Obrigado, a sua palavra-passe foi atualizada. Clique aqui para iniciar sessão.", store);
     });
 
-    it("invokes resetPassword action", (done) => {
+    it("invokes resetPassword action", async () => {
 
         const store = createStore();
         const wrapper = createSut(store);
 
-        wrapper.findComponent("input[type='password']").setValue("newpassword");
-        wrapper.findComponent("input[type='submit']").trigger("click");
+        await wrapper.find("input[type='password']").setValue("newpassword");
+        await wrapper.find("input[type='submit']").trigger("click");
 
-        setTimeout(() => {
-            expect(actions.resetPassword.mock.calls.length).toEqual(1);
-            expect(actions.resetPassword.mock.calls[0][1]).toEqual({"token": "testToken", "password": "newpassword"});
-            expect(wrapper.findComponent("form").classes()).toContain("was-validated");
-            done();
-        });
+        expect(actions.resetPassword.mock.calls.length).toEqual(1);
+        expect(actions.resetPassword.mock.calls[0][1]).toEqual({"token": "testToken", "password": "newpassword"});
+        expect(wrapper.find("form").classes()).toContain("was-validated");
 
     });
 
-    it("does not invoke resetPassword action if input value is empty", (done) => {
+    it("does not invoke resetPassword action if input value is empty", async () => {
 
         const store = createStore();
         const wrapper = createSut(store);
 
-        wrapper.findComponent("input[type='submit']").trigger("click");
+        await wrapper.find("input[type='submit']").trigger("click");
 
-        setTimeout(() => {
-            expect(actions.resetPassword.mock.calls.length).toEqual(0);
-            expect(wrapper.findComponent("form").classes()).toContain("was-validated");
-            done();
-        });
+        expect(actions.resetPassword.mock.calls.length).toEqual(0);
+        expect(wrapper.find("form").classes()).toContain("was-validated");
 
     });
 
-    it("does not invoke resetPassword action if input value is too short", (done) => {
+    it("does not invoke resetPassword action if input value is too short", async () => {
 
         const store = createStore();
         const wrapper = createSut(store);
 
-        wrapper.findComponent("input[type='password']").setValue("12345");
-        wrapper.findComponent("input[type='submit']").trigger("click");
+        await wrapper.find("input[type='password']").setValue("12345");
+        await wrapper.find("input[type='submit']").trigger("click");
 
-        setTimeout(() => {
-
-            expect(actions.resetPassword.mock.calls.length).toEqual(0);
-            expect(wrapper.findComponent("form").classes()).toContain("was-validated");
-            done();
-        });
+        expect(actions.resetPassword.mock.calls.length).toEqual(0);
+        expect(wrapper.find("form").classes()).toContain("was-validated");
     });
 
     it("passes title to logged out header", () => {
