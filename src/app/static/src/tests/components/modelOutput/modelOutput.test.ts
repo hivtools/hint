@@ -1,4 +1,4 @@
-import {VueWrapper, createLocalVue, shallowMount} from '@vue/test-utils';
+import {VueWrapper, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import {
@@ -14,16 +14,14 @@ import {mutations as plottingSelectionMutations} from "../../../app/store/plotti
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
 import {inactiveFeatures} from "../../../app/main";
-import {BarChartWithFilters} from "@reside-ic/vue-charts";
+import BarChartWithFilters from '../../../app/vue-chart/src/bar/BarChartWithFilters.vue';
 import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
 import Choropleth from "../../../app/components/plots/choropleth/Choropleth.vue";
 import BubblePlot from "../../../app/components/plots/bubble/BubblePlot.vue";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 import {BarchartIndicator, Filter} from "../../../app/types";
 import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
-
-const localVue = createLocalVue();
 
 function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"], comparisonPlotFilters: any = ["TEST COMPARISON FILTERS"], comparisonPlotError: any = null) {
     const store = new Vuex.Store({
@@ -128,7 +126,7 @@ describe("ModelOutput component", () => {
 
     it("renders choropleth", () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const choro = wrapper.findComponent("choropleth-stub") as VueWrapper;
         expect(choro.props().includeFilters).toBe(true);
@@ -141,7 +139,7 @@ describe("ModelOutput component", () => {
 
     it("renders bubble plot", () => {
         const store = getStore({selectedTab: "bubble"});
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const bubble = wrapper.findComponent(BubblePlot);
         expect(bubble.props().areaFilterId).toBe("area");
@@ -154,7 +152,7 @@ describe("ModelOutput component", () => {
 
     it("renders barchart", () => {
         const store = getStore({selectedTab: "bar"});
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
         const vm = wrapper.vm as any;
 
         const barchart = wrapper.findComponent(BarChartWithFilters);
@@ -170,7 +168,7 @@ describe("ModelOutput component", () => {
 
     it("renders comparison plot", () => {
         const store = getStore({selectedTab: "comparison"});
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
         const vm = wrapper.vm as any;
 
         expect(wrapper.findAllComponents(BarChartWithFilters).length).toBe(1);
@@ -189,90 +187,98 @@ describe("ModelOutput component", () => {
     it("renders comparison plot error", () => {
         const error = mockError("comparison plot error occurred")
         const store = getStore({selectedTab: "comparison"}, {}, {}, [], [], error);
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
         expect(wrapper.findAllComponents(ErrorAlert).length).toBe(1);
-        expect(wrapper.findComponent(ErrorAlert).props().error).toBe(error);
+        expect(wrapper.findComponent(ErrorAlert).props().error).toStrictEqual(error);
     });
 
     it("does not render comparison plot if no there are no comparison plot indicators", () => {
         const store = getStore({selectedTab: "comparison"}, {comparisonPlotIndicators: jest.fn().mockReturnValue([])});
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
         expect(wrapper.findAllComponents(BarChartWithFilters).length).toBe(1);
     });
 
     it("if no selected tab in state, defaults to select Map tab", () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
-        const activeTab = wrapper.findComponent("a.active");
+        const activeTab = wrapper.find("a.active");
         expectTranslated(activeTab, "Map", "Carte", "Mapa", store);
     });
 
     it("gets selected tab from state", () => {
         const store = getStore({selectedTab: "bar"});
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
-        const activeTab = wrapper.findComponent("a.active");
+        const activeTab = wrapper.find("a.active");
         expectTranslated(activeTab, "Bar", "Barre", "Bar", store);
     });
 
-    it("can change tabs", () => {
+    it("can change tabs", async () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
-        expect(wrapper.findAllComponents(".nav-link").length).toBe(4);
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        expect(wrapper.findAll(".nav-link").length).toBe(4);
 
-        expect(wrapper.findComponent(".nav-link.active").text()).toBe("Map");
-        expect(wrapper.findAllComponents("choropleth-stub").length).toBe(1);
+        expect(wrapper.find(".nav-link.active").text()).toBe("Map");
+        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
 
-        expect(wrapper.findComponent("#barchart-container").exists()).toBe(false);
-        expect(wrapper.findComponent("#comparison-container").exists()).toBe(false);
+        expect(wrapper.find("#barchart-container").exists()).toBe(false);
+        expect(wrapper.find("#comparison-container").exists()).toBe(false);
 
-        expect(wrapper.findAllComponents("#bubble-plot-container").length).toBe(0);
-        expect(wrapper.findAllComponents("bubble-plot-stub").length).toBe(0);
+        expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
+        expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
 
         //should invoke mutation
-        wrapper.findAllComponents(".nav-link")[1].trigger("click");
+        await wrapper.findAll(".nav-link")[1].trigger("click");
 
-        expect(wrapper.findComponent(".nav-link.active").text()).toBe("Bar");
-        expect(wrapper.findAllComponents("choropleth-filters-stub").length).toBe(0);
-        expect(wrapper.findAllComponents("choropleth-stub").length).toBe(0);
+        expect(wrapper.find(".nav-link.active").text()).toBe("Bar");
+        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
 
-        expect(wrapper.findComponent("#barchart-container").classes()).toEqual(["col-md-12"]);
+        expect(wrapper.find("#barchart-container").classes()).toEqual(["col-md-12"]);
         expect(wrapper.findAllComponents(BarChartWithFilters).length).toBe(1);
-        expect(wrapper.findComponent("#comparison-container").exists()).toBe(false);
+        expect(wrapper.find("#comparison-container").exists()).toBe(false);
 
-        expect(wrapper.findAllComponents("#bubble-plot-container").length).toBe(0);
-        expect(wrapper.findAllComponents("bubble-plot-stub").length).toBe(0);
+        expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
+        expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
 
-        wrapper.findAllComponents(".nav-link")[2].trigger("click");
+        await wrapper.findAll(".nav-link")[2].trigger("click");
 
-        expect(wrapper.findComponent(".nav-link.active").text()).toBe("Bubble Plot");
-        expect(wrapper.findAllComponents("choropleth-filters-stub").length).toBe(0);
-        expect(wrapper.findAllComponents("choropleth-stub").length).toBe(0);
+        expect(wrapper.find(".nav-link.active").text()).toBe("Bubble Plot");
+        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
 
-        expect(wrapper.findComponent("#barchart-container").exists()).toBe(false);
-        expect(wrapper.findComponent("#comparison-container").exists()).toBe(false);
+        expect(wrapper.find("#barchart-container").exists()).toBe(false);
+        expect(wrapper.find("#comparison-container").exists()).toBe(false);
 
-        expect(wrapper.findAllComponents("#bubble-plot-container").length).toBe(1);
-        expect(wrapper.findAllComponents("bubble-plot-stub").length).toBe(1);
+        expect(wrapper.findAll("#bubble-plot-container").length).toBe(1);
+        expect(wrapper.findAll("bubble-plot-stub").length).toBe(1);
 
-        wrapper.findAllComponents(".nav-link")[3].trigger("click");
+        await wrapper.findAll(".nav-link")[3].trigger("click");
 
-        expect(wrapper.findComponent(".nav-link.active").text()).toBe("Comparison");
-        expect(wrapper.findAllComponents("choropleth-filters-stub").length).toBe(0);
-        expect(wrapper.findAllComponents("choropleth-stub").length).toBe(0);
+        expect(wrapper.find(".nav-link.active").text()).toBe("Comparison");
+        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
 
-        expect(wrapper.findComponent("#barchart-container").exists()).toBe(false);
-        expect(wrapper.findComponent("#comparison-container").classes()).toEqual(["col-md-12"]);
+        expect(wrapper.find("#barchart-container").exists()).toBe(false);
+        expect(wrapper.find("#comparison-container").classes()).toEqual(["col-md-12"]);
         expect(wrapper.findAllComponents(BarChartWithFilters).length).toBe(1);
 
-        expect(wrapper.findAllComponents("#bubble-plot-container").length).toBe(0);
-        expect(wrapper.findAllComponents("bubble-plot-stub").length).toBe(0);
+        expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
+        expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
     });
 
     it("computes chartdata", () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const vm = (wrapper as any).vm;
 
         expect(vm.chartdata).toStrictEqual(["TEST DATA"]);
@@ -280,7 +286,11 @@ describe("ModelOutput component", () => {
 
     it("computes barchart selections", () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const vm = (wrapper as any).vm;
 
         expect(vm.barchartSelections).toStrictEqual({
@@ -296,7 +306,11 @@ describe("ModelOutput component", () => {
 
     it("computes comparison plot selections", () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const vm = (wrapper as any).vm;
 
         expect(vm.comparisonPlotSelections).toStrictEqual({
@@ -312,7 +326,11 @@ describe("ModelOutput component", () => {
 
     it("computes barchart filters", () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const vm = (wrapper as any).vm;
 
         expect(vm.barchartFilterConfig).toStrictEqual({
@@ -326,7 +344,11 @@ describe("ModelOutput component", () => {
 
     it("computes comparison plot filters", () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const vm = (wrapper as any).vm;
 
         expect(vm.comparisonPlotFilterConfig).toStrictEqual({
@@ -340,7 +362,11 @@ describe("ModelOutput component", () => {
 
     it("computes bubble plot indicators", () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const vm = (wrapper as any).vm;
 
         expect(vm.bubblePlotIndicators).toStrictEqual(["TEST BUBBLE INDICATORS"]);
@@ -348,7 +374,11 @@ describe("ModelOutput component", () => {
 
     it("computes bubble plot selections", () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const vm = (wrapper as any).vm;
 
         expect(vm.bubblePlotSelections).toStrictEqual({test: "TEST BUBBLE SELECTIONS"});
@@ -356,7 +386,11 @@ describe("ModelOutput component", () => {
 
     it("computes bubble plot filters", () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const vm = (wrapper as any).vm;
 
         expect(vm.bubblePlotFilters).toStrictEqual(["TEST BUBBLE FILTERS"]);
@@ -365,7 +399,11 @@ describe("ModelOutput component", () => {
 
     it("computes default comparison selections", () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const vm = (wrapper as any).vm;
 
         expect(vm.comparisonPlotDefaultSelections).toStrictEqual(["TEST comparisonPlotDefaultSelections"]);
@@ -373,7 +411,11 @@ describe("ModelOutput component", () => {
 
     it("computes features", () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const vm = (wrapper as any).vm;
 
         expect(vm.features).toStrictEqual(["TEST FEATURES"]);
@@ -381,7 +423,11 @@ describe("ModelOutput component", () => {
 
     it("computes feature levels", () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const vm = (wrapper as any).vm;
 
         expect(vm.featureLevels).toStrictEqual(["TEST LEVEL LABELS"]);
@@ -389,32 +435,44 @@ describe("ModelOutput component", () => {
 
     it("commits updated colour scale from choropleth", () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
 
         const choro = wrapper.findComponent(Choropleth);
         const newColourScales = {test: "NEW COLOUR SCALES"};
         choro.vm.$emit("update-colour-scales", newColourScales);
-        expect(store.state.plottingSelections.colourScales.output).toBe(newColourScales);
+        expect(store.state.plottingSelections.colourScales.output).toStrictEqual(newColourScales);
     });
 
     it("commits updated colour scale from bubble plot", () => {
         const store = getStore({selectedTab: "bubble"});
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
 
         const bubble = wrapper.findComponent(BubblePlot);
         const bubbleColourScales = {test: "NEW BUBBLE COLOUR SCALES"};
         bubble.vm.$emit("update-colour-scales", bubbleColourScales);
-        expect(store.state.plottingSelections.colourScales.output).toBe(bubbleColourScales);
+        expect(store.state.plottingSelections.colourScales.output).toStrictEqual(bubbleColourScales);
     });
 
     it("commits updated size scale from bubble plot", () => {
         const store = getStore({selectedTab: "bubble"});
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
 
         const bubble = wrapper.findComponent(BubblePlot);
         const bubbleSizeScales = {test: "NEW BUBBLE SIZE SCALES"};
         bubble.vm.$emit("update-colour-scales", bubbleSizeScales);
-        expect(store.state.plottingSelections.colourScales.output).toBe(bubbleSizeScales);
+        expect(store.state.plottingSelections.colourScales.output).toStrictEqual(bubbleSizeScales);
     });
 
     it("commits updated selections from barchart and orders them according to filter", () => {
@@ -429,7 +487,11 @@ describe("ModelOutput component", () => {
             }
         ]
         const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const currentBarchartSelections = store.state.plottingSelections.barchart
 
         const barchart = wrapper.findComponent(BarChartWithFilters);
@@ -466,7 +528,11 @@ describe("ModelOutput component", () => {
             }
         ]
         const store = getStore({selectedTab: "comparison"}, {}, {}, testComparisonPlotFilters);
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
 
         const comparisonPlot = wrapper.findComponent(BarChartWithFilters);
@@ -503,7 +569,11 @@ describe("ModelOutput component", () => {
             }
         ]
         const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const currentBarchartSelections = store.state.plottingSelections.barchart
 
         const barchart = wrapper.findComponent(BarChartWithFilters);
@@ -539,7 +609,11 @@ describe("ModelOutput component", () => {
             }
         ]
         const store = getStore({selectedTab: "bar"}, {}, {}, testComparisonPlotFilters);
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
 
         const comparisonPlot = wrapper.findComponent(BarChartWithFilters);
@@ -566,7 +640,11 @@ describe("ModelOutput component", () => {
     it("commits updated selections from barchart as normal if no barchart filters are provided", () => {
         const testBarchartFilters: Filter[] = []
         const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const currentBarchartSelections = store.state.plottingSelections.barchart
 
         const barchart = wrapper.findComponent(BarChartWithFilters);
@@ -594,7 +672,11 @@ describe("ModelOutput component", () => {
     it("commits updated selections from comparison plot as normal if no barchart filters are provided", () => {
         const testComparisonPlotFilters: Filter[] = []
         const store = getStore({selectedTab: "bar"}, {}, {}, testComparisonPlotFilters);
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
 
         const comparisonPlot = wrapper.findComponent(BarChartWithFilters);
@@ -639,7 +721,11 @@ describe("ModelOutput component", () => {
         const store = getStore({selectedTab: "comparison"}, {
             comparisonPlotDefaultSelections: jest.fn().mockReturnValue(comparisonDefaultSelections)
         }, {});
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
 
         const comparisonPlot = wrapper.findComponent(BarChartWithFilters);
@@ -672,7 +758,11 @@ describe("ModelOutput component", () => {
         const store = getStore({selectedTab: "comparison"}, {
             comparisonPlotDefaultSelections: jest.fn().mockReturnValue(comparisonDefaultSelections)
         }, {});
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
 
         const comparisonPlot = wrapper.findComponent(BarChartWithFilters);
@@ -698,7 +788,11 @@ describe("ModelOutput component", () => {
             }
         ]
         const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const currentBarchartSelections = store.state.plottingSelections.barchart
 
         const barchart = wrapper.findComponent(BarChartWithFilters);
@@ -745,7 +839,11 @@ describe("ModelOutput component", () => {
             }
         ]
         const store = getStore({selectedTab: "bar"}, {}, {}, testComparisonPlotFilters);
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const currentComparisonPlotSelections = store.state.plottingSelections.comparisonPlot
 
         const comparisonPlot = wrapper.findComponent(BarChartWithFilters);
@@ -780,7 +878,7 @@ describe("ModelOutput component", () => {
 
     it("renders choropleth table", () => {
         const store = getStore({selectedTab: "map"});
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const table = wrapper.findComponent(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
@@ -803,7 +901,7 @@ describe("ModelOutput component", () => {
             {
                 outputChoropleth: {indicatorId: "art_coverage"}
             });
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const table = wrapper.findComponent(AreaIndicatorsTable);
         expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
@@ -812,7 +910,7 @@ describe("ModelOutput component", () => {
 
     it("renders bubble plot table", () => {
         const store = getStore({selectedTab: "bubble"});
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const table = wrapper.findComponent(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
@@ -840,7 +938,7 @@ describe("ModelOutput component", () => {
             {
                 bubble: {colorIndicatorId: "art_coverage", sizeIndicatorId: "current_art"}
             });
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const table = wrapper.findComponent(AreaIndicatorsTable);
         expect(table.props().selections).toStrictEqual({
@@ -863,7 +961,7 @@ describe("ModelOutput component", () => {
 
     it("renders barchart table", () => {
         const store = getStore({selectedTab: "bar"});
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const table = wrapper.findComponent(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
@@ -894,7 +992,7 @@ describe("ModelOutput component", () => {
             {
                 barchart: {indicatorId: "art_coverage"}
             });
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const table = wrapper.findComponent(AreaIndicatorsTable);
         expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
@@ -907,7 +1005,7 @@ describe("ModelOutput component", () => {
 
     it("renders comparison plot table", () => {
         const store = getStore({selectedTab: "comparison"});
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const table = wrapper.findComponent(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");
@@ -938,7 +1036,7 @@ describe("ModelOutput component", () => {
             {
                 comparisonPlot: {indicatorId: "art_coverage"}
             });
-        const wrapper = shallowMount(ModelOutput, {localVue, store});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const table = wrapper.findComponent(AreaIndicatorsTable)
         expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
@@ -951,7 +1049,11 @@ describe("ModelOutput component", () => {
 
     it("formatBarchartValue formats value", () => {
         const store = getStore();
-        const wrapper = shallowMount(ModelOutput, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
 
         const indicator: BarchartIndicator = {
             indicator: "testIndicator",
