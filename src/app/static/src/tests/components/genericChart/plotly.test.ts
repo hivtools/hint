@@ -7,13 +7,13 @@ jest.mock("plotly.js-basic-dist", () => ({
     react: jest.fn()
 }));
 import * as plotly from "plotly.js-basic-dist";
-import Vue from "vue";
+import Vue, { nextTick } from "vue";
 import { shallowMount } from "@vue/test-utils";
 import Plotly from "../../../app/components/genericChart/Plotly.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 
 const chartData = {
     xVals: [1, 2, 3],
@@ -92,9 +92,9 @@ describe("Plotly", () => {
     it("invokes Plotly newPlot when layout subplot rows has changed", (done) => {
         const props = { chartMetadata, chartData, layoutData };
         const wrapper = shallowMount(Plotly, { props, store });
-        setTimeout(() => {
+        setTimeout(async () => {
             expect(mockPlotlyNewPlot.mock.calls.length).toBe(0);
-            wrapper.setProps({
+            await wrapper.setProps({
                 chartMetadata,
                 chsrtData: {...chartData},
                 layoutData: {
@@ -118,8 +118,8 @@ describe("Plotly", () => {
        const props = { chartMetadata, chartData, layoutData };
        const wrapper = shallowMount(Plotly, { props, store });
 
-       setTimeout(() => {
-           wrapper.setProps({
+       setTimeout(async () => {
+           await wrapper.setProps({
                chartData: {
                    xVals: [10, 20, 30],
                    yVals: [40, 50, 60]
@@ -153,8 +153,8 @@ describe("Plotly", () => {
     it("invokes plotly again on layout change", (done) => {
         const props = { chartMetadata, chartData, layoutData };
         const wrapper = shallowMount(Plotly, { props, store });
-        setTimeout(() => {
-            wrapper.setProps({
+        setTimeout(async () => {
+            await wrapper.setProps({
                 layoutData: {
                     topMargin: 15,
                     responsive: false
@@ -189,20 +189,19 @@ describe("Plotly", () => {
         const props = { chartMetadata, chartData, layoutData };
         const wrapper = shallowMount(Plotly, { props, store });
         (wrapper.vm as any).rendering = false;
-        expect( wrapper.findComponent("div.text-center").exists()).toBe(false);
-        expect((wrapper.findComponent("#chart").element as HTMLElement).style.visibility).toBe("visible");
+        expect( wrapper.find("div.text-center").exists()).toBe(false);
+        expect((wrapper.find("#chart").element as HTMLElement).style.visibility).toBe("visible");
     });
 
     it("renders loading spinner when rendering flag is true", async () => {
         const props = { chartMetadata, chartData, layoutData };
-        const wrapper = shallowMount(Plotly, { props, store });
+        const wrapper = shallowMountWithTranslate(Plotly, store, { props, global: {plugins: [store]} });
         (wrapper.vm as any).rendering = true;
-        await Vue.nextTick();
-        const spinnerDiv = wrapper.findComponent("div.text-center");
+        await nextTick();
+        const spinnerDiv = wrapper.find("div.text-center");
         expect(spinnerDiv.findComponent(LoadingSpinner).props("size")).toBe("lg");
-        expectTranslated(spinnerDiv.findComponent("h2"), "Loading chart",
+        await expectTranslated(spinnerDiv.find("h2"), "Loading chart",
             "Chargement du graphique", "Carregando o gráfico", store);
-        const html = wrapper.html()
-        expect((wrapper.findComponent("#chart").element as HTMLElement).style.visibility).toBe("hidden");
+        expect((wrapper.find("#chart").element as HTMLElement).style.visibility).toBe("hidden");
     });
 });

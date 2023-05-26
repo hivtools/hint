@@ -4,6 +4,7 @@ import Table from "../../../app/components/plots/table/Table.vue";
 import Vuex from "vuex";
 import {Language} from "../../../app/store/translations/locales";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import { mountWithTranslate } from "../../testHelpers";
 
 describe("GenericChartTable component", () => {
     const tableConfig = {
@@ -261,17 +262,17 @@ describe("GenericChartTable component", () => {
             state: {language: Language.en, updatingLanguage: false}
         });
         registerTranslations(store);
-        const wrapper = mount(GenericChartTable, {props: propsWithHierarchy, store});
+        const wrapper = mountWithTranslate(GenericChartTable, store, {props: propsWithHierarchy, global: {plugins: [store]}});
 
         const table = wrapper.findComponent(Table);
-        const rows = table.findAllComponents("tr");
-        expect(rows[1].findAllComponents("td")[0].findComponent("div.column-data").text()).toBe("Malawi");
-        expect(rows[1].findAllComponents("td")[0].findComponent("div.small").text()).toBe("");
+        const rows = table.findAll("tr");
+        expect(rows[1].findAll("td")[0].find("div.column-data").text()).toBe("Malawi");
+        expect(rows[1].findAll("td")[0].find("div.small").text()).toBe("");
 
-        expect(rows[2].findAllComponents("td")[0].findComponent("div.column-data").text()).toBe("Chitipa");
-        expect(rows[2].findAllComponents("td")[0].findComponent("div.small").text()).toBe("Malawi/Northern");
+        expect(rows[2].findAll("td")[0].find("div.column-data").text()).toBe("Chitipa");
+        expect(rows[2].findAll("td")[0].find("div.small").text()).toBe("Malawi/Northern");
 
-        expect(rows[3].findAllComponents("td")[0].findComponent("div.column-data").text()).toBe("Southern");
-        expect(rows[3].findAllComponents("td")[0].findComponent("div.small").text()).toBe("Malawi");
+        expect(rows[3].findAll("td")[0].find("div.column-data").text()).toBe("Southern");
+        expect(rows[3].findAll("td")[0].find("div.small").text()).toBe("Malawi");
     });
 });
