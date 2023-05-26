@@ -1,6 +1,6 @@
-import {createLocalVue, mount, shallowMount} from '@vue/test-utils';
+import {flushPromises, shallowMount} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import {
     mockAxios,
     mockError,
@@ -24,9 +24,7 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import ProgressBar from "../../../app/components/progress/ProgressBar.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {expectTranslated} from "../../testHelpers";
-
-const localVue = createLocalVue();
+import {expectTranslated, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
 
 describe("Model run component", () => {
 
@@ -87,20 +85,24 @@ describe("Model run component", () => {
     it("run models and polls for status", (done) => {
 
         const store = createStore();
-        const wrapper = shallowMount(ModelRun, {store, localVue});
-        const button = wrapper.findComponent("button");
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        const button = wrapper.find("button");
         expect(button.text()).toBe("Fit model");
         button.trigger("click");
 
         setTimeout(() => {
-            expect(wrapper.findComponent("button").attributes().disabled).toBe("disabled");
+            expect(wrapper.find("button").attributes().disabled).toBe("");
             expect(store.state.modelRun.status).toStrictEqual({id: "1234"});
             expect(store.state.modelRun.modelRunId).toBe("1234");
             expect(store.state.modelRun.statusPollId).not.toBe(-1);
             expect(wrapper.findComponent(Modal).props().open).toBe(true);
 
             setTimeout(() => {
-                expect(wrapper.findComponent("button").attributes().disabled).toBeUndefined();
+                expect(wrapper.find("button").attributes().disabled).toBeUndefined();
                 expect(store.state.modelRun.status).toStrictEqual(mockStatus);
                 expect(store.state.modelRun.modelRunId).toBe("1234");
                 expect(store.state.modelRun.statusPollId).toBe(-1);
@@ -113,14 +115,18 @@ describe("Model run component", () => {
     it("does not immediately run model if edits require confirmation", (done) => {
 
         const store = createStore({}, {}, {...stepperGetters, editsRequireConfirmation: () => true});
-        const wrapper = shallowMount(ModelRun, {store, localVue});
-        const button = wrapper.findComponent("button");
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        const button = wrapper.find("button");
         expect(button.text()).toBe("Fit model");
         button.trigger("click");
 
         setTimeout(() => {
-            expect(wrapper.vm.$data.showReRunConfirmation).toStrictEqual(true);
-            expect(wrapper.findComponent("button").attributes().disabled).toBeUndefined();
+            expect((wrapper.vm as any).$data.showReRunConfirmation).toStrictEqual(true);
+            expect(wrapper.find("button").attributes().disabled).toBeUndefined();
             expect(store.state.modelRun.status).toStrictEqual({});
             expect(store.state.modelRun.modelRunId).toBe("");
             expect(store.state.modelRun.statusPollId).toBe(-1);
@@ -141,12 +147,16 @@ describe("Model run component", () => {
             startedRunning: true,
             result: null
         });
-        const wrapper = shallowMount(ModelRun, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
 
         setTimeout(() => {
             expect(mockAxios.history.get[0].url).toBe(`/model/status/1234`);
 
-            expect(wrapper.findComponent("button").attributes().disabled).toBeUndefined();
+            expect(wrapper.find("button").attributes().disabled).toBeUndefined();
             expect(store.state.modelRun.status).toStrictEqual(mockStatus);
             expect(store.state.modelRun.modelRunId).toBe("1234");
             expect(store.state.modelRun.statusPollId).toBe(-1);
@@ -166,12 +176,16 @@ describe("Model run component", () => {
             } as any,
             result: ["result data"] as any
         });
-        const wrapper = shallowMount(ModelRun, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(0);
 
-            expect(wrapper.findComponent("button").attributes().disabled).toBeUndefined();
+            expect(wrapper.find("button").attributes().disabled).toBeUndefined();
             expect(wrapper.findComponent(Modal).props().open).toBe(false);
             done();
         }, 2500);
@@ -188,12 +202,16 @@ describe("Model run component", () => {
             } as any,
             result: null
         });
-        const wrapper = shallowMount(ModelRun, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(0);
 
-            expect(wrapper.findComponent("button").attributes().disabled).toBeUndefined();
+            expect(wrapper.find("button").attributes().disabled).toBeUndefined();
             expect(wrapper.findComponent(Modal).props().open).toBe(false);
             done();
         }, 2500);
@@ -203,11 +221,15 @@ describe("Model run component", () => {
     it("modal does not close until run result fetched", (done) => {
         const getResultMock = jest.fn();
         const store = createStore({}, {...actions, getResult: getResultMock});
-        const wrapper = shallowMount(ModelRun, {store, localVue});
-        wrapper.findComponent("button").trigger("click");
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        wrapper.find("button").trigger("click");
 
         setTimeout(() => {
-            expect(wrapper.findComponent("button").attributes().disabled).toBe("disabled");
+            expect(wrapper.find("button").attributes().disabled).toBe("");
             expect(store.state.modelRun.status).toStrictEqual({id: "1234"});
             expect(store.state.modelRun.modelRunId).toBe("1234");
             expect(store.state.modelRun.statusPollId).not.toBe(-1);
@@ -215,7 +237,7 @@ describe("Model run component", () => {
 
             setTimeout(() => {
                 // it should still be open because the result is missing
-                expect(wrapper.findComponent("button").attributes().disabled).toBe("disabled");
+                expect(wrapper.find("button").attributes().disabled).toBe("");
                 expect(store.state.modelRun.result).toBe(null);
                 expect(store.state.modelRun.status.success).toBe(true);
                 expect(wrapper.findComponent(Modal).props().open).toBe(true);
@@ -227,7 +249,7 @@ describe("Model run component", () => {
 
     it("does not start polling on created if pollId already exists", (done) => {
         const store = createStore({modelRunId: "1234", statusPollId: 1});
-        shallowMount(ModelRun, {store, localVue});
+        shallowMount(ModelRun, {global: {plugins: [store]}});
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(0);
@@ -242,8 +264,12 @@ describe("Model run component", () => {
             startedRunning: true
         });
 
-        const wrapper = shallowMount(ModelRun, {store, localVue});
-        expect(wrapper.findComponent("button").attributes().disabled).toBe("disabled");
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        expect(wrapper.find("button").attributes().disabled).toBe("");
         expect(wrapper.findComponent(Modal).props().open).toBe(true);
     });
 
@@ -254,9 +280,13 @@ describe("Model run component", () => {
             startedRunning: true
         });
 
-        const wrapper = mount(ModelRun, {store, localVue});
+        const wrapper = mountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         expect(wrapper.findComponent(Modal).props().open).toBe(true);
-        expectTranslated(wrapper.findComponent(Modal).findComponent("h4"), "Initialising model fitting",
+        expectTranslated(wrapper.findComponent(Modal).find("h4"), "Initialising model fitting",
             "Initialisation de l'ajustement du modèle",
             "Inicialização do ajuste do modelo", store);
         expect(wrapper.findComponent(Modal).findAllComponents(LoadingSpinner).length).toBe(1);
@@ -274,9 +304,13 @@ describe("Model run component", () => {
             startedRunning: true
         });
 
-        const wrapper = mount(ModelRun, {store, localVue});
+        const wrapper = mountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         expect(wrapper.findComponent(Modal).props().open).toBe(true);
-        expect(wrapper.findComponent(Modal).findAllComponents("h4").length).toBe(0);
+        expect(wrapper.findComponent(Modal).findAll("h4").length).toBe(0);
         expect(wrapper.findComponent(Modal).findAllComponents(LoadingSpinner).length).toBe(0);
         expect(wrapper.findComponent(Modal).findAllComponents(ProgressBar).length).toBe(1);
     });
@@ -293,7 +327,11 @@ describe("Model run component", () => {
             startedRunning: true
         });
 
-        const wrapper = mount(ModelRun, {store, localVue});
+        const wrapper = mountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         expect(wrapper.findComponent(Modal).props().open).toBe(true);
         expect(wrapper.findComponent(Modal).findAllComponents(ProgressBar).length).toBe(2);
         expect(wrapper.findComponent(Modal).findAllComponents(ProgressBar)[0].props("phase"))
@@ -313,8 +351,12 @@ describe("Model run component", () => {
             startedRunning: true
         });
 
-        const wrapper = shallowMount(ModelRun, {store, localVue});
-        expect(wrapper.findComponent("button").attributes().disabled).toBe("disabled");
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        expect(wrapper.find("button").attributes().disabled).toBe("");
         expect(wrapper.findComponent(Modal).props().open).toBe(true);
     });
 
@@ -325,8 +367,12 @@ describe("Model run component", () => {
             startedRunning: false
         });
 
-        const wrapper = shallowMount(ModelRun, {store, localVue});
-        expect(wrapper.findComponent("button").attributes().disabled).toBeUndefined();
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        expect(wrapper.find("button").attributes().disabled).toBeUndefined();
         expect(wrapper.findComponent(Modal).props().open).toBe(false);
     });
 
@@ -337,8 +383,12 @@ describe("Model run component", () => {
             startedRunning: false
         });
 
-        const wrapper = shallowMount(ModelRun, {store, localVue});
-        expect(wrapper.findComponent("button").attributes().disabled).toBeUndefined();
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        expect(wrapper.find("button").attributes().disabled).toBeUndefined();
         expect(wrapper.findComponent(Modal).props().open).toBe(false);
     });
 
@@ -347,8 +397,12 @@ describe("Model run component", () => {
             result: mockModelResultResponse(),
             status: {id: "1234", success: true, done: true} as ModelStatusResponse
         });
-        const wrapper = shallowMount(ModelRun, {store, localVue});
-        expectTranslated(wrapper.findComponent("#model-run-complete"), "Model fitting complete",
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        expectTranslated(wrapper.find("#model-run-complete"), "Model fitting complete",
             "Ajustement du modèle terminé", "Ajuste de modelo concluído", store);
         expect(wrapper.findAllComponents(Tick).length).toBe(1);
     });
@@ -357,15 +411,23 @@ describe("Model run component", () => {
         const store = createStore({
             status: {id: "1234", success: true, done: true} as ModelStatusResponse
         });
-        const wrapper = shallowMount(ModelRun, {store, localVue});
-        expect(wrapper.findAllComponents("#model-run-complete").length).toBe(0);
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        expect(wrapper.findAll("#model-run-complete").length).toBe(0);
         expect(wrapper.findAllComponents(Tick).length).toBe(0);
     });
 
     it("does not display message or tick if run was successful but error fetching result", () => {
         const store = createStore({status: {success: true} as ModelStatusResponse, errors: [mockError("fetch error")]});
-        const wrapper = shallowMount(ModelRun, {store, localVue});
-        expect(wrapper.findAllComponents("#model-run-complete").length).toBe(0);
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        expect(wrapper.findAll("#model-run-complete").length).toBe(0);
         expect(wrapper.findAllComponents(Tick).length).toBe(0);
     });
 
@@ -373,22 +435,30 @@ describe("Model run component", () => {
         const firstError = mockError("first error");
         const secondError = mockError("second error");
         const store = createStore({errors: [firstError, secondError]});
-        const wrapper = shallowMount(ModelRun, {store, localVue});
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
 
         const errorAlerts = wrapper.findAllComponents(ErrorAlert);
         expect(errorAlerts.length).toBe(2);
-        expect(errorAlerts[0].props().error).toBe(firstError);
-        expect(errorAlerts[1].props().error).toBe(secondError);
+        expect(errorAlerts[0].props().error).toStrictEqual(firstError);
+        expect(errorAlerts[1].props().error).toStrictEqual(secondError);
     });
 
     it("displays no error alerts if no errors", () => {
         const store = createStore();
-        const wrapper = shallowMount(ModelRun, {store, localVue});
-        const errorAlerts = wrapper.findAllComponents("error-alert-stub");
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        const errorAlerts = wrapper.findAll("error-alert-stub");
         expect(errorAlerts.length).toBe(0);
     });
 
-    it("cancel fitting button invokes action to cancel model fitting", (done) => {
+    it("cancel fitting button invokes action to cancel model fitting", async () => {
 
         const store = createStore({
             status: mockModelStatusResponse({id: "123", done: false}),
@@ -396,30 +466,36 @@ describe("Model run component", () => {
             statusPollId: 123
         });
 
-        const wrapper = shallowMount(ModelRun, {store, localVue});
-        wrapper.findComponent("#cancel-model-run").trigger("click");
-
-        setTimeout(() => {
-            expect(wrapper.findComponent(Modal).props().open).toBe(false);
-            expect(store.state.modelRun.modelRunId).toBe("");
-            expect(store.state.modelRun.statusPollId).toBe(-1);
-            expect(store.state.modelRun.status).toStrictEqual({});
-            done();
+        const wrapper = mountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
         });
+
+        await wrapper.find("#cancel-model-run").trigger("click");
+
+        expect(wrapper.findComponent(Modal).props().open).toBe(false);
+        expect(store.state.modelRun.modelRunId).toBe("");
+        expect(store.state.modelRun.statusPollId).toBe(-1);
+        expect(store.state.modelRun.status).toStrictEqual({});
     });
 
     it("confirmReRun clears and re-runs model and hides dialog", async () => {
         const mockRun = jest.fn();
         const store = createStore({result: ["TEST RESULT"] as any},  {run: mockRun});
-        const wrapper = shallowMount(ModelRun, {store, localVue});
-        wrapper.setData({showReRunConfirmation: true});
+        const wrapper = shallowMountWithTranslate(ModelRun, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+        await wrapper.setData({showReRunConfirmation: true});
 
         (wrapper.vm as any).confirmReRun();
-        await Vue.nextTick();
+        await nextTick();
 
         expect(store.state.modelRun.result).toBe(null);
         expect(mockRun.mock.calls.length).toBe(1);
-        expect(wrapper.vm.$data.showReRunConfirmation).toBe(false);
+        expect((wrapper.vm as any).$data.showReRunConfirmation).toBe(false);
     });
 
 });
