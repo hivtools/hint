@@ -8,8 +8,9 @@ import {mockDataExplorationState, mockError} from "../../mocks";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import Vuex, {Store} from "vuex";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {expectTranslated, expectTranslatedWithStoreType} from "../../testHelpers";
+import {expectTranslated, expectTranslatedWithStoreType, shallowMountWithTranslate} from "../../testHelpers";
 import {DataExplorationState, initialDataExplorationState} from "../../../app/store/dataExploration/dataExploration";
+import { nextTick } from 'vue';
 
 describe("Manage file component", () => {
 
@@ -27,9 +28,12 @@ describe("Manage file component", () => {
         return store;
     };
 
-    const createSut = (props?: any, slots?: any, store?: Store<DataExplorationState>) => {
-        return shallowMount(ManageFile, {
-            store: store || createStore(),
+    const createSut = (props?: any, slots?: any, storeOptions?: Store<DataExplorationState>) => {
+        const store = storeOptions || createStore();
+        return shallowMountWithTranslate(ManageFile, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 required: false,
                 error: null,
@@ -46,11 +50,11 @@ describe("Manage file component", () => {
     };
 
 
-    it("renders label", () => {
+    it("renders label", async () => {
         const wrapper = createSut({
             label: "Some title"
         });
-        expect(wrapper.findComponent("label").text()).toBe("Some title");
+        expect(wrapper.find("label").text()).toBe("Some title");
     });
 
     it("renders file upload", () => {
@@ -73,25 +77,25 @@ describe("Manage file component", () => {
             upload: uploadFn,
             fromADR: true
         });
-        const spans = wrapper.findComponent("span");
+        const spans = wrapper.find("span");
         expect(spans.text()).toBe("ADR");
     });
 
-    it("renders existing file name if present", () => {
+    it("renders existing file name if present", async () => {
         const store = createStore();
         const wrapper = createSut({
             existingFileName: "existing-name.csv"
         }, undefined, store);
-        expectTranslatedWithStoreType(wrapper.findComponent("label.file-name strong"), "File", "Fichier", "Ficheiro", store);
-        expect(wrapper.findComponent("label.file-name").text()).toContain("existing-name.csv");
+        await expectTranslatedWithStoreType(wrapper.find("label.file-name strong"), "File", "Fichier", "Ficheiro", store);
+        expect(wrapper.find("label.file-name").text()).toContain("existing-name.csv");
     });
 
-    it("can translate required text", () => {
+    it("can translate required text", async () => {
         const wrapper = createSut({
             required: true
         });
 
-        expectTranslated(wrapper.findComponent("#required"),
+        await expectTranslated(wrapper.find("#required"),
             "(required)",
             "(obligatoire)",
             "(necessário)",
@@ -102,9 +106,9 @@ describe("Manage file component", () => {
         const wrapper = createSut({
             required: true
         });
-        expect(wrapper.findComponent("#required").exists()).toBe(true);
-        expect(wrapper.findComponent("#required").text()).toBe("(required)");
-        expect(wrapper.findComponent("#required").attributes("class")).toBe("small text-danger");
+        expect(wrapper.find("#required").exists()).toBe(true);
+        expect(wrapper.find("#required").text()).toBe("(required)");
+        expect(wrapper.find("#required").attributes("class")).toBe("small text-danger");
     });
 
     it("renders text for filled form if required is true", () => {
@@ -112,14 +116,14 @@ describe("Manage file component", () => {
             required: true,
             existingFileName: "file.csv"
         });
-        expect(wrapper.findComponent("#required").exists()).toBe(true);
-        expect(wrapper.findComponent("#required").text()).toBe("(required)");
-        expect(wrapper.findComponent("#required").attributes("class")).toBe("small");
+        expect(wrapper.find("#required").exists()).toBe(true);
+        expect(wrapper.find("#required").text()).toBe("(required)");
+        expect(wrapper.find("#required").attributes("class")).toBe("small");
     });
 
     it("does not render text if required is false", () => {
         const wrapper = createSut();
-        expect(wrapper.findComponent("#required").exists()).toBe(false);
+        expect(wrapper.find("#required").exists()).toBe(false);
     });
 
     it("does not render tick if valid is false", () => {
@@ -141,28 +145,30 @@ describe("Manage file component", () => {
             existingFileName: null,
             error: null
         });
-        expect(wrapper.findAllComponents("a").length).toBe(0);
+        expect(wrapper.findAll("a").length).toBe(0);
     });
 
-    it("renders remove link if existing filename is present", () => {
+    it("renders remove link if existing filename is present", async () => {
         const removeHandler = jest.fn();
         const wrapper = createSut({
             existingFileName: "File.csv",
             deleteFile: removeHandler
         });
-        const removeLink = wrapper.findComponent("a");
+        const removeLink = wrapper.find("a");
         expect(removeLink.text()).toBe("remove");
 
-        removeLink.trigger("click");
+        await removeLink.trigger("click");
 
         expect(removeHandler.mock.calls.length).toBe(1);
     });
 
-    it("renders remove link if existing filename is present when on data exploration mode", () => {
+    it("renders remove link if existing filename is present when on data exploration mode", async () => {
         const removeHandler = jest.fn();
-
-        const wrapper = shallowMount(ManageFile, {
-            store: createStore(mockDataExplorationState(), true),
+        const store = createStore(mockDataExplorationState(), true);
+        const wrapper = shallowMountWithTranslate(ManageFile, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 error: null,
                 label: "PJNZ",
@@ -175,28 +181,28 @@ describe("Manage file component", () => {
             }
         });
 
-        const removeLink = wrapper.findComponent("a");
+        const removeLink = wrapper.find("a");
         expect(removeLink.text()).toBe("remove");
 
-        removeLink.trigger("click");
+        await removeLink.trigger("click");
 
         expect(removeHandler.mock.calls.length).toBe(1);
     });
 
-    it("renders remove link if error is present", () => {
+    it("renders remove link if error is present", async () => {
         const removeHandler = jest.fn();
         const wrapper = createSut({
             existingFileName: null,
             error: mockError("test error"),
             deleteFile: removeHandler
         });
-        const removeLink = wrapper.findComponent("a");
+        const removeLink = wrapper.find("a");
         expect(removeLink.text()).toBe("remove");
 
         //should not render File label if no existing filename
-        expectTranslated(wrapper.findComponent(".file-name"), "remove", "supprimer", "remover", wrapper.vm.$store);
+        await expectTranslated(wrapper.find(".file-name"), "remove", "supprimer", "remover", wrapper.vm.$store);
 
-        removeLink.trigger("click");
+        await removeLink.trigger("click");
 
         expect(removeHandler.mock.calls.length).toBe(1);
     });
@@ -204,7 +210,7 @@ describe("Manage file component", () => {
     it("renders error message if error is present", () => {
         const error = mockError("File upload went wrong");
         const wrapper = createSut({error});
-        expect(wrapper.findComponent(ErrorAlert).props().error).toBe(error);
+        expect(wrapper.findComponent(ErrorAlert).props().error).toStrictEqual(error);
     });
 
     it("does not render error message if no error is present", () => {
@@ -219,7 +225,7 @@ describe("Manage file component", () => {
         }, {
             default: '<div class="fake-slot"></div>'
         });
-        const slot = wrapper.findComponent(".fake-slot");
+        const slot = wrapper.find(".fake-slot");
         expect(slot.element!!.nextElementSibling!!.classList[0]).toBe("file-name");
     });
 
@@ -235,10 +241,12 @@ describe("Manage file component", () => {
 
         wrapper.findComponent(FileUpload).vm.$emit("uploading")
 
+        await nextTick();
+
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAllComponents(Tick).length).toBe(0);
 
-        wrapper.setProps({valid: true});
+        await wrapper.setProps({valid: true});
 
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAllComponents(Tick).length).toBe(1);
@@ -257,10 +265,12 @@ describe("Manage file component", () => {
 
         wrapper.findComponent(FileUpload).vm.$emit("uploading")
 
+        await nextTick();
+
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(1);
         expect(wrapper.findAllComponents(Tick).length).toBe(0);
 
-        wrapper.setProps({error: "Some error"});
+        await wrapper.setProps({error: "Some error"});
 
         expect(wrapper.findAllComponents(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAllComponents(Tick).length).toBe(0);

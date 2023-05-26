@@ -7,6 +7,7 @@ import {mockFile, mockRootState} from "../../mocks";
 import {emptyState, RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {getters} from "../../../app/store/root/getters";
+import { mountWithTranslate } from "../../testHelpers";
 
 declare let currentUser: string;
 currentUser = "guest";
@@ -40,8 +41,11 @@ describe("File upload component", () => {
     };
 
     const createSut = (props?: any, slots?: any, partialRootState: Partial<RootState> = {}) => {
-        return mount(ManageFile, {
-            store: createStore(partialRootState),
+        const store = createStore(partialRootState);
+        return mountWithTranslate(ManageFile, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 error: null,
                 label: "PJNZ",
@@ -62,19 +66,19 @@ describe("File upload component", () => {
         return wrapper.findAllComponents(ResetConfirmation)[1]
     }
 
-    it("opens confirmation modal when remove is clicked", () => {
+    it("opens confirmation modal when remove is clicked", async () => {
         const removeHandler = jest.fn();
         const wrapper = createSut({
             existingFileName: "test.pjnz",
             deleteFile: removeHandler
         });
-        const removeLink = wrapper.findComponent("a");
+        const removeLink = wrapper.find("a");
         expect(removeLink.text()).toBe("remove");
-        removeLink.trigger("click");
+        await removeLink.trigger("click");
         expect(deleteConfirmationModal(wrapper).props("open")).toBe(true);
     });
 
-    it("deletes file if user confirms edit", () => {
+    it("deletes file if user confirms edit", async () => {
         const removeHandler = jest.fn();
         const wrapper = createSut({
             existingFileName: "test.pjnz",
@@ -82,24 +86,24 @@ describe("File upload component", () => {
         }, {
             currentUser: 'guest'
         });
-        const removeLink = wrapper.findComponent("a");
+        const removeLink = wrapper.find("a");
         expect(removeLink.text()).toBe("remove");
-        removeLink.trigger("click");
-        deleteConfirmationModal(wrapper).findComponent(".btn-red").trigger("click");
+        await removeLink.trigger("click");
+        await deleteConfirmationModal(wrapper).find(".btn-red").trigger("click");
         expect(removeHandler.mock.calls.length).toBe(1);
         expect(deleteConfirmationModal(wrapper).props("open")).toBe(false);
     });
 
-    it("does not delete file if user cancels edit", () => {
+    it("does not delete file if user cancels edit", async () => {
         const removeHandler = jest.fn();
         const wrapper = createSut({
             existingFileName: "test.pjnz",
             deleteFile: removeHandler
         });
-        const removeLink = wrapper.findComponent("a");
+        const removeLink = wrapper.find("a");
         expect(removeLink.text()).toBe("remove");
-        removeLink.trigger("click");
-        deleteConfirmationModal(wrapper).findComponent(".btn-white").trigger("click");
+        await removeLink.trigger("click");
+        await deleteConfirmationModal(wrapper).find(".btn-white").trigger("click");
         expect(removeHandler.mock.calls.length).toBe(0);
         expect(deleteConfirmationModal(wrapper).props("open")).toBe(false);
     });

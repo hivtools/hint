@@ -36,8 +36,11 @@ describe("File upload component", () => {
     };
 
     const createSut = (props?: any, partialRootState: Partial<RootState> = {}) => {
+        const store = createStore(partialRootState);
         return mount(FileUpload, {
-            store: createStore(partialRootState),
+            global: {
+                plugins: [store]
+            },
             props: {
                 upload: jest.fn(),
                 name: "pjnz",
@@ -53,12 +56,12 @@ describe("File upload component", () => {
         return wrapper.findAllComponents(ResetConfirmation)[0]
     }
 
-    it("opens confirmation modal when new file is selected", () => {
+    it("opens confirmation modal when new file is selected", async () => {
         const wrapper = createSut();
         (wrapper.vm.$refs as any).pjnz = {
             files: [testFile]
         };
-        (wrapper.vm as any).handleFileSelect();
+        await (wrapper.vm as any).handleFileSelect();
         expect(uploadConfirmationModal(wrapper).props("open")).toBe(true);
     });
 
@@ -75,7 +78,7 @@ describe("File upload component", () => {
         };
 
         (wrapper.vm as any).handleFileSelect();
-        uploadConfirmationModal(wrapper).findComponent(".btn-red").trigger("click");
+        uploadConfirmationModal(wrapper).find(".btn-red").trigger("click");
 
         setTimeout(() => {
             expect(uploader.mock.calls.length).toBe(1);
@@ -95,7 +98,7 @@ describe("File upload component", () => {
         };
 
         (wrapper.vm as any).handleFileSelect();
-        uploadConfirmationModal(wrapper).findComponent(".btn-white").trigger("click");
+        uploadConfirmationModal(wrapper).find(".btn-white").trigger("click");
 
         setTimeout(() => {
             expect(uploader.mock.calls.length).toBe(0);

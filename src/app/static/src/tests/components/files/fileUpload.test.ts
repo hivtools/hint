@@ -1,5 +1,5 @@
-import Vue, { defineComponent } from "vue";
-import {shallowMount} from '@vue/test-utils';
+import Vue, { defineComponent, nextTick } from "vue";
+import {DOMWrapper, shallowMount} from '@vue/test-utils';
 
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import {mockDataExplorationState, mockFile} from "../../mocks";
@@ -7,7 +7,7 @@ import Vuex, {Store} from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {BDropdown} from "bootstrap-vue-next";
-import {expectTranslatedWithStoreType} from "../../testHelpers";
+import {expectTranslatedWithStoreType, shallowMountWithTranslate} from "../../testHelpers";
 import {DataExplorationState, initialDataExplorationState} from "../../../app/store/dataExploration/dataExploration";
 
 describe("File upload component", () => {
@@ -29,9 +29,15 @@ describe("File upload component", () => {
     const mockHideDropDown = jest.fn();
     const dropdownWithMockedHideMethod = defineComponent({mixins: [BDropdown], methods: {hide: mockHideDropDown}});
 
-    const createSut = (props?: any, slots?: any, store?: Store<DataExplorationState>) => {
-        return shallowMount(FileUpload, {
-            store: store || createStore(),
+    const createSut = (props?: any, slots?: any, storeOptions?: Store<DataExplorationState>) => {
+        const store = storeOptions || createStore();
+        return shallowMountWithTranslate(FileUpload, store, {
+            global: {
+                plugins: [store],
+                stubs: {
+                    "b-dropdown": dropdownWithMockedHideMethod
+                }
+            },
             props: {
                 uploading: false,
                 upload: jest.fn(),
@@ -40,9 +46,6 @@ describe("File upload component", () => {
                 ...props
             },
             slots: slots,
-            stubs: {
-                "b-dropdown": dropdownWithMockedHideMethod
-            }
         });
     };
 
@@ -56,18 +59,18 @@ describe("File upload component", () => {
         const wrapper = createSut({
             name: "test-name"
         });
-        const input = wrapper.findComponent("input");
+        const input = wrapper.find("input");
         expect(input.attributes().accept).toBe("csv");
         expect(input.attributes().id).toBe("test-name");
-        expect(wrapper.findComponent({ref: "test-name"})).toStrictEqual(input);
+        expect(wrapper.find({ref: "test-name"}).element).toStrictEqual(input.element);
     });
 
-    it("renders label", () => {
+    it("renders label", async () => {
         const store = createStore();
         const wrapper = createSut({
             name: "test-name"
         }, undefined, store);
-        expectTranslatedWithStoreType(wrapper.findComponent(".custom-file-label"), "Select new file",
+        await expectTranslatedWithStoreType(wrapper.find(".custom-file-label"), "Select new file",
             "Sélectionner un nouveau fichier", "Selecionar novo ficheiro", store);
     });
 
@@ -83,9 +86,9 @@ describe("File upload component", () => {
             files: [testFile]
         };
 
-        wrapper.findComponent("input").trigger("change");
+        await wrapper.find("input").trigger("change");
 
-        await Vue.nextTick();
+        await nextTick();
 
         const formData = uploader.mock.calls[0][0] as FormData;
         expect(formData.get('file')).toBe(testFile);
@@ -103,7 +106,7 @@ describe("File upload component", () => {
 
         (wrapper.vm as any).handleFileSelect();
 
-        await Vue.nextTick();
+        await nextTick();
 
         expect(uploader.mock.calls[0][0] instanceof FormData).toBe(true);
     });
@@ -116,14 +119,17 @@ describe("File upload component", () => {
         };
         (wrapper.vm as any).handleFileSelect();
 
-        await Vue.nextTick();
+        await nextTick();
 
         expect(wrapper.emitted().uploading.length).toBe(1);
     });
 
     it("does not trigger confirmation dialog when on data exploration mode", async () => {
-        const wrapper = shallowMount(FileUpload, {
-            store: createStore(mockDataExplorationState(), true),
+        const store = createStore(mockDataExplorationState(), true);
+        const wrapper = shallowMountWithTranslate(FileUpload, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 uploading: false,
                 upload: jest.fn(),
@@ -137,14 +143,17 @@ describe("File upload component", () => {
         };
         (wrapper.vm as any).handleFileSelect();
 
-        await Vue.nextTick();
+        await nextTick();
 
         expect(wrapper.emitted().uploading.length).toBe(1);
     });
 
     it("can trigger confirmation dialog when not on data exploration mode", async () => {
-        const wrapper = shallowMount(FileUpload, {
-            store: createStore(emptyState(), true),
+        const store = createStore(emptyState(), true);
+        const wrapper = shallowMountWithTranslate(FileUpload, store, {
+            global: {
+                plugins: [store]
+            },
             props: {
                 uploading: false,
                 upload: jest.fn(),
@@ -158,18 +167,18 @@ describe("File upload component", () => {
         };
         (wrapper.vm as any).handleFileSelect();
 
-        await Vue.nextTick();
+        await nextTick();
 
         expect(wrapper.emitted("uploading")!).toBeUndefined();
     });
 
     it("file input is disabled and label has uploading class when uploading is true", async () => {
         let wrapper = createSut();
-        expect(wrapper.findComponent("input").attributes("disabled")).toBeUndefined();
-        expect(wrapper.findComponent(".custom-file-label").classes()).not.toContain("uploading");
+        expect(wrapper.find("input").attributes("disabled")).toBeUndefined();
+        expect(wrapper.find(".custom-file-label").classes()).not.toContain("uploading");
 
         wrapper = createSut({uploading: true});
-        expect(wrapper.findComponent("input").attributes("disabled")).toBe("disabled");
-        expect(wrapper.findComponent(".custom-file-label").classes()).toContain("uploading");
+        expect(wrapper.find("input").attributes("disabled")).toBe("");
+        expect(wrapper.find(".custom-file-label").classes()).toContain("uploading");
     });
 });
