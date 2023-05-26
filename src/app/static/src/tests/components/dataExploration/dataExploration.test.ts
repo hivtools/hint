@@ -17,7 +17,7 @@ import {initialDataExplorationStepperState, StepperState} from "../../../app/sto
 import {mutations as stepperMutations} from "../../../app/store/stepper/mutations";
 import {actions as stepperActions} from "../../../app/store/stepper/actions";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 import StepperNavigation from "../../../app/components/StepperNavigation.vue";
 
 describe(`data exploration component`, () => {
@@ -90,21 +90,33 @@ describe(`data exploration component`, () => {
 
     it(`renders components as expect`, () => {
         const store = createStore()
-        const wrapper = shallowMount(DataExploration, {store});
-        expect(wrapper.findComponent("adr-integration-stub").exists()).toBe(true)
-        expect(wrapper.findComponent("upload-inputs-stub").exists()).toBe(true)
-        expect(wrapper.findAllComponents("stepper-navigation-stub").exists()).toBe(true)
+        const wrapper = shallowMountWithTranslate(DataExploration, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
+        expect(wrapper.find("adr-integration-stub").exists()).toBe(true)
+        expect(wrapper.find("upload-inputs-stub").exists()).toBe(true)
+        expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).exists()).toBe(true)
     })
 
     it(`disables back navigation when on upload step`, () => {
         const store = createStore()
-        const wrapper = shallowMount(DataExploration, {store});
+        const wrapper = shallowMountWithTranslate(DataExploration, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).props("backDisabled")).toBe(true)
     })
 
     it(`disables forward navigation when inputs are not valid`, () => {
         const store = createStore()
-        const wrapper = shallowMount(DataExploration, {store});
+        const wrapper = shallowMountWithTranslate(DataExploration, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).props("nextDisabled")).toBe(true)
     })
 
@@ -119,7 +131,11 @@ describe(`data exploration component`, () => {
                 ...defaultSAPState,
                 program: mockProgramResponse()
             })
-        const wrapper = shallowMount(DataExploration, {store});
+        const wrapper = shallowMountWithTranslate(DataExploration, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).props("nextDisabled")).toBe(false)
     })
 
@@ -130,44 +146,60 @@ describe(`data exploration component`, () => {
             jest.fn(),
             {activeStep: 2}
         );
-        const wrapper = shallowMount(DataExploration, {store});
+        const wrapper = shallowMountWithTranslate(DataExploration, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
 
         expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).props("backDisabled")).toBe(false)
         expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).props("nextDisabled")).toBe(true)
     })
 
-    it(`can navigate to reviewInputs`, () => {
+    it(`can navigate to reviewInputs`, async () => {
         const store = createStore()
-        const wrapper = shallowMount(DataExploration, {store});
-        expect(wrapper.findComponent("review-inputs-stub").exists()).toBe(false)
+        const wrapper = shallowMountWithTranslate(DataExploration, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
+        expect(wrapper.find("review-inputs-stub").exists()).toBe(false)
         const vm = wrapper.vm as any
-        vm.next()
-        expect(wrapper.findComponent("review-inputs-stub").exists()).toBe(true)
+        await vm.next()
+        expect(wrapper.find("review-inputs-stub").exists()).toBe(true)
     })
 
-    it(`can navigate to uploadInputs`, () => {
+    it(`can navigate to uploadInputs`, async () => {
         const store = createStore(defaultBaselineState, defaultSAPState, jest.fn(), {activeStep: 2});
-        const wrapper = shallowMount(DataExploration, {store});
+        const wrapper = shallowMountWithTranslate(DataExploration, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
 
-        expect(wrapper.findComponent("upload-inputs-stub").exists()).toBe(false)
+        expect(wrapper.find("upload-inputs-stub").exists()).toBe(false)
         const vm = wrapper.vm as any
-        vm.back()
-        expect(wrapper.findComponent("upload-inputs-stub").exists()).toBe(true)
+        await vm.back()
+        expect(wrapper.find("upload-inputs-stub").exists()).toBe(true)
     });
 
     it("requests plotting metadata on mount", () => {
         const metadataMock = jest.fn();
         const store = createStore({}, {}, metadataMock)
-        const wrapper = shallowMount(DataExploration, {store})
+        const wrapper = shallowMountWithTranslate(DataExploration, store, {
+            global: {
+                plugins: [store]
+            }, 
+        })
         expect(metadataMock.mock.calls.length).toBe(1);
     });
 
-    const expectLoadingView = (wrapper: Wrapper<any>) => {
-        expect(wrapper.findComponent("adr-integration-stub").exists()).toBe(false);
-        expect(wrapper.findComponent("upload-inputs-stub").exists()).toBe(false);
-        expect(wrapper.findComponent("review-inputs-stub").exists()).toBe(false);
+    const expectLoadingView = (wrapper: any) => {
+        expect(wrapper.find("adr-integration-stub").exists()).toBe(false);
+        expect(wrapper.find("upload-inputs-stub").exists()).toBe(false);
+        expect(wrapper.find("review-inputs-stub").exists()).toBe(false);
         expect(wrapper.findComponent(LoadingSpinner).props("size")).toBe("lg");
-        expectTranslated(wrapper.findComponent("#loading-message"),
+        expectTranslated(wrapper.find("#loading-message"),
             "Loading your data", "Chargement de vos données",
             "A carregar os seus dados", wrapper.vm.$store);
         expect(wrapper.findComponent(StepperNavigation).props("backDisabled")).toBe(true);
@@ -176,13 +208,21 @@ describe(`data exploration component`, () => {
 
     it("shows loading spinner and disabled navigation when baseline not ready", () => {
         const store = createStore({ready: false});
-        const wrapper = shallowMount(DataExploration, {store});
+        const wrapper = shallowMountWithTranslate(DataExploration, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expectLoadingView(wrapper);
     });
 
     it("shows loading spinner and disabled navigation when surveyAndProgram not ready", () => {
         const store = createStore(defaultBaselineState, {ready: false});
-        const wrapper = shallowMount(DataExploration, {store});
+        const wrapper = shallowMountWithTranslate(DataExploration, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expectLoadingView(wrapper);
     });
 
@@ -190,7 +230,11 @@ describe(`data exploration component`, () => {
         const dataExplorationState = {updatingLanguage: true};
         const store = createStore(defaultBaselineState, defaultSAPState, jest.fn(), {},
             dataExplorationState);
-        const wrapper = shallowMount(DataExploration, {store});
+        const wrapper = shallowMountWithTranslate(DataExploration, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expectLoadingView(wrapper);
     });
 });
