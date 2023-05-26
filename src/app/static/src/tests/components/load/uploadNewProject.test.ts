@@ -1,11 +1,11 @@
 import {mount} from "@vue/test-utils";
 import {mockError, mockLoadState, mockProjectsState, mockRootState} from "../../mocks";
-import Vue from "vue";
+import Vue, { nextTick } from "vue";
 import UploadNewProject from "../../../app/components/load/UploadNewProject.vue"
 import Vuex, {Store} from "vuex";
 import {emptyState, RootState} from "../../../app/root";
 import RegisterTranslations from "../../../app/store/translations/registerTranslations";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, mountWithTranslate} from "../../testHelpers";
 import LoadErrorModal from "../../../app/components/load/LoadErrorModal.vue";
 import UploadProgress from "../../../app/components/load/UploadProgress.vue";
 import {LoadingState, LoadState} from "../../../app/store/load/state";
@@ -60,25 +60,28 @@ describe("uploadNewProject", () => {
     }
 
     const getWrapper = (props = {}, store: Store<RootState> = getStore()) => {
-        return mount(UploadNewProject, {
+        return mountWithTranslate(UploadNewProject, store, {
             props: {
                 openModal: false,
                 submitLoad: mockSubmitFunction,
                 cancelLoad: mockCancelFunction,
                 ...props
-            }, store
+            },
+            global: {
+                plugins: [store]
+            }
         })
     }
 
     it("renders modals as expected", () => {
         const wrapper = getWrapper()
 
-        expect(wrapper.findComponent(".modal").exists()).toBe(true)
-        expect(wrapper.findComponent(".modal").attributes()).toEqual({
+        expect(wrapper.find(".modal").exists()).toBe(true)
+        expect(wrapper.find(".modal").attributes()).toEqual({
             "class": "modal",
             "style": "display: none;"
         })
-        const uploadProject = wrapper.findComponent("#load-project-name");
+        const uploadProject = wrapper.find("#load-project-name");
         expect(uploadProject.exists()).toBe(true)
         expect(mockGetProjects).toHaveBeenCalledTimes(1)
         expect(uploadProject.findComponent(LoadErrorModal).exists()).toBe(true)
@@ -88,7 +91,7 @@ describe("uploadNewProject", () => {
     it("should render UploadProgress props", () => {
         const wrapper = getWrapper()
 
-        const uploadProject = wrapper.findComponent("#load-project-name");
+        const uploadProject = wrapper.find("#load-project-name");
         expect(uploadProject.exists()).toBe(true)
         expect(uploadProject.findComponent(UploadProgress).exists()).toBe(true)
         expect(uploadProject.findComponent(UploadProgress).props("cancel")).toBeInstanceOf(Function)
@@ -98,7 +101,7 @@ describe("uploadNewProject", () => {
     it("should render loadErrorModal props", () => {
         const wrapper = getWrapper()
 
-        const uploadProject = wrapper.findComponent("#load-project-name");
+        const uploadProject = wrapper.find("#load-project-name");
         expect(uploadProject.exists()).toBe(true)
         expect(uploadProject.findComponent(LoadErrorModal).exists()).toBe(true)
         expect(uploadProject.findComponent(LoadErrorModal).props("clearLoadError")).toBeInstanceOf(Function)
@@ -106,12 +109,12 @@ describe("uploadNewProject", () => {
         expect(uploadProject.findComponent(LoadErrorModal).props("loadError")).toBe(null)
     })
 
-    it("should render translated text", () => {
+    it("should render translated text", async () => {
         const wrapper = getWrapper({openModal: true})
 
         const store = wrapper.vm.$store
-        const label = wrapper.findComponent(".modal label")
-        expectTranslated(label,
+        const label = wrapper.find(".modal label")
+        await expectTranslated(label,
             "Please enter a name for the new project",
             "Veuillez saisir un nom pour le nouveau projet",
             "Insira um nome para o novo projeto",
@@ -121,7 +124,7 @@ describe("uploadNewProject", () => {
     it("should open modal", () => {
         const wrapper = getWrapper({openModal: true})
 
-        const uploadNewProjectModal = wrapper.findComponent(".modal");
+        const uploadNewProjectModal = wrapper.find(".modal");
         expect(uploadNewProjectModal.attributes()).toEqual({
             "class": "modal show",
             "style": "display: block;"
@@ -131,29 +134,27 @@ describe("uploadNewProject", () => {
     it("confirm load to project button is disabled when project name is empty", async () => {
         const wrapper = getWrapper()
 
-        const confirmButton = wrapper.findComponent("#confirm-load-project");
-        expect(confirmButton.attributes("disabled")).toBe("disabled");
-        await wrapper.findComponent("#project-name-input").setValue("test");
+        const confirmButton = wrapper.find("#confirm-load-project");
+        expect(confirmButton.attributes("disabled")).toBe("");
+        await wrapper.find("#project-name-input").setValue("test");
         expect(mockMutations.SetProjectName.mock.calls[0][1]).toBe("test")
-        expect(wrapper.vm.$data.uploadProjectName).toBe("test")
-        await expect(confirmButton.attributes("disabled")).toBeUndefined();
+        expect((wrapper.vm as any).$data.uploadProjectName).toBe("test")
+        expect(confirmButton.attributes("disabled")).toBeUndefined();
     });
 
     it("clicking confirm load to project button invokes action", async () => {
         const wrapper = getWrapper({openModal: true})
 
-        wrapper.findComponent("#project-name-input").setValue("new project");
-        wrapper.findComponent("#confirm-load-project").trigger("click");
-        await Vue.nextTick();
+        await wrapper.find("#project-name-input").setValue("new project");
+        await wrapper.find("#confirm-load-project").trigger("click");
         expect(mockSubmitFunction.mock.calls.length).toEqual(1);
     });
 
     it("can trigger cancelLoad action", async () => {
         const wrapper = getWrapper({openModal: true})
 
-        wrapper.findComponent("#project-name-input").setValue("new project");
-        wrapper.findComponent("#cancel-load-project").trigger("click");
-        await Vue.nextTick();
+        wrapper.find("#project-name-input").setValue("new project");
+        await wrapper.find("#cancel-load-project").trigger("click");
         expect(mockCancelFunction.mock.calls.length).toEqual(1);
     });
 
@@ -161,8 +162,8 @@ describe("uploadNewProject", () => {
         const wrapper = getWrapper({openModal: true})
         const store = wrapper.vm.$store
 
-        wrapper.findComponent("#project-name-input").setValue("proj1");
-        expectTranslated(wrapper.findComponent(".invalid-feedback"),
+        await wrapper.find("#project-name-input").setValue("proj1");
+        await expectTranslated(wrapper.find(".invalid-feedback"),
             "Please choose a unique name",
             "Veuillez choisire un nom unique",
             "Por favor, escolha um nome único",
@@ -170,7 +171,7 @@ describe("uploadNewProject", () => {
         expect(wrapper.findComponent(LoadErrorModal).props("hasError")).toBe(false)
     });
 
-    it("should translate text and display error modal when error occurred while uploading", () => {
+    it("should translate text and display error modal when error occurred while uploading", async () => {
         const store = getStore({
             loadingState: LoadingState.LoadFailed,
             loadError: mockError("Testing Error")
@@ -178,17 +179,17 @@ describe("uploadNewProject", () => {
         const wrapper = getWrapper({openModal: true}, store)
 
         expect(wrapper.findComponent(LoadErrorModal).props("hasError")).toBe(true)
-        expectTranslated(wrapper.findComponent(LoadErrorModal).findComponent("h4"),
+        await expectTranslated(wrapper.findComponent(LoadErrorModal).find("h4"),
             "Load Error",
             "Erreur de chargement",
             "Erro de carregamento",
             store)
 
-        expect(wrapper.findComponent(LoadErrorModal).findComponent("p").text()).toBe("Testing Error")
-        expect(wrapper.findComponent(LoadErrorModal).findComponent("button").exists()).toBe(true)
+        expect(wrapper.findComponent(LoadErrorModal).find("p").text()).toBe("Testing Error")
+        expect(wrapper.findComponent(LoadErrorModal).find("button").exists()).toBe(true)
     })
 
-    it("should close error modal when close handler is triggered", () => {
+    it("should close error modal when close handler is triggered", async () => {
         const store = getStore({
             loadingState: LoadingState.LoadFailed,
             loadError: mockError("Testing Error")
@@ -196,11 +197,11 @@ describe("uploadNewProject", () => {
         const wrapper = getWrapper({openModal: true}, store)
 
         expect(wrapper.findComponent(LoadErrorModal).props("hasError")).toBe(true)
-        wrapper.findComponent(LoadErrorModal).findComponent("button").trigger("click")
+        await wrapper.findComponent(LoadErrorModal).find("button").trigger("click")
         expect(mockActions.clearLoadState.mock.calls.length).toBe(1)
     })
 
-    it("should translate text and ender upload progress bar when upload in progress", () => {
+    it("should translate text and ender upload progress bar when upload in progress", async () => {
         const store = getStore({
             preparing: true
         })
@@ -208,29 +209,29 @@ describe("uploadNewProject", () => {
         expect(wrapper.findComponent(LoadErrorModal).props("hasError")).toBe(false)
         expect(wrapper.findComponent(UploadProgress).props("openModal")).toBe(true)
         expect(wrapper.findComponent(LoadingSpinner).exists()).toBe(true)
-        expect(wrapper.findComponent(UploadProgress).findComponent(".progress").exists()).toBe(true)
+        expect(wrapper.findComponent(UploadProgress).find(".progress").exists()).toBe(true)
 
-        expectTranslated(wrapper.findComponent("#upload-header"),
+        await expectTranslated(wrapper.find("#upload-header"),
             "Uploading project from model outputs",
             "Téléchargement du projet à partir des sorties du modèle",
             "Fazendo upload do projeto das saídas do modelo",
             store)
 
-        expectTranslated(wrapper.findComponent("#progress-message"),
+        await expectTranslated(wrapper.find("#progress-message"),
             "Uploading...",
             "Téléchargement...",
             "Enviando...",
             store)
     })
 
-    it("should close and cancel upload progress when cancel handler is triggered", () => {
+    it("should close and cancel upload progress when cancel handler is triggered", async () => {
         const store = getStore({
             preparing: true
         })
 
         const wrapper = getWrapper({openModal: true}, store)
         expect(wrapper.findComponent(UploadProgress).props("openModal")).toBe(true)
-        wrapper.findComponent(UploadProgress).findComponent("button").trigger("click")
+        await wrapper.findComponent(UploadProgress).find("button").trigger("click")
         expect(mockMutations.RehydrateCancel.mock.calls.length).toBe(1)
     })
 
@@ -238,12 +239,12 @@ describe("uploadNewProject", () => {
         const store = getStore({}, true)
         const wrapper = getWrapper({}, store)
 
-        expect(wrapper.findComponent(".modal").exists()).toBe(true)
-        expect(wrapper.findComponent(".modal").attributes()).toEqual({
+        expect(wrapper.find(".modal").exists()).toBe(true)
+        expect(wrapper.find(".modal").attributes()).toEqual({
             "class": "modal",
             "style": "display: none;"
         })
-        const uploadProject = wrapper.findComponent("#load-project-name");
+        const uploadProject = wrapper.find("#load-project-name");
         expect(uploadProject.exists()).toBe(true)
         expect(mockGetProjects).not.toHaveBeenCalled()
     })

@@ -33,7 +33,7 @@ describe("loadErrorModal", () => {
 
     it("can render error modal as expected", () => {
         const wrapper = getWrapper()
-        const modal = wrapper.findComponent(".modal")
+        const modal = wrapper.find(".modal")
         expect(modal.attributes()).toEqual({
             class: "modal",
             style: "display: none;"
@@ -42,7 +42,7 @@ describe("loadErrorModal", () => {
 
     it("opens error modal", () => {
         const wrapper = getWrapper(openErrorProps)
-        const modal = wrapper.findComponent(".modal")
+        const modal = wrapper.find(".modal")
         expect(modal.attributes()).toEqual({
             class: "modal show",
             style: "display: block;",
@@ -52,9 +52,9 @@ describe("loadErrorModal", () => {
 
     it("can display error text and translates elements", () => {
         const wrapper = getWrapper(openErrorProps)
-        const modal = wrapper.findComponent(".modal")
+        const modal = wrapper.find(".modal")
         expect(mockFunction.mock.calls.length).toBe(0)
-        expect(modal.findComponent("p").text()).toBe("Test Error Message")
+        expect(modal.find("p").text()).toBe("Test Error Message")
 
         expect(mockTranslate.mock.calls.length).toBe(2)
         expect(mockTranslate.mock.calls[0][1].value).toBe("loadError")
@@ -63,7 +63,7 @@ describe("loadErrorModal", () => {
 
     it("trigger can invoke clearLoadError modal", async () => {
         const wrapper = getWrapper(openErrorProps)
-        const okButton = wrapper.findComponent(".modal button")
+        const okButton = wrapper.find(".modal button")
         expect(okButton.attributes()).toEqual(
             {
                 "aria-label": "Close",

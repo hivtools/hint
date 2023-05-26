@@ -25,13 +25,13 @@ describe('upload Progress', function () {
 
     it('should render elements as expected', function () {
         const wrapper = getWrapper()
-        const div = wrapper.findComponent("#upload-progress")
+        const div = wrapper.find("#upload-progress")
         expect(div.exists()).toBe(true)
     });
 
     it('should render modal as expected', function () {
         const wrapper = getWrapper({openModal: true})
-        const modal = wrapper.findComponent(".modal")
+        const modal = wrapper.find(".modal")
         expect(modal.exists()).toBe(true)
         expect(modal.attributes()).toEqual({
             "class": "modal show",
@@ -46,7 +46,7 @@ describe('upload Progress', function () {
 
     it('should render progress bar attributes and message as expected', function () {
         const wrapper = getWrapper({openModal: true})
-        const progressBar = wrapper.findComponent(".progress .progress-bar")
+        const progressBar = wrapper.find(".progress .progress-bar")
         expect(progressBar.attributes()).toEqual({
             "aria-valuemax": "100",
             "aria-valuemin": "0",
@@ -58,11 +58,11 @@ describe('upload Progress', function () {
         expect(mockTranslate.mock.calls[1][1].value).toEqual("uploading")
     });
 
-    it('should trigger cancel handler', function () {
+    it('should trigger cancel handler', async () => {
         const wrapper = getWrapper({openModal: true})
-        const okButton = wrapper.findComponent(".modal button")
+        const okButton = wrapper.find(".modal button")
         expect(okButton.attributes("class")).toBe("btn btn-white")
-        okButton.trigger("click")
+        await okButton.trigger("click")
         expect(mockFunction.mock.calls.length).toBe(1)
     });
 });
