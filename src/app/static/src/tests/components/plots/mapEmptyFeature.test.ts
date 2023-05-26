@@ -4,7 +4,7 @@ import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslated} from "../../testHelpers";
 import Vuex from "vuex";
-import {LControl} from "vue2-leaflet";
+import {LControl} from "@vue-leaflet/vue-leaflet";
 
 const localVue = createLocalVue();
 const store = new Vuex.Store({

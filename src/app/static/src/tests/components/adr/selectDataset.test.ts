@@ -4,7 +4,7 @@ import {mount, shallowMount} from "@vue/test-utils";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
 import SelectRelease from "../../../app/components/adr/SelectRelease.vue";
 import Modal from "../../../app/components/Modal.vue";
-import TreeSelect from '@riophae/vue-treeselect'
+import TreeSelect from "vue3-treeselect"
 import {
     mockBaselineState, mockDataExplorationState,
     mockDataset,
@@ -22,7 +22,7 @@ import {ADRMutation} from "../../../app/store/adr/mutations";
 import {BaselineActions} from "../../../app/store/baseline/actions";
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {ADRSchemas} from "../../../app/types";
-import {InfoIcon} from "vue-feather-icons";
+import {InfoIcon} from "vue-feather";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectTranslatedWithStoreType} from "../../testHelpers";
 import {ADRState} from "../../../app/store/adr/adr";

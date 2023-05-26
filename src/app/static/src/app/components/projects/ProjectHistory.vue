@@ -273,7 +273,7 @@
         FileTextIcon,
         RefreshCwIcon,
         Trash2Icon
-    } from "vue-feather-icons";
+    } from "vue-feather";
     import Modal from "../Modal.vue";
     import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
     import {CreateProjectPayload, projectPayload, versionPayload} from "../../store/projects/actions";
@@ -281,7 +281,7 @@
     import {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
-    import {VTooltip} from 'v-tooltip';
+    import {VTooltip} from "floating-vue";
     import {projects} from "../../store/projects/projects";
 
     const namespace = "projects";

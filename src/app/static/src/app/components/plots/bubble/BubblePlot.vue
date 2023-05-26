@@ -84,9 +84,9 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import Treeselect from '@riophae/vue-treeselect';
+    import Treeselect from "vue3-treeselect";
     import {Feature} from "geojson";
-    import {LCircleMarker, LGeoJson, LMap, LTooltip} from "vue2-leaflet";
+    import {LCircleMarker, LGeoJson, LMap, LTooltip} from "@vue-leaflet/vue-leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
     import FilterSelect from "../FilterSelect.vue";

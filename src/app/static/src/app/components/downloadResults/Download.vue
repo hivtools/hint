@@ -20,7 +20,7 @@
     import Vue from "vue";
     import DownloadStatus from "./DownloadStatus.vue";
     import ErrorAlert from "../ErrorAlert.vue";
-    import {DownloadIcon} from "vue-feather-icons";
+    import {DownloadIcon} from "vue-feather";
     import {DownloadResultsDependency} from "../../types";
 
     interface downloadTranslate {

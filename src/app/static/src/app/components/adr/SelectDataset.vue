@@ -94,7 +94,7 @@
 <script lang="ts">
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
-    import TreeSelect from "@riophae/vue-treeselect";
+    import TreeSelect from "vue3-treeselect";
     import {
         mapActionByName,
         mapGetterByName,
@@ -112,8 +112,8 @@
         DatasetResourceSet,
         Release, Step
     } from "../../types";
-    import {InfoIcon} from "vue-feather-icons";
-    import {VTooltip} from "v-tooltip";
+    import {InfoIcon} from "vue-feather";
+    import {VTooltip} from "floating-vue";
     import {ADRState} from "../../store/adr/adr";
     import {Error} from "../../generated";
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";

@@ -14,7 +14,7 @@
     import Vue from "vue";
     import {ProjectsState} from "../../store/projects/projects";
     import {mapStateProp} from "../../utils";
-    import {CheckIcon} from "vue-feather-icons";
+    import {CheckIcon} from "vue-feather";
     import moment from 'moment';
     import {versionLabel} from "../../utils";
 

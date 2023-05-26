@@ -25,13 +25,13 @@
 <script lang="ts">
     import i18next from "i18next";
     import Vue from "vue";
-    import Treeselect from '@riophae/vue-treeselect';
+    import Treeselect from "vue3-treeselect";
     import {flattenOptions, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import {FilterOption} from "../../generated";
-    import {HelpCircleIcon} from "vue-feather-icons";
-    import {VTooltip} from "v-tooltip";
+    import {HelpCircleIcon} from "vue-feather";
+    import {VTooltip} from "floating-vue";
 
     interface Methods {
         input: (value: string[]) => void
