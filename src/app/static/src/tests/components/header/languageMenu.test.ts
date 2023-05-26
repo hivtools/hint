@@ -23,38 +23,38 @@ describe("Language menu", () => {
     it("displays current language", () => {
         const store = createStore();
         const wrapper = shallowMount(LanguageMenu, {
-            store
+            global: {
+                plugins: [store]
+            }
         });
         expect(wrapper.findComponent(DropDown).props("text")).toBe("EN");
     });
 
-    it("changes language to French", (done) => {
+    it("changes language to French", async () => {
         const store = createStore();
         const wrapper = mount(LanguageMenu, {
-            store
+            global: {
+                plugins: [store]
+            }
         });
 
-        wrapper.findAllComponents(".dropdown-item")[1].trigger("mousedown");
+        await wrapper.findAll(".dropdown-item")[1].trigger("mousedown");
 
-        setTimeout(() => {
-            expect(store.state.language).toBe(Language.fr);
-            expect(wrapper.findComponent(DropDown).props("text")).toBe("FR");
-            done();
-        })
+        expect(store.state.language).toBe(Language.fr);
+        expect(wrapper.findComponent(DropDown).props("text")).toBe("FR");
     });
 
-    it("changes language to Portuguese", (done) => {
+    it("changes language to Portuguese", async () => {
         const store = createStore();
         const wrapper = mount(LanguageMenu, {
-            store
+            global: {
+                plugins: [store]
+            }
         });
 
-        wrapper.findAllComponents(".dropdown-item")[2].trigger("mousedown");
+        await wrapper.findAll(".dropdown-item")[2].trigger("mousedown");
 
-        setTimeout(() => {
-            expect(store.state.language).toBe(Language.pt);
-            expect(wrapper.findComponent(DropDown).props("text")).toBe("PT");
-            done();
-        })
+        expect(store.state.language).toBe(Language.pt);
+        expect(wrapper.findComponent(DropDown).props("text")).toBe("PT");
     });
 });
