@@ -1,4 +1,4 @@
-import {createLocalVue, shallowMount} from '@vue/test-utils';
+import {shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import ManageFile from "../../../app/components/files/ManageFile.vue";
 import {SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
@@ -11,10 +11,9 @@ import {
     mockSurveyAndProgramState
 } from "../../mocks";
 import UploadInputs from "../../../app/components/uploadInputs/UploadInputs.vue";
+import { shallowMountWithTranslate } from '../../testHelpers';
 
 export function testUploadComponent(name: string, position: number) {
-
-    const localVue = createLocalVue();
 
     let actions: jest.Mocked<SurveyAndProgramActions>;
     let mutations = {};
@@ -121,25 +120,41 @@ export function testUploadComponent(name: string, position: number) {
 
     it(`${name} upload is valid if data is present`, () => {
         const store = createSut(successState);
-        const wrapper = shallowMount(UploadInputs, {store, localVue});
+        const wrapper = shallowMountWithTranslate(UploadInputs, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         expect(wrapper.findAllComponents(ManageFile)[position].props().valid).toBe(true);
     });
 
     it(`${name} upload is invalid if data is null`, () => {
         const store = createSut();
-        const wrapper = shallowMount(UploadInputs, {store, localVue});
+        const wrapper = shallowMountWithTranslate(UploadInputs, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         expect(wrapper.findAllComponents(ManageFile)[position].props().valid).toBe(false);
     });
 
     it(`passes ${name} upload error to file upload`, () => {
         const store = createSut(errorState);
-        const wrapper = shallowMount(UploadInputs, {store, localVue});
+        const wrapper = shallowMountWithTranslate(UploadInputs, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         expect(wrapper.findAllComponents(ManageFile)[position].props().error).toStrictEqual(mockError("File upload went wrong"));
     });
 
     it(`upload ${name} dispatches surveyAndProgram/upload${name}`, (done) => {
         const store = createSut();
-        const wrapper = shallowMount(UploadInputs, {store, localVue});
+        const wrapper = shallowMountWithTranslate(UploadInputs, store, {
+            global: {
+                plugins: [store]
+            }
+        });
 
         wrapper.findAllComponents(ManageFile)[position].props().upload({name: "TEST"});
         setTimeout(() => {
@@ -150,7 +165,11 @@ export function testUploadComponent(name: string, position: number) {
 
     it(`delete ${name} dispatches surveyAndProgram/delete${name}`, (done) => {
         const store = createSut();
-        const wrapper = shallowMount(UploadInputs, {store, localVue});
+        const wrapper = shallowMountWithTranslate(UploadInputs, store, {
+            global: {
+                plugins: [store]
+            }
+        });
 
         wrapper.findAllComponents(ManageFile)[position].props().deleteFile();
         setTimeout(() => {
