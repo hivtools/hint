@@ -1,6 +1,5 @@
-import {mount} from "@vue/test-utils";
 import Vuex, {ActionTree, MutationTree} from "vuex";
-import Vue from "vue";
+import { nextTick } from "vue";
 
 import ModelOptions from "../../../app/components/modelOptions/ModelOptions.vue";
 import {ModelOptionsMutation} from "../../../app/store/modelOptions/mutations";
@@ -8,10 +7,11 @@ import {ModelOptionsState} from "../../../app/store/modelOptions/modelOptions";
 import {ModelOptionsActions} from "../../../app/store/modelOptions/actions";
 import {RootState} from "../../../app/root";
 import {mockModelOptionsState, mockRootState} from "../../mocks";
-import {DynamicForm} from "@reside-ic/vue-dynamic-form";
+import DynamicForm from "../../../app/vue-dynamic-form/src/DynamicForm.vue";
 import ResetConfirmation from "../../../app/components/resetConfirmation/ResetConfirmation.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {getters} from "../../../app/store/root/getters";
+import { mountWithTranslate } from "../../testHelpers";
 
 declare var currentUser: string;
 currentUser = "guest";
@@ -76,27 +76,40 @@ describe("Model options component when edit confirmation is required", () => {
         jest.resetAllMocks();
     });
 
-    it("opens modal when mousedown event fires", () => {
-        const rendered = mount(ModelOptions, {store});
+    it("opens modal when mousedown event fires", async () => {
+        const rendered = mountWithTranslate(ModelOptions, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         const event = { preventDefault: () => {} };
-        rendered.findComponent(DynamicForm).vm.$emit("confirm", event)
+        (rendered.findComponent(DynamicForm).vm as any).$emit("confirm", event)
+        await nextTick();
         expect(rendered.findComponent(ResetConfirmation).props("open")).toBe(true);
     });
 
     it("closes modal and commits UnValidate mutation if user confirms action", async () => {
-        const rendered = mount(ModelOptions, {store});
-        rendered.findComponent(DynamicForm).trigger("mousedown");
-        rendered.findComponent(ResetConfirmation).findComponent(".btn-red").trigger("click");
-        await Vue.nextTick();
+        const rendered = mountWithTranslate(ModelOptions, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
+        await rendered.findComponent(DynamicForm).trigger("mousedown");
+        await rendered.findComponent(ResetConfirmation).find(".btn-red").trigger("click");
+        await nextTick();
         expect(rendered.findComponent(ResetConfirmation).props("open")).toBe(false);
         expect(mockMutations[ModelOptionsMutation.UnValidate].mock.calls.length).toBe(1);
     });
 
     it("closes modal and does not commit UnValidate mutation if user cancels action", async () => {
-        const rendered = mount(ModelOptions, {store});
-        rendered.findComponent(DynamicForm).trigger("mousedown");
-        rendered.findComponent(ResetConfirmation).findComponent(".btn-white").trigger("click");
-        await Vue.nextTick();
+        const rendered = mountWithTranslate(ModelOptions, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
+        await rendered.findComponent(DynamicForm).trigger("mousedown");
+        await rendered.findComponent(ResetConfirmation).find(".btn-white").trigger("click");
+        await nextTick();
         expect(mockMutations[ModelOptionsMutation.UnValidate].mock.calls.length).toBe(0);
         expect(rendered.findComponent(ResetConfirmation).props("open")).toBe(false);
     });
