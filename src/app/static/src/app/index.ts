@@ -9,7 +9,7 @@ import Accessibility from "./components/Accessibility.vue";
 import Privacy from "./components/Privacy.vue";
 // import {mapActions, mapState} from "vuex";
 // import {RootState} from "./root";
-import {createRouter, createWebHashHistory, NavigationGuardNext} from "vue-router";
+import {createRouter, createWebHashHistory, NavigationGuardNext, RouteComponent} from "vue-router";
 // import {Route} from "vue-router/types/router";
 // import {Language} from "./store/translations/locales";
 import Hint from "./components/Hint.vue"
@@ -19,19 +19,19 @@ import translate from "./directives/translate";
 import FloatingVue from "floating-vue";
 import 'floating-vue/dist/style.css';
 
-// export const beforeEnter = (to: Route, from: Route, next: NavigationGuardNext) => {
-//     if (store.state.currentUser === "guest" && !sessionStorage.getItem("asGuest")) {
-//         window.location.assign("/login");
-//     } else {
-//         next();
-//     }
-// }
+export const beforeEnter = (from: any, to: any, next: NavigationGuardNext) => {
+    if (store.state.currentUser === "guest" && !sessionStorage.getItem("asGuest")) {
+        window.location.assign("/login");
+    } else {
+        next();
+    }
+}
 
 const routes = [
     {
         path: "/",
         component: Stepper,
-        // beforeEnter
+        beforeEnter
     },
     {path: "/accessibility", component: Accessibility},
     {path: "/privacy", component: Privacy},
