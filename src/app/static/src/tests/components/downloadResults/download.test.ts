@@ -1,3 +1,4 @@
+import VueFeather from 'vue-feather';
 import {mount, shallowMount, VueWrapper} from "@vue/test-utils";
 import Download from "../../../app/components/downloadResults/Download.vue"
 import {mockDownloadResultsDependency} from "../../mocks";
@@ -27,7 +28,9 @@ describe(`download`, () => {
         return shallowMount(Download,
             {
                 props: props,
-                directives: {"translate": mockDirective}
+                global: {
+                    directives: {"translate": mockDirective}
+                }
             })
     }
 
@@ -35,7 +38,9 @@ describe(`download`, () => {
         const wrapper = getWrapper()
         expect(mockDirective.mock.calls[0][1].value).toBe("downloadSummaryReport")
         expect(mockDirective.mock.calls[1][1].value).toBe("download")
-        expect(wrapper.findComponent("download-icon-stub").exists()).toBe(true)
+        const vueFeather = wrapper.findComponent(VueFeather)
+        expect(vueFeather.exists()).toBe(true)
+        expect(vueFeather.props("type")).toBe("download")
         expect((wrapper.findComponent("download-status-stub") as VueWrapper).props()).toEqual({
             "preparing": true,
             "translateKey": "preparing"
@@ -49,9 +54,11 @@ describe(`download`, () => {
 
     it(`does not disable button when upload is not in progress`, () => {
         const wrapper = getWrapper()
-        expect(wrapper.findComponent("download-icon-stub").exists()).toBe(true)
-        expect(wrapper.findComponent("button").classes()).toEqual(["btn", "btn-lg", "my-3", "btn-red"])
-        expect(wrapper.findComponent("button").attributes("disabled")).toBeUndefined()
+        const vueFeather = wrapper.findComponent(VueFeather)
+        expect(vueFeather.exists()).toBe(true)
+        expect(vueFeather.props("type")).toBe("download")
+        expect(wrapper.find("button").classes()).toEqual(["btn", "btn-lg", "my-3", "btn-red"])
+        expect(wrapper.find("button").attributes("disabled")).toBeUndefined()
     })
 
     it(`disables button when upload is in progress`, () => {
@@ -60,18 +67,20 @@ describe(`download`, () => {
             disabled: true
         })
 
-        expect(wrapper.findComponent("download-icon-stub").exists()).toBe(true)
-        expect(wrapper.findComponent("button").classes()).toEqual(["btn", "btn-lg", "my-3", "btn-secondary"])
-        expect(wrapper.findComponent("button").attributes("disabled")).toBe("disabled")
+        const vueFeather = wrapper.findComponent(VueFeather)
+        expect(vueFeather.exists()).toBe(true)
+        expect(vueFeather.props("type")).toBe("download")
+        expect(wrapper.find("button").classes()).toEqual(["btn", "btn-lg", "my-3", "btn-secondary"])
+        expect(wrapper.find("button").attributes("disabled")).toBe("")
     })
 
     it(`can emit download`, async () => {
         const wrapper = getWrapper()
         const downloadSummary = mockDownloadResultsDependency();
 
-        const button = wrapper.findComponent("button")
+        const button = wrapper.find("button")
         await wrapper.setProps({file: downloadSummary})
-        button.trigger("click")
+        await button.trigger("click")
         expect(wrapper.emitted().click.length).toBe(1)
     })
 
@@ -83,11 +92,11 @@ describe(`download`, () => {
             },
             directives: {"translate": mockDirective}
         });
-        expect(wrapper.findComponent("#preparing").exists()).toBe(true);
+        expect(wrapper.find("#preparing").exists()).toBe(true);
 
         await wrapper.setProps({
            preparing: false
         })
-        expect(wrapper.findComponent("#preparing").exists()).toBe(false);
+        expect(wrapper.find("#preparing").exists()).toBe(false);
     })
 })
