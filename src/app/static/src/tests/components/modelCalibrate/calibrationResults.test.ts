@@ -1,4 +1,3 @@
-import {createLocalVue, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import CalibrationResults from "../../../app/components/modelCalibrate/CalibrationResults.vue";
 import {mockCalibrateResultResponse} from "../../mocks";
@@ -6,13 +5,11 @@ import {mutations as modelCalibrateMutations} from "../../../app/store/modelCali
 import {mutations as plottingSelectionMutations} from "../../../app/store/plottingSelections/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
-import {BarChartWithFilters} from "@reside-ic/vue-charts";
+import BarChartWithFilters from '../../../app/vue-chart/src/bar/BarChartWithFilters.vue';
 import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 import {BarchartIndicator} from "../../../app/types";
-import Vue from 'vue';
-
-const localVue = createLocalVue();
+import { nextTick } from 'vue';
 
 const defaultSelections = {
     indicator_id: "TestIndicator",
@@ -66,13 +63,13 @@ describe("CalibrateResults component", () => {
 
     it("renders title and text", async () => {
         const store = getStore();
-        const wrapper = shallowMount(CalibrationResults, {localVue, store});
-        await Vue.nextTick();
-        const title = wrapper.findComponent("h3");
-        expectTranslated(title, "Review calibration results", "Examiner les résultats de l'étalonnage",
+        const wrapper = shallowMountWithTranslate(CalibrationResults, store, {global: {plugins: [store]}});
+        await nextTick();
+        const title = wrapper.find("h3");
+        await expectTranslated(title, "Review calibration results", "Examiner les résultats de l'étalonnage",
             "Revise os resultados da calibração", store);
-        const text = wrapper.findComponent("p");
-        expectTranslated(text, "Comparison of unadjusted estimates (uncalibrated) to model estimates calibrated to spectrum results as specified in calibration options above.",
+        const text = wrapper.find("p");
+        await expectTranslated(text, "Comparison of unadjusted estimates (uncalibrated) to model estimates calibrated to spectrum results as specified in calibration options above.",
             "Comparaison des estimations non ajustées (non calibrées) aux estimations du modèle calées sur les résultats du spectre comme spécifié dans les options de calage ci-dessus.",
             "Comparação de estimativas não ajustadas (não calibradas) com estimativas de modelo calibradas para resultados de espectro, conforme especificado nas opções de calibração acima.",
             store);
@@ -80,9 +77,9 @@ describe("CalibrateResults component", () => {
 
     it("renders barchart", async () => {
         const store = getStore();
-        const wrapper = shallowMount(CalibrationResults, {localVue, store});
+        const wrapper = shallowMountWithTranslate(CalibrationResults, store, {global: {plugins: [store]}});
         const barchart = wrapper.findComponent(BarChartWithFilters);
-        await Vue.nextTick();
+        await nextTick();
         const vm = wrapper.vm as any;
         expect(barchart.props().chartData).toStrictEqual(["TEST DATA"]);
         expect(barchart.props().filterConfig).toBe(vm.filterConfig);
@@ -93,7 +90,11 @@ describe("CalibrateResults component", () => {
 
     it("computes chartdata", () => {
         const store = getStore();
-        const wrapper = shallowMount(CalibrationResults, {store, localVue});
+        const wrapper = shallowMountWithTranslate(CalibrationResults, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const vm = (wrapper as any).vm;
 
         expect(vm.chartData).toStrictEqual(["TEST DATA"]);
@@ -101,7 +102,11 @@ describe("CalibrateResults component", () => {
 
     it("computes barchart selections", () => {
         const store = getStore();
-        const wrapper = shallowMount(CalibrationResults, {store, localVue});
+        const wrapper = shallowMountWithTranslate(CalibrationResults, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const vm = (wrapper as any).vm;
         const {selected_filter_options, indicator_id, x_axis_id, disaggregate_by_id} = defaultSelections
 
@@ -118,7 +123,11 @@ describe("CalibrateResults component", () => {
 
     it("computes barchart filters", () => {
         const store = getStore();
-        const wrapper = shallowMount(CalibrationResults, {store, localVue});
+        const wrapper = shallowMountWithTranslate(CalibrationResults, store, {
+            global: {
+                plugins: [store]
+            }
+        });
         const vm = (wrapper as any).vm;
 
         expect(vm.filterConfig).toStrictEqual({
@@ -132,7 +141,11 @@ describe("CalibrateResults component", () => {
 
     it("formatBarchartValue formats value", () => {
         const store = getStore();
-        const wrapper = shallowMount(CalibrationResults, {store, localVue});
+        const wrapper = shallowMountWithTranslate(CalibrationResults, store, {
+            global: {
+                plugins: [store]
+            }
+        });
 
         const indicator: BarchartIndicator = {
             indicator: "testIndicator",
