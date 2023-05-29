@@ -126,7 +126,7 @@ describe("loadErrorModal", () => {
         expectHasTranslationKey(stepsListItems.at(1), "modelOptions");
         expectHasTranslationKey(wrapper.find("span#load-error-steps-from-valid-action"), "loadErrorStepsFromValidAction");
         expectHasTranslationKey(wrapper.find("span#load-error-last-valid"), "uploadInputs");
-        expectHasTranslationKey(wrapper.find("span#load-error-steps-from-valid-warning"), "loadErrorStepsFromValidWarning");
+        expectHasTranslationKey(wrapper.find("span#load-error-steps-from-valid-info"), "loadErrorStepsFromValidInfo");
         expect(wrapper.find("#load-error-error").exists()).toBe(false);
         expect(wrapper.find("#load-error-steps-all-action").exists()).toBe(false);
 
@@ -146,7 +146,7 @@ describe("loadErrorModal", () => {
         expect(wrapper.find("#load-error-error").exists()).toBe(false);
         expect(wrapper.find("#load-error-steps-from-valid-action").exists()).toBe(false)
         expect(wrapper.find("#load-error-last-valid").exists()).toBe(false);
-        expect(wrapper.find("#load-error-steps-from-valid-warning").exists()).toBe(false);
+        expect(wrapper.find("#load-error-steps-from-valid-info").exists()).toBe(false);
 
         expectHasTranslationKey(wrapper.find("button#retry-load"), "retry");
         expectHasTranslationKey(wrapper.find("button#rollback-load"), "rollback");

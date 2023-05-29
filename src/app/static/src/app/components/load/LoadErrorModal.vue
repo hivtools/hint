@@ -10,7 +10,7 @@
               <template v-if="lastValidStep >= 1">
                 <span id="load-error-steps-from-valid-action" v-translate="'loadErrorStepsFromValidAction'" />
                 <span id="load-error-last-valid" v-translate="stepTextKey(lastValidStep)" />.
-                <span id="load-error-steps-from-valid-warning" v-translate="'loadErrorStepsFromValidWarning'" />
+                <span id="load-error-steps-from-valid-info" v-translate="'loadErrorStepsFromValidInfo'" />
               </template>
               <span v-else id="load-error-steps-all-action" v-translate="'loadErrorStepsAllAction'" />
             </p>

@@ -148,8 +148,9 @@ describe("root actions", () => {
 
         await actions.rollbackInvalidState(mockContext as any);
 
-        expect(mockContext.dispatch).toHaveBeenCalledTimes(1);
-        expect(mockContext.dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+        expect(mockContext.dispatch).toHaveBeenCalledTimes(2);
+        expect(mockContext.dispatch.mock.calls[0][0]).toBe("projects/newVersion");
+        expect(mockContext.dispatch.mock.calls[1][0]).toBe("surveyAndProgram/deleteAll");
 
         expect(mockContext.commit).toHaveBeenCalledTimes(2);
         expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "Reset", payload: 1});
@@ -166,8 +167,11 @@ describe("root actions", () => {
         };
 
         await actions.rollbackInvalidState(mockContext as any);
-        expect(mockContext.dispatch.mock.calls[0][0]).toBe("baseline/deleteAll");
-        expect(mockContext.dispatch.mock.calls[1][0]).toBe("surveyAndProgram/deleteAll");
+        expect(mockContext.dispatch.mock.calls.length).toBe(3);
+        expect(mockContext.dispatch.mock.calls[0][0]).toBe("projects/newVersion");
+        expect(mockContext.dispatch.mock.calls[0][1]).toBe("Rolled back project to last valid step.");
+        expect(mockContext.dispatch.mock.calls[1][0]).toBe("baseline/deleteAll");
+        expect(mockContext.dispatch.mock.calls[2][0]).toBe("surveyAndProgram/deleteAll");
     });
 
     it("dispatches no delete action if baseline and surveyAndProgram steps are valid", async () => {
@@ -180,7 +184,8 @@ describe("root actions", () => {
         };
 
         await actions.rollbackInvalidState(mockContext as any);
-        expect(mockContext.dispatch).not.toHaveBeenCalled();
+        expect(mockContext.dispatch).toHaveBeenCalledTimes(1);
+        expect(mockContext.dispatch.mock.calls[0][0]).toBe("projects/newVersion");
 
         expect(mockContext.commit).toHaveBeenCalledTimes(2);
         expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "Reset", payload: 2});

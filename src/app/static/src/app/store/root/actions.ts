@@ -46,7 +46,8 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         const {invalidSteps} = state;
         if (invalidSteps.length > 0) {
             // Always roll back in a new version so invalid state is available for inspection
-            await dispatch("projects/newVersion");
+            const note = i18next.t("rolledBackToLastValidStep");
+            await dispatch("projects/newVersion", note);
 
             //Invalidate any steps which come after the first invalid step
             const maxValidStep = Math.min(...invalidSteps) - 1;
