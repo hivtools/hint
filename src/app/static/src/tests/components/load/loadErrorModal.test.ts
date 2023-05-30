@@ -106,12 +106,12 @@ describe("loadErrorModal", () => {
         const okButton = wrapper.find(".modal button")
         expect(okButton.attributes()).toEqual(
             {
-                "aria-label": "Close",
                 "class": "btn btn-red",
                 "data-dismiss": "modal",
                 "id": "ok-load-error",
                 "type": "button"
             })
+        expectHasTranslationKey(okButton, "ok", "aria-label");
         expect(mockClearLoadError.mock.calls.length).toBe(0)
         await okButton.trigger("click")
         expect(mockClearLoadError.mock.calls.length).toBe(1)
@@ -130,8 +130,12 @@ describe("loadErrorModal", () => {
         expect(wrapper.find("#load-error-error").exists()).toBe(false);
         expect(wrapper.find("#load-error-steps-all-action").exists()).toBe(false);
 
-        expectHasTranslationKey(wrapper.find("button#retry-load"), "retry");
-        expectHasTranslationKey(wrapper.find("button#rollback-load"), "rollback");
+        const retryBtn = wrapper.find("button#retry-load");
+        expectHasTranslationKey(retryBtn, "retry");
+        expectHasTranslationKey(retryBtn, "retry", "aria-label");
+        const rollbackBtn = wrapper.find("button#rollback-load");
+        expectHasTranslationKey(rollbackBtn, "rollback");
+        expectHasTranslationKey(rollbackBtn, "rollback", "aria-label");
         expect(wrapper.find("button#ok-load-error").exists()).toBe(false);
     });
 

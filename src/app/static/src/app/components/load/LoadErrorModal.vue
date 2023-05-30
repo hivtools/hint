@@ -20,14 +20,14 @@
                 <button id="retry-load"
                         type="button"
                         class="btn btn-red"
-                        aria-label="Retry"
+                        v-translate:aria-label="'retry'"
                         @click="retryLoad"
                         v-translate="'retry'">
                 </button>
                 <button id="rollback-load"
                         type="button"
                         class="btn btn-red"
-                        aria-label="Rollback"
+                        v-translate:aria-label="'rollback'"
                         @click="rollbackInvalidState"
                         v-translate="'rollback'">
                 </button>
@@ -37,7 +37,7 @@
                           type="button"
                           class="btn btn-red"
                           data-dismiss="modal"
-                          aria-label="Close"
+                          v-translate:aria-label="'ok'"
                           @click="clearLoadError"
                           v-translate="'ok'">
                   </button>

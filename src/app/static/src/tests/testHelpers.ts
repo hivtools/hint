@@ -97,8 +97,9 @@ export const expectTranslated = (element: Wrapper<any>,
                                  attribute?: string) =>
     expectTranslatedWithStoreType<DataExplorationState>(element, englishText, frenchText, portugueseText, store, attribute);
 
-export const expectHasTranslationKey = (element: Wrapper<any>, translationKey: keyof Translations) => {
-    const elTranslationKey = ((element as any).vnode as VNode).data?.directives?.find(dir => dir.name === "translate")?.value;
+export const expectHasTranslationKey = (element: Wrapper<any>, translationKey: keyof Translations, attribute?: string) => {
+    const elTranslationKey = ((element as any).vnode as VNode)
+        .data?.directives?.find(dir => dir.name === "translate" && dir.arg === attribute)?.value;
     expect(elTranslationKey).toBe(translationKey);
 };
 
