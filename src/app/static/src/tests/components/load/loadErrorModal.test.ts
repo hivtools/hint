@@ -94,9 +94,10 @@ describe("loadErrorModal", () => {
         expect(mockClearLoadError.mock.calls.length).toBe(0)
         expect(modal.find("p").text()).toBe("Test Error Message")
 
-        expect(mockTranslate.mock.calls.length).toBe(2)
+        expect(mockTranslate.mock.calls.length).toBe(3)
         expect(mockTranslate.mock.calls[0][1].value).toBe("loadError")
         expect(mockTranslate.mock.calls[1][1].value).toBe("ok")
+        expect(mockTranslate.mock.calls[2][1].value).toBe("ok")
 
         expect(wrapper.find("#load-error-steps").exists()).toBe(false);
     });
