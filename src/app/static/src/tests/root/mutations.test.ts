@@ -377,6 +377,5 @@ describe("Root mutations", () => {
         expect(spy).toHaveBeenNthCalledWith(2, 97);
         expect(spy).toHaveBeenNthCalledWith(3, 98);
         expect(spy).toHaveBeenNthCalledWith(4, 99);
->>>>>>> master
     });
 });
