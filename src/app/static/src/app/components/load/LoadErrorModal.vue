@@ -1,6 +1,6 @@
 <template>
     <div id="load-error-modal">
-        <modal :open="hasError">
+        <modal :open="open">
             <h4 v-translate="'loadError'"></h4>
             <p v-if="showInvalidSteps">
               <span id="load-error-steps" v-translate="'loadErrorSteps'" />
@@ -13,6 +13,11 @@
               </template>
               <span v-else id="load-error-steps-all-action" v-translate="'loadErrorStepsAllAction'" />
               <span id="load-error-steps-rollback-info" v-translate="'loadErrorStepsRollbackInfo'" />
+              <template>
+                <!-- If ! guest user!!! -->
+                Go to <router-link to="/projects" class="btn-red-icons">Projects</router-link> instead<br/>
+
+              </template>
             </p>
             <p v-else id="load-error-error">{{ loadError }}</p>
             <template v-slot:footer>
@@ -74,7 +79,8 @@
     interface Computed extends LoadComputed, ProjectComputed, StepperComputed {
         invalidSteps: number[],
         showInvalidSteps: boolean,
-        lastValidStep: number
+        lastValidStep: number,
+        open: boolean
     }
 
     interface Methods {
@@ -101,7 +107,12 @@
             }),
             invalidSteps: mapStateProp<RootState, number[]>(null, (state) => state.invalidSteps),
             showInvalidSteps: function() { return this.invalidSteps?.length > 0; },
-            lastValidStep: function() { return Math.min(...this.invalidSteps!) - 1; }
+            lastValidStep: function() { return Math.min(...this.invalidSteps!) - 1; },
+            open: function() {
+              // Do not open the dialog if we are on the projects page and the load error relates to invalid steps
+              // - load from zip can also fail before root/validate, so may still need to show on /projects in that case
+              return this.hasError && !(this.showInvalidSteps && this.$route.path === "/projects");
+            }
         },
         methods: {
             clearLoadError: mapActionByName("load", "clearLoadState"),
