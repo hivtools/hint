@@ -15,6 +15,7 @@ describe("genericChart mutations", () => {
         const payload = {datasetId: "dataset1", dataset: ["TEST DATASET"]};
         mutations.SetDataset(state, {payload});
         expect(state.datasets).toStrictEqual({dataset1: ["TEST DATASET"]});
+        expect(state.selectionDatasetId).toStrictEqual("dataset1");
     });
 
     it("can clear anc datasets", () => {
