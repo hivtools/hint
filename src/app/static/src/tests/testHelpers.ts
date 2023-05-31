@@ -70,7 +70,7 @@ export function expectAllMutationsDefined(mutationDefinitions: any, mutationTree
     }
 }
 
-export function expectTranslatedWithStoreType<T extends TranslatableState>(element: DOMWrapper<any>,
+export async function expectTranslatedWithStoreType<T extends TranslatableState>(element: DOMWrapper<any>,
                                                                            englishText: string,
                                                                            frenchText: string,
                                                                            portugueseText: string,
@@ -93,7 +93,7 @@ export function expectTranslatedWithStoreType<T extends TranslatableState>(eleme
     expect(value()).toBe(portugueseText);
 }
 
-export const expectTranslated = (element: DOMWrapper<any>,
+export const expectTranslated = async (element: DOMWrapper<any>,
                                  englishText: string,
                                  frenchText: string,
                                  portugueseText: string,

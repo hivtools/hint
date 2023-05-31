@@ -6,30 +6,6 @@ import translate from "./directives/translate";
 import FloatingVue from "floating-vue";
 import 'floating-vue/dist/style.css';
 
-export const beforeEnter = (from: any, to: any, next: NavigationGuardNext) => {
-    if (store.state.currentUser === "guest" && !sessionStorage.getItem("asGuest")) {
-        window.location.assign("/login");
-    } else {
-        next();
-    }
-}
-
-const routes = [
-    {
-        path: "/",
-        component: Stepper,
-        beforeEnter
-    },
-    {path: "/accessibility", component: Accessibility},
-    {path: "/privacy", component: Privacy},
-    {path: "/projects", component: Projects}
-];
-
-export const router = createRouter({
-    history: createWebHashHistory(),
-    routes,
-});
-
 const app = createApp(Hint);
 
 // TODO dis-disable warnings after most of the warnings have been fixed
