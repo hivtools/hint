@@ -117,7 +117,7 @@ export const expectChangeLanguageMutations = (commit: Mock) => {
     });
 };
 
-export const expectErrorReportOpen = async (wrapper: DOMWrapper<any>, row = 0) => {
+export const expectErrorReportOpen = async (wrapper: VueWrapper<any>, row = 0) => {
     const link = wrapper.findAll(".dropdown-item")[row];
     await link.trigger("click");
     expect(wrapper.findComponent(ErrorReport).props("open")).toBe(true);
