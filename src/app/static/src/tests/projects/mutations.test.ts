@@ -4,7 +4,15 @@ import {router} from "../../app/router";
 
 describe("Projects mutations", () => {
     const testNow = Date.now();
-    global.Date.now = jest.fn(() => testNow);
+
+    beforeAll(() => {
+        jest.useFakeTimers('modern');
+        jest.setSystemTime(testNow);
+    });
+
+    afterAll(() => {
+        jest.useRealTimers();
+    });
 
     const mockProject = {
         id: 1,
