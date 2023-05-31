@@ -1,4 +1,3 @@
-/** @type {import('ts-jest').JestConfigWithTsJest} */
 
 module.exports = {
     testEnvironment: "jsdom",
@@ -12,34 +11,13 @@ module.exports = {
     globals: {
         currentUser: 'some.user@example.com',
     },
-    testResultsProcessor: 'jest-teamcity-reporter',
-    moduleFileExtensions: [
-        'js',
-        'json',
-        'ts',
-        'vue',
+    testMatch: [
+        "**/tests/**/*.test.{j,t}s"
     ],
-    transform: {
-        '.*\\.vue?$': 'vue3-jest',
-        '^.+\\.tsx?$': [
-            'ts-jest',
-            {
-                tsconfig: 'tsconfig.json',
-                diagnostics: {
-                    warnOnly: false,
-                }
-            }
-        ],
-        '^.+\\.js?$': '<rootDir>/node_modules/babel-jest',
-        // '^.+\\.ts$': 'ts-jest',
-    },
-    moduleNameMapper: {
-        'd3-format': '<rootDir>/node_modules/d3-format/dist/d3-format.min.js',
-        'd3-scale-chromatic': '<rootDir>/node_modules/d3-scale-chromatic/dist/d3-scale-chromatic.min.js',
-        'd3-interpolate': '<rootDir>/node_modules/d3-interpolate/dist/d3-interpolate.min.js',
-        'd3-color': '<rootDir>/node_modules/d3-color/dist/d3-color.min.js',
-
-    },
+   testResultsProcessor: 'jest-teamcity-reporter',
+    transformIgnorePatterns: [
+        "/node_modules/(?!d3-format|d3-scale-chromatic|d3-interpolate|d3-color)/"
+    ],
     moduleDirectories: ["node_modules", "src"],
     coverageDirectory: './coverage/',
     collectCoverage: true,
@@ -49,7 +27,7 @@ module.exports = {
         './tests/testHelpers.ts',
         './tests/.*/helpers.ts',
     ],
-    preset: 'ts-jest',
+    preset: '@vue/cli-plugin-unit-jest/presets/typescript-and-babel',
     modulePaths: [
         "<rootDir>"
     ],
