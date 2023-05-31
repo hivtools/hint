@@ -26,5 +26,8 @@ module.exports = {
           },
         },
     ],
-    rules: {}
+    rules: {
+        'vue/multi-word-component-names': 'off',
+        'no-prototype-builtins': 'off',
+    },
 };
