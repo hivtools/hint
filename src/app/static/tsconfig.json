@@ -13,8 +13,6 @@
   "include": [
     "./src/app/**/*.ts",
     "./src/app/**/*.vue",
-    "./src/tests/**/*.test.ts",
-    "./src/tests/**/*.ts",
     "./src/app/**/*.js"
   ],
   "files": [
