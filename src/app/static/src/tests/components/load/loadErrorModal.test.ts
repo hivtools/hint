@@ -1,65 +1,70 @@
 import {mount} from "@vue/test-utils";
 import LoadErrorModal from "../../../app/components/load/LoadErrorModal.vue"
 import Vuex from "vuex";
-import {RootState} from "../../../app/root";
+import {emptyState, RootState} from "../../../app/root";
 import {initialStepperState} from "../../../app/store/stepper/stepper";
 import {LoadingState} from "../../../app/store/load/state";
 import {expectHasTranslationKey, expectTranslated} from "../../testHelpers";
-import {mockError} from "../../mocks";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
+
+const mockClearLoadError = jest.fn();
+const mockRollbackInvalidState = jest.fn();
+const mockLoadVersion = jest.fn();
+
+const getStore = (hasError: boolean, loadError: string, invalidSteps: number[]) => {
+    return new Vuex.Store<RootState>({
+        state: {
+            ...emptyState(),
+            invalidSteps
+        } as any,
+        actions: {
+            rollbackInvalidState: mockRollbackInvalidState
+        },
+        modules: {
+            load: {
+                namespaced: true,
+                state: {
+                    loadingState: hasError ? LoadingState.LoadFailed : LoadingState.NotLoading,
+                    loadError: {
+                        detail: loadError
+                    }
+                },
+                actions: {
+                    clearLoadState: mockClearLoadError
+                }
+            },
+            projects: {
+                namespaced: true,
+                state: {
+                    currentProject: {
+                        id: "testProjectId"
+                    },
+                    currentVersion: {
+                        id: "testVersionId"
+                    }
+                },
+                actions: {
+                    loadVersion: mockLoadVersion
+                }
+            },
+            stepper: {
+                namespaced: true,
+                state: initialStepperState()
+            }
+        }
+    });
+};
 
 describe("loadErrorModal", () => {
+
+    const mockTranslate = jest.fn();
 
     beforeEach(() => {
         jest.resetAllMocks()
     })
 
-    const mockClearLoadError = jest.fn();
-    const mockRollbackInvalidState = jest.fn();
-    const mockLoadVersion = jest.fn();
-    const mockTranslate = jest.fn();
-
     const getWrapper = (hasError: boolean =  true, loadError: string = "Test Error Message", invalidSteps: number[] = []) => {
-        const store = new Vuex.Store<RootState>({
-            state: {
-                invalidSteps
-            } as any,
-            actions: {
-                rollbackInvalidState: mockRollbackInvalidState
-            },
-            modules: {
-                load: {
-                    namespaced: true,
-                    state: {
-                        loadingState: hasError ? LoadingState.LoadFailed : LoadingState.NotLoading,
-                        loadError: {
-                            detail: loadError
-                        }
-                    },
-                    actions: {
-                        clearLoadState: mockClearLoadError
-                    }
-                },
-                projects: {
-                    namespaced: true,
-                    state: {
-                        currentProject: {
-                            id: "testProjectId"
-                        },
-                        currentVersion: {
-                            id: "testVersionId"
-                        }
-                    },
-                    actions: {
-                        loadVersion: mockLoadVersion
-                    }
-                },
-                stepper: {
-                    namespaced: true,
-                    state: initialStepperState()
-                }
-            }
-        });
-
+        const store = getStore(hasError, loadError, invalidSteps);
         return mount(LoadErrorModal, {
             store,
             directives: {
@@ -127,7 +132,7 @@ describe("loadErrorModal", () => {
         expectHasTranslationKey(stepsListItems.at(1), "modelOptions");
         expectHasTranslationKey(wrapper.find("span#load-error-steps-from-valid-action"), "loadErrorStepsFromValidAction");
         expectHasTranslationKey(wrapper.find("span#load-error-last-valid"), "uploadInputs");
-        expectHasTranslationKey(wrapper.find("span#load-error-steps-from-valid-info"), "loadErrorStepsFromValidInfo");
+        expectHasTranslationKey(wrapper.find("span#load-error-steps-rollback-info"), "loadErrorStepsRollbackInfo");
         expect(wrapper.find("#load-error-error").exists()).toBe(false);
         expect(wrapper.find("#load-error-steps-all-action").exists()).toBe(false);
 
@@ -148,10 +153,10 @@ describe("loadErrorModal", () => {
         expectHasTranslationKey(stepsListItems.at(0), "uploadInputs");
         expectHasTranslationKey(stepsListItems.at(1), "fitModel");
         expectHasTranslationKey(wrapper.find("#load-error-steps-all-action"), "loadErrorStepsAllAction");
+        expectHasTranslationKey(wrapper.find("#load-error-steps-rollback-info"), "loadErrorStepsRollbackInfo");
         expect(wrapper.find("#load-error-error").exists()).toBe(false);
         expect(wrapper.find("#load-error-steps-from-valid-action").exists()).toBe(false)
         expect(wrapper.find("#load-error-last-valid").exists()).toBe(false);
-        expect(wrapper.find("#load-error-steps-from-valid-info").exists()).toBe(false);
 
         expectHasTranslationKey(wrapper.find("button#retry-load"), "retry");
         expectHasTranslationKey(wrapper.find("button#rollback-load"), "rollback");
@@ -169,4 +174,72 @@ describe("loadErrorModal", () => {
         await wrapper.find("button#rollback-load").trigger("click");
         expect(mockRollbackInvalidState).toHaveBeenCalledTimes(1);
     });
-})
+});
+
+describe("loadErrorModal translations", () => {
+    const getWrapper = (hasError: boolean =  true, loadError: string = "Test Error Message", invalidSteps: number[] = [])  => {
+        const store = getStore(hasError, loadError, invalidSteps);
+        registerTranslations(store);
+        return mount(LoadErrorModal, { store });
+    };
+
+    it("can display expected translations when there is load error and no invalid steps", () => {
+        const wrapper = getWrapper();
+        const store = wrapper.vm.$store;
+        expectTranslated(wrapper.find("h4"), "Load Error", "Erreur de chargement",
+            "Erro de carregamento", store);
+        const button = wrapper.find("button#ok-load-error");
+        expectTranslated(button, "OK", "OK", "OK", store);
+        expectTranslated(button, "OK", "OK", "OK", store, "aria-label");
+    });
+
+    it("can display expected translations where there are invalid steps after first step", () => {
+        const wrapper = getWrapper(true, "test error", [2, 3]);
+        const store = wrapper.vm.$store;
+
+        expectTranslated(wrapper.find("span#load-error-steps"), "There was a problem loading the following steps:",
+            "Un problème est survenu lors du chargement des étapes suivantes:",
+            "Ocorreu um problema ao carregar as seguintes etapas:", store);
+
+
+        const stepsListItems = wrapper.findAll("ul#load-error-steps-list li");
+
+        expectTranslated(stepsListItems.at(0), "Review inputs", "Examiner les entrées",
+            "Analise as entradas", store);
+        expectTranslated(stepsListItems.at(1), "Model options", "Options des modèles",
+            "Opções de modelos", store);
+
+        expectTranslated(wrapper.find("span#load-error-steps-from-valid-action"),
+            "Retry load or rollback to the last valid step, which is",
+            "Refaire ou revenir en arrière jusqu'au dernier étape valide, qui est",
+            "Tente carregar novamente ou reverter para a última etapa válida, que é", store);
+
+        expectTranslated(wrapper.find("span#load-error-last-valid"), "Upload inputs", "Télécharger les entrées",
+            "Carregar entradas", store);
+
+        expectTranslated(wrapper.find("span#load-error-steps-rollback-info"),
+            "Rollback will be done in a new version - the current project version state will be preserved.",
+            "Revenir en arrière sera effectuée dans une nouvelle version - l'état actuel de la version du projet sera conservé.",
+            "Reverter será feita em uma nova versão - o estado da versão atual do projeto será preservado.", store);
+
+        const retryBtn = wrapper.find("button#retry-load");
+        expectTranslated(retryBtn, "Retry", "Refaire", "Tentar novamente", store);
+        expectTranslated(retryBtn, "Retry", "Refaire", "Tentar novamente", store, "aria-label");
+
+        const rollbackBtn = wrapper.find("button#rollback-load");
+        expectTranslated(rollbackBtn, "Rollback", "Revenir en arrière", "Reverter", store);
+        expectTranslated(rollbackBtn, "Rollback", "Revenir en arrière", "Reverter", store, "aria-label");
+    });
+
+    it("can display expected translation where first step is invalid", () => {
+        const wrapper = getWrapper(true, "test error", [1]);
+        const store = wrapper.vm.$store;
+        expectTranslated(wrapper.find("#load-error-steps-all-action"), "Retry load or rollback?",
+            "Refaire ou revenir en arrière?", "Tentar carregar novamente ou reverter?", store);
+
+        expectTranslated(wrapper.find("span#load-error-steps-rollback-info"),
+            "Rollback will be done in a new version - the current project version state will be preserved.",
+            "Revenir en arrière sera effectuée dans une nouvelle version - l'état actuel de la version du projet sera conservé.",
+            "Reverter será feita em uma nova versão - o estado da versão atual do projeto será preservado.", store);
+    });
+});
