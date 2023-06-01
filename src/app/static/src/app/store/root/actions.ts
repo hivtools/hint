@@ -31,14 +31,6 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             .filter((i: number) => i < maxCompleteOrActive && !completeSteps.includes(i));
 
         commit({type: RootMutation.SetInvalidSteps, payload: invalidSteps});
-        if (invalidSteps.length > 0) {
-            commit({
-                type: "load/LoadFailed",
-                payload: {
-                    detail: i18next.t("loadFailedErrorDetail")
-                }
-            });
-        }
     },
 
     async rollbackInvalidState(store){

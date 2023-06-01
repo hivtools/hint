@@ -44,6 +44,7 @@
             <hr class="mt-3"/>
             <stepper-navigation v-bind="navigationProps"/>
         </template>
+        <load-invalid-modal></load-invalid-modal>
     </div>
 </template>
 
@@ -61,6 +62,7 @@
     import ModelOutput from "./modelOutput/ModelOutput.vue";
     import DownloadResults from "./downloadResults/DownloadResults.vue";
     import WarningAlert from "./WarningAlert.vue";
+    import LoadInvalidModal from "./load/LoadInvalidModal.vue";
     import {StepDescription, StepperState} from "../store/stepper/stepper";
     import {LoadingState, LoadState} from "../store/load/state";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
@@ -195,6 +197,7 @@
             UploadInputs,
             ReviewInputs,
             LoadingSpinner,
+            LoadInvalidModal,
             ModelRun,
             ModelCalibrate,
             ModelOutput,
