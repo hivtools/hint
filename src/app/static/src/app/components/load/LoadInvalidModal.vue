@@ -1,18 +1,18 @@
 <template>
-  <div id="load-error-modal">
+  <div id="load-invalid-modal">
     <modal :open="hasInvalidSteps">
       <h4 v-translate="'loadError'"></h4>
       <p>
-        <span id="load-error-steps" v-translate="'loadInvalidSteps'" />
-        <ul id="load-error-steps-list">
+        <span id="load-invalid-steps" v-translate="'loadInvalidSteps'" />
+        <ul id="load-invalid-steps-list">
           <li v-for="step in invalidSteps" :key="step" v-translate="stepTextKey(step)"></li>
         </ul>
         <template v-if="lastValidStep >= 1">
-          <span id="load-error-steps-from-valid-action" v-translate="'loadInvalidStepsFromValidAction'" />
-          <span id="load-error-last-valid" v-translate="stepTextKey(lastValidStep)" />.
+          <span id="load-invalid-steps-from-valid-action" v-translate="'loadInvalidStepsFromValidAction'" />
+          <span id="load-invalid-last-valid" v-translate="stepTextKey(lastValidStep)" />.
         </template>
-        <span v-else id="load-error-steps-all-action" v-translate="'loadInvalidStepsAllAction'" />
-        <span id="load-error-steps-rollback-info" v-translate="'loadInvalidStepsRollbackInfo'" />
+        <span v-else id="load-invalid-steps-all-action" v-translate="'loadInvalidStepsAllAction'" />
+        <span id="load-invalid-steps-rollback-info" v-translate="'loadInvalidStepsRollbackInfo'" />
       </p>
       <p>
           <!-- If ! guest user!!! -->
