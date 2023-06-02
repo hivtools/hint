@@ -1,3 +1,7 @@
+# hint 2.36.0
+
+* Projects link on invalid state dialog
+
 # hint 2.35.0
 
 * Allow retry on project load fail
