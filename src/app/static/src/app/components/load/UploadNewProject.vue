@@ -26,10 +26,7 @@
                 </button>
             </template>
         </modal>
-        <load-error-modal :has-error="hasError"
-                          :load-error="loadError"
-                          :clear-load-error="clearLoadError"/>
-
+        <load-error-modal />
         <upload-progress :open-modal="preparing" :cancel="cancelRehydration"/>
     </div>
 </template>
@@ -54,18 +51,15 @@
 
     interface Methods {
         cancelRehydration: () => void;
-        clearLoadError: () => void;
         setProjectName: (name: string) => void;
         getProjects: () => void;
     }
 
     interface LoadComputed {
-        loadError: string
-        hasError: boolean
         preparing: boolean
     }
 
-    interface Computed extends  LoadComputed{
+    interface Computed extends  LoadComputed {
         disableCreate: boolean
         isGuest: boolean
     }
@@ -84,14 +78,11 @@
         },
         methods: {
             cancelRehydration: mapMutationByName("load", "RehydrateCancel"),
-            clearLoadError: mapActionByName("load", "clearLoadState"),
             setProjectName: mapMutationByName("load", "SetProjectName"),
             getProjects: mapActionByName("projects", "getProjects")
         },
         computed: {
             ...mapStateProps<LoadState, keyof LoadComputed>("load", {
-                hasError: state => state.loadingState === LoadingState.LoadFailed,
-                loadError: state => state.loadError && state.loadError.detail,
                 preparing: state => state.preparing
             }),
             disableCreate() {

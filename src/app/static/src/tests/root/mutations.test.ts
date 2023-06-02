@@ -336,6 +336,12 @@ describe("Root mutations", () => {
         expect(state.updatingLanguage).toBe(false);
     });
 
+    it("can set invalidSteps", () => {
+        const state = mockRootState();
+        mutations.SetInvalidSteps(state, {payload: [2]});
+        expect(state.invalidSteps).toStrictEqual([2]);
+    });
+
     it("resetOutput stops any polling", () => {
         const state = mockRootState({
             modelRun: mockModelRunState({statusPollId: 98}),

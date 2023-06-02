@@ -25,7 +25,8 @@ export enum RootMutation {
     ResetOptions = "ResetOptions",
     ResetOutputs = "ResetOutputs",
     SetProject = "SetProject",
-    ResetDownload = "ResetDownload"
+    ResetDownload = "ResetDownload",
+    SetInvalidSteps = "SetInvalidSteps"
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -40,6 +41,7 @@ export const mutations: MutationTree<RootState> = {
             hintrVersion: state.hintrVersion,
             language: state.language,
             updatingLanguage: false,
+            invalidSteps: [],
             adr: state.adr,
             adrUpload: initialADRUploadState(),
             baseline: maxValidStep < 1 ? initialBaselineState() : state.baseline,
@@ -57,7 +59,11 @@ export const mutations: MutationTree<RootState> = {
             stepper: state.stepper,
             load: initialLoadState(),
             errors: initialErrorsState(),
-            projects: initialProjectsState(),
+            projects: {
+                ...initialProjectsState(),
+                currentProject: state.projects.currentProject,
+                currentVersion: state.projects.currentVersion
+            },
             currentUser: state.currentUser,
             downloadResults: initialDownloadResultsState(),
             dataExplorationMode: false,
@@ -161,6 +167,11 @@ export const mutations: MutationTree<RootState> = {
         Object.assign(state.adrUpload, initialADRUploadState());
         Object.assign(state.downloadResults, initialDownloadResultsState());
     },
+
+    [RootMutation.SetInvalidSteps](state: RootState, action: PayloadWithType<number[]>) {
+        state.invalidSteps = action.payload;
+    },
+
     ...languageMutations
 
 };
