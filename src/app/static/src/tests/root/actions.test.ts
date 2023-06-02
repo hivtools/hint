@@ -137,12 +137,15 @@ describe("root actions", () => {
         });
     });
 
-    it("rollbackInvalidSate resets state if not all steps are valid", async () => {
+    it("rollbackInvalidState resets state if not all steps are valid", async () => {
         const mockContext = {
             commit: jest.fn(),
             dispatch: jest.fn(),
             state: {
                 invalidSteps: [2]
+            },
+            rootGetters: {
+                isGuest: false
             }
         };
 
@@ -155,6 +158,29 @@ describe("root actions", () => {
         expect(mockContext.commit).toHaveBeenCalledTimes(2);
         expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "Reset", payload: 1});
         expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({type: "ResetSelectedDataType"});
+    });
+
+    it("rollbackInvalidState does not create new version if guest user", async () => {
+        const mockContext = {
+            commit: jest.fn(),
+            dispatch: jest.fn(),
+            state: {
+                invalidSteps: [2]
+            },
+            rootGetters: {
+                isGuest: true
+            }
+        };
+
+        await actions.rollbackInvalidState(mockContext as any);
+
+        expect(mockContext.dispatch).toHaveBeenCalledTimes(1);
+        expect(mockContext.dispatch.mock.calls[0][0]).toBe("surveyAndProgram/deleteAll");
+
+        expect(mockContext.commit).toHaveBeenCalledTimes(2);
+        expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({type: "Reset", payload: 1});
+        expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({type: "ResetSelectedDataType"});
+
     });
 
     it("rollbackInvalidState dispatches delete baseline and surveyAndProgram action if baseline step is not valid", async () => {

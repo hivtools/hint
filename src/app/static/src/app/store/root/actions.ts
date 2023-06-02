@@ -34,12 +34,14 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
     },
 
     async rollbackInvalidState(store){
-        const {state, dispatch, commit} = store;
+        const {state, dispatch, commit, rootGetters} = store;
         const {invalidSteps} = state;
         if (invalidSteps.length > 0) {
-            // Always roll back in a new version so invalid state is available for inspection
-            const note = i18next.t("rolledBackToLastValidStep");
-            await dispatch("projects/newVersion", note);
+            // Roll back in a new version (if not guest user) so invalid state is available for inspection
+            if (!rootGetters.isGuest) {
+                const note = i18next.t("rolledBackToLastValidStep");
+                await dispatch("projects/newVersion", note);
+            }
 
             //Invalidate any steps which come after the first invalid step
             const maxValidStep = Math.min(...invalidSteps) - 1;

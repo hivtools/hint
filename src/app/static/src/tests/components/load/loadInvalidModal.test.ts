@@ -1,4 +1,4 @@
-import {createLocalVue, mount} from "@vue/test-utils";
+import {createLocalVue, mount, RouterLinkStub} from "@vue/test-utils";
 import LoadInvalidModal from "../../../app/components/load/LoadInvalidModal.vue"
 import Vuex from "vuex";
 import {emptyState, RootState} from "../../../app/root";
@@ -10,12 +10,14 @@ import VueRouter from "vue-router";
 const mockRollbackInvalidState = jest.fn();
 const mockLoadVersion = jest.fn();
 
-const localVue = createLocalVue()
-localVue.use(VueRouter)
-const router = new VueRouter();
-const stubs = ["router-link"];
+//const localVue = createLocalVue()
+//localVue.use(VueRouter)
+//const router = new VueRouter();
+const stubs = {
+    RouterLink: RouterLinkStub
+};
 
-const getStore = (invalidSteps: number[]) => {
+const getStore = (invalidSteps: number[], isGuest: boolean) => {
     return new Vuex.Store<RootState>({
         state: {
             ...emptyState(),
@@ -24,6 +26,9 @@ const getStore = (invalidSteps: number[]) => {
         actions: {
             rollbackInvalidState: mockRollbackInvalidState
         },
+        getters: {
+            isGuest: () => isGuest
+        } as any,
         modules: {
             projects: {
                 namespaced: true,
@@ -55,14 +60,14 @@ describe("loadInvalidModal", () => {
         jest.resetAllMocks()
     })
 
-    const getWrapper = (invalidSteps: number[] = []) => {
-        const store = getStore(invalidSteps);
+    const getWrapper = (invalidSteps: number[] = [], isGuest: boolean = false) => {
+        const store = getStore(invalidSteps, isGuest);
         return mount(LoadInvalidModal, {
             store,
             directives: {
                 translate: mockTranslate
             },
-            router,
+            //router,
             stubs
         })
     }
@@ -109,6 +114,22 @@ describe("loadInvalidModal", () => {
         expectHasTranslationKey(wrapper.find("button#rollback-load"), "rollback");
     });
 
+    it("displays Projects page link if not guest user", () => {
+        const wrapper = getWrapper([1]);
+        const projectsPara = wrapper.find("p#load-invalid-projects");
+        expectHasTranslationKey(projectsPara.find("span#load-invalid-projects-prefix"), "loadInvalidStepsProjectLinkPrefix");
+        const routerLink = projectsPara.find(RouterLinkStub);
+        expect(routerLink.props("to")).toBe("/projects");
+        expectHasTranslationKey(routerLink, "projects");
+        expectHasTranslationKey(routerLink, "projects", "aria-label");
+        expectHasTranslationKey(projectsPara.find("span#load-invalid-projects-suffix"), "loadInvalidStepsProjectLinkSuffix");
+    });
+
+    it("does not display Projects page link if guest user", () => {
+        const wrapper = getWrapper([1], true);
+        expect(wrapper.find("#load-invalid-projects").exists()).toBe(false);
+    });
+
     it("click Retry invokes loadVersion action", async () => {
         const wrapper = getWrapper([1]);
         await wrapper.find("button#retry-load").trigger("click");
@@ -124,7 +145,7 @@ describe("loadInvalidModal", () => {
 
 describe("loadInvalidModal translations", () => {
     const getWrapper = (invalidSteps: number[] = [])  => {
-        const store = getStore(invalidSteps);
+        const store = getStore(invalidSteps, false);
         registerTranslations(store);
         return mount(LoadInvalidModal, { store, stubs });
     };
@@ -177,5 +198,15 @@ describe("loadInvalidModal translations", () => {
             "Rollback will be done in a new version - the current project version state will be preserved.",
             "Revenir en arrière sera effectuée dans une nouvelle version - l'état actuel de la version du projet sera conservé.",
             "Reverter será feita em uma nova versão - o estado da versão atual do projeto será preservado.", store);
+    });
+
+    it("can display Projects page link translations", () => {
+        const wrapper = getWrapper([1]);
+        const store = wrapper.vm.$store;
+        expectTranslated(wrapper.find("#load-invalid-projects-prefix"), "You can also go back to",
+            "Vous pouvez également revenir à la page", "Você também pode voltar para a página", store);
+        expectTranslated(wrapper.find("#load-invalid-projects-link"), "Projects", "Projets", "Projetos"
+            , store);
+        expectTranslated(wrapper.find("#load-invalid-projects-suffix"), "page", "", "", store);
     });
 });

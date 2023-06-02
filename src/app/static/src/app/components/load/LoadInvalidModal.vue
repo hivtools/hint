@@ -14,9 +14,10 @@
         <span v-else id="load-invalid-steps-all-action" v-translate="'loadInvalidStepsAllAction'" />
         <span id="load-invalid-steps-rollback-info" v-translate="'loadInvalidStepsRollbackInfo'" />
       </p>
-      <p>
-          <!-- If ! guest user!!! -->
-          You can also go back to  <router-link to="/projects" class="btn-red-icons">Projects</router-link> page.
+      <p v-if="!isGuest" id="load-invalid-projects">
+          <span id="load-invalid-projects-prefix" v-translate="'loadInvalidStepsProjectLinkPrefix'"></span>
+          <router-link id="load-invalid-projects-link" to="/projects" v-translate="'projects'" v-translate:aria-label="'projects'" />
+          <span id="load-invalid-projects-suffix" v-translate="'loadInvalidStepsProjectLinkSuffix'"></span>
       </p>
       <template v-slot:footer>
         <button id="retry-load"
@@ -41,7 +42,7 @@
 <script lang="ts">
     import Vue from "vue"
     import Modal from "../Modal.vue";
-    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapStateProp, mapStateProps} from "../../utils";
     import {RootState} from "../../root";
     import {Project, Version, VersionIds} from "../../types";
     import {ProjectsState} from "../../store/projects/projects";
@@ -59,7 +60,8 @@
     interface Computed extends ProjectComputed, StepperComputed {
       invalidSteps: number[],
       hasInvalidSteps: boolean,
-      lastValidStep: number
+      lastValidStep: number,
+      isGuest: boolean
     }
 
     interface Methods {
@@ -80,6 +82,7 @@
             steps: state => state.steps
           }),
           invalidSteps: mapStateProp<RootState, number[]>(null, (state) => state.invalidSteps),
+          isGuest: mapGetterByName(null, "isGuest"),
           hasInvalidSteps: function() { return this.invalidSteps?.length > 0; },
           lastValidStep: function() { return Math.min(...this.invalidSteps!) - 1; }
         },
