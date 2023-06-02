@@ -12,7 +12,8 @@
           <span id="load-invalid-last-valid" v-translate="stepTextKey(lastValidStep)" />.
         </template>
         <span v-else id="load-invalid-steps-all-action" v-translate="'loadInvalidStepsAllAction'" />
-        <span id="load-invalid-steps-rollback-info" v-translate="'loadInvalidStepsRollbackInfo'" />
+        <span v-if="!isGuest" id="load-invalid-steps-rollback-info" v-translate="'loadInvalidStepsRollbackInfo'" />
+        <span v-else id="load-invalid-steps-rollback-info-guest" v-translate="'loadInvalidStepsRollbackInfoGuest'" />
       </p>
       <p v-if="!isGuest" id="load-invalid-projects">
           <span id="load-invalid-projects-prefix" v-translate="'loadInvalidStepsProjectLinkPrefix'"></span>

@@ -1,18 +1,13 @@
-import {createLocalVue, mount, RouterLinkStub} from "@vue/test-utils";
+import {mount, RouterLinkStub} from "@vue/test-utils";
 import LoadInvalidModal from "../../../app/components/load/LoadInvalidModal.vue"
 import Vuex from "vuex";
 import {emptyState, RootState} from "../../../app/root";
 import {initialStepperState} from "../../../app/store/stepper/stepper";
 import {expectHasTranslationKey, expectTranslated} from "../../testHelpers";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import VueRouter from "vue-router";
 
 const mockRollbackInvalidState = jest.fn();
 const mockLoadVersion = jest.fn();
-
-//const localVue = createLocalVue()
-//localVue.use(VueRouter)
-//const router = new VueRouter();
 const stubs = {
     RouterLink: RouterLinkStub
 };
@@ -67,7 +62,6 @@ describe("loadInvalidModal", () => {
             directives: {
                 translate: mockTranslate
             },
-            //router,
             stubs
         })
     }
@@ -91,6 +85,7 @@ describe("loadInvalidModal", () => {
         expectHasTranslationKey(wrapper.find("span#load-invalid-steps-from-valid-action"), "loadInvalidStepsFromValidAction");
         expectHasTranslationKey(wrapper.find("span#load-invalid-last-valid"), "uploadInputs");
         expectHasTranslationKey(wrapper.find("span#load-invalid-steps-rollback-info"), "loadInvalidStepsRollbackInfo");
+        expect(wrapper.find("#load-invalid-steps-rollback-info-guest").exists()).toBe(false);
 
         const retryBtn = wrapper.find("button#retry-load");
         expectHasTranslationKey(retryBtn, "retry");
@@ -98,6 +93,13 @@ describe("loadInvalidModal", () => {
         const rollbackBtn = wrapper.find("button#rollback-load");
         expectHasTranslationKey(rollbackBtn, "rollback");
         expectHasTranslationKey(rollbackBtn, "rollback", "aria-label");
+    });
+
+    it("renders rollback information for guest user", () => {
+        const wrapper = getWrapper([2, 3], true);
+        const info = wrapper.find("span#load-invalid-steps-rollback-info-guest");
+        expectHasTranslationKey(info, "loadInvalidStepsRollbackInfoGuest");
+        expect(wrapper.find("#load-invalid-steps-rollback-info").exists()).toBe(false);
     });
 
     it("can render error modal as expected where first step is invalid", () => {
@@ -144,8 +146,8 @@ describe("loadInvalidModal", () => {
 });
 
 describe("loadInvalidModal translations", () => {
-    const getWrapper = (invalidSteps: number[] = [])  => {
-        const store = getStore(invalidSteps, false);
+    const getWrapper = (invalidSteps: number[] = [], isGuest: boolean = false)  => {
+        const store = getStore(invalidSteps, isGuest);
         registerTranslations(store);
         return mount(LoadInvalidModal, { store, stubs });
     };
@@ -188,7 +190,16 @@ describe("loadInvalidModal translations", () => {
         expectTranslated(rollbackBtn, "Rollback", "Revenir en arrière", "Reverter", store, "aria-label");
     });
 
-    it("can display expected translation where first step is invalid", () => {
+    it("can display expected translations for rollback information when user is guest", () => {
+        const wrapper = getWrapper([2, 3], true);
+        const store = wrapper.vm.$store;
+        expectTranslated(wrapper.find("span#load-invalid-steps-rollback-info-guest"),
+            "Rollback will result in a loss of all project data from subsequent steps.",
+            "Revenir en arrière entraînera la perte de toutes les données du projet des étapes suivantes.",
+            "Reverter resultará na perda de todos os dados do projeto das etapas subsequentes.", store);
+    });
+
+    it("can display expected translations where first step is invalid", () => {
         const wrapper = getWrapper([1]);
         const store = wrapper.vm.$store;
         expectTranslated(wrapper.find("#load-invalid-steps-all-action"), "Retry load or rollback?",
