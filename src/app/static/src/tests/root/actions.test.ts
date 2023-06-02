@@ -53,7 +53,7 @@ describe("root actions", () => {
         expect(mockContext.dispatch).not.toHaveBeenCalled();
     });
 
-    it("validate commits invalid steps and error if not all steps are valid", async () => {
+    it("validate commits invalid steps if not all steps are valid", async () => {
         const mockContext = {
             commit: jest.fn(),
             dispatch: jest.fn(),
@@ -73,14 +73,10 @@ describe("root actions", () => {
         await actions.validate(mockContext as any);
 
         expect(mockContext.dispatch).not.toHaveBeenCalled();
-        expect(mockContext.commit).toHaveBeenCalledTimes(2);
+        expect(mockContext.commit).toHaveBeenCalledTimes(1);
         expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({
             type: RootMutation.SetInvalidSteps,
             payload: [2]
-        });
-        expect(mockContext.commit.mock.calls[1][0]).toStrictEqual({
-            type: "load/LoadFailed",
-            payload: {detail: "There was a problem loading your data. Some data may have been invalid. Please contact support if this issue persists."}
         });
     });
 
@@ -103,12 +99,11 @@ describe("root actions", () => {
         };
 
         await actions.validate(mockContext as any);
-        expect(mockContext.commit).toHaveBeenCalledTimes(2);
+        expect(mockContext.commit).toHaveBeenCalledTimes(1);
         expect(mockContext.commit.mock.calls[0][0]).toStrictEqual({
             type: RootMutation.SetInvalidSteps,
             payload: [2]
         });
-        expect(mockContext.commit.mock.calls[1][0].type).toBe("load/LoadFailed");
     });
 
     it("validate commits empty invalid steps if later steps than current are complete and incomplete, but all are valid", async () => {
@@ -189,6 +184,9 @@ describe("root actions", () => {
             dispatch: jest.fn(),
             state: {
                 invalidSteps: [1, 2]
+            },
+            rootGetters: {
+                isGuest: false
             }
         };
 
@@ -206,6 +204,9 @@ describe("root actions", () => {
             dispatch: jest.fn(),
             state: {
                 invalidSteps: [3]
+            },
+            rootGetters: {
+                isGuest: false
             }
         };
 

@@ -48,6 +48,7 @@ import {getters as rootGetters} from "../../app/store/root/getters";
 import {expectTranslated} from "../testHelpers";
 import StepperNavigation from "../../app/components/StepperNavigation.vue";
 import WarningAlert from "../../app/components/WarningAlert.vue";
+import LoadInvalidModal from "../../app/components/load/LoadInvalidModal.vue";
 import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
 import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {ModelRunMutation} from "../../app/store/modelRun/mutations";
@@ -220,6 +221,7 @@ describe("Stepper component", () => {
         expect(wrapper.findAll(".content").length).toBe(0);
         expectTranslated(wrapper.find("#loading-message"), "Loading your data",
             "Chargement de vos données", "A carregar os seus dados", store);
+        expect(wrapper.find(LoadInvalidModal).exists()).toBe(true);
     });
 
     it("renders loading spinner while ready but loadingFromFile", () => {
@@ -264,6 +266,7 @@ describe("Stepper component", () => {
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAll(".content").length).toBe(1);
         expect(wrapper.findAll("#loading-message").length).toBe(0);
+        expect(wrapper.find(LoadInvalidModal).exists()).toBe(true);
     });
 
     it("renders steps", () => {
