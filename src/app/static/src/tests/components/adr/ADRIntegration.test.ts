@@ -214,8 +214,7 @@ describe("adr integration", () => {
     it("call getUserCanUpload action if dataset is selected", () => {
         const store = createStore("123", null, {})
         const rendered = shallowMount(ADRIntegration, {global: { plugins: [store] }});
-        // @ts-ignore
-        rendered.vm.$options.watch.selectedDataset.call(rendered.vm)
+        (rendered.vm as any).$options.watch.selectedDataset.call(rendered.vm)
         expect(getUserCanUploadStub.mock.calls.length).toBe(1);
     });
 

@@ -33,7 +33,6 @@ describe("download button", () => {
 
     it('it does not render button when disabled prop is true ', async () => {
         const wrapper = getWrapper({disabled: true, name: "downloadIndicator"})
-        await wrapper.setProps({disabled: true, name: "downloadIndicator"})
         expect(wrapper.find(".btn").attributes("disabled")).toBe("")
     });
 

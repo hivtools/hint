@@ -450,8 +450,7 @@ describe("select dataset", () => {
         expect(rendered.find("#loading-dataset").findAllComponents(LoadingSpinner).length).toBe(1);
         expect(rendered.find("#fetch-error").exists()).toBe(false);
 
-        await nextTick();
-        await nextTick();
+        await flushPromises();
 
         expect(rendered.findComponent(Modal).props("open")).toBe(false);
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
@@ -720,9 +719,7 @@ describe("select dataset", () => {
         expect(getDatasetMock.mock.calls[0][1].id).toBe("id2");
         expect(getDatasetMock.mock.calls[0][1].release).toStrictEqual(fakeRelease);
 
-        await nextTick();
-        await nextTick();
-        await nextTick();
+        await flushPromises();
 
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.findComponent(Modal).props("open")).toBe(false);
@@ -995,8 +992,7 @@ describe("select dataset", () => {
         expect((baselineActions.importPopulation as Mock).mock.calls.length).toBe(0);
         expect((baselineActions.importShape as Mock).mock.calls.length).toBe(0);
 
-        await nextTick(); // once for baseline actions to return
-        await nextTick(); // once for survey actions to return
+        await flushPromises();
 
         expect(rendered.find("#loading-dataset").exists()).toBe(false);
         expect(rendered.findComponent(Modal).props("open")).toBe(false);
@@ -1028,9 +1024,7 @@ describe("select dataset", () => {
 
         expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
 
-        await nextTick();
-        await nextTick();
-        await nextTick();
+        await flushPromises();
 
         expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
         expect((surveyProgramActions.importProgram as Mock).mock.calls[0][1]).toBe("program.csv");
@@ -1065,9 +1059,7 @@ describe("select dataset", () => {
 
         expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
 
-        await nextTick();
-        await nextTick();
-        await nextTick();
+        await flushPromises();
 
         expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
         expect((surveyProgramActions.importProgram as Mock).mock.calls.length).toBe(0);
@@ -1139,8 +1131,7 @@ describe("select dataset", () => {
 
         expect(rendered.findAllComponents(LoadingSpinner).length).toBe(1);
 
-        await nextTick();
-        await nextTick();
+        await flushPromises();
 
         expect((surveyProgramActions.importSurvey as Mock).mock.calls[0][1]).toBe("survey.csv");
         expect((surveyProgramActions.importProgram as Mock).mock.calls[0][1]).toBe("program.csv");
