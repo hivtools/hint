@@ -1,4 +1,4 @@
-import {shallowMount, VueWrapper} from '@vue/test-utils';
+import {flushPromises, shallowMount, VueWrapper} from '@vue/test-utils';
 import Vuex from 'vuex';
 import ReviewInputs from "../../../app/components/reviewInputs/ReviewInputs.vue";
 import {
@@ -24,6 +24,8 @@ import {GenericChartState} from "../../../app/store/genericChart/genericChart";
 import Choropleth from "../../../app/components/plots/choropleth/Choropleth.vue";
 import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
 import { nextTick } from 'vue';
+import Filters from '../../../app/components/plots/Filters.vue';
+import Treeselect from "vue3-treeselect";
 
 describe("Survey and programme component", () => {
 
@@ -156,7 +158,7 @@ describe("Survey and programme component", () => {
                 plugins: [store]
             }
         });
-        const choro = wrapper.findComponent("choropleth-stub") as VueWrapper;
+        const choro = wrapper.findComponent(Choropleth);
         expect(choro.props().includeFilters).toBe(false);
         expect(choro.props().areaFilterId).toBe("area");
         expect(choro.props().chartdata).toBe("TEST DATA");
@@ -273,7 +275,7 @@ describe("Survey and programme component", () => {
                 plugins: [store]
             }
         });
-        const filters = wrapper.findComponent("filters-stub") as VueWrapper;
+        const filters = wrapper.findComponent(Filters);
         expect(filters.props().filters[0]).toStrictEqual({
             id: "area",
             column_id: "area_id",
@@ -343,28 +345,29 @@ describe("Survey and programme component", () => {
     async function expectDataSource(state: Partial<SurveyAndProgramState>, englishName: string, frenchName: string,
                               portugueseName: string, id: string) {
         const store = createStore(state);
-        const wrapper = shallowMountWithTranslate(ReviewInputs, store, {
+        const wrapper = mountWithTranslate(ReviewInputs, store, {
             global: {
-                plugins: [store]
+                plugins: [store],
+                stubs: ["filters", "choropleth", "area-indicators-table", "generic-chart"]
             }
         });
-        let options = (wrapper.findComponent("#data-source tree-select-stub") as VueWrapper).props("options");
+        let options = wrapper.findComponent(Treeselect).props("options");
         expect(options).toStrictEqual([{id, label: englishName}]);
 
         store.state.language = Language.fr;
         await nextTick();
-        registerTranslations(store);
-        options = (wrapper.findComponent("#data-source tree-select-stub") as VueWrapper).props("options");
+        // registerTranslations(store);
+        options = wrapper.findComponent(Treeselect).props("options");
         expect(options).toStrictEqual([{id, label:frenchName}]);
 
         store.state.language = Language.pt;
         await nextTick();
-        registerTranslations(store);
-        options = (wrapper.findComponent("#data-source tree-select-stub") as VueWrapper).props("options");
+        // registerTranslations(store);
+        options = wrapper.findComponent(Treeselect).props("options");
         expect(options).toStrictEqual([{id, label:portugueseName}]);
     }
 
-    it("can select data source", () => {
+    it("can select data source", async () => {
         const store = createStore(
             {
                 anc: mockAncResponse(),
@@ -372,26 +375,30 @@ describe("Survey and programme component", () => {
                 program: mockProgramResponse(),
                 selectedDataType: DataType.Program
             });
-        const wrapper = shallowMountWithTranslate(ReviewInputs, store, {
+        const wrapper = mountWithTranslate(ReviewInputs, store, {
             global: {
-                plugins: [store]
+                plugins: [store],
+                stubs: ["filters", "choropleth", "area-indicators-table", "generic-chart"]
             }
         });
 
-        const dataSourceSelect = wrapper.findComponent("#data-source tree-select-stub") as VueWrapper;
-        expect(dataSourceSelect.attributes("value")).toBe("1");
-        expect(dataSourceSelect.props("options").length).toBe(3);
+        const dataSourceSelect = wrapper.findComponent(Treeselect);
+        expect(dataSourceSelect.props("modelValue")).toBe(1);
+        expect(dataSourceSelect.props("options")!.length).toBe(3);
 
-        dataSourceSelect.vm.$emit("select", {id: "0", label: "ANC"});
-        expect(dataSourceSelect.attributes("value")).toBe("0");
+        dataSourceSelect.vm.$emit("update:modelValue", {id: "0", label: "ANC"});
+        await nextTick();
+        expect(dataSourceSelect.props("modelValue")).toBe(0);
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.ANC);
 
-        dataSourceSelect.vm.$emit("select", {id: "2", label: "Household Survey"});
-        expect(dataSourceSelect.attributes("value")).toBe("2");
+        dataSourceSelect.vm.$emit("update:modelValue", {id: "2", label: "Household Survey"});
+        await nextTick();
+        expect(dataSourceSelect.props("modelValue")).toBe(2);
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.Survey);
 
-        dataSourceSelect.vm.$emit("select", {id: "1", label: "ART"});
-        expect(dataSourceSelect.attributes("value")).toBe("1");
+        dataSourceSelect.vm.$emit("update:modelValue", {id: "1", label: "ART"});
+        await nextTick();
+        expect(dataSourceSelect.props("modelValue")).toBe(1);
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.Program);
 
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);

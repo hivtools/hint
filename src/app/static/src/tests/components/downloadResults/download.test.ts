@@ -41,7 +41,7 @@ describe(`download`, () => {
         const vueFeather = wrapper.findComponent(VueFeather)
         expect(vueFeather.exists()).toBe(true)
         expect(vueFeather.props("type")).toBe("download")
-        expect((wrapper.findComponent("download-status-stub") as VueWrapper).props()).toEqual({
+        expect(wrapper.findComponent(DownloadStatus).props()).toEqual({
             "preparing": true,
             "translateKey": "preparing"
         })

@@ -1,4 +1,3 @@
-import {shallowMount, VueWrapper} from "@vue/test-utils";
 import ResetPassword from "../../../app/components/password/ResetPassword.vue";
 import {PasswordState} from "../../../app/store/password/password";
 import {PasswordActions} from "../../../app/store/password/actions";
@@ -9,6 +8,7 @@ import LoggedOutHeader from "../../../app/components/header/LoggedOutHeader.vue"
 import {expectTranslatedWithStoreType, shallowMountWithTranslate} from "../../testHelpers";
 import {LanguageMutation, mutations} from "../../../app/store/language/mutations";
 import {Language} from "../../../app/store/translations/locales";
+import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 
 describe("Reset password component", () => {
 
@@ -81,7 +81,7 @@ describe("Reset password component", () => {
         await expectTranslatedWithStoreType<PasswordState>(wrapper.find("input[type='submit']"),
             "Update password", "Mettre à jour le mot de passe","Atualizar palavra-passe", store, "value");
         expect(wrapper.findAll("error-alert-stub").length).toEqual(1);
-        expect((wrapper.findComponent("error-alert-stub") as VueWrapper).props().error).toStrictEqual(error);
+        expect(wrapper.findComponent(ErrorAlert).props().error).toStrictEqual(error);
         await expectTranslatedWithStoreType<PasswordState>(wrapper.find("#request-new-link"),
             "This password reset link is not valid. It may have expired or already been used.\n" +
             "Please request another link here.",

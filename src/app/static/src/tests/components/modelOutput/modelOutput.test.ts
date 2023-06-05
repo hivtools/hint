@@ -128,7 +128,7 @@ describe("ModelOutput component", () => {
         const store = getStore();
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
-        const choro = wrapper.findComponent("choropleth-stub") as VueWrapper;
+        const choro = wrapper.findComponent(Choropleth);
         expect(choro.props().includeFilters).toBe(true);
         expect(choro.props().areaFilterId).toBe("area");
         expect(choro.props().filters).toStrictEqual(["TEST CHORO FILTERS"]);

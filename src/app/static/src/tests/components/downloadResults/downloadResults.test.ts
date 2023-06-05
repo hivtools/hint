@@ -256,8 +256,8 @@ describe("Download Results component", () => {
             }, 
         });
 
-        const errorAlert = wrapper.findComponent("error-alert-stub");
-        expect((errorAlert as VueWrapper).props("error")).toEqual(error)
+        const errorAlert = wrapper.findComponent(ErrorAlert);
+        expect(errorAlert.props("error")).toEqual(error)
 
         const uploadButton = wrapper.find("button");
         expect(uploadButton.attributes("disabled")).toBeUndefined();

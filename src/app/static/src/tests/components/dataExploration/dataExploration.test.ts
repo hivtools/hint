@@ -97,7 +97,7 @@ describe(`data exploration component`, () => {
         });
         expect(wrapper.find("adr-integration-stub").exists()).toBe(true)
         expect(wrapper.find("upload-inputs-stub").exists()).toBe(true)
-        expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).exists()).toBe(true)
+        expect(wrapper.findComponent(StepperNavigation).exists()).toBe(true)
     })
 
     it(`disables back navigation when on upload step`, () => {
@@ -107,7 +107,7 @@ describe(`data exploration component`, () => {
                 plugins: [store]
             }, 
         });
-        expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).props("backDisabled")).toBe(true)
+        expect(wrapper.findComponent(StepperNavigation).props("backDisabled")).toBe(true)
     })
 
     it(`disables forward navigation when inputs are not valid`, () => {
@@ -117,7 +117,7 @@ describe(`data exploration component`, () => {
                 plugins: [store]
             }, 
         });
-        expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).props("nextDisabled")).toBe(true)
+        expect(wrapper.findComponent(StepperNavigation).props("nextDisabled")).toBe(true)
     })
 
     it(`enables forward navigation when inputs are valid`, () => {
@@ -136,7 +136,7 @@ describe(`data exploration component`, () => {
                 plugins: [store]
             }, 
         });
-        expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).props("nextDisabled")).toBe(false)
+        expect(wrapper.findComponent(StepperNavigation).props("nextDisabled")).toBe(false)
     })
 
     it(`disables continue navigation when on review step`, () => {
@@ -152,8 +152,8 @@ describe(`data exploration component`, () => {
             }, 
         });
 
-        expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).props("backDisabled")).toBe(false)
-        expect((wrapper.findComponent("stepper-navigation-stub") as VueWrapper).props("nextDisabled")).toBe(true)
+        expect(wrapper.findComponent(StepperNavigation).props("backDisabled")).toBe(false)
+        expect(wrapper.findComponent(StepperNavigation).props("nextDisabled")).toBe(true)
     })
 
     it(`can navigate to reviewInputs`, async () => {

@@ -20,7 +20,7 @@ import {expectTranslatedWithStoreType, mountWithTranslate, shallowMountWithTrans
 import {SurveyAndProgramActions} from "../../../app/store/surveyAndProgram/actions";
 import {getters} from "../../../app/store/surveyAndProgram/getters";
 import {DataType, SurveyAndProgramState} from "../../../app/store/surveyAndProgram/surveyAndProgram";
-import {testUploadComponent} from "./fileUploads.";
+import {testUploadComponent} from "./fileUploads";
 
 describe("UploadInputs upload component", () => {
 
@@ -435,9 +435,9 @@ describe("UploadInputs upload component", () => {
             },
         });
 
-        expect(((wrapper.findAllComponents("manage-file-stub")[0] as VueWrapper) as VueWrapper).props().fromADR).toBe(true);
-        expect(((wrapper.findAllComponents("manage-file-stub")[1] as VueWrapper) as VueWrapper).props().fromADR).toBe(true);
-        expect(((wrapper.findAllComponents("manage-file-stub")[2] as VueWrapper) as VueWrapper).props().fromADR).toBe(true);
+        expect(wrapper.findAllComponents(ManageFile)[0].props().fromADR).toBe(true);
+        expect(wrapper.findAllComponents(ManageFile)[1].props().fromADR).toBe(true);
+        expect(wrapper.findAllComponents(ManageFile)[2].props().fromADR).toBe(true);
 
     });
 
@@ -468,9 +468,9 @@ describe("UploadInputs upload component", () => {
             },
         });
 
-        expect((wrapper.findAllComponents("manage-file-stub")[0] as VueWrapper).props().fromADR).toBe(false);
-        expect((wrapper.findAllComponents("manage-file-stub")[1] as VueWrapper).props().fromADR).toBe(false);
-        expect((wrapper.findAllComponents("manage-file-stub")[2] as VueWrapper).props().fromADR).toBe(false);
+        expect(wrapper.findAllComponents(ManageFile)[0].props().fromADR).toBe(false);
+        expect(wrapper.findAllComponents(ManageFile)[1].props().fromADR).toBe(false);
+        expect(wrapper.findAllComponents(ManageFile)[2].props().fromADR).toBe(false);
 
     });
 
@@ -552,9 +552,9 @@ describe("UploadInputs upload component", () => {
             },
         })
 
-        expect((wrapper.findAllComponents("manage-file-stub")[3] as VueWrapper).props().fromADR).toBe(true);
-        expect((wrapper.findAllComponents("manage-file-stub")[4] as VueWrapper).props().fromADR).toBe(true);
-        expect((wrapper.findAllComponents("manage-file-stub")[5] as VueWrapper).props().fromADR).toBe(true);
+        expect(wrapper.findAllComponents(ManageFile)[3].props().fromADR).toBe(true);
+        expect(wrapper.findAllComponents(ManageFile)[4].props().fromADR).toBe(true);
+        expect(wrapper.findAllComponents(ManageFile)[5].props().fromADR).toBe(true);
     });
 
     it("can return false when not fromADR", async () => {
@@ -575,9 +575,9 @@ describe("UploadInputs upload component", () => {
             },
         });
 
-        expect((wrapper.findAllComponents("manage-file-stub")[3] as VueWrapper).props().fromADR).toBe(false);
-        expect((wrapper.findAllComponents("manage-file-stub")[4] as VueWrapper).props().fromADR).toBe(false);
-        expect((wrapper.findAllComponents("manage-file-stub")[5] as VueWrapper).props().fromADR).toBe(false);
+        expect(wrapper.findAllComponents(ManageFile)[3].props().fromADR).toBe(false);
+        expect(wrapper.findAllComponents(ManageFile)[4].props().fromADR).toBe(false);
+        expect(wrapper.findAllComponents(ManageFile)[5].props().fromADR).toBe(false);
 
     });
 
