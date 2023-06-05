@@ -356,13 +356,11 @@ describe("Survey and programme component", () => {
 
         store.state.language = Language.fr;
         await nextTick();
-        // registerTranslations(store);
         options = wrapper.findComponent(Treeselect).props("options");
         expect(options).toStrictEqual([{id, label:frenchName}]);
 
         store.state.language = Language.pt;
         await nextTick();
-        // registerTranslations(store);
         options = wrapper.findComponent(Treeselect).props("options");
         expect(options).toStrictEqual([{id, label:portugueseName}]);
     }
