@@ -128,6 +128,14 @@ export function expectArraysEqual(result: any[], expected: any[]) {
     expect(expected).toEqual(expect.arrayContaining(result));
 }
 
+/*
+This are functions that let us easily put in the translate directive into mount and shallowMount test
+functions. There are ts-ignores as shallowMount/mount require a DefineComponent type as their first
+argument however if we replace the C generic type below to "C extends DefineComponent" then we get
+typescript errors when we use shallowMountWithTranslate with our normal vue components.
+
+Since this is just for testing, ts-ignore was used for this special case.
+*/
 // @ts-ignore
 export function shallowMountWithTranslate<T extends TranslatableState, C>(component: C, store: Store<T>, options?: any): VueWrapper<InstanceType<C>> {
     // @ts-ignore
