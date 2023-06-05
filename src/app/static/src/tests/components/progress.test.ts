@@ -1,11 +1,11 @@
-import {mount} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 import ProgressBar from "../../app/components/progress/ProgressBar.vue";
 import {BProgress, BProgressBar} from "bootstrap-vue-next";
 
 describe("progress bar", () => {
 
     it("renders name without helptext", () => {
-        const wrapper = mount(ProgressBar, {
+        const wrapper = shallowMount(ProgressBar, {
             props: {
                 phase: {name: "Phase 1", started: true, complete: false}
             }
@@ -15,7 +15,7 @@ describe("progress bar", () => {
     });
 
     it("renders name with helptext if present", () => {
-        const wrapper = mount(ProgressBar, {
+        const wrapper = shallowMount(ProgressBar, {
             props: {
                 phase: {name: "Phase 1", helpText: "doing a thing", started: true, complete: false}
             }
@@ -25,7 +25,7 @@ describe("progress bar", () => {
     });
 
     it("has not-started class if not started", () => {
-        const wrapper = mount(ProgressBar, {
+        const wrapper = shallowMount(ProgressBar, {
             props: {
                 phase: {name: "Phase 1", started: false, complete: false}
             }
@@ -35,7 +35,7 @@ describe("progress bar", () => {
     });
 
     it("has in-progress class if in progress", () => {
-        const wrapper = mount(ProgressBar, {
+        const wrapper = shallowMount(ProgressBar, {
             props: {
                 phase: {name: "Phase 1", started: true, complete: false}
             }
@@ -45,7 +45,7 @@ describe("progress bar", () => {
     });
 
     it("has finished class if finished", () => {
-        const wrapper = mount(ProgressBar, {
+        const wrapper = shallowMount(ProgressBar, {
             props: {
                 phase: {name: "Phase 1", started: true, complete: true}
             }

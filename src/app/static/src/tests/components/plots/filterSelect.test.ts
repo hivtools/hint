@@ -42,6 +42,7 @@ describe("FilterSelect component", () => {
             },
         });
         expect(wrapper.findComponent(VueFeather).exists()).toBe(true);
+        expect(wrapper.findComponent(VueFeather).props("type")).toBe("help-circle");
         expect(tooltip.mock.calls[0][1].value.content).toBe("<dl><dt>three</dt><dd>Third option</dd><dt>four</dt><dd>Fourth option</dd></dl>");
     });
 

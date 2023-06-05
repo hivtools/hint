@@ -340,11 +340,9 @@ describe("Project history component", () => {
         const wrapper = getWrapper(testProjects);
         const deleteLink = wrapper.find("#p-1").find(".project-cell.delete-cell").find("button");
         await deleteLink.trigger("click");
-        await nextTick();
 
         const okButton = wrapper.find(".modal").findAll("button")[0];
         await okButton.trigger("click");
-        await nextTick();
 
         expect(mockDeleteProject.mock.calls.length).toBe(1);
         expect(mockDeleteProject.mock.calls[0][1]).toBe(1);

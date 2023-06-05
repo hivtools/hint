@@ -1,5 +1,6 @@
 import {FilterOption} from "../../../app/generated";
 import FilterSelect from "../../../app/components/plots/FilterSelect.vue";
+import { VueWrapper } from "@vue/test-utils";
 
 export const plhiv = {
     indicator: "plhiv",
@@ -160,7 +161,7 @@ export const testData = {
     ]
 };
 
-export const expectFilter = (wrapper: any, divId: string, value: string[], label: string, multiple: boolean, options: FilterOption[]) => {
+export const expectFilter = (wrapper: VueWrapper<any>, divId: string, value: string[], label: string, multiple: boolean, options: FilterOption[]) => {
     const filterDiv = wrapper.find("#" + divId);
     expect(filterDiv.classes()[0]).toBe("form-group");
     const filter = filterDiv.findComponent(FilterSelect);

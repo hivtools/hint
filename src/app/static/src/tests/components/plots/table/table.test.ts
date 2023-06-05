@@ -85,9 +85,9 @@ describe('Table from testdata', () => {
 
     it('renders a table', () => {
         const wrapper = getWrapper();
-        expect(wrapper.find('div')).toBe(true);
-        expect(wrapper.find('table')).toBe(true);
-        expect(wrapper.find('br')).toBe(true);
+        expect(wrapper.find('div').exists()).toBe(true);
+        expect(wrapper.find('table').exists()).toBe(true);
+        expect(wrapper.find('br').exists()).toBe(true);
     });
 
     it('renders correct markup', () => {
@@ -99,7 +99,7 @@ describe('Table from testdata', () => {
         const wrapper = getWrapper({
             filteredData: []
         });
-        expect(wrapper.find('table')).toBe(false);
+        expect(wrapper.find('table').exists()).toBe(false);
         expect(wrapper.text()).toContain('No data are available for these selections.')
     });
 
@@ -107,7 +107,7 @@ describe('Table from testdata', () => {
         const wrapper = getWrapperFr({
             filteredData: []
         });
-        expect(wrapper.find('table')).toBe(false);
+        expect(wrapper.find('table').exists()).toBe(false);
         expect(wrapper.text()).toContain("Aucune donnée n'est disponible pour ces sélections.")
     });
 

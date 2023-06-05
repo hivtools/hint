@@ -220,18 +220,16 @@ describe("ShareProject", () => {
         input2.setValue("goodemail");
         await input2.trigger("blur");
 
-        setTimeout(async () => {
-            expect(input.classes()).toContain("is-invalid");
-            expect(input2.classes()).toContain("is-invalid");
+        expect(input.classes()).toContain("is-invalid");
+        expect(input2.classes()).toContain("is-invalid");
 
-            const text = modal.find(".text-danger");
-            expect(text.classes()).not.toContain("d-none");
-            await expectTranslated(text, "Please remove duplicate emails from the list",
-                "Veuillez supprimer les e-mails en double de la liste",
-                "Por favor, remova os e-mails duplicados da lista", store as any)
-            expect(modal.find("button").attributes("disabled")).toBe("");
-            expect(modal.find(".help-text").isVisible()).toBe(true);
-        });
+        const text = modal.find(".text-danger");
+        expect(text.classes()).not.toContain("d-none");
+        await expectTranslated(text, "Please remove duplicate emails from the list",
+            "Veuillez supprimer les e-mails en double de la liste",
+            "Por favor, remova os e-mails duplicados da lista", store as any)
+        expect(modal.find("button").attributes("disabled")).toBe("");
+        expect(modal.find(".help-text").isVisible()).toBe(true);
     });
 
     it("if a valid email is entered twice but cased differently, it is invalid, appropriate validation feedback is shown, and button is disabled", async () => {
@@ -259,18 +257,16 @@ describe("ShareProject", () => {
         await input2.setValue("GOODEMAIL");
         await input2.trigger("blur");
 
-        setTimeout(async () => {
-            expect(input.classes()).toContain("is-invalid");
-            expect(input2.classes()).toContain("is-invalid");
+        expect(input.classes()).toContain("is-invalid");
+        expect(input2.classes()).toContain("is-invalid");
 
-            const text = modal.find(".text-danger");
-            expect(text.classes()).not.toContain("d-none");
-            await expectTranslated(text, "Please remove duplicate emails from the list",
-                "Veuillez supprimer les e-mails en double de la liste",
-                "Por favor, remova os e-mails duplicados da lista", store as any)
-            expect(modal.find("button").attributes("disabled")).toBe("");
-            expect(modal.find(".help-text").isVisible()).toBe(true);
-        });
+        const text = modal.find(".text-danger");
+        expect(text.classes()).not.toContain("d-none");
+        await expectTranslated(text, "Please remove duplicate emails from the list",
+            "Veuillez supprimer les e-mails en double de la liste",
+            "Por favor, remova os e-mails duplicados da lista", store as any)
+        expect(modal.find("button").attributes("disabled")).toBe("");
+        expect(modal.find(".help-text").isVisible()).toBe(true);
     });
 
     it("if email is valid, validation feedback is not shown and button enabled", async () => {
@@ -290,13 +286,11 @@ describe("ShareProject", () => {
         await input.setValue("goodemail");
         await input.trigger("blur");
 
-        setTimeout(() => {
-            const modal = wrapper.findComponent(Modal);
-            expect(modal.find("input").classes()).not.toContain("is-invalid");
-            expect(modal.find(".text-danger").classes()).toContain("d-none");
-            expect(modal.find("button").attributes("disabled")).toBeUndefined();
-            expect(modal.find(".help-text").isVisible()).toBe(false);
-        });
+        const modal = wrapper.findComponent(Modal);
+        expect(modal.find("input").classes()).not.toContain("is-invalid");
+        expect(modal.find(".text-danger").exists()).toBe(false);
+        expect(modal.find("button").attributes("disabled")).toBeUndefined();
+        expect(modal.find(".help-text").isVisible()).toBe(false);
     });
 
     it("if email is valid but cased differently, validation feedback is not shown and button enabled", async () => {
@@ -316,13 +310,11 @@ describe("ShareProject", () => {
         await input.setValue("GOODEMAIL");
         await input.trigger("blur");
 
-        setTimeout(() => {
-            const modal = wrapper.findComponent(Modal);
-            expect(modal.find("input").classes()).not.toContain("is-invalid");
-            expect(modal.find(".text-danger").classes()).toContain("d-none");
-            expect(modal.find("button").attributes("disabled")).toBeUndefined();
-            expect(modal.find(".help-text").isVisible()).toBe(false);
-        });
+        const modal = wrapper.findComponent(Modal);
+        expect(modal.find("input").classes()).not.toContain("is-invalid");
+        expect(modal.find(".text-danger").exists()).toBe(false);
+        expect(modal.find("button").attributes("disabled")).toBeUndefined();
+        expect(modal.find(".help-text").isVisible()).toBe(false);
     });
 
     it("user validation fires on blur if value is provided", async () => {
@@ -451,16 +443,14 @@ describe("ShareProject", () => {
             await inputs[0].setValue("testing");
             await inputs[0].trigger("blur");
 
-            setTimeout(async () => {
-                expect(wrapper.findComponent(Modal).findAll("input").length).toBe(2);
-                expect(wrapper.findComponent(Modal).find(".help-text").isVisible()).toBe(true);
+            expect(wrapper.findComponent(Modal).findAll("input").length).toBe(2);
+            expect(wrapper.findComponent(Modal).find(".help-text").isVisible()).toBe(true);
 
-                await inputs[0].setValue("");
-                await inputs[0].trigger("keyup.delete");
-                await nextTick();
-                expect(wrapper.findComponent(Modal).findAll("input").length).toBe(1);
-                expect(wrapper.findComponent(Modal).find(".help-text").isVisible()).toBe(false);
-            });
+            await inputs[0].setValue("");
+            await inputs[0].trigger("keyup.delete");
+            await nextTick();
+            expect(wrapper.findComponent(Modal).findAll("input").length).toBe(1);
+            expect(wrapper.findComponent(Modal).find(".help-text").isVisible()).toBe(false);
         });
 
     it("if email characters are deleted nothing happens", async () => {
@@ -539,10 +529,8 @@ describe("ShareProject", () => {
         await input.setValue("testing");
         await input.trigger("blur");
 
-        setTimeout(async () => {
-            await wrapper.findComponent(Modal).find("button").trigger("click");
-            expect(cloneProject.mock.calls[0][1]).toEqual({projectId: 1, emails: ["testing"]});
-        });
+        await wrapper.findComponent(Modal).find("button").trigger("click");
+        expect(cloneProject.mock.calls[0][1]).toEqual({projectId: 1, emails: ["testing"]});
     });
 
     it("shows loading spinner when cloningProject is true", async () => {

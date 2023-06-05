@@ -1,4 +1,4 @@
-import {shallowMount} from '@vue/test-utils';
+import {DOMWrapper, shallowMount} from '@vue/test-utils';
 import MapLegend from "../../../app/components/plots/MapLegend.vue";
 import {ScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 import MapAdjustScale from "../../../app/components/plots/MapAdjustScale.vue";
@@ -19,7 +19,7 @@ describe("Map legend component", () => {
         min: 1
     };
 
-    const expectLevels = (levels: any) => {
+    const expectLevels = (levels: DOMWrapper<any>[]) => {
         expect(levels.length).toBe(6);
         expect(levels[0].text()).toBe("2");
         expect(levels[1].text()).toBe("1.8");
@@ -29,7 +29,7 @@ describe("Map legend component", () => {
         expect(levels[5].text()).toBe("1");
     };
 
-    const expectIcons = (icons: any) => {
+    const expectIcons = (icons: DOMWrapper<any>[]) => {
         expect((icons[5].element as HTMLElement).style
             .getPropertyValue("background")).toBe("rgb(255, 255, 255)");
         expect((icons[1].element as HTMLElement).style

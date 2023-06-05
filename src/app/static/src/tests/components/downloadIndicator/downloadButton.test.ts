@@ -45,6 +45,7 @@ describe("download button", () => {
     it('it can render download icon', () => {
         const wrapper = getWrapper()
         expect(wrapper.findComponent(VueFeather).exists()).toBe(true)
+        expect(wrapper.findComponent(VueFeather).props("type")).toBe("download")
         expect(wrapper.findComponent(VueFeather).attributes("size")).toBe("20")
         expect(wrapper.findComponent(VueFeather).classes()).toEqual(["icon", "ml-2"])
     });

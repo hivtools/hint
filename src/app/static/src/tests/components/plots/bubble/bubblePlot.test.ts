@@ -1,4 +1,4 @@
-import {shallowMount} from "@vue/test-utils";
+import {VueWrapper, shallowMount} from "@vue/test-utils";
 import BubblePlot from "../../../../app/components/plots/bubble/BubblePlot.vue";
 import {LCircleMarker, LGeoJson, LTooltip} from "@vue-leaflet/vue-leaflet";
 import {getFeatureIndicators, getRadius} from "../../../../app/components/plots/bubble/utils";
@@ -63,7 +63,7 @@ const getWrapper = (customPropsData: any = {}) => {
     });
 };
 
-export const expectIndicatorSelect = (wrapper: any, divId: string, value: string) => {
+export const expectIndicatorSelect = (wrapper: VueWrapper<any>, divId: string, value: string) => {
     const indDiv = wrapper.find("#" + divId);
     expect(indDiv.classes()[0]).toBe("form-group");
     const indSelect = indDiv.findComponent(Treeselect);
