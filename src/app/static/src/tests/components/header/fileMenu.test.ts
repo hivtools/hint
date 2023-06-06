@@ -605,9 +605,9 @@ describe("File menu", () => {
         await triggerSelectFile(wrapper, testFile, "#upload-zip");
         const projectZip = wrapper.find("#project-zip")
         const confirmLoad = projectZip.find("#confirm-load-project")
-        expect(confirmLoad.attributes("disabled")).toBe("")
+        expect((confirmLoad.element as HTMLButtonElement).disabled).toBe(true)
         await projectZip.find("#project-name-input").setValue("new uploaded project")
-        expect(confirmLoad.attributes("disabled")).toBeUndefined()
+        expect((confirmLoad.element as HTMLButtonElement).disabled).toBe(false)
     });
 
     it("does not render load and save Json project", () => {

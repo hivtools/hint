@@ -174,11 +174,11 @@ describe("File upload component", () => {
 
     it("file input is disabled and label has uploading class when uploading is true", async () => {
         let wrapper = createSut();
-        expect(wrapper.find("input").attributes("disabled")).toBeUndefined();
+        expect((wrapper.find("input").element as HTMLButtonElement).disabled).toBe(false);
         expect(wrapper.find(".custom-file-label").classes()).not.toContain("uploading");
 
         wrapper = createSut({uploading: true});
-        expect(wrapper.find("input").attributes("disabled")).toBe("");
+        expect((wrapper.find("input").element as HTMLButtonElement).disabled).toBe(true);
         expect(wrapper.find(".custom-file-label").classes()).toContain("uploading");
     });
 });

@@ -542,7 +542,7 @@ describe("Project history component", () => {
         const input = modal.find("input");
         const copyBtn = modal.find(".modal-footer").findAll("button")[0];
         input.setValue("newProject");
-        expect(copyBtn.attributes("disabled")).toBe(undefined);
+        expect((copyBtn.element as HTMLButtonElement).disabled).toBe(false);
         await copyBtn.trigger("click");
 
         await nextTick();
@@ -569,7 +569,7 @@ describe("Project history component", () => {
         const input = modal.find("input");
         const copyBtn = modal.find(".modal-footer").findAll("button")[0];
         input.setValue("newProject");
-        expect(copyBtn.attributes("disabled")).toBe(undefined);
+        expect((copyBtn.element as HTMLButtonElement).disabled).toBe(false);
         await input.trigger("keyup.enter")
 
         expect(mockPromoteVersion.mock.calls.length).toBe(1);
@@ -754,7 +754,7 @@ describe("Project history component", () => {
         const input = modal.find("input");
         const copyBtn = modal.find(".modal-footer").findAll("button")[0];
         await input.setValue("");
-        expect(copyBtn.attributes("disabled")).toBe("");
+        expect((copyBtn.element as HTMLButtonElement).disabled).toBe(true);
         await copyBtn.trigger("click");
         await nextTick();
 
@@ -773,7 +773,7 @@ describe("Project history component", () => {
         const renameBtn = modal.find(".modal-footer").findAll("button")[0];
         await input.setValue("");
 
-        expect(renameBtn.attributes("disabled")).toBe("");
+        expect((renameBtn.element as HTMLButtonElement).disabled).toBe(true);
         await input.trigger("keyup.enter")
 
         /**
@@ -799,7 +799,7 @@ describe("Project history component", () => {
         const renameBtn = modal.find(".modal-footer").findAll("button")[0];
         input.setValue("renamedProject");
         textarea.setValue("renamed for no reason")
-        expect(renameBtn.attributes("disabled")).toBe(undefined);
+        expect((renameBtn.element as HTMLButtonElement).disabled).toBe(false);
         expect(vm.projectToRename).toBe(1);
         expect(vm.renamedProjectName).toBe("renamedProject");
         await renameBtn.trigger("click");
@@ -827,7 +827,7 @@ describe("Project history component", () => {
         const input = modal.find("input");
         const renameBtn = modal.find(".modal-footer").findAll("button")[0];
         await input.setValue("");
-        expect(renameBtn.attributes("disabled")).toBe("");
+        expect((renameBtn.element as HTMLButtonElement).disabled).toBe(true);
         await renameBtn.trigger("click");
 
         await nextTick();
@@ -846,7 +846,7 @@ describe("Project history component", () => {
         const input = modal.find("input");
         const renameBtn = modal.find(".modal-footer").findAll("button")[0];
         input.setValue("renamedProject");
-        expect(renameBtn.attributes("disabled")).toBe(undefined);
+        expect((renameBtn.element as HTMLButtonElement).disabled).toBe(false);
         await input.trigger("keyup.enter")
 
         expect(mockRenameProject.mock.calls.length).toBe(1);
@@ -906,7 +906,7 @@ describe("Project history component", () => {
         input.setValue("newProject");
         wrapper.find("#promoteNote textarea").setValue("editable note")
 
-        expect(copyBtn.attributes("disabled")).toBe(undefined);
+        expect((copyBtn.element as HTMLButtonElement).disabled).toBe(false);
         await copyBtn.trigger("click");
 
         await nextTick();

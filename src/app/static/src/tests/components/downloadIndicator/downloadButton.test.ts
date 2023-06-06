@@ -26,14 +26,14 @@ describe("download button", () => {
             disabled: false,
             name: "downloadIndicator"
         })
-        expect(wrapper.find(".btn").attributes("disabled")).toBeUndefined()
+        expect((wrapper.find(".btn").element as HTMLButtonElement).disabled).toBe(false)
         expect(mockTranslate.mock.calls.length).toBe(1)
         expect(mockTranslate.mock.calls[0][1].value).toBe("downloadIndicator")
     });
 
     it('it does not render button when disabled prop is true ', async () => {
         const wrapper = getWrapper({disabled: true, name: "downloadIndicator"})
-        expect(wrapper.find(".btn").attributes("disabled")).toBe("")
+        expect((wrapper.find(".btn").element as HTMLButtonElement).disabled).toBe(true)
     });
 
     it('it can emit click event ', async() => {

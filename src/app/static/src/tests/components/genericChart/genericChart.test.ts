@@ -917,7 +917,7 @@ describe("GenericChart component", () => {
             expect(feather.attributes("size")).toBe("20");
             expectTranslated(previous, "Previous page",
                 "Page précédente", "Página anterior", store, "aria-label");
-            expect(previous.attributes("disabled")).toBe("");
+            expect((previous.element as HTMLButtonElement).disabled).toBe(true);
 
             const next = pageControls.find("button#next-page");
             const feather2 = next.findComponent(VueFeather);
@@ -925,7 +925,7 @@ describe("GenericChart component", () => {
             expect(feather2.attributes("size")).toBe("20");
             expectTranslated(next, "Next page",
                 "Page suivante", "Próxima página", store, "aria-label");
-            expect(next.attributes("disabled")).toBeUndefined();
+            expect((next.element as HTMLButtonElement).disabled).toBe(false);
 
             expectTranslated(pageControls.find("#page-number"), "Page 1 of 3",
                 "Page 1 sur 3", "Pagina 1 de 3", store);
@@ -970,8 +970,8 @@ describe("GenericChart component", () => {
         await expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
             "Page 2 sur 3", "Pagina 2 de 3", store);
 
-        expect(wrapper.find("#next-page").attributes("disabled")).toBeUndefined();
-        expect(wrapper.find("#previous-page").attributes("disabled")).toBeUndefined();
+        expect((wrapper.find("#next-page").element as HTMLButtonElement).disabled).toBe(false);
+        expect((wrapper.find("#previous-page").element as HTMLButtonElement).disabled).toBe(false);
 
         const plotly = wrapper.findComponent(Plotly);
         expect(plotly.props("chartData")).toStrictEqual({
@@ -989,8 +989,8 @@ describe("GenericChart component", () => {
         await expectTranslated(wrapper.find("#page-number"), "Page 3 of 3",
             "Page 3 sur 3", "Pagina 3 de 3", store);
 
-        expect(wrapper.find("#next-page").attributes("disabled")).toBe("");
-        expect(wrapper.find("#previous-page").attributes("disabled")).toBeUndefined();
+        expect((wrapper.find("#next-page").element as HTMLButtonElement).disabled).toBe(true);
+        expect((wrapper.find("#previous-page").element as HTMLButtonElement).disabled).toBe(false);
 
         expect(plotly.props("chartData")).toStrictEqual({
             data: [
@@ -1019,8 +1019,8 @@ describe("GenericChart component", () => {
         await expectTranslated(wrapper.find("#page-number"), "Page 1 of 3",
             "Page 1 sur 3", "Pagina 1 de 3", store);
 
-        expect(wrapper.find("#next-page").attributes("disabled")).toBeUndefined();
-        expect(wrapper.find("#previous-page").attributes("disabled")).toBe("");
+        expect((wrapper.find("#next-page").element as HTMLButtonElement).disabled).toBe(false);
+        expect((wrapper.find("#previous-page").element as HTMLButtonElement).disabled).toBe(true);
 
         expect(wrapper.findComponent(Plotly).props("chartData")).toStrictEqual({
             data: [
@@ -1100,8 +1100,8 @@ describe("GenericChart component", () => {
         await expectTranslated(wrapper.find("#page-number"), "Page 1 of 2",
             "Page 1 sur 2", "Pagina 1 de 2", store);
 
-        expect(wrapper.find("#next-page").attributes("disabled")).toBeUndefined();
-        expect(wrapper.find("#previous-page").attributes("disabled")).toBe("");
+        expect((wrapper.find("#next-page").element as HTMLButtonElement).disabled).toBe(false);
+        expect((wrapper.find("#previous-page").element as HTMLButtonElement).disabled).toBe(true);
 
         const plotly = wrapper.findComponent(Plotly);
         expect(plotly.props("chartData")).toStrictEqual({

@@ -583,7 +583,7 @@ describe("Error report component", () => {
         await wrapper.find("#email").setValue("test@email.c");
 
         expect(wrapper.find(".btn-red").text()).toBe("Send");
-        expect(wrapper.find(".btn-red").attributes("disabled")).toBe("")
+        expect((wrapper.find(".btn-red").element as HTMLButtonElement).disabled).toBe(true)
 
         const invalidFeedback = wrapper.find(".invalid-feedback");
         await expectTranslated(invalidFeedback,
@@ -612,7 +612,7 @@ describe("Error report component", () => {
         await wrapper.find("#email").setValue("testemail.com");
 
         expect(wrapper.find(".btn-red").text()).toBe("Send");
-        expect(wrapper.find(".btn-red").attributes("disabled")).toBe("")
+        expect((wrapper.find(".btn-red").element as HTMLButtonElement).disabled).toBe(true)
 
         const invalidFeedback = wrapper.find(".invalid-feedback");
         await expectTranslated(invalidFeedback,
@@ -642,7 +642,7 @@ describe("Error report component", () => {
 
         expect(wrapper.find("#email").attributes("pattern")).toStrictEqual(emailRegex.source)
         expect(wrapper.find(".btn-red").text()).toBe("Send");
-        expect(wrapper.find(".btn-red").attributes("disabled")).toBe("")
+        expect((wrapper.find(".btn-red").element as HTMLButtonElement).disabled).toBe(true)
 
         const invalidFeedback = wrapper.find(".invalid-feedback");
         await expectTranslated(invalidFeedback,
@@ -673,7 +673,7 @@ describe("Error report component", () => {
 
         expect(wrapper.find("#email").attributes("pattern")).toStrictEqual(emailRegex.source)
         expect(wrapper.find(".btn-red").text()).toBe("Send");
-        expect(wrapper.find(".btn-red").attributes("disabled")).toBeUndefined()
+        expect((wrapper.find(".btn-red").element as HTMLButtonElement).disabled).toBe(false)
         expect(wrapper.find(".invalid-feedback").exists()).toBe(false)
     });
 
@@ -734,7 +734,7 @@ describe("Error report component", () => {
         expect(wrapper.findComponent(LoadingSpinner).exists()).toBe(true)
         await expectTranslated(wrapper.find("#sending-error-report"),
             "Sending request...", "Envoyer une requete...", "Enviando pedido ...", store)
-        expect(wrapper.find("#send").attributes("disabled")).toBe("")
+        expect((wrapper.find("#send").element as HTMLButtonElement).disabled).toBe(true)
     });
 
     it("does not disable send button or render spinner when sending error report is not in progress",  async () => {
@@ -757,7 +757,7 @@ describe("Error report component", () => {
         await wrapper.find("#section").setValue("downloadResults");
 
         expect(wrapper.findComponent(LoadingSpinner).exists()).toBe(false)
-        expect(wrapper.find("#send").attributes("disabled")).toBeUndefined()
+        expect((wrapper.find("#send").element as HTMLButtonElement).disabled).toBe(false)
     });
 
     it("does not emit action on cancel", async () => {

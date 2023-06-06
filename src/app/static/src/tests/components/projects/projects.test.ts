@@ -71,7 +71,7 @@ describe("Projects component", () => {
             "Nom du projet", "Nome do projeto", store, "placeholder");
         await expectTranslated(wrapper.find("button"), "Create project",
             "Créer un projet", "Criar projeto", store);
-        expect(wrapper.find("button").attributes("disabled")).toBe("");
+        expect((wrapper.find("button").element as HTMLButtonElement).disabled).toBe(true);
         expect(wrapper.findComponent(ErrorAlert).exists()).toBe(false);
     });
 
@@ -92,7 +92,7 @@ describe("Projects component", () => {
     it("enables create project button when project name is entered", async () => {
         const wrapper = getWrapper();
         await wrapper.find("input").setValue("newProject");
-        expect(wrapper.find("button").attributes("disabled")).toBeUndefined();
+        expect((wrapper.find("button").element as HTMLButtonElement).disabled).toBe(false);
         expect(wrapper.findAll(".invalid-feedback").length).toBe(0);
     });
 
@@ -101,7 +101,7 @@ describe("Projects component", () => {
         const input = wrapper.find("input")
 
         await input.setValue("newProject with enter key");
-        expect(wrapper.find("button").attributes("disabled")).toBeUndefined();
+        expect((wrapper.find("button").element as HTMLButtonElement).disabled).toBe(false);
         await input.trigger("keyup.enter")
         expect(mockCreateProject.mock.calls.length).toBe(1);
         expect(mockCreateProject.mock.calls[0][1]).toStrictEqual({name: "newProject with enter key"});
@@ -110,7 +110,7 @@ describe("Projects component", () => {
     it("shows invalid feedback if name is non unique", async () => {
         const wrapper = getWrapper({previousProjects: [{name: "p1", id: 123, versions: []}]});
         await wrapper.find("input").setValue("p1");
-        expect(wrapper.find("button").attributes("disabled")).toBe("");
+        expect((wrapper.find("button").element as HTMLButtonElement).disabled).toBe(true);
         expect(wrapper.findAll(".invalid-feedback").length).toBe(1);
     });
 

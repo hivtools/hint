@@ -58,7 +58,7 @@ describe(`download`, () => {
         expect(vueFeather.exists()).toBe(true)
         expect(vueFeather.props("type")).toBe("download")
         expect(wrapper.find("button").classes()).toEqual(["btn", "btn-lg", "my-3", "btn-red"])
-        expect(wrapper.find("button").attributes("disabled")).toBeUndefined()
+        expect((wrapper.find("button").element as HTMLButtonElement).disabled).toBe(false)
     })
 
     it(`disables button when upload is in progress`, () => {
@@ -71,7 +71,7 @@ describe(`download`, () => {
         expect(vueFeather.exists()).toBe(true)
         expect(vueFeather.props("type")).toBe("download")
         expect(wrapper.find("button").classes()).toEqual(["btn", "btn-lg", "my-3", "btn-secondary"])
-        expect(wrapper.find("button").attributes("disabled")).toBe("")
+        expect((wrapper.find("button").element as HTMLButtonElement).disabled).toBe(true)
     })
 
     it(`can emit download`, async () => {

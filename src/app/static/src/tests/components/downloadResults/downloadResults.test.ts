@@ -205,7 +205,7 @@ describe("Download Results component", () => {
             "A carregar 1 de 2 (este processo poderá demorar um pouco)", store);
 
         const uploadButton = wrapper.find("#upload").find("button");
-        expect(uploadButton.attributes("disabled")).toBe("")
+        expect((uploadButton.element as HTMLButtonElement).disabled).toBe(true)
     });
 
     it("renders upload complete and release created status messages as expected", () => {
@@ -227,7 +227,7 @@ describe("Download Results component", () => {
         expect(statusMessage2.find("tick-stub").exists()).toBe(true)
 
         const uploadButton = wrapper.find("button");
-        expect(uploadButton.attributes("disabled")).toBeUndefined();
+        expect((uploadButton.element as HTMLButtonElement).disabled).toBe(false);
     });
 
     it("renders release not created status messages as expected", () => {
@@ -244,7 +244,7 @@ describe("Download Results component", () => {
         expect(statusMessage.find("cross-stub").exists()).toBe(true)
 
         const uploadButton = wrapper.find("button");
-        expect(uploadButton.attributes("disabled")).toBeUndefined();
+        expect((uploadButton.element as HTMLButtonElement).disabled).toBe(false);
     });
 
     it("renders upload error alert as expected", () => {
@@ -260,7 +260,7 @@ describe("Download Results component", () => {
         expect(errorAlert.props("error")).toEqual(error)
 
         const uploadButton = wrapper.find("button");
-        expect(uploadButton.attributes("disabled")).toBeUndefined();
+        expect((uploadButton.element as HTMLButtonElement).disabled).toBe(false);
         expect(uploadButton.classes()).toEqual(["btn", "btn-lg", "my-3", "btn-red"]);
     });
 
@@ -273,7 +273,7 @@ describe("Download Results component", () => {
         });
 
         const uploadButton = wrapper.find("button");
-        expect(uploadButton.attributes("disabled")).toBe("");
+        expect((uploadButton.element as HTMLButtonElement).disabled).toBe(true);
         expect(uploadButton.classes()).toEqual(["btn", "btn-lg", "my-3", "btn-secondary"]);
     });
 

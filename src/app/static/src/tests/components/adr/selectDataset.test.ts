@@ -662,7 +662,7 @@ describe("select dataset", () => {
             }, 
         });
         expect(rendered.find("#fetching-datasets").classes()).toStrictEqual(["invisible"]);
-        expect(rendered.findComponent(TreeSelect).attributes("disabled")).toBeUndefined();
+        expect((rendered.findComponent(TreeSelect).attributes("disabled"))).toBeUndefined();
     });
 
     it("shows fetching dataset controls, and disables TreeSelect, when fetching", async () => {
@@ -673,7 +673,7 @@ describe("select dataset", () => {
             }, 
         });
         expect(rendered.find("#fetching-datasets").classes()).toStrictEqual(["visible"]);
-        expect(rendered.findComponent(TreeSelect).attributes("disabled")).toBeUndefined();
+        expect((rendered.findComponent(TreeSelect).attributes("disabled"))).toBeUndefined();
 
         expect(rendered.find("#fetching-datasets").findComponent(LoadingSpinner).props("size")).toBe("xs");
         await expectTranslatedWithStoreType(rendered.find("#fetching-datasets span"),
@@ -789,9 +789,9 @@ describe("select dataset", () => {
         await rendered.setData({newDatasetId: "id2", valid: false});
         const selectRelease = rendered.findComponent(SelectRelease)
         const importBtn = rendered.find("#importBtn")
-        expect(importBtn.attributes("disabled")).toBe("");
+        expect((importBtn.element as HTMLButtonElement).disabled).toBe(true);
         await selectRelease.vm.$emit("valid", true);
-        expect(importBtn.attributes("disabled")).toBeUndefined();
+        expect((importBtn.element as HTMLButtonElement).disabled).toBe(false);
     });
 
     it("select release emits selected dataset release and updates release", async () => {
@@ -1171,7 +1171,7 @@ describe("select dataset", () => {
         expect(rendered.findAllComponents(TreeSelect).length).toBe(1);
         await rendered.setData({newDatasetId: ""});
 
-        expect(rendered.findComponent(Modal).find("button").attributes("disabled")).toBe("");
+        expect((rendered.findComponent(Modal).find("button").element as HTMLButtonElement).disabled).toBe(true);
     });
 
     it("does not start polling if release is selected", async () => {

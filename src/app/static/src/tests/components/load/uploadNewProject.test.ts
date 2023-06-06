@@ -135,11 +135,11 @@ describe("uploadNewProject", () => {
         const wrapper = getWrapper()
 
         const confirmButton = wrapper.find("#confirm-load-project");
-        expect(confirmButton.attributes("disabled")).toBe("");
+        expect((confirmButton.element as HTMLButtonElement).disabled).toBe(true);
         await wrapper.find("#project-name-input").setValue("test");
         expect(mockMutations.SetProjectName.mock.calls[0][1]).toBe("test")
         expect((wrapper.vm as any).$data.uploadProjectName).toBe("test")
-        expect(confirmButton.attributes("disabled")).toBeUndefined();
+        expect((confirmButton.element as HTMLButtonElement).disabled).toBe(false);
     });
 
     it("clicking confirm load to project button invokes action", async () => {

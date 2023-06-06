@@ -226,7 +226,7 @@ describe(`uploadModal `, () => {
 
         const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(3)
-        expect(inputs[0].attributes("disabled")).toBe("");
+        expect((inputs[0].element as HTMLButtonElement).disabled).toBe(true);
         expect(inputs[0].attributes("id")).toBe("id-0-0");
         expect(inputs[1].attributes("id")).toBe("id-0-1");
         expect(inputs[2].attributes("id")).toBe("id-0-2");
@@ -470,7 +470,7 @@ describe(`uploadModal `, () => {
         const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(3)
 
-        expect(okBtn.attributes("disabled")).toBeUndefined();
+        expect((okBtn.element as HTMLButtonElement).disabled).toBe(false);
         expect(okBtn.text()).toBe("OK")
         await okBtn.trigger("click")
         expect(wrapper.emitted("close")!?.length).toBe(1)
@@ -535,7 +535,7 @@ describe(`uploadModal `, () => {
         })
 
         const btn = wrapper.findAll("button");
-        expect(btn[0].attributes("disabled")).toBe("");
+        expect((btn[0].element as HTMLButtonElement).disabled).toBe(true);
     });
 
     it(`ok button is enabled when there are uploadable files`, async () => {
@@ -547,7 +547,7 @@ describe(`uploadModal `, () => {
             })
         await nextTick();
         const btn = wrapper.findAll("button");
-        expect(btn[0].attributes("disabled")).toBeUndefined();
+        expect((btn[0].element as HTMLButtonElement).disabled).toBe(false);
     });
 
     it(`does not render output files and headers when not available for upload`, async () => {
@@ -565,7 +565,7 @@ describe(`uploadModal `, () => {
         await nextTick();
         const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(1)
-        expect(inputs[0].attributes("disabled")).toBeUndefined()
+        expect((inputs[0].element as HTMLButtonElement).disabled).toBe(false)
         expect(inputs[0].attributes("id")).toBe("id-1-0");
         expect(inputs[0].attributes("value")).toBe("population");
 
@@ -606,7 +606,7 @@ describe(`uploadModal `, () => {
         await nextTick();
         const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(1)
-        expect(inputs[0].attributes("disabled")).toBeUndefined()
+        expect((inputs[0].element as HTMLButtonElement).disabled).toBe(false)
         expect(inputs[0].attributes("id")).toBe("id-1-0");
         expect(inputs[0].attributes("value")).toBe("population");
 
@@ -655,7 +655,7 @@ describe(`uploadModal `, () => {
         await nextTick();
         const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(3)
-        expect(inputs[0].attributes("disabled")).toBeUndefined()
+        expect((inputs[0].element as HTMLButtonElement).disabled).toBe(false)
 
         expect(inputs[0].attributes("id")).toBe("id-0-0");
         expect(inputs[0].attributes("value")).toBe("outputZip");
@@ -709,7 +709,7 @@ describe(`uploadModal `, () => {
         await nextTick();
         const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(3)
-        expect(inputs[0].attributes("disabled")).toBeUndefined()
+        expect((inputs[0].element as HTMLButtonElement).disabled).toBe(false)
 
         expect(inputs[0].attributes("id")).toBe("id-0-0");
         expect(inputs[0].attributes("value")).toBe("outputSummary");
@@ -762,7 +762,7 @@ describe(`uploadModal `, () => {
         await nextTick();
         const inputs = wrapper.findAll("input[type='checkbox']")
         expect(inputs.length).toBe(3)
-        expect(inputs[0].attributes("disabled")).toBeUndefined()
+        expect((inputs[0].element as HTMLButtonElement).disabled).toBe(false)
 
         expect(inputs[0].attributes("id")).toBe("id-0-0");
         expect(inputs[0].attributes("value")).toBe("outputZip");

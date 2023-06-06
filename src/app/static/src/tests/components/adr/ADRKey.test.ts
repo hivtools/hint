@@ -154,7 +154,7 @@ describe("ADR Key", function () {
 
         await rendered.find("button").trigger("click");
 
-        expect(rendered.find("button").attributes("disabled")).toBe("");
+        expect((rendered.find("button").element as HTMLButtonElement).disabled).toBe(true);
         expect(saveStub.mock.calls.length).toBe(0);
     });
 
