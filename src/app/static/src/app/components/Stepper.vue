@@ -19,12 +19,12 @@
         </div>
         <stepper-navigation v-bind="navigationProps"/>
         <hr/>
-        <warning-alert v-if="activeStep !== 3" :warnings="activeStepWarnings" @clear-warnings="clearWarnings"></warning-alert>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingData'"></h2>
         </div>
         <div v-if="!loading" class="content">
+            <warning-alert v-if="activeStep !== 3" :warnings="activeStepWarnings" @clear-warnings="clearWarnings"></warning-alert>
             <version-status></version-status>
             <div class="pt-4">
                 <adr-integration v-if="isActive(1)"></adr-integration>
@@ -36,15 +36,15 @@
                 <model-output v-if="isActive(6)"></model-output>
                 <download-results v-if="isActive(7)"></download-results>
             </div>
+            <load-invalid-modal></load-invalid-modal>
+            <template v-if="activeStep === 3">
+              <warning-alert :warnings="activeStepWarnings" @clear-warnings="clearWarnings"></warning-alert>
+            </template>
         </div>
-        <template v-if="activeStep === 3">
-            <warning-alert :warnings="activeStepWarnings" @clear-warnings="clearWarnings"></warning-alert>
-        </template>
         <template v-if="activeStep !== 4">
             <hr class="mt-3"/>
             <stepper-navigation v-bind="navigationProps"/>
         </template>
-        <load-invalid-modal></load-invalid-modal>
     </div>
 </template>
 
