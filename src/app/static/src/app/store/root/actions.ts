@@ -17,6 +17,7 @@ export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
     generateErrorReport: (store: ActionContext<RootState, RootState>,
         payload: ErrorReportManualDetails) => void;
+    rollbackInvalidState: (store: ActionContext<RootState, RootState>) => void;
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -29,7 +30,24 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         const invalidSteps = state.stepper.steps.map((s: StepDescription) => s.number)
             .filter((i: number) => i < maxCompleteOrActive && !completeSteps.includes(i));
 
+        commit({type: RootMutation.SetInvalidSteps, payload: invalidSteps});
         if (invalidSteps.length > 0) {
+            commit({
+                type: "load/LoadFailed",
+                payload: {
+                    detail: i18next.t("loadFailedErrorDetail")
+                }
+            });
+        }
+    },
+
+    async rollbackInvalidState(store){
+        const {state, dispatch, commit} = store;
+        const {invalidSteps} = state;
+        if (invalidSteps.length > 0) {
+            // Always roll back in a new version so invalid state is available for inspection
+            const note = i18next.t("rolledBackToLastValidStep");
+            await dispatch("projects/newVersion", note);
 
             //Invalidate any steps which come after the first invalid step
             const maxValidStep = Math.min(...invalidSteps) - 1;
@@ -48,14 +66,8 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             }
 
             commit({type: RootMutation.Reset, payload: maxValidStep});
-            commit({type: RootMutation.ResetSelectedDataType});
 
-            commit({
-                type: "load/LoadFailed",
-                payload: {
-                    detail: i18next.t("loadFailedErrorDetail")
-                }
-            });
+            commit({type: RootMutation.ResetSelectedDataType});
         }
     },
 

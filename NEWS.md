@@ -1,6 +1,10 @@
-# hint 2.35.0
+# hint 2.36.0
 
 * Auth0 single sign on authorization integration 
+
+# hint 2.35.0
+
+* Allow retry on project load fail
 
 # hint 2.34.0
 

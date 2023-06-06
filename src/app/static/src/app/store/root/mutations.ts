@@ -9,7 +9,7 @@ import {initialMetadataState} from "../metadata/metadata";
 import {initialErrorsState} from "../errors/errors";
 import {initialBaselineState} from "../baseline/baseline";
 import {DataType, initialSurveyAndProgramState} from "../surveyAndProgram/surveyAndProgram";
-import {PayloadWithType, Project} from "../../types";
+import {PayloadWithType, PollingState, Project} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialProjectsState} from "../projects/projects";
 import {router} from '../../router';
@@ -25,7 +25,8 @@ export enum RootMutation {
     ResetOptions = "ResetOptions",
     ResetOutputs = "ResetOutputs",
     SetProject = "SetProject",
-    ResetDownload = "ResetDownload"
+    ResetDownload = "ResetDownload",
+    SetInvalidSteps = "SetInvalidSteps"
 }
 
 export const mutations: MutationTree<RootState> = {
@@ -40,6 +41,7 @@ export const mutations: MutationTree<RootState> = {
             hintrVersion: state.hintrVersion,
             language: state.language,
             updatingLanguage: false,
+            invalidSteps: [],
             adr: state.adr,
             adrUpload: initialADRUploadState(),
             baseline: maxValidStep < 1 ? initialBaselineState() : state.baseline,
@@ -57,7 +59,11 @@ export const mutations: MutationTree<RootState> = {
             stepper: state.stepper,
             load: initialLoadState(),
             errors: initialErrorsState(),
-            projects: initialProjectsState(),
+            projects: {
+                ...initialProjectsState(),
+                currentProject: state.projects.currentProject,
+                currentVersion: state.projects.currentVersion
+            },
             currentUser: state.currentUser,
             downloadResults: initialDownloadResultsState(),
             dataExplorationMode: false,
@@ -136,10 +142,16 @@ export const mutations: MutationTree<RootState> = {
     },
 
     [RootMutation.ResetDownload](state: RootState) {
+        stopPolling(state.downloadResults.spectrum);
+        stopPolling(state.downloadResults.coarseOutput);
+        stopPolling(state.downloadResults.summary);
+        stopPolling(state.downloadResults.comparison);
         Object.assign(state.downloadResults, initialDownloadResultsState());
     },
 
     [RootMutation.ResetOutputs](state: RootState) {
+        stopPolling(state.modelRun);
+        stopPolling(state.modelCalibrate);
         Object.assign(state.modelRun, initialModelRunState());
         state.modelRun.ready = true;
         Object.assign(state.modelCalibrate, initialModelCalibrateState());
@@ -155,6 +167,19 @@ export const mutations: MutationTree<RootState> = {
         Object.assign(state.adrUpload, initialADRUploadState());
         Object.assign(state.downloadResults, initialDownloadResultsState());
     },
+
+    [RootMutation.SetInvalidSteps](state: RootState, action: PayloadWithType<number[]>) {
+        state.invalidSteps = action.payload;
+    },
+
     ...languageMutations
 
+};
+
+const stopPolling = <T extends PollingState>(state: T) => {
+    if (state.statusPollId === -1) {
+        return
+    }
+    clearInterval(state.statusPollId);
+    state.statusPollId = -1;
 };
