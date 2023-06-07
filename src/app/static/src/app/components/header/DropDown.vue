@@ -8,7 +8,8 @@
         </p>
         <div class="dropdown-menu" :class="{'show':show, 'dropdown-menu-right': right}"
         @mouseenter="menuFocused"
-        @mouseleave="menuUnfocused">
+        @mouseleave="menuUnfocused"
+        @click="toggle">
             <slot></slot>
         </div>
     </div>
