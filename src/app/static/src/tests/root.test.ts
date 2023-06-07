@@ -26,6 +26,6 @@ describe("Root", () => {
         const store = new Vuex.Store(module.storeOptions);
         store.commit({type: "baseline/Ready", payload: null});
         expect(mockConsoleLog.mock.calls[0][0]).toBe("baseline/Ready");
-        expect(mockSaveState.mock.calls[0][0]).toBe(module.storeOptions.state);
+        expect(mockSaveState.mock.calls[0][0]).toStrictEqual(module.storeOptions.state);
     });
 });

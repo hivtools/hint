@@ -2,7 +2,7 @@ import {MutationTree} from "vuex";
 import {ProjectsState} from "./projects";
 import {PayloadWithType, Version, Project, CurrentProject} from "../../types";
 import {Error} from "../../generated";
-import {router} from "../../index";
+import {router} from "../../router";
 
 export enum ProjectsMutations {
     SetLoading = "SetLoading",

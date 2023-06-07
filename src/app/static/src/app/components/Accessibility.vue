@@ -30,7 +30,9 @@
 </template>
 
 <script lang="ts">
-    export default {
-        name: "Accessibility"
-    }
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+    name: 'Accessibility',
+});
 </script>
