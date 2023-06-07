@@ -46,10 +46,10 @@
                                 :optionsStyle="style">
                     </l-geo-json>
                 </template>
-                <div v-if="emptyFeature">
+                <template v-if="emptyFeature">
                     <map-empty-feature></map-empty-feature>
-                </div>
-                <div v-if="!emptyFeature">
+                </template>
+                <template v-else>
                     <reset-map @reset-view="updateBounds"></reset-map>
                     <map-legend :metadata="colorIndicator"
                                 :colour-range="colourRange"
@@ -63,13 +63,13 @@
                                  :size-scale="sizeIndicatorScale"
                                  @update="updateSizeScale"
                     ></size-legend>
-                </div>
-                <div>
+                </template>
+                <template>
                     <map-control :initialDetail=selections.detail
                                  :show-indicators="false"
                                  :level-labels="featureLevels"
                                  @detailChanged="onDetailChange($event)"></map-control>
-                </div>
+                </template>
             </l-map>
         </div>
     </div>
