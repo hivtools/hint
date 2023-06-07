@@ -240,7 +240,9 @@ describe("ModelCalibrate actions", () => {
                         indicator_id: "test indicator",
                         x_axis_id: "test_x",
                         disaggregate_by_id: "test_dis",
-                        selected_filter_options: {"test_name": {}}
+                        selected_filter_options: {
+                            type: [{id: "test", label: "test"}]
+                        }
                     }
                 }
             },

@@ -5,7 +5,7 @@ import {emptyState} from "../../../app/root";
 import {mockBaselineState, mockDownloadIndicatorData} from "../../mocks";
 import DownloadButton from "../../../app/components/downloadIndicator/DownloadButton.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, mountWithTranslate} from "../../testHelpers";
 import {BaselineState} from "../../../app/store/baseline/baseline";
 
 describe("download indicator", () => {
@@ -42,9 +42,11 @@ describe("download indicator", () => {
     }
 
     const getWrapper = (store = createSut(), props = {}) => {
-        return mount(DownloadIndicator, {
-            store,
-            propsData: {
+        return mountWithTranslate(DownloadIndicator, store, {
+            global: {
+                plugins: [store]
+            },
+            props: {
                 unfilteredData,
                 filteredData,
                 ...props
@@ -54,7 +56,7 @@ describe("download indicator", () => {
 
     it('it renders download button props as expected ', async() => {
         const wrapper = getWrapper();
-        expect(wrapper.find(DownloadButton).props()).toEqual(
+        expect(wrapper.findComponent(DownloadButton).props()).toEqual(
             {
                 "disabled": false,
                 "name": "downloadIndicator"
@@ -70,7 +72,7 @@ describe("download indicator", () => {
 
     it('can trigger download with iso3 country prefix in filename', async() => {
         const wrapper = getWrapper();
-        await wrapper.find(DownloadButton).vm.$emit("click")
+        await wrapper.findComponent(DownloadButton).vm.$emit("click")
         await expect(mockDownloadFileActions).toHaveBeenCalledTimes(1)
 
         const filename = mockDownloadFileActions.mock.calls[0][1].filename
@@ -82,7 +84,7 @@ describe("download indicator", () => {
 
     it('can use country prefix when iso3 data is empty', () => {
         const wrapper = getWrapper(createSut({iso3: "", country: "Malawi"}));
-        wrapper.find(DownloadButton).vm.$emit("click")
+        wrapper.findComponent(DownloadButton).vm.$emit("click")
         expect(mockDownloadFileActions).toHaveBeenCalledTimes(1)
 
         const filename = mockDownloadFileActions.mock.calls[0][1].filename
@@ -91,13 +93,13 @@ describe("download indicator", () => {
 
     it('download button is disabled when file download is in progress', async () => {
         const wrapper = getWrapper(createSut({iso3: "", country: "Malawi"}, {downloadingIndicator: true}));
-        expect(wrapper.find(DownloadButton).props("disabled")).toBe(true)
+        expect(wrapper.findComponent(DownloadButton).props("disabled")).toBe(true)
     });
 
     it('does not download file when indicator data is empty', async() => {
         const wrapper = getWrapper(createSut(), {filteredData: null});
 
-        await wrapper.find(DownloadButton).vm.$emit("click")
+        await wrapper.findComponent(DownloadButton).vm.$emit("click")
 
         await expect(mockDownloadFileActions).toHaveBeenCalledTimes(0)
     });

@@ -12,7 +12,7 @@ import {DataType, initialSurveyAndProgramState} from "../surveyAndProgram/survey
 import {PayloadWithType, Project} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialProjectsState} from "../projects/projects";
-import {router} from "../../index"
+import {router} from "../../router"
 import {initialModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {initialADRUploadState} from "../adrUpload/adrUpload";
 import {initialDownloadResultsState} from "../downloadResults/downloadResults";

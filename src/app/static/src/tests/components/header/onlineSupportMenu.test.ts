@@ -1,20 +1,22 @@
-import {createLocalVue, mount, shallowMount, Wrapper} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 import Vuex from "vuex";
 import OnlineSupportMenu from "../../../app/components/header/OnlineSupportMenu.vue";
 import {emptyState} from "../../../app/root";
 import {mutations} from "../../../app/store/root/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {Language} from "../../../app/store/translations/locales";
-import {expectTranslated, expectErrorReportOpen} from "../../testHelpers";
+import {expectTranslated, expectErrorReportOpen, mountWithTranslate} from "../../testHelpers";
 import DropDown from "../../../app/components/header/DropDown.vue";
-import VueRouter from 'vue-router'
+import VueRouter, { createRouter, createWebHashHistory } from 'vue-router'
 import ErrorReport from "../../../app/components/ErrorReport.vue";
 import {mockErrorsState, mockProjectsState, mockStepperState} from "../../mocks";
 import {StepperState} from "../../../app/store/stepper/stepper";
+import { nextTick } from "vue";
 
-const localVue = createLocalVue()
-localVue.use(VueRouter)
-const router = new VueRouter()
+const router = createRouter({
+    routes: [],
+    history: createWebHashHistory()
+});
 
 
 describe("Online support menu", () => {
@@ -57,207 +59,209 @@ describe("Online support menu", () => {
     it("renders drop down with delay property true", () => {
         const store = createStore();
         const wrapper = shallowMount(OnlineSupportMenu, {
-            store,
-            localVue,
-            router
+            global: {
+                plugins: [store, router]
+            }
         });
 
-        const dropDown = wrapper.find(DropDown);
+        const dropDown = wrapper.findComponent(DropDown);
         expect(dropDown.props("delay")).toBe(true);
     });
 
-    it("renders drop down text correctly", () => {
+    it("renders drop down text correctly", async () => {
         const store = createStore();
-        const wrapper = mount(OnlineSupportMenu, {
-            store,
-            localVue,
-            router
+        const wrapper = mountWithTranslate(OnlineSupportMenu, store, {
+            global: {
+                plugins: [store, router]
+            }
         });
-        wrapper.find(".dropdown-toggle").trigger("click");
+        await wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes())
             .toStrictEqual(["dropdown-menu", "show", "dropdown-menu-right"]);
 
         const link = wrapper.find(".dropdown").find("a");
-        expectTranslated(link, "Online support", "Support en ligne",
+        await expectTranslated(link, "Online support", "Support en ligne",
             "Apoio online", store as any);
     });
 
-    it("renders FAQ menu-item text", () => {
+    it("renders FAQ menu-item text", async () => {
         const store = createStore();
-        const wrapper = shallowMount(OnlineSupportMenu, {
-            store,
-            localVue,
-            router
+        const wrapper = mountWithTranslate(OnlineSupportMenu, store, {
+            global: {
+                plugins: [store, router]
+            }
         });
 
-        const link = wrapper.findAll(".dropdown-item").at(0);
-        expectTranslated(link, "FAQ", "FAQ", "Perguntas Frequentes", store as any);
+        const link = wrapper.findAll(".dropdown-item")[0];
+        await expectTranslated(link, "FAQ", "FAQ", "Perguntas Frequentes", store as any);
         expect(link.attributes("target")).toBe("_blank");
     });
 
     it("renders FAQ menu-item link href when language is English", () => {
         const store = createStore();
-        const wrapper = shallowMount(OnlineSupportMenu, {
-            store,
-            localVue,
-            router
+        const wrapper = mount(OnlineSupportMenu, {
+            global: {
+                plugins: [store, router]
+            }
         });
 
-        const link = wrapper.findAll(".dropdown-item").at(0);
+        const link = wrapper.findAll(".dropdown-item")[0];
         expect(link.attributes("href")).toBe("https://mrc-ide.github.io/naomi-troubleshooting/index-en.html");
     });
 
-    it("renders FAQ menu-item link href when lang is French", () => {
+    it("renders FAQ menu-item link href when lang is French", async () => {
         const store = createStore();
         store.state.language = Language.fr;
-        const wrapper = shallowMount(OnlineSupportMenu, {
-            store,
-            localVue,
-            router
+        await nextTick();
+        const wrapper = mount(OnlineSupportMenu, {
+            global: {
+                plugins: [store, router]
+            }
         });
 
-        const link = wrapper.findAll(".dropdown-item").at(0);
+        const link = wrapper.findAll(".dropdown-item")[0];
         expect(link.attributes("href")).toBe("https://mrc-ide.github.io/naomi-troubleshooting/index-fr.html");
     });
 
-    it("renders FAQ menu-item link href when language is Portuguese", () => {
+    it("renders FAQ menu-item link href when language is Portuguese", async () => {
         const store = createStore();
         store.state.language = Language.pt;
-        const wrapper = shallowMount(OnlineSupportMenu, {
-            store,
-            localVue,
-            router
+        await nextTick();
+        const wrapper = mount(OnlineSupportMenu, {
+            global: {
+                plugins: [store, router]
+            }
         });
 
-        const link = wrapper.findAll(".dropdown-item").at(0);
+        const link = wrapper.findAll(".dropdown-item")[0];
         // This will eventually link to Portuguese language FAQ doc, but using English doc for now
         expect(link.attributes("href")).toBe("https://mrc-ide.github.io/naomi-troubleshooting/index-en.html");
     });
 
-    it("renders error report widget", () => {
+    it("renders error report widget", async () => {
 
         const store = createStore();
-        const wrapper = shallowMount(OnlineSupportMenu, {
-            store,
-            localVue,
-            router
+        const wrapper = mountWithTranslate(OnlineSupportMenu, store, {
+            global: {
+                plugins: [store, router]
+            }
         });
 
-        expect(wrapper.findAll(ErrorReport).length).toBe(1);
-        expect(wrapper.find(ErrorReport).props("open")).toBe(false);
+        expect(wrapper.findAllComponents(ErrorReport).length).toBe(1);
+        expect(wrapper.findComponent(ErrorReport).props("open")).toBe(false);
 
-        const link = wrapper.findAll(".dropdown-item").at(1);
+        const link = wrapper.findAll(".dropdown-item")[1];
 
-        expectTranslated(link, "Troubleshooting request", "Demande de dépannage", "Solicitação de solução de problemas", store as any);
+        await expectTranslated(link, "Troubleshooting request", "Demande de dépannage", "Solicitação de solução de problemas", store as any);
 
-        expectErrorReportOpen(wrapper, 1)
+        await expectErrorReportOpen(wrapper, 1)
     });
 
-    it("can render section on error report widget", () => {
+    it("can render section on error report widget", async () => {
         const store = createStore();
-        const wrapper = mount(OnlineSupportMenu, {
-            store,
-            localVue,
-            router
+        const wrapper = mountWithTranslate(OnlineSupportMenu, store, {
+            global: {
+                plugins: [store, router]
+            }
         });
 
-        expect(wrapper.findAll(ErrorReport).length).toBe(1);
+        expect(wrapper.findAllComponents(ErrorReport).length).toBe(1);
 
-        expect(wrapper.find(ErrorReport).props("open")).toBe(false);
+        expect(wrapper.findComponent(ErrorReport).props("open")).toBe(false);
 
-        expectErrorReportOpen(wrapper, 1)
+        await expectErrorReportOpen(wrapper, 1)
 
-        const options = wrapper.find(ErrorReport).findAll("option")
+        const options = wrapper.findComponent(ErrorReport).findAll("option")
         expect(options.length).toBe(10)
 
-        expect((options.at(0).element as HTMLOptionElement).value).toBe("uploadInputs");
+        expect((options[0].element as HTMLOptionElement).value).toBe("uploadInputs");
 
-        expectTranslated(options.at(0),
+        await expectTranslated(options[0],
             "Upload inputs",
             "Télécharger les entrées",
             "Carregar entradas",
             store)
 
-        expectTranslated(options.at(1),
+        await expectTranslated(options[1],
             "Review inputs",
             "Examiner les entrées",
             "Analise as entradas",
             store)
 
-        expectTranslated(options.at(2),
+        await expectTranslated(options[2],
             "Model options",
             "Options des modèles",
             "Opções de modelos",
             store)
 
-        expectTranslated(options.at(3),
+        await expectTranslated(options[3],
             "Fit model",
             "Ajuster le modèle",
             "Ajustar modelo",
             store)
 
-        expectTranslated(options.at(4),
+        await expectTranslated(options[4],
             "Calibrate model",
             "Calibrer le modèle",
             "Calibrar modelo",
             store)
 
-        expectTranslated(options.at(5),
+        await expectTranslated(options[5],
             "Review output",
             "Résultat de l'examen",
             "Rever os resultados",
             store)
 
-        expectTranslated(options.at(6),
+        await expectTranslated(options[6],
             "Save results",
             "Enregistrer les résultats",
             "Guardar resultados",
             store)
 
-        expectTranslated(options.at(7),
+        await expectTranslated(options[7],
             "Login",
             "Connexion",
             "Conecte-se",
             store)
 
-        expectTranslated(options.at(8),
+        await expectTranslated(options[8],
             "Projects",
             "Projets",
             "Projetos",
             store)
 
-        expectTranslated(options.at(9),
+        await expectTranslated(options[9],
             "Other",
             "Autre",
             "De outros",
             store)
 });
 
-    it("selects current step by default", () => {
+    it("selects current step by default", async () => {
         const store = createStore();
         const wrapper = mount(OnlineSupportMenu, {
-            store,
-            localVue,
-            router
+            global: {
+                plugins: [store, router]
+            }
         });
 
-        expectErrorReportOpen(wrapper, 1)
+        await expectErrorReportOpen(wrapper, 1)
 
-        expect((wrapper.find(ErrorReport).find("select#section").element as HTMLSelectElement).value)
+        expect((wrapper.findComponent(ErrorReport).find("select#section").element as HTMLSelectElement).value)
             .toBe("uploadInputs")
     });
 
     it("invokes generateErrorReport with expected data", async () => {
         const store = createStore();
         const wrapper = mount(OnlineSupportMenu, {
-            store,
-            localVue,
-            router
+            global: {
+                plugins: [store, router]
+            }
         });
 
-        expectErrorReportOpen(wrapper, 1)
+        await expectErrorReportOpen(wrapper, 1)
 
-        await wrapper.find(ErrorReport).vm.$emit("send",
+        wrapper.findComponent(ErrorReport).vm.$emit("send",
             {
                 description: "something",
                 stepsToReproduce: "reproduce steps",
@@ -266,7 +270,7 @@ describe("Online support menu", () => {
 
         expect(mockGenerateErrorReport).toHaveBeenCalledTimes(1)
 
-        await expect(mockGenerateErrorReport.mock.calls[0][1]).toEqual(
+        expect(mockGenerateErrorReport.mock.calls[0][1]).toEqual(
             {
                 description: "something",
                 section: "uploadInputs",
@@ -274,31 +278,29 @@ describe("Online support menu", () => {
                 email: ""
             }
         )
-        expect(wrapper.vm.$data.section).toBe("")
+        expect((wrapper.vm as any).$data.section).toBe("")
     });
 
-    it("can update section", () => {
+    it("can update section", async () => {
         const store = createStore({activeStep: 2});
         const wrapper = mount(OnlineSupportMenu, {
-            store,
-            localVue,
-            router
+            global: {
+                plugins: [store, router]
+            }
         });
 
         expect((wrapper.find("select#section").element as HTMLSelectElement).value)
             .toBe("reviewInputs");
 
-        wrapper.find("#section").setValue("downloadResults");
+        await wrapper.find("#section").setValue("downloadResults");
 
         expect((wrapper.find("select#section").element as HTMLSelectElement).value)
             .toBe("downloadResults");
-        expect(wrapper.vm.$data.section).toBe("downloadResults");
+        expect((wrapper.vm as any).$data.section).toBe("downloadResults");
         expect((wrapper.vm as any).currentSection).toBe("downloadResults");
     });
 
-    it("sets section to 'projects' if opened on project page",  () => {
-        const localVue = createLocalVue()
-        localVue.use(VueRouter)
+    it("sets section to 'projects' if opened on project page",  async () => {
         const routes = [
             {
                 path: '/',
@@ -309,57 +311,61 @@ describe("Online support menu", () => {
                 component: ErrorReport
             }
         ]
-        const router = new VueRouter({
-            routes
+        const router = createRouter({
+            routes,
+            history: createWebHashHistory()
         })
 
         const wrapper = mount(OnlineSupportMenu,
             {
-                localVue,
-                router,
-                store: createStore()
+                global: {
+                    plugins: [router, createStore()]
+                }
             })
         expect(wrapper.vm.$route.path).toBe("/");
-        wrapper.setData({errorReportOpen: true});
-        expect((wrapper.find(ErrorReport).find("#section").element as HTMLSelectElement).value).toBe("uploadInputs");
+        await wrapper.setData({errorReportOpen: true});
+        expect((wrapper.findComponent(ErrorReport).find("#section").element as HTMLSelectElement).value).toBe("uploadInputs");
 
-        wrapper.setData({errorReportOpen: false});
-        router.push("/projects");
-        expectErrorReportOpen(wrapper, 1)
-        expect(wrapper.find(ErrorReport).props("open")).toBe(true);
+        await wrapper.setData({errorReportOpen: false});
+        await router.push("/projects");
+        await router.isReady();
+        await expectErrorReportOpen(wrapper, 1)
+        expect(wrapper.findComponent(ErrorReport).props("open")).toBe(true);
         expect((wrapper.find("#section").element as HTMLSelectElement).value).toBe("projects")
     });
 
-    it("renders accessibility menu-item text and link", () => {
+    it("renders accessibility menu-item text and link", async () => {
         const store = createStore();
-        const wrapper = shallowMount(OnlineSupportMenu, {
-            store,
-            localVue,
-            router
+        const wrapper = mountWithTranslate(OnlineSupportMenu, store, {
+            global: {
+                plugins: [store, router],
+                stubs: ["router-link"]
+            }
         });
 
         const links = wrapper.findAll("router-link-stub");
         expect(links.length).toBe(2)
 
-        const link = links.at(1)
+        const link = links[1]
         expect(link.attributes("to")).toBe("/accessibility");
-        expectTranslated(link, "Accessibility", "Accessibilité", "Acessibilidade", store as any);
+        await expectTranslated(link, "Accessibility", "Accessibilité", "Acessibilidade", store as any);
     });
 
-    it("renders privacy menu-item text and link", () => {
+    it("renders privacy menu-item text and link", async () => {
         const store = createStore();
-        const wrapper = shallowMount(OnlineSupportMenu, {
-            store,
-            localVue,
-            router
+        const wrapper = mountWithTranslate(OnlineSupportMenu, store, {
+            global: {
+                plugins: [store, router],
+                stubs: ["router-link"]
+            }
         });
 
         const links = wrapper.findAll("router-link-stub");
         expect(links.length).toBe(2)
 
-        const link = links.at(0)
+        const link = links[0]
         expect(link.attributes("to")).toBe("/privacy");
-        expectTranslated(link, "Privacy", "Vie privée", "Privacidade", store as any);
+        await expectTranslated(link, "Privacy", "Vie privée", "Privacidade", store as any);
     });
 
 });

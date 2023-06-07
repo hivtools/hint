@@ -1,12 +1,10 @@
-import {createLocalVue, shallowMount} from '@vue/test-utils';
+import {shallowMount} from '@vue/test-utils';
 import WarningAlert from "../../app/components/WarningAlert.vue";
 import Warning from "../../app/components/Warning.vue";
 import Vuex from "vuex";
 import {emptyState} from "../../app/root";
 import registerTranslations from "../../app/store/translations/registerTranslations";
-import {expectTranslated} from "../testHelpers";
-
-const localVue = createLocalVue();
+import {expectTranslated, shallowMountWithTranslate} from "../testHelpers";
 
 describe("Warning alert component", () => {
 
@@ -20,13 +18,14 @@ describe("Warning alert component", () => {
     registerTranslations(store);
 
     const createWrapper = (warnings = warningsMock, activeStep = 3) => {
-        const wrapper = shallowMount(WarningAlert, {
-            propsData: {
+        const wrapper = shallowMountWithTranslate(WarningAlert, store, {
+            props: {
                 warnings: warnings,
                 activeStep
             },
-            store,
-            localVue
+            global: {
+                plugins: [store]
+            }
         });
         return wrapper
     }
@@ -44,23 +43,23 @@ describe("Warning alert component", () => {
         const wrapper = createWrapper()
 
         expect(wrapper.find(".alert-warning").exists()).toBe(true);
-        const warnings = wrapper.findAll(Warning)
+        const warnings = wrapper.findAllComponents(Warning)
         expect(warnings.length).toBe(3);
-        expect(warnings.at(0).props()).toStrictEqual({maxLines: 2, origin: "modelOptions", warnings: warningsMock["modelOptions"]});
-        expect(warnings.at(1).props()).toStrictEqual({maxLines: 2, origin: "modelRun", warnings: warningsMock["modelRun"]});
-        expect(warnings.at(2).props()).toStrictEqual({maxLines: 2, origin: "modelCalibrate", warnings: warningsMock["modelCalibrate"]});
+        expect(warnings[0].props()).toStrictEqual({maxLines: 2, origin: "modelOptions", warnings: warningsMock["modelOptions"]});
+        expect(warnings[1].props()).toStrictEqual({maxLines: 2, origin: "modelRun", warnings: warningsMock["modelRun"]});
+        expect(warnings[2].props()).toStrictEqual({maxLines: 2, origin: "modelCalibrate", warnings: warningsMock["modelCalibrate"]});
     });
 
     it("clicking close triggers clear warnings emit", async () => {
         const wrapper = createWrapper()
         await wrapper.find("button").trigger("click")
-        expect(wrapper.emitted("clear-warnings").length).toBe(1);
+        expect(wrapper.emitted("clear-warnings")!.length).toBe(1);
     });
 
-    it("close button has correct aria-label translations", () => {
+    it("close button has correct aria-label translations", async () => {
         const wrapper = createWrapper()
         const button = wrapper.find("button")
-        expectTranslated(button,
+        await expectTranslated(button,
             "Close",
             "Fermer",
             "Fechar",
@@ -68,18 +67,18 @@ describe("Warning alert component", () => {
             "aria-label");
     });
 
-    it("only renders warning messages that have warnings and sets maxLines prop", () => {
+    it("only renders warning messages that have warnings and sets maxLines prop", async () => {
         const wrapper = createWrapper({
             modelOptions: [],
             modelRun: [{ text: 'model run warning', locations: []}],
             modelCalibrate: []
         })
-        wrapper.setProps({maxLines: 3})
+        await wrapper.setProps({maxLines: 3})
 
         expect(wrapper.find(".alert-warning").exists()).toBe(true);
-        const warnings = wrapper.findAll(Warning)
+        const warnings = wrapper.findAllComponents(Warning)
         expect(warnings.length).toBe(1);
-        expect(warnings.at(0).props()).toStrictEqual({maxLines: 3, origin: "modelRun", warnings: warningsMock["modelRun"]});
+        expect(warnings[0].props()).toStrictEqual({maxLines: 3, origin: "modelRun", warnings: warningsMock["modelRun"]});
     });
 
 })
