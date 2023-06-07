@@ -98,8 +98,8 @@ export const expectTranslated = (element: Wrapper<any>,
     expectTranslatedWithStoreType<DataExplorationState>(element, englishText, frenchText, portugueseText, store, attribute);
 
 export const expectHasTranslationKey = (element: Wrapper<any>, translationKey: keyof Translations, attribute?: string) => {
-    const elTranslationKey = ((element as any).vnode as VNode)
-        .data?.directives?.find(dir => dir.name === "translate" && dir.arg === attribute)?.value;
+    const vNode = (element.vm ? element.vm.$vnode : (element as any).vnode) as VNode; // support component and element wrappers
+    const elTranslationKey = vNode.data?.directives?.find(dir => dir.name === "translate" && dir.arg === attribute)?.value;
     expect(elTranslationKey).toBe(translationKey);
 };
 
