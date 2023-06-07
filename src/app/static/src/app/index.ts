@@ -5,6 +5,7 @@ import Hint from "./components/Hint.vue"
 import translate from "./directives/translate";
 import FloatingVue from "floating-vue";
 import 'floating-vue/dist/style.css';
+import "../scss/style.scss";
 
 const mountEl = document.querySelector("#app");
 const app = createApp(Hint, {...(mountEl as HTMLDivElement).dataset});
