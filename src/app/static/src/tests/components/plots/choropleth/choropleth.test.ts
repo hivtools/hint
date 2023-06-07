@@ -1,4 +1,4 @@
-import {createLocalVue, shallowMount} from "@vue/test-utils";
+import {shallowMount} from "@vue/test-utils";
 import Choropleth from "../../../../app/components/plots/choropleth/Choropleth.vue";
 import {LGeoJson} from "@vue-leaflet/vue-leaflet";
 import {getFeatureIndicator} from "../../../../app/components/plots/choropleth/utils";
@@ -14,14 +14,14 @@ import Vue from "vue";
 import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
 import ResetMap from "../../../../app/components/plots/ResetMap.vue";
 import {ChoroplethIndicatorMetadata} from "../../../../app/generated";
+import { shallowMountWithTranslate } from "../../../testHelpers";
 
-const localVue = createLocalVue();
 const store = new Vuex.Store({
     state: emptyState()
 });
 registerTranslations(store);
 
-const propsData = {
+const props = {
     ...testData,
     selections: {
         indicatorId: "prevalence",
@@ -45,44 +45,49 @@ const propsData = {
 const allAreaIds = ["MWI", "MWI_3_1", "MWI_3_2", "MWI_4_1", "MWI_4_2"];
 
 const getWrapper = (customPropsData: any = {}) => {
-    return shallowMount(Choropleth, {propsData: {...propsData, ...customPropsData}, localVue});
+    return shallowMountWithTranslate(Choropleth, store, {
+        props: {...props, ...customPropsData},
+        global: {
+            plugins: [store]
+        }
+    });
 };
 
 describe("Choropleth component", () => {
     it("renders plot as expected", () => {
         const wrapper = getWrapper();
-        const geoJsons = wrapper.findAll(LGeoJson);
+        const geoJsons = wrapper.findAllComponents(LGeoJson);
         expect(geoJsons.length).toBe(2);
-        expect(geoJsons.at(0).props().geojson).toBe(propsData.features[2]);
-        expect(geoJsons.at(1).props().geojson).toBe(propsData.features[3]);
+        expect(geoJsons[0].props().geojson).toBe(props.features[2]);
+        expect(geoJsons[1].props().geojson).toBe(props.features[3]);
 
-        expect(wrapper.find(MapControl).props().initialDetail).toEqual(4);
-        expect(wrapper.find(MapControl).props().showIndicators).toEqual(true);
-        expect(wrapper.find(MapControl).props().indicator).toEqual("prevalence");
-        expect(wrapper.find(MapControl).props().indicatorsMetadata).toEqual(testData.indicators);
+        expect(wrapper.findComponent(MapControl).props().initialDetail).toEqual(4);
+        expect(wrapper.findComponent(MapControl).props().showIndicators).toEqual(true);
+        expect(wrapper.findComponent(MapControl).props().indicator).toEqual("prevalence");
+        expect(wrapper.findComponent(MapControl).props().indicatorsMetadata).toEqual(testData.indicators);
     });
 
     it("renders filters", () => {
         const wrapper = getWrapper();
-        expect(wrapper.findAll(Filters).length).toBe(1);
+        expect(wrapper.findAllComponents(Filters).length).toBe(1);
 
         //TODO: ADD TEST THAT MODIFIES AREA FILTER FOR DISPLAY IN FILTERS
     });
 
     it("does not render filters if includeFilters is false", () => {
         const wrapper = getWrapper({includeFilters: false});
-        expect(wrapper.findAll(Filters).length).toBe(0);
+        expect(wrapper.findAllComponents(Filters).length).toBe(0);
     });
 
     it("renders color legend", () => {
         const wrapper = getWrapper();
-        const legend = wrapper.find(MapLegend);
-        expect(legend.props().metadata).toBe(propsData.indicators[1]);
-        expect(legend.props().colourScale).toBe(propsData.colourScales.prevalence)
+        const legend = wrapper.findComponent(MapLegend);
+        expect(legend.props().metadata).toBe(props.indicators[1]);
+        expect(legend.props().colourScale).toBe(props.colourScales.prevalence)
     });
 
     it("computes emptyFeatures returns true when selections are empty", () => {
-        const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
+        const wrapper = getWrapper({selections: {...props.selections, detail: 0}});
         const vm = wrapper.vm as any;
         expect(vm.emptyFeature).toBe(true);
     });
@@ -95,36 +100,36 @@ describe("Choropleth component", () => {
 
     it("render does not display translated no data message on map", () => {
         const wrapper = getWrapper();
-        expect(wrapper.findAll(MapEmptyFeature).length).toBe(0)
-        expect(wrapper.find(MapEmptyFeature).exists()).toBe(false)
+        expect(wrapper.findAllComponents(MapEmptyFeature).length).toBe(0)
+        expect(wrapper.findComponent(MapEmptyFeature).exists()).toBe(false)
     });
 
     it("render can display translated no data message on map", () => {
-        const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
-        expect(wrapper.findAll(MapEmptyFeature).length).toBe(1)
-        expect(wrapper.find(MapEmptyFeature).exists()).toBe(true)
+        const wrapper = getWrapper({selections: {...props.selections, detail: 0}});
+        expect(wrapper.findAllComponents(MapEmptyFeature).length).toBe(1)
+        expect(wrapper.findComponent(MapEmptyFeature).exists()).toBe(true)
     });
 
     it("render does not display legends when selections have no data", () => {
         const wrapper = getWrapper();
-        expect(wrapper.find(MapLegend).element.style.display).toBeFalsy()
+        expect((wrapper.findComponent(MapLegend).element as HTMLElement).style.display).toBeFalsy()
     });
 
     it("render does display legends when selections have data", () => {
-        const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
-        expect(wrapper.find(MapLegend).element.style.display).toBeTruthy()
+        const wrapper = getWrapper({selections: {...props.selections, detail: 0}});
+        expect((wrapper.findComponent(MapLegend).element as HTMLElement).style.display).toBeTruthy()
     });
 
     it("computes featureIndicators", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
 
-        expect(vm.featureIndicators).toStrictEqual(getFeatureIndicator(propsData.chartdata,
+        expect(vm.featureIndicators).toStrictEqual(getFeatureIndicator(props.chartdata,
             allAreaIds,
             prev,
-            {min: propsData.colourScales["prevalence"].customMin, max: propsData.colourScales["prevalence"].customMax},
-            [propsData.filters[1], propsData.filters[2]],
-            propsData.selections.selectedFilterOptions
+            {min: props.colourScales["prevalence"].customMin, max: props.colourScales["prevalence"].customMax},
+            [props.filters[1], props.filters[2]],
+            props.selections.selectedFilterOptions
         ));
     });
 
@@ -136,7 +141,7 @@ describe("Choropleth component", () => {
 
     it("computes selectedAreaIds with no area selection, where detail is 0", () => {
         //no selections means select all areas, including top level
-        const wrapper = getWrapper({selections: {...propsData.selections, detail: 0}});
+        const wrapper = getWrapper({selections: {...props.selections, detail: 0}});
         const vm = wrapper.vm as any;
         expect(vm.selectedAreaIds).toStrictEqual(allAreaIds);
     });
@@ -144,9 +149,9 @@ describe("Choropleth component", () => {
     it("computes selectedAreaIds with area selection", () => {
         const wrapper = getWrapper({
             selections: {
-                ...propsData.selections,
+                ...props.selections,
                 selectedFilterOptions: {
-                    ...propsData.selections.selectedFilterOptions,
+                    ...props.selections.selectedFilterOptions,
                     area: [{id: "MWI_4_1", label: ""}]
                 }
             }
@@ -159,11 +164,11 @@ describe("Choropleth component", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         expect(vm.colourRange).toStrictEqual({
-            min: propsData.colourScales["prevalence"].customMin,
-            max: propsData.colourScales["prevalence"].customMax
+            min: props.colourScales["prevalence"].customMin,
+            max: props.colourScales["prevalence"].customMax
         });
 
-        wrapper.setProps({
+        await wrapper.setProps({
             colourScales: {
                 prevalence: {
                     type: ScaleType.Default,
@@ -179,7 +184,7 @@ describe("Choropleth component", () => {
             max: prev.max
         });
 
-        wrapper.setProps({
+        await wrapper.setProps({
             colourScales: {
                 prevalence: {
                     type: ScaleType.DynamicFull,
@@ -195,7 +200,7 @@ describe("Choropleth component", () => {
             max: 0.9
         });
 
-        wrapper.setProps({
+        await wrapper.setProps({
             colourScales: {
                 prevalence: {
                     type: ScaleType.DynamicFiltered,
@@ -227,9 +232,9 @@ describe("Choropleth component", () => {
         const vm = wrapper.vm as any;
 
         expect(vm.featuresByLevel).toStrictEqual({
-            0: [propsData.features[0]],
-            3: [propsData.features[1], propsData.features[4]],
-            4: [propsData.features[2], propsData.features[3]]
+            0: [props.features[0]],
+            3: [props.features[1], props.features[4]],
+            4: [props.features[2], props.features[3]]
         });
     });
 
@@ -243,7 +248,7 @@ describe("Choropleth component", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
 
-        expect(vm.currentFeatures).toStrictEqual([propsData.features[2], propsData.features[3]]);
+        expect(vm.currentFeatures).toStrictEqual([props.features[2], props.features[3]]);
     });
 
     it("computes indicatorNameLookup", () => {
@@ -285,7 +290,7 @@ describe("Choropleth component", () => {
                 selectedFilterOptions: {}
             },
             filters: [
-                propsData.filters[0], //area
+                props.filters[0], //area
                 {id: "age", label: "Age", column_id: "age", options: []},
                 {id: "sex", label: "Sex", column_id: "sex", options: []}
             ],
@@ -317,7 +322,7 @@ describe("Choropleth component", () => {
 
         const indicators: ChoroplethIndicatorMetadata[] = [{...plhiv}];
         const selections: ChoroplethSelections = {
-            ...propsData.selections,
+            ...props.selections,
             indicatorId: "badid"
         }
         const uninitialisableWrapper = getWrapper({
@@ -330,20 +335,20 @@ describe("Choropleth component", () => {
 
     it("computes areaFilter", () => {
         const wrapper = getWrapper();
-        expect((wrapper.vm as any).areaFilter).toBe(propsData.filters[0]);
+        expect((wrapper.vm as any).areaFilter).toBe(props.filters[0]);
     });
 
     it("computes nonAreaFilters", () => {
         const wrapper = getWrapper();
-        expect((wrapper.vm as any).nonAreaFilters).toStrictEqual([propsData.filters[1], propsData.filters[2]]);
+        expect((wrapper.vm as any).nonAreaFilters).toStrictEqual([props.filters[1], props.filters[2]]);
     });
 
     it("computes selectedAreaFilterOptions", () => {
         const wrapper = getWrapper({
             selections: {
-                ...propsData.selections,
+                ...props.selections,
                 selectedFilterOptions: {
-                    ...propsData.selections.selectedFilterOptions,
+                    ...props.selections.selectedFilterOptions,
                     area: [{id: "MWI_4_2", label: "4.2"}]
                 }
             }
@@ -355,21 +360,21 @@ describe("Choropleth component", () => {
     it("computes selectedAreaFeatures where a feature is selected", () => {
         const wrapper = getWrapper({
             selections: {
-                ...propsData.selections,
+                ...props.selections,
                 selectedFilterOptions: {
-                    ...propsData.selections.selectedFilterOptions,
+                    ...props.selections.selectedFilterOptions,
                     area: [{id: "MWI_4_2", label: "4.2"}]
                 }
             }
         });
 
-        expect((wrapper.vm as any).selectedAreaFeatures).toStrictEqual([propsData.features[3]]);
+        expect((wrapper.vm as any).selectedAreaFeatures).toStrictEqual([props.features[3]]);
     });
 
     it("computes selectedAreaFeatures where no feature is selected", () => {
         //defaults to country level
         const wrapper = getWrapper();
-        expect((wrapper.vm as any).selectedAreaFeatures).toStrictEqual([propsData.features[0]]);
+        expect((wrapper.vm as any).selectedAreaFeatures).toStrictEqual([props.features[0]]);
     });
 
     it("computes empty selectedAreaFeatures with empty area options", () => {
@@ -379,7 +384,7 @@ describe("Choropleth component", () => {
                 label: "Area",
                 column_id: "area_id",
                 options: []
-            }, propsData.filters[1], propsData.filters[2]]
+            }, props.filters[1], props.filters[2]]
         });
         expect((wrapper.vm as any).selectedAreaFeatures).toStrictEqual([]);
     });
@@ -407,7 +412,7 @@ describe("Choropleth component", () => {
             fitBounds: mockMapFitBounds
         };
 
-        const resetButton = wrapper.find(ResetMap)
+        const resetButton = wrapper.findComponent(ResetMap)
         expect(resetButton.exists()).toBe(true)
 
         resetButton.vm.$emit("reset-view");
@@ -425,10 +430,10 @@ describe("Choropleth component", () => {
             }
         });
 
-        const updates = wrapper.emitted("update");
-        expect(wrapper.emitted("update")[0][0]).toStrictEqual({detail: 4});
-        expect(wrapper.emitted("update")[1][0]).toStrictEqual({indicatorId: "prevalence"});
-        expect(wrapper.emitted("update")[2][0]).toStrictEqual({
+        const updates = wrapper.emitted("update")!;
+        expect(wrapper.emitted("update")![0][0]).toStrictEqual({detail: 4});
+        expect(wrapper.emitted("update")![1][0]).toStrictEqual({indicatorId: "prevalence"});
+        expect(wrapper.emitted("update")![2][0]).toStrictEqual({
             selectedFilterOptions: {
                 age: [{id: "0:15", label: "0-15"}],
                 sex: [{id: "female", label: "Female"}],
@@ -442,7 +447,7 @@ describe("Choropleth component", () => {
         const vm = wrapper.vm as any;
         const newSelections = {age: [{id: "15:30", label: "15-30"}]};
         vm.onFilterSelectionsChange(newSelections);
-        const updates = wrapper.emitted("update");
+        const updates = wrapper.emitted("update")!;
         expect(updates[updates.length - 1][0]).toStrictEqual({
             selectedFilterOptions: newSelections
         });
@@ -452,7 +457,7 @@ describe("Choropleth component", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         vm.onIndicatorChange("newIndicator");
-        const updates = wrapper.emitted("update");
+        const updates = wrapper.emitted("update")!;
         expect(updates[updates.length - 1][0]).toStrictEqual({
             indicatorId: "newIndicator"
         });
@@ -464,7 +469,7 @@ describe("Choropleth component", () => {
         const vm = wrapper.vm as any;
         vm.onDetailChange(3);
 
-        const updates = wrapper.emitted("update");
+        const updates = wrapper.emitted("update")!;
         expect(updates[updates.length - 1][0]).toStrictEqual({
             detail: 3
         });
@@ -474,7 +479,7 @@ describe("Choropleth component", () => {
     it("updates colour scales on change in legend", () => {
         const wrapper = getWrapper();
 
-        const legend = wrapper.find(MapLegend);
+        const legend = wrapper.findComponent(MapLegend);
         const newScale = {
             type: ScaleType.Custom,
             customMin: 5,
@@ -482,20 +487,20 @@ describe("Choropleth component", () => {
         };
         legend.vm.$emit("update", newScale);
 
-        expect(wrapper.emitted("update-colour-scales").length).toBe(1);
-        expect(wrapper.emitted("update-colour-scales")[0][0]).toStrictEqual({
+        expect(wrapper.emitted("update-colour-scales")!.length).toBe(1);
+        expect(wrapper.emitted("update-colour-scales")![0][0]).toStrictEqual({
             prevalence: newScale
         });
     });
 
     it("initialises new colour scales when current indicator has no colour scale yet", () => {
         const wrapper = getWrapper({
-            selections: {...propsData.selections, indicatorId: "plhiv"}
+            selections: {...props.selections, indicatorId: "plhiv"}
         });
 
-        expect(wrapper.emitted("update-colour-scales").length).toBe(1);
-        expect(wrapper.emitted("update-colour-scales")[0][0]).toStrictEqual({
-            ...propsData.colourScales,
+        expect(wrapper.emitted("update-colour-scales")!.length).toBe(1);
+        expect(wrapper.emitted("update-colour-scales")![0][0]).toStrictEqual({
+            ...props.colourScales,
             plhiv: {
                 type: ScaleType.DynamicFiltered,
                 customMin: 1,
@@ -504,19 +509,19 @@ describe("Choropleth component", () => {
         });
     });
 
-    it("updates bounds when becomes initialises", () => {
+    it("updates bounds when becomes initialises", async () => {
         const mockUpdateBounds = jest.fn();
         const wrapper = getWrapper({ //this cannot initialise
-            features: [...propsData.features],
-            featureLevels: [...propsData.featureLevels],
-            chartdata: [...propsData.chartdata],
-            indicators: [...propsData.indicators],
+            features: [...props.features],
+            featureLevels: [...props.featureLevels],
+            chartdata: [...props.chartdata],
+            indicators: [...props.indicators],
             selections: {
                 detail: -1,
                 selectedFilterOptions: {}
             },
             filters: [
-                propsData.filters[0], //area
+                props.filters[0], //area
                 {id: "age", label: "Age", column_id: "age", options: []},
                 {id: "sex", label: "Sex", column_id: "sex", options: []}
             ],
@@ -525,14 +530,14 @@ describe("Choropleth component", () => {
         const vm = wrapper.vm as any;
         vm.updateBounds = mockUpdateBounds;
 
-        wrapper.setProps(propsData); //This should initialise and trigger the watcher
+        await wrapper.setProps(props); //This should initialise and trigger the watcher
         expect(mockUpdateBounds.mock.calls.length).toBeGreaterThan(0);
     });
 
     it("normalizeIndicators converts indicator metadata for treeselect", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
-        const result = vm.normalizeIndicators(propsData.indicators[0]);
+        const result = vm.normalizeIndicators(props.indicators[0]);
         expect(result).toStrictEqual({id: "plhiv", label: "PLHIV"});
     });
 

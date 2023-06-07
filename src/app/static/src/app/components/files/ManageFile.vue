@@ -71,7 +71,7 @@
         existingFileName: string,
         fromADR?: boolean,
         name: string,
-        required: boolean
+        required?: boolean
     }
 
     export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
@@ -116,7 +116,7 @@
             },
             required: {
                 type: Boolean,
-                required: true
+                required: false
             }
         },
         data(): Data {
