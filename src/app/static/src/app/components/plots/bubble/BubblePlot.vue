@@ -46,9 +46,7 @@
                                 :optionsStyle="style">
                     </l-geo-json>
                 </template>
-                <template v-if="emptyFeature">
-                    <map-empty-feature></map-empty-feature>
-                </template>
+                <map-empty-feature v-if="emptyFeature"></map-empty-feature>
                 <template v-else>
                     <reset-map @reset-view="updateBounds"></reset-map>
                     <map-legend :metadata="colorIndicator"
