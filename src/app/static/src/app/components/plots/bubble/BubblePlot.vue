@@ -39,7 +39,7 @@
             </div>
         </div>
         <div id="chart" class="col-md-9">
-            <l-map ref="map" style="height: 800px; width: 100%" @vnode-updated="updateBounds">
+            <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds" @vnode-updated="updateBounds">
                 <template v-for="feature in currentFeatures" :key="feature.id">
                     <l-geo-json :geojson="feature"
                                 :options="options"
@@ -513,10 +513,7 @@
                 this.$emit("update-size-scales", newSizeScales);
             },
         },
-        mounted() {
-            this.updateBounds();
-        },
-        async beforeMount() {
+        beforeMount() {
             //If selections have not been initialised, refresh them
             if (this.selections.detail < 0) {
                 this.onDetailChange(this.maxLevel);
