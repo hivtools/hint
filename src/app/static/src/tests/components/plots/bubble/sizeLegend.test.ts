@@ -1,13 +1,18 @@
-import {shallowMount} from "@vue/test-utils";
 import SizeLegend from "../../../../app/components/plots/bubble/SizeLegend.vue";
 import {getRadius} from "../../../../app/components/plots/bubble/utils";
-import {LControl} from "@vue-leaflet/vue-leaflet";
 import Vuex from "vuex";
 import {emptyState} from "../../../../app/root";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
 import MapAdjustScale from "../../../../app/components/plots/MapAdjustScale.vue";
 import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 import { mountWithTranslate, shallowMountWithTranslate } from "../../../testHelpers";
+
+jest.mock("@vue-leaflet/vue-leaflet", () => {
+    const LControl = {
+        template: "<div id='l-control-mock'><slot></slot></div>"
+    }
+    return { LControl }
+});
 
 const store = new Vuex.Store({
     state: emptyState()
@@ -28,7 +33,7 @@ const props = {
 
 const getWrapper = (partialProps = {}) => {
     const testProps = {...props, ...partialProps};
-    return shallowMountWithTranslate(SizeLegend, store, {
+    return mountWithTranslate(SizeLegend, store, {
         props: testProps,
         global: {
             plugins: [store]
@@ -121,12 +126,11 @@ describe("SizeLegend component", () => {
 
     it("renders as expected", () => {
         const wrapper = getWrapper();
-
         const label = wrapper.find("label")
         expect(label.text()).toBe("indicator");
 
-        const lControl = wrapper.findComponent(LControl);
-        expect(lControl.props().position).toBe("bottomleft");
+        const lControl = wrapper.find("#l-control-mock");
+        expect(lControl.attributes().position).toBe("bottomleft");
 
         const svg = lControl.find("svg");
         expect(svg.attributes().width).toBe("222");
@@ -161,12 +165,12 @@ describe("SizeLegend component", () => {
         const adjust = wrapper.findComponent(MapAdjustScale);
         expect(adjust.props("name")).toBe("size");
         expect(adjust.props("show")).toBe(false);
-        expect(adjust.props("scale")).toBe(props.sizeScale);
-        expect(adjust.props("metadata")).toBe(props.metadata);
+        expect(adjust.props("scale")).toStrictEqual(props.sizeScale);
+        expect(adjust.props("metadata")).toStrictEqual(props.metadata);
     });
 
     it("renders text for circle with 0 value as expected", () => {
-        const wrapper = shallowMountWithTranslate(SizeLegend, store, {
+        const wrapper = mountWithTranslate(SizeLegend, store, {
             props: {
                 minRadius: 10,
                 maxRadius: 110,
@@ -183,7 +187,7 @@ describe("SizeLegend component", () => {
     });
 
     it("renders large numbers as expected", () => {
-        const wrapper = shallowMountWithTranslate(SizeLegend, store, {
+        const wrapper = mountWithTranslate(SizeLegend, store, {
             props: {
                 minRadius: 10,
                 maxRadius: 100,
