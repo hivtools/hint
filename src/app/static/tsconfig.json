@@ -17,7 +17,8 @@
     "./src/app/**/*.js"
   ],
   "files": [
-    "./vue-shims.d.ts"
+    "./vue-shims.d.ts",
+    "./vuex-shims.d.ts"
   ],
   "exclude": [
     "node_modules"

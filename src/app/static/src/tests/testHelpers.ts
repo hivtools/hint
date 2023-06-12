@@ -1,14 +1,13 @@
-import {mockAxios, mockBaselineState, mockError, mockFailure, mockFile, mockRootState} from "./mocks";
+import {mockAxios, mockBaselineState, mockError, mockFailure, mockRootState} from "./mocks";
 import {ActionContext, MutationTree, Store} from "vuex";
 import {PayloadWithType, TranslatableState} from "../app/types";
-import {Wrapper} from "@vue/test-utils";
-import {RootState} from "../app/root";
+import {DOMWrapper} from "@vue/test-utils";
 import {Language} from "../app/store/translations/locales";
 import registerTranslations from "../app/store/translations/registerTranslations";
 import {LanguageMutation} from "../app/store/language/mutations";
-import Mock = jest.Mock;
 import ErrorReport from "../app/components/ErrorReport.vue";
 import {DataExplorationState} from "../app/store/dataExploration/dataExploration";
+import Mock = jest.Mock;
 
 export function expectEqualsFrozen(args: PayloadWithType<any>, expected: PayloadWithType<any>) {
     expect(Object.isFrozen(args["payload"])).toBe(true);
@@ -68,7 +67,7 @@ export function expectAllMutationsDefined(mutationDefinitions: any, mutationTree
     }
 }
 
-export function expectTranslatedWithStoreType<T extends TranslatableState>(element: Wrapper<any>,
+export function expectTranslatedWithStoreType<T extends TranslatableState>(element: DOMWrapper<any>,
                                                                            englishText: string,
                                                                            frenchText: string,
                                                                            portugueseText: string,
@@ -88,7 +87,7 @@ export function expectTranslatedWithStoreType<T extends TranslatableState>(eleme
     expect(value()).toBe(portugueseText);
 }
 
-export const expectTranslated = (element: Wrapper<any>,
+export const expectTranslated = (element: DOMWrapper<any>,
                                  englishText: string,
                                  frenchText: string,
                                  portugueseText: string,
@@ -112,11 +111,11 @@ export const expectChangeLanguageMutations = (commit: Mock) => {
     });
 };
 
-export const expectErrorReportOpen = (wrapper: Wrapper<any>, row = 0) => {
+export const expectErrorReportOpen = (wrapper: DOMWrapper<any>, row = 0) => {
     const link = wrapper.findAll(".dropdown-item").at(row);
-    link.trigger("click");
+    link?.trigger("click");
 
-    expect(wrapper.find(ErrorReport).props("open")).toBe(true);
+    expect(wrapper.findComponent(ErrorReport).props("open")).toBe(true);
 }
 
 export function expectArraysEqual(result: any[], expected: any[]) {

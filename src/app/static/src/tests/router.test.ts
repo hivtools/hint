@@ -1,26 +1,28 @@
-import {router} from '../app/router';
 import {storeOptions} from "../app/root";
+import {RouteLocationNormalized} from "vue-router";
+import {mount} from '@vue/test-utils'
+import Vuex from "vuex";
+import {mockRootState} from "./mocks";
+import {store} from "../app/main";
+import Hint from "../app/components/Hint.vue";
 
+// Mock the actions before import the router as the app will call
+// these actions on import
 const baselineActions = {
     getBaselineData: jest.fn()
 };
-
 const surveyAndProgramActions = {
     getSurveyAndProgramData: jest.fn()
 };
-
 const modelRunActions = {
     getResult: jest.fn()
 };
-
 const projectActions = {
     getCurrentProject: jest.fn()
 };
-
 const genericChartActions = {
     getGenericChartMetadata: jest.fn()
 };
-
 const actions = {
     getADRSchemas: jest.fn()
 };
@@ -34,13 +36,19 @@ storeOptions.actions = actions
 
 console.error = jest.fn();
 
-// only import the app after we have replaced action with mocks
-// as the app will call these actions on import
-import {app, beforeEnter} from "../app";
-import Stepper from "../app/components/Stepper.vue";
-import Projects from "../app/components/projects/Projects.vue";
-import {store} from "../app/main";
-import {Route} from "vue-router";
+// Mock the components before we import the rooter as the app will call these components
+// on import of the router
+jest.mock("../app/components/Stepper.vue", () => ({
+    name: "Stepper",
+    template: "<div id='stepper-stub'/>"
+}))
+
+jest.mock("../app/components/projects/Projects.vue", () => ({
+    name: "Projects",
+    template: "<div id='projects-stub'/>"
+}))
+
+import {router, beforeEnter} from '../app/router';
 
 describe("Router", () => {
 
@@ -48,11 +56,40 @@ describe("Router", () => {
         (console.error as jest.Mock).mockClear();
     });
 
-    it("has expected properties", () => {
-        expect(app.$router).toBe(router);
-        expect(router.mode).toBe("history");
-        expect(router.getMatchedComponents("/")).toStrictEqual([Stepper]);
-        expect(router.getMatchedComponents("/projects")).toStrictEqual([Projects]);
+    it("has expected properties", async () => {
+        const store = new Vuex.Store({
+            state: mockRootState()
+        })
+        const mockTranslate = jest.fn()
+        const wrapper = mount(Hint, {
+            global: {
+                plugins: [router, store],
+                stubs: ["user-header", "errors"],
+                directives: {
+                    translate: mockTranslate
+                },
+            },
+        })
+
+        await router.push("/");
+        await router.isReady();
+
+        expect(wrapper.find("#stepper-stub").exists()).toBe(true);
+
+        await router.push("/projects");
+        await router.isReady();
+
+        expect(wrapper.find("#projects-stub").exists()).toBe(true);
+
+        await router.push("/privacy");
+        await router.isReady();
+
+        expect(wrapper.find("#privacy-content").exists()).toBe(true);
+
+        await router.push("/accessibility");
+        await router.isReady();
+
+        expect(wrapper.find("#accessibility-content").exists()).toBe(true);
     });
 
     it("doesn't redirect returning guest to login page", () => {
@@ -60,15 +97,12 @@ describe("Router", () => {
         delete (window as any).location
         window.location = {...realLocation, assign: jest.fn()};
 
-        const next = jest.fn();
-
         store.state.currentUser = "guest";
         Storage.prototype.getItem = jest.fn((key) => key === "asGuest" ? "continueAsGuest" : null);
 
-        beforeEnter({} as Route, {} as Route, next);
+        beforeEnter({} as RouteLocationNormalized, {} as RouteLocationNormalized);
 
         expect(window.location.assign).not.toHaveBeenCalled();
-        expect(next).toBeCalled();
 
         window.location = realLocation
     });
@@ -78,15 +112,13 @@ describe("Router", () => {
         delete (window as any).location
         window.location = {...realLocation, assign: jest.fn()};
 
-        const next = jest.fn();
         store.state.currentUser = "guest";
         Storage.prototype.getItem = jest.fn();
 
-        beforeEnter({} as Route, {} as Route, next);
+        beforeEnter({} as RouteLocationNormalized, {} as RouteLocationNormalized);
 
         expect(window.location.assign).toHaveBeenCalledTimes(1);
         expect(window.location.assign).toHaveBeenCalledWith("/login");
-        expect(next).not.toBeCalled();
 
         window.location = realLocation
     });
@@ -96,14 +128,11 @@ describe("Router", () => {
         delete (window as any).location
         window.location = {...realLocation, assign: jest.fn()};
 
-        const next = jest.fn();
         store.state.currentUser = "test.user@example.com";
 
-        beforeEnter({} as Route, {} as Route, next);
+        beforeEnter({} as RouteLocationNormalized, {} as RouteLocationNormalized);
 
         expect(window.location.assign).not.toHaveBeenCalled();
-        expect(next).toBeCalled();
-
         window.location = realLocation
     });
 });

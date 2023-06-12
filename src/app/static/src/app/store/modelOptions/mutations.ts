@@ -66,7 +66,8 @@ export const mutations: MutationTree<ModelOptionsState> = {
     },
 
     [ModelOptionsMutation.ModelOptionsFetched](state: ModelOptionsState, action: PayloadWithType<DynamicFormMeta>) {
-        const newForm = (state.optionsFormMeta?.controlSections.filter((x) => (x?.label)).length === state.optionsFormMeta?.controlSections.length)
+
+        const newForm = state.optionsFormMeta.controlSections.length
             ? {...updateForm(state.optionsFormMeta, action.payload)}
             : constructOptionsFormMetaFromData(state, action.payload)
         state.valid = state.valid && JSON.stringify(newForm) == JSON.stringify(state.optionsFormMeta);
