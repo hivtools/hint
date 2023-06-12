@@ -13,7 +13,8 @@
   "include": [
     "./src/app/**/*.ts",
     "./src/app/**/*.vue",
-    "./src/app/**/*.js"
+    "./src/app/**/*.js",
+    "./src/tests/**/*.ts"
   ],
   "files": [
     "./vue-shims.d.ts",
