@@ -14,7 +14,7 @@
     "./src/app/**/*.ts",
     "./src/app/**/*.vue",
     "./src/app/**/*.js",
-    "./src/tests/**/*.ts"
+    // "./src/tests/**/*.ts"
   ],
   "files": [
     "./vue-shims.d.ts",
