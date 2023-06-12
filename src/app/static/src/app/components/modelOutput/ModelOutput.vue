@@ -24,7 +24,7 @@
                     :include-filters="true"
                     area-filter-id="area"
                     :colour-scales="colourScales"
-                    @update="updateOutputChoroplethSelections({payload: $event})"
+                    @update:selections="updateOutputChoroplethSelections({payload: $event})"
                     @update-colour-scales="updateOutputColourScales({payload: $event})"></choropleth>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>

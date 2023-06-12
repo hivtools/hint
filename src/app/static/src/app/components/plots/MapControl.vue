@@ -5,7 +5,7 @@
                 <div v-if="showIndicators" class="row form-group">
                     <label class="col-3 col-form-label" v-translate="'indicator'">
                     </label>
-                    <div class="col">
+                    <div class="col" :key="JSON.stringify(indicatorOptions)">
                         <treeselect  :modelValue="indicator"
                                      :multiple="false"
                                      :clearable="false"

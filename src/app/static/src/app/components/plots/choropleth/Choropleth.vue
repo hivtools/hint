@@ -5,27 +5,31 @@
                  :selectedFilterOptions="selections.selectedFilterOptions"
                  @update="onFilterSelectionsChange"></filters>
         <div id="chart" :class="includeFilters ? 'col-md-9' : 'col-md-12'">
-            <l-map ref="map" style="height: 800px; width: 100%" @ready="() => updateBounds()">
-                <template v-for="feature in currentFeatures" :key="feature.id">
+            <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds" @vnode-updated="updateBounds">
+                <template v-for="feature in currentFeatures" :key="feature">
                     <l-geo-json :geojson="feature"
                                 :options="options"
                                 :optionsStyle="{...style, fillColor: getColor(feature)}">
                     </l-geo-json>
                 </template>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
-                <reset-map v-else @reset-view="updateBounds"></reset-map>
-                <map-control :initialDetail=selections.detail
-                             :indicator=selections.indicatorId
-                             :show-indicators="true"
-                             :indicators-metadata="indicators"
-                             :level-labels="featureLevels"
-                             @detail-changed="onDetailChange"
-                             @indicator-changed="onIndicatorChange"></map-control>
-                <map-legend v-show="!emptyFeature"
-                            :metadata="colorIndicator"
-                            :colour-scale="indicatorColourScale"
-                            :colour-range="colourRange"
-                            @update="updateColourScale"></map-legend>
+                <template v-else>
+                    <reset-map @reset-view="updateBounds"></reset-map>
+                </template>
+                <template>
+                    <map-control :initialDetail="selections.detail"
+                                :indicator="selections.indicatorId"
+                                :show-indicators="true"
+                                :indicators-metadata="indicators"
+                                :level-labels="featureLevels"
+                                @detail-changed="onDetailChange"
+                                @indicator-changed="onIndicatorChange"></map-control>
+                    <map-legend v-show="!emptyFeature"
+                                :metadata="colorIndicator"
+                                :colour-scale="indicatorColourScale"
+                                :colour-range="colourRange"
+                                @update="updateColourScale"></map-legend>
+                </template>
             </l-map>
         </div>
     </div>
@@ -403,7 +407,7 @@
                 this.changeSelections({selectedFilterOptions: newSelections});
             },
             changeSelections(newSelections: Partial<ChoroplethSelections>) {
-                this.$emit("update", newSelections)
+                this.$emit("update:selections", newSelections)
             },
             updateColourScale: function (scale: ScaleSettings) {
                 const newColourScales = {...this.colourScales};
@@ -419,12 +423,6 @@
         },
         watch:
             {
-                initialised: function (newVal: boolean) {
-                    this.updateBounds();
-                },
-                selectedAreaFeatures: function (newVal) {
-                    this.updateBounds();
-                },
                 filters: function () {
                     this.initialise();
                 },
@@ -432,7 +430,7 @@
                     this.initialise();
                 },
             },
-        created() {
+        beforeMount() {
             this.initialise();
         }
     });
