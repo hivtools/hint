@@ -39,7 +39,7 @@
     import {defineComponentVue2WithProps} from "../../../defineComponentVue2/defineComponentVue2"
     import {Feature} from "geojson";
     import {LGeoJson, LMap} from "@vue-leaflet/vue-leaflet";
-    import {GeoJSON, Layer, GeoJSONOptions, Map} from "leaflet";
+    import {GeoJSON, Layer, GeoJSONOptions} from "leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
     import Filters from "../Filters.vue";
@@ -420,8 +420,7 @@
                 return {id: node.indicator, label: node.name};
             }
         },
-        watch:
-            {
+        watch: {
                 filters: function () {
                     this.initialise();
                 },

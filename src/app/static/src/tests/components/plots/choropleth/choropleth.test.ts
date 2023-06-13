@@ -1,4 +1,3 @@
-import {shallowMount} from "@vue/test-utils";
 import Choropleth from "../../../../app/components/plots/choropleth/Choropleth.vue";
 import {LGeoJson} from "@vue-leaflet/vue-leaflet";
 import {getFeatureIndicator} from "../../../../app/components/plots/choropleth/utils";
@@ -10,11 +9,26 @@ import MapLegend from "../../../../app/components/plots/MapLegend.vue";
 import {plhiv, prev, testData} from "../testHelpers";
 import Filters from "../../../../app/components/plots/Filters.vue";
 import {ChoroplethSelections, ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
-import Vue from "vue";
 import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
 import ResetMap from "../../../../app/components/plots/ResetMap.vue";
 import {ChoroplethIndicatorMetadata} from "../../../../app/generated";
-import { shallowMountWithTranslate } from "../../../testHelpers";
+import { mountWithTranslate } from "../../../testHelpers";
+
+jest.mock("@vue-leaflet/vue-leaflet", () => {
+    const LMap = {
+        template: "<div id='l-map-mock'><slot></slot></div>"
+    }
+    const LControl = {
+        template: "<div id='l-control-mock'><slot></slot></div>"
+    }
+    const LGeoJson = {
+        template: `<div id='l-geo-json-mock'><slot></slot></div>`,
+        props: {
+            geojson: Object
+        }
+    }
+    return { LMap, LControl, LGeoJson }
+});
 
 const store = new Vuex.Store({
     state: emptyState()
@@ -45,7 +59,7 @@ const props = {
 const allAreaIds = ["MWI", "MWI_3_1", "MWI_3_2", "MWI_4_1", "MWI_4_2"];
 
 const getWrapper = (customPropsData: any = {}) => {
-    return shallowMountWithTranslate(Choropleth, store, {
+    return mountWithTranslate(Choropleth, store, {
         props: {...props, ...customPropsData},
         global: {
             plugins: [store]
@@ -58,8 +72,8 @@ describe("Choropleth component", () => {
         const wrapper = getWrapper();
         const geoJsons = wrapper.findAllComponents(LGeoJson);
         expect(geoJsons.length).toBe(2);
-        expect(geoJsons[0].props().geojson).toBe(props.features[2]);
-        expect(geoJsons[1].props().geojson).toBe(props.features[3]);
+        expect(geoJsons[0].props().geojson).toStrictEqual(props.features[2]);
+        expect(geoJsons[1].props().geojson).toStrictEqual(props.features[3]);
 
         expect(wrapper.findComponent(MapControl).props().initialDetail).toEqual(4);
         expect(wrapper.findComponent(MapControl).props().showIndicators).toEqual(true);
@@ -82,8 +96,8 @@ describe("Choropleth component", () => {
     it("renders color legend", () => {
         const wrapper = getWrapper();
         const legend = wrapper.findComponent(MapLegend);
-        expect(legend.props().metadata).toBe(props.indicators[1]);
-        expect(legend.props().colourScale).toBe(props.colourScales.prevalence)
+        expect(legend.props().metadata).toStrictEqual(props.indicators[1]);
+        expect(legend.props().colourScale).toStrictEqual(props.colourScales.prevalence)
     });
 
     it("computes emptyFeatures returns true when selections are empty", () => {
@@ -178,7 +192,6 @@ describe("Choropleth component", () => {
             }
         });
 
-        await Vue.nextTick();
         expect(vm.colourRange).toStrictEqual({
             min: prev.min,
             max: prev.max
@@ -194,7 +207,6 @@ describe("Choropleth component", () => {
             }
         });
 
-        await Vue.nextTick();
         expect(vm.colourRange).toStrictEqual({
             min: 0,
             max: 0.9
@@ -219,7 +231,6 @@ describe("Choropleth component", () => {
             }
         });
 
-        await Vue.nextTick();
         expect(vm.colourRange).toStrictEqual({
             min: 0.1,
             max: 0.9
@@ -335,7 +346,7 @@ describe("Choropleth component", () => {
 
     it("computes areaFilter", () => {
         const wrapper = getWrapper();
-        expect((wrapper.vm as any).areaFilter).toBe(props.filters[0]);
+        expect((wrapper.vm as any).areaFilter).toStrictEqual(props.filters[0]);
     });
 
     it("computes nonAreaFilters", () => {
@@ -394,7 +405,7 @@ describe("Choropleth component", () => {
         const mockMapFitBounds = jest.fn();
 
         const vm = wrapper.vm as any;
-        vm.$refs.map = {
+        vm.$refs.map.leafletObject = {
             fitBounds: mockMapFitBounds
         };
 
@@ -408,7 +419,7 @@ describe("Choropleth component", () => {
         const mockMapFitBounds = jest.fn();
 
         const vm = wrapper.vm as any;
-        vm.$refs.map = {
+        vm.$refs.map.leafletObject = {
             fitBounds: mockMapFitBounds
         };
 
@@ -430,10 +441,10 @@ describe("Choropleth component", () => {
             }
         });
 
-        const updates = wrapper.emitted("update")!;
-        expect(wrapper.emitted("update")![0][0]).toStrictEqual({detail: 4});
-        expect(wrapper.emitted("update")![1][0]).toStrictEqual({indicatorId: "prevalence"});
-        expect(wrapper.emitted("update")![2][0]).toStrictEqual({
+        const updates = wrapper.emitted("update:selections")!;
+        expect(wrapper.emitted("update:selections")![0][0]).toStrictEqual({detail: 4});
+        expect(wrapper.emitted("update:selections")![1][0]).toStrictEqual({indicatorId: "prevalence"});
+        expect(wrapper.emitted("update:selections")![2][0]).toStrictEqual({
             selectedFilterOptions: {
                 age: [{id: "0:15", label: "0-15"}],
                 sex: [{id: "female", label: "Female"}],
@@ -447,7 +458,7 @@ describe("Choropleth component", () => {
         const vm = wrapper.vm as any;
         const newSelections = {age: [{id: "15:30", label: "15-30"}]};
         vm.onFilterSelectionsChange(newSelections);
-        const updates = wrapper.emitted("update")!;
+        const updates = wrapper.emitted("update:selections")!;
         expect(updates[updates.length - 1][0]).toStrictEqual({
             selectedFilterOptions: newSelections
         });
@@ -457,7 +468,7 @@ describe("Choropleth component", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         vm.onIndicatorChange("newIndicator");
-        const updates = wrapper.emitted("update")!;
+        const updates = wrapper.emitted("update:selections")!;
         expect(updates[updates.length - 1][0]).toStrictEqual({
             indicatorId: "newIndicator"
         });
@@ -469,7 +480,7 @@ describe("Choropleth component", () => {
         const vm = wrapper.vm as any;
         vm.onDetailChange(3);
 
-        const updates = wrapper.emitted("update")!;
+        const updates = wrapper.emitted("update:selections")!;
         expect(updates[updates.length - 1][0]).toStrictEqual({
             detail: 3
         });
@@ -561,10 +572,10 @@ describe("Choropleth component", () => {
 
         onEachFeatureFunction(mockFeature, mockLayer);
         expect(mockLayer.bindTooltip.mock.calls[0][0]).toEqual(`<div>
-                            <strong>Area 1</strong>
-                            <br/>1.00%
-                            <br/>(1.00% - 10.00%)
-                        </div>`);
+                                <strong>Area 1</strong>
+                                <br/>1.00%
+                                <br/>(1.00% - 10.00%)
+                            </div>`);
 
         const mockZeroValueFeature = {
             properties: {
@@ -575,9 +586,9 @@ describe("Choropleth component", () => {
 
         onEachFeatureFunction(mockZeroValueFeature, mockLayer);
         expect(mockLayer.bindTooltip.mock.calls[1][0]).toEqual(`<div>
-                            <strong>Area 2</strong>
-                            <br/>0.00%
-                        </div>`);
+                                <strong>Area 2</strong>
+                                <br/>0.00%
+                            </div>`);
 
     });
 
