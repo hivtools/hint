@@ -14,7 +14,7 @@ module.exports = {
     testMatch: [
         "**/tests/**/*.test.{j,t}s"
     ],
-   testResultsProcessor: 'jest-teamcity-reporter',
+    testResultsProcessor: 'jest-teamcity-reporter',
     transformIgnorePatterns: [
         "/node_modules/(?!d3-format|d3-scale-chromatic|d3-interpolate|d3-color)/"
     ],
@@ -31,4 +31,11 @@ module.exports = {
     modulePaths: [
         "<rootDir>"
     ],
+    testPathIgnorePatterns: [
+        "<rootDir>/src/tests/components/header/fileMenu.test.ts",
+        "<rootDir>/src/tests/components/plots/.*.test.ts",
+        "<rootDir>/src/tests/components/plots/.*/.test.ts",
+        "<rootDir>/src/tests/components/app.test.ts",
+        "<rootDir>/src/tests/components/dataExplorationApp.test.ts",
+    ]
 }

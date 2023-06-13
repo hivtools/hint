@@ -1,16 +1,18 @@
-import {createLocalVue, mount, shallowMount} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 import Vuex from "vuex";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {expectErrorReportOpen, expectTranslated} from "../../testHelpers";
+import {expectErrorReportOpen, expectTranslated, mountWithTranslate} from "../../testHelpers";
 import DropDown from "../../../app/components/header/DropDown.vue";
-import VueRouter from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import DataExplorationSupportMenu from "../../../app/components/header/DataExplorationSupportMenu.vue"
 import {mockDataExplorationState, mockErrorsState} from "../../mocks";
 import ErrorReport from "../../../app/components/ErrorReport.vue";
+import { nextTick } from "vue";
 
-const localVue = createLocalVue()
-localVue.use(VueRouter)
-const router = new VueRouter()
+const router = createRouter({
+    routes: [],
+    history: createWebHashHistory()
+});
 
 describe("Data exploration online support menu", () => {
 
@@ -43,23 +45,23 @@ describe("Data exploration online support menu", () => {
     it("renders drop down with delay property true", () => {
         const store = createStore();
         const wrapper = shallowMount(DataExplorationSupportMenu, {
-            store,
-            localVue,
-            router
+            global: {
+                plugins: [store, router]
+            },
         });
 
-        const dropDown = wrapper.find(DropDown);
+        const dropDown = wrapper.findComponent(DropDown);
         expect(dropDown.props("delay")).toBe(true);
     });
 
-    it("renders drop down text correctly", () => {
+    it("renders drop down text correctly", async () => {
         const store = createStore();
-        const wrapper = mount(DataExplorationSupportMenu, {
-            store,
-            localVue,
-            router
+        const wrapper = mountWithTranslate(DataExplorationSupportMenu, store, {
+            global: {
+                plugins: [store, router]
+            },
         });
-        wrapper.find(".dropdown-toggle").trigger("click");
+        await wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes())
             .toStrictEqual(["dropdown-menu", "show", "dropdown-menu-right"]);
 
@@ -67,25 +69,25 @@ describe("Data exploration online support menu", () => {
 
         expect(link.length).toBe(4)
 
-        expectTranslated(link.at(0),
+        await expectTranslated(link[0],
             "Online support",
             "Support en ligne",
             "Apoio online",
             store as any);
 
-        expectTranslated(link.at(1),
+        await expectTranslated(link[1],
             "Troubleshooting request",
             "Demande de dépannage",
             "Solicitação de solução de problemas",
             store as any);
 
-        expectTranslated(link.at(2),
+        await expectTranslated(link[2],
             "Privacy",
             "Vie privée",
             "Privacidade",
             store as any);
 
-        expectTranslated(link.at(3),
+        await expectTranslated(link[3],
             "Accessibility",
             "Accessibilité",
             "Acessibilidade",
@@ -94,83 +96,83 @@ describe("Data exploration online support menu", () => {
 
     it("renders accessibility menu-item text and link", () => {
         const store = createStore();
-        const wrapper = shallowMount(DataExplorationSupportMenu, {
-            store,
-            localVue,
-            router
+        const wrapper = mount(DataExplorationSupportMenu, {
+            global: {
+                plugins: [store, router],
+                stubs: ["router-link"]
+            },
         });
 
         const links = wrapper.findAll("router-link-stub");
         expect(links.length).toBe(2)
 
-        const link = links.at(1)
+        const link = links[1]
         expect(link.attributes("to")).toBe("/accessibility");
     });
 
     it("renders privacy menu-item text and link", () => {
         const store = createStore();
-        const wrapper = shallowMount(DataExplorationSupportMenu, {
-            store,
-            localVue,
-            router
+        const wrapper = mount(DataExplorationSupportMenu, {
+            global: {
+                plugins: [store, router],
+                stubs: ["router-link"]
+            },
         });
 
         const links = wrapper.findAll("router-link-stub");
         expect(links.length).toBe(2)
 
-        const link = links.at(0)
+        const link = links[0]
         expect(link.attributes("to")).toBe("/privacy");
     });
 
-    it("renders error report widget", () => {
+    it("renders error report widget", async () => {
 
-        const store = createStore();
-        const wrapper = shallowMount(DataExplorationSupportMenu, {
-            store,
-            localVue,
-            router
-        });
-
-        expect(wrapper.findAll(ErrorReport).length).toBe(1);
-        expect(wrapper.find(ErrorReport).props("open")).toBe(false);
-
-        const link = wrapper.findAll(".dropdown-item").at(0);
-
-        expectErrorReportOpen(wrapper)
-    });
-
-    it("selects current step by default", () => {
         const store = createStore();
         const wrapper = mount(DataExplorationSupportMenu, {
-            store,
-            localVue,
-            router
+            global: {
+                plugins: [store, router]
+            },
         });
 
-        expectErrorReportOpen(wrapper)
+        expect(wrapper.findAllComponents(ErrorReport).length).toBe(1);
+        expect(wrapper.findComponent(ErrorReport).props("open")).toBe(false);
+
+        await expectErrorReportOpen(wrapper)
+    });
+
+    it("selects current step by default", async () => {
+        const store = createStore();
+        const wrapper = mount(DataExplorationSupportMenu, {
+            global: {
+                plugins: [store, router]
+            },
+        });
+
+        await expectErrorReportOpen(wrapper)
     });
 
     it("invokes generateErrorReport with expected data", async () => {
 
         const store = createStore();
         const wrapper = mount(DataExplorationSupportMenu, {
-            store,
-            localVue,
-            router
+            global: {
+                plugins: [store, router]
+            },
         });
 
-        expectErrorReportOpen(wrapper)
+        await expectErrorReportOpen(wrapper)
 
-        await wrapper.find(ErrorReport).vm.$emit("send",
+        wrapper.findComponent(ErrorReport).vm.$emit("send",
             {
                 description: "something",
                 stepsToReproduce: "reproduce steps",
                 email: ""
             })
-
+        await nextTick();
         expect(mockGenerateErrorReport).toHaveBeenCalledTimes(1)
 
-        await expect(mockGenerateErrorReport.mock.calls[0][1]).toEqual(
+        expect(mockGenerateErrorReport.mock.calls[0][1]).toEqual(
             {
                 description: "something",
                 section: "dataExploration",

@@ -45,7 +45,7 @@
 
     interface Props {
         indicator?: string,
-        initialDetail: number,
+        initialDetail?: number,
         showIndicators: boolean,
         indicatorsMetadata?: ChoroplethIndicatorMetadata[],
         levelLabels: LevelLabel[]
@@ -79,7 +79,7 @@
             },
             initialDetail: {
                 type: Number,
-                required: true
+                required: false
             },
             showIndicators: {
                 type: Boolean,

@@ -27,7 +27,7 @@ module.exports = {
         },
     ],
     rules: {
-        "no-prototype-builtins": "off",
-        "vue/multi-word-component-names": "off",
-    }
+        'vue/multi-word-component-names': 'off',
+        'no-prototype-builtins': 'off',
+    },
 };

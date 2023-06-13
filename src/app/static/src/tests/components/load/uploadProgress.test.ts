@@ -15,7 +15,7 @@ describe('upload Progress', function () {
             directives: {
                 translate: mockTranslate
             },
-            propsData: {
+            props: {
                 openModal: false,
                 cancel: mockFunction,
                 ...props
@@ -38,7 +38,7 @@ describe('upload Progress', function () {
             "style": "display: block;"
         })
 
-        expect(modal.find(LoadingSpinner).props("size")).toBe("xs")
+        expect(modal.findComponent(LoadingSpinner).props("size")).toBe("xs")
         expect(mockTranslate.mock.calls[0][1].value).toBe("uploadFromZip")
         expect(mockTranslate.mock.calls[1][1].value).toBe("uploading")
         expect(mockTranslate.mock.calls[2][1].value).toBe("cancel")
@@ -58,11 +58,11 @@ describe('upload Progress', function () {
         expect(mockTranslate.mock.calls[1][1].value).toEqual("uploading")
     });
 
-    it('should trigger cancel handler', function () {
+    it('should trigger cancel handler', async () => {
         const wrapper = getWrapper({openModal: true})
         const okButton = wrapper.find(".modal button")
         expect(okButton.attributes("class")).toBe("btn btn-white")
-        okButton.trigger("click")
+        await okButton.trigger("click")
         expect(mockFunction.mock.calls.length).toBe(1)
     });
 });

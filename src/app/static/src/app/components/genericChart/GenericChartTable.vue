@@ -21,7 +21,7 @@
         columns: GenericChartColumn[],
         selectedFilterOptions: Dict<FilterOption[]>,
         tableConfig: GenericChartTableConfig,
-        valueFormat: string
+        valueFormat?: string
     }
 
     interface Computed {
@@ -52,7 +52,7 @@
             },
             valueFormat: {
                 type: String,
-                required: true
+                required: false
             }
         },
         computed: {

@@ -7,13 +7,14 @@ import {emptyState} from "../../../../app/root";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
 import MapAdjustScale from "../../../../app/components/plots/MapAdjustScale.vue";
 import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
+import { mountWithTranslate, shallowMountWithTranslate } from "../../../testHelpers";
 
 const store = new Vuex.Store({
     state: emptyState()
 });
 registerTranslations(store);
 
-const propsData = {
+const props = {
     minRadius: 10,
     maxRadius: 110,
     indicatorRange: {min: 1, max: 101},
@@ -26,8 +27,13 @@ const propsData = {
 };
 
 const getWrapper = (partialProps = {}) => {
-    const testProps = {...propsData, ...partialProps};
-    return shallowMount(SizeLegend, {propsData: testProps});
+    const testProps = {...props, ...partialProps};
+    return shallowMountWithTranslate(SizeLegend, store, {
+        props: testProps,
+        global: {
+            plugins: [store]
+        }
+    });
 };
 
 const expectCirclesEqual = (actual: any, expected: any) => {
@@ -119,7 +125,7 @@ describe("SizeLegend component", () => {
         const label = wrapper.find("label")
         expect(label.text()).toBe("indicator");
 
-        const lControl = wrapper.find(LControl);
+        const lControl = wrapper.findComponent(LControl);
         expect(lControl.props().position).toBe("bottomleft");
 
         const svg = lControl.find("svg");
@@ -134,7 +140,7 @@ describe("SizeLegend component", () => {
         expect(texts.length).toBe(expectedCirclesData.length);
 
         expectedCirclesData.forEach((circleData: any, index: number) => {
-            const circle = circles.at(index);
+            const circle = circles[index];
             expect(circle.attributes().stroke).toBe("#aaa");
             expect(circle.attributes()["stroke-width"]).toBe("1");
             expect(circle.attributes()["fill-opacity"]).toBe("0");
@@ -142,7 +148,7 @@ describe("SizeLegend component", () => {
             expect(parseFloat(circle.attributes().cx)).toBe(111);
             expect(parseFloat(circle.attributes().cy)).toBeCloseTo(circleData.y);
 
-            const text = texts.at(index);
+            const text = texts[index];
             expect(text.attributes()["text-anchor"]).toBe("middle");
             expect(parseFloat(text.attributes().x)).toBe(111);
             expect(parseFloat(text.attributes().y)).toBeCloseTo(circleData.textY);
@@ -152,57 +158,63 @@ describe("SizeLegend component", () => {
 
     it("renders MapAdjustScale as expected", () => {
         const wrapper = getWrapper();
-        const adjust = wrapper.find(MapAdjustScale);
+        const adjust = wrapper.findComponent(MapAdjustScale);
         expect(adjust.props("name")).toBe("size");
         expect(adjust.props("show")).toBe(false);
-        expect(adjust.props("scale")).toBe(propsData.sizeScale);
-        expect(adjust.props("metadata")).toBe(propsData.metadata);
+        expect(adjust.props("scale")).toBe(props.sizeScale);
+        expect(adjust.props("metadata")).toBe(props.metadata);
     });
 
     it("renders text for circle with 0 value as expected", () => {
-        const wrapper = shallowMount(SizeLegend, {
-            propsData: {
+        const wrapper = shallowMountWithTranslate(SizeLegend, store, {
+            props: {
                 minRadius: 10,
                 maxRadius: 110,
                 indicatorRange: {min: 0, max: 0.1},
                 metadata: { format: '0', accuracy: 0.1, name: 'indicator'}
+            },
+            global: {
+                plugins: [store]
             }
         });
-        const zeroText = wrapper.findAll("text").at(0);
+        const zeroText = wrapper.findAll("text")[0];
         expect(zeroText.text()).toBe("0");
 
     });
 
     it("renders large numbers as expected", () => {
-        const wrapper = shallowMount(SizeLegend, {
-            propsData: {
+        const wrapper = shallowMountWithTranslate(SizeLegend, store, {
+            props: {
                 minRadius: 10,
                 maxRadius: 100,
                 indicatorRange: {min: 2000, max: 10000},
                 metadata: { format: '0.0', accuracy: 1, name: 'indicator'}
+            },
+            global: {
+                plugins: [store]
             }
         });
 
-        const firstText = wrapper.findAll("text").at(0);
+        const firstText = wrapper.findAll("text")[0];
         expect(firstText.text()).toBe("<2.0k");
 
-        const lastText = wrapper.findAll("text").at(4);
+        const lastText = wrapper.findAll("text")[4];
         expect(lastText.text()).toBe("10k");
     });
 
-    it("toggles show adjust scale", () => {
+    it("toggles show adjust scale", async () => {
         const wrapper = getWrapper();
 
-        const adjust = wrapper.find(MapAdjustScale);
+        const adjust = wrapper.findComponent(MapAdjustScale);
 
         const showAdjust = wrapper.find(".adjust-scale a");
         expect(showAdjust.find("span").text()).toBe("Adjust scale");
 
-        showAdjust.trigger("click");
+        await showAdjust.trigger("click");
         expect(adjust.props().show).toBe(true);
         expect(showAdjust.find("span").text()).toBe("Done");
 
-        showAdjust.trigger("click");
+        await showAdjust.trigger("click");
         expect(adjust.props().show).toBe(false);
         expect(showAdjust.find("span").text()).toBe("Adjust scale");
     });
@@ -216,10 +228,10 @@ describe("SizeLegend component", () => {
             customMax: 1
         };
 
-        const adjust = wrapper.find(MapAdjustScale);
+        const adjust = wrapper.findComponent(MapAdjustScale);
         adjust.vm.$emit("update", newScale);
 
-        expect(wrapper.emitted("update").length).toBe(1);
-        expect(wrapper.emitted("update")[0][0]).toBe(newScale);
+        expect(wrapper.emitted("update")!.length).toBe(1);
+        expect(wrapper.emitted("update")![0][0]).toBe(newScale);
     });
 });

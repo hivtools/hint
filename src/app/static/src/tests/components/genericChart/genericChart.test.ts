@@ -1,7 +1,8 @@
+import VueFeather from 'vue-feather';
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import Vuex from 'vuex';
 import {emptyState} from "../../../app/root";
-import {shallowMount} from "@vue/test-utils";
+import {flushPromises, shallowMount} from "@vue/test-utils";
 import GenericChart from "../../../app/components/genericChart/GenericChart.vue";
 import DataSource from "../../../app/components/genericChart/dataSelectors/DataSource.vue";
 import Filters from "../../../app/components/plots/Filters.vue";
@@ -14,13 +15,14 @@ import {mockGenericChartState, mockSuccess} from "../../mocks";
 import {GenericChartState} from "../../../app/store/genericChart/genericChart";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 import {GenericChartMetadataResponse} from "../../../app/types";
 import {actions} from "../../../app/store/genericChart/actions";
 import {mutations} from "../../../app/store/genericChart/mutations";
 import {mockAxios} from "../../mocks";
 import GenericChartTable from "../../../app/components/genericChart/GenericChartTable.vue";
 import DownloadIndicator from "../../../app/components/downloadIndicator/DownloadIndicator.vue";
+import { nextTick } from "vue";
 
 describe("GenericChart component", () => {
 
@@ -186,13 +188,13 @@ describe("GenericChart component", () => {
             }
         });
 
-        const propsData = {
+        const props = {
             ...ChartPropsData,
             metadata: metadataProp
         };
 
         registerTranslations(store);
-        return shallowMount(GenericChart,{store, propsData});
+        return shallowMountWithTranslate(GenericChart, store, {global: {plugins: [store]}, props});
     };
 
     it("renders as expected without chart data", (done) => {
@@ -205,10 +207,10 @@ describe("GenericChart component", () => {
 
         const wrapper = getWrapper();
         setTimeout(() => {
-            expect(wrapper.findAll(DataSource).length).toBe(0);
-            expect(wrapper.findAll(Filters).length).toBe(0);
-            expect(wrapper.find(Plotly).exists()).toBe(false);
-            expect(wrapper.find(LoadingSpinner).attributes("size")).toBe("lg");
+            expect(wrapper.findAllComponents(DataSource).length).toBe(0);
+            expect(wrapper.findAllComponents(Filters).length).toBe(0);
+            expect(wrapper.findComponent(Plotly).exists()).toBe(false);
+            expect(wrapper.findComponent(LoadingSpinner).attributes("size")).toBe("lg");
             expectTranslated(wrapper.find("h2"), "Loading your data", "Chargement de vos données",
                 "A carregar os seus dados", wrapper.vm.$store);
             done();
@@ -220,10 +222,10 @@ describe("GenericChart component", () => {
         const wrapper = getWrapper(state);
 
         setTimeout(() => {
-            const dataSources = wrapper.findAll(DataSource);
+            const dataSources = wrapper.findAllComponents(DataSource);
             expect(dataSources.length).toBe(2); //It should not show non-editable data sources
 
-            expect(dataSources.at(0).props("config")).toStrictEqual(
+            expect(dataSources[0].props("config")).toStrictEqual(
                 {
                     id: "visible1",
                     type: "editable",
@@ -233,10 +235,10 @@ describe("GenericChart component", () => {
                     showIndicators: false
                 }
             );
-            expect(dataSources.at(0).props("datasets")).toBe(metadata["test-chart"].datasets);
-            expect(dataSources.at(0).props("value")).toBe("dataset1");
+            expect(dataSources[0].props("datasets")).toStrictEqual(metadata["test-chart"].datasets);
+            expect(dataSources[0].props("value")).toBe("dataset1");
 
-            expect(dataSources.at(1).props("config")).toStrictEqual(
+            expect(dataSources[1].props("config")).toStrictEqual(
                 {
                     id: "visible2",
                     type: "editable",
@@ -246,12 +248,12 @@ describe("GenericChart component", () => {
                     showIndicators: false
                 }
             );
-            expect(dataSources.at(1).props("datasets")).toBe(metadata["test-chart"].datasets);
-            expect(dataSources.at(1).props("value")).toBe("dataset2");
+            expect(dataSources[1].props("datasets")).toStrictEqual(metadata["test-chart"].datasets);
+            expect(dataSources[1].props("value")).toBe("dataset2");
 
-            const filters = wrapper.findAll(Filters);
+            const filters = wrapper.findAllComponents(Filters);
             expect(filters.length).toBe(2);
-            expect(filters.at(0).props("filters")).toStrictEqual([
+            expect(filters[0].props("filters")).toStrictEqual([
                 {
                     id: "age",
                     column_id: "age",
@@ -273,8 +275,8 @@ describe("GenericChart component", () => {
                     ]
                 }
             ],);
-            expect(filters.at(0).props("selectedFilterOptions")).toStrictEqual(datasets.dataset1.metadata.defaults.selected_filter_options);
-            expect(filters.at(1).props("filters")).toStrictEqual( [
+            expect(filters[0].props("selectedFilterOptions")).toStrictEqual(datasets.dataset1.metadata.defaults.selected_filter_options);
+            expect(filters[1].props("filters")).toStrictEqual( [
                 {
                     id: "type",
                     column_id: "type",
@@ -283,9 +285,9 @@ describe("GenericChart component", () => {
                     options: [{id: "test", label: "test"}]
                 }
             ]);
-            expect(filters.at(1).props("selectedFilterOptions")).toStrictEqual(datasets.dataset3.metadata.defaults.selected_filter_options);
+            expect(filters[1].props("selectedFilterOptions")).toStrictEqual(datasets.dataset3.metadata.defaults.selected_filter_options);
 
-            const plotly = wrapper.find(Plotly);
+            const plotly = wrapper.findComponent(Plotly);
             expect(plotly.props("chartMetadata")).toBe("Test Chart Config");
             expect(plotly.props("chartData")).toStrictEqual({
                 visible1: [{age: "1", year: "2021", value: 2}],
@@ -296,9 +298,9 @@ describe("GenericChart component", () => {
                 hidden: [{type: "test", value: "test"}]
             });
             expect(plotly.props("layoutData")).toStrictEqual({yAxisFormat: ""});
-            expect(plotly.element.style.height).toBe("100%");
+            expect((plotly.element as HTMLElement).style.height).toBe("100%");
 
-            expect(wrapper.find(ErrorAlert).exists()).toBe(false);
+            expect(wrapper.findComponent(ErrorAlert).exists()).toBe(false);
             expect(wrapper.find("#empty-generic-chart-data").exists()).toBe(false);
 
             expect(wrapper.find("#page-controls").exists()).toBe(false);
@@ -338,7 +340,7 @@ describe("GenericChart component", () => {
         const state = {datasets: datasetsWithNoMatchingData};
         const wrapper = getWrapper(state);
         setTimeout(() => {
-            expect(wrapper.find(Plotly).exists()).toBe(false);
+            expect(wrapper.findComponent(Plotly).exists()).toBe(false);
             const noDataDiv = wrapper.find("#empty-generic-chart-data");
             expectTranslated(noDataDiv,
                 "No data are available for the selected combination. Please review the combination of filter values selected.",
@@ -347,10 +349,10 @@ describe("GenericChart component", () => {
                 wrapper.vm.$store
             );
 
-            expect(wrapper.findAll(DataSource).length).toBe(2);
-            const filters = wrapper.findAll(Filters);
+            expect(wrapper.findAllComponents(DataSource).length).toBe(2);
+            const filters = wrapper.findAllComponents(Filters);
             expect(filters.length).toBe(2);
-            expect(filters.at(0).props("filters")).toStrictEqual([
+            expect(filters[0].props("filters")).toStrictEqual([
                 {
                     id: "age",
                     column_id: "age",
@@ -372,8 +374,8 @@ describe("GenericChart component", () => {
                     ]
                 }
             ],);
-            expect(filters.at(0).props("selectedFilterOptions")).toStrictEqual(datasets.dataset1.metadata.defaults.selected_filter_options);
-            expect(filters.at(1).props("filters")).toStrictEqual( [
+            expect(filters[0].props("selectedFilterOptions")).toStrictEqual(datasets.dataset1.metadata.defaults.selected_filter_options);
+            expect(filters[1].props("filters")).toStrictEqual( [
                 {
                     id: "type",
                     column_id: "type",
@@ -382,13 +384,13 @@ describe("GenericChart component", () => {
                     options: [{id: "test", label: "test"}]
                 }
             ]);
-            expect(filters.at(1).props("selectedFilterOptions")).toStrictEqual(datasets.dataset3.metadata.defaults.selected_filter_options);
+            expect(filters[1].props("selectedFilterOptions")).toStrictEqual(datasets.dataset3.metadata.defaults.selected_filter_options);
 
             done();
         });
     });
 
-    it("does not render DataSource component when available datasetIds length is not greater than 1", () => {
+    it("does not render DataSource component when available datasetIds length is not greater than 1", async () => {
         const state = {datasets};
         const reducedMetadata = {
             "test-chart": {
@@ -410,17 +412,18 @@ describe("GenericChart component", () => {
             }
         } as any;
 
-        const propsData = {
+        const props = {
             chartId: "test-chart",
             availableDatasetIds: ["dataset1"]
         };
 
-        const wrapper = getWrapper(state, reducedMetadata, propsData);
-        const dataSources = wrapper.findAll(DataSource);
+        const wrapper = getWrapper(state, reducedMetadata, props);
+        await flushPromises();
+        const dataSources = wrapper.findComponent(DataSource);
         expect(dataSources.exists()).toBe(false);
     });
 
-    it("sets data source's datasetId if default is not available, and hides datasource picker if only one available dataset", () => {
+    it("sets data source's datasetId if default is not available, and hides datasource picker if only one available dataset", async () => {
         const state = {datasets};
         const reducedMetadata =  {
             "test-chart": {
@@ -435,13 +438,14 @@ describe("GenericChart component", () => {
             }
         } as any;
 
-        const propsData = {
+        const props = {
             chartId: "test-chart",
             availableDatasetIds: ["dataset2"]
         };
 
-        const wrapper = getWrapper(state, reducedMetadata, propsData);
-        const dataSources = wrapper.findAll(DataSource);
+        const wrapper = getWrapper(state, reducedMetadata, props);
+        await flushPromises();
+        const dataSources = wrapper.findComponent(DataSource);
         expect(dataSources.exists()).toBe(false);
         const vm = wrapper.vm as any
         expect(vm.dataSourceSelections.visible1.datasetId).toEqual("dataset2")
@@ -453,7 +457,7 @@ describe("GenericChart component", () => {
         const wrapper = getWrapper(state);
 
         setTimeout(() => {
-            const dataset1Filters = wrapper.findAll(Filters).at(0);
+            const dataset1Filters = wrapper.findAllComponents(Filters)[0];
             const newFilterSelections = {
                 age: [{id: "2", label: "2"}],
                 year: [{id: "2020", label: "2020"}]
@@ -462,7 +466,7 @@ describe("GenericChart component", () => {
 
             setTimeout(() => {
                 expect(dataset1Filters.props("selectedFilterOptions")).toStrictEqual(newFilterSelections);
-                const chartData = wrapper.find(Plotly).props("chartData");
+                const chartData = wrapper.findComponent(Plotly).props("chartData");
                 expect(chartData).toStrictEqual({
                     visible1: [{age: "2", year: "2020", value: 3}],
                     visible2: [
@@ -533,12 +537,12 @@ describe("GenericChart component", () => {
 
         const wrapper = getWrapper(state, subplotsMetadata);
         setTimeout(() => {
-            const dataSources = wrapper.findAll(DataSource);
+            const dataSources = wrapper.findAllComponents(DataSource);
             expect(dataSources.length).toBe(1);
-            const filters = wrapper.findAll(Filters);
+            const filters = wrapper.findAllComponents(Filters);
             expect(filters.length).toBe(1);
 
-            const plotly = wrapper.find(Plotly);
+            const plotly = wrapper.findComponent(Plotly);
             // 5 values of distinctColumn, so should be 3 rows of 2 columns
             expect(plotly.props("layoutData")).toStrictEqual({
                 subplots: {
@@ -550,7 +554,7 @@ describe("GenericChart component", () => {
                 },
                 yAxisFormat: ""
             });
-            expect(plotly.element.style.height).toBe("370px");
+            expect((plotly.element as HTMLElement).style.height).toBe("370px");
             done();
         });
     });
@@ -614,12 +618,12 @@ describe("GenericChart component", () => {
 
         const wrapper = getWrapper(state, valueFormatMetadata);
         setTimeout(() => {
-            const plotly = wrapper.find(Plotly);
+            const plotly = wrapper.findComponent(Plotly);
             expect(plotly.props("layoutData")).toStrictEqual({
                 yAxisFormat: ".1%"
             });
-            expect(wrapper.find(GenericChartTable).props("valueFormat")).toBe(".1%");
-            expect(wrapper.find(DownloadIndicator).props()).toEqual(
+            expect(wrapper.findComponent(GenericChartTable).props("valueFormat")).toBe(".1%");
+            expect(wrapper.findComponent(DownloadIndicator).props()).toEqual(
                 {
                     unfilteredData: [
                         {
@@ -665,7 +669,7 @@ describe("GenericChart component", () => {
             expect(mockAxios.history.get[1].url).toBe("/dataset2");
             expect(mockAxios.history.get[2].url).toBe("/dataset3");
 
-            expect(wrapper.vm.$data.dataSourceSelections).toStrictEqual({
+            expect((wrapper.vm as any).$data.dataSourceSelections).toStrictEqual({
                 visible1: {
                     datasetId: "dataset1",
                     selectedFilterOptions: {
@@ -715,14 +719,14 @@ describe("GenericChart component", () => {
 
         const wrapper = getWrapper({datasets: datasets1And3}, reducedMetadata);
         setTimeout(async () => {
-            await wrapper.findAll(DataSource).at(0).vm.$emit("update", "dataset2");
+            await wrapper.findAllComponents(DataSource)[0].vm.$emit("update", "dataset2");
 
             // expect filter selections to have been set to null while ensure dataset
-            expect(wrapper.vm.$data.dataSourceSelections.visible1.selectedFilterOptions).toBe(null);
+            expect((wrapper.vm as any).$data.dataSourceSelections.visible1.selectedFilterOptions).toBe(null);
             setTimeout(() => {
                 expect(mockAxios.history.get.length).toBe(1);
                 expect(mockAxios.history.get[0].url).toBe("/dataset2");
-                expect(wrapper.vm.$data.dataSourceSelections).toStrictEqual({
+                expect((wrapper.vm as any).$data.dataSourceSelections).toStrictEqual({
                     visible1: {
                         datasetId: "dataset2",
                         selectedFilterOptions: {
@@ -754,7 +758,7 @@ describe("GenericChart component", () => {
         const state = {datasets};
         const wrapper = getWrapper(state);
         setTimeout(() => {
-            wrapper.findAll(DataSource).at(0).vm.$emit("update", "dataset2");
+            wrapper.findAllComponents(DataSource)[0].vm.$emit("update", "dataset2");
             setTimeout(() => {
                 expect(mockAxios.history.get.length).toBe(0);
                 done();
@@ -765,7 +769,7 @@ describe("GenericChart component", () => {
     it("renders error", () => {
         const genericChartError = {error: "TEST-ERROR"} as any;
         const wrapper = getWrapper( {datasets, genericChartError});
-        expect(wrapper.find(ErrorAlert).props("error")).toBe(genericChartError);
+        expect(wrapper.findComponent(ErrorAlert).props("error")).toStrictEqual(genericChartError);
     });
 
     it("does not render table if no table config for data source's dataset", () => {
@@ -773,7 +777,7 @@ describe("GenericChart component", () => {
         const wrapper = getWrapper(state);
 
         setTimeout(() => {
-            expect(wrapper.findAll(GenericChartTable).length).toBe(0);
+            expect(wrapper.findAllComponents(GenericChartTable).length).toBe(0);
         });
     });
 
@@ -809,22 +813,22 @@ describe("GenericChart component", () => {
         const wrapper = getWrapper(state, customMetadata);
 
         setTimeout(() => {
-            const tables = wrapper.findAll(GenericChartTable);
+            const tables = wrapper.findAllComponents(GenericChartTable);
             expect(tables.length).toBe(2);
-            expect(tables.at(0).props("tableConfig")).toBe(tableConfig1);
-            expect(tables.at(0).props("filteredData")).toStrictEqual([{age: "1", year: "2021", value: 2}]);
-            expect(tables.at(0).props("columns")).toBe(datasets.dataset1.metadata.columns);
-            expect(tables.at(0).props("selectedFilterOptions")).toStrictEqual(datasets.dataset1.metadata.defaults.selected_filter_options);
-            expect(tables.at(0).props("valueFormat")).toBe("");
+            expect(tables[0].props("tableConfig")).toStrictEqual(tableConfig1);
+            expect(tables[0].props("filteredData")).toStrictEqual([{age: "1", year: "2021", value: 2}]);
+            expect(tables[0].props("columns")).toStrictEqual(datasets.dataset1.metadata.columns);
+            expect(tables[0].props("selectedFilterOptions")).toStrictEqual(datasets.dataset1.metadata.defaults.selected_filter_options);
+            expect(tables[0].props("valueFormat")).toBe("");
 
-            expect(tables.at(1).props("tableConfig")).toBe(tableConfig2);
-            expect(tables.at(1).props("filteredData")).toStrictEqual([
+            expect(tables[1].props("tableConfig")).toStrictEqual(tableConfig2);
+            expect(tables[1].props("filteredData")).toStrictEqual([
                 {age: "10", year: "2020", value: 10},
                 {age: "20", year: "2020", value: 30}
             ]);
-            expect(tables.at(1).props("columns")).toBe(datasets.dataset2.metadata.columns);
-            expect(tables.at(1).props("selectedFilterOptions")).toStrictEqual(datasets.dataset2.metadata.defaults.selected_filter_options);
-            expect(tables.at(0).props("valueFormat")).toBe("");
+            expect(tables[1].props("columns")).toStrictEqual(datasets.dataset2.metadata.columns);
+            expect(tables[1].props("selectedFilterOptions")).toStrictEqual(datasets.dataset2.metadata.defaults.selected_filter_options);
+            expect(tables[0].props("valueFormat")).toBe("");
 
             done();
         });
@@ -901,28 +905,32 @@ describe("GenericChart component", () => {
         const wrapper = getWrapper(state, pagedMetadata);
         setTimeout(() => {
             const store = wrapper.vm.$store;
-            const dataSources = wrapper.findAll(DataSource);
+            const dataSources = wrapper.findAllComponents(DataSource);
             expect(dataSources.length).toBe(1);
-            const filters = wrapper.findAll(Filters);
+            const filters = wrapper.findAllComponents(Filters);
             expect(filters.length).toBe(1);
 
             const pageControls = wrapper.find("#page-controls");
             const previous = pageControls.find("button#previous-page");
-            expect(previous.find("chevron-left-icon-stub").attributes("size")).toBe("20");
+            const feather = previous.findComponent(VueFeather);
+            expect(feather.attributes("type")).toBe("chevron-left");
+            expect(feather.attributes("size")).toBe("20");
             expectTranslated(previous, "Previous page",
                 "Page précédente", "Página anterior", store, "aria-label");
-            expect(previous.attributes("disabled")).toBe("disabled");
+            expect((previous.element as HTMLButtonElement).disabled).toBe(true);
 
             const next = pageControls.find("button#next-page");
-            expect(next.find("chevron-right-icon-stub").attributes("size")).toBe("20");
+            const feather2 = next.findComponent(VueFeather);
+            expect(feather2.attributes("type")).toBe("chevron-right");
+            expect(feather2.attributes("size")).toBe("20");
             expectTranslated(next, "Next page",
                 "Page suivante", "Próxima página", store, "aria-label");
-            expect(next.attributes("disabled")).toBeUndefined();
+            expect((next.element as HTMLButtonElement).disabled).toBe(false);
 
             expectTranslated(pageControls.find("#page-number"), "Page 1 of 3",
                 "Page 1 sur 3", "Pagina 1 de 3", store);
 
-            const plotly = wrapper.find(Plotly);
+            const plotly = wrapper.findComponent(Plotly);
             expect(plotly.props("chartData")).toStrictEqual({
                 data: [
                     {type: "test", area:"a", year: "2020", value: 1, page: 1},
@@ -946,92 +954,87 @@ describe("GenericChart component", () => {
         });
     });
 
-    it("next page button loads next page", (done) => {
+    it("next page button loads next page", async () => {
         const state = {datasets: pagedDatasets};
 
         const wrapper = getWrapper(state, pagedMetadata);
-        setTimeout(() => {
-            const chartContainerEl = wrapper.find(".chart-container").element as HTMLElement;
-            chartContainerEl.scrollTop = 100;
+        await flushPromises();
+        const chartContainerEl = wrapper.find(".chart-container").element as HTMLElement;
+        chartContainerEl.scrollTop = 100;
 
-            const next = wrapper.find("#next-page");
+        const next = wrapper.find("#next-page");
 
-            // Move to Page 2
-            next.trigger("click");
-            const store = wrapper.vm.$store;
-            expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
-                "Page 2 sur 3", "Pagina 2 de 3", store);
+        // Move to Page 2
+        await next.trigger("click");
+        const store = wrapper.vm.$store;
+        await expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
+            "Page 2 sur 3", "Pagina 2 de 3", store);
 
-            expect(wrapper.find("#next-page").attributes("disabled")).toBeUndefined();
-            expect(wrapper.find("#previous-page").attributes("disabled")).toBeUndefined();
+        expect((wrapper.find("#next-page").element as HTMLButtonElement).disabled).toBe(false);
+        expect((wrapper.find("#previous-page").element as HTMLButtonElement).disabled).toBe(false);
 
-            const plotly = wrapper.find(Plotly);
-            expect(plotly.props("chartData")).toStrictEqual({
-                data: [
-                    {type: "test", area:"c", year: "2020", value: 3, page: 2},
-                    {type: "test", area:"d", year: "2020", value: 4, page: 2},
-                    {type: "test", area:"c", year: "2021", value: 3.1, page: 2},
-                    {type: "test", area:"d", year: "2021", value: 4.1, page: 2}
-                ]
-            });
-            expect(chartContainerEl.scrollTop).toBe(0);
+        const plotly = wrapper.findComponent(Plotly);
+        expect(plotly.props("chartData")).toStrictEqual({
+            data: [
+                {type: "test", area:"c", year: "2020", value: 3, page: 2},
+                {type: "test", area:"d", year: "2020", value: 4, page: 2},
+                {type: "test", area:"c", year: "2021", value: 3.1, page: 2},
+                {type: "test", area:"d", year: "2021", value: 4.1, page: 2}
+            ]
+        });
+        expect(chartContainerEl.scrollTop).toBe(0);
 
-            // Move to Page 3
-            next.trigger("click");
-            expectTranslated(wrapper.find("#page-number"), "Page 3 of 3",
-                "Page 3 sur 3", "Pagina 3 de 3", store);
+        // Move to Page 3
+        await next.trigger("click");
+        await expectTranslated(wrapper.find("#page-number"), "Page 3 of 3",
+            "Page 3 sur 3", "Pagina 3 de 3", store);
 
-            expect(wrapper.find("#next-page").attributes("disabled")).toBe("disabled");
-            expect(wrapper.find("#previous-page").attributes("disabled")).toBeUndefined();
+        expect((wrapper.find("#next-page").element as HTMLButtonElement).disabled).toBe(true);
+        expect((wrapper.find("#previous-page").element as HTMLButtonElement).disabled).toBe(false);
 
-            expect(plotly.props("chartData")).toStrictEqual({
-                data: [
-                    {type: "test", area:"e", year: "2020", value: 5, page: 3},
-                    {type: "test", area:"e", year: "2021", value: 5.1, page: 3}
-                ]
-            });
-
-            done();
+        expect(plotly.props("chartData")).toStrictEqual({
+            data: [
+                {type: "test", area:"e", year: "2020", value: 5, page: 3},
+                {type: "test", area:"e", year: "2021", value: 5.1, page: 3}
+            ]
         });
     });
 
-    it("previous page button loads previous page", (done) => {
+    it("previous page button loads previous page", async () => {
         const state = {datasets: pagedDatasets};
 
         const wrapper = getWrapper(state, pagedMetadata);
-        setTimeout(() => {
-            // Move to Page 2
-            wrapper.find("#next-page").trigger("click");
-            const store = wrapper.vm.$store;
-            expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
-                "Page 2 sur 3", "Pagina 2 de 3", store);
+        await flushPromises();
+        // Move to Page 2
+        await wrapper.find("#next-page").trigger("click");
+        const store = wrapper.vm.$store;
+        await expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
+            "Page 2 sur 3", "Pagina 2 de 3", store);
 
-            // Move back to Page 1
-            const chartContainerEl = wrapper.find(".chart-container").element as HTMLElement;
-            chartContainerEl.scrollTop = 100;
+        // Move back to Page 1
+        const chartContainerEl = wrapper.find(".chart-container").element as HTMLElement;
+        chartContainerEl.scrollTop = 100;
 
-            wrapper.find("#previous-page").trigger("click");
-            expectTranslated(wrapper.find("#page-number"), "Page 1 of 3",
-                "Page 1 sur 3", "Pagina 1 de 3", store);
+        await wrapper.find("#previous-page").trigger("click");
+        await expectTranslated(wrapper.find("#page-number"), "Page 1 of 3",
+            "Page 1 sur 3", "Pagina 1 de 3", store);
 
-            expect(wrapper.find("#next-page").attributes("disabled")).toBeUndefined();
-            expect(wrapper.find("#previous-page").attributes("disabled")).toBe("disabled");
+        expect((wrapper.find("#next-page").element as HTMLButtonElement).disabled).toBe(false);
+        expect((wrapper.find("#previous-page").element as HTMLButtonElement).disabled).toBe(true);
 
-            expect(wrapper.find(Plotly).props("chartData")).toStrictEqual({
-                data: [
-                    {type: "test", area: "a", year: "2020", value: 1, page: 1},
-                    {type: "test", area: "b", year: "2020", value: 2, page: 1},
-                    {type: "test", area: "a", year: "2021", value: 1.1, page: 1},
-                    {type: "test", area: "b", year: "2021", value: 2.1, page: 1}
-                ]
-            });
-
-            expect(chartContainerEl.scrollTop).toBe(0);
-            done();
+        expect(wrapper.findComponent(Plotly).props("chartData")).toStrictEqual({
+            data: [
+                {type: "test", area: "a", year: "2020", value: 1, page: 1},
+                {type: "test", area: "b", year: "2020", value: 2, page: 1},
+                {type: "test", area: "a", year: "2021", value: 1.1, page: 1},
+                {type: "test", area: "b", year: "2021", value: 2.1, page: 1}
+            ]
         });
+
+        expect(chartContainerEl.scrollTop).toBe(0);
     });
 
-    it("pages reset when data source changes", (done) => {
+    it("pages reset when data source changes", async () => {
         const secondDataset = {
             data: [
                 {type: "test", area:"aa", value: 10},
@@ -1082,61 +1085,58 @@ describe("GenericChart component", () => {
             .reply(200, mockSuccess(secondDataset));
 
         const wrapper = getWrapper(state, metadata);
-        setTimeout(() => {
-            // Move to Page 2
-            wrapper.find("#next-page").trigger("click");
-            const store = wrapper.vm.$store;
-            expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
-                "Page 2 sur 3", "Pagina 2 de 3", store);
+        await flushPromises();
+        // Move to Page 2
+        await wrapper.find("#next-page").trigger("click");
+        const store = wrapper.vm.$store;
+        await nextTick();
+        await expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
+            "Page 2 sur 3", "Pagina 2 de 3", store);
 
-            wrapper.findAll(DataSource).at(0).vm.$emit("update", "dataset2");
-            setTimeout(() => {
-                expect(wrapper.vm.$data.dataSourceSelections.data.datasetId).toBe("dataset2");
+        wrapper.findAllComponents(DataSource)[0].vm.$emit("update", "dataset2");
+        await nextTick();
+        expect((wrapper.vm as any).$data.dataSourceSelections.data.datasetId).toBe("dataset2");
+        await nextTick();
+        await expectTranslated(wrapper.find("#page-number"), "Page 1 of 2",
+            "Page 1 sur 2", "Pagina 1 de 2", store);
 
-                expectTranslated(wrapper.find("#page-number"), "Page 1 of 2",
-                    "Page 1 sur 2", "Pagina 1 de 2", store);
+        expect((wrapper.find("#next-page").element as HTMLButtonElement).disabled).toBe(false);
+        expect((wrapper.find("#previous-page").element as HTMLButtonElement).disabled).toBe(true);
 
-                expect(wrapper.find("#next-page").attributes("disabled")).toBeUndefined();
-                expect(wrapper.find("#previous-page").attributes("disabled")).toBe("disabled");
-
-                const plotly = wrapper.find(Plotly);
-                expect(plotly.props("chartData")).toStrictEqual({
-                    data: [
-                        {type: "test", area:"aa", value: 10, page: 1},
-                        {type: "test", area:"bb", value: 20, page: 1}
-                    ]
-                });
-                done();
-            });
+        const plotly = wrapper.findComponent(Plotly);
+        expect(plotly.props("chartData")).toStrictEqual({
+            data: [
+                {type: "test", area:"aa", value: 10, page: 1},
+                {type: "test", area:"bb", value: 20, page: 1}
+            ]
         });
     });
 
-    it("pages reset when selected filter options change", (done) => {
+    it("pages reset when selected filter options change", async () => {
         const state = {datasets: pagedDatasets};
         const wrapper = getWrapper(state, pagedMetadata);
-        setTimeout(() => {
-            // Move to Page 2
-            wrapper.find("#next-page").trigger("click");
-            const store = wrapper.vm.$store;
-            expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
-                "Page 2 sur 3", "Pagina 2 de 3", store);
+        await flushPromises();
+        const nextPage = wrapper.find("#next-page");
+        // Move to Page 2
+        await nextPage.trigger("click");
+        const store = wrapper.vm.$store;
+        await expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
+            "Page 2 sur 3", "Pagina 2 de 3", store);
+        const dataset1Filters = wrapper.findAllComponents(Filters)[0];
+        const newFilterSelections = {
+            type: [{id: "other"}]
+        };
+        dataset1Filters.vm.$emit("update", newFilterSelections);
+        await nextTick();
 
-            const dataset1Filters = wrapper.findAll(Filters).at(0);
-            const newFilterSelections = {
-                type: [{id: "other"}]
-            };
-            dataset1Filters.vm.$emit("update", newFilterSelections);
-
-            expect(wrapper.find("#page-controls").exists()).toBe(false);
-            expect((wrapper.vm as any).currentPage).toBe(1);
-            expect((wrapper.vm as any).totalPages).toBe(1);
-            const plotly = wrapper.find(Plotly);
-            expect(plotly.props("chartData")).toStrictEqual({
-                data: [
-                    {type: "other", area: "f", year: "2020", value: 6, page: 1}
-                ]
-            });
-            done();
+        expect(wrapper.find("#page-controls").exists()).toBe(false);
+        expect((wrapper.vm as any).currentPage).toBe(1);
+        expect((wrapper.vm as any).totalPages).toBe(1);
+        const plotly = wrapper.findComponent(Plotly);
+        expect(plotly.props("chartData")).toStrictEqual({
+            data: [
+                {type: "other", area: "f", year: "2020", value: 6, page: 1}
+            ]
         });
     });
 
@@ -1153,14 +1153,14 @@ describe("GenericChart component", () => {
         const wrapper = getWrapper(state, metadataWithoutSubplots);
         setTimeout(() => {
             const store = wrapper.vm.$store;
-            const dataSources = wrapper.findAll(DataSource);
+            const dataSources = wrapper.findAllComponents(DataSource);
             expect(dataSources.length).toBe(1);
-            const filters = wrapper.findAll(Filters);
+            const filters = wrapper.findAllComponents(Filters);
             expect(filters.length).toBe(1);
 
             expect(wrapper.find("#page-controls").exists()).toBe(false);
 
-            const plotly = wrapper.find(Plotly);
+            const plotly = wrapper.findComponent(Plotly);
             expect(plotly.props("chartData")).toStrictEqual({
                 data:  [
                     {type: "test", area:"a", year: "2020", value: 1},
