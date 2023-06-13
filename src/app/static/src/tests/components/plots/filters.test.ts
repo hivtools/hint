@@ -1,17 +1,16 @@
 import Filters from "../../../app/components/plots/Filters.vue";
-import {createLocalVue, shallowMount} from "@vue/test-utils";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {expectFilter} from "./testHelpers";
+import { shallowMountWithTranslate } from "../../testHelpers";
 
-const localVue = createLocalVue();
 const store = new Vuex.Store({
     state: emptyState()
 });
 registerTranslations(store);
 
-const propsData = {
+const props = {
     filters: [
         {
             id: "area", label: "Area", column_id: "area_id", allowMultiple: true,
@@ -49,7 +48,12 @@ const propsData = {
 };
 
 const getWrapper = (customPropsData: any = {}) => {
-    return shallowMount(Filters, {propsData: {...propsData, ...customPropsData}, localVue});
+    return shallowMountWithTranslate(Filters, store, {
+        props: {...props, ...customPropsData},
+        global: {
+            plugins: [store]
+        }
+    });
 };
 
 describe("Filters component", () => {
@@ -83,10 +87,10 @@ describe("Filters component", () => {
     it("onFilterSelect updates filter value", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
-        vm.onFilterSelect(propsData.filters[1], [{id: "15:30", label: "15-30"}]);
-        const updates = wrapper.emitted("update");
+        vm.onFilterSelect(props.filters[1], [{id: "15:30", label: "15-30"}]);
+        const updates = wrapper.emitted("update")!;
         expect(updates[updates.length - 1][0]).toStrictEqual({
-            ...propsData.selectedFilterOptions,
+            ...props.selectedFilterOptions,
             age: [{id: "15:30", label: "15-30"}],
         });
     });

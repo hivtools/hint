@@ -34,7 +34,7 @@ import {initialLoadState} from "../../app/store/load/state";
 import {initialErrorsState} from "../../app/store/errors/errors";
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {Language} from "../../app/store/translations/locales";
-import {router} from '../../app/router';
+import {router} from "../../app/router";
 import {initialModelCalibrateState} from "../../app/store/modelCalibrate/modelCalibrate";
 import {initialDownloadResultsState} from "../../app/store/downloadResults/downloadResults";
 

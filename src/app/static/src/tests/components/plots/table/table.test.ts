@@ -1,8 +1,9 @@
-import {mount, Wrapper} from "@vue/test-utils";
+import {mount, VueWrapper} from "@vue/test-utils";
 import Table from "../../../../app/components/plots/table/Table.vue";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
 import Vuex from "vuex";
 import {Language} from "../../../../app/store/translations/locales";
+import { mountWithTranslate } from "../../../testHelpers";
 
 const createStore = () => {
     const store = new Vuex.Store({
@@ -20,7 +21,7 @@ const createStoreFr = () => {
     return store as any;
 };
 
-const propsData = {
+const props = {
     filteredData: [
         {
             area_id: "4.1", plhiv: 20, prevalence: "80.00%", age: "0-15", sex: "Female"
@@ -39,44 +40,54 @@ const propsData = {
 
 const getWrapper = (customPropsData: any = {}) => {
     const store = createStore();
-    return mount(Table, {store, propsData: {...propsData, ...customPropsData}});
+    return mountWithTranslate(Table, store, {
+        props: {...props, ...customPropsData},
+        global: {
+            plugins: [store]
+        }
+    });
 };
 
 const getWrapperFr = (customPropsData: any = {}) => {
     const store = createStoreFr();
-    return mount(Table, {store, propsData: {...propsData, ...customPropsData}});
+    return mountWithTranslate(Table, store, {
+        props: {...props, ...customPropsData},
+        global: {
+            plugins: [store]
+        }
+    });
 };
 
 describe('Table from testdata', () => {
 
-    const expectDefaultTableMarkup = (wrapper: Wrapper<any>) => {
-        const dataRow1 = wrapper.findAll("tr").at(1);
-        const dataRow2 = wrapper.findAll("tr").at(2);
+    const expectDefaultTableMarkup = (wrapper: VueWrapper) => {
+        const dataRow1 = wrapper.findAll("tr")[1];
+        const dataRow2 = wrapper.findAll("tr")[2];
 
         expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
         expect(dataRow1.find('td').text()).toBe('4.1');
         expect(dataRow2.find('td').text()).toBe('4.2');
 
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
-        expect(dataRow1.findAll('td').at(1).text()).toBe('0-15');
-        expect(dataRow2.findAll('td').at(1).text()).toBe('15-30');
+        expect(wrapper.findAll('th')[1].text()).toBe('Age (Click to sort Ascending)');
+        expect(dataRow1.findAll('td')[1].text()).toBe('0-15');
+        expect(dataRow2.findAll('td')[1].text()).toBe('15-30');
 
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
-        expect(dataRow1.findAll('td').at(2).text()).toBe('Female');
-        expect(dataRow2.findAll('td').at(2).text()).toBe('Male');
+        expect(wrapper.findAll('th')[2].text()).toBe('Sex (Click to sort Ascending)');
+        expect(dataRow1.findAll('td')[2].text()).toBe('Female');
+        expect(dataRow2.findAll('td')[2].text()).toBe('Male');
 
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(dataRow1.findAll('td').at(3).text()).toBe('80.00%');
-        expect(dataRow2.findAll('td').at(3).text()).toBe('30.00%');
+        expect(wrapper.findAll('th')[3].text()).toBe('HIV prevalence (Click to sort Ascending)');
+        expect(dataRow1.findAll('td')[3].text()).toBe('80.00%');
+        expect(dataRow2.findAll('td')[3].text()).toBe('30.00%');
 
         expect(wrapper.findAll('tr').length).toBe(3);
     };
 
     it('renders a table', () => {
         const wrapper = getWrapper();
-        expect(wrapper.contains('div')).toBe(true);
-        expect(wrapper.contains('table')).toBe(true);
-        expect(wrapper.contains('br')).toBe(true);
+        expect(wrapper.find('div').exists()).toBe(true);
+        expect(wrapper.find('table').exists()).toBe(true);
+        expect(wrapper.find('br').exists()).toBe(true);
     });
 
     it('renders correct markup', () => {
@@ -88,7 +99,7 @@ describe('Table from testdata', () => {
         const wrapper = getWrapper({
             filteredData: []
         });
-        expect(wrapper.contains('table')).toBe(false);
+        expect(wrapper.find('table').exists()).toBe(false);
         expect(wrapper.text()).toContain('No data are available for these selections.')
     });
 
@@ -96,63 +107,63 @@ describe('Table from testdata', () => {
         const wrapper = getWrapperFr({
             filteredData: []
         });
-        expect(wrapper.contains('table')).toBe(false);
+        expect(wrapper.find('table').exists()).toBe(false);
         expect(wrapper.text()).toContain("Aucune donnée n'est disponible pour ces sélections.")
     });
 
-    it('renders correct markup when sorting by HIV prevalence ascending', () => {
+    it('renders correct markup when sorting by HIV prevalence ascending', async () => {
         const wrapper = getWrapper();
-        wrapper.setData({sortBy: 'prevalence'});
+        await wrapper.setData({sortBy: 'prevalence'});
 
-        const dataRow1 = wrapper.findAll("tr").at(1);
-        const dataRow2 = wrapper.findAll("tr").at(2);
+        const dataRow1 = wrapper.findAll("tr")[1];
+        const dataRow2 = wrapper.findAll("tr")[2];
 
         expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
         expect(dataRow1.find('td').text()).toBe('4.2');
         expect(dataRow2.find('td').text()).toBe('4.1');
 
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
-        expect(dataRow1.findAll('td').at(1).text()).toBe('15-30');
-        expect(dataRow2.findAll('td').at(1).text()).toBe('0-15');
+        expect(wrapper.findAll('th')[1].text()).toBe('Age (Click to sort Ascending)');
+        expect(dataRow1.findAll('td')[1].text()).toBe('15-30');
+        expect(dataRow2.findAll('td')[1].text()).toBe('0-15');
 
 
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
-        expect(dataRow1.findAll('td').at(2).text()).toBe('Male');
-        expect(dataRow2.findAll('td').at(2).text()).toBe('Female');
+        expect(wrapper.findAll('th')[2].text()).toBe('Sex (Click to sort Ascending)');
+        expect(dataRow1.findAll('td')[2].text()).toBe('Male');
+        expect(dataRow2.findAll('td')[2].text()).toBe('Female');
 
 
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Descending)');
-        expect(dataRow1.findAll('td').at(3).text()).toBe('30.00%');
-        expect(dataRow2.findAll('td').at(3).text()).toBe('80.00%');
+        expect(wrapper.findAll('th')[3].text()).toBe('HIV prevalence (Click to sort Descending)');
+        expect(dataRow1.findAll('td')[3].text()).toBe('30.00%');
+        expect(dataRow2.findAll('td')[3].text()).toBe('80.00%');
 
         expect(wrapper.findAll('tr').length).toBe(3);
 
     });
 
-    it('renders correct markup when sorting by HIV prevalence descending', () => {
+    it('renders correct markup when sorting by HIV prevalence descending', async () => {
         const wrapper = getWrapper();
-        wrapper.setData({sortBy: 'prevalence', sortDesc: true});
+        await wrapper.setData({sortBy: 'prevalence', sortDesc: true});
         expectDefaultTableMarkup(wrapper);
     });
 
-    it('renders correct markup when filtering by 4.2', () => {
+    it('renders correct markup when filtering by 4.2', async () => {
         const wrapper = getWrapper();
-        wrapper.setData({filter: '4.2'})
+        await wrapper.setData({filter: '4.2'})
         expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
         expect(wrapper.find('td').text()).toBe('4.2');
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(1).text()).toBe('15-30');
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(2).text()).toBe('Male');
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(wrapper.findAll('td').at(3).text()).toBe('30.00%');
+        expect(wrapper.findAll('th')[1].text()).toBe('Age (Click to sort Ascending)');
+        expect(wrapper.findAll('td')[1].text()).toBe('15-30');
+        expect(wrapper.findAll('th')[2].text()).toBe('Sex (Click to sort Ascending)');
+        expect(wrapper.findAll('td')[2].text()).toBe('Male');
+        expect(wrapper.findAll('th')[3].text()).toBe('HIV prevalence (Click to sort Ascending)');
+        expect(wrapper.findAll('td')[3].text()).toBe('30.00%');
         expect(wrapper.findAll('tr').length).toBe(2);
     });
 
     it('clicking clear button clears filter and resets table', async () => {
         const wrapper = getWrapper();
-        wrapper.setData({filter: '4.2'})
-        wrapper.find('button').trigger('click')
+        await wrapper.setData({filter: '4.2'})
+        await wrapper.find('button').trigger('click')
         expectDefaultTableMarkup(wrapper);
     });
 
@@ -193,12 +204,16 @@ describe('Table from testdata', () => {
         ];
 
 
-        const customPropsData = {...propsData, filteredData: filteredDataWithSlotValues};
+        const customPropsData = {...props, filteredData: filteredDataWithSlotValues};
 
-        const wrapper = mount(Table, {store, propsData: customPropsData, scopedSlots});
+        const wrapper = mountWithTranslate(Table, store, {
+            global: {
+                plugins: [store]
+            }, props: customPropsData, scopedSlots
+        });
 
-        const dataRow1 = wrapper.findAll("tr").at(1);
-        const dataRow2 = wrapper.findAll("tr").at(2);
+        const dataRow1 = wrapper.findAll("tr")[1];
+        const dataRow2 = wrapper.findAll("tr")[2];
 
         expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
         expect(dataRow1.find('td .value').text()).toBe('4.1');
@@ -206,19 +221,19 @@ describe('Table from testdata', () => {
         expect(dataRow2.find('td .value').text()).toBe('4.2');
         expect(dataRow2.find('td .small').text()).toBe('3.2');
 
-        expect(wrapper.findAll('th').at(1).text()).toBe('Age (Click to sort Ascending)');
-        expect(dataRow1.findAll('td').at(1).text()).toBe('0-15');
-        expect(dataRow2.findAll('td').at(1).text()).toBe('15-30');
+        expect(wrapper.findAll('th')[1].text()).toBe('Age (Click to sort Ascending)');
+        expect(dataRow1.findAll('td')[1].text()).toBe('0-15');
+        expect(dataRow2.findAll('td')[1].text()).toBe('15-30');
 
-        expect(wrapper.findAll('th').at(2).text()).toBe('Sex (Click to sort Ascending)');
-        expect(dataRow1.findAll('td').at(2).text()).toBe('Female');
-        expect(dataRow2.findAll('td').at(2).text()).toBe('Male');
+        expect(wrapper.findAll('th')[2].text()).toBe('Sex (Click to sort Ascending)');
+        expect(dataRow1.findAll('td')[2].text()).toBe('Female');
+        expect(dataRow2.findAll('td')[2].text()).toBe('Male');
 
-        expect(wrapper.findAll('th').at(3).text()).toBe('HIV prevalence (Click to sort Ascending)');
-        expect(dataRow1.findAll('td').at(3).find(".value").text()).toBe('80.00%');
-        expect(dataRow1.findAll('td').at(3).find(".small").text()).toBe('(70.00% - 90.00%)');
-        expect(dataRow2.findAll('td').at(3).find(".value").text()).toBe('30.00%');
-        expect(dataRow2.findAll('td').at(3).find(".small").text()).toBe('(20.00% - 40.00%)');
+        expect(wrapper.findAll('th')[3].text()).toBe('HIV prevalence (Click to sort Ascending)');
+        expect(dataRow1.findAll('td')[3].find(".value").text()).toBe('80.00%');
+        expect(dataRow1.findAll('td')[3].find(".small").text()).toBe('(70.00% - 90.00%)');
+        expect(dataRow2.findAll('td')[3].find(".value").text()).toBe('30.00%');
+        expect(dataRow2.findAll('td')[3].find(".small").text()).toBe('(20.00% - 40.00%)');
 
         expect(wrapper.findAll('tr').length).toBe(3);
     });

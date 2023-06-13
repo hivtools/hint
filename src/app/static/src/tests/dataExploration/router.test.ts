@@ -1,4 +1,4 @@
-import {router} from '../../app/router';
+import {router} from "../../app/router";
 import {storeOptions} from "../../app/store/dataExploration/dataExploration";
 
 const baselineActions = {
