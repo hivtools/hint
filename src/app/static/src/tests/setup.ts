@@ -36,6 +36,8 @@ global.console.error = (message: any) => {
     throw message instanceof Error ? message : new Error(message);
 };
 
+global.console.warn = () => null;
+
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
     throw err;

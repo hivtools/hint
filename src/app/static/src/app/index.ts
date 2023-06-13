@@ -4,6 +4,7 @@ import {router} from "./router"
 import Hint from "./components/Hint.vue"
 import translate from "./directives/translate";
 import FloatingVue from "floating-vue";
+import 'floating-vue/dist/style.css';
 
 const app = createApp(Hint);
 

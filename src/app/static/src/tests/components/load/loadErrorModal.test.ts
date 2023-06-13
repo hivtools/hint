@@ -24,7 +24,7 @@ describe("loadErrorModal", () => {
 
     const getWrapper = (props = errorProps) => {
         return mount(LoadErrorModal, {
-            propsData: props,
+            props: props,
             directives: {
                 translate: mockTranslate
             }

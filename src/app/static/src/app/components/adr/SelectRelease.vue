@@ -89,7 +89,7 @@
 
     interface Props {
         datasetId: string | null;
-        open: boolean;
+        open?: boolean;
     }
 
     const namespace = "adr";
@@ -106,7 +106,7 @@
             },
             open: {
                 type: Boolean,
-                required: true
+                required: false
             }
         },
         data() {
