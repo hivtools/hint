@@ -6,7 +6,7 @@
                  @update="onFilterSelectionsChange"></filters>
         <div id="chart" :class="includeFilters ? 'col-md-9' : 'col-md-12'">
             <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds" @vnode-updated="updateBounds">
-                <template v-for="feature in currentFeatures" :key="feature">
+                <template v-for="feature in currentFeatures" :key="feature.properties.area_id">
                     <l-geo-json :geojson="feature"
                                 :options="options"
                                 :optionsStyle="{...style, fillColor: getColor(feature)}">
@@ -378,7 +378,6 @@
             updateBounds: function () {
                 if (this.initialised) {
                     let map = this.$refs.map as any;
-                    
                     if (map && map.leafletObject) {
                         map.leafletObject.fitBounds(this.selectedAreaFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
                     }
