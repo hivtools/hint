@@ -378,6 +378,7 @@
             updateBounds: function () {
                 if (this.initialised) {
                     let map = this.$refs.map as any;
+                    
                     if (map && map.leafletObject) {
                         map.leafletObject.fitBounds(this.selectedAreaFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
                     }
