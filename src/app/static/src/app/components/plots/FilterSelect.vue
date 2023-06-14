@@ -4,8 +4,8 @@
         <span v-if="labelTooltip"
               v-tooltip="{
                     content: `<dl>${labelTooltip}</dl>`,
-                    classes: 'filter-select',
-                    autoHide: false
+                    // Keep the tooltip open when mouse over the popup
+                    popperTriggers: ['hover'],
                 }"
               class="icon-small">
             <vue-feather type="help-circle"></vue-feather>
