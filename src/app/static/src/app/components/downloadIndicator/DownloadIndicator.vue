@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="indicator-download">
         <download-button
             :name="'downloadIndicator'"
             :disabled="downloadingIndicator"
