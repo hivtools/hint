@@ -20,13 +20,13 @@ import {prefixNamespace} from "../../../app/utils";
 import {Language} from "../../../app/store/translations/locales";
 import {expectTranslated} from "../../testHelpers";
 import {BaselineState} from "../../../app/store/baseline/baseline";
-import Vue from "vue";
 
 describe("adr integration", () => {
 
     const fetchKeyStub = jest.fn();
     const getDataStub = jest.fn();
-    const getUserCanUploadStub = jest.fn()
+    const getUserCanUploadStub = jest.fn();
+    const ssoLoginMethodStud = jest.fn();
 
     const fakeDataset = {
         id: "id1",
@@ -50,17 +50,19 @@ describe("adr integration", () => {
     const createStore = (key: string = "", error: Error | null = null,
                          partialRootState: Partial<RootState> = {},
                          canUpload = false,
-                         baselineState?: Partial<BaselineState>) => {
+                         baselineState?: Partial<BaselineState>,
+                         ssoLogin = false) => {
         const store = new Vuex.Store({
             state: mockRootState({...partialRootState}),
             modules: {
                 adr: {
                     namespaced: true,
-                    state: mockADRState({key, keyError: error, userCanUpload: canUpload}),
+                    state: mockADRState({key, keyError: error, userCanUpload: canUpload, ssoLogin}),
                     actions: {
                         getDatasets: getDataStub,
                         fetchKey: fetchKeyStub,
                         getUserCanUpload: getUserCanUploadStub,
+                        ssoLoginMethod: ssoLoginMethodStud,
                     } as Partial<ADRActions> & ActionTree<ADRState, RootState>,
                     mutations
                 },
@@ -85,6 +87,23 @@ describe("adr integration", () => {
         expect(rendered.findAll("div").length).toBe(0);
     });
 
+    it("fetches sso login method if logged in", () => {
+        shallowMount(ADRIntegration, {store: createStore()});
+        expect(ssoLoginMethodStud.mock.calls.length).toBe(1);
+    });
+
+    it("does not fetch sso login method if not logged in", () => {
+        const store = createStore('', null, {currentUser: 'guest'});
+        shallowMount(ADRIntegration, {store});
+        expect(ssoLoginMethodStud.mock.calls.length).toBe(0);
+    });
+
+    it("does not fetch adrKey if user logs in with SSO", () => {
+        const store = createStore("", null, {}, false, {}, true)
+        shallowMount(ADRIntegration, {store});
+        expect(fetchKeyStub.mock.calls.length).toBe(0);
+    });
+
     it("fetches ADR key if logged in", () => {
         shallowMount(ADRIntegration, {store: createStore()});
         expect(fetchKeyStub.mock.calls.length).toBe(1);
@@ -101,9 +120,21 @@ describe("adr integration", () => {
         expect(rendered.findAll(ADRKey).length).toBe(1);
     });
 
-    it("does not render select dataset widget if key is not present", () => {
+    it("does not render adr-key widget if logged in with SSO", () => {
+        const store = createStore("", null, {}, false, {}, true)
+        const rendered = shallowMount(ADRIntegration, {store});
+        expect(rendered.findAll(ADRKey).length).toBe(0);
+    });
+
+    it("does not render select dataset widget if key is not present or not ssoLogin method", () => {
         const rendered = shallowMount(ADRIntegration, {store: createStore()});
         expect(rendered.findAll(SelectDataset).length).toBe(0);
+    });
+
+    it("renders select dataset widget if ssoLogin is present", () => {
+        const store = createStore("", null, {}, false, {}, true)
+        const rendered = shallowMount(ADRIntegration, {store});
+        expect(rendered.findAll(SelectDataset).length).toBe(1);
     });
 
     it("renders select dataset widget if key is present", () => {

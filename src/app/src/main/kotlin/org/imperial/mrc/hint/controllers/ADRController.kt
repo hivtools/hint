@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
-import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
@@ -12,6 +11,7 @@ import org.imperial.mrc.hint.md5sum
 import org.imperial.mrc.hint.models.*
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
+import org.imperial.mrc.hint.service.ADRService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest
 @Suppress("LongParameterList")
 class ADRController(private val encryption: Encryption,
                     private val userRepository: UserRepository,
-                    private val adrClientBuilder: ADRClientBuilder,
+                    private val adrService: ADRService,
                     private val objectMapper: ObjectMapper,
                     private val appProperties: AppProperties,
                     fileManager: FileManager,
@@ -80,7 +80,8 @@ class ADRController(private val encryption: Encryption,
     @GetMapping("/datasets")
     fun getDatasets(@RequestParam showInaccessible: Boolean = false): ResponseEntity<String>
     {
-        val adr = adrClientBuilder.build()
+        val adr = adrService.build()
+
         var url = "package_search?q=type:${appProperties.adrDatasetSchema}&rows=$MAX_DATASETS&include_private=true"
         url = if (showInaccessible)
         {
@@ -107,7 +108,7 @@ class ADRController(private val encryption: Encryption,
     @GetMapping("/datasets/{id}")
     fun getDataset(@PathVariable id: String, @RequestParam release: String? = null): ResponseEntity<String>
     {
-        val adr = adrClientBuilder.build()
+        val adr = adrService.build()
         var url = "package_show?id=${id}"
         if (release != null) {
             url = "$url&release=${release}"
@@ -118,7 +119,7 @@ class ADRController(private val encryption: Encryption,
     @GetMapping("/datasets/{id}/releases")
     fun getReleases(@PathVariable id: String): ResponseEntity<String>
     {
-        val adr = adrClientBuilder.build()
+        val adr = adrService.build()
         return adr.get("/dataset_version_list?dataset_id=${id}")
     }
 
@@ -141,7 +142,7 @@ class ADRController(private val encryption: Encryption,
     @GetMapping("/orgs")
     fun getOrgsWithPermission(@RequestParam permission: String): ResponseEntity<String>
     {
-        val adr = adrClientBuilder.build()
+        val adr = adrService.build()
         return adr.get("organization_list_for_user?permission=${permission}")
     }
 
@@ -186,7 +187,7 @@ class ADRController(private val encryption: Encryption,
     @Suppress("ReturnCount")
     fun createRelease(@PathVariable id: String, @RequestParam name: String): ResponseEntity<String>
     {
-        val adr = adrClientBuilder.build()
+        val adr = adrService.build()
         // checks for existing releases on ADR with the same name as the release being created
         val releasesResponse = adr.get("/dataset_version_list?dataset_id=${id}")
         if (releasesResponse.statusCode != HttpStatus.OK) 
@@ -337,7 +338,7 @@ class ADRController(private val encryption: Encryption,
             commonParameters.add("description" to description)
         }
 
-        val adr = adrClientBuilder.build()
+        val adr = adrService.build()
         return try
         {
             when (resourceId)
@@ -370,7 +371,7 @@ class ADRController(private val encryption: Encryption,
 
     fun uploadFileHasChanges(resourceId: String, newDatasetHash: String): Boolean
     {
-        val adr = adrClientBuilder.build()
+        val adr = adrService.build()
         val response = adr.get("resource_show?id=${resourceId}")
         if (response.statusCode.isError)
         {

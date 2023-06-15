@@ -10,13 +10,13 @@ import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.LocalFileManager
 import org.imperial.mrc.hint.clients.ADRClient
-import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.exceptions.AdrException
 import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.models.AdrResource
 import org.imperial.mrc.hint.models.VersionFile
 import org.imperial.mrc.hint.security.Session
+import org.imperial.mrc.hint.service.ADRService
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyString
@@ -117,7 +117,7 @@ class LocalFileManagerTests
             on { getInputStream(any()) } doReturn mockInputStream
             on { get(anyString()) } doReturn mockAdrActivityResponse
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mockBuilder, objectMapper)
@@ -150,7 +150,7 @@ class LocalFileManagerTests
             on { get(anyString()) } doReturn mockAdrActivityResponse
         }
 
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
 
@@ -180,7 +180,7 @@ class LocalFileManagerTests
             on { get(anyString()) } doReturn mockAdrActivityResponse
         }
 
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
 
@@ -231,7 +231,7 @@ class LocalFileManagerTests
             on { getInputStream(any()) } doReturn mockInputStream
             on { get(anyString()) } doReturn mockAdrActivityResponse
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
 
@@ -252,7 +252,7 @@ class LocalFileManagerTests
             on { getInputStream(any()) } doReturn mockInputStream
             on { get(anyString()) } doReturn mockAdrActivityResponse
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mockBuilder, objectMapper)
@@ -364,7 +364,7 @@ class LocalFileManagerTests
             on { getInputStream(any()) } doReturn mockInputStream
             on { get(anyString()) } doReturn activityResponse
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = LocalFileManager(mockSession, mockStateRepository, mockProperties, mockBuilder, objectMapper)

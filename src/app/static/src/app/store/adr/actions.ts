@@ -17,6 +17,7 @@ export interface ADRActions {
     getDataset: (store: ActionContext<ADRState, DataExplorationState>, payload: GetDatasetPayload) => void;
     getSchemas: (store: ActionContext<ADRState, DataExplorationState>) => void;
     getUserCanUpload: (store: ActionContext<ADRState, DataExplorationState>) => void;
+    ssoLoginMethod: (store: ActionContext<ADRState, DataExplorationState>) => void;
 }
 
 export interface GetDatasetPayload {
@@ -30,6 +31,18 @@ export const actions: ActionTree<ADRState, DataExplorationState> & ADRActions = 
             .ignoreErrors()
             .withSuccess(ADRMutation.UpdateKey)
             .get("/adr/key/");
+    },
+
+    async ssoLoginMethod(context) {
+        await api<ADRMutation, ADRMutation>(context)
+            .ignoreErrors()
+            .withSuccess(ADRMutation.SetSSOLogin)
+            .get("/sso")
+            .then((response) => {
+                if (response && response.data) {
+                    context.dispatch("getDatasets")
+                }
+            })
     },
 
     async saveKey(context, key) {

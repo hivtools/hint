@@ -2,19 +2,14 @@ package org.imperial.mrc.hint.security
 
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic.Companion.GUEST_USER
-import org.imperial.mrc.hint.security.oauth2.clients.HintClientsContext
-import org.imperial.mrc.hint.security.oauth2.clients.OAuth2Client
-import org.pac4j.core.client.Clients
 import org.pac4j.core.config.Config
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.context.session.SessionStore
-import org.pac4j.core.http.callback.PathParameterCallbackUrlResolver
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 import org.pac4j.core.util.Pac4jConstants
-import org.pac4j.http.client.indirect.FormClient
-import org.pac4j.jee.context.session.JEESessionStore
 import org.pac4j.oauth.config.OAuth20Configuration.STATE_REQUEST_PARAMETER
+import org.pac4j.oauth.profile.OAuth20Profile
 import org.pac4j.sql.profile.service.DbProfileService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
@@ -38,15 +33,7 @@ class Pac4jConfig
     @Bean
     fun getPac4jConfig(profileService: DbProfileService, userRepository: UserRepository): Config
     {
-        val oAuthClient = OAuth2Client(userRepository)
-        val auth2Client = HintClientsContext(oAuthClient)
-        val formClient = FormClient("/login", profileService)
-
-        formClient.callbackUrlResolver = PathParameterCallbackUrlResolver()
-        val clients = Clients("/callback", formClient, auth2Client.getIndirectClient())
-        return Config(clients).apply {
-            sessionStore = JEESessionStore.INSTANCE
-        }
+        return HintPac4jConfigService(profileService, userRepository).getConfig()
     }
 }
 
@@ -61,6 +48,7 @@ class Session(
     {
         private const val VERSION_ID = "version_id"
         private const val MODE = "mode"
+        private const val ACCESS_TOKEN = "access_token"
     }
 
     fun generateStateParameter(): String
@@ -77,6 +65,17 @@ class Session(
         return (manager.profiles.singleOrNull() ?: CommonProfile().apply {
             id = GUEST_USER
         }) as CommonProfile
+    }
+
+    fun getAccessToken(): String
+    {
+        val manager = ProfileManager(webContext, sessionStore)
+
+        val profile = manager.profiles.singleOrNull() ?: OAuth20Profile()
+
+        val token = profile.getAttribute(ACCESS_TOKEN) ?: ""
+
+        return token.toString()
     }
 
     fun userIsGuest(): Boolean
@@ -123,4 +122,3 @@ class Session(
         return UUID.randomUUID().toString()
     }
 }
-

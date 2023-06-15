@@ -2,7 +2,6 @@ package org.imperial.mrc.hint
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.tomcat.util.http.fileupload.FileUtils
-import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.db.VersionRepository
 import org.imperial.mrc.hint.security.Session
 import org.springframework.stereotype.Component
@@ -14,6 +13,7 @@ import java.security.MessageDigest
 import jakarta.xml.bind.DatatypeConverter
 import org.imperial.mrc.hint.exceptions.AdrException
 import org.imperial.mrc.hint.models.*
+import org.imperial.mrc.hint.service.ADRService
 import org.springframework.http.HttpStatus
 import org.springframework.web.util.UriComponentsBuilder
 
@@ -46,11 +46,11 @@ interface FileManager
 
 @Component
 class LocalFileManager(
-        private val session: Session,
-        private val versionRepository: VersionRepository,
-        private val appProperties: AppProperties,
-        private val adrClientBuilder: ADRClientBuilder,
-        private val objectMapper: ObjectMapper) : FileManager
+    private val session: Session,
+    private val versionRepository: VersionRepository,
+    private val appProperties: AppProperties,
+    private val adrService: ADRService,
+    private val objectMapper: ObjectMapper) : FileManager
 {
     private val uploadPath = appProperties.uploadDirectory
 
@@ -63,7 +63,7 @@ class LocalFileManager(
     {
         val originalFilename = data.url.split("/").last().split("?").first()
 
-        val adr = adrClientBuilder.build()
+        val adr = adrService.build()
 
         val resourceUrl = getResourceUrl(data, originalFilename)
 
@@ -172,7 +172,7 @@ class LocalFileManager(
 
     private fun getResourceUrl(adrResource: AdrResource, filename: String ): String
     {
-        val adr = adrClientBuilder.build()
+        val adr = adrService.build()
 
         val response = adr.get("package_activity_list?id=${adrResource.datasetId}")
 

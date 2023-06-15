@@ -5,12 +5,10 @@ import org.imperial.mrc.hint.security.Session
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 
-@Component
-class OAuth2AuthenticationRedirection(
+open class OAuth2AuthenticationRedirection(
     protected val appProperties: AppProperties,
     protected val session: Session? = null,
 )
@@ -23,7 +21,7 @@ class OAuth2AuthenticationRedirection(
             .queryParam("response_type", "code")
             .queryParam("client_id", appProperties.oauth2ClientId)
             .queryParam("state", session?.generateStateParameter())
-            .queryParam("scope", "openid+profile+email+read:dataset")
+            .queryParam("scope", appProperties.oauth2ClientScope)
             .queryParam("audience", appProperties.oauth2ClientAudience)
             .queryParam("redirect_uri", "${appProperties.applicationUrl}/callback/oauth2Client")
     }

@@ -139,4 +139,15 @@ class SessionTests
 
         verify(mockSessionStore).set(any(), anyString(), anyString())
     }
+
+    @Test
+    fun `gets empty string when token is empty`()
+    {
+        val mockWebContext = mock<WebContext>()
+        val mockSessionStore = mock<SessionStore>()
+        val mockConfig = mock<Config>()
+        val sut = Session(mockWebContext, mockConfig, mockSessionStore)
+        val accessToken = sut.getAccessToken()
+        assertThat(accessToken).isEqualTo("")
+    }
 }

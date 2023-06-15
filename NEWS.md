@@ -1,3 +1,7 @@
+# hint 2.37.0
+
+* Auth0 single sign on authorization integration 
+
 # hint 2.36.0
 
 * Projects link on invalid state dialog

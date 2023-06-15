@@ -11,6 +11,12 @@ describe("ADR mutations", () => {
         expect(state.key).toBe(null);
     });
 
+    it("can set ssoLogin", () => {
+        const state = mockADRState();
+        mutations[ADRMutation.SetSSOLogin](state, {payload: true});
+        expect(state.ssoLogin).toBe(true);
+    });
+
     it("can set key error", () => {
         const state = mockADRState();
         mutations[ADRMutation.SetKeyError](state, {payload: mockError("whatevs")});

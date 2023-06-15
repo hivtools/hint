@@ -201,9 +201,9 @@ class AppPropertiesTests
     @Test
     fun `can read oauth2 client ADR url`()
     {
-        val props = readPropsFromTempFile("oauth2_client_adr_url=http://flask.imperial")
+        val props = readPropsFromTempFile("oauth2_client_adr_server_url=http://flask.imperial")
         val sut = ConfiguredAppProperties(props)
-        assertEquals(sut.oauth2ClientAdrUrl, "http://flask.imperial")
+        assertEquals(sut.oauth2ClientAdrServerUrl, "http://flask.imperial")
     }
 
     @Test

@@ -16,7 +16,7 @@ class HttpClientTests
     @Test
     fun `can parse inputStream success response`()
     {
-        val sut = ADRFuelClient(ConfiguredAppProperties(), "fakekey", mockLogger)
+        val sut = ADRFuelClient(ConfiguredAppProperties().adrUrl, "fakekey", mockLogger)
         val response = sut.getInputStream("https://mock.codes/200")
         Assertions.assertThat(response.statusCode()).isEqualTo(200)
         Assertions.assertThat(response.body().bufferedReader().use { it.readText() }).isNotBlank
@@ -26,7 +26,7 @@ class HttpClientTests
     @Test
     fun `can parse inputStream server error response`()
     {
-        val sut = ADRFuelClient(ConfiguredAppProperties(), "fakekey", mockLogger)
+        val sut = ADRFuelClient(ConfiguredAppProperties().adrUrl, "fakekey", mockLogger)
         val response = sut.getInputStream("https://mock.codes/503")
         Assertions.assertThat(response.statusCode()).isEqualTo(503)
         verify(mockLogger).info(Mockito.contains("ADR request time elapsed: "))
