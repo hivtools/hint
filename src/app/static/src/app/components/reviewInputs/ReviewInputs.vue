@@ -46,7 +46,7 @@
                                 :round-format-output="false"
                                 :area-filter-id="areaFilterId"
                                 :colour-scales="selectedSAPColourScales"
-                                @update="updateChoroplethSelections({payload: $event})"
+                                @update:selections="updateChoroplethSelections({payload: $event})"
                                 @update-colour-scales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
                     <div>
                         <area-indicators-table :table-data="data"
@@ -142,7 +142,7 @@
         updateChoroplethSelections: (data: {payload: Partial<ChoroplethSelections>}) => void,
         updateSAPColourScales: (data: {payload: [DataType, ScaleSelections]}) => void,
         selectDataType: (payload: DataType) => void,
-        selectDataSource: (option: FilterOption) => void,
+        selectDataSource: (option: string) => void,
         selectTab: (tab: Tab) => void
     }
 
@@ -219,8 +219,8 @@
                 updateSAPColourScales: "plottingSelections/updateSAPColourScales",
             }),
             selectDataType: mapActionByName(namespace, "selectDataType"),
-            selectDataSource: function(option: FilterOption) {
-                this.selectDataType(parseInt(option.id))
+            selectDataSource: function(option: string) {
+                this.selectDataType(parseInt(option))
             },
             selectTab: function(tab: Tab) {
                 this.selectedTab = tab
@@ -232,10 +232,6 @@
             AreaIndicatorsTable,
             Treeselect,
             GenericChart
-        },
-        // TODO choropleth map doesn't show up because this doesn't get set for some reason! need to fix
-        beforeMount() {
-            this.selectDataSource({label: "whatever", id: "1"});
-        },
+        }
     })
 </script>

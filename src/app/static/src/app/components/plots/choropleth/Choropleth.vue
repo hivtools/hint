@@ -5,8 +5,8 @@
                  :selectedFilterOptions="selections.selectedFilterOptions"
                  @update="onFilterSelectionsChange"></filters>
         <div id="chart" :class="includeFilters ? 'col-md-9' : 'col-md-12'">
-            <l-map ref="map" style="height: 800px; width: 100%" @ready="() => updateBounds()">
-                <template v-for="feature in currentFeatures" :key="feature.id">
+            <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds" @vnode-updated="updateBounds">
+                <template v-for="feature in currentFeatures" :key="feature.properties.area_id">
                     <l-geo-json :geojson="feature"
                                 :options="options"
                                 :optionsStyle="{...style, fillColor: getColor(feature)}">
@@ -14,18 +14,20 @@
                 </template>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
                 <reset-map v-else @reset-view="updateBounds"></reset-map>
-                <map-control :initialDetail=selections.detail
-                             :indicator=selections.indicatorId
-                             :show-indicators="true"
-                             :indicators-metadata="indicators"
-                             :level-labels="featureLevels"
-                             @detail-changed="onDetailChange"
-                             @indicator-changed="onIndicatorChange"></map-control>
-                <map-legend v-show="!emptyFeature"
-                            :metadata="colorIndicator"
-                            :colour-scale="indicatorColourScale"
-                            :colour-range="colourRange"
-                            @update="updateColourScale"></map-legend>
+                <template>
+                    <map-control :initialDetail="selections.detail"
+                                :indicator="selections.indicatorId"
+                                :show-indicators="true"
+                                :indicators-metadata="indicators"
+                                :level-labels="featureLevels"
+                                @detail-changed="onDetailChange"
+                                @indicator-changed="onIndicatorChange"></map-control>
+                    <map-legend v-show="!emptyFeature"
+                                :metadata="colorIndicator"
+                                :colour-scale="indicatorColourScale"
+                                :colour-range="colourRange"
+                                @update="updateColourScale"></map-legend>
+                </template>
             </l-map>
         </div>
     </div>
@@ -35,7 +37,7 @@
     import {defineComponentVue2WithProps} from "../../../defineComponentVue2/defineComponentVue2"
     import {Feature} from "geojson";
     import {LGeoJson, LMap} from "@vue-leaflet/vue-leaflet";
-    import {GeoJSON, Layer, GeoJSONOptions, Map} from "leaflet";
+    import {GeoJSON, Layer, GeoJSONOptions} from "leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
     import Filters from "../Filters.vue";
@@ -403,7 +405,7 @@
                 this.changeSelections({selectedFilterOptions: newSelections});
             },
             changeSelections(newSelections: Partial<ChoroplethSelections>) {
-                this.$emit("update", newSelections)
+                this.$emit("update:selections", newSelections)
             },
             updateColourScale: function (scale: ScaleSettings) {
                 const newColourScales = {...this.colourScales};
@@ -417,14 +419,7 @@
                 return {id: node.indicator, label: node.name};
             }
         },
-        watch:
-            {
-                initialised: function (newVal: boolean) {
-                    this.updateBounds();
-                },
-                selectedAreaFeatures: function (newVal) {
-                    this.updateBounds();
-                },
+        watch: {
                 filters: function () {
                     this.initialise();
                 },
@@ -432,7 +427,7 @@
                     this.initialise();
                 },
             },
-        created() {
+        beforeMount() {
             this.initialise();
         }
     });
