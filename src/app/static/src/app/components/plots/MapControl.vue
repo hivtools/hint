@@ -5,6 +5,9 @@
                 <div v-if="showIndicators" class="row form-group">
                     <label class="col-3 col-form-label" v-translate="'indicator'">
                     </label>
+                    <!-- The indicator modelValue was not updating when the
+                    indicator options were changing so added indicator options
+                    as key to force re-render -->
                     <div class="col" :key="JSON.stringify(indicatorOptions)">
                         <treeselect  :modelValue="indicator"
                                      :multiple="false"

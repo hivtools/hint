@@ -13,9 +13,7 @@
                     </l-geo-json>
                 </template>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
-                <template v-else>
-                    <reset-map @reset-view="updateBounds"></reset-map>
-                </template>
+                <reset-map v-else @reset-view="updateBounds"></reset-map>
                 <template>
                     <map-control :initialDetail="selections.detail"
                                 :indicator="selections.indicatorId"
