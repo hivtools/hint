@@ -140,7 +140,7 @@ describe('Table from testdata', () => {
 
     it("scoped slot content is rendered correctly", () => {
         const store = createStore();
-        const scopedSlots = {
+        const slots = {
             "cell(area_id)": `<template v-slot:cell(area_id)="props">
                     <div class="value">{{ props.item.area_id }}</div>
                     <div class="small">{{ props.item.area_hierarchy }}</div>
@@ -180,19 +180,16 @@ describe('Table from testdata', () => {
         const wrapper = mountWithTranslate(Table, store, {
             global: {
                 plugins: [store]
-            }, props: customPropsData, scopedSlots
+            }, props: customPropsData, slots
         });
 
         const dataRow1 = wrapper.findAll("tr")[1];
         const dataRow2 = wrapper.findAll("tr")[2];
 
-        console.log(dataRow1.html())
-
         expect(wrapper.find('th').text()).toBe('Area');
-        // TODO continueeee
-        expect(dataRow1.find('td').text()).toBe('4.1');
+        expect(dataRow1.find('td .value').text()).toBe('4.1');
         expect(dataRow1.find('td .small').text()).toBe('3.1');
-        expect(dataRow2.find('td').text()).toBe('4.2');
+        expect(dataRow2.find('td .value').text()).toBe('4.2');
         expect(dataRow2.find('td .small').text()).toBe('3.2');
 
         expect(wrapper.findAll('th')[1].text()).toBe('Age');
