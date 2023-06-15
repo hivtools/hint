@@ -48,6 +48,7 @@ import {getters as rootGetters} from "../../app/store/root/getters";
 import {expectTranslated} from "../testHelpers";
 import StepperNavigation from "../../app/components/StepperNavigation.vue";
 import WarningAlert from "../../app/components/WarningAlert.vue";
+import LoadInvalidModal from "../../app/components/load/LoadInvalidModal.vue";
 import {ModelOptionsMutation} from "../../app/store/modelOptions/mutations";
 import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
 import {ModelRunMutation} from "../../app/store/modelRun/mutations";
@@ -220,6 +221,8 @@ describe("Stepper component", () => {
         expect(wrapper.findAll(".content").length).toBe(0);
         expectTranslated(wrapper.find("#loading-message"), "Loading your data",
             "Chargement de vos données", "A carregar os seus dados", store);
+        expect(wrapper.find(LoadInvalidModal).exists()).toBe(false);
+        expect(wrapper.find(WarningAlert).exists()).toBe(false);
     });
 
     it("renders loading spinner while ready but loadingFromFile", () => {
@@ -264,6 +267,7 @@ describe("Stepper component", () => {
         expect(wrapper.findAll(LoadingSpinner).length).toBe(0);
         expect(wrapper.findAll(".content").length).toBe(1);
         expect(wrapper.findAll("#loading-message").length).toBe(0);
+        expect(wrapper.find(LoadInvalidModal).exists()).toBe(true);
     });
 
     it("renders steps", () => {
@@ -843,9 +847,10 @@ describe("Stepper component", () => {
             modelCalibrate: [],
             reviewInputs: []
         });
-        //Expect warnings component to be at top, immediately before content div, not at bottom immediately after content
-        expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(true);
-        expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(false);
+        //Expect warnings component to be at top of content div, immediately before version status,
+        // not at bottom immediately after load invalid modal
+        expect(wrapper.find("warning-alert-stub + version-status-stub").exists()).toBe(true);
+        expect(wrapper.find("load-invalid-modal-stub + warning-alert-stub ").exists()).toBe(false);
     });
 
     it("renders warning alert for model options after step content", () => {
@@ -887,9 +892,10 @@ describe("Stepper component", () => {
             modelCalibrate: [],
             reviewInputs: []
         });
-        //Expect warnings component to be at bottom, immediately after content div, not at top immediately before content
-        expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(false);
-        expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(true);
+        //Expect warnings component to be at bottom of content div, immediately after load invalid modal,
+        // not at top immediately before version status
+        expect(wrapper.find("warning-alert-stub + version-status-stub").exists()).toBe(false);
+        expect(wrapper.find("load-invalid-modal-stub + warning-alert-stub ").exists()).toBe(true);
     });
 
     it("renders warning alert for review inputs", () => {
@@ -932,9 +938,9 @@ describe("Stepper component", () => {
                 locations: ["review_inputs"]
             }]
         });
-        //Expect warnings component to be at top, immediately before content div, not at bottom immediately after content
-        expect(wrapper.find("warning-alert-stub + div.content").exists()).toBe(true);
-        expect(wrapper.find("div.content + warning-alert-stub ").exists()).toBe(false);
+        //Expect warnings component to be at top, immediately before version status, not at bottom immediately after load invalid
+        expect(wrapper.find("warning-alert-stub + version-status-stub").exists()).toBe(true);
+        expect(wrapper.find("load-invalid-modal-stub + warning-alert-stub ").exists()).toBe(false);
     });
 
     it("clear-warnings emit when in modelOptions triggers clear warnings mutation in modelOptions store", async () => {
