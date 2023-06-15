@@ -39,46 +39,35 @@
             </div>
         </div>
         <div id="chart" class="col-md-9">
-            <l-map ref="map" style="height: 800px; width: 100%">
+            <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds" @vnode-updated="updateBounds">
                 <template v-for="feature in currentFeatures" :key="feature.id">
                     <l-geo-json :geojson="feature"
                                 :options="options"
                                 :optionsStyle="style">
                     </l-geo-json>
-                    <!-- <l-circle-marker v-if="showBubble(feature)"
-                                     :key="feature.id"
-                                     :lat-lng="[feature.properties?.center_y, feature.properties?.center_x]"
-                                     :radius="getRadius(feature)"
-                                     :fill-opacity="0.75"
-                                     :opacity="0.75"
-                                     :color="getColor(feature)"
-                                     :fill-color="getColor(feature)">
-                        <l-tooltip :content="getTooltip(feature)"/>
-                    </l-circle-marker> -->
-                    <!-- <l-circle-marker
-                    :lat-lng="[33.64, -9.61]"
-                    ></l-circle-marker> -->
                 </template>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
-                <reset-map v-else @reset-view="updateBounds"></reset-map>
-                <map-control :initialDetail=selections.detail
-                             :show-indicators="false"
-                             :level-labels="featureLevels"
-                             @detailChanged="onDetailChange($event)"></map-control>
-                <map-legend v-show="!emptyFeature"
-                            :metadata="colorIndicator"
-                            :colour-range="colourRange"
-                            :colour-scale="colourIndicatorScale"
-                            @update="updateColourScale"
-                ></map-legend>
-                <size-legend v-show="!emptyFeature"
-                             :indicatorRange="sizeRange"
-                             :max-radius="maxRadius"
-                             :min-radius="minRadius"
-                             :metadata="sizeIndicator"
-                             :size-scale="sizeIndicatorScale"
-                             @update="updateSizeScale"
-                ></size-legend>
+                <template v-else>
+                    <reset-map @reset-view="updateBounds"></reset-map>
+                    <map-legend :metadata="colorIndicator"
+                                :colour-range="colourRange"
+                                :colour-scale="colourIndicatorScale"
+                                @update="updateColourScale"
+                    ></map-legend>
+                    <size-legend :indicatorRange="sizeRange"
+                                 :max-radius="maxRadius"
+                                 :min-radius="minRadius"
+                                 :metadata="sizeIndicator"
+                                 :size-scale="sizeIndicatorScale"
+                                 @update="updateSizeScale"
+                    ></size-legend>
+                </template>
+                <template>
+                    <map-control :initialDetail=selections.detail
+                                 :show-indicators="false"
+                                 :level-labels="featureLevels"
+                                 @detailChanged="onDetailChange($event)"></map-control>
+                </template>
             </l-map>
         </div>
     </div>
@@ -88,11 +77,11 @@
     import {defineComponentVue2WithProps} from "../../../defineComponentVue2/defineComponentVue2"
     import Treeselect from "vue3-treeselect";
     import {Feature} from "geojson";
-    import {LCircleMarker, LGeoJson, LMap, LTooltip} from "@vue-leaflet/vue-leaflet";
+    import {LGeoJson, LMap} from "@vue-leaflet/vue-leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
     import FilterSelect from "../FilterSelect.vue";
-    import {CircleMarker, GeoJSON, GeoJSONOptions, Layer, circleMarker} from "leaflet";
+    import {CircleMarker, GeoJSON, circleMarker} from "leaflet";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {
         BubblePlotSelections,
@@ -180,8 +169,6 @@
         components: {
             LMap,
             LGeoJson,
-            LCircleMarker,
-            LTooltip,
             MapControl,
             MapLegend,
             SizeLegend,
@@ -373,27 +360,33 @@
             updateBounds: function () {
                 if (this.initialised) {
                     let map = this.$refs.map as any;
-                    if (this.previousCircles.length != 0) {
+                    if (this.previousCircles.length > 0) {
                         this.previousCircles.forEach(circle => circle.remove())
                         this.previousCircles = []
                     }
                     let circlesArray: CircleMarker[] = [];
-                    this.currentFeatures.forEach((feature) => {
-                        let circle = circleMarker([feature.properties?.center_y, feature.properties?.center_x], {
-                            radius: this.getRadius(feature),
-                            fillOpacity: 0.75,
-                            opacity: 0.75,
-                            color: this.getColor(feature),
-                            fillColor: this.getColor(feature),
+                    if (!this.emptyFeature) {
+                        this.currentFeatures.forEach((feature) => {
+                            if (!this.showBubble(feature)) {
+                                return
+                            }
+                            let circle = circleMarker([feature.properties?.center_y, feature.properties?.center_x], {
+                                radius: this.getRadius(feature),
+                                fillOpacity: 0.75,
+                                opacity: 0.75,
+                                color: this.getColor(feature),
+                                fillColor: this.getColor(feature),
+                            }).bindTooltip(this.getTooltip(feature))
+                            circlesArray.push(circle)
                         })
-                        circlesArray.push(circle)
-                    })
-                    this.previousCircles = circlesArray
-
+                        this.previousCircles = circlesArray
+                    }
 
                     if (map && map.leafletObject) {
                         map.leafletObject.fitBounds(this.selectedAreaFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
-                        circlesArray.forEach(circle => circle.addTo(map.leafletObject))
+                        if (circlesArray.length > 0) {
+                            circlesArray.forEach(circle => circle.addTo(map.leafletObject))
+                        }
                     }
                 }
             },
@@ -518,19 +511,7 @@
                 this.$emit("update-size-scales", newSizeScales);
             },
         },
-        watch:
-            {
-                initialised: function (newVal: boolean) {
-                    this.updateBounds();
-                },
-                selectedAreaFeatures: function (newVal) {
-                    this.updateBounds();
-                }
-            },
-        mounted() {
-            this.updateBounds();
-        },
-        async beforeMount() {
+        beforeMount() {
             //If selections have not been initialised, refresh them
             if (this.selections.detail < 0) {
                 this.onDetailChange(this.maxLevel);

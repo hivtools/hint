@@ -48,7 +48,7 @@
     interface Props {
         multiple?: boolean,
         label: string,
-        disabled: boolean,
+        disabled?: boolean,
         options: FilterOption[],
         value: string[] | string
     }
@@ -70,7 +70,7 @@
             },
             disabled: {
                 type: Boolean,
-                required: true
+                required: false
             },
             options: {
                 type: Array,
@@ -131,4 +131,3 @@
         }
     });
 </script>
-
