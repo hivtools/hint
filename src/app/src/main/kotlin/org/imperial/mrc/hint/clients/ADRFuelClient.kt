@@ -31,9 +31,16 @@ class ADRClientBuilder(val appProperties: AppProperties,
 
     fun buildSSO(): ADRClient
     {
+        val token = this.session.getAccessToken()
+
+        if (token.isEmpty())
+        {
+            logger.info("There was a problem retrieving access token from Auth0")
+        }
+
         return ADRFuelClient(
             this.appProperties.oauth2ClientAdrServerUrl,
-            "Bearer ${this.session.getAccessToken()}",
+            "Bearer $token",
             this.logger
         )
     }

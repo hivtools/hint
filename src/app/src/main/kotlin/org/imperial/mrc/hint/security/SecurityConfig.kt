@@ -1,6 +1,5 @@
 package org.imperial.mrc.hint.security
 
-import com.github.scribejava.core.model.OAuth2AccessToken
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.logic.DbProfileServiceUserLogic.Companion.GUEST_USER
 import org.pac4j.core.config.Config

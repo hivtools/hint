@@ -2,12 +2,14 @@ package org.imperial.mrc.hint.unit
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
 import org.imperial.mrc.hint.ConfiguredAppProperties
 import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.ADRFuelClient
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.exceptions.UserException
+import org.imperial.mrc.hint.logging.GenericLogger
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.junit.jupiter.api.Test
@@ -64,6 +66,30 @@ class ADRClientBuilderTests
         val headers = result.standardHeaders()
         Assertions.assertThat(headers["Authorization"]).isEqualTo("Bearer FAKE_TOKEN")
         Assertions.assertThat(result.httpRequestHeaders()).isEqualTo(arrayOf("Authorization", "Bearer FAKE_TOKEN"))
+    }
+
+    @Test
+    fun `add log message if user does not have access token`()
+    {
+        val mockSession = mock<Session> {
+            on { getAccessToken() } doReturn ""
+        }
+
+        val mockLogger = mock<GenericLogger>()
+
+        val sut = ADRClientBuilder(
+            ConfiguredAppProperties(),
+            encryption,
+            mockSession,
+            mockRepo,
+            mockLogger
+        )
+
+        val result = sut.buildSSO() as ADRFuelClient
+        val headers = result.standardHeaders()
+        verify(mockLogger).info("There was a problem retrieving access token from Auth0")
+        Assertions.assertThat(headers["Authorization"]).isEqualTo("Bearer ")
+        Assertions.assertThat(result.httpRequestHeaders()).isEqualTo(arrayOf("Authorization", "Bearer "))
     }
 
 }
