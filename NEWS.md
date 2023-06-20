@@ -1,3 +1,7 @@
+# hint 2.38.0
+
+* Include invalid steps in new project version note on rollback
+
 # hint 2.37.0
 
 * Auth0 single sign on authorization integration 
