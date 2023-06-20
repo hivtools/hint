@@ -193,14 +193,19 @@ describe("root actions", () => {
                 invalidSteps: [1, 2]
             },
             rootGetters: {
-                isGuest: false
+                isGuest: false,
+                ["stepper/stepTextKeys"]: {
+                    1: "uploadInputs",
+                    2: "reviewInputs"
+                }
             }
         };
 
         await actions.rollbackInvalidState(mockContext as any);
         expect(mockContext.dispatch.mock.calls.length).toBe(3);
         expect(mockContext.dispatch.mock.calls[0][0]).toBe("projects/newVersion");
-        expect(mockContext.dispatch.mock.calls[0][1]).toBe("Rolled back project to last valid step.");
+        expect(mockContext.dispatch.mock.calls[0][1]).toBe(
+            "Rolled back project to last valid step. The invalid steps were: Upload inputs, Review inputs");
         expect(mockContext.dispatch.mock.calls[1][0]).toBe("baseline/deleteAll");
         expect(mockContext.dispatch.mock.calls[2][0]).toBe("surveyAndProgram/deleteAll");
     });
@@ -213,7 +218,10 @@ describe("root actions", () => {
                 invalidSteps: [3]
             },
             rootGetters: {
-                isGuest: false
+                isGuest: false,
+                ["stepper/stepTextKeys"]: {
+                    3: "modelOptions"
+                }
             }
         };
 
