@@ -115,4 +115,17 @@ describe("stepper getters", () => {
         const result = getters.editsRequireConfirmation(state, localTestGetters, null as any, null as any);
         expect(result).toBe(false);
     });
+
+    it("returns expected stepTextKeys", () => {
+        const result = getters.stepTextKeys(state, testGetters, null as any, null as any);
+        expect(result).toStrictEqual({
+            1: "uploadInputs",
+            2: "reviewInputs",
+            3: "modelOptions",
+            4: "fitModel",
+            5: "calibrateModel",
+            6: "reviewOutput",
+            7: "downloadResults"
+        });
+    });
 });

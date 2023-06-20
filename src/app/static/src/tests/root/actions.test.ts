@@ -137,10 +137,15 @@ describe("root actions", () => {
             commit: jest.fn(),
             dispatch: jest.fn(),
             state: {
-                invalidSteps: [2]
+                invalidSteps: [2, 3]
             },
             rootGetters: {
-                isGuest: false
+                isGuest: false,
+                ["stepper/stepTextKeys"]: {
+                    1: "uploadInputs",
+                    2: "reviewInputs",
+                    3: "modelOptions"
+                }
             }
         };
 
@@ -148,6 +153,8 @@ describe("root actions", () => {
 
         expect(mockContext.dispatch).toHaveBeenCalledTimes(2);
         expect(mockContext.dispatch.mock.calls[0][0]).toBe("projects/newVersion");
+        expect(mockContext.dispatch.mock.calls[0][1]).toBe(
+            "Rolled back project to last valid step. The invalid steps were: Review inputs, Model options");
         expect(mockContext.dispatch.mock.calls[1][0]).toBe("surveyAndProgram/deleteAll");
 
         expect(mockContext.commit).toHaveBeenCalledTimes(2);
