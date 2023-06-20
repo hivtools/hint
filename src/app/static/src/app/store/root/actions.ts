@@ -12,7 +12,6 @@ import {currentHintVersion} from "../../hintVersion";
 import {ChangeLanguageAction} from "../language/actions";
 import {ErrorReportDefaultValue} from "../errors/errors";
 
-
 export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
     generateErrorReport: (store: ActionContext<RootState, RootState>,
@@ -39,8 +38,11 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         if (invalidSteps.length > 0) {
             // Roll back in a new version (if not guest user) so invalid state is available for inspection
             if (!rootGetters.isGuest) {
-                const note = i18next.t("rolledBackToLastValidStep");
-                await dispatch("projects/newVersion", note);
+                const stepTextKeys = rootGetters["stepper/stepTextKeys"];
+                const notePrefix = [i18next.t("rolledBackToLastValidStep")];
+                const noteSteps = invalidSteps.map((stepNumber) =>
+                    i18next.t(stepTextKeys[stepNumber]) || stepNumber.toString()).join(", ");
+                await dispatch("projects/newVersion", notePrefix + noteSteps);
             }
 
             //Invalidate any steps which come after the first invalid step
