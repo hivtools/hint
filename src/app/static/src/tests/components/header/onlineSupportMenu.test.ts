@@ -79,7 +79,7 @@ describe("Online support menu", () => {
         expect(wrapper.find(".dropdown-menu").classes())
             .toStrictEqual(["dropdown-menu", "show", "dropdown-menu-right"]);
 
-        const link = wrapper.find(".dropdown").find("a");
+        const link = wrapper.find(".dropdown").find("p");
         await expectTranslated(link, "Online support", "Support en ligne",
             "Apoio online", store as any);
     });
