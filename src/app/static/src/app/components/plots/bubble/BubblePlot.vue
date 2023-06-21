@@ -6,9 +6,9 @@
                 <treeselect :multiple=false
                             :clearable="false"
                             :options="indicators"
-                            :modelValue="selections.colorIndicatorId"
+                            :model-value="selections.colorIndicatorId"
                             :normalizer="normalizeIndicators"
-                            @update:modelValue="onColorIndicatorSelect($event)">
+                            @update:model-value="onColorIndicatorSelect($event)">
                 </treeselect>
             </div>
             <div id="size-indicator" class="form-group">
@@ -16,9 +16,9 @@
                 <treeselect :multiple=false
                             :clearable="false"
                             :options="indicators"
-                            :modelValue="selections.sizeIndicatorId"
+                            :model-value="selections.sizeIndicatorId"
                             :normalizer="normalizeIndicators"
-                            @update:modelValue="onSizeIndicatorSelect($event)">
+                            @update:model-value="onSizeIndicatorSelect($event)">
                 </treeselect>
             </div>
             <h4 v-translate="'filters'"></h4>

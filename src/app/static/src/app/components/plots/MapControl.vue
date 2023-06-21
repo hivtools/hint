@@ -5,28 +5,28 @@
                 <div v-if="showIndicators" class="row form-group">
                     <label class="col-3 col-form-label" v-translate="'indicator'">
                     </label>
-                    <!-- The indicator modelValue was not updating when the
+                    <!-- The indicator model-value was not updating when the
                     indicator options were changing so added indicator options
                     as key to force re-render -->
                     <div class="col" :key="JSON.stringify(indicatorOptions)">
-                        <treeselect  :modelValue="indicator"
+                        <treeselect  :model-value="indicator"
                                      :multiple="false"
                                      :clearable="false"
                                      :searchable="false"
                                      :options="indicatorOptions"
-                                     @update:modelValue="indicatorChanged"></treeselect>
+                                     @update:model-value="indicatorChanged"></treeselect>
                     </div>
                 </div>
                 <div class="row form-group">
                     <label class="col-3 col-form-label" v-translate="'detail'">
                     </label>
                     <div class="col">
-                        <treeselect  :modelValue="detail"
+                        <treeselect  :model-value="detail"
                                      :multiple="false"
                                      :clearable="false"
                                      :searchable="false"
                                      :options="detailOptions"
-                                     @update:modelValue="detailChanged"></treeselect>
+                                     @update:model-value="detailChanged"></treeselect>
                     </div>
                 </div>
             </form>

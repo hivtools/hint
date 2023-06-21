@@ -10,15 +10,17 @@
               class="icon-small">
             <vue-feather type="help-circle"></vue-feather>
         </span>
-        <treeselect :multiple="multiple"
+        <treeselect :key="`${reRender}`"
+                    :multiple="multiple"
                     :clearable="false"
                     :options="options"
-                    :modelValue="treeselectValue"
+                    :model-value="treeselectValue"
                     :disabled="disabled"
                     :placeholder="placeholder"
-                    @update:modelValue="input"
+                    @update:model-value="input"
                     @select="select"
-                    @deselect="deselect"></treeselect>
+                    @deselect="deselect"
+                    @vnode-mounted="test"></treeselect>
     </div>
 </template>
 
@@ -36,6 +38,7 @@
         input: (value: string[]) => void
         select: (node: FilterOption) => void
         deselect: (node: FilterOption) => void
+        test: () => void
     }
 
     interface Computed {
@@ -48,13 +51,15 @@
     interface Props {
         multiple?: boolean,
         label: string,
-        disabled: boolean,
+        disabled?: boolean,
         options: FilterOption[],
         value: string[] | string
     }
 
     interface Data {
         selectedOptions: any
+        reRender: boolean,
+        preventReRender: boolean
     }
 
     export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
@@ -70,7 +75,8 @@
             },
             disabled: {
                 type: Boolean,
-                required: true
+                required: false,
+                default: false
             },
             options: {
                 type: Array,
@@ -86,7 +92,9 @@
             const flatOptions = Object.values(flattenOptions(this.options));
             const selected = flatOptions.filter((o: FilterOption) => idArray.includes(o.id));
             return {
-                selectedOptions: selected
+                selectedOptions: selected,
+                reRender: false,
+                preventReRender: false
             }
         },
         computed: {
@@ -108,6 +116,7 @@
         },
         methods: {
             input(value: string[]) {
+                this.preventReRender = true;
                 if (!this.disabled && value != this.value) {
                     this.$emit("input", value);
                 }
@@ -123,12 +132,31 @@
             deselect(node: FilterOption) {
                 this.selectedOptions = this.selectedOptions.filter((n: any) => n.id != node.id);
                 this.$emit("select", this.selectedOptions);
-            }
+            },
+            test() {
+                console.log("lifecycle")
+            },
         },
         components: {
             Treeselect,
             VueFeather
-        }
+        },
+        watch: {
+            options: {
+                handler: function(newVal, oldVal) {
+                    this.preventReRender = false
+                },
+                deep: true
+            },
+            treeselectValue: {
+                handler: function(newVal, oldVal) {
+                    if (!this.preventReRender) {
+                        this.reRender = !this.reRender
+                    }
+                },
+                deep: true
+            }
+        },
     });
 </script>
 
