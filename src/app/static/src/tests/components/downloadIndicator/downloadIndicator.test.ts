@@ -73,7 +73,7 @@ describe("download indicator", () => {
     it('can trigger download with iso3 country prefix in filename', async() => {
         const wrapper = getWrapper();
         const button = wrapper.find("#indicator-download").find("button");
-        expect(button.attributes().disabled).toBeUndefined();
+        expect(button.element.disabled).toBe(false);
         await button.trigger("click")
         await expect(mockDownloadFileActions).toHaveBeenCalledTimes(1)
 
@@ -87,7 +87,7 @@ describe("download indicator", () => {
     it('can use country prefix when iso3 data is empty', async() => {
         const wrapper = getWrapper(createSut({iso3: "", country: "Malawi"}));
         const button = wrapper.find("#indicator-download").find("button");
-        expect(button.attributes().disabled).toBeUndefined();
+        expect(button.element.disabled).toBe(false);
         await button.trigger("click")
         expect(mockDownloadFileActions).toHaveBeenCalledTimes(1)
 
