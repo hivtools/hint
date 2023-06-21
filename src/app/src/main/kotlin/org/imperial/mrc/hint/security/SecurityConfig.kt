@@ -75,6 +75,8 @@ class Session(
 
         val token = profile.getAttribute(ACCESS_TOKEN) ?: ""
 
+        println(token)
+
         return token.toString()
     }
 
