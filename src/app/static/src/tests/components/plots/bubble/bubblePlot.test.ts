@@ -1,6 +1,6 @@
-import {VueWrapper, shallowMount} from "@vue/test-utils";
+import {VueWrapper, flushPromises, shallowMount} from "@vue/test-utils";
 import BubblePlot from "../../../../app/components/plots/bubble/BubblePlot.vue";
-import {LCircleMarker, LGeoJson, LTooltip} from "@vue-leaflet/vue-leaflet";
+import {LCircleMarker, LGeoJson} from "@vue-leaflet/vue-leaflet";
 import {getFeatureIndicators, getRadius} from "../../../../app/components/plots/bubble/utils";
 import {getColor} from "../../../../app/components/plots/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
@@ -15,8 +15,24 @@ import {expectFilter, plhiv, prev, testData} from "../testHelpers"
 import {ScaleType} from "../../../../app/store/plottingSelections/plottingSelections";
 import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vue";
 import ResetMap from "../../../../app/components/plots/ResetMap.vue";
-import { shallowMountWithTranslate } from "../../../testHelpers";
+import { mountWithTranslate } from "../../../testHelpers";
 import { nextTick } from "vue";
+
+jest.mock("@vue-leaflet/vue-leaflet", () => {
+    const LMap = {
+        template: "<div id='l-map-mock'><slot></slot></div>"
+    }
+    const LControl = {
+        template: "<div id='l-control-mock'><slot></slot></div>"
+    }
+    const LGeoJson = {
+        template: `<div id='l-geo-json-mock'><slot></slot></div>`,
+        props: {
+            geojson: Object
+        }
+    }
+    return { LMap, LControl, LGeoJson }
+});
 
 const store = new Vuex.Store({
     state: emptyState()
@@ -55,7 +71,7 @@ const allAreaIds = ["MWI", "MWI_3_1", "MWI_3_2", "MWI_4_1", "MWI_4_2"];
 
 const getWrapper = (customPropsData: any = {}) => {
 
-    return shallowMountWithTranslate(BubblePlot, store, {
+    return mountWithTranslate(BubblePlot, store, {
         props: {...props, ...customPropsData},
         global: {
             plugins: [store]
@@ -70,46 +86,48 @@ export const expectIndicatorSelect = (wrapper: VueWrapper<any>, divId: string, v
     expect(indSelect.props().multiple).toBe(false);
     expect(indSelect.props().clearable).toBe(false);
     expect(indSelect.props().options).toStrictEqual(props.indicators);
-    expect(indSelect.props().value).toBe(value);
+    expect(indSelect.props().modelValue).toBe(value);
 };
 
 describe("BubblePlot component", () => {
-    it("renders plot as expected", () => {
+    it("renders plot as expected", async () => {
         const wrapper = getWrapper();
-        const geoJsons = wrapper.findAllComponents(LGeoJson);
+        const geoJsons = wrapper.findAllComponents("#l-geo-json-mock") as VueWrapper[];
         expect(geoJsons.length).toBe(2);
-        expect(geoJsons[0].props().geojson).toBe(props.features[2]);
-        expect(geoJsons[1].props().geojson).toBe(props.features[3]);
+        expect(geoJsons[0].props().geojson).toStrictEqual(props.features[2]);
+        expect(geoJsons[1].props().geojson).toStrictEqual(props.features[3]);
 
         //These are hardcoded in the component
         const minRadius = 10;
         const maxRadius = 60;
 
-        const circles = wrapper.findAllComponents(LCircleMarker);
+        // circles are only rendered when the map is ready
+        await wrapper.findComponent("#l-map-mock").trigger("ready");
+        const circles = (wrapper.vm as any).$data.previousCircles;
         expect(circles.length).toBe(2);
-        expect(circles[0].props().latLng).toEqual([-15.2047, 35.7083]);
-        expect(circles[0].props().radius).toEqual(getRadius(10, 0, 100, 10, 70));
-        expect(circles[0].findComponent(LTooltip).props().content).toEqual(`<div>
-                            <strong>North West</strong>
-                            <br/>Prevalence: 10.00%
-                            <br/>PLHIV: 100
-                        </div>`);
+        expect(circles[0].getLatLng()).toStrictEqual({lat: -15.2047, lng: 35.7083});
+        expect(circles[0].getRadius()).toEqual(getRadius(10, 0, 100, 10, 70));
+        expect(circles[0].getTooltip()._content).toEqual(`<div>
+                                <strong>North West</strong>
+                                <br/>Prevalence: 10.00%
+                                <br/>PLHIV: 100
+                            </div>`);
         const meta = props.indicators[1];
         const colourRange = {min: meta.min, max: meta.max};
         let color = getColor(0.1, meta, colourRange);
-        expect(circles[0].props().color).toEqual(color);
-        expect(circles[0].props().fillColor).toEqual(color);
+        expect(circles[0].options.color).toEqual(color);
+        expect(circles[0].options.fillColor).toEqual(color);
 
-        expect(circles[1].props().latLng).toEqual([-15.2048, 35.7084]);
-        expect(circles[1].props().radius).toEqual(getRadius(20, 0, 100, 10, 70));
-        expect(circles[1].findComponent(LTooltip).props().content).toEqual(`<div>
-                            <strong>North East</strong>
-                            <br/>Prevalence: 20.00%
-                            <br/>PLHIV: 200
-                        </div>`);
+        expect(circles[1].getLatLng()).toEqual({lat: -15.2048, lng: 35.7084});
+        expect(circles[1].getRadius()).toEqual(getRadius(20, 0, 100, 10, 70));
+        expect(circles[1].getTooltip()._content).toEqual(`<div>
+                                <strong>North East</strong>
+                                <br/>Prevalence: 20.00%
+                                <br/>PLHIV: 200
+                            </div>`);
         color = getColor(0.2, meta, colourRange);
-        expect(circles[1].props().color).toEqual(color);
-        expect(circles[1].props().fillColor).toEqual(color);
+        expect(circles[1].options.color).toEqual(color);
+        expect(circles[1].options.fillColor).toEqual(color);
 
         expect(wrapper.findComponent(MapControl).props().initialDetail).toEqual(4);
         expect(wrapper.findComponent(MapControl).props().showIndicators).toEqual(false);
@@ -142,8 +160,8 @@ describe("BubblePlot component", () => {
     it("renders color legend", () => {
         const wrapper = getWrapper();
         const legend = wrapper.findComponent(MapLegend);
-        expect(legend.props().metadata).toBe(props.indicators[1]);
-        expect(legend.props().colourScale).toBe(props.colourScales.prevalence);
+        expect(legend.props().metadata).toStrictEqual(props.indicators[1]);
+        expect(legend.props().colourScale).toStrictEqual(props.colourScales.prevalence);
         expect(legend.props().colourRange).toStrictEqual({min: 0, max: 0.8});
     });
 
@@ -153,10 +171,10 @@ describe("BubblePlot component", () => {
         expect(sizeLegend.props().indicatorRange).toStrictEqual({min: 0, max: 100});
         expect(sizeLegend.props().minRadius).toBe(10);
         expect(sizeLegend.props().maxRadius).toBe(70);
-        expect(sizeLegend.props().sizeScale).toBe(props.sizeScales.plhiv);
+        expect(sizeLegend.props().sizeScale).toStrictEqual(props.sizeScales.plhiv);
     });
 
-    it("renders plot as expected with single bubble range value", () => {
+    it("renders plot as expected with single bubble range value", async () => {
         const customProps = {
           ...props,
           selections: {
@@ -181,21 +199,22 @@ describe("BubblePlot component", () => {
 
         const maxRadius = 70;
 
+        await wrapper.findComponent("#l-map-mock").trigger("ready");
         //expect single circle with max radius
-        const circles = wrapper.findAllComponents(LCircleMarker);
+        const circles = (wrapper.vm as any).$data.previousCircles;
         expect(circles.length).toBe(1);
-        expect(circles[0].props().latLng).toEqual([-15.2047, 35.7083]);
-        expect(circles[0].props().radius).toEqual(maxRadius);
-        expect(circles[0].findComponent(LTooltip).props().content).toEqual(`<div>
-                            <strong>North West</strong>
-                            <br/>Prevalence: 10.00%
-                            <br/>PLHIV: 100
-                        </div>`);
+        expect(circles[0].getLatLng()).toStrictEqual({lat: -15.2047, lng: 35.7083});
+        expect(circles[0].getRadius()).toEqual(maxRadius);
+        expect(circles[0].getTooltip()._content).toEqual(`<div>
+                                <strong>North West</strong>
+                                <br/>Prevalence: 10.00%
+                                <br/>PLHIV: 100
+                            </div>`);
         const meta = props.indicators[1];
         const colourRange = {min: meta.min, max: meta.max};
         let color = getColor(0.1, meta, colourRange);
-        expect(circles[0].props().color).toEqual(color);
-        expect(circles[0].props().fillColor).toEqual(color);
+        expect(circles[0].options.color).toEqual(color);
+        expect(circles[0].options.fillColor).toEqual(color);
 
     });
 
@@ -337,10 +356,10 @@ describe("BubblePlot component", () => {
         expect((wrapper.findComponent(SizeLegend).element as HTMLElement).style.display).toBeFalsy()
     });
 
-    it("render does display legends when selections have data", () => {
-        const wrapper = getWrapper({selections: {...props.selections, detail: 0}});
-        expect((wrapper.findComponent(SizeLegend).element as HTMLElement).style.display).toBeTruthy()
-        expect((wrapper.findComponent(MapLegend).element as HTMLElement).style.display).toBeTruthy()
+    it("render does display legends when selections have data", async () => {
+        const wrapper = getWrapper({selections: {...props.selections, detail: 4}});
+        expect(wrapper.findComponent(SizeLegend).exists()).toBe(true);
+        expect(wrapper.findComponent(MapLegend).exists()).toBe(true);
     });
 
     it("computes currentLevelFeatureIds", () => {
@@ -551,15 +570,16 @@ describe("BubblePlot component", () => {
         expect((wrapper.vm as any).sizeIndicatorScale).toStrictEqual(expectedScale);
     });
 
-    it("updateBounds updates bounds of map from features geojson", () => {
+    it("updateBounds updates bounds of map from features geojson", async () => {
         const wrapper = getWrapper();
         const mockMapFitBounds = jest.fn();
+        const mockMapAddLayer = jest.fn();
 
         const vm = wrapper.vm as any;
-        vm.$refs.map = {
-            fitBounds: mockMapFitBounds
-        };
-
+        vm.$refs.map.leafletObject = {
+            fitBounds: mockMapFitBounds,
+            addLayer: mockMapAddLayer
+        }
         vm.updateBounds();
         expect(mockMapFitBounds.mock.calls[0][0]).toStrictEqual(
             [{_northEast: {lat: -15.1, lng: 35.9}, _southWest: {lat: -15.3, lng: 35.7}}]);
@@ -568,11 +588,13 @@ describe("BubblePlot component", () => {
     it("clicking reset view button updates bounds of map from features geojson", () => {
         const wrapper = getWrapper();
         const mockMapFitBounds = jest.fn();
+        const mockMapAddLayer = jest.fn();
 
         const vm = wrapper.vm as any;
-        vm.$refs.map = {
-            fitBounds: mockMapFitBounds
-        };
+        vm.$refs.map.leafletObject = {
+            fitBounds: mockMapFitBounds,
+            addLayer: mockMapAddLayer
+        }
 
         const resetButton = wrapper.findComponent(ResetMap)
         expect(resetButton.exists()).toBe(true)
@@ -634,10 +656,10 @@ describe("BubblePlot component", () => {
             }
         });
 
-        expect(wrapper.emitted("update")![0][0]).toStrictEqual({detail: 4});
-        expect(wrapper.emitted("update")![1][0]).toStrictEqual({colorIndicatorId: "prevalence"});
-        expect(wrapper.emitted("update")![2][0]).toStrictEqual({sizeIndicatorId: "plhiv"});
-        expect(wrapper.emitted("update")![3][0]).toStrictEqual({
+        expect(wrapper.emitted("update:selections")![0][0]).toStrictEqual({detail: 4});
+        expect(wrapper.emitted("update:selections")![1][0]).toStrictEqual({colorIndicatorId: "prevalence"});
+        expect(wrapper.emitted("update:selections")![2][0]).toStrictEqual({sizeIndicatorId: "plhiv"});
+        expect(wrapper.emitted("update:selections")![3][0]).toStrictEqual({
             selectedFilterOptions: {
                 age: [{id: "0:15", label: "0-15"}],
                 sex: [{id: "female", label: "Female"}]
@@ -649,7 +671,7 @@ describe("BubblePlot component", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         vm.onFilterSelect(props.filters[1], [{id: "15:30", label: "15-30"}]);
-        const updates = wrapper.emitted("update")!;
+        const updates = wrapper.emitted("update:selections")!;
         expect(updates[updates.length - 1][0]).toStrictEqual({
             selectedFilterOptions: {
                 ...props.selections.selectedFilterOptions,
@@ -662,7 +684,7 @@ describe("BubblePlot component", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         vm.onColorIndicatorSelect("newIndicator");
-        const updates = wrapper.emitted("update")!;
+        const updates = wrapper.emitted("update:selections")!;
         expect(updates[updates.length - 1][0]).toStrictEqual({
             colorIndicatorId: "newIndicator"
         });
@@ -672,7 +694,7 @@ describe("BubblePlot component", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         vm.onSizeIndicatorSelect("newIndicator");
-        const updates = wrapper.emitted("update")!;
+        const updates = wrapper.emitted("update:selections")!;
         expect(updates[updates.length - 1][0]).toStrictEqual({
             sizeIndicatorId: "newIndicator"
         });
@@ -683,7 +705,7 @@ describe("BubblePlot component", () => {
         const vm = wrapper.vm as any;
         vm.onDetailChange(3);
 
-        expect((wrapper.emitted("update")![0][0] as any).detail).toStrictEqual(3);
+        expect((wrapper.emitted("update:selections")![0][0] as any).detail).toStrictEqual(3);
     });
 
     it("updates bounds when becomes initialised", async () => {
@@ -740,7 +762,7 @@ describe("BubblePlot component", () => {
     });
 
 
-    it("renders toolTip as expected on each feature prevalence and plhiv", () => {
+    it("renders toolTip as expected on each feature prevalence and plhiv", async () => {
         const customProps = {
             ...testData,
             selections: {
@@ -769,21 +791,22 @@ describe("BubblePlot component", () => {
             }
         };
         const wrapper = getWrapper(customProps);
+        await wrapper.findComponent("#l-map-mock").trigger("ready");
 
-        const circles = wrapper.findAllComponents(LCircleMarker);
+        const circles = (wrapper.vm as any).$data.previousCircles;
         expect(circles.length).toBe(1);
-        expect(circles[0].findComponent(LTooltip).props().content).toEqual(`<div>
-                            <strong>North</strong>
-                            <br/>Prevalence: 1.00%
-                            <br/>(1.00% - 10.00%)
-                            <br/>
-                            <br/>PLHIV: 10
-                            <br/>(0 - 1)
-                        </div>`);
+        expect(circles[0].getTooltip()._content).toEqual(`<div>
+                                <strong>North</strong>
+                                <br/>Prevalence: 1.00%
+                                <br/>(1.00% - 10.00%)
+                                <br/>
+                                <br/>PLHIV: 10
+                                <br/>(0 - 1)
+                            </div>`);
 
     });
 
-    it("renders toolTip as expected on each feature prevalence and plhiv when ranges are zeros", () => {
+    it("renders toolTip as expected on each feature prevalence and plhiv when ranges are zeros", async () => {
         const customProps = {
             ...testData,
             chartdata: [
@@ -816,17 +839,18 @@ describe("BubblePlot component", () => {
             }
         };
         const wrapper = getWrapper(customProps);
+        await wrapper.findComponent("#l-map-mock").trigger("ready");
 
-        const circles = wrapper.findAllComponents(LCircleMarker);
+        const circles = (wrapper.vm as any).$data.previousCircles;
         expect(circles.length).toBe(1);
-        expect(circles[0].findComponent(LTooltip).props().content).toEqual(`<div>
-                            <strong>North</strong>
-                            <br/>Prevalence: 1.00%
-                            <br/>(0.00% - 0.00%)
-                            <br/>
-                            <br/>PLHIV: 10
-                            <br/>(0 - 0)
-                        </div>`);
+        expect(circles[0].getTooltip()._content).toEqual(`<div>
+                                <strong>North</strong>
+                                <br/>Prevalence: 1.00%
+                                <br/>(0.00% - 0.00%)
+                                <br/>
+                                <br/>PLHIV: 10
+                                <br/>(0 - 0)
+                            </div>`);
 
     });
 });

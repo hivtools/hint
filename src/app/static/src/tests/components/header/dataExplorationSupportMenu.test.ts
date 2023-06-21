@@ -65,29 +65,31 @@ describe("Data exploration online support menu", () => {
         expect(wrapper.find(".dropdown-menu").classes())
             .toStrictEqual(["dropdown-menu", "show", "dropdown-menu-right"]);
 
+        const button = wrapper.find(".dropdown").findAll("p");
         const link = wrapper.find(".dropdown").findAll("a");
 
-        expect(link.length).toBe(4)
+        expect(button.length).toBe(1)
+        expect(link.length).toBe(3)
 
-        await expectTranslated(link[0],
+        await expectTranslated(button[0],
             "Online support",
             "Support en ligne",
             "Apoio online",
             store as any);
 
-        await expectTranslated(link[1],
+        await expectTranslated(link[0],
             "Troubleshooting request",
             "Demande de dépannage",
             "Solicitação de solução de problemas",
             store as any);
 
-        await expectTranslated(link[2],
+        await expectTranslated(link[1],
             "Privacy",
             "Vie privée",
             "Privacidade",
             store as any);
 
-        await expectTranslated(link[3],
+        await expectTranslated(link[2],
             "Accessibility",
             "Accessibilité",
             "Acessibilidade",
