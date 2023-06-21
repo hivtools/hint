@@ -1,9 +1,9 @@
 <template>
-    <div>
+    <div id="indicator-download">
         <download-button
             :name="'downloadIndicator'"
             :disabled="downloadingIndicator"
-            @click="download"></download-button>
+            @trigger-download="download"></download-button>
     </div>
 </template>
 
