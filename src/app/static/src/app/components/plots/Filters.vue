@@ -51,9 +51,6 @@
 
                 this.$emit("update", newSelectedFilterOptions);
             },
-        },
-        updated() {
-            console.log(this.filters)
         }
     });
 </script>

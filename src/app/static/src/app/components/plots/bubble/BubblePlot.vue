@@ -3,23 +3,23 @@
         <div class="col-md-3">
             <div id="color-indicator" class="form-group">
                 <label class="font-weight-bold" v-translate="'colorIndicator'"></label>
-                <treeselect :multiple=false
+                <tree-select :multiple=false
                             :clearable="false"
                             :options="indicators"
                             :model-value="selections.colorIndicatorId"
                             :normalizer="normalizeIndicators"
                             @update:model-value="onColorIndicatorSelect($event)">
-                </treeselect>
+                </tree-select>
             </div>
             <div id="size-indicator" class="form-group">
                 <label class="font-weight-bold" v-translate="'sizeIndicator'"></label>
-                <treeselect :multiple=false
+                <tree-select :multiple=false
                             :clearable="false"
                             :options="indicators"
                             :model-value="selections.sizeIndicatorId"
                             :normalizer="normalizeIndicators"
                             @update:model-value="onSizeIndicatorSelect($event)">
-                </treeselect>
+                </tree-select>
             </div>
             <h4 v-translate="'filters'"></h4>
             <div id="area-filter" class="form-group">
@@ -86,7 +86,7 @@
 
 <script lang="ts">
     import {defineComponentVue2WithProps} from "../../../defineComponentVue2/defineComponentVue2"
-    import Treeselect from "vue3-treeselect";
+    import TreeSelect from "../../TreeSelect.vue";
     import {Feature} from "geojson";
     import {LCircleMarker, LGeoJson, LMap, LTooltip} from "@vue-leaflet/vue-leaflet";
     import MapControl from "../MapControl.vue";
@@ -186,7 +186,7 @@
             MapLegend,
             SizeLegend,
             FilterSelect,
-            Treeselect,
+            TreeSelect,
             MapEmptyFeature,
             ResetMap
         },

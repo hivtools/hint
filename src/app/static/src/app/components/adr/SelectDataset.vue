@@ -35,7 +35,7 @@
             <p v-if="loading" v-translate="'importingFiles'"></p>
             <div v-if="!loading">
                 <label for="datasetSelector" class="font-weight-bold" v-translate="'datasets'"></label>
-                <treeselect id="datasetSelector"
+                <tree-select id="datasetSelector"
                              :multiple="false"
                              :searchable="true"
                              :options="datasetOptions"
@@ -46,7 +46,7 @@
                         <label v-html="node.raw.customLabel">
                         </label>
                     </template>
-                </treeselect>
+                </tree-select>
                 <select-release :dataset-id="newDatasetId" :open="open"
                                 @selected-dataset-release="updateDatasetRelease"
                                 @valid="updateValid">
@@ -96,7 +96,7 @@
     import i18next from "i18next";
     import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2"
     import {Language} from "../../store/translations/locales";
-    import Treeselect from "vue3-treeselect";
+    import TreeSelect from "../TreeSelect.vue";
     import {
         mapActionByName,
         mapGetterByName,
@@ -207,7 +207,7 @@
         },
         components: {
             Modal,
-            Treeselect,
+            TreeSelect,
             LoadingSpinner,
             VueFeather,
             ResetConfirmation,
