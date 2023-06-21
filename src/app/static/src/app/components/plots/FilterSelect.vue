@@ -10,22 +10,22 @@
               class="icon-small">
             <vue-feather type="help-circle"></vue-feather>
         </span>
-        <treeselect :multiple="multiple"
-                    :clearable="false"
-                    :options="options"
-                    :modelValue="treeselectValue"
-                    :disabled="disabled"
-                    :placeholder="placeholder"
-                    @update:modelValue="input"
-                    @select="select"
-                    @deselect="deselect"></treeselect>
+        <tree-select :multiple="multiple"
+                     :clearable="false"
+                     :options="options"
+                     :model-value="treeselectValue"
+                     :disabled="disabled"
+                     :placeholder="placeholder"
+                     @update:model-value="input"
+                     @select="select"
+                     @deselect="deselect"></tree-select>
     </div>
 </template>
 
 <script lang="ts">
     import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
     import i18next from "i18next";
-    import Treeselect from "vue3-treeselect";
+    import TreeSelect from "../TreeSelect.vue";
     import {flattenOptions, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
@@ -70,7 +70,8 @@
             },
             disabled: {
                 type: Boolean,
-                required: false
+                required: false,
+                default: false
             },
             options: {
                 type: Array,
@@ -126,7 +127,7 @@
             }
         },
         components: {
-            Treeselect,
+            TreeSelect,
             VueFeather
         }
     });

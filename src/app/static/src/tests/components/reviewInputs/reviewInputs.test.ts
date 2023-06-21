@@ -26,6 +26,7 @@ import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicat
 import { nextTick } from 'vue';
 import Filters from '../../../app/components/plots/Filters.vue';
 import Treeselect from "vue3-treeselect";
+import TreeSelect from '../../../app/components/TreeSelect.vue';
 
 describe("Survey and programme component", () => {
 
@@ -380,21 +381,21 @@ describe("Survey and programme component", () => {
             }
         });
 
-        const dataSourceSelect = wrapper.findComponent(Treeselect);
+        const dataSourceSelect = wrapper.findComponent(TreeSelect);
         expect(dataSourceSelect.props("modelValue")).toBe(1);
         expect(dataSourceSelect.props("options")!.length).toBe(3);
 
-        dataSourceSelect.vm.$emit("update:modelValue", {id: "0", label: "ANC"});
+        dataSourceSelect.vm.$emit("update:modelValue", "0");
         await nextTick();
         expect(dataSourceSelect.props("modelValue")).toBe(0);
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.ANC);
 
-        dataSourceSelect.vm.$emit("update:modelValue", {id: "2", label: "Household Survey"});
+        dataSourceSelect.vm.$emit("update:modelValue", "2");
         await nextTick();
         expect(dataSourceSelect.props("modelValue")).toBe(2);
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.Survey);
 
-        dataSourceSelect.vm.$emit("update:modelValue", {id: "1", label: "ART"});
+        dataSourceSelect.vm.$emit("update:modelValue", "1");
         await nextTick();
         expect(dataSourceSelect.props("modelValue")).toBe(1);
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.Program);

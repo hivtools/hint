@@ -5,28 +5,25 @@
                 <div v-if="showIndicators" class="row form-group">
                     <label class="col-3 col-form-label" v-translate="'indicator'">
                     </label>
-                    <!-- The indicator modelValue was not updating when the
-                    indicator options were changing so added indicator options
-                    as key to force re-render -->
-                    <div class="col" :key="JSON.stringify(indicatorOptions)">
-                        <treeselect  :modelValue="indicator"
+                    <div class="col">
+                        <tree-select :model-value="indicator"
                                      :multiple="false"
                                      :clearable="false"
                                      :searchable="false"
                                      :options="indicatorOptions"
-                                     @update:modelValue="indicatorChanged"></treeselect>
+                                     @update:model-value="indicatorChanged"></tree-select>
                     </div>
                 </div>
                 <div class="row form-group">
                     <label class="col-3 col-form-label" v-translate="'detail'">
                     </label>
                     <div class="col">
-                        <treeselect  :modelValue="detail"
+                        <tree-select :model-value="detail"
                                      :multiple="false"
                                      :clearable="false"
                                      :searchable="false"
                                      :options="detailOptions"
-                                     @update:modelValue="detailChanged"></treeselect>
+                                     @update:model-value="detailChanged"></tree-select>
                     </div>
                 </div>
             </form>
@@ -36,7 +33,7 @@
 
 <script lang="ts">
     import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
-    import Treeselect from "vue3-treeselect"
+    import TreeSelect from "../TreeSelect.vue";
     import {LControl} from "@vue-leaflet/vue-leaflet";
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {LevelLabel} from "../../types";
@@ -72,7 +69,7 @@
     export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         name: 'MapControl',
         components: {
-            Treeselect,
+            TreeSelect,
             LControl
         },
         props: {
