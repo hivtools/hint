@@ -1,3 +1,7 @@
+# hint 2.38.0
+
+* Improve Load Failed dialog guidance
+
 # hint 2.37.0
 
 * Auth0 single sign on authorization integration 
