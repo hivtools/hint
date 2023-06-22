@@ -1,23 +1,26 @@
 <template>
   <div id="load-invalid-modal">
     <modal :open="hasInvalidSteps">
-      <h4 v-translate="'loadError'"></h4>
-      <p>
-        <span id="load-invalid-steps" v-translate="'loadInvalidSteps'" />
-        <ul id="load-invalid-steps-list">
-          <li v-for="step in invalidSteps" :key="step" v-translate="stepTextKey(step)"></li>
-        </ul>
-        <span id="load-invalid-action-prefix" v-translate="'loadInvalidActionPrefix'" />
-        <span id="load-invalid-first-invalid" v-translate="stepTextKey(invalidSteps[0])" />
-        <span id="load-invalid-action-prefix" v-translate="'loadInvalidActionSuffix'" />
-      </p>
-      <p v-if="!isGuest" id="load-invalid-steps-rollback-info" v-translate="'loadInvalidStepsRollbackInfo'"></p>
-      <p v-else id="load-invalid-steps-rollback-info-guest" v-translate="'loadInvalidStepsRollbackInfoGuest'"></p>
-      <p v-if="!isGuest" id="load-invalid-projects">
-          <span id="load-invalid-projects-prefix" v-translate="'loadInvalidStepsProjectLinkPrefix'"></span>
-          <router-link id="load-invalid-projects-link" to="/projects" v-translate="'projects'" v-translate:aria-label="'projects'" />
-          <span id="load-invalid-projects-suffix" v-translate="'loadInvalidStepsProjectLinkSuffix'"></span>
-      </p>
+      <template v-if="hasInvalidSteps">
+        <h4 v-translate="'loadError'"></h4>
+        <p>
+          <span id="load-invalid-steps" v-translate="'loadInvalidSteps'" />
+          <ul id="load-invalid-steps-list">
+            <li v-for="step in invalidSteps" :key="step" v-translate="stepTextKey(step)"></li>
+          </ul>
+          <span id="load-invalid-action-prefix" v-translate="'loadInvalidActionPrefix'" />
+          <span id="load-invalid-first-invalid" v-translate="stepTextKey(invalidSteps[0])" />
+          <span id="load-invalid-action-prefix" v-translate="'loadInvalidActionSuffix'" />
+        </p>
+        <p v-if="!isGuest" id="load-invalid-steps-rollback-info" v-translate="'loadInvalidStepsRollbackInfo'"></p>
+        <p v-else id="load-invalid-steps-rollback-info-guest" v-translate="'loadInvalidStepsRollbackInfoGuest'"></p>
+        <p v-if="!isGuest" id="load-invalid-projects">
+            <span id="load-invalid-projects-prefix" v-translate="'loadInvalidStepsProjectLinkPrefix'"></span>
+            <router-link id="load-invalid-projects-link" to="/projects" v-translate="'projects'" v-translate:aria-label="'projects'" />
+            <span id="load-invalid-projects-suffix" v-translate="'loadInvalidStepsProjectLinkSuffix'"></span>
+
+        </p>
+      </template>
       <template v-slot:footer>
         <button id="retry-load"
                 type="button"
@@ -103,9 +106,3 @@
         }
     })
 </script>
-<style scoped>
-  @media (min-width:1000px)
-  .modal-dialog {
-    max-width: 800px;
-  }
-</style>
