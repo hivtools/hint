@@ -13,17 +13,19 @@
         <treeselect :multiple="multiple"
                     :clearable="false"
                     :options="options"
-                    :modelValue="treeselectValue"
                     :disabled="disabled"
+                    v-model="treeselectValue"
+                    :key="treeselectValue"
                     :placeholder="placeholder"
-                    @update:modelValue="input"
                     @select="select"
                     @deselect="deselect"></treeselect>
     </div>
 </template>
 
 <script lang="ts">
-    import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
+import {
+  defineComponentVue2GetSetWithProps
+} from "../../defineComponentVue2/defineComponentVue2"
     import i18next from "i18next";
     import Treeselect from "vue3-treeselect";
     import {flattenOptions, mapStateProp} from "../../utils";
@@ -31,18 +33,22 @@
     import {Language} from "../../store/translations/locales";
     import {FilterOption} from "../../generated";
     import VueFeather from "vue-feather";
+    import {ComputedGetter} from "vue";
 
     interface Methods {
-        input: (value: string[]) => void
+        input: (value: string[] | string | null) => void
         select: (node: FilterOption) => void
         deselect: (node: FilterOption) => void
     }
 
-    interface Computed {
-        treeselectValue: string[] | string | null
-        currentLanguage: Language
-        placeholder: string,
-        labelTooltip: string
+    interface Computed extends Record<string, any> {
+        treeselectValue: {
+          get: ComputedGetter<string[] | string | null>,
+          set: (newVal: string[] | string | null) => void
+        },
+        currentLanguage: ComputedGetter<Language>
+        placeholder: ComputedGetter<string>,
+        labelTooltip: ComputedGetter<string>
     }
 
     interface Props {
@@ -57,7 +63,7 @@
         selectedOptions: any
     }
 
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponentVue2GetSetWithProps<Data, Methods, Computed, Props>({
         name: "FilterSelect",
         props: {
             multiple: {
@@ -90,8 +96,13 @@
             }
         },
         computed: {
-            treeselectValue() {
-                return this.disabled ? null : this.value;
+            treeselectValue: {
+                get() {
+                  return this.disabled ? null : this.value;
+                },
+                set(newValue: string[] | string | null) {
+                  this.input(newValue)
+                }
             },
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
@@ -107,7 +118,7 @@
             }
         },
         methods: {
-            input(value: string[]) {
+            input(value: string[] | string | null) {
                 if (!this.disabled && value != this.value) {
                     this.$emit("input", value);
                 }
