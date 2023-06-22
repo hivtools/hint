@@ -10,7 +10,7 @@
           </ul>
           <span id="load-invalid-action-prefix" v-translate="'loadInvalidActionPrefix'" />
           <span id="load-invalid-first-invalid" v-translate="stepTextKey(invalidSteps[0])" />
-          <span id="load-invalid-action-prefix" v-translate="'loadInvalidActionSuffix'" />
+          <span id="load-invalid-action-suffix" v-translate="'loadInvalidActionSuffix'" />
         </p>
         <p v-if="!isGuest" id="load-invalid-steps-rollback-info" v-translate="'loadInvalidStepsRollbackInfo'"></p>
         <p v-else id="load-invalid-steps-rollback-info-guest" v-translate="'loadInvalidStepsRollbackInfoGuest'"></p>

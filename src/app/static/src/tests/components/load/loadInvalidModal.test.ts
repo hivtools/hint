@@ -75,16 +75,17 @@ describe("loadInvalidModal", () => {
         })
     });
 
-    it("can render error modal as expected where there are invalid steps after first step", () => {
+    it("can render error modal as expected where there are invalid steps", () => {
         const wrapper = getWrapper([2, 3]);
         expectHasTranslationKey(wrapper.find("span#load-invalid-steps"), "loadInvalidSteps");
         const stepsListItems = wrapper.findAll("ul#load-invalid-steps-list li");
         expect(stepsListItems.length).toBe(2);
         expectHasTranslationKey(stepsListItems.at(0), "reviewInputs");
         expectHasTranslationKey(stepsListItems.at(1), "modelOptions");
-        expectHasTranslationKey(wrapper.find("span#load-invalid-steps-from-valid-action"), "loadInvalidStepsFromValidAction");
-        expectHasTranslationKey(wrapper.find("span#load-invalid-last-valid"), "uploadInputs");
-        expectHasTranslationKey(wrapper.find("span#load-invalid-steps-rollback-info"), "loadInvalidStepsRollbackInfo");
+        expectHasTranslationKey(wrapper.find("span#load-invalid-action-prefix"), "loadInvalidActionPrefix");
+        expectHasTranslationKey(wrapper.find("span#load-invalid-first-invalid"), "reviewInputs");
+        expectHasTranslationKey(wrapper.find("span#load-invalid-action-suffix"), "loadInvalidActionSuffix");
+        expectHasTranslationKey(wrapper.find("p#load-invalid-steps-rollback-info"), "loadInvalidStepsRollbackInfo");
         expect(wrapper.find("#load-invalid-steps-rollback-info-guest").exists()).toBe(false);
 
         const retryBtn = wrapper.find("button#retry-load");
@@ -97,23 +98,9 @@ describe("loadInvalidModal", () => {
 
     it("renders rollback information for guest user", () => {
         const wrapper = getWrapper([2, 3], true);
-        const info = wrapper.find("span#load-invalid-steps-rollback-info-guest");
+        const info = wrapper.find("p#load-invalid-steps-rollback-info-guest");
         expectHasTranslationKey(info, "loadInvalidStepsRollbackInfoGuest");
         expect(wrapper.find("#load-invalid-steps-rollback-info").exists()).toBe(false);
-    });
-
-    it("can render error modal as expected where first step is invalid", () => {
-        const wrapper = getWrapper([1, 4]);
-        expectHasTranslationKey(wrapper.find("span#load-invalid-steps"), "loadInvalidSteps");
-        const stepsListItems = wrapper.findAll("ul#load-invalid-steps-list li");
-        expect(stepsListItems.length).toBe(2);
-        expectHasTranslationKey(stepsListItems.at(0), "uploadInputs");
-        expectHasTranslationKey(stepsListItems.at(1), "fitModel");
-        expectHasTranslationKey(wrapper.find("#load-invalid-steps-all-action"), "loadInvalidStepsAllAction");
-        expectHasTranslationKey(wrapper.find("#load-invalid-steps-rollback-info"), "loadInvalidStepsRollbackInfo");
-
-        expectHasTranslationKey(wrapper.find("button#retry-load"), "retry");
-        expectHasTranslationKey(wrapper.find("button#rollback-load"), "rollback");
     });
 
     it("displays Projects page link if not guest user", () => {
@@ -152,7 +139,7 @@ describe("loadInvalidModal translations", () => {
         return mount(LoadInvalidModal, { store, stubs });
     };
 
-    it("can display expected translations where there are invalid steps after first step", () => {
+    it("can display expected translations where there are invalid steps", () => {
         const wrapper = getWrapper([2, 3]);
         const store = wrapper.vm.$store;
 
@@ -168,15 +155,20 @@ describe("loadInvalidModal translations", () => {
         expectTranslated(stepsListItems.at(1), "Model options", "Options des modèles",
             "Opções de modelos", store);
 
-        expectTranslated(wrapper.find("span#load-invalid-steps-from-valid-action"),
-            "Retry load or rollback to the last valid step, which is",
-            "Refaire ou revenir en arrière jusqu'au dernier étape valide, qui est",
-            "Tente carregar novamente ou reverter para a última etapa válida, que é", store);
+        expectTranslated(wrapper.find("span#load-invalid-action-prefix"),
+            "Please Retry load. If the problem persists, Rollback to re-run from the",
+            "Veuillez Refaire de charger. Si le problème persiste, Revenir en arrière pour relancer à partir du",
+            "Por favor Tente carregar novamente. Se o problema persistir, Reverter para executar novamente a partir do", store);
 
-        expectTranslated(wrapper.find("span#load-invalid-last-valid"), "Upload inputs", "Télécharger les entrées",
-            "Carregar entradas", store);
+        expectTranslated(wrapper.find("span#load-invalid-first-invalid"), "Review inputs", "Examiner les entrées",
+            "Analise as entradas", store);
 
-        expectTranslated(wrapper.find("span#load-invalid-steps-rollback-info"),
+        expectTranslated(wrapper.find("span#load-invalid-action-suffix"),
+            "step. Please also submit a troubleshooting request.",
+            "étape. Veuillez également soumettre une demande de dépannage.",
+            "etapa. Envie também uma solicitação de solução de problemas.", store);
+
+        expectTranslated(wrapper.find("p#load-invalid-steps-rollback-info"),
             "Rollback will be done in a new version - the current project version state will be preserved.",
             "Revenir en arrière sera effectuée dans une nouvelle version - l'état actuel de la version du projet sera conservé.",
             "Reverter será feita em uma nova versão - o estado da versão atual do projeto será preservado.", store);
@@ -193,23 +185,12 @@ describe("loadInvalidModal translations", () => {
     it("can display expected translations for rollback information when user is guest", () => {
         const wrapper = getWrapper([2, 3], true);
         const store = wrapper.vm.$store;
-        expectTranslated(wrapper.find("span#load-invalid-steps-rollback-info-guest"),
+        expectTranslated(wrapper.find("p#load-invalid-steps-rollback-info-guest"),
             "Rollback will result in a loss of all project data from subsequent steps.",
             "Revenir en arrière entraînera la perte de toutes les données du projet des étapes suivantes.",
             "Reverter resultará na perda de todos os dados do projeto das etapas subsequentes.", store);
     });
 
-    it("can display expected translations where first step is invalid", () => {
-        const wrapper = getWrapper([1]);
-        const store = wrapper.vm.$store;
-        expectTranslated(wrapper.find("#load-invalid-steps-all-action"), "Retry load or rollback?",
-            "Refaire ou revenir en arrière?", "Tentar carregar novamente ou reverter?", store);
-
-        expectTranslated(wrapper.find("span#load-invalid-steps-rollback-info"),
-            "Rollback will be done in a new version - the current project version state will be preserved.",
-            "Revenir en arrière sera effectuée dans une nouvelle version - l'état actuel de la version du projet sera conservé.",
-            "Reverter será feita em uma nova versão - o estado da versão atual do projeto será preservado.", store);
-    });
 
     it("can display Projects page link translations", () => {
         const wrapper = getWrapper([1]);
@@ -218,6 +199,9 @@ describe("loadInvalidModal translations", () => {
             "Vous pouvez également revenir à la page", "Você também pode voltar para a página", store);
         expectTranslated(wrapper.find("#load-invalid-projects-link"), "Projects", "Projets", "Projetos"
             , store);
-        expectTranslated(wrapper.find("#load-invalid-projects-suffix"), "page", "", "", store);
+        expectTranslated(wrapper.find("#load-invalid-projects-suffix"),
+            "page - if you do this, you can try to load this project again later.",
+            "- si vous faites cela, vous pouvez essayer de charger à nouveau ce projet plus tard.",
+            "- se você fizer isso, você pode tentar carregar este projeto novamente mais tarde.", store);
     });
 });
