@@ -36,7 +36,7 @@
             class="font-weight-bold"
             v-translate="'releases'"
         ></label>
-        <tree-select
+        <hint-tree-select
             id="releaseSelector"
             :multiple="false"
             :searchable="true"
@@ -49,14 +49,14 @@
                 <label v-html="node.raw.customLabel">
                 </label>
             </template>
-        </tree-select>
+        </hint-tree-select>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2"
     import { mapActionByName, mapStateProp, mapMutationByName } from "../../utils";
-    import TreeSelect from "../TreeSelect.vue";
+    import HintTreeSelect from "../HintTreeSelect.vue";
     import { ADRState } from "../../store/adr/adr";
     import VueFeather from "vue-feather";
     import i18next from "i18next";
@@ -96,7 +96,7 @@
 
     export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         components: {
-            TreeSelect,
+            HintTreeSelect,
             VueFeather,
         },
         props: {

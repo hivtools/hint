@@ -5,7 +5,7 @@ import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import VueFeather from "vue-feather";
 import { mountWithTranslate, shallowMountWithTranslate } from '../../testHelpers';
-import { nextTick } from "vue";
+import { VueWrapper } from "@vue/test-utils";
 
 describe("FilterSelect component", () => {
     const testOptions = [{id: "1", label: "one"}, {id: "2", label: "two"}];
@@ -47,7 +47,7 @@ describe("FilterSelect component", () => {
     });
 
     it("does not render tooltip unless any options have descriptions", () => {
-        const wrapper = shallowMountWithTranslate(FilterSelect, store, {
+        const wrapper = mountWithTranslate(FilterSelect, store, {
             global: {
                 plugins: [store]
             }, props: {options: testOptions, label: "testLabel"}
@@ -119,7 +119,7 @@ describe("FilterSelect component", () => {
     });
 
     it("does not emit input event if disabled", () => {
-        const wrapper = shallowMountWithTranslate(FilterSelect, store, {
+        const wrapper = mountWithTranslate(FilterSelect, store, {
             global: {
                 plugins: [store]
             },
@@ -130,7 +130,7 @@ describe("FilterSelect component", () => {
     });
 
     it("emits select event with added value when multi-select", () => {
-        const wrapper = shallowMountWithTranslate(FilterSelect, store, {
+        const wrapper = mountWithTranslate(FilterSelect, store, {
             global: {
                 plugins: [store]
             },
@@ -144,7 +144,7 @@ describe("FilterSelect component", () => {
     });
 
     it("emits select event with replaced value when not multi-select", () => {
-        const wrapper = shallowMountWithTranslate(FilterSelect, store, {
+        const wrapper = mountWithTranslate(FilterSelect, store, {
             global: {
                 plugins: [store]
             },
@@ -158,7 +158,7 @@ describe("FilterSelect component", () => {
     });
 
     it("emits select even when deselect", () => {
-        const wrapper = shallowMountWithTranslate(FilterSelect, store, {
+        const wrapper = mountWithTranslate(FilterSelect, store, {
             global: {
                 plugins: [store]
             },

@@ -21,13 +21,13 @@
                 <div :class="showChoropleth ? 'col-md-3' : 'col-sm-6 col-md-8'" class="upload-section">
                     <div v-if="showChoropleth" id="data-source" class="form-group">
                         <h4 id="data-source-header" v-translate="'dataSource'"></h4>
-                        <tree-select
+                        <hint-tree-select
                                 :multiple="false"
                                 :clearable="false"
                                 :options="dataSourceOptions"
                                 :model-value="selectedDataType"
                                 @update:model-value="selectDataSource">
-                        </tree-select>
+                        </hint-tree-select>
                     </div>
                     <filters v-if="showChoropleth"
                             :filters="filters"
@@ -73,7 +73,7 @@
 </template>
 
 <script lang="ts">
-    import TreeSelect from "../TreeSelect.vue";
+    import HintTreeSelect from "../HintTreeSelect.vue";
     import i18next from "i18next";
     import {mapGetters, mapMutations, mapState} from "vuex";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
@@ -230,7 +230,7 @@
             Choropleth,
             Filters,
             AreaIndicatorsTable,
-            TreeSelect,
+            HintTreeSelect,
             GenericChart
         }
     })

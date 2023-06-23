@@ -1,14 +1,14 @@
 <template>
     <div>
         <label class="font-weight-bold">{{label}}</label>
-        <tree-select :instanceId="id"
+        <hint-tree-select :instanceId="id"
                      :multiple=isXAxisOrDisagg
                      :clearable="false"
                      :flat=isXAxisOrDisagg
                      :options="options"
                      :model-value="selectedValues"
                      @select="select"
-                     @deselect="deselect"></tree-select>
+                     @deselect="deselect"></hint-tree-select>
         <span v-if="isXAxisOrDisagg" class="text-muted">
                         <small>{{badge}}</small>
                     </span>
@@ -18,7 +18,7 @@
 <script lang="ts">
     import {defineComponent, Prop, PropType} from "vue";
     import {FilterOption} from "./types";
-    import TreeSelect from "../../../components/TreeSelect.vue";
+    import HintTreeSelect from "../../../components/HintTreeSelect.vue";
 
     interface Props {
         id?: string
@@ -125,7 +125,7 @@
             }
         },
         components: {
-            TreeSelect
+            HintTreeSelect
         }
     })
 </script>

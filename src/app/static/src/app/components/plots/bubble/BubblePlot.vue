@@ -3,23 +3,23 @@
         <div class="col-md-3">
             <div id="color-indicator" class="form-group">
                 <label class="font-weight-bold" v-translate="'colorIndicator'"></label>
-                <tree-select :multiple=false
+                <hint-tree-select :multiple=false
                             :clearable="false"
                             :options="indicators"
                             :model-value="selections.colorIndicatorId"
                             :normalizer="normalizeIndicators"
                             @update:model-value="onColorIndicatorSelect($event)">
-                </tree-select>
+                </hint-tree-select>
             </div>
             <div id="size-indicator" class="form-group">
                 <label class="font-weight-bold" v-translate="'sizeIndicator'"></label>
-                <tree-select :multiple=false
+                <hint-tree-select :multiple=false
                             :clearable="false"
                             :options="indicators"
                             :model-value="selections.sizeIndicatorId"
                             :normalizer="normalizeIndicators"
                             @update:model-value="onSizeIndicatorSelect($event)">
-                </tree-select>
+                </hint-tree-select>
             </div>
             <h4 v-translate="'filters'"></h4>
             <div id="area-filter" class="form-group">
@@ -75,7 +75,7 @@
 
 <script lang="ts">
     import {defineComponentVue2WithProps} from "../../../defineComponentVue2/defineComponentVue2"
-    import TreeSelect from "../../TreeSelect.vue";
+    import HintTreeSelect from "../../HintTreeSelect.vue";
     import {Feature} from "geojson";
     import {LGeoJson, LMap} from "@vue-leaflet/vue-leaflet";
     import MapControl from "../MapControl.vue";
@@ -173,7 +173,7 @@
             MapLegend,
             SizeLegend,
             FilterSelect,
-            TreeSelect,
+            HintTreeSelect,
             MapEmptyFeature,
             ResetMap
         },
