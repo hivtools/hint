@@ -1,3 +1,7 @@
+# hint 2.37.1
+
+* Fix Retry load for guest user
+
 # hint 2.37.0
 
 * Auth0 single sign on authorization integration 
