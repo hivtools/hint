@@ -1,6 +1,6 @@
 <template>
     <treeselect
-    :key="`${reRender}`"
+    :key="reRender"
     :options="options"
     :model-value="modelValue"
     @update:model-value="input"
@@ -42,9 +42,9 @@
         },
         data() {
             return {
-                // this is a boolean that toggles to cause key to change
-                // and force re-render
-                reRender: false,
+                // this is an integer that toggles between 1 and 0 to cause
+                // key to change and force re-render
+                reRender: 0,
                 lastEmittedValue: "" as string | string[] | null | undefined
             }
         },
@@ -69,10 +69,10 @@
                     // This relates to multi-select filters
                     if (this.lastEmittedValue instanceof Array) {
                         if (this.lastEmittedValue.sort().join(",") !== newVal.sort().join(",")) {
-                            this.reRender = !this.reRender
+                            this.reRender = 1 - this.reRender
                         }
                     } else if (newVal == null || this.lastEmittedValue != newVal) {
-                        this.reRender = !this.reRender
+                        this.reRender = 1 - this.reRender
                     }
                 },
                 deep: true
