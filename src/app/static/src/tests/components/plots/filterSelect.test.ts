@@ -136,10 +136,10 @@ describe("FilterSelect component", () => {
             },
             props: {label: "Label", options: testOptions, multiple: true, value: []}
         });
-        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("update:select", {id: "1", label: "one"});
+        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("select", {id: "1", label: "one"});
         expect(wrapper.emitted("update:filter-select")![0][0]).toStrictEqual([{id: "1", label: "one"}]);
 
-        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("update:select", {id: "2", label: "two"});
+        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("select", {id: "2", label: "two"});
         expect(wrapper.emitted("update:filter-select")![1][0]).toStrictEqual([{id: "1", label: "one"}, {id: "2", label: "two"}]);
     });
 
@@ -150,10 +150,10 @@ describe("FilterSelect component", () => {
             },
             props: {label: "Label", options: testOptions, multiple: false}
         });
-        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("update:select", {id: "1", label: "one"});
+        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("select", {id: "1", label: "one"});
         expect(wrapper.emitted("update:filter-select")![0][0]).toStrictEqual([{id: "1", label: "one"}]);
 
-        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("update:select", {id: "2", label: "two"});
+        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("select", {id: "2", label: "two"});
         expect(wrapper.emitted("update:filter-select")![1][0]).toStrictEqual([{id: "2", label: "two"}]);
     });
 
@@ -165,7 +165,7 @@ describe("FilterSelect component", () => {
             props: {label: "Label", options: testOptions, multiple: true, value: ["1", "2"]}
         });
 
-        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("update:deselect", {id: "1", label: "one"});
+        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("deselect", {id: "1", label: "one"});
         expect(wrapper.emitted("update:filter-select")![0][0]).toStrictEqual([{id: "2", label: "two"}]);
     });
 });

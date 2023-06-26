@@ -53,7 +53,6 @@
         methods: {
             input(value: string[]) {
                 this.lastEmittedValue = value;
-                console.log(value)
                 this.$emit("update:model-value", value)
             }
         },

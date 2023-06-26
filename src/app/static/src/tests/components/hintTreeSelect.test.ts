@@ -48,7 +48,6 @@ describe("Treeselect component", () => {
         const treeSelect = wrapper.findComponent(Treeselect);
         expect(getKey(wrapper)).toBe(0);
         await treeSelect.vm.$emit("update:model-value", "2")
-        console.log(wrapper.vm.lastEmittedValue)
         await callWatcher(wrapper, "modelValue", ["2"]);
         expect(getKey(wrapper)).toBe(0);
     });
@@ -58,7 +57,6 @@ describe("Treeselect component", () => {
         const treeSelect = wrapper.findComponent(Treeselect);
         expect(getKey(wrapper)).toBe(0);
         await treeSelect.vm.$emit("update:model-value", "2")
-        console.log(wrapper.vm.lastEmittedValue)
         await callWatcher(wrapper, "modelValue", "2");
         expect(getKey(wrapper)).toBe(0);
     });
