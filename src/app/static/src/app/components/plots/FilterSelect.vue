@@ -17,8 +17,8 @@
                      :disabled="disabled"
                      :placeholder="placeholder"
                      @update:model-value="input"
-                     @select="select"
-                     @deselect="deselect"></hint-tree-select>
+                     @update:select="select"
+                     @update:deselect="deselect"></hint-tree-select>
     </div>
 </template>
 
