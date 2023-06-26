@@ -3,7 +3,9 @@
     :key="`${reRender}`"
     :options="options"
     :model-value="modelValue"
-    @update:model-value="input">
+    @update:model-value="input"
+    @select="select"
+    @deselect="deselect">
     <!-- way to pass down all slots -->
     <template v-for="(_, slot) in $slots" v-slot:[slot]="scope">
         <slot :name="slot" v-bind="scope || {}" />
@@ -31,25 +33,31 @@
         data() {
             return {
                 reRender: false,
-                preventReRender: false
+                lastEmittedValue: "" as string | string[] | null | undefined
             }
         },
         methods: {
             input(value: string[]) {
-                this.preventReRender = true
+                this.lastEmittedValue = value;
                 this.$emit("update:model-value", value)
+            },
+            select(value: string[]) {
+                this.lastEmittedValue = value;
+                this.$emit("update:select", value)
+            },
+            deselect(value: string[]) {
+                this.lastEmittedValue = value;
+                this.$emit("update:deselect", value)
             }
         },
         watch: {
-            options: {
-                handler: function(newVal, oldVal) {
-                    this.preventReRender = false
-                },
-                deep: true
-            },
             modelValue: {
                 handler: function(newVal, oldVal) {
-                    if (!this.preventReRender) {
+                    if (this.lastEmittedValue instanceof Array) {
+                        if (this.lastEmittedValue.sort().join(",") !== newVal.sort().join(",")) {
+                            this.reRender = !this.reRender
+                        }
+                    } else if (newVal == null || this.lastEmittedValue != newVal) {
                         this.reRender = !this.reRender
                     }
                 },

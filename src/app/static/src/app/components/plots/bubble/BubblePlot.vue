@@ -27,7 +27,7 @@
                                :multiple="true"
                                :options="areaFilterOptions"
                                :value="getSelectedFilterValues('area')"
-                               @select="onFilterSelect(areaFilter, $event)">
+                               @update:filter-select="onFilterSelect(areaFilter, $event)">
                 </filter-select>
             </div>
             <div :id="'filter-' + filter.id" v-for="filter in nonAreaFilters" :key="filter.id" class="form-group">
@@ -35,7 +35,7 @@
                                :multiple="false"
                                :label="filter.label"
                                :options="filter.options"
-                               @select="onFilterSelect(filter, $event)"></filter-select>
+                               @update:filter-select="onFilterSelect(filter, $event)"></filter-select>
             </div>
         </div>
         <div id="chart" class="col-md-9">

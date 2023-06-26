@@ -119,11 +119,11 @@
                 } else {
                     this.selectedOptions.push(node);
                 }
-                this.$emit("select", this.selectedOptions);
+                this.$emit("update:filter-select", this.selectedOptions);
             },
             deselect(node: FilterOption) {
                 this.selectedOptions = this.selectedOptions.filter((n: any) => n.id != node.id);
-                this.$emit("select", this.selectedOptions);
+                this.$emit("update:filter-select", this.selectedOptions);
             }
         },
         components: {
