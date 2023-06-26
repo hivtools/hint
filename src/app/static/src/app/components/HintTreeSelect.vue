@@ -16,6 +16,16 @@
     import { PropType, defineComponent } from "vue";
     import Treeselect from "vue3-treeselect";
 
+    // This wrapper was necessary as this third party treeselect was not
+    // updating its value when an external update was being made, e.g.
+    // when dataSource changed in Choropleth tab, the filters' values
+    // would not update.
+    
+    // Here we force this treeselect component to re-render if an external
+    // change has been made. If an internal change is made (like user
+    // selecting a value) then the lastEmittedValue keeps track of it so
+    // we can prevent re-render.
+
     export default defineComponent({
         components: {
             Treeselect
@@ -32,6 +42,8 @@
         },
         data() {
             return {
+                // this is a boolean that toggles to cause key to change
+                // and force re-render
                 reRender: false,
                 lastEmittedValue: "" as string | string[] | null | undefined
             }
@@ -53,6 +65,8 @@
         watch: {
             modelValue: {
                 handler: function(newVal, oldVal) {
+                    // Bit more complicated to check if two string[] have the same elements.
+                    // This relates to multi-select filters
                     if (this.lastEmittedValue instanceof Array) {
                         if (this.lastEmittedValue.sort().join(",") !== newVal.sort().join(",")) {
                             this.reRender = !this.reRender
