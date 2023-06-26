@@ -3,9 +3,8 @@
     :key="reRender"
     :options="options"
     :model-value="modelValue"
-    @update:model-value="input"
-    @select="select"
-    @deselect="deselect">
+    :multiple="multiple"
+    @update:model-value="input">
     <!-- way to pass down all slots -->
     <template v-for="(_, slot) in $slots" v-slot:[slot]="scope">
         <slot :name="slot" v-bind="scope || {}" />
@@ -38,6 +37,9 @@
             modelValue: {
                 type: Array as PropType<string | string[] | null | undefined>,
                 required: true
+            },
+            multiple: {
+                type: Boolean
             }
         },
         data() {
@@ -51,28 +53,26 @@
         methods: {
             input(value: string[]) {
                 this.lastEmittedValue = value;
+                console.log(value)
                 this.$emit("update:model-value", value)
-            },
-            select(value: string[]) {
-                this.lastEmittedValue = value;
-                this.$emit("update:select", value)
-            },
-            deselect(value: string[]) {
-                this.lastEmittedValue = value;
-                this.$emit("update:deselect", value)
             }
         },
         watch: {
             modelValue: {
                 handler: function(newVal, oldVal) {
-                    // Bit more complicated to check if two string[] have the same elements.
-                    // This relates to multi-select filters
-                    if (this.lastEmittedValue instanceof Array) {
-                        if (this.lastEmittedValue.sort().join(",") !== newVal.sort().join(",")) {
-                            this.reRender = 1 - this.reRender
+                    // Multi-select component already seems to work fine so we want to
+                    // not re-render those. We only want to re-render if:
+                    // newVal === null : to replace value with "Not used" in treeselect
+                    // newValStringCase : to re-render when we pass string into treeselect
+                    // newValArrayCase : to re-render when we pass array of length 1 into treeselect
+
+                    const newValStringCase = (typeof newVal === "string") && this.lastEmittedValue !== newVal;
+                    const newValArrayCase = newVal instanceof Array && newVal.length === 1 && this.lastEmittedValue !== newVal[0];
+                    
+                    if (!this.multiple) {
+                        if (newVal === null || newValStringCase || newValArrayCase) {
+                            this.reRender = 1 - this.reRender;
                         }
-                    } else if (newVal == null || this.lastEmittedValue != newVal) {
-                        this.reRender = 1 - this.reRender
                     }
                 },
                 deep: true

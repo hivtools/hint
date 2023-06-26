@@ -7,8 +7,8 @@
                      :flat=isXAxisOrDisagg
                      :options="options"
                      :model-value="selectedValues"
-                     @update:select="select"
-                     @update:deselect="deselect"></hint-tree-select>
+                     @select="select"
+                     @deselect="deselect"></hint-tree-select>
         <span v-if="isXAxisOrDisagg" class="text-muted">
                         <small>{{badge}}</small>
                     </span>
