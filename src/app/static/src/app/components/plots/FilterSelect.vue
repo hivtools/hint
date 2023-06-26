@@ -10,7 +10,7 @@
               class="icon-small">
             <vue-feather type="help-circle"></vue-feather>
         </span>
-        <tree-select :multiple="multiple"
+        <hint-tree-select :multiple="multiple"
                      :clearable="false"
                      :options="options"
                      :model-value="treeselectValue"
@@ -18,14 +18,14 @@
                      :placeholder="placeholder"
                      @update:model-value="input"
                      @select="select"
-                     @deselect="deselect"></tree-select>
+                     @deselect="deselect"></hint-tree-select>
     </div>
 </template>
 
 <script lang="ts">
     import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
     import i18next from "i18next";
-    import TreeSelect from "../TreeSelect.vue";
+    import HintTreeSelect from "../HintTreeSelect.vue";
     import {flattenOptions, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
@@ -119,15 +119,15 @@
                 } else {
                     this.selectedOptions.push(node);
                 }
-                this.$emit("select", this.selectedOptions);
+                this.$emit("update:filter-select", this.selectedOptions);
             },
             deselect(node: FilterOption) {
                 this.selectedOptions = this.selectedOptions.filter((n: any) => n.id != node.id);
-                this.$emit("select", this.selectedOptions);
+                this.$emit("update:filter-select", this.selectedOptions);
             }
         },
         components: {
-            TreeSelect,
+            HintTreeSelect,
             VueFeather
         }
     });

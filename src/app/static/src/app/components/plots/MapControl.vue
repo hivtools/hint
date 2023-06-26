@@ -6,24 +6,24 @@
                     <label class="col-3 col-form-label" v-translate="'indicator'">
                     </label>
                     <div class="col">
-                        <tree-select :model-value="indicator"
+                        <hint-tree-select :model-value="indicator"
                                      :multiple="false"
                                      :clearable="false"
                                      :searchable="false"
                                      :options="indicatorOptions"
-                                     @update:model-value="indicatorChanged"></tree-select>
+                                     @update:model-value="indicatorChanged"></hint-tree-select>
                     </div>
                 </div>
                 <div class="row form-group">
                     <label class="col-3 col-form-label" v-translate="'detail'">
                     </label>
                     <div class="col">
-                        <tree-select :model-value="detail"
+                        <hint-tree-select :model-value="detail"
                                      :multiple="false"
                                      :clearable="false"
                                      :searchable="false"
                                      :options="detailOptions"
-                                     @update:model-value="detailChanged"></tree-select>
+                                     @update:model-value="detailChanged"></hint-tree-select>
                     </div>
                 </div>
             </form>
@@ -33,7 +33,7 @@
 
 <script lang="ts">
     import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
-    import TreeSelect from "../TreeSelect.vue";
+    import HintTreeSelect from "../HintTreeSelect.vue";
     import {LControl} from "@vue-leaflet/vue-leaflet";
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {LevelLabel} from "../../types";
@@ -69,7 +69,7 @@
     export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         name: 'MapControl',
         components: {
-            TreeSelect,
+            HintTreeSelect,
             LControl
         },
         props: {

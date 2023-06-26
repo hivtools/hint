@@ -1,17 +1,17 @@
 <template>
     <div>
-        <tree-select :multiple="true"
+        <hint-tree-select :multiple="true"
                      :clearable="false"
                      v-model="value"
                      :options="formControl.options" 
-                     :placeholder="selectText"></tree-select>
+                     :placeholder="selectText"></hint-tree-select>
         <input type="hidden" :value="formControl.value" :name="formControl.name"/>
     </div>
 </template>
 
 <script lang="ts">
     import {MultiSelectControl} from "./types";
-    import TreeSelect from "../../components/TreeSelect.vue";
+    import HintTreeSelect from "../../components/HintTreeSelect.vue";
     import { defineComponentVue2GetSetWithProps } from "../../defineComponentVue2/defineComponentVue2";
 
     interface Props {
@@ -55,7 +55,7 @@
             },
         },
         components: {
-            TreeSelect
+            HintTreeSelect
         }
     })
 </script>

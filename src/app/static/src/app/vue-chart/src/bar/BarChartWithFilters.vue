@@ -4,25 +4,25 @@
             <div class="col-md-3">
                 <div id="indicator-fg" class="form-group">
                     <label class="font-weight-bold">{{filterConfig.indicatorLabel || "Indicator"}}</label>
-                    <tree-select :multiple=false
+                    <hint-tree-select :multiple=false
                                  :clearable="false"
                                  :options="indicators"
                                  v-model="indicatorId"
-                                 :normalizer="normalizeIndicators"></tree-select>
+                                 :normalizer="normalizeIndicators"></hint-tree-select>
                 </div>
                 <div v-if="!xAxisIsFixed" id="x-axis-fg" class="form-group">
                     <label class="font-weight-bold">{{filterConfig.xAxisLabel || "X Axis"}}</label>
-                    <tree-select :multiple=false
+                    <hint-tree-select :multiple=false
                                  :clearable="false"
                                  :options="filterXaxisOptions"
-                                 v-model="xAxisId"></tree-select>
+                                 v-model="xAxisId"></hint-tree-select>
                 </div>
                 <div v-if="!disaggregateIsFixed" id="disagg-fg" class="form-group">
                     <label class="font-weight-bold">{{filterConfig.disaggLabel || "Disaggregate by"}}</label>
-                    <tree-select :multiple=false
+                    <hint-tree-select :multiple=false
                                  :clearable="false"
                                  :options="filterDisaggregateOptions"
-                                 v-model="disaggregateById"></tree-select>
+                                 v-model="disaggregateById"></hint-tree-select>
                 </div>
                 <hr/>
                 <h3 v-if="anyFiltersShown">{{filterConfig.filterLabel || "Filters"}}</h3>
@@ -64,8 +64,7 @@
 </template>
 
 <script lang="ts">
-    import {defineComponentVue2GetSetWithProps} from "../../../defineComponentVue2/defineComponentVue2"
-    import TreeSelect from "../../../components/TreeSelect.vue";
+    import HintTreeSelect from "../../../components/HintTreeSelect.vue";
     import BarChartWithErrors from "./BarChartWithErrors.vue";
     import FilterSelect from "./FilterSelect.vue";
     import {AxisConfig, BarchartIndicator, BarchartSelections, Dict, Filter, FilterConfig, FilterOption} from "./types";
@@ -322,7 +321,7 @@
         },
         components: {
             BarChartWithErrors,
-            TreeSelect,
+            HintTreeSelect,
             FilterSelect
         }
     });
