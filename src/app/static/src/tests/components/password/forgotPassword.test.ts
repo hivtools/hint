@@ -39,7 +39,12 @@ describe("Forgot password component", () => {
     };
 
     const createSut = (store: Store<PasswordState>) => {
-        return shallowMountWithTranslate(ForgotPassword, store, {global: {plugins: [store]}, props: {title: "Naomi"}});
+        return shallowMountWithTranslate(ForgotPassword, store, {
+            global: {
+                plugins: [store]
+            },
+            props: {title: "Naomi"}
+        });
     };
 
     it("renders form with no error", async () => {
@@ -151,10 +156,10 @@ describe("Forgot password component", () => {
     it("updates html lang when language changes", async () => {
         const store = createStore();
         const wrapper = createSut(store);
-        store.commit(LanguageMutation.ChangeLanguage, {payload: Language.pt});
+        // need to call watchers manually so this emulates us changing
+        // the language to Portuguese in the store
+        (wrapper.vm as any).$options.watch.language.call(wrapper.vm, Language.pt)
         await nextTick();
-        (wrapper.vm as any).$options.watch.language.call(wrapper.vm)
         expect(document.documentElement.lang).toBe("pt");
     });
-
 });
