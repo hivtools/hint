@@ -36,7 +36,6 @@
     import {ScaleSettings} from "../../store/plottingSelections/plottingSelections";
     import MapAdjustScale from "./MapAdjustScale.vue";
     import {NumericRange} from "../../types";
-    import numeral from 'numeral';
 
     interface Props {
         metadata: ChoroplethIndicatorMetadata | undefined,

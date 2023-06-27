@@ -1,14 +1,23 @@
 import {mount, shallowMount} from '@vue/test-utils';
 import MapControl from "../../../app/components/plots/MapControl.vue";
-import TreeSelect from "vue3-treeselect";
+import Treeselect from "vue3-treeselect";
+import HintTreeSelect from '../../../app/components/HintTreeSelect.vue';
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import { nextTick } from 'vue';
 
 const store = new Vuex.Store({
     state: emptyState()
 });
 registerTranslations(store);
+
+jest.mock("@vue-leaflet/vue-leaflet", () => {
+    const LControl = {
+        template: "<div id='l-control-mock'><slot></slot></div>"
+    }
+    return { LControl }
+});
 
 describe("Map control component", () => {
 
@@ -33,19 +42,19 @@ describe("Map control component", () => {
     it("renders tree selects with expected properties", () => {
         const wrapper = mount(MapControl, {props, global: {plugins: [store]}});
 
-        expect(wrapper.findAllComponents(TreeSelect)[0].props("searchable")).toBe(false);
-        expect(wrapper.findAllComponents(TreeSelect)[0].props("multiple")).toBe(false);
-        expect(wrapper.findAllComponents(TreeSelect)[0].props("clearable")).toBe(false);
+        expect(wrapper.findAllComponents(Treeselect)[0].props("searchable")).toBe(false);
+        expect(wrapper.findAllComponents(Treeselect)[0].props("multiple")).toBe(false);
+        expect(wrapper.findAllComponents(Treeselect)[0].props("clearable")).toBe(false);
 
-        expect(wrapper.findAllComponents(TreeSelect)[1].props("searchable")).toBe(false);
-        expect(wrapper.findAllComponents(TreeSelect)[1].props("multiple")).toBe(false);
-        expect(wrapper.findAllComponents(TreeSelect)[1].props("clearable")).toBe(false);
+        expect(wrapper.findAllComponents(Treeselect)[1].props("searchable")).toBe(false);
+        expect(wrapper.findAllComponents(Treeselect)[1].props("multiple")).toBe(false);
+        expect(wrapper.findAllComponents(Treeselect)[1].props("clearable")).toBe(false);
     });
 
     it("renders indicator options", () => {
         const wrapper = mount(MapControl, {props, global: {plugins: [store]}});
 
-        expect(wrapper.findAllComponents(TreeSelect)[0].props("options"))
+        expect(wrapper.findAllComponents(Treeselect)[0].props("options"))
             .toStrictEqual([{id: "art_coverage", label: "ART coverage"},
                 {id: "prevalence", label: "Prevalence"}]);
     });
@@ -53,22 +62,24 @@ describe("Map control component", () => {
     it("renders detail options", () => {
         const wrapper = mount(MapControl, {props, global: {plugins: [store]}});
 
-        expect(wrapper.findAllComponents(TreeSelect)[1].props("options"))
+        expect(wrapper.findAllComponents(Treeselect)[1].props("options"))
             .toStrictEqual([{id: 4, label: "Admin Level 4"},
                 {id: 5, label: "Admin Level 5"}]);
     });
 
 
-    it("emits indicator-changed event with indicator", () => {
+    it("emits indicator-changed event with indicator", async () => {
         const wrapper = mount(MapControl, {props, global: {plugins: [store]}});
-        wrapper.findAllComponents(TreeSelect)[0].vm.$emit("input", "art_coverage");
-        expect(wrapper.emitted("indicator-changed")![0][0]).toBe("art_coverage");
+        wrapper.findAllComponents(HintTreeSelect)[0].vm.$emit("update:model-value", "art_coverage");
+        await nextTick();
+        expect(wrapper.emitted("indicatorChanged")![0][0]).toBe("art_coverage");
     });
 
-    it("emits detail-changed event with detail", () => {
+    it("emits detail-changed event with detail", async () => {
         const wrapper = mount(MapControl, {props, global: {plugins: [store]}});
-        wrapper.findAllComponents(TreeSelect)[1].vm.$emit("input", 3);
-        expect(wrapper.emitted("detail-changed")![0][0]).toBe(3);
+        wrapper.findAllComponents(HintTreeSelect)[1].vm.$emit("update:model-value", 3);
+        await nextTick();
+        expect(wrapper.emitted("detailChanged")![0][0]).toBe(3);
     });
 
 });

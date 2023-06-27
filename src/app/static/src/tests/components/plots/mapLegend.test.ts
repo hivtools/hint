@@ -1,11 +1,18 @@
-import {DOMWrapper, shallowMount} from '@vue/test-utils';
+jest.mock("@vue-leaflet/vue-leaflet", () => {
+    const LControl = {
+        template: "<div id='l-control-mock'><slot></slot></div>"
+    }
+    return { LControl }
+});
+
+import {DOMWrapper} from '@vue/test-utils';
 import MapLegend from "../../../app/components/plots/MapLegend.vue";
 import {ScaleType} from "../../../app/store/plottingSelections/plottingSelections";
 import MapAdjustScale from "../../../app/components/plots/MapAdjustScale.vue";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {expectTranslated, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
+import {expectTranslated, mountWithTranslate} from "../../testHelpers";
 
 const store = new Vuex.Store({
     state: emptyState()
@@ -83,13 +90,13 @@ describe("Map legend component", () => {
         const adjust = wrapper.findComponent(MapAdjustScale);
         expect(adjust.props("name")).toBe("colour");
         expect(adjust.props("show")).toBe(false);
-        expect(adjust.props("scale")).toBe(props.colourScale);
-        expect(adjust.props("metadata")).toBe(props.metadata);
+        expect(adjust.props("scale")).toStrictEqual(props.colourScale);
+        expect(adjust.props("metadata")).toStrictEqual(props.metadata);
         expect(adjust.props("step")).toBe(0.1);
     });
 
     it("calculates 6 levels from min to max with negative min", () => {
-        const rangeWrapper = shallowMountWithTranslate(MapLegend, store, {
+        const rangeWrapper = mountWithTranslate(MapLegend, store, {
             global: {
                 plugins: [store]
             },
@@ -119,7 +126,7 @@ describe("Map legend component", () => {
     });
 
     it("calculates 6 levels from min to max with percentage format", () => {
-        const rangeWrapper = shallowMountWithTranslate(MapLegend, store, {
+        const rangeWrapper = mountWithTranslate(MapLegend, store, {
             global: {
                 plugins: [store]
             },
@@ -148,7 +155,7 @@ describe("Map legend component", () => {
     });
 
     it("calculates 6 levels from min to max with 500 scale", () => {
-        const rangeWrapper = shallowMountWithTranslate(MapLegend, store, {
+        const rangeWrapper = mountWithTranslate(MapLegend, store, {
             global: {
                 plugins: [store]
             },
@@ -177,7 +184,7 @@ describe("Map legend component", () => {
     });
 
     it("calculates single level when max equals min", () => {
-        const rangeWrapper = shallowMountWithTranslate(MapLegend, store, {
+        const rangeWrapper = mountWithTranslate(MapLegend, store, {
             global: {
                 plugins: [store]
             },
@@ -208,7 +215,7 @@ describe("Map legend component", () => {
     it("does not render adjust link if no colour scale", () => {
         expect(wrapper.find(".adjust-scale").exists()).toBe(true);
 
-        const noScaleWrapper = shallowMountWithTranslate(MapLegend, store, {
+        const noScaleWrapper = mountWithTranslate(MapLegend, store, {
             global: {
                 plugins: [store]
             },
@@ -231,7 +238,7 @@ describe("Map legend component", () => {
     });
 
     it("renders icons with colors, with scale inverted", () => {
-        const invertedWrapper = shallowMountWithTranslate(MapLegend, store, {
+        const invertedWrapper = mountWithTranslate(MapLegend, store, {
             global: {
                 plugins: [store]
             },
@@ -264,7 +271,7 @@ describe("Map legend component", () => {
     });
 
     it("returns no levels if no metadata", () => {
-        const emptyWrapper = shallowMountWithTranslate(MapLegend, store, {
+        const emptyWrapper = mountWithTranslate(MapLegend, store, {
             global: {
                 plugins: [store]
             },
@@ -277,7 +284,7 @@ describe("Map legend component", () => {
     });
 
     it("formats big numbers", () => {
-        const wrapper = shallowMountWithTranslate(MapLegend, store, {
+        const wrapper = mountWithTranslate(MapLegend, store, {
             global: {
                 plugins: [store]
             },
@@ -308,7 +315,7 @@ describe("Map legend component", () => {
             type: ScaleType.Default
         };
 
-        const wrapper = shallowMountWithTranslate(MapLegend, store, {
+        const wrapper = mountWithTranslate(MapLegend, store, {
             global: {
                 plugins: [store]
             },
@@ -346,7 +353,7 @@ describe("Map legend component", () => {
     });
 
     it("emits update event when scale changes", () => {
-        const wrapper = shallowMountWithTranslate(MapLegend, store, {
+        const wrapper = mountWithTranslate(MapLegend, store, {
             global: {
                 plugins: [store]
             },
