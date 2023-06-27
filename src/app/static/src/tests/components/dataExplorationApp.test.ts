@@ -27,9 +27,10 @@ console.error = jest.fn();
 
 // only import the app after we have replaced action with mocks
 // as the app will call these actions on import
-import {dataExplorationApp} from "../../app/dataExploration"
+import HintDataExploration from '../../app/components/HintDataExploration.vue';
 import {LanguageMutation} from "../../app/store/language/mutations";
 import {Language} from "../../app/store/translations/locales";
+import { nextTick } from 'vue';
 
 describe("Data Exploration App", () => {
 
@@ -52,12 +53,11 @@ describe("Data Exploration App", () => {
 
     it("loads input data on mount", (done) => {
         const store = getStore();
-        let c = dataExplorationApp.$options;
-        mount({
-            beforeMount: c.beforeMount,
-            methods: c.methods,
-            render: c.render
-        }, {store});
+        mount(HintDataExploration, {
+            global: {
+                plugins: [store]
+            }
+        });
 
         setTimeout(() => {
             expect(baselineActions.getBaselineData).toHaveBeenCalled();
@@ -70,25 +70,30 @@ describe("Data Exploration App", () => {
 
     it("gets language from state", () => {
         const store = getStore();
-        let c = dataExplorationApp.$options;
-        const rendered = shallowMount({
-            computed: c.computed,
-            template: "<div :class='language'></div>"
-        }, {store});
+        const rendered = shallowMount(HintDataExploration, {
+            global: {
+                plugins: [store]
+            }
+        });
 
-        expect(rendered.classes()).toContain("en");
+        expect((rendered.vm as any).language).toBe("en");
     });
 
-    it("updates html lang when language changes", () => {
+    it("updates html lang when language changes", async () => {
+        const div = document.createElement('div');
+        div.id = 'root';
+        document.body.appendChild(div);
+
         const store = getStore();
-        let c = dataExplorationApp.$options;
-        const rendered = shallowMount({
-            computed: c.computed,
-            template: "<div :class='language'></div>",
-            watch: c.watch
-        }, {store});
+        const rendered = shallowMount(HintDataExploration, {
+            global: {
+                plugins: [store]
+            },
+            attachTo: "#root"
+        });
 
         store.commit(LanguageMutation.ChangeLanguage, {payload: Language.pt});
+        await nextTick();
 
         expect(document.documentElement.lang).toBe("pt");
     });
