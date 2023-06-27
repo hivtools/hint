@@ -1,15 +1,16 @@
-import {mount, shallowMount} from "@vue/test-utils";
 import ProjectHistory from "../../../app/components/projects/ProjectHistory.vue";
 import {formatDateTime} from "../../../app/utils";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import Vuex, {Store} from "vuex";
-import Vue, { nextTick } from "vue";
+import { nextTick } from "vue";
 import {emptyState, RootState} from "../../../app/root";
 import {Project} from "../../../app/types";
 import {mockProjectsState} from "../../mocks";
-import {expectTranslated, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
+import {expectTranslated, mountWithTranslate} from "../../testHelpers";
 import ShareProject from "../../../app/components/projects/ShareProject.vue";
 import {Language} from "../../../app/store/translations/locales";
+import VueFeather from "vue-feather";
+import { flushPromises } from "@vue/test-utils";
 
 describe("Project history component", () => {
 
@@ -198,12 +199,11 @@ describe("Project history component", () => {
                                 versionsCount: number) => {
         const v = wrapper.find(`#p-${id}`).findAll(".project-cell");
         const button = v[0].find("button");
-        expect(button.attributes()).toContain("collapsed");
-        const svg = button.findAll("svg");
-        expect(svg[0].classes()).toContain("when-closed");
-        expect(svg[0].classes()).toContain("feather-chevron-right");
-        expect(svg[1].classes()).toContain("when-open");
-        expect(svg[1].classes()).toContain("feather-chevron-down");
+        const feather = button.findAllComponents(VueFeather);
+        expect(feather[0].classes()).toContain("when-closed");
+        expect(feather[0].props("type")).toBe("chevron-right");
+        expect(feather[1].classes()).toContain("when-open");
+        expect(feather[1].props("type")).toBe("chevron-down");
         expect(v[1].find("a").text()).toContain(name);
 
         const versionCountLabel = versionsCount === 1 ? "1 version" : `${versionsCount} versions`;
@@ -219,9 +219,8 @@ describe("Project history component", () => {
 
         expect(wrapper.findAllComponents(ShareProject).length).toBeGreaterThan(0);
 
-        const versions = wrapper.findComponent(`#versions-${id}`);
-        expect(versions.classes()).toContain("collapse");
-        expect(versions.attributes("style")).toBe("display: none;");
+        const versionMenu = wrapper.find(`#versions-${id}`)
+        expect(versionMenu.classes()).toStrictEqual(["collapse"]);
     };
 
     const testRendersVersion = (row: any, id: string, updatedIsoDate: string, versionNumber: number,
@@ -233,7 +232,8 @@ describe("Project history component", () => {
         expect(cells[2].text()).toBe(`v${versionNumber}`);
         expect(cells[3].text()).toBe(formatDateTime(updatedIsoDate));
         expect(cells[4].classes()).toContain("load-cell");
-        expect(cells[5].isEmpty()).toBe(true);
+        expect(cells[5].text()).toBe("");
+        expect(cells[5].classes()).toStrictEqual(["col-md-1", "version-cell"]);
         expect(cells[6].classes()).toContain("delete-cell");
         expect(cells[7].classes()).toContain("copy-cell");
     };
@@ -256,20 +256,20 @@ describe("Project history component", () => {
         await expectTranslated(headers[7], "Copy to", "Copier", "Copiar para", store);
         await expectTranslated(headers[8], "Share", "Partager", "Partilhar", store);
 
-        expect(true).toBe(false)
+        // expect(true).toBe(false)
         // TODO fix this
-        // testRendersProject(wrapper, 1, "proj1", isoDates[1], 2);
-        // const proj1Versions = wrapper.find("#versions-1");
-        // const proj1VersionRows = proj1Versions.findAll(".row");
-        // expect(proj1VersionRows.length).toBe(2);
-        // testRendersVersion(proj1VersionRows[0], "s11", isoDates[1], 1, store);
-        // testRendersVersion(proj1VersionRows[1], "s12", isoDates[2], 2, store);
+        testRendersProject(wrapper, 1, "proj1", isoDates[1], 2);
+        const proj1Versions = wrapper.find("#versions-1");
+        const proj1VersionRows = proj1Versions.findAll(".row");
+        expect(proj1VersionRows.length).toBe(2);
+        testRendersVersion(proj1VersionRows[0], "s11", isoDates[1], 1, store);
+        testRendersVersion(proj1VersionRows[1], "s12", isoDates[2], 2, store);
 
-        // testRendersProject(wrapper, 2, "proj2", isoDates[3], 1);
-        // const proj2Versions = wrapper.find("#versions-2");
-        // const proj2VersionRows = proj2Versions.findAll(".row");
-        // expect(proj2VersionRows.length).toBe(1);
-        // testRendersVersion(proj2VersionRows[0], "s21", isoDates[3], 1, store);
+        testRendersProject(wrapper, 2, "proj2", isoDates[3], 1);
+        const proj2Versions = wrapper.find("#versions-2");
+        const proj2VersionRows = proj2Versions.findAll(".row");
+        expect(proj2VersionRows.length).toBe(1);
+        testRendersVersion(proj2VersionRows[0], "s21", isoDates[3], 1, store);
 
         const modal = wrapper.find(".modal");
         expect(modal.classes).not.toContain("show");
@@ -278,19 +278,23 @@ describe("Project history component", () => {
     it("can expand project row",  async () => {
         const wrapper = getWrapper();
         const button = wrapper.find("#p-1 button");
+        const versionMenu = wrapper.find("#versions-1");
+        expect(versionMenu.classes()).toStrictEqual(["collapse"])
         await button.trigger("click");
-        expect(button.classes()).toContain("not-collapsed");
-        expect(wrapper.find("#versions-1").attributes("style")).toBe("");
+        await flushPromises();
+        expect(versionMenu.classes()).toStrictEqual(["collapse", "show"])
     });
 
     it("can collapse project row",  async () => {
         const wrapper = getWrapper();
         const button = wrapper.find("#p-1 button");
+        const versionMenu = wrapper.find("#versions-1");
         await button.trigger("click");
-        expect(button.classes()).toContain("not-collapsed");
+        await flushPromises();
+        expect(versionMenu.classes()).toStrictEqual(["collapse", "show"])
         await button.trigger("click");
-        expect(button.classes()).toContain("collapsed");
-        expect(wrapper.find("#versions-1").attributes("style")).toBe("display: none;");
+        await new Promise((r) => setTimeout(r, 200))
+        expect(versionMenu.classes()).toStrictEqual(["collapse"])
     });
     it("does not render if no previous projects", () => {
         const wrapper = getWrapper([]);

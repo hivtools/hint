@@ -6,10 +6,9 @@
             <h2 id="loading-message" v-translate="'loadingOptions'"></h2>
         </div>
         <dynamic-form
-            :form-meta="calibrateOptions"
             ref="form"
             v-if="!loading"
-            v-model="calibrateOptions"
+            v-model:form-meta="calibrateOptions"
             @submit="submitCalibrate"
             :required-text="requiredText"
             :select-text="selectText"

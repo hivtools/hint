@@ -22,6 +22,7 @@ import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 import {BarchartIndicator, Filter} from "../../../app/types";
 import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
+import { nextTick } from 'vue';
 
 function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"], comparisonPlotFilters: any = ["TEST COMPARISON FILTERS"], comparisonPlotError: any = null) {
     const store = new Vuex.Store({
@@ -75,6 +76,7 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                 namespaced: true,
                 state: {
                     barchart: {
+                        detail: null,
                         indicatorId: "TestIndicator",
                         xAxisId: "region",
                         disaggregateById: "age",
@@ -84,6 +86,7 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                         }
                     },
                     comparisonPlot: {
+                        detail: null,
                         indicatorId: "TestIndicator",
                         xAxisId: "age",
                         disaggregateById: "source",
@@ -294,6 +297,7 @@ describe("ModelOutput component", () => {
         const vm = (wrapper as any).vm;
 
         expect(vm.barchartSelections).toStrictEqual({
+            detail: null,
             indicatorId: "TestIndicator",
             xAxisId: "region",
             disaggregateById: "age",
@@ -314,6 +318,7 @@ describe("ModelOutput component", () => {
         const vm = (wrapper as any).vm;
 
         expect(vm.comparisonPlotSelections).toStrictEqual({
+            detail: null,
             indicatorId: "TestIndicator",
             xAxisId: "age",
             disaggregateById: "source",
@@ -475,7 +480,7 @@ describe("ModelOutput component", () => {
         expect(store.state.plottingSelections.colourScales.output).toStrictEqual(bubbleSizeScales);
     });
 
-    it("commits updated selections from barchart and orders them according to filter", () => {
+    it("commits updated selections from barchart and orders them according to filter", async () => {
         const testBarchartFilters = [
             {
                 id: "region",
@@ -737,6 +742,7 @@ describe("ModelOutput component", () => {
         expect(currentComparisonPlotSelections.xAxisId).toBe("age")
         expect(store.state.plottingSelections.comparisonPlot)
             .toStrictEqual({
+                detail: null,
                 disaggregateById: "source",
                 indicatorId: "prevalence",
                 selectedFilterOptions: {},
@@ -967,6 +973,7 @@ describe("ModelOutput component", () => {
         expect(table.props().areaFilterId).toBe("area");
         expect(table.props().filters).toStrictEqual(["TEST BAR FILTERS"]);
         expect(table.props().selections).toStrictEqual({
+            detail: null,
             indicatorId: "TestIndicator",
             xAxisId: "region",
             disaggregateById: "age",
@@ -995,7 +1002,7 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const table = wrapper.findComponent(AreaIndicatorsTable);
-        expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage"});
+        expect(table.props().selections).toStrictEqual({indicatorId: "art_coverage", detail: null});
         expect(table.props().indicators).toStrictEqual(
             [
                 {"indicator": "art_coverage", "indicator_value": "4"}
@@ -1011,6 +1018,7 @@ describe("ModelOutput component", () => {
         expect(table.props().areaFilterId).toBe("area");
         expect(table.props().filters).toStrictEqual(["TEST COMPARISON FILTERS"]);
         expect(table.props().selections).toStrictEqual({
+            detail: null,
             indicatorId: "TestIndicator",
             xAxisId: "age",
             disaggregateById: "source",
