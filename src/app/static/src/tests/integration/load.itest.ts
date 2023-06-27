@@ -38,7 +38,7 @@ describe("load actions", () => {
         window.location = realLocation;
     });
 
-    it("can set files as guest user", async (done) => {
+    it("can set files as guest user", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const fakeState = JSON.stringify({
@@ -52,58 +52,55 @@ describe("load actions", () => {
         const rootGetters = {isGuest: true};
         await actions.setFiles({commit, dispatch, state: {}, rootState, rootGetters} as any,
             {savedFileContents: fakeFileContents});
-
-        setTimeout(() => {
-            expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
-            expect(commit.mock.calls[1][0].type).toBe("UpdatingState");
-            expect(commit.mock.calls[1][0].payload).toEqual({
-                shape: {
-                    hash: shape.hash,
-                    filename: shape.filename,
-                    fromAdr: false,
-                    resource_url: null
-                }
-            });
-            expect(dispatch.mock.calls[0][1]).toStrictEqual({
-                stepper: {
-                    steps: [
-                        {
-                            "number": 1,
-                            "textKey": "uploadInputs"
-                        },
-                        {
-                            "number": 2,
-                            "textKey": "reviewInputs"
-                        },
-                        {
-                            "number": 3,
-                            "textKey": "modelOptions"
-                        },
-                        {
-                            "number": 4,
-                            "textKey": "fitModel"
-                        },
-                        {
-                            "number": 5,
-                            "textKey": "calibrateModel"
-                        },
-                        {
-                            "number": 6,
-                            "textKey": "reviewOutput"
-                        },
-                        {
-                            "number": 7,
-                            "textKey": "downloadResults"
-                        }
-                    ]
-                },
-                "version": currentHintVersion
-            });
-            done();
+        
+        expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
+        expect(commit.mock.calls[1][0].type).toBe("UpdatingState");
+        expect(commit.mock.calls[1][0].payload).toEqual({
+            shape: {
+                hash: shape.hash,
+                filename: shape.filename,
+                fromAdr: false,
+                resource_url: null
+            }
+        });
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({
+            stepper: {
+                steps: [
+                    {
+                        "number": 1,
+                        "textKey": "uploadInputs"
+                    },
+                    {
+                        "number": 2,
+                        "textKey": "reviewInputs"
+                    },
+                    {
+                        "number": 3,
+                        "textKey": "modelOptions"
+                    },
+                    {
+                        "number": 4,
+                        "textKey": "fitModel"
+                    },
+                    {
+                        "number": 5,
+                        "textKey": "calibrateModel"
+                    },
+                    {
+                        "number": 6,
+                        "textKey": "reviewOutput"
+                    },
+                    {
+                        "number": 7,
+                        "textKey": "downloadResults"
+                    }
+                ]
+            },
+            "version": currentHintVersion
         });
     });
 
-    it("can create project and set files as logged in user when uploading JSON file", async (done) => {
+    it("can create project and set files as logged in user when uploading JSON file", async () => {
         const commit = jest.fn();
         const fakeState = JSON.stringify({
             files: {"shape": shape},
@@ -154,27 +151,24 @@ describe("load actions", () => {
         await actions.setFiles({commit, dispatch, state: {}, rootState: store.state, rootGetters} as any,
             {savedFileContents: fakeFileContents});
 
-        setTimeout(() => {
-            //we expect the non-mocked dispatch to have created a project, and to have invoked the local store manager to
-            //save state
-            expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
-            expect(commit.mock.calls[1][0].type).toBe("UpdatingState");
-            expect(commit.mock.calls[1][0].payload)
-                .toEqual({
-                    shape:
-                        {
-                            hash: shape.hash,
-                            filename: shape.filename,
-                            fromAdr: false,
-                            resource_url: null
-                        }
-                });
-            expect(mockSaveToLocalStorage.mock.calls[0][0].baseline).toBe("TEST BASELINE");
-            done();
-        })
+        //we expect the non-mocked dispatch to have created a project, and to have invoked the local store manager to
+        //save state
+        expect(commit.mock.calls[0][0].type).toBe("SettingFiles");
+        expect(commit.mock.calls[1][0].type).toBe("UpdatingState");
+        expect(commit.mock.calls[1][0].payload)
+            .toEqual({
+                shape:
+                    {
+                        hash: shape.hash,
+                        filename: shape.filename,
+                        fromAdr: false,
+                        resource_url: null
+                    }
+            });
+        expect(mockSaveToLocalStorage.mock.calls[0][0].baseline).toBe("TEST BASELINE");
     });
 
-    it("can submit model output ZIP file", async (done) => {
+    it("can submit model output ZIP file", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn()
         const formData = getFormData("output.zip");
@@ -182,20 +176,17 @@ describe("load actions", () => {
 
         await actions.preparingRehydrate({commit, dispatch, state, rootState} as any, formData);
 
-        setTimeout(() => {
-            expect(commit.mock.calls[0][0].type).toBe("StartPreparingRehydrate");
-            expect(commit.mock.calls[1][0].type).toBe("PreparingRehydrate");
-            expect(commit.mock.calls[1][0].payload).not.toBeNull();
-            done();
-        })
+        expect(commit.mock.calls[0][0].type).toBe("StartPreparingRehydrate");
+        expect(commit.mock.calls[1][0].type).toBe("PreparingRehydrate");
+        expect(commit.mock.calls[1][0].payload).not.toBeNull();
     });
 
-    it("can poll model output ZIP status", async (done) => {
+    it("can poll model output ZIP status", (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn()
         const state = {rehydrateId: "1"}
 
-        await actions.pollRehydrate({commit, dispatch, state, rootState} as any);
+        actions.pollRehydrate({commit, dispatch, state, rootState} as any);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2)
