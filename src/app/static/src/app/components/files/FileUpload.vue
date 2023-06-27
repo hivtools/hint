@@ -16,7 +16,7 @@
         </div>
         <reset-confirmation v-if="!dataExplorationMode"
                             :discard-step-warning="modelOptions"
-                            :continue-editing="uploadSelectedFile"
+                            :continue-editing="onFileUpload"
                             :cancel-editing="cancelEdit"
                             :open="showUploadConfirmation"></reset-confirmation>
     </div>
@@ -27,12 +27,13 @@
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin"
     import {Step} from "../../types";
     import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
-import { PropType } from "vue";
+    import { PropType } from "vue";
 
     interface Methods {
         handleFileSelect: () => void
-        uploadSelectedFile: () => void
+        uploadSelectedFile: (file: File) => void
         cancelEdit: () => void
+        onFileUpload: () => void
     }
 
     interface Data {
@@ -81,14 +82,13 @@ import { PropType } from "vue";
                 if (this.editsRequireConfirmation) {
                     this.showUploadConfirmation = true;
                 } else {
-                    this.uploadSelectedFile();
+                    this.onFileUpload();
                 }
             },
-            uploadSelectedFile() {
+            uploadSelectedFile(file: File) {
                 const fileInput = this.$refs[this.name] as HTMLInputElement;
-                const selectedFile = fileInput.files![0]!;
                 const formData = new FormData();
-                formData.append('file', selectedFile);
+                formData.append('file', file);
                 this.$emit("uploading");
                 this.upload(formData);
                 fileInput.value = "";
@@ -98,6 +98,10 @@ import { PropType } from "vue";
                 const fileInput = this.$refs[this.name] as HTMLInputElement;
                 fileInput.value = "";
                 this.showUploadConfirmation = false
+            },
+            onFileUpload() {
+                const fileInput = this.$refs[this.name] as HTMLInputElement;
+                this.uploadSelectedFile(fileInput.files![0]!);
             }
         }
 
