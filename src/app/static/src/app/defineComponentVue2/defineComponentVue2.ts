@@ -24,17 +24,17 @@ type POVue3<P> = {
 }
 
 export function defineComponentVue2<D, M, C, E extends ComponentOptionsMixin = ComponentOptionsMixin>(options: ComponentOptionsWithoutProps<unknown, unknown, D, COVue3<C>, MOVue3<M>, ComponentOptionsMixin, E>) {
-    return defineComponent<unknown, unknown, D, COVue3<C>, MOVue3<M>, ComponentOptionsMixin, E>(options)
+    return defineComponent<unknown, unknown, D, COVue3<C>, MOVue3<M>, ComponentOptionsMixin, E>(options as any)
 }
 
 export function defineComponentVue2GetSet<D, M, C extends ComputedOptions, E extends ComponentOptionsMixin = ComponentOptionsMixin>(options: ComponentOptionsWithoutProps<unknown, unknown, D, C, MOVue3<M>, ComponentOptionsMixin, E>) {
-    return defineComponent<unknown, unknown, D, C, MOVue3<M>, ComponentOptionsMixin, E>(options)
+    return defineComponent<unknown, unknown, D, C, MOVue3<M>, ComponentOptionsMixin, E>(options as any)
 }
 
 export function defineComponentVue2GetSetWithProps<D, M, C extends ComputedOptions, P>(options: ComponentOptionsWithObjectProps<POVue3<P>, unknown, D, C, MOVue3<M>>) {
-    return defineComponent<POVue3<P>, unknown, D, C, MOVue3<M>>(options)
+    return defineComponent<POVue3<P>, unknown, D, C, MOVue3<M>>(options as any)
 }
 
 export function defineComponentVue2WithProps<D, M, C, P>(options: ComponentOptionsWithObjectProps<POVue3<P>, unknown, D, COVue3<C>, MOVue3<M>>) {
-    return defineComponent<POVue3<P>, unknown, D, COVue3<C>, MOVue3<M>>(options)
+    return defineComponent<POVue3<P>, unknown, D, COVue3<C>, MOVue3<M>>(options as any)
 }
