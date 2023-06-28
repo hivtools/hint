@@ -1,3 +1,7 @@
+# hint 2.38.1
+
+* Improve Load Failed dialog guidance
+
 # hint 2.38.0
 
 * Include invalid steps in new project version note on rollback

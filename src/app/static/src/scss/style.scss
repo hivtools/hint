@@ -149,3 +149,9 @@ a.down::after {
   background: #fff;
   margin: auto;
 }
+
+@media (min-width:1000px) {
+  #load-invalid-modal .modal-dialog {
+    max-width: 800px;
+  }
+}
