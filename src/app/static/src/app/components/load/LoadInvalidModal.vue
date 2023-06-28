@@ -62,7 +62,8 @@
       invalidSteps: number[],
       hasInvalidSteps: boolean,
       lastValidStep: number,
-      isGuest: boolean
+      isGuest: boolean,
+      stepTextKeys: Record<number, string>
     }
 
     interface Methods {
@@ -84,6 +85,7 @@
           }),
           invalidSteps: mapStateProp<RootState, number[]>(null, (state) => state.invalidSteps),
           isGuest: mapGetterByName(null, "isGuest"),
+          stepTextKeys: mapGetterByName("stepper", "stepTextKeys"),
           hasInvalidSteps: function() { return this.invalidSteps?.length > 0; },
           lastValidStep: function() { return Math.min(...this.invalidSteps!) - 1; }
         },
@@ -103,7 +105,7 @@
             }
           },
           stepTextKey(stepNumber: number) {
-            return this.steps.find(step => step.number === stepNumber)?.textKey || stepNumber.toString();
+            return this.stepTextKeys[stepNumber] || stepNumber.toString();
           }
         },
         components: {

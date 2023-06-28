@@ -5,6 +5,7 @@ import {emptyState, RootState} from "../../../app/root";
 import {initialStepperState} from "../../../app/store/stepper/stepper";
 import {expectHasTranslationKey, expectTranslated} from "../../testHelpers";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {getters as stepperGetters} from "../../../app/store/stepper/getters";
 
 const mockRollbackInvalidState = jest.fn();
 const mockLoadVersion = jest.fn();
@@ -41,7 +42,8 @@ const getStore = (invalidSteps: number[], isGuest: boolean) => {
             },
             stepper: {
                 namespaced: true,
-                state: initialStepperState()
+                state: initialStepperState(),
+                getters: stepperGetters
             }
         }
     });
