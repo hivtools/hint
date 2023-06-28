@@ -5,6 +5,7 @@ import {emptyState, RootState} from "../../../app/root";
 import {initialStepperState} from "../../../app/store/stepper/stepper";
 import {expectHasTranslationKey, expectTranslated} from "../../testHelpers";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import {getters as stepperGetters} from "../../../app/store/stepper/getters";
 
 const mockRollbackInvalidState = jest.fn();
 const mockLoadVersion = jest.fn();
@@ -41,7 +42,8 @@ const getStore = (invalidSteps: number[], isGuest: boolean) => {
             },
             stepper: {
                 namespaced: true,
-                state: initialStepperState()
+                state: initialStepperState(),
+                getters: stepperGetters
             }
         }
     });
@@ -50,6 +52,19 @@ const getStore = (invalidSteps: number[], isGuest: boolean) => {
 describe("loadInvalidModal", () => {
 
     const mockTranslate = jest.fn();
+    const mockLocationReload = jest.fn();
+
+    const win = window as any;
+    const realLocation = win.location;
+
+    beforeAll(() => {
+        delete win.location;
+        win.location = {reload: mockLocationReload};
+    });
+
+    afterAll(() => {
+        win.location = realLocation;
+    });
 
     beforeEach(() => {
         jest.resetAllMocks()
@@ -119,10 +134,18 @@ describe("loadInvalidModal", () => {
         expect(wrapper.find("#load-invalid-projects").exists()).toBe(false);
     });
 
-    it("click Retry invokes loadVersion action", async () => {
+    it("click Retry invokes loadVersion action for logged in user", async () => {
         const wrapper = getWrapper([1]);
         await wrapper.find("button#retry-load").trigger("click");
         expect(mockLoadVersion.mock.calls[0][1]).toStrictEqual({versionId:  "testVersionId", projectId: "testProjectId"});
+        expect(mockLocationReload).not.toHaveBeenCalled();
+    });
+
+    it("click Retry reloads location for guest user", async () => {
+        const wrapper = getWrapper([1], true);
+        await wrapper.find("button#retry-load").trigger("click");
+        expect(mockLocationReload).toHaveBeenCalled();
+        expect(mockLoadVersion).not.toHaveBeenCalled();
     });
 
     it("click Rollback invokes rollbackInvalidState action", async () => {

@@ -6,6 +6,7 @@ interface StepperGetters {
     ready: Getter<StepperState, RootState>,
     complete: Getter<StepperState, RootState>
     editsRequireConfirmation: Getter<StepperState, RootState>
+    stepTextKeys: Getter<StepperState, RootState>
 }
 
 export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
@@ -48,5 +49,10 @@ export const getters: StepperGetters & GetterTree<StepperState, RootState> = {
     },
     editsRequireConfirmation: (state: StepperState, getters: any) => {
         return getters.changesToRelevantSteps.length > 0;
+    },
+    stepTextKeys: (state: StepperState) => {
+        const result: Record<number, string> = {};
+        state.steps.forEach((step) => result[step.number] = step.textKey);
+        return result;
     }
 };

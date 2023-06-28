@@ -1,6 +1,18 @@
-# hint 2.38.0
+# hint 2.38.1
 
 * Improve Load Failed dialog guidance
+
+# hint 2.38.0
+
+* Include invalid steps in new project version note on rollback
+
+# hint 2.37.2
+
+* Fix Retry load for guest user
+
+# hint 2.37.1
+
+* Fix Input Time Series plots with single values
 
 # hint 2.37.0
 

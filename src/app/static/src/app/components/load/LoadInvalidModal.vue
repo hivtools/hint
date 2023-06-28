@@ -61,8 +61,9 @@
 
     interface Computed extends ProjectComputed, StepperComputed {
       invalidSteps: number[],
-      hasInvalidSteps: boolean,
-      isGuest: boolean
+      lastValidStep: number,
+      isGuest: boolean,
+      stepTextKeys: Record<number, string>
     }
 
     interface Methods {
@@ -84,21 +85,26 @@
           }),
           invalidSteps: mapStateProp<RootState, number[]>(null, (state) => state.invalidSteps),
           isGuest: mapGetterByName(null, "isGuest"),
+          stepTextKeys: mapGetterByName("stepper", "stepTextKeys"),
           hasInvalidSteps: function() { return this.invalidSteps?.length > 0; }
         },
         methods: {
           rollbackInvalidState: mapActionByName(null, "rollbackInvalidState"),
           loadVersion: mapActionByName("projects", "loadVersion"),
           retryLoad() {
-            const versionId = this.currentVersion!.id;
-            const projectId = this.currentProject!.id;
-            this.loadVersion({
-              versionId,
-              projectId
-            })
+            if (this.isGuest) {
+              location.reload();
+            } else {
+              const versionId = this.currentVersion!.id;
+              const projectId = this.currentProject!.id;
+              this.loadVersion({
+                versionId,
+                projectId
+              })
+            }
           },
           stepTextKey(stepNumber: number) {
-            return this.steps.find(step => step.number === stepNumber)?.textKey || stepNumber.toString();
+            return this.stepTextKeys[stepNumber] || stepNumber.toString();
           }
         },
         components: {
