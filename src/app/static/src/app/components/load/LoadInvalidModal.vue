@@ -61,7 +61,7 @@
 
     interface Computed extends ProjectComputed, StepperComputed {
       invalidSteps: number[],
-      lastValidStep: number,
+      hasInvalidSteps: boolean,      
       isGuest: boolean,
       stepTextKeys: Record<number, string>
     }
