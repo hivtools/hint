@@ -65,8 +65,8 @@ $lastXAxisVal := $timePeriods[$count(timePeriods) - 1];
                {
                     "name": ($lookup($dataByArea, $v).area_name)[0],
                     "showlegend": false,
-                    "x": $areaData.time_period,
-                    "y": $areaData.value,
+                    "x": [$areaData.time_period],
+                    "y": [$areaData.value],
                     "xaxis": 'x' & ($i+1),
                     "yaxis": 'y' & ($i+1),
                     "type": "scatter",
