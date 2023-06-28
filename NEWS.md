@@ -2,6 +2,14 @@
 
 * Include invalid steps in new project version note on rollback
 
+# hint 2.37.2
+
+* Fix Retry load for guest user
+
+# hint 2.37.1
+
+* Fix Input Time Series plots with single values
+
 # hint 2.37.0
 
 * Auth0 single sign on authorization integration 

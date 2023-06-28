@@ -93,12 +93,16 @@
           rollbackInvalidState: mapActionByName(null, "rollbackInvalidState"),
           loadVersion: mapActionByName("projects", "loadVersion"),
           retryLoad() {
-            const versionId = this.currentVersion!.id;
-            const projectId = this.currentProject!.id;
-            this.loadVersion({
-              versionId,
-              projectId
-            })
+            if (this.isGuest) {
+              location.reload();
+            } else {
+              const versionId = this.currentVersion!.id;
+              const projectId = this.currentProject!.id;
+              this.loadVersion({
+                versionId,
+                projectId
+              })
+            }
           },
           stepTextKey(stepNumber: number) {
             return this.stepTextKeys[stepNumber] || stepNumber.toString();
