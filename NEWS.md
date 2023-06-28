@@ -1,3 +1,7 @@
+# hint 2.37.2
+
+* Fix Retry load for guest user
+
 # hint 2.37.1
 
 * Fix Input Time Series plots with single values
