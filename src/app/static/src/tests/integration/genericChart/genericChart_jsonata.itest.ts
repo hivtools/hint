@@ -72,6 +72,17 @@ const testChartData = {
             "plot": "art_total",
             "value": 4795,
             "page": 1
+        },
+        {
+            "area_id": "MWI_4_4_demo",
+            "area_name": "Mzuzu City",
+            "area_hierarchy": "Northern/Mzuzu City",
+            "area_level": 4,
+            "quarter": "Q4",
+            "time_period": "2012 Q4",
+            "plot": "art_total",
+            "value": 1024,
+            "page": 1
         }
     ],
     "subplots": {
@@ -183,6 +194,28 @@ describe("inputTimeSeries jsonata", () => {
                 "type": "scatter",
                 "line": {"color": "rgb(255, 51, 51)"},
                 "hovertemplate": "%{x}, %{y}<br>Northern/Rumphi<extra></extra>"
+            },
+            {
+                "name": "Mzuzu City",
+                "showlegend": false,
+                "x": ["2012 Q4"],
+                "y": [1024],
+                "xaxis": "x4",
+                "yaxis": "y4",
+                "type": "scatter",
+                "line": {"color": "rgb(51, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<br>Northern/Mzuzu City<extra></extra>"
+            },
+            {
+                "name": "Mzuzu City",
+                "showlegend": false,
+                "x": [],
+                "y": [],
+                "xaxis": "x4",
+                "yaxis": "y4",
+                "type": "scatter",
+                "line": {"color": "rgb(255, 51, 51)"},
+                "hovertemplate": "%{x}, %{y}<br>Northern/Mzuzu City<extra></extra>"
             }
         ]));
     });
@@ -199,7 +232,7 @@ describe("inputTimeSeries jsonata", () => {
         const layout = inputTimeSeriesJsonataResult.layout;
         expect(Object.keys(layout)).toStrictEqual([
             "margin", "dragmode", "grid", "annotations",
-            "yaxis1", "xaxis1", "yaxis2", "xaxis2", "yaxis3", "xaxis3"
+            "yaxis1", "xaxis1", "yaxis2", "xaxis2", "yaxis3", "xaxis3", "yaxis4", "xaxis4"
         ]);
         expect(layout.margin).toStrictEqual({"t": 32});
         expect(layout.dragmode).toBe(false);
@@ -241,6 +274,17 @@ describe("inputTimeSeries jsonata", () => {
                 "y": 1.1,
                 "yanchor": "middle",
                 "yref": "y3 domain"
+            },
+            {
+                "text": "Mzuzu City (MWI_4_4_demo)",
+                "textfont": {},
+                "showarrow": false,
+                "x": 0.5,
+                "xanchor": "middle",
+                "xref": "x4 domain",
+                "y": 1.1,
+                "yanchor": "middle",
+                "yref": "y4 domain"
             }
         ]));
     });
@@ -250,7 +294,8 @@ describe("inputTimeSeries jsonata", () => {
 
         expect(layout.xaxis1).toStrictEqual(expectedXAxis);
         expect(layout.xaxis2).toStrictEqual(expectedXAxis);
-        expect(layout.xaxis3).toStrictEqual(expectedXAxis);
+        expect(layout.xaxis3).toStrictEqual(expectedXAxis)
+        expect(layout.xaxis4).toStrictEqual(expectedXAxis);
 
         expectYAxis(1, 0.7, layout.yaxis1);
         expectYAxis(1, 0.7, layout.yaxis2);

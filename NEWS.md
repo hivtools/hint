@@ -1,3 +1,7 @@
+# hint 2.37.1
+
+* Fix Input Time Series plots with single values
+
 # hint 2.37.0
 
 * Auth0 single sign on authorization integration 
