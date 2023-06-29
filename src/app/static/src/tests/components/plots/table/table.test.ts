@@ -64,19 +64,19 @@ describe('Table from testdata', () => {
         const dataRow1 = wrapper.findAll("tr")[1];
         const dataRow2 = wrapper.findAll("tr")[2];
 
-        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
+        expect(wrapper.find('th').text()).toBe('Area');
         expect(dataRow1.find('td').text()).toBe('4.1');
         expect(dataRow2.find('td').text()).toBe('4.2');
 
-        expect(wrapper.findAll('th')[1].text()).toBe('Age (Click to sort Ascending)');
+        expect(wrapper.findAll('th')[1].text()).toBe('Age');
         expect(dataRow1.findAll('td')[1].text()).toBe('0-15');
         expect(dataRow2.findAll('td')[1].text()).toBe('15-30');
 
-        expect(wrapper.findAll('th')[2].text()).toBe('Sex (Click to sort Ascending)');
+        expect(wrapper.findAll('th')[2].text()).toBe('Sex');
         expect(dataRow1.findAll('td')[2].text()).toBe('Female');
         expect(dataRow2.findAll('td')[2].text()).toBe('Male');
 
-        expect(wrapper.findAll('th')[3].text()).toBe('HIV prevalence (Click to sort Ascending)');
+        expect(wrapper.findAll('th')[3].text()).toBe('HIV prevalence');
         expect(dataRow1.findAll('td')[3].text()).toBe('80.00%');
         expect(dataRow2.findAll('td')[3].text()).toBe('30.00%');
 
@@ -111,35 +111,6 @@ describe('Table from testdata', () => {
         expect(wrapper.text()).toContain("Aucune donnée n'est disponible pour ces sélections.")
     });
 
-    it('renders correct markup when sorting by HIV prevalence ascending', async () => {
-        const wrapper = getWrapper();
-        await wrapper.setData({sortBy: 'prevalence'});
-
-        const dataRow1 = wrapper.findAll("tr")[1];
-        const dataRow2 = wrapper.findAll("tr")[2];
-
-        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
-        expect(dataRow1.find('td').text()).toBe('4.2');
-        expect(dataRow2.find('td').text()).toBe('4.1');
-
-        expect(wrapper.findAll('th')[1].text()).toBe('Age (Click to sort Ascending)');
-        expect(dataRow1.findAll('td')[1].text()).toBe('15-30');
-        expect(dataRow2.findAll('td')[1].text()).toBe('0-15');
-
-
-        expect(wrapper.findAll('th')[2].text()).toBe('Sex (Click to sort Ascending)');
-        expect(dataRow1.findAll('td')[2].text()).toBe('Male');
-        expect(dataRow2.findAll('td')[2].text()).toBe('Female');
-
-
-        expect(wrapper.findAll('th')[3].text()).toBe('HIV prevalence (Click to sort Descending)');
-        expect(dataRow1.findAll('td')[3].text()).toBe('30.00%');
-        expect(dataRow2.findAll('td')[3].text()).toBe('80.00%');
-
-        expect(wrapper.findAll('tr').length).toBe(3);
-
-    });
-
     it('renders correct markup when sorting by HIV prevalence descending', async () => {
         const wrapper = getWrapper();
         await wrapper.setData({sortBy: 'prevalence', sortDesc: true});
@@ -149,13 +120,13 @@ describe('Table from testdata', () => {
     it('renders correct markup when filtering by 4.2', async () => {
         const wrapper = getWrapper();
         await wrapper.setData({filter: '4.2'})
-        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
+        expect(wrapper.find('th').text()).toBe('Area');
         expect(wrapper.find('td').text()).toBe('4.2');
-        expect(wrapper.findAll('th')[1].text()).toBe('Age (Click to sort Ascending)');
+        expect(wrapper.findAll('th')[1].text()).toBe('Age');
         expect(wrapper.findAll('td')[1].text()).toBe('15-30');
-        expect(wrapper.findAll('th')[2].text()).toBe('Sex (Click to sort Ascending)');
+        expect(wrapper.findAll('th')[2].text()).toBe('Sex');
         expect(wrapper.findAll('td')[2].text()).toBe('Male');
-        expect(wrapper.findAll('th')[3].text()).toBe('HIV prevalence (Click to sort Ascending)');
+        expect(wrapper.findAll('th')[3].text()).toBe('HIV prevalence');
         expect(wrapper.findAll('td')[3].text()).toBe('30.00%');
         expect(wrapper.findAll('tr').length).toBe(2);
     });
@@ -169,7 +140,7 @@ describe('Table from testdata', () => {
 
     it("scoped slot content is rendered correctly", () => {
         const store = createStore();
-        const scopedSlots = {
+        const slots = {
             "cell(area_id)": `<template v-slot:cell(area_id)="props">
                     <div class="value">{{ props.item.area_id }}</div>
                     <div class="small">{{ props.item.area_hierarchy }}</div>
@@ -209,27 +180,27 @@ describe('Table from testdata', () => {
         const wrapper = mountWithTranslate(Table, store, {
             global: {
                 plugins: [store]
-            }, props: customPropsData, scopedSlots
+            }, props: customPropsData, slots
         });
 
         const dataRow1 = wrapper.findAll("tr")[1];
         const dataRow2 = wrapper.findAll("tr")[2];
 
-        expect(wrapper.find('th').text()).toBe('Area (Click to sort Ascending)');
+        expect(wrapper.find('th').text()).toBe('Area');
         expect(dataRow1.find('td .value').text()).toBe('4.1');
         expect(dataRow1.find('td .small').text()).toBe('3.1');
         expect(dataRow2.find('td .value').text()).toBe('4.2');
         expect(dataRow2.find('td .small').text()).toBe('3.2');
 
-        expect(wrapper.findAll('th')[1].text()).toBe('Age (Click to sort Ascending)');
+        expect(wrapper.findAll('th')[1].text()).toBe('Age');
         expect(dataRow1.findAll('td')[1].text()).toBe('0-15');
         expect(dataRow2.findAll('td')[1].text()).toBe('15-30');
 
-        expect(wrapper.findAll('th')[2].text()).toBe('Sex (Click to sort Ascending)');
+        expect(wrapper.findAll('th')[2].text()).toBe('Sex');
         expect(dataRow1.findAll('td')[2].text()).toBe('Female');
         expect(dataRow2.findAll('td')[2].text()).toBe('Male');
 
-        expect(wrapper.findAll('th')[3].text()).toBe('HIV prevalence (Click to sort Ascending)');
+        expect(wrapper.findAll('th')[3].text()).toBe('HIV prevalence');
         expect(dataRow1.findAll('td')[3].find(".value").text()).toBe('80.00%');
         expect(dataRow1.findAll('td')[3].find(".small").text()).toBe('(70.00% - 90.00%)');
         expect(dataRow2.findAll('td')[3].find(".value").text()).toBe('30.00%');

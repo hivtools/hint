@@ -11,7 +11,10 @@
                         @update:model-value="changeFilter"
                         :placeholder="translate('typeSearch')"></b-form-input>
                     <b-input-group-append>
-                        <b-button :disabled="!filter" @click="filter = ''" v-translate="'clearText'"></b-button>
+                        <b-button :disabled="!filter"
+                        @click="filter = ''"
+                        v-translate="'clearText'"
+                        size="sm"></b-button>
                     </b-input-group-append>
                 </b-input-group>
             </b-form-group>
@@ -19,9 +22,8 @@
                 striped hover
                 :fields="fields"
                 :items="filteredData"
-                :sort-by="sortBy"
-                :sort-desc="sortDesc"
                 :filter="filter"
+                :filterable="[]"
                 responsive="sm"
                 show-empty>
                 <template v-for="(_, slot) in $slots" v-slot:[slot]="props">
@@ -56,8 +58,6 @@
         },
         data() {
             return {
-                sortBy: "",
-                sortDesc: false,
                 filter: ""
             }
         },
