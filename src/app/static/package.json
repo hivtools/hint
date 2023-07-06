@@ -108,6 +108,7 @@
     "@m-kusumgar/vue3-treeselect": "^1.0.18",
     "@reside-ic/vue-dynamic-form": "^0.5.7",
     "@types/chart.js": "^2.9.14",
+    "@types/chartjs-plugin-annotation": "^0.5.2",
     "@types/geojson": "^7946.0.7",
     "@types/plotly.js-basic-dist": "^1.54.0",
     "bootstrap-vue-next": "^0.8.7",

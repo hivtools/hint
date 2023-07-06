@@ -7,7 +7,7 @@ declare module "*.vue" {
 
 declare module 'vue3-treeselect';
 declare module "vue-feather";
-// declare module 'chartjs-plugin-error-bars';
+// declare module 'chartjs-plugin-annotation';
 // declare module 'chartjs-plugin-error-bars';
 
 //export {}  // Important! See note.

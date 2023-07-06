@@ -3,29 +3,31 @@
 </template>
 
 <script lang="ts">
-import {Bar} from 'vue-chartjs';
+import {Bar} from 'vue-chartjs'
+// import ErrorBarsPlugin from 'chartjs-plugin-error-bars';
 import {BarChartData} from "./utils";
-import { ChartDataSetsWithErrors } from "./types";
+import { ChartDataSetsWithErrors } from "./types"
 import { PropType, defineComponent } from 'vue';
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, Chart } from 'chart.js';
-import annotationPlugin from "chartjs-plugin-annotation";
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, annotationPlugin);
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+// interface Props {
+//     [key:string]: any
+//     chartData: BarChartData
+//     xLabel: string
+//     yLabel: string
+//     yFormat: (value: number | string) => string
+//     showErrors: boolean
+// }
 
-interface Data {
-    displayErrorBars: boolean,
-    errorBarTimeout: any
-}
+// interface Methods {
+//     [key:string]: any
+//     updateRender(): void
+// }
 
 export default defineComponent({
     components: {
         Bar
-    },
-    data(): Data {
-        return {
-            displayErrorBars: true,
-            errorBarTimeout: null
-        }
     },
     props: {
         chartData: {
@@ -50,79 +52,28 @@ export default defineComponent({
         },
     },
     computed: {
-        chartDataString() {
-            console.log(this.chartData)
-            console.log(this.xLabel)
-            console.log(this.yLabel)
-            return JSON.stringify(this.chartData)
-        },
         chartOptions() {
             const formatCallback = this.yFormat || ((value: number | string) => value);
-
-            const chartData = this.chartData as any;
-            console.log(chartData)
-            const datasets = chartData.datasets as any[];
-            const errorLines = [] as any[];
-            const numOfDatasets = datasets.length;
-            const numOfLabels = chartData.labels.length;
-            const numOfBars = numOfDatasets * numOfLabels;
-            const barPercentage = 0.8;
-            const barWidth = barPercentage/(numOfDatasets * 2);
-            const errorBarWeight = 1;
-            datasets.forEach((dataset, indexDataset) => {
-                const errorBarData = dataset.errorBars;
-                const label = dataset.label;
-                Object.keys(errorBarData).forEach((xLabel) => {
-                    const labelIndex = chartData.labels.indexOf(xLabel)
-                    const barMidPoint = labelIndex - barPercentage/2 + barWidth * (indexDataset * 2 + 1);
-                    const errorBarWidth = (numOfBars/(numOfBars + 10)) * barWidth * 0.3;
-                    const config = [
-                        {
-                            drawTime: "afterDraw",
-                            type: "line",
-                            label: {
-                                content: label
-                            },
-                            display: this.displayErrorBars,
-                            xMin: barMidPoint,
-                            xMax: barMidPoint,
-                            yMin: errorBarData[xLabel].minus,
-                            yMax: errorBarData[xLabel].plus,
-                            borderWidth: errorBarWeight
-                        },
-                        {
-                            drawTime: "afterDraw",
-                            type: "line",
-                            label: {
-                                content: label
-                            },
-                            display: this.displayErrorBars,
-                            xMin: barMidPoint - errorBarWidth,
-                            xMax: barMidPoint + errorBarWidth,
-                            yMin: errorBarData[xLabel].plus,
-                            yMax: errorBarData[xLabel].plus,
-                            borderWidth: errorBarWeight
-                        },
-                        {
-                            drawTime: "afterDraw",
-                            type: "line",
-                            label: {
-                                content: label
-                            },
-                            display: this.displayErrorBars,
-                            xMin: barMidPoint - errorBarWidth,
-                            xMax: barMidPoint + errorBarWidth,
-                            yMin: errorBarData[xLabel].minus,
-                            yMax: errorBarData[xLabel].minus,
-                            borderWidth: errorBarWeight
-                        },
-                    ];
-                    errorLines.push(...config);
-                })
-
-            });
-
             return {
+                // scales: {
+                //     yAxes: [{
+                //         scaleLabel: {
+                //             display: true,
+                //             labelString: this.yLabel
+                //         },
+                //         ticks: {
+                //             suggestedMax: this.chartData.maxValuePlusError,
+                //             beginAtZero: true,
+                //             // callback: formatCallback
+                //         }
+                //     }],
+                //     xAxes: [{
+                //         scaleLabel: {
+                //             display: true,
+                //             labelString: this.xLabel
+                //         }
+                //     }]
+                // },
                 legend: {
                     position: "right",
                 },
@@ -161,28 +112,15 @@ export default defineComponent({
                 },
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    annotation: {
-                        annotations: errorLines
-                    }
-                },
-                scales: {
-                    y: {
-                        max: this.chartData.maxValuePlusError * 1.1
-                    }
-                }
+                // plugins: {
+                //     chartJsPluginErrorBars: {
+                //         color: '#000',
+                //         width: '2px',
+                //         lineWidth: '2px',
+                //         absoluteValues: true
+                //     }
+                // }
             }
-        }
-    },
-    watch: {
-        chartDataString: function(newVal, oldVal) {
-            this.displayErrorBars = false;
-            if (this.errorBarTimeout) {
-                window.clearTimeout(this.errorBarTimeout)
-            }
-            this.errorBarTimeout = setTimeout(() => {
-                this.displayErrorBars = true
-            }, 900)
         }
     }
 })
