@@ -76,7 +76,7 @@
                     <loading-spinner size="xs"></loading-spinner>
                     <span v-translate="'validating'"></span>
                 </div>
-                <error-alert v-if="hasBaselineError" :error="baselineError"></error-alert>
+                <error-alert v-if="hasBaselineError" :error="baselineError!"></error-alert>
             </div>
         </div>
     </div>

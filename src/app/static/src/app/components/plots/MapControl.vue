@@ -18,7 +18,7 @@
                     <label class="col-3 col-form-label" v-translate="'detail'">
                     </label>
                     <div class="col">
-                        <hint-tree-select :model-value="detail"
+                        <hint-tree-select :model-value="`${detail}`"
                                      :multiple="false"
                                      :clearable="false"
                                      :searchable="false"
@@ -39,7 +39,7 @@
     import {LevelLabel} from "../../types";
 
     interface Data {
-        detail: any;
+        detail?: number;
         optionsLoaded: boolean;
     }
 

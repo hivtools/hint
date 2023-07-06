@@ -52,7 +52,7 @@
                         :yLabel="indicatorLabel"
                         :yFormat="formatValueFunction"
                         :show-errors="showRangesInTooltips"
-                        style="width: 100vh; height: 100vh; position: relative"></bar-chart-with-errors>
+                        style="width: 100%; height: 100%;"></bar-chart-with-errors>
                 <div v-if="showNoDataMessage" id="noDataMessage" class="px-3 py-2 noDataMessage">
                     <span class="lead">
                         <strong>{{ noDataMessage }}</strong>
@@ -279,7 +279,6 @@
             },
             changeSelections(newSelections: Partial<BarchartSelections>) {
                 this.$emit("update:selections", {...this.selections, ...newSelections});
-                this.$emit("update", newSelections)
             },
             changeFilter(filterId: any, selectedOptions: any) {
                 const newSelectedFilterOptions = {...this.selections.selectedFilterOptions};

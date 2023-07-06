@@ -13,7 +13,7 @@
 </template>
 <script lang="ts">
     import { PropType, defineComponent } from "vue";
-    import Treeselect from "vue3-treeselect";
+    import Treeselect from "@m-kusumgar/vue3-treeselect";
 
     // This wrapper was necessary as this third party treeselect was not
     // updating its value when an external update was being made, e.g.
@@ -35,8 +35,7 @@
                 required: true
             },
             modelValue: {
-                type: Array as PropType<string | string[] | null | undefined>,
-                required: true
+                type: [Array, String] as PropType<string | string[] | null>,
             },
             multiple: {
                 type: Boolean

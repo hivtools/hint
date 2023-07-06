@@ -45,11 +45,11 @@
                     :chart-data="chartdata"
                     :filter-config="barchartFilterConfig"
                     :indicators="barchartIndicators"
-                    v-model:selections="barchartSelections"
+                    :selections="barchartSelections"
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
                     :no-data-message="noChartData"
-                    @update="updateBarchartSelectionsAndXAxisOrder"></bar-chart-with-filters>
+                    @update:selections="updateBarchartSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <area-indicators-table class="col-md-9"
@@ -59,7 +59,6 @@
                                            :countryAreaFilterOption="countryAreaFilterOption"
                                            :indicators="filteredBarchartIndicators"
                                            :selections="barchartSelections"
-
                                            :selectedFilterOptions="barchartSelections.selectedFilterOptions"
                     ></area-indicators-table>
                 </div>
@@ -95,11 +94,11 @@
                     :filter-config="comparisonPlotFilterConfig"
                     :disaggregate-by-config="{ fixed: true, hideFilter: true }"
                     :indicators="comparisonPlotIndicators"
-                    v-model:selections="comparisonPlotSelections"
+                    :selections="comparisonPlotSelections"
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
                     :no-data-message="noChartData"
-                    @update="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
+                    @update:selections="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <area-indicators-table class="col-md-9"

@@ -1,11 +1,11 @@
 <template>
     <div v-if="display" class="text-muted small pl-1">
-        <span class="float-right">
+        <span class="small float-right">
             <span v-translate="'project'"></span>: {{ projectName }} {{ versionLabel }}
         </span><br/>
-        <span v-if="time" class="float-right">
+        <span v-if="time" class="small float-right">
             <span v-translate="'lastSaved'"></span> {{ formattedTime }}
-            <vue-feather type="check" size="14" class="mb-1"></vue-feather>
+            <vue-feather type="check" size="14" class="align-middle mb-1"></vue-feather>
         </span>
     </div>
 </template>

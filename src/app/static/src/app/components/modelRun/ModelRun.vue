@@ -5,9 +5,10 @@
                 :disabled="running"
                 v-translate="'fitModel'">
         </button>
-        <h4 v-if="complete" class="mt-3" id="model-run-complete" v-translate="'fittingComplete'">
+        <div v-if="complete" class="mt-3 d-flex align-items-center" id="model-run-complete">
+            <h4 v-translate="'fittingComplete'" style="margin-right: 7px;"></h4>
             <tick color="#e31837" width="20px"></tick>
-        </h4>
+        </div>
         <modal :open="running">
             <progress-bar v-for="phase in phases"
                           :key="phase.name"

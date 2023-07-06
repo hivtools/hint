@@ -1,4 +1,5 @@
 <template>
+    <!-- stop inheritance of attributes -->
     <svg class="tick">
         <path d="M5 70 L 30 90 L 90 5" :stroke="color" :stroke-width="width"
               fill="none"></path>

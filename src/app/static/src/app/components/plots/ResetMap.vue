@@ -6,7 +6,9 @@
                 href="#" :title="tooltipContent('resetView')" 
                 role="button" 
                 :aria-label="tooltipContent('resetView')">
-                <vue-feather type="refresh-cw" size="20"></vue-feather>
+                <vue-feather type="refresh-cw"
+                             size="20"
+                             style="vertical-align: middle; margin-bottom: 3px; margin-right: 1px;"></vue-feather>
             </a>
         </div>                    
     </l-control>

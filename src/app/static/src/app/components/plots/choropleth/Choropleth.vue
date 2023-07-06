@@ -3,13 +3,13 @@
         <filters class="col-md-3" v-if="includeFilters"
                  :filters="filters"
                  :selectedFilterOptions="selections.selectedFilterOptions"
-                 @update="onFilterSelectionsChange"></filters>
+                 @update:filters="onFilterSelectionsChange"></filters>
         <div id="chart" :class="includeFilters ? 'col-md-9' : 'col-md-12'">
-            <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds" @vnode-updated="updateBounds">
+            <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds">
                 <template v-for="feature in currentFeatures" :key="feature.properties.area_id">
                     <l-geo-json :geojson="feature"
                                 :options="options"
-                                :optionsStyle="{...style, fillColor: getColor(feature)}">
+                                :optionsStyle="() => {return {...style, fillColor: getColor(feature)}}">
                     </l-geo-json>
                 </template>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
@@ -429,6 +429,9 @@
             },
         beforeMount() {
             this.initialise();
-        }
+        },
+        updated() {
+            this.updateBounds();
+        },
     });
 </script>

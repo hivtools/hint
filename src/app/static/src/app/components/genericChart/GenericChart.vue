@@ -12,7 +12,7 @@
                     <filters v-if="ds.config.showFilters && ds.filters && ds.selections.selectedFilterOptions"
                                 :filters="ds.filters"
                                 :selected-filter-options="ds.selections.selectedFilterOptions"
-                                @update="updateSelectedFilterOptions(ds.config.id, $event)">
+                                @update:filters="updateSelectedFilterOptions(ds.config.id, $event)">
                     </filters>
                 </div>
                 <div id="chart-description"
@@ -60,12 +60,12 @@
                 </div>
                 <div v-for="dataSource in chartConfigValues.dataSourceConfigValues.filter(ds => ds.tableConfig)"
                      :key="dataSource.config.id">
-                    <download-indicator :filtered-data="filteredDataWithoutPages ? filteredDataWithoutPages[dataSource.config.id] : null"
-                                        :unfiltered-data="unfilteredData ? unfilteredData[dataSource.config.id] : []"></download-indicator>
-                    <generic-chart-table :table-config="dataSource.tableConfig || { columns: [] }"
+                    <download-indicator :filtered-data="filteredDataWithoutPages![dataSource.config.id]"
+                                        :unfiltered-data="unfilteredData[dataSource.config.id]"></download-indicator>
+                    <generic-chart-table :table-config="dataSource.tableConfig!"
                                          :filtered-data="chartData[dataSource.config.id]"
-                                         :columns="dataSource.columns || []"
-                                         :selected-filter-options="dataSource.selections.selectedFilterOptions || {}"
+                                         :columns="dataSource.columns!"
+                                         :selected-filter-options="dataSource.selections.selectedFilterOptions!"
                                          :value-format="valueFormat"
                     ></generic-chart-table>
                 </div>
@@ -159,7 +159,7 @@
         pageNumberText: string
         prevPageEnabled: boolean
         nextPageEnabled: boolean
-        unfilteredData: Dict<unknown[]> | null
+        unfilteredData: Dict<unknown[]>
         filteredDataWithoutPages: Dict<unknown[]> | null
     }
 
@@ -214,7 +214,6 @@
                         selectedFilterOptions: null
                     }
                 }), {});
-
             return {
                 dataSourceSelections,
                 currentPage: 1,
@@ -304,6 +303,14 @@
                 // support one chart type, so here we select the first config in the array
                 const chartConfig = this.chartMetadata.chartConfig[0].config;
                 const description = this.chartMetadata.chartConfig[0].description;
+
+                console.log({
+                    dataSourceConfigValues,
+                    layoutData,
+                    scrollHeight,
+                    chartConfig,
+                    description
+                })
 
                 return {
                     dataSourceConfigValues,

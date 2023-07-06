@@ -49,7 +49,7 @@
                 const newSelectedFilterOptions = {...this.selectedFilterOptions};
                 newSelectedFilterOptions[filter.id] = selectedOptions;
 
-                this.$emit("update", newSelectedFilterOptions);
+                this.$emit("update:filters", newSelectedFilterOptions);
             },
         }
     });

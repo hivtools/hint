@@ -42,8 +42,7 @@
             <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds" @vnode-updated="updateBounds">
                 <template v-for="feature in currentFeatures" :key="feature.id">
                     <l-geo-json :geojson="feature"
-                                :options="options"
-                                :optionsStyle="style">
+                                :optionsStyle="() => {return style}">
                     </l-geo-json>
                 </template>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>

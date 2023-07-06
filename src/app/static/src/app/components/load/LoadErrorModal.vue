@@ -23,7 +23,7 @@ import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComp
 
     interface Props {
         hasError: boolean
-        loadError: string
+        loadError?: string
         clearLoadError: () => void
     }
 
@@ -36,7 +36,7 @@ import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComp
             },
             loadError: {
                 type: String,
-                required: true
+                required: false
             },
             clearLoadError: {
                 type: Function as PropType<Props["clearLoadError"]>,

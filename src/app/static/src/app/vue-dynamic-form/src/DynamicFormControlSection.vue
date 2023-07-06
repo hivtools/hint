@@ -2,9 +2,9 @@
     <div>
         <h3 @click="toggleSection" :class="{'cursor-pointer': controlSection.collapsible}">
             {{controlSection.label}}
-            <component v-if="controlSection.collapsible"
+            <vue-feather v-if="controlSection.collapsible"
                        style="vertical-align: initial"
-                       :is="chevronComponent"></component>
+                       :type="chevronComponent"></vue-feather>
         </h3>
         <b-collapse v-model="open">
             <p v-if="controlSection.description" class="text-muted">{{controlSection.description}}</p>
@@ -20,8 +20,8 @@
                     <a href="#" @click="toggleDocumentation">
                         <vue-feather type="info"></vue-feather>
                         How to use these settings
-                        <component style="vertical-align: top"
-                                   :is="documentationChevronComponent"></component>
+                        <vue-feather style="vertical-align: top"
+                                   :type="documentationChevronComponent"></vue-feather>
                     </a>
                     <b-collapse v-model="showDocumentation">
                         <div class="my-1" v-html="controlSection.documentation"></div>
@@ -29,36 +29,6 @@
                 </b-col>
             </b-row>
         </b-collapse>
-        
-        <!-- <h3 @click="toggleSection" :class="{'cursor-pointer': controlSection.collapsible}">
-            {{controlSection.label}}
-            <component v-if="controlSection.collapsible"
-                       style="vertical-align: initial"
-                       :is="chevronComponent"></component>
-        </h3>
-        <div>
-            <p v-if="controlSection.description" class="text-muted">{{controlSection.description}}</p>
-            <dynamic-form-control-group v-for="(group, index) in controlSection.controlGroups"
-                                        :key="index"
-                                        :control-group="group"
-                                        @confirm="confirm"
-                                        :required-text="requiredText"
-                                        :select-text="selectText"
-                                        @updateControlGroup="change($event, index)"></dynamic-form-control-group>
-            <div v-if="controlSection.documentation" class="documentation mb-4">
-                <div>
-                    <a href="#" @click="toggleDocumentation">
-                        <info-icon></info-icon>
-                        How to use these settings
-                        <component style="vertical-align: top"
-                                   :is="documentationChevronComponent"></component>
-                    </a>
-                    <div>
-                        <div class="my-1" v-html="controlSection.documentation"></div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
     </div>
 </template>
 
@@ -113,15 +83,15 @@
         computed: {
             chevronComponent() {
                 if (this.open) {
-                    return "chevron-up-icon"
+                    return "chevron-up"
                 }
-                return "chevron-down-icon"
+                return "chevron-down"
             },
             documentationChevronComponent() {
                 if (this.showDocumentation) {
-                    return "chevron-up-icon"
+                    return "chevron-up"
                 }
-                return "chevron-down-icon"
+                return "chevron-down"
             }
         },
         methods: {

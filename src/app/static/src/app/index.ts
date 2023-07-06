@@ -46,7 +46,7 @@ const getApp = () => {
         app.mount('#app');
         // TODO dis-disable warnings after most of the warnings have been fixed
         // TODO comment this warn handler out if you dare
-        app.config.warnHandler = () => null;
+        // app.config.warnHandler = () => null;
 
         return app
     } else if (mountElDataExploration) {
@@ -60,7 +60,7 @@ const getApp = () => {
         app.mount('#dataExplorationApp');
         // TODO dis-disable warnings after most of the warnings have been fixed
         // TODO comment this warn handler out if you dare
-        app.config.warnHandler = () => null;
+        // app.config.warnHandler = () => null;
         
         return app
     } else if (mountElForgotPassword) {

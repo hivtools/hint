@@ -23,7 +23,7 @@
     }
 
     interface Props {
-        filteredData: unknown[] | null
+        filteredData?: unknown[] | null
         unfilteredData: unknown[]
     }
 
@@ -45,7 +45,7 @@
             },
             filteredData: {
                 type: Array,
-                required: true
+                required: false
             }
         },
         computed: {
