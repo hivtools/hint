@@ -32,7 +32,7 @@ describe("Step component", () => {
             props: {
                 textKey: "uploadInputs",
                 enabled: true
-            }
+            } as any
         });
 
         expect(wrapper.classes()).toStrictEqual(["col", "step", "enabled"]);
@@ -44,7 +44,7 @@ describe("Step component", () => {
                 textKey: "uploadInputs",
                 active: true,
                 enabled: true
-            }
+            } as any
         });
 
         expect(wrapper.classes()).toStrictEqual(["col", "step", "active", "enabled"]);
@@ -56,7 +56,7 @@ describe("Step component", () => {
             props: {
                 textKey: "uploadInputs",
                 active: false
-            }
+            } as any
         });
 
         expect(wrapper.classes()).toStrictEqual(["col", "step"]);
@@ -69,7 +69,7 @@ describe("Step component", () => {
                 textKey: "uploadInputs",
                 enabled: true,
                 number: 2
-            }
+            } as any
         });
 
         expect(wrapper.classes()).toStrictEqual(["col", "step", "enabled"]);
@@ -87,7 +87,7 @@ describe("Step component", () => {
                 textKey: "uploadInputs",
                 enabled: true,
                 complete: true
-            }
+            } as any
         });
 
         expect(wrapper.classes()).toStrictEqual(["col", "step", "complete", "enabled"]);
@@ -99,7 +99,7 @@ describe("Step component", () => {
             props: {
                 textKey: "uploadInputs",
                 enabled: false
-            }
+            } as any
         });
         expect(wrapper.find("button").attributes().disabled).toBeDefined();
         await wrapper.find("button").trigger("click");

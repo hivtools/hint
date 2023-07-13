@@ -18,11 +18,9 @@
 
 <script lang="ts">
 
-    import {PropType} from "vue";
-    import { defineComponentVue2WithProps } from "../defineComponentVue2/defineComponentVue2";
-    import {StepperNavigationProps} from "../types";
+    import {PropType, defineComponent} from "vue";
 
-    export default defineComponentVue2WithProps<unknown, unknown, unknown, StepperNavigationProps>({
+    export default defineComponent({
         props: {
             back: {
                 type: Function as PropType<() => void>,

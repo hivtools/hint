@@ -6,21 +6,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponentVue2WithProps } from "../defineComponentVue2/defineComponentVue2";
+    import { PropType, defineComponent } from "vue";
     import {Error} from "../generated";
 
-    interface Props {
-        error: Error
-    }
-
-    interface Computed {
-        message: string
-    }
-
-    export default defineComponentVue2WithProps<unknown, unknown, Computed, Props>({
+    export default defineComponent({
         props: {
             error: {
-                type: Object,
+                type: Object as PropType<Error>,
                 required: true
             }
         },

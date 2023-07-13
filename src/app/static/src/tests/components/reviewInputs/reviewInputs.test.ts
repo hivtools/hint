@@ -1,4 +1,3 @@
-import {flushPromises, shallowMount, VueWrapper} from '@vue/test-utils';
 import Vuex from 'vuex';
 import ReviewInputs from "../../../app/components/reviewInputs/ReviewInputs.vue";
 import {
@@ -382,22 +381,22 @@ describe("Survey and programme component", () => {
         });
 
         const dataSourceSelect = wrapper.findComponent(HintTreeSelect);
-        expect(dataSourceSelect.props("modelValue")).toBe(1);
+        expect(dataSourceSelect.props("modelValue")).toBe("1");
         expect(dataSourceSelect.props("options")!.length).toBe(3);
 
         dataSourceSelect.vm.$emit("update:modelValue", "0");
         await nextTick();
-        expect(dataSourceSelect.props("modelValue")).toBe(0);
+        expect(dataSourceSelect.props("modelValue")).toBe("0");
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.ANC);
 
         dataSourceSelect.vm.$emit("update:modelValue", "2");
         await nextTick();
-        expect(dataSourceSelect.props("modelValue")).toBe(2);
+        expect(dataSourceSelect.props("modelValue")).toBe("2");
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.Survey);
 
         dataSourceSelect.vm.$emit("update:modelValue", "1");
         await nextTick();
-        expect(dataSourceSelect.props("modelValue")).toBe(1);
+        expect(dataSourceSelect.props("modelValue")).toBe("1");
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.Program);
 
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);

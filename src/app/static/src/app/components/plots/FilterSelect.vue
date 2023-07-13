@@ -24,7 +24,6 @@
 </template>
 
 <script lang="ts">
-    import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
     import i18next from "i18next";
     import HintTreeSelect from "../HintTreeSelect.vue";
     import {flattenOptions, mapStateProp} from "../../utils";
@@ -32,33 +31,9 @@
     import {Language} from "../../store/translations/locales";
     import {FilterOption} from "../../generated";
     import VueFeather from "vue-feather";
+    import { PropType, defineComponent } from "vue";
 
-    interface Methods {
-        input: (value: string[]) => void
-        select: (node: FilterOption) => void
-        deselect: (node: FilterOption) => void
-    }
-
-    interface Computed {
-        treeselectValue: string[] | string | null
-        currentLanguage: Language
-        placeholder: string,
-        labelTooltip: string
-    }
-
-    interface Props {
-        multiple?: boolean,
-        label: string,
-        disabled?: boolean,
-        options: FilterOption[],
-        value: string[] | string
-    }
-
-    interface Data {
-        selectedOptions: any
-    }
-
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponent({
         name: "FilterSelect",
         props: {
             multiple: {
@@ -75,11 +50,11 @@
                 default: false
             },
             options: {
-                type: Array,
+                type: Array as PropType<FilterOption[]>,
                 required: true
             },
             value: {
-                type: [Array, String],
+                type: [Array, String] as PropType<string | string[]>,
                 required: true
             }
         },
@@ -103,7 +78,7 @@
             },
             labelTooltip() {
                 return this.options.reduce(
-                    (lines, option) => lines.concat(option.description ? `<dt>${option.label}</dt><dd>${option.description}</dd>` : []),
+                    (lines: string[], option: FilterOption) => lines.concat(option.description ? `<dt>${option.label}</dt><dd>${option.description}</dd>` : []),
                     [] as string[]
                 ).join('');
             }

@@ -272,13 +272,13 @@
     import VueFeather from "vue-feather";
     import Modal from "../Modal.vue";
     import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
-    import {CreateProjectPayload, projectPayload, versionPayload} from "../../store/projects/actions";
+    import {projectPayload, versionPayload} from "../../store/projects/actions";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
     import {projects} from "../../store/projects/projects";
-    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
+    import { defineComponent } from "vue";
 
     const namespace = "projects";
 
@@ -300,57 +300,9 @@
         openVersion: Record<number, boolean>
     }
 
-    interface Computed {
-        disableCreate: boolean;
-        disableRename: boolean;
-        currentLanguage: Language;
-        promoteVersionHeader: string;
-        editVersionNoteHeader: string;
-        editVersionNoteSubHeader: string;
-        editProjectNoteSubHeader: string;
-    }
-
-    interface Methods {
-        format: (date: string) => void;
-        loadVersion: (event: Event, projectId: number, versionId: string) => void;
-        handleEditVersionNote: (projectId: number, versionId: string, versionNumber: number) => void;
-        handleEditProjectNote: (projectId: number) => void;
-        loadAction: (version: VersionIds) => void;
-        versionCountLabel: (project: Project) => string;
-        deleteProject: (event: Event, projectId: number) => void;
-        deleteVersion: (event: Event, projectId: number, versionId: string) => void;
-        promoteVersion: (
-            event: Event,
-            projectId: number,
-            versionId: string,
-            versionNumber: number
-        ) => void;
-        cancelPromotion: () => void;
-        cancelDelete: () => void;
-        confirmDelete: () => void;
-        confirmPromotion: (name: string) => void;
-        deleteProjectAction: (projectId: number) => void;
-        deleteVersionAction: (versionIds: VersionIds) => void;
-        promoteVersionAction: (versionPayload: versionPayload) => void;
-        renameProjectAction: (projectPayload: projectPayload) => void;
-        createProject: (name: CreateProjectPayload) => void;
-        getProjects: () => void;
-        versionLabel: (version: Version) => string;
-        renameProject: (event: Event, projectId: number) => void;
-        cancelRename: () => void;
-        confirmRename: (name: string) => void;
-        cancelNoteEditing: () => void;
-        confirmNoteEditing: () => void;
-        getTranslatedValue: (key: string) => string;
-        updateVersionNoteAction: (versionPayload: versionPayload) => void
-        updateProjectNoteAction: (payload: projectPayload) => void
-        toggleVersionMenu: (pid: number) => void
-    }
-
-    export default defineComponentVue2<Data, Methods, Computed, typeof ProjectsMixin>({
-        // ! Needs more work on mixins
+    export default defineComponent({
         extends: ProjectsMixin,
-        data() {
+        data(): Data {
             let openVersion: Record<number, boolean> = {};
             if (this.projects) {
                 this.projects.forEach(p => {
@@ -421,16 +373,16 @@
                 this.loadAction({projectId, versionId});
             },
             handleEditVersionNote(projectId: number, versionId: string, versionNumber: number) {
-                const project = this.projects.find(project => project.id === projectId)!
+                const project = this.projects.find((project: Project) => project.id === projectId)!
                 this.displayProjectName = project.name;
                 this.editedNote = project.versions
-                    .find(version => version.versionNumber === versionNumber)!.note || "";
+                    .find((version: Version) => version.versionNumber === versionNumber)!.note || "";
 
                 this.versionNoteToEdit = {projectId, versionId};
                 this.selectedVersionNumber = `v${versionNumber}`;
             },
             handleEditProjectNote(projectId: number) {
-                const project = this.projects.find(project => project.id === projectId)!;
+                const project = this.projects.find((project: Project) => project.id === projectId)!;
                 this.displayProjectName = project.name;
                 this.editedNote = project.note || "";
 
@@ -438,7 +390,7 @@
             },
             renameProject(event: Event, projectId: number) {
                 event.preventDefault();
-                this.projects.filter(project => {
+                this.projects.filter((project: Project) => {
                     if (project.id === projectId) {
                         this.renamedProjectName = project.name
                         this.renameProjectNote = project.note || ""
@@ -450,7 +402,7 @@
                 this.projectToRename = null;
                 this.renamedProjectName = '';
             },
-            async confirmRename(name) {
+            async confirmRename(name: string) {
                 if (this.projectToRename) {
                     const projectPayload: projectPayload = {
                         projectId: this.projectToRename!,
@@ -507,7 +459,7 @@
                 versionNumber: number
             ) {
                 event.preventDefault();
-                this.projects.filter(project => {
+                this.projects.filter((project: Project) => {
                     if (project.id === projectId) {
                         this.newProjectName = project.name
                         this.versionNote = project.versions.find(version => version.id === versionId)!.note || "";
@@ -533,7 +485,7 @@
                     this.versionToDelete = null;
                 }
             },
-            async confirmPromotion(name) {
+            async confirmPromotion(name: string) {
                 if (this.versionToPromote && this.newProjectName) {
                     const versionPayload: versionPayload = {
                         version: this.versionToPromote!,

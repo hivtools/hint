@@ -738,7 +738,7 @@ describe("ModelOutput component", () => {
             indicatorId: "prevalence"
         };
 
-        comparisonPlot.vm.$emit("update", comparisonPlotSelections);
+        comparisonPlot.vm.$emit("update:selections", comparisonPlotSelections);
         expect(currentComparisonPlotSelections.xAxisId).toBe("age")
         expect(store.state.plottingSelections.comparisonPlot)
             .toStrictEqual({

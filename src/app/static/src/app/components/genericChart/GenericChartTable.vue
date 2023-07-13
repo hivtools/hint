@@ -10,44 +10,29 @@
 </template>
 
 <script lang="ts">
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
+    import { PropType, defineComponent } from "vue";
     import {FilterOption, NestedFilterOption} from "../../generated";
-    import {Dict, Field, GenericChartColumn, GenericChartTableColumnConfig, GenericChartTableConfig} from "../../types";
+    import {Dict, Field, GenericChartColumn, GenericChartColumnValue, GenericChartTableColumnConfig, GenericChartTableConfig} from "../../types";
     import TableView from "../plots/table/Table.vue";
     import {format} from "d3-format";
 
-    interface Props {
-        filteredData: any[],
-        columns: GenericChartColumn[],
-        selectedFilterOptions: Dict<FilterOption[]>,
-        tableConfig: GenericChartTableConfig,
-        valueFormat?: string
-    }
-
-    interface Computed {
-        generatedFields: Field[],
-        labelledData: any[],
-        columnsWithHierarchy: GenericChartTableColumnConfig[],
-        hierarchyColumnPaths: Dict<Dict<string>>
-    }
-
-    export default defineComponentVue2WithProps<unknown, unknown, Computed, Props>({
+    export default defineComponent({
         name: "GenericChartTable",
         props: {
             filteredData: {
-                type: Array,
+                type: Array as PropType<any[]>,
                 required: true
             },
             columns: {
-                type: Array,
+                type: Array as PropType<GenericChartColumn[]>,
                 required: true
             },
             selectedFilterOptions: {
-                type: Object,
+                type: Object as PropType<Dict<FilterOption[]>>,
                 required: true
             },
             tableConfig: {
-                type: Object,
+                type: Object as PropType<GenericChartTableConfig>,
                 required: true
             },
             valueFormat: {
@@ -57,10 +42,10 @@
         },
         computed: {
             generatedFields() {
-                return this.tableConfig.columns.map(column => {
+                return this.tableConfig.columns.map((column: GenericChartTableColumnConfig) => {
                     let label: string;
                     if (column.header.type === "columnLabel") {
-                        label = this.columns.find(f => f.id === column.header.column)?.label || column.header.column;
+                        label = this.columns.find((f: GenericChartColumn) => f.id === column.header.column)?.label || column.header.column;
                     } else {
                         const selectedFilterOption = this.selectedFilterOptions[column.header.column][0];
                         label = selectedFilterOption.label;
@@ -75,7 +60,7 @@
                 });
             },
             columnsWithHierarchy() {
-                return this.tableConfig.columns.filter(column => column.data.hierarchyColumn);
+                return this.tableConfig.columns.filter((column: GenericChartTableColumnConfig) => column.data.hierarchyColumn);
             },
             hierarchyColumnPaths() {
                // Generate a dictionary of dictionaries allowing hierarchy label lookup for all  hierarchy columns (i.e. area)
@@ -92,13 +77,13 @@
                };
 
                const result = {} as Dict<Dict<string>>;
-               this.columnsWithHierarchy.forEach((columnConfig) => {
+               this.columnsWithHierarchy.forEach((columnConfig: GenericChartTableColumnConfig) => {
                    const columnId = columnConfig.data.hierarchyColumn!;
                    const pathsDict = {};
-                   const column = this.columns.find((column) => column.id == columnId)!;
+                   const column = this.columns.find((column: GenericChartColumn) => column.id == columnId)!;
                    // Deal with both array or object as top-level values type
                    const values = Array.isArray(column.values) ? column.values : [column.values];
-                   values.forEach((value) => addPathsToDict(value, "", pathsDict));
+                   values.forEach((value: GenericChartColumnValue) => addPathsToDict(value, "", pathsDict));
                    result[columnId] = pathsDict;
                });
                return result;
@@ -106,16 +91,16 @@
             labelledData() {
                 // Build a dictionary of the columns defined in the fetched dataset, which include all values and
                 // associated labels
-                const columnsDict = this.columns.reduce((dict, column) => ({...dict, [column.id]: column}), {} as Dict<GenericChartColumn>);
+                const columnsDict = this.columns.reduce((dict: Dict<GenericChartColumn>, column: GenericChartColumn) => ({...dict, [column.id]: column}), {} as Dict<GenericChartColumn>);
                 const formatFunc = this.valueFormat ? format(this.valueFormat) : null;
 
-                const result = this.filteredData.map(row => {
+                const result = this.filteredData.map((row: any) => {
                     const friendlyRow = {} as Dict<unknown>;
-                    this.tableConfig.columns.forEach(columnConfig => {
+                    this.tableConfig.columns.forEach((columnConfig: GenericChartTableColumnConfig) => {
                         const columnId = columnConfig.data.columnId;
                         if (columnConfig.data.labelColumn) {
                             const column = columnsDict[columnConfig.data.labelColumn!];
-                            const friendlyValue = column.values.find(value => value.id == row[columnConfig.data.columnId])?.label;
+                            const friendlyValue = column.values.find((value: GenericChartColumnValue) => value.id == row[columnConfig.data.columnId])?.label;
                             friendlyRow[columnId] = friendlyValue;
                         } else if (formatFunc && columnConfig.data.useValueFormat) {
                             friendlyRow[columnId] = formatFunc(row[columnId]);
@@ -126,7 +111,7 @@
 
                     // Include additional fields for any columns configured to include hierarchy values - use the
                     // configured column's data column id, suffixed with '_hierarchy' as the field id
-                    this.columnsWithHierarchy.forEach((columnConfig) => {
+                    this.columnsWithHierarchy.forEach((columnConfig: GenericChartTableColumnConfig) => {
                         const hierarchyColumn = columnsDict[columnConfig.data.hierarchyColumn!];
                         const value = row[hierarchyColumn.column_id];
                         friendlyRow[`${columnConfig.data.columnId}_hierarchy`] = this.hierarchyColumnPaths[hierarchyColumn.id][value];

@@ -25,6 +25,7 @@ import {LoadState} from "./store/load/state";
 import {initialModelRunState} from "./store/modelRun/modelRun";
 import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
 import {AxiosResponse} from "axios";
+import { ComputedGetter } from 'vue';
 
 export type ComputedWithType<T> = () => T;
 
@@ -37,33 +38,51 @@ export const mapStatePropByName = <T>(namespace: string | null, name: string): C
     return (namespace && mapState(namespace, [name])[name]) || mapState([name])[name]
 };
 
-export const mapStateProps = <S, K extends string>(namespace: string,
-    map: Dict<(this: CustomVue, state: S) => any>) => {
-    type R = {[key in K]: any}
-    return mapState<S>(namespace, map) as R
+export const mapStateProps = <M extends Dict<(this: CustomVue, state: any) => any>>(namespace: string, map: M) => {
+    type T = typeof map
+    type R = {[key in keyof T]: ComputedGetter<ReturnType<T[key]>>}
+    return mapState(namespace, map) as R
 };
 
-export const mapGetterByName = <T>(namespace: string | null, name: string): ComputedWithType<T> => {
+export const mapRootStateProps = <M extends Dict<(this: CustomVue, state: any) => any>>(map: M) => {
+    type T = typeof map
+    type R = {[key in keyof T]: ComputedGetter<ReturnType<T[key]>>}
+    return mapState(map) as R
+};
+
+export const mapGetterByName = <T>(namespace: string | null, name: string): ComputedGetter<T> => {
     return (namespace && mapGetters(namespace, [name])[name]) || mapGetters([name])[name]
 }
 
-export const mapGettersByNames = <K extends string>(namespace: string, names: string[]) => {
-    type R = {[key in K]: any}
-    return mapGetters(namespace, names) as R
+export const mapGettersByNames = <N extends readonly string[], T extends Record<N[number], any>>(namespace: string, names: N) => {
+    const nameCopy = [...names]
+    type R = {[key in N[number]]: any}
+    type TR = {[key in N[number]]: ComputedGetter<T[key]>}
+    type Result = T extends undefined ? R : TR
+    return mapGetters(namespace, nameCopy) as Result
 };
+
+interface heyman {
+    hey: string,
+    bye: boolean
+}
+const hey = mapGettersByNames<readonly ["hey", "bye"], heyman>("whatever", ["hey", "bye"] as const)
+type yo = typeof hey
 
 export const mapActionByName = <T>(namespace: string | null, name: string): ActionMethod => {
     return (!!namespace && mapActions(namespace, [name])[name]) || mapActions([name])[name]
 };
 
-export const mapActionsByNames = <K extends string>(namespace: string | null, names: string[]) => {
-    type R = {[key in K]: any}
-    return (!!namespace && mapActions(namespace, names) || mapActions(names)) as R
+export const mapActionsByNames = <N extends readonly string[]>(namespace: string | null, names: N) => {
+    const nameCopy = [...names]
+    type R = {[key in N[number]]: any}
+    return (!!namespace && mapActions(namespace, nameCopy) || mapActions(nameCopy)) as R
 };
 
-export const mapMutationsByNames = <K extends string>(namespace: string, names: string[]) => {
-    type R = {[key in K]: any}
-    return mapMutations(namespace, names) as R
+export const mapMutationsByNames = <N extends readonly string[]>(namespace: string, names: N) => {
+    const nameCopy = [...names]
+    type R = {[key in N[number]]: any}
+    return mapMutations(namespace, nameCopy) as R
 };
 
 export const mapMutationByName = <T>(namespace: string | null, name: string): MutationMethod => {

@@ -54,7 +54,6 @@
 </template>
 
 <script lang="ts">
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2"
     import { mapActionByName, mapStateProp, mapMutationByName } from "../../utils";
     import HintTreeSelect from "../HintTreeSelect.vue";
     import { ADRState } from "../../store/adr/adr";
@@ -63,53 +62,32 @@
     import { Language } from "../../store/translations/locales";
     import { RootState } from "../../root";
     import {ADRMutation} from "../../store/adr/mutations";
-    import { Release } from "../../types";
     import { BaselineState } from "../../store/baseline/baseline";
+    import { PropType, defineComponent } from "vue";
 
     interface Data {
         releaseId: string | undefined;
         choiceADR: "useLatest" | "useRelease";
     }
 
-    interface Methods {
-        getReleases: (id: string) => void;
-        clearReleases: () => void;
-        translate(text: string): string;
-        preSelectRelease: () => void;
-    }
-
-    interface Computed {
-        releases: Release[];
-        initialRelease: string | undefined;
-        valid: boolean;
-        releaseOptions: any[];
-        useRelease: boolean;
-        currentLanguage: Language;
-    }
-
-    interface Props {
-        datasetId?: string;
-        open?: boolean;
-    }
-
     const namespace = "adr";
 
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponent({
         components: {
             HintTreeSelect,
             VueFeather,
         },
         props: {
             datasetId: {
-                type: String,
-                required: false
+                type: [String, null] as PropType<string | null>,
+                required: true
             },
             open: {
                 type: Boolean,
                 required: false
             }
         },
-        data() {
+        data(): Data {
             return {
                 releaseId: undefined,
                 choiceADR: "useLatest",
@@ -128,7 +106,7 @@
                 return (this.choiceADR === "useLatest") || !!this.releaseId;
             },
             releaseOptions() {
-                return this.releases.map((d) => ({
+                return this.releases.map((d: any) => ({
                     id: d.id,
                     label: d.name,
                 customLabel: `${d.name}
@@ -147,16 +125,16 @@
         },
         methods: {
             getReleases: mapActionByName(namespace, "getReleases"),
-            translate(text) {
+            translate(text: string) {
                 return i18next.t(text, { lng: this.currentLanguage });
             },
             clearReleases: mapMutationByName(namespace, ADRMutation.ClearReleases),
             preSelectRelease(){
                 const selectedReleaseId = this.initialRelease
-                if (selectedReleaseId && this.releases.some(release => release.id === selectedReleaseId)){
+                if (selectedReleaseId && this.releases.some((release: any) => release.id === selectedReleaseId)){
                     this.choiceADR = "useRelease"
                     this.releaseId = selectedReleaseId;
-                } else if (selectedReleaseId && !this.releases.some(release => release.id === selectedReleaseId)) {
+                } else if (selectedReleaseId && !this.releases.some((release: any) => release.id === selectedReleaseId)) {
                     this.choiceADR = "useLatest"
                 }
             }
@@ -175,7 +153,7 @@
                 }
             },
             releaseId() {
-                this.$emit("selected-dataset-release", this.releases.find(release => release.id === this.releaseId))
+                this.$emit("selected-dataset-release", this.releases.find((release: any) => release.id === this.releaseId))
             },
             valid() {
                 this.$emit("valid", this.valid);

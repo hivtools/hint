@@ -42,7 +42,6 @@
     </div>
 </template>
 <script lang="ts">
-    import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
     import {serialiseState} from "../../localStorageManager";
     import {BaselineState} from "../../store/baseline/baseline";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
@@ -54,33 +53,13 @@
     import {mapGetterByName} from "../../utils";
     import UploadNewProject from "../load/UploadNewProject.vue";
     import {switches} from "../../featureSwitches"
+    import { defineComponent } from "vue";
 
     interface Data {
         projectNameJson: boolean,
         projectNameZip: boolean,
         fileToLoad: File | null
         loadJsonFeatureSwitch: boolean
-    }
-
-    interface Methods {
-        save: (e: Event) => void;
-        loadJson: () => void;
-        loadZip: () => void;
-        loadAction: (file: File) => void;
-        preparingRehydrate: (file: FormData) => void
-        cancelLoadZip: () => void;
-        cancelLoadJson: () => void;
-        handleLoadJson: () => void
-        handleLoadZip: () => void
-        clearLoadJsonInput: () => void,
-        clearLoadZipInput: () => void,
-        getZip: () => FileList | null
-    }
-
-    interface Computed {
-        baselineFiles: BaselineFiles
-        surveyAndProgramFiles: SurveyAndProgramFiles,
-        isGuest: boolean
     }
 
     interface BaselineFiles {
@@ -95,15 +74,11 @@
         anc: LocalSessionFile | null
     }
 
-    interface Props {
-        title: string
-    }
-
     const localSessionFile = function (file: ValidateInputResponse | null) {
         return file ? {hash: file.hash, filename: file.filename} : null
     };
 
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponent({
         props: {
             title: {
                 type: String,
@@ -118,7 +93,7 @@
                 handleLoadJson
             }
         },
-        data() {
+        data(): Data {
             return {
                 projectNameJson: false,
                 projectNameZip: false,

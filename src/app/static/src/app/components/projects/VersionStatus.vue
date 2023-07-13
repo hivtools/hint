@@ -16,24 +16,16 @@
     import VueFeather from "vue-feather";
     import moment from 'moment';
     import {versionLabel} from "../../utils";
-import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
+    import { defineComponent } from "vue";
 
     const namespace = "projects";
 
-    interface Computed {
-        time: Date | null,
-        projectName: string | null,
-        versionLabel: string | null,
-        display: boolean,
-        formattedTime: string
-    }
-
-    export default defineComponentVue2<unknown, unknown, Computed>({
+    export default defineComponent({
         computed: {
-            display: function () {
+            display(): boolean {
                 return !!this.projectName;
             },
-            formattedTime: function () {
+            formattedTime(): string {
                 return this.time ? moment(this.time).format('HH:mm') : '';
             },
             time: mapStateProp<ProjectsState, Date | null>(namespace, state => state.versionTime),

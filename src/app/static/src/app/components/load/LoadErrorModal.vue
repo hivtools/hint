@@ -17,17 +17,10 @@
 </template>
 
 <script lang="ts">
-    import { PropType } from "vue";
-import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
+    import { PropType, defineComponent } from "vue";
     import Modal from "../Modal.vue";
 
-    interface Props {
-        hasError: boolean
-        loadError?: string
-        clearLoadError: () => void
-    }
-
-    export default defineComponentVue2WithProps<unknown, unknown, unknown, Props>({
+    export default defineComponent({
         name: "LoadErrorModal",
         props: {
             hasError: {
@@ -39,7 +32,7 @@ import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComp
                 required: false
             },
             clearLoadError: {
-                type: Function as PropType<Props["clearLoadError"]>,
+                type: Function as PropType<() => void>,
                 required: true
             }
         },

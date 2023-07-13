@@ -31,7 +31,7 @@
             <span v-if="!progressMessage" v-translate="'calibrating'"></span>
             <span v-else>{{ progressMessage }}</span>
         </div>
-        <error-alert v-if="hasError" :error="error"></error-alert>
+        <error-alert v-if="hasError" :error="error!"></error-alert>
         <div v-if="complete" id="calibration-complete" class="mt-3">
             <h4
                 class="d-inline"
@@ -51,14 +51,10 @@
 </template>
 <script lang="ts">
     import i18next from "i18next";
-    import {
-        DynamicFormData,
-        DynamicFormMeta
-    } from "../../vue-dynamic-form/src/types";
+    import { DynamicFormMeta } from "../../vue-dynamic-form/src/types";
     import { DynamicForm } from "../../vue-dynamic-form/src";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
-    import {defineComponentVue2, defineComponentVue2GetSet} from "../../defineComponentVue2/defineComponentVue2"
     import {
         mapActionByName,
         mapMutationByName,
@@ -71,50 +67,12 @@
     import { ModelCalibrateState } from "../../store/modelCalibrate/modelCalibrate";
     import ErrorAlert from "../ErrorAlert.vue";
     import CalibrationResults from "./CalibrationResults.vue";
-    import { Error } from "../../generated";
-    import { ComputedGetter, ComputedOptions } from "vue";
+    import { defineComponent } from "vue";
 
-    interface Methods {
-        fetchOptions: () => void;
-        submitCalibrate: (data: DynamicFormData) => void;
-        update: (data: DynamicFormMeta) => void;
-        submitForm: (e: Event) => void;
-    }
-
-    interface Computed extends Record<string, any> {
-        calibrateOptions: {
-            get: ComputedGetter<DynamicFormMeta>,
-            set: (value: DynamicFormMeta) => void
-        };
-        loading: ComputedGetter<boolean>;
-        calibrating: ComputedGetter<boolean>;
-        complete: ComputedGetter<boolean>;
-        generatingCalibrationPlot: ComputedGetter<boolean>;
-        calibrationPlotGenerated: ComputedGetter<boolean>;
-        currentLanguage: ComputedGetter<Language>;
-        selectText: ComputedGetter<string>;
-        requiredText: ComputedGetter<string>;
-        submitText: ComputedGetter<string>;
-        hasError: ComputedGetter<boolean>;
-        error: ComputedGetter<Error>;
-        progressMessage: ComputedGetter<string>;
-        showCalibrateResults: ComputedGetter<boolean>
-    }
-
-    type ModelCalibrateStateKeys = "loading" |
-        "calibrating" |
-        "generatingCalibrationPlot" |
-        "calibrationPlotGenerated" |
-        "error" |
-        "progressMessage"
-
-    interface Data {
-        showConfirmation: boolean;
-    }
 
     const namespace = "modelCalibrate";
 
-    export default defineComponentVue2GetSet<Data, Methods, Computed>({
+    export default defineComponent({
         name: "ModelCalibrate",
         data() {
             return {
@@ -122,13 +80,13 @@
             };
         },
         computed: {
-            ...mapStateProps<ModelCalibrateState, ModelCalibrateStateKeys>(namespace, {
-                loading: (state) => state.fetching,
-                calibrating: (state) => state.calibrating,
-                generatingCalibrationPlot: (state) => state.generatingCalibrationPlot,
-                calibrationPlotGenerated: (state) => !!state.calibratePlotResult,
-                error: (state) => state.error,
-                progressMessage: (state) => {
+            ...mapStateProps(namespace, {
+                loading: (state: ModelCalibrateState) => state.fetching,
+                calibrating: (state: ModelCalibrateState) => state.calibrating,
+                generatingCalibrationPlot: (state: ModelCalibrateState) => state.generatingCalibrationPlot,
+                calibrationPlotGenerated: (state: ModelCalibrateState) => !!state.calibratePlotResult,
+                error: (state: ModelCalibrateState) => state.error,
+                progressMessage: (state: ModelCalibrateState) => {
                     if (
                         state.status &&
                         state.status.progress &&
@@ -143,20 +101,20 @@
                     }
                 }
             }),
-            showCalibrateResults() {
+            showCalibrateResults(): boolean {
                 return this.calibrationPlotGenerated && this.complete
             },
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
             ),
-            selectText() {
+            selectText(): string {
                 return i18next.t("select", { lng: this.currentLanguage });
             },
-            requiredText() {
+            requiredText(): string {
                 return i18next.t("required", { lng: this.currentLanguage });
             },
-            submitText() {
+            submitText(): string {
                 return i18next.t("calibrate", { lng: this.currentLanguage });
             },
             complete: mapStateProp<ModelCalibrateState, boolean>(
@@ -171,7 +129,7 @@
                     this.update(value);
                 },
             },
-            hasError() {
+            hasError(): boolean {
                 return !!this.error;
             },
         },

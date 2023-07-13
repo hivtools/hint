@@ -15,27 +15,9 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
+    import { defineComponent } from "vue";
 
-    interface Methods {
-        toggle: () => void
-        close: () => void
-        menuFocused: () => void
-        menuUnfocused: () => void
-    }
-
-    interface Data {
-        show: boolean
-        menuFocus: boolean
-    }
-
-    interface Props {
-        text: string
-        right?: boolean
-        delay?: boolean
-    }
-
-    export default defineComponentVue2WithProps<Data, Methods, unknown, Props>({
+    export default defineComponent({
         props: {
             text: {
                 type: String,
@@ -50,7 +32,7 @@
                 required: false
             }
         },
-        data(): Data {
+        data() {
             return {
                 show: false,
                 menuFocus: false

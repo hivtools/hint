@@ -10,26 +10,16 @@
 </template>
 
 <script lang="ts">
-    import { defineComponentVue2WithProps } from "../defineComponentVue2/defineComponentVue2";
+    import { PropType, defineComponent } from "vue";
     import { Warning as WarningType } from "../generated";
     import { Dict } from "../types";
     import Warning from "./Warning.vue"
 
-    interface Props {
-        warnings: Dict<WarningType[]>;
-        maxLines?: number;
-    }
-
-    interface Computed  {
-        filteredWarnings: Dict<WarningType[]>;
-        showAlert: boolean;
-    }
-
-    export default defineComponentVue2WithProps<unknown, unknown, Computed, Props>({
+    export default defineComponent({
         name: "WarningAlert",
         props: {
             warnings: {
-                type: Object,
+                type: Object as PropType<Dict<WarningType[]>>,
                 required: true
             },
             maxLines: {

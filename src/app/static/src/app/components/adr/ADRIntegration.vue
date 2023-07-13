@@ -22,32 +22,18 @@
     import {Language} from "../../store/translations/locales";
     import {BaselineState} from "../../store/baseline/baseline";
     import {Dataset} from "../../types";
-    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
-
-    interface Methods {
-        getDatasets: () => void
-        fetchADRKey: () => void
-        getUserCanUpload: () => void
-        handleUploadPermission: (isADRWriter: boolean, isTooltip: boolean) => string | null
-        getTranslation: (key: string) => string
-    }
-
-    interface Computed {
-        isGuest: boolean
-        loggedIn: boolean
-        key: string | null,
-        hasUploadPermission: boolean,
-        currentLanguage: Language
-        selectedDataset: Dataset | null
-    }
+    import {defineComponent} from "vue";
 
     const namespace = "adr";
 
-    export default defineComponentVue2<unknown, Methods, Computed>({
-        components: {AdrKey, SelectDataset},
+    export default defineComponent({
+        components: {
+            "adr-key": AdrKey,
+            "select-dataset": SelectDataset
+        },
         computed: {
             isGuest: mapGetterByName(null, "isGuest"),
-            loggedIn() {
+            loggedIn(): boolean {
                 return !this.isGuest
             },
             key: mapStateProp<ADRState, string | null>(namespace,

@@ -20,19 +20,10 @@
     import {mapActionByName, mapStateProp} from "../../utils";
     import DropDown from "./DropDown.vue";
     import {currentHintVersion} from "../../hintVersion";
-    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
-
-    interface Computed {
-        hintrVersions: HintrVersionResponse;
-        hintVersion: string
-    }
-
-    interface Methods {
-        showHintrVersion: () => void;
-    }
+    import { defineComponent } from "vue";
 
     const namespace = "hintrVersion";
-    export default defineComponentVue2<unknown, Methods, Computed>({
+    export default defineComponent({
 
         computed: {
             hintrVersions: mapStateProp<RootState, HintrVersionResponse>(

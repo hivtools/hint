@@ -12,14 +12,10 @@
     </header>
 </template>
 <script lang="ts">
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
+    import { defineComponent } from "vue";
     import LanguageMenu from "./LanguageMenu.vue";
 
-    interface Props {
-        title: string
-    }
-
-    export default defineComponentVue2WithProps<unknown, unknown, unknown, Props>({
+    export default defineComponent({
         props: {
             title: {
                 type: String,

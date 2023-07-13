@@ -92,7 +92,7 @@ describe("GenericChartTable component", () => {
     };
 
     const getWrapper = (filteredData = data, valueFormat = "") => {
-        const props = {tableConfig, filteredData, columns, selectedFilterOptions, valueFormat};
+        const props = {tableConfig, filteredData, columns, selectedFilterOptions, valueFormat} as any;
         return shallowMount(GenericChartTable, {props});
     };
 
@@ -159,7 +159,7 @@ describe("GenericChartTable component", () => {
             filteredData: filteredDataWithTwoAreaIdColumns,
             columns,
             selectedFilterOptions
-        };
+        } as any;
         const wrapper = shallowMount(GenericChartTable, {props});
         const table = wrapper.findComponent(Table);
         const expectedData = [
@@ -237,7 +237,7 @@ describe("GenericChartTable component", () => {
         filteredData: filteredDataWithHierarchy,
         columns: columnsWithHierarchy,
         selectedFilterOptions
-    };
+    } as any;
 
     it("renders table component with hierarchy column", () => {
         const wrapper = shallowMount(GenericChartTable, {props: propsWithHierarchy});

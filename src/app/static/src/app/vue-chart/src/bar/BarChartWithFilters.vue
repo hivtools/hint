@@ -224,17 +224,17 @@
                 return toFilterLabelLookup(this.selections.selectedFilterOptions[this.selections.xAxisId] || []);
             },
             filtersAsOptions() {
-                return this.filterConfig.filters.map((f: Filter) => ({id: f.id, label: f.label}))
+                return this.filterConfig.filters.map((f: Filter) => ({id: f.id, label: f.label})) as FilterOption[]
             },
             filterXaxisOptions() {
                 if (this.disaggregateIsFixed) {
-                    return this.filtersAsOptions.filter(f => f.id !== this.disaggregateById)
+                    return this.filtersAsOptions.filter((f: FilterOption) => f.id !== this.disaggregateById)
                 }
                 return this.filtersAsOptions
             },
             filterDisaggregateOptions() {
                 if (this.xAxisIsFixed) {
-                    return this.filtersAsOptions.filter(f => f.id !== this.xAxisId)
+                    return this.filtersAsOptions.filter((f: FilterOption) => f.id !== this.xAxisId)
                 }
                 return this.filtersAsOptions
             },

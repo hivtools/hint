@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts">
-    import {mapActions, mapGetters} from "vuex";
+    import {mapActions} from "vuex";
     import AdrIntegration from "./adr/ADRIntegration.vue";
     import Step from "./Step.vue";
     import UploadInputs from "./uploadInputs/UploadInputs.vue";
@@ -62,7 +62,7 @@
     import {LoadingState, LoadState} from "../store/load/state";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
     import VersionStatus from "./projects/VersionStatus.vue";
-    import {mapGettersByNames, mapStateProp, mapStateProps, mapMutationByName} from "../utils";
+    import {mapGettersByNames, mapStateProp, mapStateProps, mapMutationByName, mapGetterByName} from "../utils";
     import {Project, StepperNavigationProps, StepWarnings} from "../types";
     import {ProjectsState} from "../store/projects/projects";
     import {RootState} from "../root";
@@ -72,68 +72,39 @@
     import {ModelCalibrateMutation} from "../store/modelCalibrate/mutations";
     import {GenericChartMutation} from "../store/genericChart/mutations";
     import {SurveyAndProgramMutation} from "../store/surveyAndProgram/mutations";
-    import { defineComponentVue2 } from "../defineComponentVue2/defineComponentVue2";
-
-    interface ComputedState {
-        activeStep: number,
-        steps: StepDescription[],
-        currentProject: Project | null
-        projectLoading: boolean,
-        updatingLanguage: boolean,
-        navigationProps: StepperNavigationProps,
-        activeStepTextKey: string,
-        activeStepWarnings: StepWarnings
-    }
-
-    interface ComputedGetters {
-        ready: boolean,
-        complete: boolean[],
-        loadingFromFile: boolean,
-        loading: boolean,
-        warnings: (stepName: string) => StepWarnings,
-    }
-
-    interface Methods {
-        jump: (num: number) => void,
-        next: () => void,
-        back: () => void,
-        isActive: (num: number) => boolean,
-        isEnabled: (num: number) => boolean,
-        isComplete: (num: number) => boolean,
-        activeContinue: (num: number) => boolean,
-        clearReviewInputsWarnings: () => void,
-        clearWarnings: () => void,
-        clearModelRunWarnings: () => void,
-        clearModelCalibrateWarnings: () => void,
-        clearModelOptionsWarnings: () => void,
-        clearGenericChartWarnings: () => void,
-        clearSurveyAndProgramWarnings: () => void,
-    }
+    import { defineComponent } from "vue";
 
     const namespace = 'stepper';
 
-    export default defineComponentVue2<unknown, Methods, ComputedState & ComputedGetters>({
+    const readyCompleteGetters = ["ready", "complete"] as const
+    interface ReadyCompleteGetters {
+        ready: boolean,
+        complete: boolean[]
+    }
+
+    export default defineComponent({
         computed: {
-            ...mapStateProps<StepperState, keyof ComputedState>(namespace, {
-                activeStep: state => state.activeStep,
-                steps: state => state.steps
+            ...mapStateProps(namespace, {
+                activeStep: (state: StepperState) => state.activeStep,
+                steps: (state: StepperState) => state.steps
             }),
-            ...mapStateProps<LoadState, keyof ComputedState>("load", {
-                loadingFromFile: state => [LoadingState.SettingFiles, LoadingState.UpdatingState].includes(state.loadingState)
+            ...mapStateProps("load", {
+                loadingFromFile: (state: LoadState) => [LoadingState.SettingFiles, LoadingState.UpdatingState].includes(state.loadingState)
             }),
-            ...mapStateProps<ProjectsState, keyof ComputedState>("projects", {
-                currentProject: state => state.currentProject,
-                projectLoading: state => state.loading
+            ...mapStateProps("projects", {
+                currentProject: (state: ProjectsState) => state.currentProject,
+                projectLoading: (state: ProjectsState) => state.loading
             }),
             updatingLanguage: mapStateProp<RootState, boolean>(null,
                 (state: RootState) => state.updatingLanguage
             ),
-            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"]),
-            loading: function () {
+            ...mapGettersByNames<typeof readyCompleteGetters, ReadyCompleteGetters>(namespace, readyCompleteGetters),
+            loading: function (): boolean {
                 return this.loadingFromFile || this.updatingLanguage || !this.ready;
             },
-            ...mapGetters(["isGuest", "warnings"]),
-            navigationProps: function() {
+            isGuest: mapGetterByName<boolean>(null, "isGuest"),
+            warnings: mapGetterByName<(stepName: string) => StepWarnings>(null, "warnings"),
+            navigationProps(): StepperNavigationProps {
                 return {
                     back: this.back,
                     backDisabled: this.activeStep === 1,
@@ -141,15 +112,15 @@
                     nextDisabled: this.activeContinue(this.activeStep)
                 };
             },
-            activeStepTextKey: function() {
+            activeStepTextKey(): string {
                 return this.steps.find((step: StepDescription) => step.number === this.activeStep)!.textKey;
             },
-            activeStepWarnings: function() {
+            activeStepWarnings(): StepWarnings {
                 return this.warnings(this.activeStepTextKey);
             }
         },
         methods: {
-            ...mapActions<keyof Methods>(namespace, ["jump", "next"]),
+            ...mapActions(namespace, ["jump", "next"]),
             ...mapActions(["validate"]),
             back() {
                 this.jump(this.activeStep - 1);
@@ -175,7 +146,7 @@
                 }
                 return !this.isComplete(activeStep)
             },
-            clearReviewInputsWarnings: function() {
+            clearReviewInputsWarnings() {
                 this.clearSurveyAndProgramWarnings()
                 this.clearGenericChartWarnings()
             },

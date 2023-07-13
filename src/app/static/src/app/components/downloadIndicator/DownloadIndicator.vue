@@ -8,12 +8,12 @@
 </template>
 
 <script lang="ts">
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
     import DownloadButton from "./DownloadButton.vue";
     import {DownloadIndicatorPayload} from "../../types";
     import {appendCurrentDateTime, mapActionByName, mapStateProps} from "../../utils";
     import {BaselineState} from "../../store/baseline/baseline";
     import {DownloadIndicatorState} from "../../store/downloadIndicator/downloadIndicator";
+    import { defineComponent } from "vue";
 
     const namespace = "downloadIndicator";
 
@@ -33,7 +33,7 @@
         downloadingIndicator: boolean
     }
 
-    export default defineComponentVue2WithProps<unknown, Methods, Computed, Props>({
+    export default defineComponent({
         name: "downloadIndicator",
         components: {
             DownloadButton
@@ -49,12 +49,12 @@
             }
         },
         computed: {
-            ...mapStateProps<BaselineState, keyof Computed>("baseline", {
-                iso3: state => state.iso3,
-                country: state => state.country
+            ...mapStateProps("baseline", {
+                iso3: (state: BaselineState) => state.iso3,
+                country: (state: BaselineState) => state.country
             }),
-            ...mapStateProps<DownloadIndicatorState, keyof Computed>(namespace, {
-                downloadingIndicator: state => state.downloadingIndicator
+            ...mapStateProps(namespace, {
+                downloadingIndicator: (state: DownloadIndicatorState) => state.downloadingIndicator
             })
         },
         methods: {

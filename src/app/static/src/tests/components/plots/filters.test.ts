@@ -88,7 +88,7 @@ describe("Filters component", () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         vm.onFilterSelect(props.filters[1], [{id: "15:30", label: "15-30"}]);
-        const updates = wrapper.emitted("update")!;
+        const updates = wrapper.emitted("update:filters")!;
         expect(updates[updates.length - 1][0]).toStrictEqual({
             ...props.selectedFilterOptions,
             age: [{id: "15:30", label: "15-30"}],

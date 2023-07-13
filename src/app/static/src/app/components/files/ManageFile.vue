@@ -41,8 +41,7 @@
     import {Error} from "../../generated";
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
     import {Step} from "../../types";
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
-    import { PropType } from "vue";
+    import { PropType, defineComponent } from "vue";
 
     interface Data {
         uploading: boolean
@@ -50,40 +49,16 @@
         modelOptions: number
     }
 
-    interface Computed {
-        hasError: boolean
-    }
-
-    interface Methods {
-        deleteSelectedFile: () => void
-        handleFileDelete: () => void
-        cancelEdit: () => void
-        handleUploading: () => void
-    }
-
-    interface Props {
-        upload: (formData: FormData) => void,
-        deleteFile: () => void,
-        accept: string,
-        label: string,
-        valid: boolean,
-        error?: Error | null,
-        existingFileName?: string,
-        fromADR?: boolean,
-        name: string,
-        required?: boolean
-    }
-
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponent({
         extends: ResetConfirmationMixin,
         name: "FileSelect",
         props: {
             upload: {
-                type: Function as PropType<Props["upload"]>,
+                type: Function as PropType<(formData: FormData) => void>,
                 required: true
             },
             deleteFile: {
-                type: Function as PropType<Props["deleteFile"]>,
+                type: Function as PropType<() => void>,
                 required: true
             },
             accept: {
@@ -99,12 +74,12 @@
                 required: true
             },
             error: {
-                type: Object,
+                type: [Object, null] as PropType<Error | null>,
                 required: false
             },
             existingFileName: {
-                type: String,
-                required: false
+                type: [String, null] as PropType<string | null>,
+                required: true
             },
             fromADR: {
                 type: Boolean,

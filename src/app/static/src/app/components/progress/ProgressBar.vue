@@ -13,19 +13,12 @@
     import {BProgress, BProgressBar} from "bootstrap-vue-next";
     import Tick from "../Tick.vue";
     import {ProgressPhase} from "../../generated";
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
+    import { PropType, defineComponent } from "vue";
 
-    interface Computed {
-        isDeterminate: boolean
-        value: number
-        title: string
-        cssClass: string
-    }
-
-    export default defineComponentVue2WithProps<unknown, unknown, Computed, { phase: ProgressPhase }>({
+    export default defineComponent({
         props: {
             phase: {
-                type: Object,
+                type: Object as PropType<ProgressPhase>,
                 required: true
             }
         },

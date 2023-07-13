@@ -20,38 +20,19 @@
     </b-row>
 </template>
 <script lang="ts">
-    import {defineComponent} from "vue";
+    import {PropType, defineComponent} from "vue";
     import {BRow} from "bootstrap-vue-next";
     import {Control, DynamicControlGroup} from "./types";
     import DynamicFormControl from "./DynamicFormControl.vue";
     import VueFeather from "vue-feather";
     import FormsMixin from "./FormsMixin";
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
 
-    interface Methods {
-        anyValueEmpty: (controlGroup: DynamicControlGroup) => boolean
-        change: (newVal: Control, index: number) => void
-        confirm:(e: Event) => void
-    }
-
-    interface Computed {
-        colWidth: string,
-        required: boolean
-        helpText: string | undefined
-    }
-
-    interface Props {
-        controlGroup: DynamicControlGroup
-        requiredText?: string
-        selectText?: string
-    }
-
-    export default defineComponentVue2WithProps<unknown, Methods, Computed, Props>({
+    export default defineComponent({
         extends: FormsMixin,
         name: "DynamicFormControlGroup",
         props: {
             controlGroup: {
-                type: Object,
+                type: Object as PropType<DynamicControlGroup>,
                 required: true
             },
             requiredText: {

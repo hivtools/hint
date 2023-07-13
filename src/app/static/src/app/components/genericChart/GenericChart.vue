@@ -9,11 +9,11 @@
                                  :value="ds.selections.datasetId"
                                  @update="updateDataSource(ds.config.id, $event)">
                     </data-source>
-                    <filters v-if="ds.config.showFilters && ds.filters && ds.selections.selectedFilterOptions"
+                    <filters-comp v-if="ds.config.showFilters && ds.filters && ds.selections.selectedFilterOptions"
                                 :filters="ds.filters"
                                 :selected-filter-options="ds.selections.selectedFilterOptions"
                                 @update:filters="updateSelectedFilterOptions(ds.config.id, $event)">
-                    </filters>
+                    </filters-comp>
                 </div>
                 <div id="chart-description"
                      v-if="chartConfigValues.description"
@@ -88,13 +88,15 @@
     import VueFeather from "vue-feather";
     import {
         DataSourceConfig,
+        DatasetConfig,
+        DatasetFilterConfig,
         Dict, DisplayFilter, GenericChartColumn, GenericChartColumnValue,
         GenericChartDataset,
         GenericChartMetadata,
         GenericChartMetadataResponse, GenericChartTableConfig
     } from "../../types";
     import DataSource from "./dataSelectors/DataSource.vue";
-    import Filters from "../plots/Filters.vue";
+    import FiltersComp from "../plots/Filters.vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {mapActionByName, mapStateProp} from "../../utils";
@@ -107,7 +109,7 @@
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import DownloadIndicator from "../downloadIndicator/DownloadIndicator.vue";
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
+    import { PropType, defineComponent } from "vue";
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections
@@ -174,11 +176,11 @@
 
     const namespace = "genericChart";
 
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponent({
         name: "GenericChart",
         props: {
             metadata: {
-                type: Object,
+                type: Object as PropType<GenericChartMetadataResponse>,
                 required: true
             },
             chartId: {
@@ -198,22 +200,28 @@
             DownloadIndicator,
             VueFeather,
             DataSource,
-            Filters,
+            FiltersComp,
             Plotly,
             GenericChartTable,
             ErrorAlert,
             LoadingSpinner
         },
-        data: function() {
+        data: function(): Data {
             const chart = this.metadata[this.chartId];
             const dataSourceSelections = chart.dataSelectors.dataSources
-                .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => ({
-                    ...running,
-                    [dataSource.id]: {
-                        datasetId: this.availableDatasetIds.find(id => id === dataSource.datasetId) || this.availableDatasetIds[0],
-                        selectedFilterOptions: null
-                    }
-                }), {});
+            .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => Object.assign(running, {
+                [dataSource.id]: {
+                    datasetId: this.availableDatasetIds.find(id => id === dataSource.datasetId) || this.availableDatasetIds[0],
+                    selectedFilterOptions: null
+                }
+            }), {})
+            // .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => ({
+            //         ...running,
+            //         [dataSource.id]: {
+            //             datasetId: this.availableDatasetIds.find(id => id === dataSource.datasetId) || this.availableDatasetIds[0],
+            //             selectedFilterOptions: null
+            //         }
+            //     }), {});
             return {
                 dataSourceSelections,
                 currentPage: 1,
@@ -245,9 +253,9 @@
                     let filterColumns: GenericChartColumn[] = [];
                     if (datasetConfig.filters) {
                         // Only include columns which are configured as filters in the dataset config
-                        const configuredFilterIds = datasetConfig.filters.map(filter => filter.id);
+                        const configuredFilterIds = datasetConfig.filters.map((filter: DatasetFilterConfig) => filter.id);
                         const allColumns = this.datasets[datasetId]?.metadata.columns || [];
-                        filterColumns = allColumns.filter(column => configuredFilterIds.includes(column.id));
+                        filterColumns = allColumns.filter((column: GenericChartColumn) => configuredFilterIds.includes(column.id));
                     }
                     result[datasetId] = genericChartColumnsToFilters(filterColumns, datasetConfig.filters);
                 }
@@ -269,7 +277,7 @@
                 return "";
             },
             chartConfigValues() {
-                const dataSourceConfigValues = this.chartMetadata.dataSelectors.dataSources.map((dataSourceConfig) => {
+                const dataSourceConfigValues = this.chartMetadata.dataSelectors.dataSources.map((dataSourceConfig: DataSourceConfig) => {
                     const selections = this.dataSourceSelections[dataSourceConfig.id];
                     return {
                         selections,
@@ -277,7 +285,7 @@
                         config: dataSourceConfig,
                         columns: this.datasets[selections.datasetId]?.metadata.columns,
                         filters: this.filters[selections.datasetId],
-                        tableConfig: this.chartMetadata.datasets.find(d => d.id === selections.datasetId)?.table
+                        tableConfig: this.chartMetadata.datasets.find((d: DatasetConfig) => d.id === selections.datasetId)?.table
                     }
                 });
 
@@ -303,14 +311,6 @@
                 // support one chart type, so here we select the first config in the array
                 const chartConfig = this.chartMetadata.chartConfig[0].config;
                 const description = this.chartMetadata.chartConfig[0].description;
-
-                console.log({
-                    dataSourceConfigValues,
-                    layoutData,
-                    scrollHeight,
-                    chartConfig,
-                    description
-                })
 
                 return {
                     dataSourceConfigValues,
@@ -367,7 +367,7 @@
             },
             chartDataIsEmpty() {
                 return !this.chartData ||
-                    !Object.values(this.chartData).some(e => e.length);
+                    !Object.values(this.chartData).some((e: any) => e.length);
 
             },
             chartDataPage() {
@@ -396,7 +396,7 @@
             getDataset: mapActionByName(namespace, 'getDataset'),
             async ensureDataset(datasetId: string) {
                 if (datasetId && !this.datasets[datasetId]) {
-                    const datasetConfig = this.chartMetadata.datasets.find(dataset => dataset.id === datasetId)!;
+                    const datasetConfig = this.chartMetadata.datasets.find((dataset: DatasetConfig) => dataset.id === datasetId)!;
                     await this.getDataset({datasetId, url: datasetConfig.url});
                 }
             },

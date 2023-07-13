@@ -10,14 +10,14 @@
 </template>
 
 <script lang="ts">
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2"
+    import { defineComponent } from "vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
 
     interface Props {
         preparing: boolean,
         translateKey: string
     }
-    export default defineComponentVue2WithProps<unknown, unknown, unknown, Props>({
+    export default defineComponent({
         name: "DownloadStatus",
         components: {
             LoadingSpinner

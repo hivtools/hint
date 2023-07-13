@@ -30,7 +30,7 @@
             <div class="my-3 col-12">
                 <project-history></project-history>
             </div>
-            <error-alert v-if="hasError" :error="error"></error-alert>
+            <error-alert v-if="hasError" :error="error!"></error-alert>
         </div>
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
@@ -42,41 +42,22 @@
 <script lang="ts">
     import {mapActionByName, mapGetterByName, mapStatePropByName, mapStateProps} from "../../utils";
     import {ProjectsState} from "../../store/projects/projects";
-    import {Error} from "../../generated";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
-    import {Project} from "../../types";
     import ProjectHistory from "./ProjectHistory.vue";
     import ProjectsMixin from "./ProjectsMixin";
-    import {CreateProjectPayload} from "../../store/projects/actions";
-import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
+    import { defineComponent } from "vue";
 
     const namespace = "projects";
 
-    interface Computed {
-        currentProject: Project | null,
-        error: Error,
-        hasError: boolean,
-        isGuest: boolean,
-        disableCreate: boolean,
-        loading: boolean
-        uploadProjectName: string
-    }
-
-    interface Methods {
-        createProject: (name: CreateProjectPayload) => void,
-        getProjects: () => void,
-        handleCurrentProjectClick: (e: Event) => void
-    }
-
-    export default defineComponentVue2<unknown, Methods, Computed, typeof ProjectsMixin>({
+    export default defineComponent({
         extends: ProjectsMixin,
         computed: {
-            ...mapStateProps<ProjectsState, keyof Computed>(namespace, {
-                currentProject: state => state.currentProject,
-                error: state => state.error,
-                hasError: state => !!state.error,
-                loading: state => state.loading
+            ...mapStateProps(namespace, {
+                currentProject: (state: ProjectsState) => state.currentProject,
+                error: (state: ProjectsState) => state.error,
+                hasError: (state: ProjectsState) => !!state.error,
+                loading: (state: ProjectsState) => state.loading
             }),
             uploadProjectName: mapStatePropByName<string>("load", "projectName"),
             isGuest: mapGetterByName(null, "isGuest"),

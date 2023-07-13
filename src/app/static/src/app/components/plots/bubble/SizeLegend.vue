@@ -26,57 +26,20 @@
 </template>
 
 <script lang="ts">
-    import { defineComponentVue2WithProps } from "../../../defineComponentVue2/defineComponentVue2";
     import {LControl} from "@vue-leaflet/vue-leaflet";
     import {getRadius} from "./utils";
     import {NumericRange} from "../../../types";
-    import numeral from "numeral";
-    import {formatOutput, formatLegend, scaleStepFromMetadata} from "./../utils";
+    import {formatLegend, scaleStepFromMetadata} from "./../utils";
     import {ChoroplethIndicatorMetadata} from "../../../generated";
     import {ScaleSettings} from "../../../store/plottingSelections/plottingSelections";
     import MapAdjustScale from "../MapAdjustScale.vue";
+    import { PropType, defineComponent } from "vue";
 
-    interface Circle {
-        y: number,
-        radius: number,
-        text: string,
-        textY: number
-    }
-
-    interface Data {
-        steps: number[],
-        showAdjust: boolean
-    }
-
-    interface Props {
-        indicatorRange: NumericRange,
-        minRadius: number,
-        maxRadius: number,
-        metadata: ChoroplethIndicatorMetadata
-        sizeScale: ScaleSettings | null,
-    }
-
-    interface Computed {
-        circles: Circle[],
-        width: number,
-        height: number,
-        midX: number,
-        scaleStep: number,
-    }
-
-    interface Methods {
-        circleFromRadius: (r: number, value: number, under: boolean) => Circle,
-        valueScalePointFromRadius: (r: number) => number
-        valueFromValueScalePoint: (valueScalePoint: number) => number,
-        toggleAdjust: (e: Event) => void,
-        update: (scale: ScaleSettings) => void
-    }
-
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponent({
         name: "SizeLegend",
         props: {
             indicatorRange: {
-                type: Object,
+                type: Object as PropType<NumericRange>,
                 required: true
             },
             minRadius: {
@@ -88,11 +51,11 @@
                 required: true
             },
             metadata: {
-                type: Object,
+                type: Object as PropType<ChoroplethIndicatorMetadata>,
                 required: true
             },
             sizeScale: {
-                type: Object,
+                type: Object as PropType<ScaleSettings>,
                 required: true
             }
         },

@@ -15,23 +15,15 @@
 </template>
 
 <script lang="ts">
-    import {defineComponentVue2} from "../../defineComponentVue2/defineComponentVue2"
     import {LControl} from "@vue-leaflet/vue-leaflet";
     import {mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import VueFeather from "vue-feather";
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
+    import { defineComponent } from "vue";
 
-    interface Computed {
-        currentLanguage: Language
-    }
-
-    interface Methods {
-        tooltipContent: (tooltipValue: string) => string
-    }
-
-    export default defineComponentVue2<unknown, Methods, Computed>({
+    export default defineComponent({
         components: {
             VueFeather,
             LControl

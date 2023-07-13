@@ -27,7 +27,7 @@
             </template>
         </modal>
         <load-error-modal :has-error="hasError"
-                          :load-error="loadError"
+                          :load-error="loadError!"
                           :clear-load-error="clearLoadError"/>
 
         <upload-progress :open-modal="preparing" :cancel="cancelRehydration"/>
@@ -41,38 +41,9 @@
     import {LoadingState, LoadState} from "../../store/load/state";
     import LoadErrorModal from "./LoadErrorModal.vue";
     import ProjectsMixin from "../projects/ProjectsMixin";
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
-    import { PropType } from "vue";
+    import { PropType, defineComponent } from "vue";
 
-    interface Props {
-        openModal: boolean
-        submitLoad: () => void
-        cancelLoad: () => void
-    }
-
-    interface Data {
-        uploadProjectName: string
-    }
-
-    interface Methods {
-        cancelRehydration: () => void;
-        clearLoadError: () => void;
-        setProjectName: (name: string) => void;
-        getProjects: () => void;
-    }
-
-    interface LoadComputed {
-        loadError: string
-        hasError: boolean
-        preparing: boolean
-    }
-
-    interface Computed extends  LoadComputed{
-        disableCreate: boolean
-        isGuest: boolean
-    }
-
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponent({
         extends: ProjectsMixin,
         name: "UploadNewProject",
         props: {
@@ -81,15 +52,15 @@
                 required: true
             },
             submitLoad: {
-                type: Function as PropType<Props["submitLoad"]>,
+                type: Function as PropType<() => void>,
                 required: true
             },
             cancelLoad: {
-                type: Function as PropType<Props["cancelLoad"]>,
+                type: Function as PropType<() => void>,
                 required: true
             }
         },
-        data(): Data {
+        data() {
             return {
                 uploadProjectName: ""
             }
@@ -101,10 +72,10 @@
             getProjects: mapActionByName("projects", "getProjects")
         },
         computed: {
-            ...mapStateProps<LoadState, keyof LoadComputed>("load", {
-                hasError: state => state.loadingState === LoadingState.LoadFailed,
-                loadError: state => state.loadError && state.loadError.detail,
-                preparing: state => state.preparing
+            ...mapStateProps("load", {
+                hasError: (state: LoadState) => state.loadingState === LoadingState.LoadFailed,
+                loadError: (state: LoadState) => state.loadError && state.loadError.detail,
+                preparing: (state: LoadState) => state.preparing
             }),
             disableCreate() {
                 return !this.uploadProjectName || this.invalidName(this.uploadProjectName)

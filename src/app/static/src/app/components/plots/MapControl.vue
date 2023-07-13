@@ -32,41 +32,13 @@
 </template>
 
 <script lang="ts">
-    import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
     import HintTreeSelect from "../HintTreeSelect.vue";
     import {LControl} from "@vue-leaflet/vue-leaflet";
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {LevelLabel} from "../../types";
+    import { PropType, defineComponent } from "vue";
 
-    interface Data {
-        detail?: number;
-        optionsLoaded: boolean;
-    }
-
-    interface Props {
-        indicator?: string,
-        initialDetail?: number,
-        showIndicators: boolean,
-        indicatorsMetadata?: ChoroplethIndicatorMetadata[],
-        levelLabels: LevelLabel[]
-    }
-
-    interface Option {
-        id: any;
-        label: string;
-    }
-
-    interface Computed {
-        detailOptions: Option[]
-        indicatorOptions: Option[]
-    }
-
-    interface Methods {
-        indicatorChanged: (newVal: string) => void;
-        detailChanged: (newVal: number) => void;
-    }
-
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponent({
         name: 'MapControl',
         components: {
             HintTreeSelect,
@@ -86,15 +58,15 @@
                 required: true
             },
             indicatorsMetadata: {
-                type: Array,
+                type: Array as PropType<ChoroplethIndicatorMetadata[]>,
                 required: false
             },
             levelLabels: {
-                type: Array,
+                type: Array as PropType<LevelLabel[]>,
                 required: true
             }
         },
-        data(): Data {
+        data() {
             return {
                 optionsLoaded: false,
                 detail: this.initialDetail
@@ -102,7 +74,7 @@
         },
         computed: {
             detailOptions: function () {
-                return this.levelLabels.filter(l => l.display).map(l => {
+                return this.levelLabels.filter((l: LevelLabel) => l.display).map((l: LevelLabel) => {
                     return {id: l.id, label: l.area_level_label}
                 });
             },

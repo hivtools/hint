@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent} from 'vue';
+import {defineComponent} from 'vue';
 import UserHeader from "./header/UserHeader.vue";
 import Errors from "./Errors.vue";
 import {mapActions, mapState} from "vuex";
