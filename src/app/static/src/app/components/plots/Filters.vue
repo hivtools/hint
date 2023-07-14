@@ -7,7 +7,7 @@
                            :label="filter.label"
                            :options="filter.options"
                            :disabled="filter.options.length===0"
-                           @select="onFilterSelect(filter, $event)"></filter-select>
+                           @update:filter-select="onFilterSelect(filter, $event)"></filter-select>
         </div>
     </div>
 </template>

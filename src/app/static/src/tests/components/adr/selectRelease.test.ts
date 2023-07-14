@@ -1,4 +1,3 @@
-import {shallowMount} from "@vue/test-utils";
 import SelectRelease from "../../../app/components/adr/SelectRelease.vue";
 import Vuex from "vuex";
 import {ADRMutation} from "../../../app/store/adr/mutations";
@@ -10,6 +9,7 @@ import {Language} from "../../../app/store/translations/locales";
 import {Dataset} from "../../../app/types";
 import VueFeather from "vue-feather";
 import { nextTick } from "vue";
+import TreeSelect from "../../../app/components/TreeSelect.vue";
 
 describe("select release", () => {
 
@@ -215,56 +215,59 @@ describe("select release", () => {
 
     it("radial toggles whether release tree select is disabled", async () => {
         let store = getStore()
-        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+        const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
             }, 
         });
         await rendered.setProps({datasetId: "datasetId"})
         const select = rendered.findComponent(Treeselect);
-        expect(select.attributes("disabled")).toBe("true");
+        expect(select.props("disabled")).toBe(true);
         const selectRelease = rendered.findAll("input")[1]
         await selectRelease.trigger("change")
-        expect(select.attributes("disabled")).toBe("false");
+        expect(select.props("disabled")).toBe(false);
     });
 
     it("radial toggles automatically toggles and selects release if selectedDataset has an appropriate releaseId", () => {
         let store = getStore(releasesArray, fakeDataset)
-        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+        const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
             }, props: {datasetId: "datasetId"}
         });
         const select = rendered.findComponent(Treeselect);
-        expect(select.attributes("disabled")).toBe("true");
+        expect(select.props("disabled")).toBe(true);
         expect((rendered.vm.$data as any).releaseId).toBe("releaseId");
     });
 
     it("preselect release occurs if releases are updated", async () => {
         let store = getStore([releasesArray[1]], fakeDataset)
-        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+        const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
             }, props: {datasetId: "datasetId"}
         });
         const select = rendered.findComponent(Treeselect);
-        expect(select.attributes("disabled")).toBe("true");
+        const selectWrapper = rendered.findComponent(TreeSelect);
+        expect(select.props("disabled")).toBe(true);
         expect((rendered.vm.$data as any).releaseId).toBeUndefined();
-        store.state.adr.releases = releasesArray
+        store.state.adr.releases = releasesArray;
+        // need to manually trigger watcher to cause treeselect re-render
+        (selectWrapper.vm as any).$options.watch.modelValue.handler.call(selectWrapper.vm);
         await nextTick();
-        expect(select.attributes("disabled")).toBe("false");
+        expect(select.props("disabled")).toBe(false);
         expect((rendered.vm.$data as any).releaseId).toBe("releaseId");
     });
 
     it("does not automatically select release if no matching release and reverts to use latest", () => {
         let store = getStore([releasesArray[1]], fakeDataset)
-        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+        const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
             }, props: {datasetId: "datasetId", choiceADR: "useRelease"}
         });
         const select = rendered.findComponent(Treeselect);
-        expect(select.attributes("disabled")).toBe("true");
+        expect(select.props("disabled")).toBe(true);
         expect((rendered.vm.$data as any).releaseId).toBeUndefined();
     });
 
@@ -316,7 +319,7 @@ describe("select release", () => {
 
     it("changing datasetId clears releases and resets radial and releaseId", async () => {
         let store = getStore()
-        const rendered = shallowMountWithTranslate(SelectRelease, store, {
+        const rendered = mountWithTranslate(SelectRelease, store, {
             global: {
                 plugins: [store]
             }
@@ -331,7 +334,7 @@ describe("select release", () => {
         await rendered.setProps({datasetId: "datasetId2"})
         expect(clearReleasesMock.mock.calls.length).toBe(2);
         const select = rendered.findComponent(Treeselect);
-        expect(select.attributes("disabled")).toBe("true");
+        expect(select.props("disabled")).toBe(true);
         expect((rendered.vm.$data as any).releaseId).toBe(undefined);
         expect((rendered.vm.$data as any).choiceADR).toBe("useLatest");
     });

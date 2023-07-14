@@ -36,27 +36,27 @@
             class="font-weight-bold"
             v-translate="'releases'"
         ></label>
-        <treeselect
+        <hint-tree-select
             id="releaseSelector"
             :multiple="false"
             :searchable="true"
             :options="releaseOptions"
             :placeholder="translate('select')"
             :disabled="!useRelease"
-            v-model="releaseId"
-        >
+            :model-value="releaseId"
+            @update:model-value="newVal => releaseId = newVal">
             <template v-slot:option-label="{node}">
                 <label v-html="node.raw.customLabel">
                 </label>
             </template>
-        </treeselect>
+        </hint-tree-select>
     </div>
 </template>
 
 <script lang="ts">
     import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2"
     import { mapActionByName, mapStateProp, mapMutationByName } from "../../utils";
-    import Treeselect from "vue3-treeselect";
+    import HintTreeSelect from "../HintTreeSelect.vue";
     import { ADRState } from "../../store/adr/adr";
     import VueFeather from "vue-feather";
     import i18next from "i18next";
@@ -96,7 +96,7 @@
 
     export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         components: {
-            Treeselect,
+            HintTreeSelect,
             VueFeather,
         },
         props: {

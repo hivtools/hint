@@ -3,23 +3,23 @@
         <div class="col-md-3">
             <div id="color-indicator" class="form-group">
                 <label class="font-weight-bold" v-translate="'colorIndicator'"></label>
-                <treeselect :multiple=false
+                <hint-tree-select :multiple=false
                             :clearable="false"
                             :options="indicators"
-                            :modelValue="selections.colorIndicatorId"
+                            :model-value="selections.colorIndicatorId"
                             :normalizer="normalizeIndicators"
-                            @update:modelValue="onColorIndicatorSelect($event)">
-                </treeselect>
+                            @update:model-value="onColorIndicatorSelect($event)">
+                </hint-tree-select>
             </div>
             <div id="size-indicator" class="form-group">
                 <label class="font-weight-bold" v-translate="'sizeIndicator'"></label>
-                <treeselect :multiple=false
+                <hint-tree-select :multiple=false
                             :clearable="false"
                             :options="indicators"
-                            :modelValue="selections.sizeIndicatorId"
+                            :model-value="selections.sizeIndicatorId"
                             :normalizer="normalizeIndicators"
-                            @update:modelValue="onSizeIndicatorSelect($event)">
-                </treeselect>
+                            @update:model-value="onSizeIndicatorSelect($event)">
+                </hint-tree-select>
             </div>
             <h4 v-translate="'filters'"></h4>
             <div id="area-filter" class="form-group">
@@ -27,7 +27,7 @@
                                :multiple="true"
                                :options="areaFilterOptions"
                                :value="getSelectedFilterValues('area')"
-                               @select="onFilterSelect(areaFilter, $event)">
+                               @update:filter-select="onFilterSelect(areaFilter, $event)">
                 </filter-select>
             </div>
             <div :id="'filter-' + filter.id" v-for="filter in nonAreaFilters" :key="filter.id" class="form-group">
@@ -35,7 +35,7 @@
                                :multiple="false"
                                :label="filter.label"
                                :options="filter.options"
-                               @select="onFilterSelect(filter, $event)"></filter-select>
+                               @update:filter-select="onFilterSelect(filter, $event)"></filter-select>
             </div>
         </div>
         <div id="chart" class="col-md-9">
@@ -75,7 +75,7 @@
 
 <script lang="ts">
     import {defineComponentVue2WithProps} from "../../../defineComponentVue2/defineComponentVue2"
-    import Treeselect from "vue3-treeselect";
+    import HintTreeSelect from "../../HintTreeSelect.vue";
     import {Feature} from "geojson";
     import {LGeoJson, LMap} from "@vue-leaflet/vue-leaflet";
     import MapControl from "../MapControl.vue";
@@ -173,7 +173,7 @@
             MapLegend,
             SizeLegend,
             FilterSelect,
-            Treeselect,
+            HintTreeSelect,
             MapEmptyFeature,
             ResetMap
         },
