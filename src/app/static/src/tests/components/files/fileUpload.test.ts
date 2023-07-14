@@ -103,9 +103,8 @@ describe("File upload component", () => {
             upload: uploader
         });
 
-        const testFileLocal = new File(["TEST FILE CONTENTS"], "TEST FILE NAME");
-
-        (wrapper.vm as any).uploadSelectedFile(testFileLocal)
+        jest.spyOn((wrapper.vm.$refs as any).pjnz, "files", "get").mockImplementation(() => [testFile]);
+        await wrapper.find("input").trigger("change");
 
         await nextTick();
 
