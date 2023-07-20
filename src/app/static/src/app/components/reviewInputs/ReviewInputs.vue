@@ -21,13 +21,13 @@
                 <div :class="showChoropleth ? 'col-md-3' : 'col-sm-6 col-md-8'" class="upload-section">
                     <div v-if="showChoropleth" id="data-source" class="form-group">
                         <h4 id="data-source-header" v-translate="'dataSource'"></h4>
-                        <treeselect
+                        <hint-tree-select
                                 :multiple="false"
                                 :clearable="false"
                                 :options="dataSourceOptions"
                                 :model-value="selectedDataType"
                                 @update:model-value="selectDataSource">
-                        </treeselect>
+                        </hint-tree-select>
                     </div>
                     <filters v-if="showChoropleth"
                             :filters="filters"
@@ -46,7 +46,7 @@
                                 :round-format-output="false"
                                 :area-filter-id="areaFilterId"
                                 :colour-scales="selectedSAPColourScales"
-                                @update="updateChoroplethSelections({payload: $event})"
+                                @update:selections="updateChoroplethSelections({payload: $event})"
                                 @update-colour-scales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
                     <div>
                         <area-indicators-table :table-data="data"
@@ -73,7 +73,7 @@
 </template>
 
 <script lang="ts">
-    import Treeselect from "vue3-treeselect";
+    import HintTreeSelect from "../HintTreeSelect.vue";
     import i18next from "i18next";
     import {mapGetters, mapMutations, mapState} from "vuex";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
@@ -142,7 +142,7 @@
         updateChoroplethSelections: (data: {payload: Partial<ChoroplethSelections>}) => void,
         updateSAPColourScales: (data: {payload: [DataType, ScaleSelections]}) => void,
         selectDataType: (payload: DataType) => void,
-        selectDataSource: (option: FilterOption) => void,
+        selectDataSource: (option: string) => void,
         selectTab: (tab: Tab) => void
     }
 
@@ -219,8 +219,8 @@
                 updateSAPColourScales: "plottingSelections/updateSAPColourScales",
             }),
             selectDataType: mapActionByName(namespace, "selectDataType"),
-            selectDataSource: function(option: FilterOption) {
-                this.selectDataType(parseInt(option.id))
+            selectDataSource: function(option: string) {
+                this.selectDataType(parseInt(option))
             },
             selectTab: function(tab: Tab) {
                 this.selectedTab = tab
@@ -230,12 +230,8 @@
             Choropleth,
             Filters,
             AreaIndicatorsTable,
-            Treeselect,
+            HintTreeSelect,
             GenericChart
-        },
-        // TODO choropleth map doesn't show up because this doesn't get set for some reason! need to fix
-        beforeMount() {
-            this.selectDataSource({label: "whatever", id: "1"});
-        },
+        }
     })
 </script>

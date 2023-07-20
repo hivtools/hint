@@ -6,24 +6,24 @@
                     <label class="col-3 col-form-label" v-translate="'indicator'">
                     </label>
                     <div class="col">
-                        <treeselect  :modelValue="indicator"
+                        <hint-tree-select :model-value="indicator"
                                      :multiple="false"
                                      :clearable="false"
                                      :searchable="false"
                                      :options="indicatorOptions"
-                                     @update:modelValue="indicatorChanged"></treeselect>
+                                     @update:model-value="indicatorChanged"></hint-tree-select>
                     </div>
                 </div>
                 <div class="row form-group">
                     <label class="col-3 col-form-label" v-translate="'detail'">
                     </label>
                     <div class="col">
-                        <treeselect  :modelValue="detail"
+                        <hint-tree-select :model-value="detail"
                                      :multiple="false"
                                      :clearable="false"
                                      :searchable="false"
                                      :options="detailOptions"
-                                     @update:modelValue="detailChanged"></treeselect>
+                                     @update:model-value="detailChanged"></hint-tree-select>
                     </div>
                 </div>
             </form>
@@ -33,7 +33,7 @@
 
 <script lang="ts">
     import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
-    import Treeselect from "vue3-treeselect"
+    import HintTreeSelect from "../HintTreeSelect.vue";
     import {LControl} from "@vue-leaflet/vue-leaflet";
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {LevelLabel} from "../../types";
@@ -69,7 +69,7 @@
     export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
         name: 'MapControl',
         components: {
-            Treeselect,
+            HintTreeSelect,
             LControl
         },
         props: {
