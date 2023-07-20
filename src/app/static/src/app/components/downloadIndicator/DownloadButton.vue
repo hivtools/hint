@@ -1,8 +1,7 @@
 <template>
-    <div id="download-button">
+    <div id="download-button" class="d-inline-block">
         <button class="btn btn-sm mt-2" :class="disabled ? 'btn-secondary' : 'btn-red'"
-                :disabled="disabled"
-                @click="download">
+                :disabled="disabled">
             <span v-translate="name"></span>
             <vue-feather type="download" size="20" class="icon ml-2"></vue-feather>
         </button>
@@ -18,11 +17,7 @@
         name: string
     }
 
-    interface Method {
-        download: () => void
-    }
-
-    export default defineComponentVue2WithProps<unknown, Method, unknown, Props>({
+    export default defineComponentVue2WithProps<unknown, unknown, unknown, Props>({
         name: "downloadButton",
         components: {
             VueFeather
@@ -35,11 +30,6 @@
             disabled: {
                 type: Boolean,
                 required: true
-            }
-        },
-        methods: {
-            download() {
-                this.$emit("trigger-download")
             }
         }
     });

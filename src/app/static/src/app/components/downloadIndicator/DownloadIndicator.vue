@@ -3,7 +3,7 @@
         <download-button
             :name="'downloadIndicator'"
             :disabled="downloadingIndicator"
-            @trigger-download="download"></download-button>
+            @click="download"></download-button>
     </div>
 </template>
 
