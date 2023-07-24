@@ -256,8 +256,6 @@ describe("Project history component", () => {
         await expectTranslated(headers[7], "Copy to", "Copier", "Copiar para", store);
         await expectTranslated(headers[8], "Share", "Partager", "Partilhar", store);
 
-        // expect(true).toBe(false)
-        // TODO fix this
         testRendersProject(wrapper, 1, "proj1", isoDates[1], 2);
         const proj1Versions = wrapper.find("#versions-1");
         const proj1VersionRows = proj1Versions.findAll(".row");
