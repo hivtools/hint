@@ -4,7 +4,10 @@
                 :disabled="disabled"
                 @click="download">
             <span v-translate="name"></span>
-            <vue-feather type="download" size="20" class="icon ml-2"></vue-feather>
+            <vue-feather type="download"
+                         size="20"
+                         class="icon ml-2"
+                         style="vertical-align: middle;"></vue-feather>
         </button>
     </div>
 </template>

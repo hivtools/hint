@@ -9,9 +9,9 @@
                       :complete="isComplete(step.number)"
                       @jump="jump">
                 </step>
-                <div class="col step-connector" v-if="step.number < steps.length"
-                     :key="step.number + 'conn'"
-                     :class="[{'enabled': isEnabled(step.number + 1)}]">
+                <div class="col step-connector mt-2" v-if="step.number < steps.length"
+                    :key="step.number + 'conn'"
+                    :class="[{'enabled': isEnabled(step.number + 1)}]">
                     <hr/>
                 </div>
             </template>
