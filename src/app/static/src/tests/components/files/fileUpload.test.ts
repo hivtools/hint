@@ -11,16 +11,6 @@ import {expectTranslatedWithStoreType, mountWithTranslate, shallowMountWithTrans
 import {DataExplorationState, initialDataExplorationState} from "../../../app/store/dataExploration/dataExploration";
 
 describe("File upload component", () => {
-
-    // @ts-ignore
-    global.File = class MockFile {
-        filename: string;
-        constructor(parts: (string | Blob | ArrayBuffer | ArrayBufferView)[], filename: string, properties ? : FilePropertyBag) {
-          this.filename = filename;
-        }
-    }
-
-    // @ts-ignore
     global.FormData = class MockFormData {
         files: Record<string, File>;
         constructor(key?: string, file?: File) {
@@ -32,7 +22,7 @@ describe("File upload component", () => {
         get(key: string) {
             return this.files[key]
         }
-    }
+    } as any
 
     const createStore = (state = initialDataExplorationState(), requireConfirmation = false) => {
         const store = new Vuex.Store({
