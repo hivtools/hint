@@ -3,31 +3,25 @@
 </template>
 
 <script lang="ts">
-import {Bar} from 'vue-chartjs'
-// import ErrorBarsPlugin from 'chartjs-plugin-error-bars';
+import {Bar} from 'vue-chartjs';
 import {BarChartData} from "./utils";
-import { ChartDataSetsWithErrors } from "./types"
-import { PropType, defineComponent } from 'vue';
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
-
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
-// interface Props {
-//     [key:string]: any
-//     chartData: BarChartData
-//     xLabel: string
-//     yLabel: string
-//     yFormat: (value: number | string) => string
-//     showErrors: boolean
-// }
-
-// interface Methods {
-//     [key:string]: any
-//     updateRender(): void
-// }
+import { ChartDataSetsWithErrors } from "./types";
+import { PropType, defineComponent, shallowReadonly } from 'vue';
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
+import annotationPlugin from "chartjs-plugin-annotation";
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, annotationPlugin);
 
 export default defineComponent({
     components: {
         Bar
+    },
+    data() {
+        const showLabelErrorBars = this.chartData.datasets!.map(() => true);
+        return {
+            displayErrorBars: true,
+            errorBarTimeout: null as any,
+            showLabelErrorBars
+        }
     },
     props: {
         chartData: {
@@ -50,179 +44,231 @@ export default defineComponent({
             type: Boolean,
             required: true
         },
+        showErrorBars: {
+            type: Boolean,
+            required: false,
+            default: false
+        }
     },
     computed: {
+        chartDatasetLabels() {
+            return JSON.stringify(this.chartData.datasets.map(x => x.label))
+        },
         chartOptions() {
             const formatCallback = this.yFormat || ((value: number | string) => value);
-            return {
-                // scales: {
-                //     yAxes: [{
-                //         scaleLabel: {
-                //             display: true,
-                //             labelString: this.yLabel
-                //         },
-                //         ticks: {
-                //             suggestedMax: this.chartData.maxValuePlusError,
-                //             beginAtZero: true,
-                //             // callback: formatCallback
-                //         }
-                //     }],
-                //     xAxes: [{
-                //         scaleLabel: {
-                //             display: true,
-                //             labelString: this.xLabel
-                //         }
-                //     }]
-                // },
-                legend: {
-                    position: "right",
-                },
-                tooltips: {
-                    callbacks: {
-                        label: (tooltipItem: any, data: any) => {
-                            let label = ((typeof tooltipItem.datasetIndex !== "undefined") && data.datasets && data.datasets[tooltipItem.datasetIndex].label)
-                                            || '';
-                            if (label) {
-                                label += ': ';
-                            }
+            const chartData = this.chartData as any;
+            const datasets = chartData.datasets as any[];
 
-                            if (tooltipItem.yLabel) {
-                                label += formatCallback(tooltipItem.yLabel);
-                            }
+            if (this.showErrorBars) {
+                const errorLines = [] as any[];
+                const visibleDatasetIndices = this.showLabelErrorBars.reduce(
+                    (out: number[], bool: boolean, index: number) => bool ? out.concat(index) : out, 
+                    []
+                );
+                const numOfDatasets = this.showLabelErrorBars.filter(x => x).length;
+                const numOfLabels = chartData.labels.length;
+                const numOfBars = numOfDatasets * numOfLabels;
+                const barPercentage = 0.8;
+                const barWidth = barPercentage/(numOfDatasets * 2);
+                const errorBarWeight = 1;
+                visibleDatasetIndices.forEach((datasetId, indexDataset) => {
+                    const dataset = datasets[datasetId];
+                    if (!dataset) {
+                        return
+                    }
+                    const errorBarData = dataset.errorBars;
+                    const label = dataset.label;
+                    Object.keys(errorBarData).forEach((xLabel) => {
+                        const labelIndex = chartData.labels.indexOf(xLabel)
+                        const barMidPoint = labelIndex - barPercentage/2 + barWidth * (indexDataset * 2 + 1);
+                        const errorBarWidth = (numOfBars/(numOfBars + 10)) * barWidth * 0.3;
+                        if (errorBarData[xLabel].minus && errorBarData[xLabel].plus) {
+                            const config = [
+                                {
+                                    drawTime: "afterDraw",
+                                    type: "line",
+                                    label: {
+                                        content: label
+                                    },
+                                    display: this.displayErrorBars,
+                                    xMin: barMidPoint,
+                                    xMax: barMidPoint,
+                                    yMin: errorBarData[xLabel].minus,
+                                    yMax: errorBarData[xLabel].plus,
+                                    borderWidth: errorBarWeight
+                                },
+                                {
+                                    drawTime: "afterDraw",
+                                    type: "line",
+                                    label: {
+                                        content: label
+                                    },
+                                    display: this.displayErrorBars,
+                                    xMin: barMidPoint - errorBarWidth,
+                                    xMax: barMidPoint + errorBarWidth,
+                                    yMin: errorBarData[xLabel].plus,
+                                    yMax: errorBarData[xLabel].plus,
+                                    borderWidth: errorBarWeight
+                                },
+                                {
+                                    drawTime: "afterDraw",
+                                    type: "line",
+                                    label: {
+                                        content: label
+                                    },
+                                    display: this.displayErrorBars,
+                                    xMin: barMidPoint - errorBarWidth,
+                                    xMax: barMidPoint + errorBarWidth,
+                                    yMin: errorBarData[xLabel].minus,
+                                    yMax: errorBarData[xLabel].minus,
+                                    borderWidth: errorBarWeight
+                                },
+                            ];
+                            errorLines.push(...config);
+                        }
+                    })
+                });
 
-                            let minus = null
-                            let plus = null
+                const customLegendClick = (e: Event, legendItem: any, legend: any) => {
+                    const index = legendItem.datasetIndex;
+                    const ci = legend.chart;
+                    if (ci.isDatasetVisible(index)) {
+                        this.showLabelErrorBars[index] = false;
+                        setTimeout(() => {
+                            ci.hide(index);
+                        }, 50)
+                        legendItem.hidden = true;
+                    } else {
+                        this.showLabelErrorBars[index] = true;
+                        setTimeout(() => {
+                            ci.show(index);
+                        }, 50)
+                        legendItem.hidden = false;
+                    }
+                }
 
-                            if (this.showErrors && tooltipItem.xLabel && typeof tooltipItem.datasetIndex !== "undefined" && data.datasets && data.datasets[tooltipItem.datasetIndex]) {
-                                const errorBars = (data.datasets[tooltipItem.datasetIndex] as ChartDataSetsWithErrors).errorBars
-                                const xLabelErrorBars = errorBars ? errorBars[tooltipItem.xLabel] : null
-                                if (xLabelErrorBars) {
-                                    minus = xLabelErrorBars.minus
-                                    plus = xLabelErrorBars.plus
+                return {
+                    tooltips: {
+                        callbacks: {
+                            label: (tooltipItem: any, data: any) => {
+                                let label = ((typeof tooltipItem.datasetIndex !== "undefined") && data.datasets && data.datasets[tooltipItem.datasetIndex].label)
+                                                || '';
+                                if (label) {
+                                    label += ': ';
                                 }
+    
+                                if (tooltipItem.yLabel) {
+                                    label += formatCallback(tooltipItem.yLabel);
+                                }
+    
+                                let minus = null
+                                let plus = null
+    
+                                if (this.showErrors && tooltipItem.xLabel && typeof tooltipItem.datasetIndex !== "undefined" && data.datasets && data.datasets[tooltipItem.datasetIndex]) {
+                                    const errorBars = (data.datasets[tooltipItem.datasetIndex] as ChartDataSetsWithErrors).errorBars
+                                    const xLabelErrorBars = errorBars ? errorBars[tooltipItem.xLabel] : null
+                                    if (xLabelErrorBars) {
+                                        minus = xLabelErrorBars.minus
+                                        plus = xLabelErrorBars.plus
+                                    }
+                                }
+    
+                                if ((typeof minus === "number") && (typeof plus === "number")) {
+                                    label = `${label} (${formatCallback(minus)} - ${formatCallback(plus)})`
+                                }
+    
+                                return label;
                             }
-
-                            if ((typeof minus === "number") && (typeof plus === "number")) {
-                                label = `${label} (${formatCallback(minus)} - ${formatCallback(plus)})`
-                            }
-
-                            return label;
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        annotation: {
+                            annotations: errorLines
+                        },
+                        legend: {
+                            onClick: customLegendClick
+                        }
+                    },
+                    scales: {
+                        y: {
+                            max: this.chartData.maxValuePlusError * 1.1
                         }
                     }
-                },
-                responsive: true,
-                maintainAspectRatio: false,
-                // plugins: {
-                //     chartJsPluginErrorBars: {
-                //         color: '#000',
-                //         width: '2px',
-                //         lineWidth: '2px',
-                //         absoluteValues: true
-                //     }
-                // }
+                }
+            } else {
+                return {
+                    tooltips: {
+                        callbacks: {
+                            label: (tooltipItem: any, data: any) => {
+                                let label = ((typeof tooltipItem.datasetIndex !== "undefined") && data.datasets && data.datasets[tooltipItem.datasetIndex].label)
+                                                || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+    
+                                if (tooltipItem.yLabel) {
+                                    label += formatCallback(tooltipItem.yLabel);
+                                }
+    
+                                let minus = null
+                                let plus = null
+    
+                                if (this.showErrors && tooltipItem.xLabel && typeof tooltipItem.datasetIndex !== "undefined" && data.datasets && data.datasets[tooltipItem.datasetIndex]) {
+                                    const errorBars = (data.datasets[tooltipItem.datasetIndex] as ChartDataSetsWithErrors).errorBars
+                                    const xLabelErrorBars = errorBars ? errorBars[tooltipItem.xLabel] : null
+                                    if (xLabelErrorBars) {
+                                        minus = xLabelErrorBars.minus
+                                        plus = xLabelErrorBars.plus
+                                    }
+                                }
+    
+                                if ((typeof minus === "number") && (typeof plus === "number")) {
+                                    label = `${label} (${formatCallback(minus)} - ${formatCallback(plus)})`
+                                }
+    
+                                return label;
+                            }
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
             }
         }
+    },
+    watch: {
+        chartData: {
+            handler: function(newVal, oldVal) {
+                this.displayErrorBars = false;
+                if (this.errorBarTimeout) {
+                    window.clearTimeout(this.errorBarTimeout)
+                }
+                this.errorBarTimeout = setTimeout(() => {
+                    this.displayErrorBars = true
+                }, 900)
+            },
+            deep: true
+        },
+        chartDatasetLabels: {
+            handler: function(newVal, oldVal) {
+                console.log(this.chartDatasetLabels)
+                this.showLabelErrorBars = this.chartData.datasets!.map(() => true)
+            }
+        },
+        showLabelErrorBars: {
+            handler: function(newVal, oldVal) {
+                this.displayErrorBars = false;
+                if (this.errorBarTimeout) {
+                    window.clearTimeout(this.errorBarTimeout)
+                }
+                this.errorBarTimeout = setTimeout(() => {
+                    this.displayErrorBars = true
+                }, 1050)
+            },
+            deep: true
+        }        
     }
 })
-
-// @Component
-// export default class BarChartWithErrors extends mixins(Bar) {
-
-//     @Prop()
-//     chartData!: BarChartData;
-
-//     @Prop()
-//     xLabel!: string;
-
-//     @Prop()
-//     yLabel!: string;
-
-//     @Prop()
-//     yFormat!: (value: number | string) => string;
-
-//     @Prop()
-//     showErrors!: boolean;
-
-    // updateRender() {
-    //     (this as any).addPlugin(ErrorBarsPlugin);
-
-    //     const formatCallback = this.yFormat || ((value: number | string) => value);
-    //     (this as any).renderChart(this.chartData, {
-    //         scales: {
-    //             yAxes: [{
-    //                 scaleLabel: {
-    //                     display: true,
-    //                     labelString: this.yLabel
-    //                 },
-    //                 ticks: {
-    //                     suggestedMax: this.chartData.maxValuePlusError,
-    //                     beginAtZero: true,
-    //                     callback: formatCallback
-    //                 }
-    //             }],
-    //             xAxes: [{
-    //                 scaleLabel: {
-    //                     display: true,
-    //                     labelString: this.xLabel
-    //                 }
-    //             }]
-    //         },
-    //         legend: {
-    //             position: "right",
-    //         },
-    //         tooltips: {
-    //             callbacks: {
-    //                 label: (tooltipItem, data) => {
-    //                     let label = ((typeof tooltipItem.datasetIndex !== "undefined") && data.datasets && data.datasets[tooltipItem.datasetIndex].label)
-    //                                     || '';
-    //                     if (label) {
-    //                         label += ': ';
-    //                     }
-
-    //                     if (tooltipItem.yLabel) {
-    //                         label += formatCallback(tooltipItem.yLabel);
-    //                     }
-
-    //                     let minus = null
-    //                     let plus = null
-
-    //                     if (this.showErrors && tooltipItem.xLabel && typeof tooltipItem.datasetIndex !== "undefined" && data.datasets && data.datasets[tooltipItem.datasetIndex]) {
-    //                         const errorBars = (data.datasets[tooltipItem.datasetIndex] as ChartDataSetsWithErrors).errorBars
-    //                         const xLabelErrorBars = errorBars ? errorBars[tooltipItem.xLabel] : null
-    //                         if (xLabelErrorBars) {
-    //                             minus = xLabelErrorBars.minus
-    //                             plus = xLabelErrorBars.plus
-    //                         }
-    //                     }
-
-    //                     if ((typeof minus === "number") && (typeof plus === "number")) {
-    //                         label = `${label} (${formatCallback(minus)} - ${formatCallback(plus)})`
-    //                     }
-
-    //                     return label;
-    //                 }
-    //             }
-    //         },
-    //         responsive: true,
-    //         maintainAspectRatio: false,
-    //         plugins: {
-    //             chartJsPluginErrorBars: {
-    //                 color: '#000',
-    //                 width: '2px',
-    //                 lineWidth: '2px',
-    //                 absoluteValues: true
-    //             }
-    //         }
-    //     })
-    // }
-
-//     mounted() {
-//         this.updateRender();
-//     }
-
-//     @Watch("chartData")
-//     chartDataChanged() {
-//         this.updateRender();
-//     }
-// };
 </script>

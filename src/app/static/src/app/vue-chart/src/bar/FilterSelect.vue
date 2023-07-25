@@ -2,13 +2,14 @@
     <div>
         <label class="font-weight-bold">{{label}}</label>
         <hint-tree-select :instanceId="id"
-                     :multiple=isXAxisOrDisagg
+                     :multiple="isXAxisOrDisagg"
                      :clearable="false"
-                     :flat=isXAxisOrDisagg
+                     :flat="isXAxisOrDisagg"
                      :options="options"
                      :model-value="selectedValues"
                      @select="select"
-                     @deselect="deselect"></hint-tree-select>
+                     @deselect="deselect"
+                     :key="`${isXAxisOrDisagg}`"></hint-tree-select>
         <span v-if="isXAxisOrDisagg" class="text-muted">
                         <small>{{badge}}</small>
                     </span>
@@ -85,11 +86,11 @@
                 } else {
                     this.selected.push(node);
                 }
-                this.$emit("input", this.selected);
+                this.$emit("update:filter-select", this.selected);
             },
             deselect(node: FilterOption) {
                 this.selected = this.selected.filter((n: any) => n.id != node.id);
-                this.$emit("input", this.selected);
+                this.$emit("update:filter-select", this.selected);
             }
         },
         computed: {
@@ -101,7 +102,7 @@
             },
             badge() {
                 if (this.isXAxis) {
-                    return ("x axis");
+                    return "x axis";
                 } else {
                     return "disaggregate by"
                 }
@@ -120,7 +121,7 @@
                     if (this.selected.length == 0) {
                         this.selected.push(this.options[0]);
                     }
-                    this.$emit("input", this.selected);
+                    this.$emit("update:filter-select", this.selected);
                 }
             }
         },

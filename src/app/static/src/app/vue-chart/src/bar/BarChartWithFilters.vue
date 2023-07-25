@@ -39,7 +39,7 @@
                         :is-x-axis="filter.id === selections.xAxisId"
                         :label="filter.label"
                         :options="filter.options"
-                        @input="changeFilter(filter.id, $event)"></filter-select>
+                        @update:filter-select="changeFilter(filter.id, $event)"></filter-select>
                     </div>
                 </div>
             </template>
@@ -52,6 +52,7 @@
                         :yLabel="indicatorLabel"
                         :yFormat="formatValueFunction"
                         :show-errors="showRangesInTooltips"
+                        :show-error-bars="showErrorBars"
                         style="width: 100%; height: 100%;"></bar-chart-with-errors>
                 <div v-if="showNoDataMessage" id="noDataMessage" class="px-3 py-2 noDataMessage">
                     <span class="lead">
@@ -169,6 +170,11 @@
                 type: String as PropType<string | null>,
                 required: false,
                 default: null
+            },
+            showErrorBars: {
+                type: Boolean,
+                required: false,
+                default: false
             }
         },
         computed: {

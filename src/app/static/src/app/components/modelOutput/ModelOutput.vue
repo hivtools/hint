@@ -49,6 +49,7 @@
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
                     :no-data-message="noChartData"
+                    :show-error-bars="true"
                     @update:selections="updateBarchartSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
@@ -98,6 +99,7 @@
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
                     :no-data-message="noChartData"
+                    :show-error-bars="true"
                     @update:selections="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
