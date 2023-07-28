@@ -4,7 +4,7 @@
             <div class="col-sm">
                 <div id="spectrum-download">
                     <download :translate-key="translation.spectrum"
-                              @click="downloadSpectrumOutput"
+                              @trigger-download="downloadSpectrumOutput"
                               :disabled="!spectrum.downloadId || spectrum.preparing"
                               :file="spectrum"/>
                     <div class="pb-2">
@@ -13,7 +13,7 @@
                 </div>
                 <div id="coarse-output-download">
                     <download :translate-key="translation.coarse"
-                              @click="downloadCoarseOutput"
+                              @trigger-download="downloadCoarseOutput"
                               :disabled="!coarseOutput.downloadId || coarseOutput.preparing"
                               :file="coarseOutput"/>
                     <div class="pb-2">
@@ -22,7 +22,7 @@
                 </div>
                 <div id="summary-download">
                     <download :translate-key="translation.summary"
-                              @click="downloadSummaryReport"
+                              @trigger-download="downloadSummaryReport"
                               :disabled="!summary.downloadId || summary.preparing"
                               :file="summary"/>
                     <div class="pb-2">
@@ -31,7 +31,7 @@
                 </div>
                 <div id="comparison-download" v-if="comparisonSwitch">
                     <download :translate-key="translation.comparison"
-                              @click="downloadComparisonReport"
+                              @trigger-download="downloadComparisonReport"
                               :disabled="!comparison.downloadId || comparison.preparing"
                               :file="comparison"/>
                     <error-alert v-if="comparison.downloadError" :error="comparison.downloadError"></error-alert>
