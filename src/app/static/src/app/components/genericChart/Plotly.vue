@@ -90,10 +90,9 @@ import { StyleValue } from "vue";
             drawChart: async function() {
                 this.rendering = true;
                 const el = this.$refs.chart;
-                const drawFunc = Plotly.react;
+                const drawFunc = this.layoutRequired ? Plotly.newPlot : Plotly.react;
                 this.layoutRequired = false;
-                const dataScatterGL = this.data.data.map((data: any) => {return {...data, type: "scattergl"}})
-                await drawFunc(el as HTMLElement, dataScatterGL, this.data.layout, {...this.data.config as any});
+                await drawFunc(el as HTMLElement, this.data.data as any, this.data.layout, {...this.data.config as any});
                 this.rendering = false;
             }
         },
