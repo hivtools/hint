@@ -323,7 +323,7 @@ describe("File menu", () => {
                             }
                         }
                     })]
-                }
+                },
             });
 
         const spy = jest.spyOn((wrapper.vm as any), "clearLoadZipInput")
@@ -647,22 +647,7 @@ const openUploadNewProject = async (store: Store<any>, inputId= "#upload-file", 
 }
 
 const triggerSelectFile = async (wrapper: VueWrapper, testFile: File, id: string) => {
-    // const vm = wrapper.vm;
     const input = wrapper.find(id);
-
-    jest.spyOn((wrapper.vm as any), "getZip").mockImplementation(() => [testFile]);
-
-    //Can't programmatically construct a FileList to give to the real rendered input element, so we need to trick
-    //the component with a mocked ref
-    // if (testFile.type == "application/zip") {
-        // (vm.$refs as any).loadZip = {
-        //     files: [testFile]
-        // };
-    // } else if (testFile.type == "application/json") {
-    //     (vm.$refs as any).loadJson = {
-    //         files: [testFile]
-    //     };
-    // }
-
+    jest.spyOn((wrapper.vm.$refs as any).loadZip, "files", "get").mockImplementation(() => [testFile]);
     await input.trigger("change");
 };
