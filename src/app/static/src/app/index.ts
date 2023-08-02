@@ -44,9 +44,6 @@ const getApp = () => {
         app.config.globalProperties.$store = store;
 
         app.mount('#app');
-        // TODO dis-disable warnings after most of the warnings have been fixed
-        // TODO comment this warn handler out if you dare
-        // app.config.warnHandler = () => null;
 
         return app
     } else if (mountElDataExploration) {
@@ -58,9 +55,6 @@ const getApp = () => {
         app.directive("translate", translate(storeDataExploration));
         
         app.mount('#dataExplorationApp');
-        // TODO dis-disable warnings after most of the warnings have been fixed
-        // TODO comment this warn handler out if you dare
-        // app.config.warnHandler = () => null;
         
         return app
     } else if (mountElForgotPassword) {

@@ -93,7 +93,6 @@ import { StyleValue } from "vue";
                 const drawFunc = Plotly.react;
                 this.layoutRequired = false;
                 const dataScatterGL = this.data.data.map((data: any) => {return {...data, type: "scattergl"}})
-                console.log(dataScatterGL)
                 await drawFunc(el as HTMLElement, dataScatterGL, this.data.layout, {...this.data.config as any});
                 this.rendering = false;
             }

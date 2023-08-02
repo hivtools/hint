@@ -180,7 +180,7 @@ localStorageManager.deleteState(true); //Clear state in other mode if it exists
 const existingState = localStorageManager.getState(false);
 
 export const storeOptions: StoreOptions<RootState> = {
-    state: {...emptyState(), ...existingState} as RootState,
+    state: {...emptyState(), ...existingState},
     modules: {
         adr,
         genericChart,

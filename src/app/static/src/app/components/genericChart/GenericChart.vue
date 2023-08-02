@@ -304,14 +304,6 @@
                 const chartConfig = this.chartMetadata.chartConfig[0].config;
                 const description = this.chartMetadata.chartConfig[0].description;
 
-                console.log({
-                    dataSourceConfigValues,
-                    layoutData,
-                    scrollHeight,
-                    chartConfig,
-                    description
-                })
-
                 return {
                     dataSourceConfigValues,
                     layoutData,

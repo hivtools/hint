@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex">
-        <div v-if="selectedDataset" style="margin-top: 8px;">
+        <div v-if="selectedDataset" style="margin-top: 8px">
             <span class="font-weight-bold"
                   v-translate="'selectedDataset'"
                   id="selectedDatasetSpan"
