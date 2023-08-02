@@ -5,7 +5,6 @@ declare module "*.vue" {
   export default component;
 }
 
-declare module '@m-kusumgar/vue3-treeselect';
 declare module "vue-feather";
 
 //export {}  // Important! See note.
