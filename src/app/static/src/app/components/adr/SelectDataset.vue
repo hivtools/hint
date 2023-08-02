@@ -1,10 +1,9 @@
 <template>
     <div class="d-flex">
-        <div v-if="selectedDataset" style="margin-top: 8px;">
-            <span class="font-weight-bold"
+        <div v-if="selectedDataset" class="mt-2">
+            <span class="font-weight-bold mr-1"
                   v-translate="'selectedDataset'"
-                  id="selectedDatasetSpan"
-                  style="margin-right: 4px;">
+                  id="selectedDatasetSpan">
             </span>
             <a v-if="releaseName" :href="releaseURL" target="_blank">
                 {{ selectedDataset.title }} — {{ releaseName }}

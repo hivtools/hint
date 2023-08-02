@@ -2,7 +2,8 @@
     <div class="form-group">
         <label class="font-weight-bold mb-0" v-translate="label"></label>
         <span id="required" v-if="required"
-              style="font-size: small; margin-left: 4px;"
+              class="ml-1"
+              style="font-size: small;"
               :class="existingFileName? '': 'text-danger'">(<span v-translate="'required'"></span>)
         </span>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
