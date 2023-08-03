@@ -2,8 +2,8 @@ FROM mrcide/node-docker:master
 
 RUN apt-get install wget
 
-RUN wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add -
-RUN add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
+RUN wget -qO - https://packages.adoptium.net/artifactory/api/gpg/key/public | apt-key add -
+RUN add-apt-repository --yes https://packages.adoptium.net/artifactory/deb/
 RUN apt-get update
 RUN apt-get install adoptopenjdk-11-hotspot -y
 
