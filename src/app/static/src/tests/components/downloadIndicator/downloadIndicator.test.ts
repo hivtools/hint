@@ -75,7 +75,7 @@ describe("download indicator", () => {
         const button = downloadButton.find("button");
         expect(button.element.disabled).toBe(false);
         downloadButton.vm.$emit("trigger-download");
-        await expect(mockDownloadFileActions).toHaveBeenCalledTimes(1)
+        expect(mockDownloadFileActions).toHaveBeenCalledTimes(1)
 
         const filename = mockDownloadFileActions.mock.calls[0][1].filename
         expect(filename.split(".")[0]).toContain("MWI_naomi_data-review_")
