@@ -1,6 +1,6 @@
-import {flushPromises, shallowMount} from '@vue/test-utils';
+import {shallowMount} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
-import Vue, { nextTick } from 'vue';
+import { nextTick } from 'vue';
 import {
     mockAxios,
     mockError,
@@ -404,6 +404,7 @@ describe("Model run component", () => {
         });
         expectTranslated(wrapper.find("#model-run-complete"), "Model fitting complete",
             "Ajustement du modèle terminé", "Ajuste de modelo concluído", store);
+        expect(wrapper.find("#model-run-complete").classes()).toStrictEqual(["mt-3", "d-flex", "align-items-center", "mr-2"]);
         expect(wrapper.findAllComponents(Tick).length).toBe(1);
     });
 

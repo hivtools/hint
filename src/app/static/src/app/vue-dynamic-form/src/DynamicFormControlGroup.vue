@@ -5,8 +5,9 @@
                     <vue-feather type="help-circle" style="vertical-align: middle;"></vue-feather>
                 </span>
             <span v-if="required"
+                  class="ml-1"
                   :class="{'text-danger': anyValueEmpty(controlGroup)}"
-                  style="margin-left: 4px; font-size: small;">({{requiredText}})</span>
+                  style="font-size: small;">({{requiredText}})</span>
         </label>
         <dynamic-form-control v-for="(control, index) in controlGroup.controls"
                               :key="control.name"

@@ -48,11 +48,10 @@
                             v-translate="'ok'">
                     </button>
                     <button type="button"
-                            class="btn btn-white"
+                            class="btn btn-white ml-2"
                             @mousedown="cancelShareProject"
                             :disabled="cloningProject"
-                            v-translate="'cancel'"
-                            style="margin-left: 10px;">
+                            v-translate="'cancel'">
                     </button>
                 </div>
             </div>
