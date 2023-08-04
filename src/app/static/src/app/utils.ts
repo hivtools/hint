@@ -62,13 +62,6 @@ export const mapGettersByNames = <N extends readonly string[], T extends Record<
     return mapGetters(namespace, nameCopy) as Result
 };
 
-interface heyman {
-    hey: string,
-    bye: boolean
-}
-const hey = mapGettersByNames<readonly ["hey", "bye"], heyman>("whatever", ["hey", "bye"] as const)
-type yo = typeof hey
-
 export const mapActionByName = <T>(namespace: string | null, name: string): ActionMethod => {
     return (!!namespace && mapActions(namespace, [name])[name]) || mapActions([name])[name]
 };
