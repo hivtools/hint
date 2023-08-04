@@ -118,7 +118,7 @@
 
                         const interpolationRequired = !(interpolateIndexes.every(v => v === false));
 
-                        const highlightY = [];
+                        const highlightY: any[] = [];
                         for (let i = 0; i < values.length; i++) {
                             const isHighlighted = (i === 0 && highlightedLineIndexes[0])
                             || (i === highlightedLineIndexes.length && highlightedLineIndexes[i - 1])
@@ -131,7 +131,7 @@
                             }
                         }
 
-                        let highlightX = [];
+                        let highlightX: any[] = [];
                         const localTimePeriods = dataByArea[id].map(x => x.time_period);
                         if (!interpolationRequired) {
                             highlightX = localTimePeriods
