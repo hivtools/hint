@@ -1,11 +1,11 @@
 <template>
     <div style="flex:auto">
         <drop-down text="file">
-            <a class="dropdown-item" href="#"
-               @mousedown="handleLoadZip">
+            <p class="dropdown-item mb-0" tabindex="0"
+               @click="$refs.loadZip.click()">
                 <span v-translate="'loadZip'"></span>
-                <vue-feather type="upload" size="20" class="icon"></vue-feather>
-            </a>
+                <vue-feather type="upload" size="20" class="icon ml-1"></vue-feather>
+            </p>
             <input id="upload-zip" v-translate:aria-label="'selectFile'"
                    type="file"
                    style="display: none;" ref="loadZip"

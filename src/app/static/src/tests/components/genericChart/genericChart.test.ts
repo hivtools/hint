@@ -207,6 +207,7 @@ describe("GenericChart component", () => {
 
         const wrapper = getWrapper();
         setTimeout(() => {
+            console.log(wrapper.html())
             expect(wrapper.findAllComponents(DataSource).length).toBe(0);
             expect(wrapper.findAllComponents(FiltersComp).length).toBe(0);
             expect(wrapper.findComponent(Plotly).exists()).toBe(false);

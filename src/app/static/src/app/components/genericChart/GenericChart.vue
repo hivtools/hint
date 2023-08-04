@@ -60,7 +60,7 @@
                 </div>
                 <div v-for="dataSource in chartConfigValues.dataSourceConfigValues.filter(ds => ds.tableConfig)"
                      :key="dataSource.config.id">
-                    <download-indicator :filtered-data="filteredDataWithoutPages![dataSource.config.id]"
+                    <download-indicator :filtered-data="filteredDataWithoutPages ? filteredDataWithoutPages[dataSource.config.id] : []"
                                         :unfiltered-data="unfilteredData[dataSource.config.id]"></download-indicator>
                     <generic-chart-table :table-config="dataSource.tableConfig!"
                                          :filtered-data="chartData[dataSource.config.id]"

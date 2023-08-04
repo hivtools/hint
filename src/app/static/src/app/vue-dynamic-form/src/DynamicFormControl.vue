@@ -4,7 +4,7 @@
             <span v-if="formControl.helpText"
                   class="icon-small"
                   v-tooltip="formControl.helpText">
-                <vue-feather type="help-circle" style="vertical-align: middle;"></vue-feather>
+                <vue-feather type="help-circle" class="align-middle"></vue-feather>
             </span>
             <span v-if="formControl.required"
                   class="ml-1"
