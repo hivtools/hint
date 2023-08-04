@@ -256,8 +256,6 @@ describe("Project history component", () => {
         await expectTranslated(headers[7], "Copy to", "Copier", "Copiar para", store);
         await expectTranslated(headers[8], "Share", "Partager", "Partilhar", store);
 
-        // expect(true).toBe(false)
-        // TODO fix this
         testRendersProject(wrapper, 1, "proj1", isoDates[1], 2);
         const proj1Versions = wrapper.find("#versions-1");
         const proj1VersionRows = proj1Versions.findAll(".row");
@@ -278,22 +276,40 @@ describe("Project history component", () => {
     it("can expand project row",  async () => {
         const wrapper = getWrapper();
         const button = wrapper.find("#p-1 button");
+        const vueFeather = button.findAllComponents(VueFeather);
+        const chevRight = vueFeather[0];
+        expect(chevRight.props("type")).toBe("chevron-right");
+        const chevDown = vueFeather[1];
+        expect(chevDown.props("type")).toBe("chevron-down");
         const versionMenu = wrapper.find("#versions-1");
         expect(versionMenu.classes()).toStrictEqual(["collapse"])
+        expect(chevRight.isVisible()).toBe(true);
+        expect(chevDown.isVisible()).toBe(false);
         await button.trigger("click");
         await flushPromises();
         expect(versionMenu.classes()).toStrictEqual(["collapse", "show"])
+        expect(chevRight.isVisible()).toBe(false);
+        expect(chevDown.isVisible()).toBe(true);
     });
 
     it("can collapse project row",  async () => {
         const wrapper = getWrapper();
         const button = wrapper.find("#p-1 button");
+        const vueFeather = button.findAllComponents(VueFeather);
+        const chevRight = vueFeather[0];
+        expect(chevRight.props("type")).toBe("chevron-right");
+        const chevDown = vueFeather[1];
+        expect(chevDown.props("type")).toBe("chevron-down");
         const versionMenu = wrapper.find("#versions-1");
         await button.trigger("click");
         await flushPromises();
+        expect(chevRight.isVisible()).toBe(false);
+        expect(chevDown.isVisible()).toBe(true);
         expect(versionMenu.classes()).toStrictEqual(["collapse", "show"])
         await button.trigger("click");
         await new Promise((r) => setTimeout(r, 200))
+        expect(chevRight.isVisible()).toBe(true);
+        expect(chevDown.isVisible()).toBe(false);
         expect(versionMenu.classes()).toStrictEqual(["collapse"])
     });
     it("does not render if no previous projects", () => {

@@ -151,9 +151,9 @@
                 }
             },
             loadZip() {
-                const input = this.getZip();
-                if (input && input.length > 0) {
-                    const file = input[0];
+                const input = this.$refs.loadZip as HTMLInputElement;
+                if (input.files && input.files.length > 0) {
+                    const file = input.files[0];
                     this.clearLoadZipInput();
                     if (this.isGuest) {
                         this.preparingRehydrate(getFormData(file));
@@ -162,9 +162,6 @@
                         this.projectNameZip = true;
                     }
                 }
-            },
-            getZip() {
-                return (this.$refs.loadZip as HTMLInputElement).files
             },
             clearLoadZipInput() {
                 // clearing value because browser does not

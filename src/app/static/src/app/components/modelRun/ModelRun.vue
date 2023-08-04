@@ -5,8 +5,8 @@
                 :disabled="running"
                 v-translate="'fitModel'">
         </button>
-        <div v-if="complete" class="mt-3 d-flex align-items-center" id="model-run-complete">
-            <h4 v-translate="'fittingComplete'" style="margin-right: 7px;"></h4>
+        <div v-if="complete" class="mt-3 d-flex align-items-center mr-2" id="model-run-complete">
+            <h4 v-translate="'fittingComplete'"></h4>
             <tick color="#e31837" width="20px"></tick>
         </div>
         <modal :open="running">

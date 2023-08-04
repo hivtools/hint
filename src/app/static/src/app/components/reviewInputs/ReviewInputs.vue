@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>
-            <ul class="nav nav-tabs col-12 mb-3">
+            <ul class="nav nav-tabs col-12 mb-3 p-0">
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{'active': selectedTab === 0}"
