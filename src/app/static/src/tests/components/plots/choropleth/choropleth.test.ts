@@ -1,5 +1,5 @@
 import Choropleth from "../../../../app/components/plots/choropleth/Choropleth.vue";
-import {LGeoJson} from "@vue-leaflet/vue-leaflet";
+import {LGeoJson, LMap} from "@vue-leaflet/vue-leaflet";
 import {getFeatureIndicator} from "../../../../app/components/plots/choropleth/utils";
 import MapControl from "../../../../app/components/plots/MapControl.vue";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
@@ -13,6 +13,7 @@ import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vu
 import ResetMap from "../../../../app/components/plots/ResetMap.vue";
 import {ChoroplethIndicatorMetadata} from "../../../../app/generated";
 import { mountWithTranslate } from "../../../testHelpers";
+import { nextTick } from "vue";
 
 jest.mock("@vue-leaflet/vue-leaflet", () => {
     const LMap = {
@@ -70,6 +71,8 @@ const getWrapper = (customPropsData: any = {}) => {
 describe("Choropleth component", () => {
     it("renders plot as expected", () => {
         const wrapper = getWrapper();
+        const map = wrapper.findComponent(LMap);
+        expect(map.attributes("style")).toBe("height: 800px; width: 100%;");
         const geoJsons = wrapper.findAllComponents(LGeoJson);
         expect(geoJsons.length).toBe(2);
         expect(geoJsons[0].props().geojson).toStrictEqual(props.features[2]);
@@ -604,4 +607,12 @@ describe("Choropleth component", () => {
         expect(wrapper.props("roundFormatOutput")).toBe(true)
     });
 
+    it("triggers updateBounds when component is updated", async () => {
+        const wrapper = getWrapper();
+        const spy = jest.spyOn(wrapper.vm as any, "updateBounds");
+        expect(spy.mock.calls.length).toBe(0);
+        // applying any update
+        await wrapper.setProps({ ...props, selections: { ...props.selections, detail: 3 }});
+        expect(spy.mock.calls.length).toBe(1);
+    });
 });

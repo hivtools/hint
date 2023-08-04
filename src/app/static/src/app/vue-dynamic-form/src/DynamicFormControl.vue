@@ -7,8 +7,9 @@
                 <vue-feather type="help-circle" style="vertical-align: middle;"></vue-feather>
             </span>
             <span v-if="formControl.required"
+                  class="ml-1"
                   :class="{'text-danger': valueIsEmpty(formControl.value)}"
-                  style="font-size: small; margin-left: 4px;">({{requiredText}})</span>
+                  style="font-size: small;">({{requiredText}})</span>
         </label>
         <component :is="dynamicComponent!"
                    v-model:formControl="formControlLocal"

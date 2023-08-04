@@ -16,7 +16,7 @@
         </div>
         <reset-confirmation v-if="!dataExplorationMode"
                             :discard-step-warning="modelOptions"
-                            :continue-editing="onFileUpload"
+                            :continue-editing="uploadSelectedFile"
                             :cancel-editing="cancelEdit"
                             :open="showUploadConfirmation"></reset-confirmation>
     </div>
@@ -67,13 +67,14 @@
                 if (this.editsRequireConfirmation) {
                     this.showUploadConfirmation = true;
                 } else {
-                    this.onFileUpload();
+                    this.uploadSelectedFile();
                 }
             },
-            uploadSelectedFile(file: File) {
+            uploadSelectedFile() {
                 const fileInput = this.$refs[this.name] as HTMLInputElement;
+                const selectedFile = fileInput.files![0]!;
                 const formData = new FormData();
-                formData.append('file', file);
+                formData.append('file', selectedFile);
                 this.$emit("uploading");
                 this.upload(formData);
                 fileInput.value = "";
@@ -83,10 +84,6 @@
                 const fileInput = this.$refs[this.name] as HTMLInputElement;
                 fileInput.value = "";
                 this.showUploadConfirmation = false
-            },
-            onFileUpload() {
-                const fileInput = this.$refs[this.name] as HTMLInputElement;
-                this.uploadSelectedFile(fileInput.files![0]!);
             }
         }
 

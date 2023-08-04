@@ -1,12 +1,12 @@
 <template>
     <drop-down :text="currentLanguage" :right="true" style="flex: none">
-        <p class="dropdown-item" tabindex="0" v-on:mousedown="() => changeLanguage('en')" style="margin: 0;">
+        <p class="dropdown-item m-0" tabindex="0" v-on:mousedown="() => changeLanguage('en')">
             EN
         </p>
-        <p class="dropdown-item" tabindex="0" v-on:mousedown="() => changeLanguage('fr')" style="margin: 0;">
+        <p class="dropdown-item m-0" tabindex="0" v-on:mousedown="() => changeLanguage('fr')">
             FR
         </p>
-        <p class="dropdown-item" tabindex="0" v-on:mousedown="() => changeLanguage('pt')" style="margin: 0;">
+        <p class="dropdown-item m-0" tabindex="0" v-on:mousedown="() => changeLanguage('pt')">
             PT
         </p>
     </drop-down>

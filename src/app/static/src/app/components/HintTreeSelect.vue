@@ -46,11 +46,11 @@
                 // this is an integer that toggles between 1 and 0 to cause
                 // key to change and force re-render
                 reRender: 0,
-                lastEmittedValue: "" as string | string[] | null | undefined
+                lastEmittedValue: "" as string | null | undefined
             }
         },
         methods: {
-            input(value: string[]) {
+            input(value: string) {
                 this.lastEmittedValue = value;
                 this.$emit("update:model-value", value)
             }
@@ -63,6 +63,9 @@
                     // newVal === null : to replace value with "Not used" in treeselect
                     // newValStringCase : to re-render when we pass string into treeselect
                     // newValArrayCase : to re-render when we pass array of length 1 into treeselect
+
+                    // Note: the lastEmittedValue is always a string but from our state we may
+                    // pass in "value" or ["value"] so these checks are necessary
 
                     const newValStringCase = (typeof newVal === "string") && this.lastEmittedValue !== newVal;
                     const newValArrayCase = newVal instanceof Array && newVal.length === 1 && this.lastEmittedValue !== newVal[0];

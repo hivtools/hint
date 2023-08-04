@@ -9,6 +9,7 @@ import ForgotPassword from "./components/password/ForgotPassword.vue";
 import ResetPassword from "./components/password/ResetPassword.vue";
 import 'floating-vue/dist/style.css';
 import "../scss/style.scss";
+import "bootstrap/scss/bootstrap-grid.scss";
 
 const mountEl = document.querySelector("#app");
 const mountElDataExploration = document.querySelector("#dataExplorationApp");
@@ -44,9 +45,6 @@ const getApp = () => {
         app.config.globalProperties.$store = store;
 
         app.mount('#app');
-        // TODO dis-disable warnings after most of the warnings have been fixed
-        // TODO comment this warn handler out if you dare
-        // app.config.warnHandler = () => null;
 
         return app
     } else if (mountElDataExploration) {
@@ -58,9 +56,6 @@ const getApp = () => {
         app.directive("translate", translate(storeDataExploration));
         
         app.mount('#dataExplorationApp');
-        // TODO dis-disable warnings after most of the warnings have been fixed
-        // TODO comment this warn handler out if you dare
-        // app.config.warnHandler = () => null;
         
         return app
     } else if (mountElForgotPassword) {

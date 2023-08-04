@@ -618,7 +618,7 @@ describe(`uploadModal `, () => {
             "Fichiers d'entrée",
             "Ficheiros de entrada",
             store);
-
+        expect(wrapper.find("#output-file-error").classes()).toStrictEqual(["pt-3", "text-danger"]);
         await expectTranslated(wrapper.find("#output-file-error"),
             "Output files are not available for upload.",
             "Les fichiers de sortie ne sont pas disponibles pour le téléchargement.",
@@ -671,7 +671,8 @@ describe(`uploadModal `, () => {
         expect(headers.length).toBe(2);
         expect(headers[0].text()).toBe("Output Files")
         expect(headers[1].text()).toBe("Input Files")
-   
+
+        expect(wrapper.find("#output-file-error").classes()).toStrictEqual(["pt-3", "text-danger"]);
         const outputError = wrapper.find("#output-file-error");
         await expectTranslated(outputError,
             "Summary output file is not available for upload.",
@@ -726,6 +727,7 @@ describe(`uploadModal `, () => {
         expect(headers[0].text()).toBe("Output Files")
         expect(headers[1].text()).toBe("Input Files")
 
+        expect(wrapper.find("#output-file-error").classes()).toStrictEqual(["pt-3", "text-danger"]);
         await expectTranslated(wrapper.find("#output-file-error"),
             "Spectrum output file is not available for upload.",
             "Le fichier de sortie spectre n'est pas disponible pour le téléchargement",
@@ -779,6 +781,7 @@ describe(`uploadModal `, () => {
         expect(headers[0].text()).toBe("Output Files")
         expect(headers[1].text()).toBe("Input Files")
 
+        expect(wrapper.find("#output-file-error").classes()).toStrictEqual(["pt-3", "text-danger"]);
         await expectTranslated(wrapper.find("#output-file-error"),
             "Comparison output file is not available for upload.",
             "Le fichier de sortie Comparaison n'est pas disponible pour le téléchargement",

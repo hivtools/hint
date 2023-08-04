@@ -33,16 +33,18 @@ import { mount } from "@vue/test-utils";
 import HintDataExploration from "../../app/components/HintDataExploration.vue";
 import { storeDataExploration } from "../../app/main";
 import { RouteLocationNormalized } from "vue-router";
+import DataExploration from "../../app/components/dataExploration/DataExploration.vue";
+import Accessibility from "../../app/components/Accessibility.vue";
 
-jest.mock("../../app/components/dataExploration/DataExploration.vue", () => ({
-    name: "DataExploration",
-    template: "<div id='data-exploration-stub'/>"
-}))
+// jest.mock("../../app/components/dataExploration/DataExploration.vue", () => ({
+//     name: "DataExploration",
+//     template: "<div id='data-exploration-stub'/>"
+// }))
 
-jest.mock("../../app/components/Accessibility.vue", () => ({
-    name: "Accessibility",
-    template: "<div id='accessibility-stub'/>"
-}))
+// jest.mock("../../app/components/Accessibility.vue", () => ({
+//     name: "Accessibility",
+//     template: "<div id='accessibility-stub'/>"
+// }))
 
 
 
@@ -70,12 +72,12 @@ describe("Router", () => {
         await routerDataExploration.push("/");
         await routerDataExploration.isReady();
 
-        expect(wrapper.find("#data-exploration-stub").exists()).toBe(true);
+        expect(wrapper.findComponent(DataExploration).exists()).toBe(true);
 
         await routerDataExploration.push("/accessibility");
         await routerDataExploration.isReady();
 
-        expect(wrapper.find("#accessibility-stub").exists()).toBe(true);
+        expect(wrapper.findComponent(Accessibility).exists()).toBe(true);
     });
 
     it("doesn't redirect returning guest to login page", () => {
