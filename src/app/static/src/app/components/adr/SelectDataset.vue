@@ -16,7 +16,7 @@
                            size="20"
                            v-if="outOfDateMessage"
                            v-tooltip="outOfDateMessage"
-                           style="vertical-align: text-bottom">
+                           class="align-text-bottom">
                 </vue-feather>
             </span>
         </div>

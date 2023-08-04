@@ -34,13 +34,13 @@
             </div>
             <template v-slot:footer>
             <div style="display: flex; align-items: center; justify-content: space-between;">
-                <div class="text-muted help-text"
+                <div class="text-muted help-text float-left"
                      v-show="showValidationMessage"
                      v-translate="'emailMultiValidation'"
-                     style="float: left; width: 60%;">
+                     style="width: 60%;">
                 </div>
                 <error-alert v-if="cloneProjectError" :error="cloneProjectError"></error-alert>
-                <div style="float: right;">
+                <div class="float-right">
                     <button type="button"
                             class="btn btn-red"
                             @click="confirmShareProject"

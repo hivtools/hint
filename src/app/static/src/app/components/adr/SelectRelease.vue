@@ -9,7 +9,7 @@
             />
             <label for="useLatest" v-translate="'useLatest'" class="ml-1"></label>
             <span class="icon-small ml-1" v-tooltip="translate('datasetTooltip')">
-                <vue-feather type="help-circle" style="vertical-align: middle"></vue-feather>
+                <vue-feather type="help-circle" class="align-middle"></vue-feather>
             </span>
             <br />
         </div>
@@ -22,7 +22,7 @@
             />
             <label for="useRelease" v-translate="'useRelease'" class="ml-1"></label>
             <span class="icon-small ml-1" v-tooltip="translate('releaseTooltip')">
-                <vue-feather type="help-circle" style="vertical-align: middle;"></vue-feather>
+                <vue-feather type="help-circle" class="align-middle"></vue-feather>
             </span>
             <br />
         </div>

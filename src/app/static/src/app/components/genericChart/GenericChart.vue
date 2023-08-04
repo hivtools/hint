@@ -60,7 +60,7 @@
                 </div>
                 <div v-for="dataSource in chartConfigValues.dataSourceConfigValues.filter(ds => ds.tableConfig)"
                      :key="dataSource.config.id">
-                    <download-indicator :filtered-data="filteredDataWithoutPages![dataSource.config.id]"
+                    <download-indicator :filtered-data="filteredDataWithoutPages[dataSource.config.id]"
                                         :unfiltered-data="unfilteredData[dataSource.config.id]"></download-indicator>
                     <generic-chart-table :table-config="dataSource.tableConfig!"
                                          :filtered-data="chartData[dataSource.config.id]"
@@ -160,7 +160,7 @@
         prevPageEnabled: boolean
         nextPageEnabled: boolean
         unfilteredData: Dict<unknown[]>
-        filteredDataWithoutPages: Dict<unknown[]> | null
+        filteredDataWithoutPages: Dict<unknown[]>
     }
 
     interface Methods {
@@ -339,7 +339,7 @@
                     const selectedFilterOptions = dataSourceSelections.selectedFilterOptions;
 
                     if (!unfilteredData || !selectedFilterOptions) {
-                        return null; //Do not attempt to initialise if we are missing any datasets, or selections not initialised
+                        return {}; //Do not attempt to initialise if we are missing any datasets, or selections not initialised
                     }
 
                     result[dataSourceId] = filterData(unfilteredData, filters, selectedFilterOptions);
