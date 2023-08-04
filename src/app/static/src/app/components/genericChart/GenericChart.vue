@@ -24,7 +24,6 @@
                 <div class="chart-container" ref="chartContainer" :style="{height: chartHeight}">
                     <plotly class="chart"
                             v-if="!chartDataIsEmpty"
-                           :chart-metadata="chartConfigValues.chartConfig"
                            :chart-data="chartDataPage"
                            :layout-data="chartConfigValues.layoutData"
                            :style="{height: chartConfigValues.scrollHeight}"></plotly>

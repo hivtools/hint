@@ -288,7 +288,6 @@ describe("GenericChart component", () => {
             expect(filters[1].props("selectedFilterOptions")).toStrictEqual(datasets.dataset3.metadata.defaults.selected_filter_options);
 
             const plotly = wrapper.findComponent(Plotly);
-            expect(plotly.props("chartMetadata")).toBe("Test Chart Config");
             expect(plotly.props("chartData")).toStrictEqual({
                 visible1: [{age: "1", year: "2021", value: 2}],
                 visible2: [
