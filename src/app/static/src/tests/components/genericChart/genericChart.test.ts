@@ -458,7 +458,6 @@ describe("GenericChart component", () => {
 
         setTimeout(() => {
             const dataset1Filters = wrapper.findAllComponents(FiltersComp)[0];
-            console.log(dataset1Filters.html())
             const newFilterSelections = {
                 age: [{id: "2", label: "2"}],
                 year: [{id: "2020", label: "2020"}]

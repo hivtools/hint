@@ -26,10 +26,6 @@
     export default defineComponent({
         name: "Plotly",
         props: {
-            chartMetadata: {
-                type: String,
-                required: true
-            },
             chartData: {
                 type: Object as PropType<Dict<any[]> | null>,
                 required: true
@@ -251,12 +247,6 @@
             await this.drawChart();
         },
         watch: {
-            chartMetadata: {
-                handler: async function() {
-                    await this.drawChart();
-                },
-                deep: true
-            },
             chartData: {
                 handler: async function() {
                     await this.drawChart();

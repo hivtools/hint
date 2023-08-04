@@ -15,10 +15,45 @@ import {emptyState} from "../../../app/root";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 
-const chartData = {
-    xVals: [1, 2, 3],
-    yVals: [4, 5, 6]
-};
+const chartData = (xval = "date11", yval = 1) => {
+    const chartData = {
+        data: [
+            {
+                area_id: "area_1",
+                area_hierarchy: "hierarchy11",
+                area_level: 4,
+                area_name: "name11",
+                time_period: xval,
+                value: yval
+            },
+            {
+                area_id: "area_1",
+                area_hierarchy: "hierarchy12",
+                area_level: 4,
+                area_name: "name12",
+                time_period: "date12",
+                value: 2
+            },
+            {
+                area_id: "area_2",
+                area_hierarchy: "hierarchy21",
+                area_level: 4,
+                area_name: "name21",
+                time_period: "date21",
+                value: 3
+            },
+            {
+                area_id: "area_2",
+                area_hierarchy: "hierarchy22",
+                area_level: 4,
+                area_name: "name22",
+                time_period: "date22",
+                value: 4
+            }
+        ]
+    };
+    return chartData
+}
 
 const layoutData = {
     topMargin: 0,
@@ -28,22 +63,144 @@ const layoutData = {
     }
 };
 
-const chartMetadata = `{
-    "data": {
-                "x": xVals,
-                "y": yVals
+const expectedData = (xval = "date11", yval = 1) => {
+    const expectedData = [
+        {
+            hoverTemplate: "%{x}, %{y}<br>hierarchy11<extra></extra>",
+            line: {color: "rgb(51, 51, 51)"},
+            name: "name11",
+            showlegend: false,
+            type: "scatter",
+            x: [xval, "date12"],
+            xaxis: "x1",
+            y: [yval, 2],
+            yaxis: "y1"
+        },
+        {
+            hovertemplate: "%{x}, %{y}<br>hierarchy11<extra></extra>",
+            line: {color: "rgb(255, 51, 51)"},
+            name: "name11",
+            showlegend: false,
+            type: "scatter",
+            x: [xval, "date12"],
+            xaxis: "x1",
+            y: [yval, 2],
+            yaxis: "y1"
+        },
+        {
+            hoverTemplate: "%{x}, %{y}<br>hierarchy21<extra></extra>",
+            line: {color: "rgb(51, 51, 51)"},
+            name: "name21",
+            showlegend: false,
+            type: "scatter",
+            x: ["date21", "date22"],
+            xaxis: "x2",
+            y: [3, 4],
+            yaxis: "y2"
+        },
+        {
+            hovertemplate: "%{x}, %{y}<br>hierarchy21<extra></extra>",
+            line: {color: "rgb(255, 51, 51)"},
+            name: "name21",
+            showlegend: false,
+            type: "scatter",
+            x: ["date21", "date22"],
+            xaxis: "x2",
+            y: [3, 4],
+            yaxis: "y2"
+        },
+    ] as any;
+    expectedData["sequence"] = true;
+    expectedData["keepSingleton"] = true;
+    expectedData[0]["x"]["sequence"] = true;
+    expectedData[0]["y"]["sequence"] = true;
+    expectedData[1]["x"]["sequence"] = true;
+    expectedData[1]["y"]["sequence"] = true;
+    expectedData[2]["x"]["sequence"] = true;
+    expectedData[2]["y"]["sequence"] = true;
+    expectedData[3]["x"]["sequence"] = true;
+    expectedData[3]["y"]["sequence"] = true;
+    return expectedData
+}
+
+const expectedLayout = (rows: number, xval = "date11") => {
+    const expectedLayout = {
+        annotations: [
+            {
+                showarrow: false,
+                text: "name11 (area_1)",
+                textfont: {},
+                x: 0.5,
+                xanchor: "middle",
+                xref: "x1 domain",
+                y: 1.1,
+                yanchor: "middle",
+                yref: "y1 domain"
             },
-    "layout": {
-                "margin": {
-                    "t": topMargin,
-                    "l": xVals[0]
-                }
+            {
+                showarrow: false,
+                text: "name21 (area_2)",
+                textfont: {},
+                x: 0.5,
+                xanchor: "middle",
+                xref: "x2 domain",
+                y: 1.1,
+                yanchor: "middle",
+                yref: "y2 domain"
             },
-    "config": {
-                "responsive": responsive,
-                "height": yVals[2]
-            }
-}`;
+        ],
+        dragmode: false,
+        grid: {
+            columns: undefined,
+            pattern: "independent",
+            rows,
+        },
+        margin: {
+            t: 32,
+        },
+        xaxis1: {
+            autorange: true,
+            tickfont: { color: "grey" },
+            tickvals: [ xval, "date22" ],
+            type: "category",
+            zeroline: false
+        },
+        xaxis2: {
+            autorange: true,
+            tickfont: { color: "grey" },
+            tickvals: [ xval, "date22" ],
+            type: "category",
+            zeroline: false
+        },
+        yaxis1: {
+            autorange: true,
+            domain: [ NaN, NaN ],
+            rangemode: "tozero",
+            tickfont: { color: "grey" },
+            tickformat: undefined,
+            type: "linear",
+            zeroline: false
+        },
+        yaxis2: {
+            autorange: true,
+            domain: [ NaN, NaN ],
+            rangemode: "tozero",
+            tickfont: { color: "grey" },
+            tickformat: undefined,
+            type: "linear",
+            zeroline: false
+        },
+    } as any
+    expectedLayout.annotations["sequence"] = true;
+    expectedLayout.annotations["keepSingleton"] = true;
+    return expectedLayout
+};
+
+const expectedConfig = {
+    responsive: false,
+    scrollZoom: false,
+    modeBarButtonsToRemove: ['zoom2d', 'pan2d', 'select2d', 'lasso2d', 'autoScale2d', 'resetScale2d', 'zoomIn2d', 'zoomOut2d']
+};
 
 describe("Plotly", () => {
     const mockPlotlyReact = jest.spyOn(plotly, "react");
@@ -55,26 +212,15 @@ describe("Plotly", () => {
         jest.clearAllMocks();
     });
 
-    const expectPlotlyParams = (plotlyParams: any[]) => {
+    const expectPlotlyParams = (plotlyParams: any[], rows = 2) => {
         expect(plotlyParams[0].constructor.name).toBe("HTMLDivElement");
-        expect(plotlyParams[1]).toStrictEqual({
-            x: [1, 2, 3],
-            y: [4, 5, 6]
-        });
-        expect(plotlyParams[2]).toStrictEqual({
-            margin: {
-                t: 0,
-                l: 1
-            }
-        });
-        expect(plotlyParams[3]).toStrictEqual({
-            responsive: true,
-            height: 6
-        });
+        expect(plotlyParams[1]).toStrictEqual(expectedData());
+        expect(plotlyParams[2]).toStrictEqual(expectedLayout(rows));
+        expect(plotlyParams[3]).toStrictEqual(expectedConfig);
     };
 
     it("invokes Plotly on render with expected parameters", (done) => {
-        const props = { chartMetadata, chartData, layoutData };
+        const props = { chartData: chartData(), layoutData };
         const wrapper = shallowMount(Plotly, { props, store });
 
         // Rendering flag should be set while rendering proceeds
@@ -90,12 +236,11 @@ describe("Plotly", () => {
     });
 
     it("invokes Plotly newPlot when layout subplot rows has changed", async () => {
-        const props = { chartMetadata, chartData, layoutData };
+        const props = { chartData: chartData(), layoutData };
         const wrapper = shallowMount(Plotly, { props, store });
         expect(mockPlotlyNewPlot.mock.calls.length).toBe(0);
         await wrapper.setProps({
-            chartMetadata,
-            chsrtData: {...chartData},
+            chartData: {...chartData()},
             layoutData: {
                 ...layoutData,
                 subplots: {
@@ -112,83 +257,62 @@ describe("Plotly", () => {
         }, layoutData)
         await nextTick();
         expect(mockPlotlyNewPlot.mock.calls.length).toBe(1);
-        expectPlotlyParams(mockPlotlyNewPlot.mock.calls[0]);
+        expectPlotlyParams(mockPlotlyNewPlot.mock.calls[0], 3);
         expect((wrapper.vm as any).rendering).toBe(false);
     });
 
     it("invokes plotly again on data change", (done) => {
-       const props = { chartMetadata, chartData, layoutData };
+       const props = { chartData: chartData(), layoutData };
        const wrapper = shallowMount(Plotly, { props, store });
 
        setTimeout(async () => {
-           await wrapper.setProps({
-               chartData: {
-                   xVals: [10, 20, 30],
-                   yVals: [40, 50, 60]
-               }
-           });
+            await wrapper.setProps({
+                chartData: chartData("date111", 1.5),
+                layoutData
+            });
 
-           setTimeout(() => {
-               expect(mockPlotlyReact.mock.calls.length).toBe(2);
-               const plotlyParams = mockPlotlyReact.mock.calls[1];
-               expect(plotlyParams[0].constructor.name).toBe("HTMLDivElement");
-               expect(plotlyParams[1]).toStrictEqual({
-                   x: [10, 20, 30],
-                   y: [40, 50, 60]
-               });
-               expect(plotlyParams[2]).toStrictEqual({
-                   margin: {
-                       t: 0,
-                       l: 10
-                   }
-               });
-               expect(plotlyParams[3]).toStrictEqual({
-                   responsive: true,
-                   height: 60
-               });
+            (wrapper.vm as any).$options.watch.chartData.handler.call(wrapper.vm);
+            await nextTick();
 
-               done();
-           });
+            setTimeout(() => {
+                expect(mockPlotlyReact.mock.calls.length).toBe(3);
+                const plotlyParams = mockPlotlyReact.mock.calls[1];
+                expect(plotlyParams[0].constructor.name).toBe("HTMLDivElement");
+                expect(plotlyParams[1]).toStrictEqual(expectedData("date111", 1.5));
+                expect(plotlyParams[2]).toStrictEqual(expectedLayout(2, "date111"));
+                expect(plotlyParams[3]).toStrictEqual(expectedConfig);
+
+                done();
+            });
        });
     });
 
     it("invokes plotly again on layout change", (done) => {
-        const props = { chartMetadata, chartData, layoutData };
+        const props = { chartData: chartData(), layoutData };
         const wrapper = shallowMount(Plotly, { props, store });
         setTimeout(async () => {
             await wrapper.setProps({
-                layoutData: {
-                    topMargin: 15,
-                    responsive: false
-                }
+                chartData: chartData(),
+                layoutData: {...layoutData, responsive: false}
             });
 
-            setTimeout(() => {
+            (wrapper.vm as any).$options.watch.layoutData.call(wrapper.vm);
+            await nextTick();
 
+            setTimeout(() => {
                 expect(mockPlotlyReact.mock.calls.length).toBe(2);
                 const plotlyParams = mockPlotlyReact.mock.calls[1];
                 expect(plotlyParams[0].constructor.name).toBe("HTMLDivElement");
-                expect(plotlyParams[1]).toStrictEqual({
-                    x: [1, 2, 3],
-                    y: [4, 5, 6]
-                });
-                expect(plotlyParams[2]).toStrictEqual({
-                    margin: {
-                        t: 15,
-                        l: 1
-                    }
-                });
-                expect(plotlyParams[3]).toStrictEqual({
-                    responsive: false,
-                    height: 6
-                });
+                expect(plotlyParams[1]).toStrictEqual(expectedData());
+                expect(plotlyParams[2]).toStrictEqual(expectedLayout(2));
+                expect(plotlyParams[3]).toStrictEqual(expectedConfig);
                 done();
             });
         });
     });
 
     it("does not render loading spinner when rendering flag is false", () => {
-        const props = { chartMetadata, chartData, layoutData };
+        const props = { chartData: chartData(), layoutData };
         const wrapper = shallowMount(Plotly, { props, store });
         (wrapper.vm as any).rendering = false;
         expect( wrapper.find("div.text-center").exists()).toBe(false);
@@ -196,7 +320,7 @@ describe("Plotly", () => {
     });
 
     it("renders loading spinner when rendering flag is true", async () => {
-        const props = { chartMetadata, chartData, layoutData };
+        const props = { chartData: chartData(), layoutData };
         const wrapper = shallowMountWithTranslate(Plotly, store, { props, global: {plugins: [store]} });
         (wrapper.vm as any).rendering = true;
         await nextTick();
