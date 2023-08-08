@@ -30,6 +30,7 @@ import {getters} from "../../../app/store/dataExploration/getters"
 import ResetConfirmation from "../../../app/components/resetConfirmation/ResetConfirmation.vue";
 import Mock = jest.Mock;
 import { DataExplorationState } from "../../../app/store/dataExploration/dataExploration";
+import HintTreeSelect from "../../../app/components/HintTreeSelect.vue";
 
 describe("select dataset", () => {
 
@@ -1193,6 +1194,9 @@ describe("select dataset", () => {
         const setInterval = jest.spyOn(window, "setInterval");
 
         await rendered.find("button").trigger("click");
+
+        const hintTreeSelect = rendered.findComponent(HintTreeSelect)
+        expect(hintTreeSelect.exists()).toBe(true)
 
         const treeSelect = rendered.findComponent(TreeSelect)
         expect(treeSelect.exists()).toBe(true);

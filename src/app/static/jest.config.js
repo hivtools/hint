@@ -30,12 +30,5 @@ module.exports = {
     preset: '@vue/cli-plugin-unit-jest/presets/typescript-and-babel',
     modulePaths: [
         "<rootDir>"
-    ],
-    testPathIgnorePatterns: [
-        "<rootDir>/src/tests/components/header/fileMenu.test.ts",
-        "<rootDir>/src/tests/components/plots/.*.test.ts",
-        "<rootDir>/src/tests/components/plots/.*/.test.ts",
-        "<rootDir>/src/tests/components/app.test.ts",
-        "<rootDir>/src/tests/components/dataExplorationApp.test.ts",
     ]
 }

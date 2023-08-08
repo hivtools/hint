@@ -1,5 +1,5 @@
 import Vue, { defineComponent, nextTick } from "vue";
-import {DOMWrapper, shallowMount} from '@vue/test-utils';
+import {DOMWrapper, flushPromises, shallowMount} from '@vue/test-utils';
 
 import FileUpload from "../../../app/components/files/FileUpload.vue";
 import {mockDataExplorationState, mockFile} from "../../mocks";
@@ -7,10 +7,22 @@ import Vuex, {Store} from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {BDropdown} from "bootstrap-vue-next";
-import {expectTranslatedWithStoreType, shallowMountWithTranslate} from "../../testHelpers";
+import {expectTranslatedWithStoreType, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
 import {DataExplorationState, initialDataExplorationState} from "../../../app/store/dataExploration/dataExploration";
 
 describe("File upload component", () => {
+    global.FormData = class MockFormData {
+        files: Record<string, File>;
+        constructor(key?: string, file?: File) {
+          this.files = {}
+        }
+        append(key: string, file: File) {
+            this.files[key] = file;
+        }
+        get(key: string) {
+            return this.files[key]
+        }
+    } as any
 
     const createStore = (state = initialDataExplorationState(), requireConfirmation = false) => {
         const store = new Vuex.Store({
@@ -31,7 +43,7 @@ describe("File upload component", () => {
 
     const createSut = (props?: any, slots?: any, storeOptions?: Store<DataExplorationState>) => {
         const store = storeOptions || createStore();
-        return shallowMountWithTranslate(FileUpload, store, {
+        return mountWithTranslate(FileUpload, store, {
             global: {
                 plugins: [store],
                 stubs: {
@@ -81,17 +93,13 @@ describe("File upload component", () => {
             upload: uploader
         });
 
-        const vm = wrapper.vm;
-        (vm.$refs as any).pjnz = {
-            files: [testFile]
-        };
-
+        jest.spyOn((wrapper.vm.$refs as any).pjnz, "files", "get").mockImplementation(() => [testFile]);
         await wrapper.find("input").trigger("change");
 
         await nextTick();
 
         const formData = uploader.mock.calls[0][0] as FormData;
-        expect(formData.get('file')).toBe(testFile);
+        expect(formData.get('file')).toStrictEqual(testFile);
     });
 
     it("calls upload function with formData", async () => {

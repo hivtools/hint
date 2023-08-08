@@ -9,6 +9,7 @@ import {expectTranslatedWithStoreType, shallowMountWithTranslate} from "../../te
 import {LanguageMutation, mutations} from "../../../app/store/language/mutations";
 import {Language} from "../../../app/store/translations/locales";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
+import { nextTick } from "vue";
 
 describe("Reset password component", () => {
 
@@ -159,10 +160,11 @@ describe("Reset password component", () => {
         expect(wrapper.findComponent(LoggedOutHeader).props("title")).toBe("Naomi")
     });
 
-    it("updates html lang when language changes", () => {
+    it("updates html lang when language changes", async () => {
         const store = createStore();
-        createSut(store);
-        store.commit(LanguageMutation.ChangeLanguage, {payload: Language.pt});
+        const wrapper = createSut(store);
+        (wrapper.vm as any).$options.watch.language.call(wrapper.vm, Language.pt)
+        await nextTick();
         expect(document.documentElement.lang).toBe("pt");
     });
 });

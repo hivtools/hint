@@ -27,7 +27,7 @@
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin"
     import {Step} from "../../types";
     import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
-import { PropType } from "vue";
+    import { PropType } from "vue";
 
     interface Methods {
         handleFileSelect: () => void

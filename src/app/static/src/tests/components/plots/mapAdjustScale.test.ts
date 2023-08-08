@@ -252,7 +252,6 @@ describe("MapAdjustScale component", () => {
         });
 
         await wrapper.find("#custom-min-input").setValue("0.5");
-        await wrapper.find("#custom-min-input").trigger("change");
         expect(wrapper.emitted("update")!.length).toBe(1);
         expect(wrapper.emitted("update")![0][0]).toStrictEqual({
             type: ScaleType.Custom,
@@ -260,8 +259,7 @@ describe("MapAdjustScale component", () => {
             customMax: 1
         });
 
-        wrapper.find("#custom-max-input").setValue("1.5");
-        await wrapper.find("#custom-max-input").trigger("keyup");
+        await wrapper.find("#custom-max-input").setValue("1.5");
         expect(wrapper.emitted("update")!.length).toBe(2);
         expect(wrapper.emitted("update")![1][0]).toStrictEqual({
             type: ScaleType.Custom,

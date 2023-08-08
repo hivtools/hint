@@ -5,7 +5,7 @@
     <link rel="shortcut icon" href="/public/favicon.ico"/>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <!-- inject:css -->
-    <link rel="stylesheet" href="/public/css/style-393864d1b82cb6d8b6fc400efabd5e90.min.css">
+    <link rel="stylesheet" href="/public/css/app.css">
     <!-- endinject -->
 </head>
 <body>
@@ -15,11 +15,11 @@
         <a href="/">homepage</a>.</p>
 </div>
 <hr>
-<div>
-    <a href="/"><img src="public/images/unaids_logo.png" class="large-logo mx-auto mt-5"/></a>
+<div class="d-flex justify-content-center">
+    <a href="/"><img src="public/images/unaids_logo.png" class="large-logo mt-5"/></a>
 </div>
 
-<div id="partner-logos" class="logos mx-auto mt-5">
+<div id="partner-logos" class="logos d-flex justify-content-center mt-5">
     <a href="https://www.fjelltopp.org"><img src="public/images/fjelltopp_logo.png" class="small-logo"></a>
     <a href="https://www.imperial.ac.uk"><img src="public/images/imperial_logo.png" class="small-logo"></a>
     <a href="https://github.com/reside-ic"><img src="public/images/reside_logo.png" class="small-logo"></a>

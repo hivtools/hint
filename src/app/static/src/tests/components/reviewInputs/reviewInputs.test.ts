@@ -26,7 +26,7 @@ import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicat
 import { nextTick } from 'vue';
 import Filters from '../../../app/components/plots/Filters.vue';
 import Treeselect from "vue3-treeselect";
-import TreeSelect from '../../../app/components/TreeSelect.vue';
+import HintTreeSelect from '../../../app/components/HintTreeSelect.vue';
 
 describe("Survey and programme component", () => {
 
@@ -381,7 +381,7 @@ describe("Survey and programme component", () => {
             }
         });
 
-        const dataSourceSelect = wrapper.findComponent(TreeSelect);
+        const dataSourceSelect = wrapper.findComponent(HintTreeSelect);
         expect(dataSourceSelect.props("modelValue")).toBe(1);
         expect(dataSourceSelect.props("options")!.length).toBe(3);
 

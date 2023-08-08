@@ -74,8 +74,8 @@ describe("download indicator", () => {
         const wrapper = getWrapper();
         const button = wrapper.find("#indicator-download").find("button");
         expect(button.element.disabled).toBe(false);
-        await button.trigger("click")
-        await expect(mockDownloadFileActions).toHaveBeenCalledTimes(1)
+        await button.trigger("trigger-download");
+        expect(mockDownloadFileActions).toHaveBeenCalledTimes(1)
 
         const filename = mockDownloadFileActions.mock.calls[0][1].filename
         expect(filename.split(".")[0]).toContain("MWI_naomi_data-review_")
@@ -88,7 +88,7 @@ describe("download indicator", () => {
         const wrapper = getWrapper(createSut({iso3: "", country: "Malawi"}));
         const button = wrapper.find("#indicator-download").find("button");
         expect(button.element.disabled).toBe(false);
-        await button.trigger("click")
+        await button.trigger("trigger-download");
         expect(mockDownloadFileActions).toHaveBeenCalledTimes(1)
 
         const filename = mockDownloadFileActions.mock.calls[0][1].filename

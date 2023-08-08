@@ -1,7 +1,7 @@
 import {actions, getCalibrateStatus} from "../../app/store/modelCalibrate/actions";
-import {isDynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {rootState} from "./integrationTest";
 import {Language} from "../../app/store/translations/locales";
+import { isDynamicFormMeta } from "../../app/vue-dynamic-form/src";
 
 describe("model calibrate actions integration", () => {
 

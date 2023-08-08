@@ -18,15 +18,15 @@
                 <div class="col-md-1 project-cell">
                     <button
                         id="version-toggle"
-                        v-b-toggle="`versions-${p.id}`"
                         :aria-label="`toggle ${getTranslatedValue('versionCountLabelSingle')} ${p.id}`"
-                        class="btn btn-xs bg-transparent shadow-none py-0">
-                        <vue-feather
+                        class="btn btn-xs bg-transparent shadow-none py-0"
+                        @click="toggleVersionMenu">
+                        <vue-feather v-show="!openVersion"
                             type="chevron-right"
                             size="20"
                             class="icon when-closed"
                         ></vue-feather>
-                        <vue-feather
+                        <vue-feather v-show="openVersion"
                             type="chevron-down"
                             size="20"
                             class="icon when-open"
@@ -100,11 +100,12 @@
                     <share-project :project="p"></share-project>
                 </div>
             </div>
-            <b-collapse :id="`versions-${p.id}`">
+            <b-collapse :id="`versions-${p.id}`" :visible="openVersion">
                 <div v-for="v in p.versions"
                      :id="`v-${v.id}`"
                      :key="v.id"
-                     class="row font-italic bg-light py-2">
+                     class="row font-italic bg-light py-2"
+                     style="max-width: 100%; margin: 0px;">
                     <div class="col-md-1 version-cell"></div>
                     <div class="col-md-3 version-cell edit-cell">
                         <span class="float-right">
@@ -296,6 +297,7 @@
         renameProjectNote: string;
         projectNoteToEdit: number | null;
         editedProjectNote: string;
+        openVersion: boolean
     }
 
     interface Computed {
@@ -342,6 +344,7 @@
         getTranslatedValue: (key: string) => string;
         updateVersionNoteAction: (versionPayload: versionPayload) => void
         updateProjectNoteAction: (payload: projectPayload) => void
+        toggleVersionMenu: () => void
     }
 
     export default defineComponentVue2<Data, Methods, Computed, typeof ProjectsMixin>({
@@ -362,7 +365,8 @@
                 renameProjectNote: "",
                 renamedProjectName: "",
                 editedProjectNote: "",
-                projectNoteToEdit: null
+                projectNoteToEdit: null,
+                openVersion: false
             };
         },
         computed: {
@@ -570,16 +574,16 @@
                 return i18next.t(key, {
                     lng: this.currentLanguage,
                 });
-            }
+            },
+            toggleVersionMenu() {
+                this.openVersion = !this.openVersion
+            },
         },
         components: {
             BCollapse,
             VueFeather,
             Modal,
             ShareProject,
-        },
-        directives: {
-            "b-toggle": vBToggle
         }
     });
 </script>

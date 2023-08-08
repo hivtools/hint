@@ -9,7 +9,7 @@ import {Language} from "../../../app/store/translations/locales";
 import {Dataset} from "../../../app/types";
 import VueFeather from "vue-feather";
 import { nextTick } from "vue";
-import TreeSelect from "../../../app/components/TreeSelect.vue";
+import HintTreeSelect from "../../../app/components/HintTreeSelect.vue";
 
 describe("select release", () => {
 
@@ -247,15 +247,16 @@ describe("select release", () => {
                 plugins: [store]
             }, props: {datasetId: "datasetId"}
         });
-        const select = rendered.findComponent(Treeselect);
-        const selectWrapper = rendered.findComponent(TreeSelect);
-        expect(select.props("disabled")).toBe(true);
+        const selectWrapper = rendered.findComponent(HintTreeSelect);
+        expect(!rendered.vm.useRelease).toBe(true);
         expect((rendered.vm.$data as any).releaseId).toBeUndefined();
         store.state.adr.releases = releasesArray;
-        // need to manually trigger watcher to cause treeselect re-render
-        (selectWrapper.vm as any).$options.watch.modelValue.handler.call(selectWrapper.vm);
+        (rendered.vm as any).$options.watch.releases.call(rendered.vm);
         await nextTick();
-        expect(select.props("disabled")).toBe(false);
+        // need to manually trigger watcher to cause treeselect re-render
+        (selectWrapper.vm as any).$options.watch.modelValue.handler.call(selectWrapper.vm, (rendered.vm.$data as any).releaseId);
+        await nextTick();
+        expect(!rendered.vm.useRelease).toBe(false);
         expect((rendered.vm.$data as any).releaseId).toBe("releaseId");
     });
 

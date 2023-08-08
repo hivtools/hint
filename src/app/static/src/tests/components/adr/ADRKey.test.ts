@@ -1,5 +1,5 @@
 import Vue, { nextTick } from "vue";
-import {mount, shallowMount} from "@vue/test-utils";
+import {flushPromises, mount, shallowMount} from "@vue/test-utils";
 
 import ADRKey from "../../../app/components/adr/ADRKey.vue";
 import Vuex, {ActionTree} from "vuex";
@@ -116,6 +116,10 @@ describe("ADR Key", function () {
     });
 
     it("can add key", async () => {
+        const div = document.createElement('div');
+        div.id = 'root';
+        document.body.appendChild(div);
+
         const store = createStore()
         const rendered = mountWithTranslate(ADRKey, store,
             {
@@ -123,19 +127,20 @@ describe("ADR Key", function () {
                     plugins: [store],
                     stubs: ["tree-select"]
                 },
-                attachToDocument: true,
+                attachTo: "#root",
             });
+
         expect(rendered.findAll(".input-group").length).toBe(0);
         const links = rendered.findAll(".btn")
         await links[0].trigger("click");
-
+        await nextTick();
         expect(rendered.find("input").element).toBe(document.activeElement);
         expect(rendered.find("button").text()).toBe("Save");
 
         expect((rendered.find("input").element as HTMLInputElement).placeholder).toBe("Enter key");
-        rendered.find("input").setValue("new-key-456");
+        await rendered.find("input").setValue("new-key-456");
         await rendered.find("button").trigger("click");
-
+        
         expect(saveStub.mock.calls.length).toBe(1);
     });
 

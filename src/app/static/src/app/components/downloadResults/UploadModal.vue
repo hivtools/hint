@@ -6,7 +6,10 @@
                 <div id="dataset-id" class="mt-4">
                     <span v-translate="'uploadFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
-                <div class="pt-3 text-danger" id="output-file-error" v-if="outputFileError" v-translate="outputFileError"></div>
+                <div class="pt-3 text-danger" id="output-file-error" v-if="outputFileError"
+                v-translate="isOutputFileErrorKey ? outputFileError : ''">
+                    {{ isOutputFileErrorKey ? '' : outputFileError }}
+                </div>
                 <div class="pt-3 form-check form-check-inline">
                     <input type="radio"
                            id="createRelease"
@@ -114,7 +117,8 @@
         uploadFileSections: Array<Dict<UploadFile>>
         currentLanguage: Language;
         createRelease: boolean
-        outputFileError:  string | null
+        outputFileError:  string | null,
+        isOutputFileErrorKey: boolean
     }
 
     interface Data {
@@ -232,6 +236,9 @@
                 } else {
                     return [];
                 }
+            },
+            isOutputFileErrorKey() {
+                return this.outputFileError === "downloadSpectrumAndSummaryError"
             }
         },
         components: {

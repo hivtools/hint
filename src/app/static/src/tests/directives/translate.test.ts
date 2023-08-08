@@ -211,13 +211,17 @@ describe("translate directive", () => {
                 plugins: [store]
             }, 
         });
-        expect((store._watcherVM as any)._watchers.length).toBe(5);
+        expect((renderedAttribute.element as any).__lang_unwatch__).toHaveProperty("value")
+        expect((renderedText.element as any).__lang_unwatch__).toHaveProperty("innerHTML")
+        expect((renderedMultiple.element as any).__lang_unwatch__).toHaveProperty("innerHTML")
+        expect((renderedMultiple.element as any).__lang_unwatch__).toHaveProperty("placeholder")
+        expect((renderedMultiple.element as any).__lang_unwatch__).toHaveProperty("value")
         renderedAttribute.unmount();
-        expect((store._watcherVM as any)._watchers.length).toBe(4);
+        expect((renderedAttribute.element as any).__lang_unwatch__).toStrictEqual({})
         renderedText.unmount();
-        expect((store._watcherVM as any)._watchers.length).toBe(3);
+        expect((renderedText.element as any).__lang_unwatch__).toStrictEqual({})
         renderedMultiple.unmount();
-        expect((store._watcherVM as any)._watchers.length).toBe(0);
+        expect((renderedMultiple.element as any).__lang_unwatch__).toStrictEqual({})
     });
 
 });
