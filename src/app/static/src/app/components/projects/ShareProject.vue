@@ -72,14 +72,14 @@
     import { PropType, defineComponent } from "vue";
 import { Error } from "../../generated";
 
-    interface EmailToShareWith {
+    interface RecipientEmail {
         value: string
         valid: boolean | null
         validationMessage: string
     }
 
     interface Data {
-        emailsToShareWith: EmailToShareWith[]
+        emailsToShareWith: RecipientEmail[]
         open: boolean
     }
 
@@ -101,7 +101,7 @@ import { Error } from "../../generated";
         methods: {
             cloneProject: mapActionByName("projects", "cloneProject"),
             userExists: mapActionByName("projects", "userExists"),
-            addEmail(e: EmailToShareWith, index: number) {
+            addEmail(e: RecipientEmail, index: number) {
                 if (e.value && index == this.emailsToShareWith.length - 1) {
                     this.emailsToShareWith.push({
                         value: "",
@@ -109,13 +109,13 @@ import { Error } from "../../generated";
                         validationMessage: ""
                     });
                 }
-                this.emailsToShareWith.map(async (email: EmailToShareWith, index: number) => {
+                this.emailsToShareWith.map(async (email: RecipientEmail, index: number) => {
                     if (email.value) {
                         let invalidMsg = null;
                         const emailValue = email.value.toLowerCase()
                         if (emailValue == currentUser.toLowerCase()) {
                             invalidMsg = "projectsNoSelfShare";
-                        } else if (this.emailsToShareWith.filter((val: EmailToShareWith) => val.value.toLowerCase() === emailValue).length > 1) {
+                        } else if (this.emailsToShareWith.filter((val: RecipientEmail) => val.value.toLowerCase() === emailValue).length > 1) {
                             invalidMsg = "duplicateEmails";
                         } else {
                             const result = await this.userExists(emailValue);
@@ -132,7 +132,7 @@ import { Error } from "../../generated";
                     }
                 });
             },
-            removeEmail(email: EmailToShareWith, index: number) {
+            removeEmail(email: RecipientEmail, index: number) {
                 // if email has been deleted and this is not the last input
                 // remove from UI
                 if (!email.value && index < this.emailsToShareWith.length - 1) {
@@ -145,8 +145,8 @@ import { Error } from "../../generated";
             },
             confirmShareProject() {
                 const emails = this.emailsToShareWith
-                    .filter((e: EmailToShareWith) => e.value)
-                    .map((e: EmailToShareWith) => e.value);
+                    .filter((e: RecipientEmail) => e.value)
+                    .map((e: RecipientEmail) => e.value);
                 if (emails.length > 0) {
                     this.cloneProject({emails, projectId: this.project.id})
                 }
@@ -165,11 +165,11 @@ import { Error } from "../../generated";
             },
             invalidEmails() {
                 //Invalid state until all emails evaluated as valid = true (may not have blurred yet)...
-                return this.emailsToShareWith.filter((e: EmailToShareWith) => e.value && !e.valid).length > 0
+                return this.emailsToShareWith.filter((e: RecipientEmail) => e.value && !e.valid).length > 0
             },
             showValidationMessage() {
                 //...however only show error message if any confirmed to be valid = false
-                return this.emailsToShareWith.filter((e: EmailToShareWith) => e.value && e.valid === false).length > 0
+                return this.emailsToShareWith.filter((e: RecipientEmail) => e.value && e.valid === false).length > 0
             },
             tooltipShare() {
                 return i18next.t("share", {

@@ -215,13 +215,7 @@
                     selectedFilterOptions: null
                 }
             }), {})
-            // .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => ({
-            //         ...running,
-            //         [dataSource.id]: {
-            //             datasetId: this.availableDatasetIds.find(id => id === dataSource.datasetId) || this.availableDatasetIds[0],
-            //             selectedFilterOptions: null
-            //         }
-            //     }), {});
+
             return {
                 dataSourceSelections,
                 currentPage: 1,
