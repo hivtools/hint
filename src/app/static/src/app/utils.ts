@@ -91,7 +91,7 @@ export const mapGettersByNames = <Names extends readonly string[], Types extends
     /*
         Names is a readonly string[] so looks like ["name1", "name2"].
         Names[number] has type "name1" | "name2" since number is used
-        to index arrays. If we didn't have readonly Name[number] would
+        to index arrays. If we didn't have readonly, Name[number] would
         have type string.
         Since we now have a type "name1" | "name2" we can loop through
         this like before and construct and object type like
