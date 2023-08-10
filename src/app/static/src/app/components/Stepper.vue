@@ -10,8 +10,8 @@
                       @jump="jump">
                 </step>
                 <div class="col step-connector mt-2" v-if="step.number < steps.length"
-                    :key="step.number + 'conn'"
-                    :class="[{'enabled': isEnabled(step.number + 1)}]">
+                     :key="step.number + 'conn'"
+                     :class="[{'enabled': isEnabled(step.number + 1)}]">
                     <hr/>
                 </div>
             </template>
