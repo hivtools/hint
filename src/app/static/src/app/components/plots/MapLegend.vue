@@ -23,7 +23,6 @@
     </l-control>
 </template>
 <script lang="ts">
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
     import {LControl} from "@vue-leaflet/vue-leaflet";
     import {
         colorFunctionFromName,
@@ -36,46 +35,21 @@
     import {ScaleSettings} from "../../store/plottingSelections/plottingSelections";
     import MapAdjustScale from "./MapAdjustScale.vue";
     import {NumericRange} from "../../types";
+    import { PropType, defineComponent } from "vue";
 
-    interface Props {
-        metadata: ChoroplethIndicatorMetadata | undefined,
-        colourScale: ScaleSettings| null,
-        colourRange: NumericRange
-    }
-
-    interface Level {
-        val: number | string,
-        style: any
-    }
-
-    interface Data {
-        showAdjust: boolean
-    }
-
-    interface Computed {
-        levels: Level[],
-        colourScaleStep: number,
-        adjustable: boolean
-    }
-
-    interface Methods {
-        toggleAdjust: (e: Event) => void
-        update: (scale: ScaleSettings) => void
-    }
-
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponent({
         name: "MapLegend",
         props: {
             metadata: {
-                type: Object,
+                type: Object as PropType<ChoroplethIndicatorMetadata>,
                 required: false
             },
             colourScale: {
-                type: Object,
+                type: Object as PropType<ScaleSettings | null>,
                 required: true
             },
             colourRange: {
-                type: Object,
+                type: Object as PropType<NumericRange>,
                 required: true
             }
         },
@@ -83,7 +57,7 @@
             LControl,
             MapAdjustScale
         },
-        data(): Data {
+        data() {
             return {
                 showAdjust: false
             }

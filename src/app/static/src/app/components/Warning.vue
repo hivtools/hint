@@ -28,37 +28,9 @@
     import { Language } from "../store/translations/locales";
     import { Warning } from "../generated";
     import { Dict } from "../types";
-    import { defineComponentVue2WithProps } from "../defineComponentVue2/defineComponentVue2";
-import { nextTick } from "vue";
+    import { PropType, defineComponent, nextTick } from "vue";
 
-    interface Props {
-        origin: string;
-        warnings: Warning[];
-        maxLines?: number;
-    }
-
-    interface Data {
-        showFullBox: boolean;
-        fullBoxHeight: number;
-        lineHeight: number;
-    }
-
-    interface Methods {
-        toggleShowFullBox: () => void;
-        updateDimensions: () => void;
-        headerText: (key: string) => string;
-    }
-
-    interface Computed  {
-        currentLanguage: Language;
-        renderedBoxHeight: number;
-        warningsLengthy: boolean;
-        buttonText: string;
-        maxBoxHeight: number;
-        lineStyling: Dict<string | number | undefined>;
-    }
-
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponent({
         name: "Warning",
         props: {
             origin: {
@@ -66,7 +38,7 @@ import { nextTick } from "vue";
                 required: true
             },
             warnings: {
-                type: Array,
+                type: Array as PropType<Warning[]>,
                 required: true
             },
             maxLines: {
@@ -146,7 +118,7 @@ import { nextTick } from "vue";
                     this.fullBoxHeight = (this.$refs.warningBox as HTMLElement).clientHeight;
                 }
             },
-            headerText(key){
+            headerText(key: string){
                 const headers: { [key: string]: string } = {
                     modelOptions: "warningsHeaderModelOptions",
                     modelRun: "warningsHeaderModelRun",

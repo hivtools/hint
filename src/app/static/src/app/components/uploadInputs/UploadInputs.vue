@@ -84,7 +84,7 @@
 
 <script lang="ts">
 
-    import {mapActions, mapState} from "vuex";
+    import {CustomVue, mapActions, mapState} from "vuex";
     import {BaselineState} from "../../store/baseline/baseline";
     import {PartialFileUploadProps} from "../../types";
     import {MetadataState} from "../../store/metadata/metadata";
@@ -93,9 +93,9 @@
     import ManageFile from "../files/ManageFile.vue";
     import {RootState} from "../../root";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
-    import {mapStatePropByName, mapStateProps} from "../../utils";
-    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
+    import {mapRootStateProps, mapStatePropByName, mapStateProps} from "../../utils";
     import { Error } from "../../generated";
+    import { defineComponent } from "vue";
 
     const namespace = 'baseline';
 
@@ -136,7 +136,9 @@
         deleteANC: () => void
     }
 
-    export default defineComponentVue2<unknown, Methods, Computed>({
+    type PlottingMetadataError = Record<"plottingMetadataError", (this: CustomVue, state: MetadataState) => Error | null>
+
+    export default defineComponent({
         name: "UploadInputs",
         computed: {
             ...mapStateProps(namespace, {
@@ -146,45 +148,45 @@
                     error: state.pjnzError,
                     fromADR: !!state.pjnz?.fromADR,
                     existingFileName: (state.pjnz && state.pjnz.filename) || state.pjnzErroredFile
-                } as PartialFileUploadProps),
+                }),
                 shape: (state: BaselineState) => ({
                     valid: state.shape != null,
                     error: state.shapeError,
                     fromADR: !!state.shape?.fromADR,
                     existingFileName: (state.shape && state.shape.filename) || state.shapeErroredFile
-                } as PartialFileUploadProps),
+                }),
                 population: (state: BaselineState) => ({
                     valid: state.population != null,
                     error: state.populationError,
                     fromADR: !!state.population?.fromADR,
                     existingFileName: (state.population && state.population.filename) || state.populationErroredFile
-                } as PartialFileUploadProps),
+                }),
                 hasBaselineError: (state: BaselineState) => !!state.baselineError,
                 baselineError: (state: BaselineState) => state.baselineError,
                 validating: (state: BaselineState) => state.validating
             }),
-            ...mapState<MetadataState>("metadata", {
+            ...mapState<MetadataState, PlottingMetadataError>("metadata", {
                 plottingMetadataError: (state: MetadataState) => state.plottingMetadataError
             }),
-            ...mapState<RootState>({
+            ...mapRootStateProps({
                 anc: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     valid: !!surveyAndProgram.anc,
                     fromADR: !!surveyAndProgram.anc?.fromADR,
                     error: surveyAndProgram.ancError,
                     existingFileName: (surveyAndProgram.anc && surveyAndProgram.anc.filename)|| surveyAndProgram.ancErroredFile
-                } as PartialFileUploadProps),
+                }),
                 programme: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     valid: surveyAndProgram.program != null,
                     fromADR: !!surveyAndProgram.program?.fromADR,
                     error: surveyAndProgram.programError,
                     existingFileName: (surveyAndProgram.program && surveyAndProgram.program.filename) || surveyAndProgram.programErroredFile
-                } as PartialFileUploadProps),
+                }),
                 survey: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     valid: surveyAndProgram.survey != null,
                     fromADR: !!surveyAndProgram.survey?.fromADR,
                     error: surveyAndProgram.surveyError,
                     existingFileName: (surveyAndProgram.survey && surveyAndProgram.survey.filename) || surveyAndProgram.surveyErroredFile
-                } as PartialFileUploadProps)
+                })
             }),
             dataExplorationMode: mapStatePropByName(null, "dataExplorationMode"),
         },

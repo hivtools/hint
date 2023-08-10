@@ -61,7 +61,6 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
     import {mapActionsByNames, mapStateProp} from "../../utils";
     import {Error} from "../../generated"
     import {RootState} from "../../root";
@@ -69,36 +68,14 @@
     import i18next from "i18next";
     import ErrorAlert from "../ErrorAlert.vue";
     import {ADRState} from "../../store/adr/adr";
-
-    interface Data {
-        editableKey: string | null
-        editing: boolean
-    }
-
-    interface Methods {
-        saveKey: (key: string | null) => void
-        deleteKey: () => void
-        add: (e: Event) => void
-        remove: (e: Event) => void
-        save: (e: Event) => void
-        cancel: (e: Event) => void
-    }
-
-    interface Computed {
-        key: string | null
-        currentLanguage: Language
-        keyText: string
-        error: Error | null
-        tooltipContent: string,
-        adrProfileUrl: string
-    }
+    import { defineComponent } from "vue";
 
     const namespace = "adr";
 
-    export default defineComponentVue2<Data, Methods, Computed>({
+    export default defineComponent({
         data() {
             return {
-                editableKey: "",
+                editableKey: "" as string | null,
                 editing: false
             }
         },
@@ -111,7 +88,7 @@
                 (state: RootState) => state.language),
             error: mapStateProp<ADRState, Error | null>(namespace,
                 (state: ADRState) => state.keyError),
-            keyText() {
+            keyText(): string {
                 if (this.key) {
                     let str = ""
                     let count = this.key.length
@@ -124,12 +101,12 @@
                     return i18next.t("noneProvided", {lng: this.currentLanguage})
                 }
             },
-            tooltipContent() {
+            tooltipContent(): string {
                 return i18next.t("adrTooltip", {lng: this.currentLanguage})
             }
         },
         methods: {
-            ...mapActionsByNames<keyof Methods>(namespace, ["saveKey", "deleteKey"]),
+            ...mapActionsByNames(namespace, ["saveKey", "deleteKey"] as const),
             add(e: Event) {
                 e.preventDefault();
                 this.editing = true;

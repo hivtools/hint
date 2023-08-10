@@ -22,7 +22,7 @@
                                v-on:click="handleRequestResetLink"/>
                     </div>
                 </form>
-                <error-alert v-if="hasError" :error="error"></error-alert>
+                <error-alert v-if="hasError" :error="error!"></error-alert>
                 <div v-if="resetLinkRequested"
                      class="alert alert-success mt-4"
                      role="alert"
@@ -39,30 +39,10 @@
     import {PasswordState} from "../../store/password/password";
     import LoggedOutHeader from "../header/LoggedOutHeader.vue";
     import {Language} from "../../store/translations/locales";
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
     import { mapStateProps } from "../../utils";
+    import { defineComponent } from "vue";
 
-    interface Data {
-        email: string
-    }
-
-    interface Computed {
-        error: Error | null
-        hasError: boolean
-        resetLinkRequested: boolean,
-        language: Language
-    }
-
-    interface Methods {
-        requestResetLink: (email: string) => void
-        handleRequestResetLink: (email: Event) => void
-    }
-
-    interface Props {
-        title: string
-    }
-
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponent({
         name: "ForgotPassword",
         props: {
             title: {

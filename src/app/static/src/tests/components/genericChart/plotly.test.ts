@@ -89,29 +89,31 @@ describe("Plotly", () => {
         });
     });
 
-    it("invokes Plotly newPlot when layout subplot rows has changed", (done) => {
+    it("invokes Plotly newPlot when layout subplot rows has changed", async () => {
         const props = { chartMetadata, chartData, layoutData };
         const wrapper = shallowMount(Plotly, { props, store });
-        setTimeout(async () => {
-            expect(mockPlotlyNewPlot.mock.calls.length).toBe(0);
-            await wrapper.setProps({
-                chartMetadata,
-                chsrtData: {...chartData},
-                layoutData: {
-                    ...layoutData,
-                    subplots: {
-                        rows: 3
-                    }
+        expect(mockPlotlyNewPlot.mock.calls.length).toBe(0);
+        await wrapper.setProps({
+            chartMetadata,
+            chsrtData: {...chartData},
+            layoutData: {
+                ...layoutData,
+                subplots: {
+                    rows: 3
                 }
-            });
-            setTimeout(() => {
-                expect(mockPlotlyNewPlot.mock.calls.length).toBe(1);
-                expectPlotlyParams(mockPlotlyNewPlot.mock.calls[0]);
-                expect((wrapper.vm as any).rendering).toBe(false);
-
-                done();
-            });
+            }
         });
+        // call watcher that would be triggered by layoutData change
+        (wrapper.vm as any).$options.watch.layoutData.call({
+            ...layoutData,
+            subplots: {
+                rows: 3
+            }
+        }, layoutData)
+        await nextTick();
+        expect(mockPlotlyNewPlot.mock.calls.length).toBe(1);
+        expectPlotlyParams(mockPlotlyNewPlot.mock.calls[0]);
+        expect((wrapper.vm as any).rendering).toBe(false);
     });
 
     it("invokes plotly again on data change", (done) => {

@@ -35,18 +35,9 @@
     import HintrVersionMenu from "./HintrVersionMenu.vue";
     import {DataExplorationState} from "../../store/dataExploration/dataExploration";
     import DataExplorationSupportMenu from "./DataExplorationSupportMenu.vue";
-    import { defineComponentVue2WithProps } from '../../defineComponentVue2/defineComponentVue2';
+    import { defineComponent } from 'vue';
 
-    interface Props {
-        title: string,
-        user: string
-    }
-
-    interface Computed {
-        helpFilename: string
-    }
-
-    export default defineComponentVue2WithProps<unknown, unknown, Computed, Props>({
+    export default defineComponent({
         computed: {
             helpFilename: mapStateProp<DataExplorationState, string>(null,
                 (state: DataExplorationState) => {

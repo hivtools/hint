@@ -31,48 +31,9 @@ module.exports = defineConfig({
             },
             port: 3000,
         },
-        // plugins: [new MiniCssExtractPlugin({
-        //     filename: "css/app.css"
-        // })],
-        // module: {
-        //     rules: [
-        //         {
-        //             test: /\.s[ac]ss$/i,
-        //             use: [
-        //                 "style-loader",
-        //                 MiniCssExtractPlugin.loader,
-        //                 "css-loader",
-        //                 "sass-loader",
-        //             ]
-        //         }
-        //     ]
-        // },
-        // plugins: [
-        //     new HtmlWebpackPlugin({
-        //         template: 'templates/index.ftl',
-        //         filename: 'index.ftl'
-        //     })
-        // ],
-        // noInfo: true,
         performance: {
             hints: false
         },
         devtool: 'eval-source-map',
-
-        // module: {
-        //     rules: [
-        //       {
-        //         test: /\.s[ac]ss$/i,
-        //         use: [
-        //           // Creates `style` nodes from JS strings
-        //           "style-loader",
-        //           // Translates CSS into CommonJS
-        //           "css-loader",
-        //           // Compiles Sass to CSS
-        //           "sass-loader",
-        //         ],
-        //       },
-        //     ],
-        //   },
     }
 });

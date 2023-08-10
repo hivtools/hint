@@ -37,7 +37,7 @@ describe("Map control component", () => {
                 name: "Prevalence"
             }
         ]
-    };
+    } as any;
 
     it("renders tree selects with expected properties", () => {
         const wrapper = mount(MapControl, {props, global: {plugins: [store]}});

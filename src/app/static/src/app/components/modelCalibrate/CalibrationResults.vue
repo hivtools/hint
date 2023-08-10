@@ -23,9 +23,8 @@
 </template>
 
 <script lang="ts">
-    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
     import i18next from "i18next";
-    import { Language, Translations } from "../../store/translations/locales";
+    import { Language } from "../../store/translations/locales";
     import {
         BarchartIndicator,
         Filter,
@@ -34,52 +33,36 @@
     import BarChartWithFilters from "../../vue-chart/src/bar/BarChartWithFilters.vue";
     import {
         mapGettersByNames,
-        mapMutationByName,
+        mapGetterByName,
         mapMutationsByNames,
         mapStateProp,
     } from "../../utils";
     import {
-        PlottingSelectionsState,
         BarchartSelections,
         UnadjustedBarchartSelections,
     } from "../../store/plottingSelections/plottingSelections";
     import { ModelCalibrateState } from "../../store/modelCalibrate/modelCalibrate";
     import { formatOutput } from "../plots/utils";
     import { RootState } from "../../root";
-    import { PayloadWithType } from "../../types";
+    import { defineComponent } from "vue";
 
     const namespace = "modelCalibrate";
 
-    interface Methods {
-        updateCalibratePlotSelections: (data: {
-            payload: BarchartSelections;
-        }) => void;
-        formatBarchartValue: (
-            value: string | number,
-            indicator: BarchartIndicator
-        ) => string;
+    interface GetterTypes {
+        indicators: BarchartIndicator[]
+        filters: Filter[]
     }
 
-    interface Computed {
-        calibratePlotDefaultSelections: UnadjustedBarchartSelections;
-        chartData: any;
-        filterConfig: FilterConfig;
-        filters: Filter[];
-        selections: BarchartSelections;
-        indicators: BarchartIndicator[];
-        currentLanguage: Language;
-    }
+    const getters = ["indicators", "filters"] as const
 
-    export default defineComponentVue2<unknown, Methods, Computed>({
+    export default defineComponent({
         name: "CalibrationResults",
         components: {
             BarChartWithFilters,
         },
         computed: {
-            ...mapGettersByNames(namespace, ["indicators", "filters"]),
-            ...mapGettersByNames("modelCalibrate", [
-                "calibratePlotDefaultSelections",
-            ]),
+            ...mapGettersByNames<typeof getters, GetterTypes>(namespace, getters),
+            calibratePlotDefaultSelections: mapGetterByName<UnadjustedBarchartSelections>("modelCalibrate", "calibratePlotDefaultSelections"),
             chartData: mapStateProp<ModelCalibrateState, any>(
                 namespace,
                 (state) => {
@@ -106,9 +89,9 @@
             ),
         },
         methods: {
-            ...mapMutationsByNames<"updateCalibratePlotSelections">("plottingSelections", [
+            ...mapMutationsByNames("plottingSelections", [
                 "updateCalibratePlotSelections",
-            ]),
+            ] as const),
             formatBarchartValue: (
                 value: string | number,
                 indicator: BarchartIndicator

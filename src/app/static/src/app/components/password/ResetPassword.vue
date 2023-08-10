@@ -21,7 +21,7 @@
                         </div>
                     </form>
                     <div v-if="hasError">
-                        <error-alert :error="error"></error-alert>
+                        <error-alert :error="error!"></error-alert>
                         <div id="request-new-link" v-translate="'resetTokenInvalid'">
                         </div>
                     </div>
@@ -34,36 +34,15 @@
 </template>
 
 <script lang="ts">
-    import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
     import ErrorAlert from "../ErrorAlert.vue";
     import {mapActions, mapState} from "vuex";
     import {PasswordState} from "../../store/password/password";
     import LoggedOutHeader from "../header/LoggedOutHeader.vue";
     import {Language} from "../../store/translations/locales";
-import { mapStateProps } from "../../utils";
+    import { mapStateProps } from "../../utils";
+    import { defineComponent } from "vue";
 
-    interface Data {
-        password: string
-    }
-
-    interface Computed {
-        error: Error | null
-        hasError: boolean
-        passwordWasReset: boolean,
-        language: Language
-    }
-
-    interface Methods {
-        resetPassword: (input: object) => void
-        handleResetPassword: (email: Event) => void
-    }
-
-    interface Props {
-        title: string,
-        token: string
-    }
-
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponent({
         name: "ResetPassword",
         props: {
             title: {

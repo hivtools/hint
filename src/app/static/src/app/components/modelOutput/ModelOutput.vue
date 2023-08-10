@@ -125,7 +125,6 @@
     import {BarchartIndicator, Filter, FilterConfig, FilterOption} from "../../vue-chart/src/bar/types";
     import {BarChartWithFilters} from "../../vue-chart/src";
     import ErrorAlert from "../ErrorAlert.vue";
-    import {defineComponentVue2} from "../../defineComponentVue2/defineComponentVue2"
     import {
         mapGettersByNames,
         mapMutationByName,
@@ -156,6 +155,7 @@
     } from "../plots/utils";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
     import i18next from "i18next";
+import { defineComponent } from "vue";
 
     const namespace = 'filteredData';
 
@@ -212,7 +212,7 @@
         comparisonPlotDefaultSelections: UnadjustedBarchartSelections[]
     }
 
-    export default defineComponentVue2<Data, Methods, Computed>({
+    export default defineComponent({
         name: "ModelOutput",
         beforeMount() {
             if (!this.selectedTab) {
@@ -238,22 +238,22 @@
                 "bubblePlotFilters", "bubblePlotIndicators",
                 "choroplethFilters", "choroplethIndicators",
                 "countryAreaFilterOption", "comparisonPlotIndicators",
-                "comparisonPlotFilters", "comparisonPlotDefaultSelections"]),
-            ...mapStateProps<PlottingSelectionsState, keyof Computed>("plottingSelections", {
-                barchartSelections: state => state.barchart,
-                comparisonPlotSelections: state => state.comparisonPlot,
-                bubblePlotSelections: state => state.bubble,
-                choroplethSelections: state => state.outputChoropleth,
-                colourScales: state => state.colourScales.output,
-                bubbleSizeScales: state => state.bubbleSizeScales.output
+                "comparisonPlotFilters", "comparisonPlotDefaultSelections"] as const),
+            ...mapStateProps("plottingSelections", {
+                barchartSelections: (state: PlottingSelectionsState) => state.barchart,
+                comparisonPlotSelections: (state: PlottingSelectionsState) => state.comparisonPlot as BarchartSelections & {detail: null},
+                bubblePlotSelections: (state: PlottingSelectionsState) => state.bubble,
+                choroplethSelections: (state: PlottingSelectionsState) => state.outputChoropleth,
+                colourScales: (state: PlottingSelectionsState) => state.colourScales.output,
+                bubbleSizeScales: (state: PlottingSelectionsState) => state.bubbleSizeScales.output
             }),
-            ...mapStateProps<BaselineState, keyof Computed>("baseline", {
-                    features: state => state.shape!.data.features as Feature[],
-                    featureLevels: state => state.shape!.filters.level_labels || []
+            ...mapStateProps("baseline", {
+                    features: (state: BaselineState) => state.shape!.data.features as Feature[],
+                    featureLevels: (state: BaselineState) => state.shape!.filters.level_labels || []
                 }
             ),
-            ...mapStateProps<ModelCalibrateState, keyof Computed>("modelCalibrate", {
-                comparisonPlotError: state => state.comparisonPlotError
+            ...mapStateProps("modelCalibrate", {
+                comparisonPlotError: (state: ModelCalibrateState) => state.comparisonPlotError
             }),
             filteredChoroplethIndicators() {
                 return this.choroplethIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.choroplethSelections.indicatorId)
@@ -299,20 +299,20 @@
             },
         },
         methods: {
-            ...mapMutationsByNames<keyof Methods>("plottingSelections",
+            ...mapMutationsByNames("plottingSelections",
                 ["updateBarchartSelections", "updateComparisonPlotSelections", "updateBubblePlotSelections",
-                "updateOutputChoroplethSelections", "updateOutputColourScales", "updateOutputBubbleSizeScales"]),
+                "updateOutputChoroplethSelections", "updateOutputColourScales", "updateOutputBubbleSizeScales"] as const),
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected),
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
             },
-            updateBarchartSelectionsAndXAxisOrder(data) {
+            updateBarchartSelectionsAndXAxisOrder(data: BarchartSelections) {
                 updateSelectionsAndXAxisOrder(data, this.barchartSelections, this.barchartFlattenedXAxisFilterOptionIds, this.updateBarchartSelections)
             },
-            updateComparisonPlotSelectionsAndXAxisOrder(data) {
+            updateComparisonPlotSelectionsAndXAxisOrder(data: BarchartSelections) {
                 if (data.indicatorId && data.indicatorId !== this.comparisonPlotSelections.indicatorId) {
                     const selections = this.comparisonPlotDefaultSelections
-                        .find(selection => selection.indicator_id === data.indicatorId)
+                        .find((selection: UnadjustedBarchartSelections) => selection.indicator_id === data.indicatorId)
 
                     if (selections) {
                         const comparisonSelections = {

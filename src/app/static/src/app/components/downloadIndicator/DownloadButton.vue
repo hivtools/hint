@@ -9,15 +9,10 @@
 </template>
 
 <script lang="ts">
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
+    import { defineComponent } from "vue";
     import VueFeather from "vue-feather";
 
-    interface Props {
-        disabled: boolean
-        name: string
-    }
-
-    export default defineComponentVue2WithProps<unknown, unknown, unknown, Props>({
+    export default defineComponent({
         name: "downloadButton",
         components: {
             VueFeather

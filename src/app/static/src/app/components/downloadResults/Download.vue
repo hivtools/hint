@@ -17,28 +17,13 @@
 </template>
 
 <script lang="ts">
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
     import DownloadStatus from "./DownloadStatus.vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import VueFeather from "vue-feather";
-    import {DownloadResultsDependency} from "../../types";
+    import { defineComponent } from "vue";
 
-    interface downloadTranslate {
-        header: string,
-        button: string
-    }
 
-    interface Props {
-        file: DownloadResultsDependency,
-        translateKey: downloadTranslate,
-        disabled: boolean
-    }
-
-    interface Methods {
-        download: () => void
-    }
-
-    export default defineComponentVue2WithProps<unknown, Methods, unknown, Props>({
+    export default defineComponent({
         name: "Download",
         components: {
             VueFeather,

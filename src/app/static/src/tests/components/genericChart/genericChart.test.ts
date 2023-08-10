@@ -5,7 +5,7 @@ import {emptyState} from "../../../app/root";
 import {flushPromises, shallowMount} from "@vue/test-utils";
 import GenericChart from "../../../app/components/genericChart/GenericChart.vue";
 import DataSource from "../../../app/components/genericChart/dataSelectors/DataSource.vue";
-import Filters from "../../../app/components/plots/Filters.vue";
+import FiltersComp from "../../../app/components/plots/Filters.vue";
 // Mock the import of plotly to avoid import failures in non-browser context
 jest.mock("plotly.js-basic-dist", () => ({
     newPlot: jest.fn()
@@ -15,7 +15,7 @@ import {mockGenericChartState, mockSuccess} from "../../mocks";
 import {GenericChartState} from "../../../app/store/genericChart/genericChart";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
-import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
+import {expectTranslated, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
 import {GenericChartMetadataResponse} from "../../../app/types";
 import {actions} from "../../../app/store/genericChart/actions";
 import {mutations} from "../../../app/store/genericChart/mutations";
@@ -209,7 +209,7 @@ describe("GenericChart component", () => {
         setTimeout(() => {
             console.log(wrapper.html())
             expect(wrapper.findAllComponents(DataSource).length).toBe(0);
-            expect(wrapper.findAllComponents(Filters).length).toBe(0);
+            expect(wrapper.findAllComponents(FiltersComp).length).toBe(0);
             expect(wrapper.findComponent(Plotly).exists()).toBe(false);
             expect(wrapper.findComponent(LoadingSpinner).attributes("size")).toBe("lg");
             expectTranslated(wrapper.find("h2"), "Loading your data", "Chargement de vos données",
@@ -252,7 +252,7 @@ describe("GenericChart component", () => {
             expect(dataSources[1].props("datasets")).toStrictEqual(metadata["test-chart"].datasets);
             expect(dataSources[1].props("value")).toBe("dataset2");
 
-            const filters = wrapper.findAllComponents(Filters);
+            const filters = wrapper.findAllComponents(FiltersComp);
             expect(filters.length).toBe(2);
             expect(filters[0].props("filters")).toStrictEqual([
                 {
@@ -351,7 +351,7 @@ describe("GenericChart component", () => {
             );
 
             expect(wrapper.findAllComponents(DataSource).length).toBe(2);
-            const filters = wrapper.findAllComponents(Filters);
+            const filters = wrapper.findAllComponents(FiltersComp);
             expect(filters.length).toBe(2);
             expect(filters[0].props("filters")).toStrictEqual([
                 {
@@ -458,7 +458,8 @@ describe("GenericChart component", () => {
         const wrapper = getWrapper(state);
 
         setTimeout(() => {
-            const dataset1Filters = wrapper.findAllComponents(Filters)[0];
+            const dataset1Filters = wrapper.findAllComponents(FiltersComp)[0];
+            console.log(dataset1Filters.html())
             const newFilterSelections = {
                 age: [{id: "2", label: "2"}],
                 year: [{id: "2020", label: "2020"}]
@@ -540,7 +541,7 @@ describe("GenericChart component", () => {
         setTimeout(() => {
             const dataSources = wrapper.findAllComponents(DataSource);
             expect(dataSources.length).toBe(1);
-            const filters = wrapper.findAllComponents(Filters);
+            const filters = wrapper.findAllComponents(FiltersComp);
             expect(filters.length).toBe(1);
 
             const plotly = wrapper.findComponent(Plotly);
@@ -908,7 +909,7 @@ describe("GenericChart component", () => {
             const store = wrapper.vm.$store;
             const dataSources = wrapper.findAllComponents(DataSource);
             expect(dataSources.length).toBe(1);
-            const filters = wrapper.findAllComponents(Filters);
+            const filters = wrapper.findAllComponents(FiltersComp);
             expect(filters.length).toBe(1);
 
             const pageControls = wrapper.find("#page-controls");
@@ -1123,7 +1124,7 @@ describe("GenericChart component", () => {
         const store = wrapper.vm.$store;
         await expectTranslated(wrapper.find("#page-number"), "Page 2 of 3",
             "Page 2 sur 3", "Pagina 2 de 3", store);
-        const dataset1Filters = wrapper.findAllComponents(Filters)[0];
+        const dataset1Filters = wrapper.findAllComponents(FiltersComp)[0];
         const newFilterSelections = {
             type: [{id: "other"}]
         };
@@ -1156,7 +1157,7 @@ describe("GenericChart component", () => {
             const store = wrapper.vm.$store;
             const dataSources = wrapper.findAllComponents(DataSource);
             expect(dataSources.length).toBe(1);
-            const filters = wrapper.findAllComponents(Filters);
+            const filters = wrapper.findAllComponents(FiltersComp);
             expect(filters.length).toBe(1);
 
             expect(wrapper.find("#page-controls").exists()).toBe(false);

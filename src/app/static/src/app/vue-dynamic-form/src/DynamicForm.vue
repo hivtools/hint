@@ -28,7 +28,7 @@
         DynamicFormData,
         DynamicFormMeta
     } from "./types";
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
+    import { defineComponent } from "vue";
 
     interface Methods {
         buildValue: (control: DynamicControl) => string | string[] | number | null
@@ -51,7 +51,7 @@
         selectText?: string
     }
 
-    export default defineComponentVue2WithProps<unknown, Methods, Computed, Props>({
+    export default defineComponent({
         name: "DynamicForm",
         props: {
             id: {
@@ -86,7 +86,6 @@
         },
         components: {
             BForm,
-            DynamicFormControlGroup,
             DynamicFormControlSection
         },
         beforeMount() {
@@ -112,7 +111,7 @@
             },
             disabled() {
                 return this.controls
-                    .filter(c => c.required && (c.value == null || c.value == ""))
+                    .filter((c: Control) => c.required && (c.value == null || c.value == ""))
                     .length > 0
             }
         },
@@ -132,7 +131,7 @@
                     e.preventDefault();
                 }
                 const result = this.controls
-                    .reduce((formData, control) => {
+                    .reduce((formData: DynamicFormData, control: Control) => {
                         formData[control.name] = this.buildValue(control);
                         return formData
                     }, {} as DynamicFormData);

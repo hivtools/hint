@@ -9,17 +9,9 @@
 </template>
 
 <script lang="ts">
-    import { defineComponentVue2WithProps } from '../defineComponentVue2/defineComponentVue2';
+    import { defineComponent } from 'vue';
 
-    interface Props {
-        active: boolean,
-        number: number,
-        textKey: string,
-        enabled: boolean,
-        complete: boolean
-    }
-
-    export default defineComponentVue2WithProps<unknown, unknown, unknown, Props>({
+    export default defineComponent({
         props: {
             active: {
                 type: Boolean,

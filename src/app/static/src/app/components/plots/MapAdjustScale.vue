@@ -77,33 +77,10 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
 <script lang="ts">
     import {ScaleSettings, ScaleType} from "../../store/plottingSelections/plottingSelections";
     import i18next from "i18next";
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
+    import { PropType, defineComponent } from "vue";
 
-    interface Props {
-        name: string,
-        show: boolean,
-        scale: ScaleSettings,
-        step: number,
-        metadata: any
-    }
 
-    interface Computed {
-        disableCustom: boolean,
-        invalidMsg: string | null,
-        scaleText: string,
-        scaleTypeGroup: string
-    }
-
-    interface Data {
-        scaleToAdjust: ScaleSettings,
-        ScaleType: typeof ScaleType
-    }
-
-    interface Methods {
-        update: () => void
-    }
-
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponent({
         name: "MapAdjustScale",
         props: {
             name: {
@@ -115,7 +92,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
                 required: true
             },
             scale: {
-                type: Object,
+                type: Object as PropType<ScaleSettings>,
                 required: true
             },
             step: {
@@ -123,7 +100,7 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
                 required: true
             },
             metadata: {
-                type: Object,
+                type: Object as PropType<any>,
                 required: false
             }
         },

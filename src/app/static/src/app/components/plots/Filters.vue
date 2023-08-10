@@ -13,37 +13,27 @@
 </template>
 
 <script lang="ts">
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
     import FilterSelect from "./FilterSelect.vue";
     import {Dict, DisplayFilter} from "../../types";
     import {FilterOption} from "../../generated";
+    import { PropType, defineComponent } from "vue";
 
-    interface Props {
-        filters: DisplayFilter[],
-        selectedFilterOptions: Dict<FilterOption[]>,
-    }
-
-    interface Methods {
-        getSelectedFilterValues: (filterId: string) => string[],
-        onFilterSelect: (filter: DisplayFilter, selectedOptions: FilterOption[]) => void
-    }
-
-    export default defineComponentVue2WithProps<unknown, Methods, unknown, Props>({
+    export default defineComponent({
         name: "Filters",
         components: {FilterSelect},
         props: {
             filters: {
-                type: Array,
+                type: Array as PropType<DisplayFilter[]>,
                 required: true
             },
             selectedFilterOptions: {
-                type: Object,
+                type: Object as PropType<Dict<FilterOption[]>>,
                 required: true
             }
         },
         methods: {
             getSelectedFilterValues(filterId: string) {
-                return (this.selectedFilterOptions[filterId] || []).map(o => o.id);
+                return (this.selectedFilterOptions[filterId] || []).map((o: FilterOption) => o.id);
             },
             onFilterSelect(filter: DisplayFilter, selectedOptions: FilterOption[]) {
                 const newSelectedFilterOptions = {...this.selectedFilterOptions};

@@ -23,66 +23,35 @@
     import TableView from "./Table.vue";
     import {findPath, iterateDataValues, formatOutput} from "../utils";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
-    import {Dict, Field, Filter} from "../../../types";
+    import {Dict, Filter} from "../../../types";
     import {flattenOptions, flattenToIdSet, mapStateProp} from "../../../utils";
     import {RootState} from "../../../root";
     import {Language} from "../../../store/translations/locales";
-    import { defineComponentVue2WithProps } from "../../../defineComponentVue2/defineComponentVue2";
+    import { PropType, defineComponent } from "vue";
 
-    interface Selections {
-        [key: string]: any
+
+    type LocalSelections = {
         selectedFilterOptions: Dict<FilterOption[]>,
         detail: number | null
     }
 
-    interface Props {
-        tableData: any[],
-        indicators: ChoroplethIndicatorMetadata[],
-        selections: {
-            selectedFilterOptions: Dict<FilterOption[]>,
-            detail: number | null
-        },
-        filters: Filter[],
-        countryAreaFilterOption: NestedFilterOption,
-        areaFilterId: string
-        translateFilterLabels?: boolean,
-        roundFormatOutput?: boolean
-    }
-
-    interface DisplayRow {
-        areaLabel: string,
-        areaHierarchy: string
-    }
-
-    interface Computed {
-        nonAreaFilters: Filter[],
-        filtersToDisplay: Filter[],
-        areaFilter: Filter,
-        filteredData: DisplayRow[],
-        flattenedAreas: Dict<NestedFilterOption>,
-        selectedAreaIds: string[],
-        selectedAreaFilterOptions: FilterOption[],
-        generatedFields: Array<Field>,
-        currentLanguage: Language
-    }
-
-    export default defineComponentVue2WithProps<unknown, unknown, Computed, Props>({
+    export default defineComponent({
         name: "AreaIndicatorsTable",
         props: {
             tableData: {
-                type: Array,
+                type: Array as PropType<any[]>,
                 required: true
             },
             filters: {
-                type: Array,
+                type: Array as PropType<Filter[]>,
                 required: true
             },
             countryAreaFilterOption: {
-                type: Object,
+                type: Object as PropType<NestedFilterOption>,
                 required: true
             },
             indicators: {
-                type: Array,
+                type: Array as PropType<ChoroplethIndicatorMetadata[]>,
                 required: true
             },
             areaFilterId: {
@@ -90,7 +59,7 @@
                 required: true
             },
             selections: {
-                type: Object,
+                type: Object as PropType<LocalSelections>,
                 required: true
             },
             translateFilterLabels: {
@@ -119,13 +88,13 @@
             },
             selectedAreaIds() {
                 const selectedAreaIdSet =
-                    flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
+                    flattenToIdSet(this.selectedAreaFilterOptions.map((o: FilterOption) => o.id), this.flattenedAreas);
                 const areaArray = Array.from(selectedAreaIdSet);
                 if (this.selections.detail === 0) {
                     return [areaArray[0]]
                 } else if (!this.selections.detail) {
                     const selectedAreaOptions = this.selections.selectedFilterOptions.area || [];
-                    return selectedAreaOptions.map(row => row.id)
+                    return selectedAreaOptions.map((row: FilterOption) => row.id)
                 } else return areaArray.filter(val => parseInt(val[4]) === this.selections.detail);
             },
             selectedAreaFilterOptions() {
@@ -137,7 +106,7 @@
                 } else return this.areaFilter ? this.areaFilter.options : []; //consider all top level areas to be selected if none are
             },
             filtersToDisplay() {
-                return this.nonAreaFilters.filter(f => f.options.length > 0)
+                return this.nonAreaFilters.filter((f: Filter) => f.options.length > 0)
             },
             filteredData() {
                 const filteredValues: any[] = [];
@@ -148,7 +117,7 @@
                     this.selections.selectedFilterOptions,
                     (areaId: string, indicatorMeta: ChoroplethIndicatorMetadata, value: number, row: any) => {
                         const filterValues: Dict<any> = {};
-                        this.filtersToDisplay.forEach(f => {
+                        this.filtersToDisplay.forEach((f: Filter) => {
                             if (row[f.column_id]) {
                                 filterValues[f.id] = row[f.column_id]
                             }
@@ -158,14 +127,14 @@
                     });
                 const displayRows: Dict<any> = {};
                 filteredValues.forEach(current => {
-                    const key = [current.areaId, ...this.nonAreaFilters.map(f => current.filterValues[f.id])].join("_");
+                    const key = [current.areaId, ...this.nonAreaFilters.map((f: Filter) => current.filterValues[f.id])].join("_");
                     if (!(key in displayRows)) {
                         const areaLabel = this.flattenedAreas[current.areaId].label;
                         const areaHierarchy = findPath(current.areaId, this.countryAreaFilterOption.children)
                         const filterLabels: Dict<string> = {};
                         Object.keys(current.filterValues).forEach(k => {
                             const selectedOptions = this.selections.selectedFilterOptions[k];
-                            filterLabels[k] = selectedOptions.filter(o => o.id == current.filterValues[k])[0].label;
+                            filterLabels[k] = selectedOptions.filter((o: FilterOption) => o.id == current.filterValues[k])[0].label;
                         });
                         displayRows[key] = {
                             areaLabel,
@@ -187,13 +156,13 @@
                     key: 'areaLabel',
                     label: i18next.t('area', {lng: this.currentLanguage})
                 })
-                this.filtersToDisplay.forEach(value => {
+                this.filtersToDisplay.forEach((value: Filter) => {
                     const field: Dict<any> = {};
                     field.key = value.id
                     field.label = this.translateFilterLabels ? i18next.t(value.label.toLowerCase(), {lng: this.currentLanguage}) : value.label
                     fields.push(field)
                 })
-                this.indicators.forEach(value => {
+                this.indicators.forEach((value: ChoroplethIndicatorMetadata) => {
                     const field: Dict<any> = {};
                     field.key = value.indicator
                     field.label = value.name

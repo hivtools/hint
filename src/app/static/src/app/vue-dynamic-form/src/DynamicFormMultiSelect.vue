@@ -12,25 +12,13 @@
 <script lang="ts">
     import {MultiSelectControl} from "./types";
     import HintTreeSelect from "../../components/HintTreeSelect.vue";
-    import { defineComponentVue2GetSetWithProps } from "../../defineComponentVue2/defineComponentVue2";
+    import { PropType, defineComponent } from "vue";
 
-    interface Props {
-        formControl: MultiSelectControl
-        selectText?: string
-    }
-
-    interface Computed extends Record<string, any>{
-        value: {
-            get(): string[],
-            set: (newVal: string[]) => void
-        }
-    }
-
-    export default defineComponentVue2GetSetWithProps<unknown, unknown, Computed, Props>({
+    export default defineComponent({
         name: "DynamicFormMultiSelect",
         props: {
             formControl: {
-                type: Object,
+                type: Object as PropType<MultiSelectControl>,
                 required: true
             },
             selectText: {

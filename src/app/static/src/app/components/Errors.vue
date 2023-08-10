@@ -14,33 +14,14 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponent } from "vue";
     import {ErrorsState} from "../store/errors/errors";
     import {mapMutationByName, mapStateProps} from "../utils";
     import {ErrorsMutation} from "../store/errors/mutations";
-    import {Error} from "../generated"
-    import { defineComponentVue2WithProps } from "../defineComponentVue2/defineComponentVue2";
 
     const namespace = "errors";
 
-    interface Props {
-        title?: string
-    }
-
-    interface Methods {
-        dismissAll: () => void
-    }
-
-    interface ComputedState {
-        errors: Error[]
-    }
-
-    interface Computed extends ComputedState {
-        hasErrors: boolean
-
-    }
-
-    export default defineComponentVue2WithProps<unknown, Methods, Computed, Props>({
+    export default defineComponent({
         name: "Errors",
         props: {
             title: {
@@ -49,8 +30,8 @@
             }
         },
         computed: {
-            ...mapStateProps<ErrorsState, keyof ComputedState>(namespace, {
-                errors: state => {
+            ...mapStateProps(namespace, {
+                errors: (state: ErrorsState) => {
                     const messages = state.errors.map(e => e.detail ? e.detail : e.error);
                     return Array.from(new Set(messages))
                 }

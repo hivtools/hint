@@ -25,6 +25,7 @@ import {LoadState} from "./store/load/state";
 import {initialModelRunState} from "./store/modelRun/modelRun";
 import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
 import {AxiosResponse} from "axios";
+import { ComputedGetter } from 'vue';
 
 export type ComputedWithType<T> = () => T;
 
@@ -37,33 +38,104 @@ export const mapStatePropByName = <T>(namespace: string | null, name: string): C
     return (namespace && mapState(namespace, [name])[name]) || mapState([name])[name]
 };
 
-export const mapStateProps = <S, K extends string>(namespace: string,
-    map: Dict<(this: CustomVue, state: S) => any>) => {
-    type R = {[key in K]: any}
-    return mapState<S>(namespace, map) as R
+export const mapStateProps = <Map extends Dict<(this: CustomVue, state: any) => any>>(namespace: string, map: Map) => {
+    /*
+        User inputs a namespace and an object with the maps
+        they want to execute, e.g.
+        map = {
+            prop1: (state: StateType) => {
+                ...some code...
+                return result1
+            },
+            prop2: (state: StateType) => {
+                ...some code...
+                return result2
+            }
+        }
+    */
+    type TypeOfMap = typeof map
+    /*
+        We now create the expected return type by looping
+        through the type of map and extracting the result
+        type of the functions so for the example above we
+        get:
+        Result = {
+            prop1: ComputedGetter<typeof result1>
+            prop2: ComputedGetter<typeof result2>
+        }
+        which is exactly what we want (the ComputedGetter
+        type is just required by defineComponent)
+    */
+    type Result = {
+        [key in keyof TypeOfMap]: ComputedGetter<ReturnType<TypeOfMap[key]>>
+    }
+    return mapState(namespace, map) as Result
 };
 
-export const mapGetterByName = <T>(namespace: string | null, name: string): ComputedWithType<T> => {
+export const mapRootStateProps = <Map extends Dict<(this: CustomVue, state: any) => any>>(map: Map) => {
+    type TypeOfMap = typeof map
+    type Result = {
+        [key in keyof TypeOfMap]: ComputedGetter<ReturnType<TypeOfMap[key]>>
+    }
+    return mapState(map) as Result
+};
+
+export const mapGetterByName = <T>(namespace: string | null, name: string): ComputedGetter<T> => {
     return (namespace && mapGetters(namespace, [name])[name]) || mapGetters([name])[name]
 }
 
-export const mapGettersByNames = <K extends string>(namespace: string, names: string[]) => {
-    type R = {[key in K]: any}
-    return mapGetters(namespace, names) as R
+export const mapGettersByNames = <Names extends readonly string[], Types extends Record<Names[number], any>>(namespace: string, names: Names) => {
+    // need to create a copy as names is a readonly and mapGetters
+    // needs a normal string[]
+    const nameCopy = [...names]
+    /*
+        Names is a readonly string[] so looks like ["name1", "name2"].
+        Names[number] has type "name1" | "name2" since number is used
+        to index arrays. If we didn't have readonly, Name[number] would
+        have type string.
+        Since we now have a type "name1" | "name2" we can loop through
+        this like before and construct and object type like
+        {
+            name1: any,
+            name2: any
+        }
+        This is what AnyResult does
+    */
+    type AnyResult = {
+        [key in Names[number]]: any
+    }
+    /*
+        If the user decided to assert types, we can extract those from
+        the generic Types and the interfaces are guaranteed to have
+        the same properties as Types extendes Record<"name1" | "name2", any>
+        from example above
+    */
+    type TypedResult = {
+        [key in Names[number]]: ComputedGetter<Types[key]>
+    }
+    // simple check to see if user has defined Types or not
+    type Result = Types extends undefined ? AnyResult : TypedResult
+    return mapGetters(namespace, nameCopy) as Result
 };
 
 export const mapActionByName = <T>(namespace: string | null, name: string): ActionMethod => {
     return (!!namespace && mapActions(namespace, [name])[name]) || mapActions([name])[name]
 };
 
-export const mapActionsByNames = <K extends string>(namespace: string | null, names: string[]) => {
-    type R = {[key in K]: any}
-    return (!!namespace && mapActions(namespace, names) || mapActions(names)) as R
+export const mapActionsByNames = <Names extends readonly string[]>(namespace: string | null, names: Names) => {
+    const nameCopy = [...names]
+    type Result = {
+        [key in Names[number]]: any
+    }
+    return (!!namespace && mapActions(namespace, nameCopy) || mapActions(nameCopy)) as Result
 };
 
-export const mapMutationsByNames = <K extends string>(namespace: string, names: string[]) => {
-    type R = {[key in K]: any}
-    return mapMutations(namespace, names) as R
+export const mapMutationsByNames = <Names extends readonly string[]>(namespace: string, names: Names) => {
+    const nameCopy = [...names]
+    type Result = {
+        [key in Names[number]]: any
+    }
+    return mapMutations(namespace, nameCopy) as Result
 };
 
 export const mapMutationByName = <T>(namespace: string | null, name: string): MutationMethod => {

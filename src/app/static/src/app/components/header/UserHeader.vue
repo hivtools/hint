@@ -29,7 +29,6 @@
     </header>
 </template>
 <script lang="ts">
-    import {defineComponentVue2WithProps} from "../../defineComponentVue2/defineComponentVue2"
     import {mapGetters} from 'vuex';
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
@@ -38,16 +37,9 @@
     import {RootState} from "../../root";
     import HintrVersionMenu from "./HintrVersionMenu.vue";
     import OnlineSupportMenu from "./OnlineSupportMenu.vue";
+    import { defineComponent } from "vue";
 
-    interface Props {
-        title?: string,
-        user?: string
-    }
-
-    interface Computed {
-        helpFilename: string
-    }
-    export default defineComponentVue2WithProps<unknown, unknown, Computed, Props>({
+    export default defineComponent({
         computed: {
             helpFilename: mapStateProp<RootState, string>(null,
                 (state: RootState) => {

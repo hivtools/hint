@@ -16,18 +16,9 @@
     </div>
 </template>
 <script lang="ts">
-    import { StyleValue } from "vue";
-    import { defineComponentVue2WithProps } from "../defineComponentVue2/defineComponentVue2";
+    import { defineComponent } from "vue";
 
-    interface Props {
-        open: boolean
-    }
-
-    interface Computed {
-        style: StyleValue
-    }
-
-    export default defineComponentVue2WithProps<unknown, unknown, Computed, Props>({
+    export default defineComponent({
         name: "Modal",
         props: {
             open: {

@@ -1,12 +1,7 @@
-import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
+import { defineComponent } from "vue";
 import {mapStatePropByName} from "../../utils";
 
-interface Computed {
-    editsRequireConfirmation: boolean,
-    dataExplorationMode: boolean
-}
-
-export default defineComponentVue2<unknown, unknown, Computed>({
+export default defineComponent({
     computed: {
         dataExplorationMode: mapStatePropByName(null, "dataExplorationMode"),
         editsRequireConfirmation() {

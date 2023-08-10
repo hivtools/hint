@@ -41,7 +41,6 @@
                                 :feature-levels="featureLevels"
                                 :indicators="sapIndicatorsMetadata"
                                 :selections="plottingSelections"
-                                @format="handleFormatOutput($event)"
                                 :include-filters="false"
                                 :round-format-output="false"
                                 :area-filter-id="areaFilterId"
@@ -89,7 +88,7 @@
     import {DataType, SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
     import {Feature} from "geojson";
     import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
-    import {mapActionByName, mapGettersByNames, mapStateProp} from "../../utils";
+    import {mapActionByName, mapGettersByNames, mapStateProp, mapRootStateProps} from "../../utils";
     import {
         ChoroplethSelections,
         PlottingSelectionsState,
@@ -99,7 +98,7 @@
     import {Language} from "../../store/translations/locales";
     import GenericChart from "../genericChart/GenericChart.vue";
     import {GenericChartState} from "../../store/genericChart/genericChart";
-    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
+    import { defineComponent } from "vue";
 
     const namespace = 'surveyAndProgram';
 
@@ -108,45 +107,7 @@
         TimeSeries = 1
     }
 
-    interface Data {
-        areaFilterId: string
-        selectedTab: Tab
-    }
-
-    interface SAPFileUploadProps extends PartialFileUploadProps {
-        available: boolean
-    }
-
-    interface Computed {
-        selectedDataType: DataType,
-        filters: Filter[],
-        countryAreaFilterOption: FilterOption,
-        data: any,
-        sapIndicatorsMetadata: ChoroplethIndicatorMetadata[],
-        showChoropleth: boolean,
-        anc: SAPFileUploadProps,
-        programme: SAPFileUploadProps,
-        survey: SAPFileUploadProps,
-        features: Feature[],
-        featureLevels: LevelLabel[],
-        plottingSelections: ChoroplethSelections,
-        availableDatasetIds: string[],
-        filterTableIndicators: ChoroplethIndicatorMetadata[],
-        currentLanguage: Language,
-        dataSourceOptions: FilterOption[],
-        genericChartMetadata: GenericChartMetadataResponse | null,
-        selectedSAPColourScales: ScaleSelections,
-    }
-
-    interface Methods {
-        updateChoroplethSelections: (data: {payload: Partial<ChoroplethSelections>}) => void,
-        updateSAPColourScales: (data: {payload: [DataType, ScaleSelections]}) => void,
-        selectDataType: (payload: DataType) => void,
-        selectDataSource: (option: string) => void,
-        selectTab: (tab: Tab) => void
-    }
-
-    export default defineComponentVue2<Data, Methods, Computed>({
+    export default defineComponent({
         name: "ReviewInputs",
         data() {
             return {
@@ -155,7 +116,7 @@
             };
         },
         computed: {
-            ...mapState<RootState>({
+            ...mapRootStateProps({
                 selectedDataType: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => {
                     return surveyAndProgram.selectedDataType;
                 },
@@ -171,22 +132,22 @@
                 survey: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     available: !surveyAndProgram.surveyError && surveyAndProgram.survey
                 }),
-                features: ({baseline} : {baseline: BaselineState}) => baseline.shape ? baseline.shape.data.features : [] as Feature[],
-                featureLevels: ({baseline} : {baseline: BaselineState}) => baseline.shape ? baseline.shape.filters.level_labels : [],
+                features: ({baseline} : {baseline: BaselineState}) => baseline.shape ? baseline.shape.data.features as Feature[] : [] as Feature[],
+                featureLevels: ({baseline} : {baseline: BaselineState}) => baseline.shape ? baseline.shape.filters.level_labels as LevelLabel[] : [] as LevelLabel[],
                 plottingSelections: ({plottingSelections}: {plottingSelections: PlottingSelectionsState}) => plottingSelections.sapChoropleth,
                 genericChartMetadata:({genericChart}: {genericChart: GenericChartState}) => genericChart.genericChartMetadata
             }),
-            ...mapGettersByNames(namespace, ["data", "filters", "countryAreaFilterOption"]),
-            ...mapGetters("metadata", ["sapIndicatorsMetadata"]),
-            ...mapGetters("plottingSelections", ["selectedSAPColourScales"]),
+            ...mapGettersByNames(namespace, ["data", "filters", "countryAreaFilterOption"] as const),
+            ...mapGettersByNames("metadata", ["sapIndicatorsMetadata"] as const),
+            ...mapGettersByNames("plottingSelections", ["selectedSAPColourScales"] as const),
             currentLanguage: mapStateProp<RootState, Language>(
                 null,
                 (state: RootState) => state.language
             ),
-            filterTableIndicators() {
+            filterTableIndicators(): ChoroplethIndicatorMetadata[] {
                 return this.sapIndicatorsMetadata.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.plottingSelections.indicatorId)
             },
-            dataSourceOptions() {
+            dataSourceOptions(): FilterOption[] {
                 const options = [];
                 const lang = {lng: this.currentLanguage};
                 if (this.survey.available) {

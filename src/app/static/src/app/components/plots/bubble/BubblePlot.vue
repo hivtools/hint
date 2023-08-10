@@ -73,7 +73,6 @@
 </template>
 
 <script lang="ts">
-    import {defineComponentVue2WithProps} from "../../../defineComponentVue2/defineComponentVue2"
     import HintTreeSelect from "../../HintTreeSelect.vue";
     import {Feature} from "geojson";
     import {LGeoJson, LMap} from "@vue-leaflet/vue-leaflet";
@@ -96,19 +95,7 @@
     import {initialiseScaleFromMetadata} from "../choropleth/utils";
     import MapEmptyFeature from "../MapEmptyFeature.vue";
     import ResetMap from "../ResetMap.vue";
-
-
-    interface Props {
-        features: Feature[],
-        featureLevels: LevelLabel[]
-        indicators: ChoroplethIndicatorMetadata[],
-        chartdata: any[],
-        filters: Filter[],
-        selections: BubblePlotSelections,
-        areaFilterId: string,
-        colourScales: ScaleSelections,
-        sizeScales: ScaleSelections
-    }
+    import { PropType, defineComponent } from "vue";
 
     interface Data {
         style: any,
@@ -118,52 +105,7 @@
         previousCircles: CircleMarker[]
     }
 
-    interface Methods {
-        updateBounds: () => void,
-        showBubble: (feature: Feature) => boolean,
-        getRadius: (feature: Feature) => number,
-        getColor: (feature: Feature) => string,
-        getTooltip: (feature: Feature) => string,
-        getSelectedFilterValues: (filterId: string) => string[],
-        onDetailChange: (newVal: number) => void,
-        onFilterSelect: (filter: Filter, selectedOptions: FilterOption[]) => void,
-        onColorIndicatorSelect: (newValue: string) => void,
-        onSizeIndicatorSelect: (newValue: string) => void,
-        changeSelections: (newSelections: Partial<BubblePlotSelections>) => void,
-        getFeatureFromAreaId: (id: string) => Feature,
-        normalizeIndicators: (node: ChoroplethIndicatorMetadata) => any,
-        updateColourScale: (scale: ScaleSettings) => void,
-        updateSizeScale: (scale: ScaleSettings) => void,
-        getRange: (indicator: ChoroplethIndicatorMetadata, scale: ScaleSettings) => NumericRange
-    }
-
-    interface Computed {
-        initialised: boolean,
-        currentLevelFeatureIds: string[],
-        featureIndicators: BubbleIndicatorValuesDict,
-        featuresByLevel: { [k: number]: Feature[] },
-        currentFeatures: Feature[],
-        maxLevel: number,
-        indicatorNameLookup: Dict<string>,
-        areaFilter: Filter,
-        nonAreaFilters: Filter[],
-        areaFilterOptions: FilterOption[],
-        selectedAreaFilterOptions: FilterOption[],
-        flattenedAreas: Dict<NestedFilterOption>,
-        selectedAreaFeatures: Feature[],
-        countryFilterOption: FilterOption,
-        countryFeature: Feature | null,
-        sizeIndicator: ChoroplethIndicatorMetadata,
-        colorIndicator: ChoroplethIndicatorMetadata,
-        sizeRange: NumericRange,
-        colourRange: NumericRange,
-        colourIndicatorScale: ScaleSettings | null
-        sizeIndicatorScale: ScaleSettings | null
-        selectedAreaIds: string[]
-        emptyFeature: boolean
-    }
-
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponent({
         name: "BubblePlot",
         components: {
             LMap,
@@ -178,27 +120,27 @@
         },
         props: {
             features: {
-                type: Array,
+                type: Array as PropType<Feature[]>,
                 required: true
             },
             featureLevels: {
-                type: Array,
+                type: Array as PropType<LevelLabel[]>,
                 required: true
             },
             indicators: {
-                type: Array,
+                type: Array as PropType<ChoroplethIndicatorMetadata[]>,
                 required: true
             },
             chartdata: {
-                type: Array,
+                type: Array as PropType<any[]>,
                 required: true
             },
             filters: {
-                type: Array,
+                type: Array as PropType<Filter[]>,
                 required: true
             },
             selections: {
-                type: Object,
+                type: Object as PropType<BubblePlotSelections>,
                 required: true
             },
             areaFilterId: {
@@ -206,15 +148,15 @@
                 required: true
             },
             colourScales: {
-                type: Object,
+                type: Object as PropType<ScaleSelections>,
                 required: true
             },
             sizeScales: {
-                type: Object,
+                type: Object as PropType<ScaleSelections>,
                 required: true
             }
         },
-        data() {
+        data(): Data {
             return {
                 style: {
                     className: "geojson-grey",
@@ -232,10 +174,10 @@
                     !!this.selections.colorIndicatorId && !!this.selections.sizeIndicatorId;
             },
             currentLevelFeatureIds() {
-                return this.currentFeatures.map(f => f.properties!["area_id"]);
+                return this.currentFeatures.map((f: Feature) => f.properties!["area_id"]);
             },
             emptyFeature() {
-                const nonEmptyFeature = (this.currentFeatures.filter(filtered => !!this.featureIndicators[filtered.properties!.area_id]))
+                const nonEmptyFeature = (this.currentFeatures.filter((filtered: Feature) => !!this.featureIndicators[filtered.properties!.area_id]))
                 return nonEmptyFeature.length == 0
             },
             sizeRange() {
@@ -247,7 +189,7 @@
                 return this.getRange(this.colorIndicator, colourScale);
             },
             selectedAreaIds() {
-                const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
+                const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map((o: FilterOption) => o.id), this.flattenedAreas);
                 return Array.from(selectedAreaIdSet)
             },
             featureIndicators() {
@@ -291,8 +233,8 @@
 
                 return Math.max(...levelNums);
             },
-            currentFeatures() {
-                return this.featuresByLevel[this.selections.detail] || [];
+            currentFeatures(): Feature[] {
+                return this.featuresByLevel[this.selections.detail]|| [];
             },
             indicatorNameLookup() {
                 return toIndicatorNameLookup(this.indicators)
@@ -318,7 +260,7 @@
             },
             selectedAreaFeatures(): Feature[] {
                 if (this.selectedAreaFilterOptions && this.selectedAreaFilterOptions.length > 0) {
-                    return this.selectedAreaFilterOptions.map(o => this.getFeatureFromAreaId(o.id)!);
+                    return this.selectedAreaFilterOptions.map((o: FilterOption) => this.getFeatureFromAreaId(o.id)!);
                 }
                 return [];
             },
@@ -329,10 +271,10 @@
                 return this.countryFilterOption ? this.getFeatureFromAreaId(this.countryFilterOption.id)! : null;
             },
             colorIndicator(): ChoroplethIndicatorMetadata {
-                return this.indicators.find(i => i.indicator == this.selections.colorIndicatorId)!;
+                return this.indicators.find((i: ChoroplethIndicatorMetadata) => i.indicator == this.selections.colorIndicatorId)!;
             },
             sizeIndicator(): ChoroplethIndicatorMetadata {
-                return this.indicators.find(i => i.indicator == this.selections.sizeIndicatorId)!;
+                return this.indicators.find((i: ChoroplethIndicatorMetadata) => i.indicator == this.selections.sizeIndicatorId)!;
             },
             colourIndicatorScale(): ScaleSettings | null {
                 const current = this.colourScales[this.selections.colorIndicatorId];
@@ -344,7 +286,7 @@
                     return newScale;
                 }
             },
-            sizeIndicatorScale(): ScaleSettings | null {
+            sizeIndicatorScale(): ScaleSettings {
                 const current = this.sizeScales[this.selections.sizeIndicatorId];
                 if (current) {
                     return current
@@ -365,7 +307,7 @@
                     }
                     let circlesArray: CircleMarker[] = [];
                     if (!this.emptyFeature) {
-                        this.currentFeatures.forEach((feature) => {
+                        this.currentFeatures.forEach((feature: Feature) => {
                             if (!this.showBubble(feature)) {
                                 return
                             }
@@ -440,7 +382,7 @@
                             </div>`;
             },
             getSelectedFilterValues(filterId: string) {
-                return (this.selections.selectedFilterOptions[filterId] || []).map(o => o.id);
+                return (this.selections.selectedFilterOptions[filterId] || []).map((o: FilterOption) => o.id);
             },
             getRange(indicator: ChoroplethIndicatorMetadata, scale: ScaleSettings) {
                 if (!this.initialised) {
@@ -463,7 +405,7 @@
                             indicator,
                             this.nonAreaFilters,
                             this.selections.selectedFilterOptions,
-                            this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1)
+                            this.selectedAreaIds.filter((a: string) => this.currentLevelFeatureIds.indexOf(a) > -1)
                         );
                     case ScaleType.Custom:
                         return {

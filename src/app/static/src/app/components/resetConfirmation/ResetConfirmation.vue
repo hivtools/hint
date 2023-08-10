@@ -48,46 +48,17 @@
 </template>
 
 <script lang="ts">
-    import {PropType} from "vue";
+    import {PropType, defineComponent} from "vue";
     import Modal from "../Modal.vue";
     import {mapActionByName, mapGetterByName, mapStateProp} from "../../utils";
     import {StepDescription} from "../../store/stepper/stepper";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {ProjectsState} from "../../store/projects/projects";
     import {ErrorsState} from "../../store/errors/errors";
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
-
-    interface Computed {
-        changesToRelevantSteps: StepDescription[]
-        currentVersionId: string | null
-        errorsCount: number
-        currentVersionNote: string
-        isGuest: boolean
-        showRelevantSteps: StepDescription[]
-        showWarning: boolean
-    }
-
-    interface Props {
-        open: boolean
-        continueEditing: () => void
-        cancelEditing: () => void
-        discardStepWarning?: number | null
-    }
-
-    interface Data {
-        waitingForVersion: boolean
-        versionNote: string
-        uuid: string
-    }
-
-    interface Methods {
-        handleConfirm: () => void
-        newVersion: (note: string) => void
-    }
 
     let uuid = 0;
 
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>({
+    export default defineComponent({
         props: {
             open: {
                 type: Boolean,
@@ -102,7 +73,7 @@
                 required: true
             },
             discardStepWarning: {
-                type: Number,
+                type: Number as PropType<number | null>,
                 required: false
             }
         },
@@ -114,7 +85,7 @@
             }
         },
         computed: {
-            changesToRelevantSteps: mapGetterByName("stepper", "changesToRelevantSteps"),
+            changesToRelevantSteps: mapGetterByName<StepDescription[]>("stepper", "changesToRelevantSteps"),
             currentVersionId: mapStateProp<ProjectsState, string | null>("projects", state => {
                 return state.currentVersion && state.currentVersion.id;
             }),
@@ -127,7 +98,7 @@
             }),
             showRelevantSteps() {
                 // In special cases when data for a downstream step can be retained, remove the warning for that step
-                return this.changesToRelevantSteps.filter(step => step.number !== this.discardStepWarning)
+                return this.changesToRelevantSteps.filter((step: StepDescription) => step.number !== this.discardStepWarning)
             },
             showWarning() {
                 return this.showRelevantSteps.length > 0

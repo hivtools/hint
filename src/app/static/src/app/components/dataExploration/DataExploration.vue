@@ -18,7 +18,6 @@
     </div>
 </template>
 <script lang="ts">
-    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import AdrIntegration from "../adr/ADRIntegration.vue";
     import UploadInputs from "../uploadInputs/UploadInputs.vue";
@@ -32,37 +31,18 @@
     import {StepperState} from "../../store/stepper/stepper";
     import {BaselineState} from "../../store/baseline/baseline";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
+    import { defineComponent } from "vue";
 
-    interface Computed {
-        step: number,
-        baselineReady: boolean,
-        baselineValid: boolean,
-        surveyAndProgramReady: boolean,
-        surveyAndProgramValid: boolean,
-        canProgress: boolean,
-        isUploadStep: boolean,
-        isReviewStep: boolean,
-        updatingLanguage: boolean,
-        loading: boolean
-    }
-
-    interface Methods {
-        jump: (step: number) => void,
-        next: () => void
-        back: () => void
-        getPlottingMetadata: (country: string) => void
-    }
-
-    export default defineComponentVue2<unknown, Methods, Computed>({
+    export default defineComponent({
         computed: {
             step: mapStateProp<StepperState, number>("stepper", state => state.activeStep),
-            canProgress() {
+            canProgress(): boolean {
                 return this.isUploadStep && this.baselineValid && this.surveyAndProgramValid
             },
-            isUploadStep() {
+            isUploadStep(): boolean {
                 return this.step === 1
             },
-            isReviewStep() {
+            isReviewStep(): boolean {
                 return this.step === 2
             },
             baselineValid: mapGetterByName("baseline", "validForDataExploration"),
@@ -70,7 +50,7 @@
             baselineReady: mapStateProp<BaselineState, boolean>("baseline", state => state.ready),
             surveyAndProgramReady: mapStateProp<SurveyAndProgramState, boolean>("surveyAndProgram", state => state.ready),
             updatingLanguage: mapStatePropByName(null, "updatingLanguage"),
-            loading() {
+            loading():boolean {
                 return !this.baselineReady || !this.surveyAndProgramReady || this.updatingLanguage
             }
 

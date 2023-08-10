@@ -33,7 +33,6 @@
 </template>
 
 <script lang="ts">
-    import {defineComponentVue2} from "../../defineComponentVue2/defineComponentVue2"
     import {ModelRunState} from "../../store/modelRun/modelRun";
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
@@ -45,66 +44,36 @@
         mapMutationByName
     } from "../../utils";
     import ErrorAlert from "../ErrorAlert.vue";
-    import {ProgressPhase} from "../../generated";
     import ProgressBar from "../progress/ProgressBar.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import {ModelRunMutation} from "../../store/modelRun/mutations";
-
-    interface ComputedState {
-        runId: string
-        pollId: number
-        phases: ProgressPhase[]
-    }
-
-    interface ComputedGetters {
-        running: boolean
-        complete: boolean
-    }
-
-     interface Data {
-        showReRunConfirmation: boolean
-    }
-
-    interface Computed extends ComputedGetters, ComputedState {
-        editsRequireConfirmation: boolean
-    }
-
-    interface Methods {
-        handleRun: () => void;
-        confirmReRun: () => void;
-        cancelReRun: () => void;
-        run: () => void;
-        poll: (runId: string) => void;
-        cancelRun: () => void;
-        runModelWithParams: () => void;
-        clearResult: () => void;
-    }
+    import { defineComponent } from "vue";
 
     const namespace = 'modelRun';
 
-    export default defineComponentVue2<Data, Methods, Computed>({
+    export default defineComponent({
         name: "ModelRun",
-        data(): Data {
+        data() {
             return {
                 showReRunConfirmation: false
             }
         },
         computed: {
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
-            ...mapStateProps<ModelRunState, keyof ComputedState>(namespace, {
-                runId: state => state.modelRunId,
-                pollId: state => state.statusPollId,
-                errors: state => state.errors,
-                phases: state => {
+            ...mapStateProps(namespace, {
+                runId: (state: ModelRunState) => state.modelRunId,
+                pollId: (state: ModelRunState) => state.statusPollId,
+                errors: (state: ModelRunState) => state.errors,
+                phases: (state: ModelRunState) => {
                     const progress = state.status.progress || [];
                     return progress.map((item, index) => ({...item, name: `${index + 1}. ${item.name}`}))
                 }
             }),
-            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running", "complete"])
+            ...mapGettersByNames(namespace, ["running", "complete"] as const)
         },
         methods: {
-            ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll", "cancelRun"]),
+            ...mapActionsByNames(namespace, ["run", "poll", "cancelRun"] as const),
             clearResult: mapMutationByName(namespace, ModelRunMutation.ClearResult),
             handleRun(){
                 if (this.editsRequireConfirmation){

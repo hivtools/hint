@@ -28,7 +28,7 @@
 
 </template>
 <script lang="ts">
-    import {ComputedGetter} from "vue";
+    import { defineComponent } from "vue";
     import i18next from "i18next";
     import {DynamicFormData, DynamicFormMeta} from "../../vue-dynamic-form/src/types";
     import DynamicForm from "../../vue-dynamic-form/src/DynamicForm.vue";
@@ -39,57 +39,13 @@
     import {ModelOptionsMutation} from "../../store/modelOptions/mutations";
     import {ModelOptionsState} from "../../store/modelOptions/modelOptions";
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
-    import {StepDescription} from "../../store/stepper/stepper";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import ErrorAlert from "../ErrorAlert.vue";
-    import { defineComponentVue2GetSet } from "../../defineComponentVue2/defineComponentVue2";
-    import { Error } from "../../generated";
-
-    interface Methods {
-        fetchOptions: () => void
-        validate: (data: DynamicFormData) => void
-        handleValidation: (data: DynamicFormData) => void
-        unValidate: () => void
-        update: (data: DynamicFormMeta) => void
-        cancelEditing: () => void
-        continueEditing: () => void
-        confirmEditing: (e: Event) => void
-    }
-
-    interface Computed extends Record<string, any> {
-        modelOptions: {
-            get: ComputedGetter<DynamicFormMeta>,
-            set: (newVal: DynamicFormMeta) => void
-        }
-        loading: ComputedGetter<boolean>
-        valid: ComputedGetter<boolean>
-        validating: ComputedGetter<boolean>,
-        validateError: ComputedGetter<Error | null>
-        hasOptionsError: ComputedGetter<boolean>
-        optionsError: ComputedGetter<Error | null>
-        editsRequireConfirmation: ComputedGetter<boolean>
-        currentLanguage: ComputedGetter<Language>
-        selectText: ComputedGetter<string>
-        requiredText: ComputedGetter<string>
-        validateText: ComputedGetter<string>
-    }
-
-    interface Data {
-        showConfirmation: boolean
-    }
-
-    type ModelOptionsStateKeys = "loading" |
-        "valid" |
-        "validating" |
-        "validateError" |
-        "hasValidateError" |
-        "hasOptionsError" |
-        "optionsError"
 
     const namespace = "modelOptions";
 
-    export default defineComponentVue2GetSet<Data, Methods, Computed>({
+    export default defineComponent({
         data() {
             return {
                 showConfirmation: false
@@ -97,24 +53,24 @@
         },
         name: "ModelOptions",
         computed: {
-            ...mapStateProps<ModelOptionsState, ModelOptionsStateKeys>(namespace, {
-                loading: state => state.fetching,
-                valid: state => state.valid,
-                validating: state => state.validating,
-                validateError: state => state.validateError,
-                hasValidateError: state => !!state.validateError,
-                hasOptionsError: state => !!state.optionsError,
-                optionsError: state => state.optionsError
+            ...mapStateProps(namespace, {
+                loading: (state: ModelOptionsState) => state.fetching,
+                valid: (state: ModelOptionsState) => state.valid,
+                validating: (state: ModelOptionsState) => state.validating,
+                validateError: (state: ModelOptionsState) => state.validateError,
+                hasValidateError: (state: ModelOptionsState) => !!state.validateError,
+                hasOptionsError: (state: ModelOptionsState) => !!state.optionsError,
+                optionsError: (state: ModelOptionsState) => state.optionsError
             }),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
-            selectText() {
+            selectText(): string {
                 return i18next.t("select", {lng: this.currentLanguage})
             },
-            requiredText() {
+            requiredText(): string {
                 return i18next.t("required", {lng: this.currentLanguage})
             },
-            validateText() {
+            validateText(): string {
                 return i18next.t("validate", {lng: this.currentLanguage})
             },
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
@@ -145,7 +101,7 @@
             unValidate: mapMutationByName(namespace, ModelOptionsMutation.UnValidate),
             fetchOptions: mapActionByName(namespace, "fetchModelRunOptions"),
             validate: mapActionByName(namespace, "validateModelOptions"),
-            handleValidation(options) {
+            handleValidation(options: DynamicFormData) {
                 if (options) {
                     this.validate(options)
                 }

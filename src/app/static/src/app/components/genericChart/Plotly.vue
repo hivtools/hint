@@ -11,37 +11,11 @@
 <script lang="ts">
     import Plotly from "plotly.js-basic-dist";
     import jsonata from "jsonata";
-    import {Dict} from "../../types";
     import LoadingSpinner from "../LoadingSpinner.vue";
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
-import { StyleValue } from "vue";
+    import { PropType, defineComponent } from "vue";
+import { Dict } from "../../types";
 
-    interface Data {
-        rendering: boolean,
-        layoutRequired: boolean
-    }
-
-    interface Props {
-        chartMetadata: string,
-        chartData: Dict<unknown[]> | null,
-        layoutData: Dict<unknown>
-    }
-
-    interface Computed {
-        inputData: Dict<unknown>,
-        data: {
-            data: unknown[],
-            layout: Dict<unknown>,
-            config: unknown
-        },
-        style: StyleValue
-    }
-
-    interface Methods {
-        drawChart: () => void
-    }
-
-    export default defineComponentVue2WithProps<Data, Methods, Computed, Props>( {
+    export default defineComponent({
         name: "Plotly",
         props: {
             chartMetadata: {
@@ -49,11 +23,11 @@ import { StyleValue } from "vue";
                 required: true
             },
             chartData: {
-                type: Object,
+                type: Object as PropType<Dict<unknown[]> | null>,
                 required: true
             },
             layoutData: {
-                type: Object,
+                type: Object as PropType<Dict<unknown>>,
                 required: true
             }
         },
@@ -83,7 +57,7 @@ import { StyleValue } from "vue";
                     width:'100%',
                     height: '100%',
                     visibility: this.rendering ? 'hidden' : 'visible'
-                };
+                } as any;
             }
         },
         methods: {
@@ -92,7 +66,7 @@ import { StyleValue } from "vue";
                 const el = this.$refs.chart;
                 const drawFunc = this.layoutRequired ? Plotly.newPlot : Plotly.react;
                 this.layoutRequired = false;
-                await drawFunc(el as HTMLElement, this.data.data as any, this.data.layout, {...this.data.config as any});
+                await drawFunc(el as HTMLElement, this.data.data, this.data.layout, {...this.data.config as any});
                 this.rendering = false;
             }
         },
@@ -107,7 +81,7 @@ import { StyleValue } from "vue";
                 deep: true
             },
             layoutData: function(newVal, oldVal) {
-                if (oldVal.subplots && newVal.subplots && oldVal.subplots.rows != newVal.subplots.rows) {
+                if (oldVal?.subplots && newVal?.subplots && oldVal.subplots.rows != newVal.subplots.rows) {
                     this.layoutRequired = true;
                 }
             }

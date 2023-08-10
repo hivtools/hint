@@ -94,7 +94,6 @@
 </template>
 <script lang="ts">
     import i18next from "i18next";
-    import { defineComponentVue2 } from "../../defineComponentVue2/defineComponentVue2"
     import {Language} from "../../store/translations/locales";
     import HintTreeSelect from "../HintTreeSelect.vue";
     import {
@@ -110,7 +109,6 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {
         Dataset,
-        DatasetResource,
         DatasetResourceSet,
         Release, Step
     } from "../../types";
@@ -119,55 +117,8 @@
     import {Error} from "../../generated";
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import SelectRelease from "./SelectRelease.vue";
-    import {GetDatasetPayload} from "../../store/adr/actions";
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
-
-    interface Methods {
-        getDatasets: () => void;
-        getDataset: (payload: GetDatasetPayload) => void;
-        importDataset: () => void;
-        toggleModal: () => void;
-        importPJNZ: (url: string) => Promise<void>;
-        importShape: (url: string) => Promise<void>;
-        importPopulation: (url: string) => Promise<void>;
-        importSurvey: (url: string) => Promise<void>;
-        importProgram: (url: string) => Promise<void>;
-        importANC: (url: string) => Promise<void>;
-        deleteBaselineFiles: () => Promise<void>;
-        refresh: () => void;
-        refreshDatasetMetadata: () => void;
-        markResourcesUpdated: () => void;
-        startPolling: () => void;
-        stopPolling: () => void;
-        confirmImport: () => void;
-        continueEditing: () => void;
-        cancelEditing: () => void;
-        updateDatasetRelease: (release: Release) => void;
-        updateValid: (valid: boolean) => void;
-        preSelectDataset: () => void;
-    }
-
-    interface Computed {
-        datasets: any[];
-        selectedRelease: Release | null;
-        releaseName: string | null;
-        releaseURL: string;
-        fetchingDatasets: boolean;
-        adrError: Error | null;
-        datasetOptions: any[];
-        selectedDataset: Dataset | null;
-        selectText: string;
-        outOfDateMessage: string;
-        outOfDateResources: { [k in keyof DatasetResourceSet]?: true };
-        hasShapeFile: boolean;
-        currentLanguage: Language;
-        select: string;
-        disableImport: boolean;
-        hasPjnzFile: boolean;
-        hasPopulationFile: boolean;
-        selectedDatasetAvailableResources: { [k in keyof DatasetResourceSet]?: DatasetResource | null }
-        selectedDatasetIsRefreshed: boolean
-    }
+    import { defineComponent } from "vue";
 
     interface Data {
         open: boolean;
@@ -191,9 +142,9 @@
 
     const namespace = "adr";
 
-    export default defineComponentVue2<Data, Methods, Computed>({
+    export default defineComponent({
         extends: ResetConfirmationMixin,
-        data() {
+        data(): Data {
             return {
                 open: false,
                 showConfirmation: false,
@@ -258,7 +209,7 @@
                 return new URL(this.selectedDataset!.url).origin + '/dataset/' + this.selectedDataset!.id + '?activity_id=' + this.selectedRelease!.activity_id;
             },
             datasetOptions() {
-                return this.datasets.map((d) => ({
+                return this.datasets.map((d: any) => ({
                     id: d.id,
                     label: d.title,
                     customLabel: `${d.title}
@@ -426,7 +377,7 @@
             },
             preSelectDataset() {
                 const selectedDatasetId = this.selectedDataset?.id
-                if (selectedDatasetId && this.datasets.some(dataset => dataset.id === selectedDatasetId)) {
+                if (selectedDatasetId && this.datasets.some((dataset: any) => dataset.id === selectedDatasetId)) {
                     this.newDatasetId = selectedDatasetId;
                 }
             },
@@ -459,10 +410,10 @@
                     window.clearInterval(this.pollingId);
                 }
             },
-            updateDatasetRelease(release) {
+            updateDatasetRelease(release: Release) {
                 this.newDatasetRelease = release;
             },
-            updateValid(valid) {
+            updateValid(valid: boolean) {
                 this.valid = valid;
             }
         },

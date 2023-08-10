@@ -33,32 +33,13 @@
 </template>
 
 <script lang="ts">
-
-    import { defineComponentVue2WithProps } from "../../defineComponentVue2/defineComponentVue2";
     import DynamicFormControlGroup from "./DynamicFormControlGroup.vue";
     import {DynamicControlGroup, DynamicControlSection} from "./types";
     import VueFeather from "vue-feather";
     import {BCollapse, BRow, BCol} from "bootstrap-vue-next";
+    import { PropType, defineComponent } from "vue";
 
-    interface Methods {
-        change: (newVal: DynamicControlGroup, index: number) => void
-        toggleDocumentation: (e: Event) => void
-        toggleSection: () => void
-        confirm: (e: Event) => void
-    }
-
-    interface Props {
-        controlSection: DynamicControlSection
-        requiredText?: string
-        selectText?: string
-    }
-
-    interface Data {
-        open: boolean
-        showDocumentation: boolean
-    }
-
-    export default defineComponentVue2WithProps<Data, Methods, unknown, Props>({
+    export default defineComponent({
         name: "DynamicFormControlSection",
         data() {
             return {
@@ -68,7 +49,7 @@
         },
         props: {
             controlSection: {
-                type: Object,
+                type: Object as PropType<DynamicControlSection>,
                 required: true
             },
             requiredText: {
