@@ -59,18 +59,64 @@ export default defineComponent({
             const chartData = this.chartData as any;
             const datasets = chartData.datasets as any[];
 
+            const baseChartOptions = {
+                tooltips: {
+                    callbacks: {
+                        label: (tooltipItem: any, data: any) => {
+                            let label = ((typeof tooltipItem.datasetIndex !== "undefined") && data.datasets && data.datasets[tooltipItem.datasetIndex].label)
+                                            || '';
+                            if (label) {
+                                label += ': ';
+                            }
+
+                            if (tooltipItem.yLabel) {
+                                label += formatCallback(tooltipItem.yLabel);
+                            }
+
+                            let minus = null
+                            let plus = null
+
+                            if (this.showErrors && tooltipItem.xLabel && typeof tooltipItem.datasetIndex !== "undefined" && data.datasets && data.datasets[tooltipItem.datasetIndex]) {
+                                const errorBars = (data.datasets[tooltipItem.datasetIndex] as ChartDataSetsWithErrors).errorBars
+                                const xLabelErrorBars = errorBars ? errorBars[tooltipItem.xLabel] : null
+                                if (xLabelErrorBars) {
+                                    minus = xLabelErrorBars.minus
+                                    plus = xLabelErrorBars.plus
+                                }
+                            }
+
+                            if ((typeof minus === "number") && (typeof plus === "number")) {
+                                label = `${label} (${formatCallback(minus)} - ${formatCallback(plus)})`
+                            }
+
+                            return label;
+                        }
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+
             if (this.showErrorBars) {
                 const errorLines = [] as any[];
+
+                // the errorBars need to coordinate with what bar charts are visible
+                // in chart js (users can click legend to hide certain bars)
                 const visibleDatasetIndices = this.showLabelErrorBars.reduce(
                     (out: number[], bool: boolean, index: number) => bool ? out.concat(index) : out, 
                     []
                 );
+
                 const numOfDatasets = this.showLabelErrorBars.filter(x => x).length;
                 const numOfLabels = chartData.labels.length;
                 const numOfBars = numOfDatasets * numOfLabels;
+
+                // amount of padding chart js uses by default for each bar 
                 const barPercentage = 0.8;
-                const barWidth = barPercentage/(numOfDatasets * 2);
+
+                const halfBarWidth = barPercentage/(numOfDatasets * 2);
                 const errorBarWeight = 1;
+
                 visibleDatasetIndices.forEach((datasetId, indexDataset) => {
                     const dataset = datasets[datasetId];
                     if (!dataset) {
@@ -80,12 +126,27 @@ export default defineComponent({
                     const label = dataset.label;
                     Object.keys(errorBarData).forEach((xLabel) => {
                         const labelIndex = chartData.labels.indexOf(xLabel)
-                        const barMidPoint = labelIndex - barPercentage/2 + barWidth * (indexDataset * 2 + 1);
-                        const errorBarWidth = (numOfBars/(numOfBars + 10)) * barWidth * 0.3;
+                        const barMidPoint = labelIndex + halfBarWidth * (indexDataset * 2 + 1) - barPercentage/2;
+
+                        /*
+                            This is the width of the horizontal bits on top and bottom of the error
+                            bars. This formula address the problem of error bars being too wide
+                            when there is only one or two bars on the chart. If we just set it to
+                            a constant halfBarWidth * 0.3 then it is too big when there are a few
+                            wide bars on the screen.
+
+                            So when there are a few wide bars, numOfBars/(numOfBars + 10) is small
+                            which solves our problem. When there are a lot of thin bars
+                            numOfBars/(numOfBars + 10) is closer to 1 so we don't get very small
+                            error bar widths
+                        */
+                        const errorBarWidth = (numOfBars/(numOfBars + 10)) * halfBarWidth * 0.3;
+
                         if (errorBarData[xLabel].minus && errorBarData[xLabel].plus) {
                             const config = [
                                 {
-                                    drawTime: "afterDraw",
+                                    borderColor: "#585858",
+                                    drawTime: "afterDatasetsDraw",
                                     type: "line",
                                     label: {
                                         content: label
@@ -98,7 +159,8 @@ export default defineComponent({
                                     borderWidth: errorBarWeight
                                 },
                                 {
-                                    drawTime: "afterDraw",
+                                    borderColor: "#585858",
+                                    drawTime: "afterDatasetsDraw",
                                     type: "line",
                                     label: {
                                         content: label
@@ -111,7 +173,8 @@ export default defineComponent({
                                     borderWidth: errorBarWeight
                                 },
                                 {
-                                    drawTime: "afterDraw",
+                                    borderColor: "#585858",
+                                    drawTime: "afterDatasetsDraw",
                                     type: "line",
                                     label: {
                                         content: label
@@ -129,6 +192,12 @@ export default defineComponent({
                     })
                 });
 
+                /*
+                    We need to pass a customLegendClick event into chartOptions so
+                    that our state can update when a user clicks on the legend and
+                    hides some bars. This is required to coordinate the chart with
+                    the error bars.
+                */
                 const customLegendClick = (e: Event, legendItem: any, legend: any) => {
                     const index = legendItem.datasetIndex;
                     const ci = legend.chart;
@@ -148,41 +217,7 @@ export default defineComponent({
                 }
 
                 return {
-                    tooltips: {
-                        callbacks: {
-                            label: (tooltipItem: any, data: any) => {
-                                let label = ((typeof tooltipItem.datasetIndex !== "undefined") && data.datasets && data.datasets[tooltipItem.datasetIndex].label)
-                                                || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-    
-                                if (tooltipItem.yLabel) {
-                                    label += formatCallback(tooltipItem.yLabel);
-                                }
-    
-                                let minus = null
-                                let plus = null
-    
-                                if (this.showErrors && tooltipItem.xLabel && typeof tooltipItem.datasetIndex !== "undefined" && data.datasets && data.datasets[tooltipItem.datasetIndex]) {
-                                    const errorBars = (data.datasets[tooltipItem.datasetIndex] as ChartDataSetsWithErrors).errorBars
-                                    const xLabelErrorBars = errorBars ? errorBars[tooltipItem.xLabel] : null
-                                    if (xLabelErrorBars) {
-                                        minus = xLabelErrorBars.minus
-                                        plus = xLabelErrorBars.plus
-                                    }
-                                }
-    
-                                if ((typeof minus === "number") && (typeof plus === "number")) {
-                                    label = `${label} (${formatCallback(minus)} - ${formatCallback(plus)})`
-                                }
-    
-                                return label;
-                            }
-                        }
-                    },
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    ...baseChartOptions,
                     plugins: {
                         annotation: {
                             annotations: errorLines
@@ -198,56 +233,28 @@ export default defineComponent({
                     }
                 }
             } else {
-                return {
-                    tooltips: {
-                        callbacks: {
-                            label: (tooltipItem: any, data: any) => {
-                                let label = ((typeof tooltipItem.datasetIndex !== "undefined") && data.datasets && data.datasets[tooltipItem.datasetIndex].label)
-                                                || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-    
-                                if (tooltipItem.yLabel) {
-                                    label += formatCallback(tooltipItem.yLabel);
-                                }
-    
-                                let minus = null
-                                let plus = null
-    
-                                if (this.showErrors && tooltipItem.xLabel && typeof tooltipItem.datasetIndex !== "undefined" && data.datasets && data.datasets[tooltipItem.datasetIndex]) {
-                                    const errorBars = (data.datasets[tooltipItem.datasetIndex] as ChartDataSetsWithErrors).errorBars
-                                    const xLabelErrorBars = errorBars ? errorBars[tooltipItem.xLabel] : null
-                                    if (xLabelErrorBars) {
-                                        minus = xLabelErrorBars.minus
-                                        plus = xLabelErrorBars.plus
-                                    }
-                                }
-    
-                                if ((typeof minus === "number") && (typeof plus === "number")) {
-                                    label = `${label} (${formatCallback(minus)} - ${formatCallback(plus)})`
-                                }
-    
-                                return label;
-                            }
-                        }
-                    },
-                    responsive: true,
-                    maintainAspectRatio: false
-                }
+                return baseChartOptions
             }
         }
+    },
+    methods: {
+        hideErrorBarsDuringAnimation() {
+            this.displayErrorBars = false;
+            if (this.errorBarTimeout) {
+                window.clearTimeout(this.errorBarTimeout)
+            }
+            this.errorBarTimeout = setTimeout(() => {
+                this.displayErrorBars = true
+            }, 1050)
+        }
+    },
+    mounted() {
+        this.hideErrorBarsDuringAnimation()
     },
     watch: {
         chartData: {
             handler: function(newVal, oldVal) {
-                this.displayErrorBars = false;
-                if (this.errorBarTimeout) {
-                    window.clearTimeout(this.errorBarTimeout)
-                }
-                this.errorBarTimeout = setTimeout(() => {
-                    this.displayErrorBars = true
-                }, 900)
+                this.hideErrorBarsDuringAnimation()
             },
             deep: true
         },
@@ -259,13 +266,7 @@ export default defineComponent({
         },
         showLabelErrorBars: {
             handler: function(newVal, oldVal) {
-                this.displayErrorBars = false;
-                if (this.errorBarTimeout) {
-                    window.clearTimeout(this.errorBarTimeout)
-                }
-                this.errorBarTimeout = setTimeout(() => {
-                    this.displayErrorBars = true
-                }, 1050)
+                this.hideErrorBarsDuringAnimation()
             },
             deep: true
         }        
