@@ -6,6 +6,7 @@ import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.models.ModelOptions
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 
 @RestController
 @RequestMapping("/model")
@@ -37,7 +38,7 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
 
     @GetMapping("/result/{id}")
     @ResponseBody
-    fun result(@PathVariable("id") id: String): ResponseEntity<String>
+    fun result(@PathVariable("id") id: String): ResponseEntity<StreamingResponseBody>
     {
         return apiClient.getResult(id)
     }

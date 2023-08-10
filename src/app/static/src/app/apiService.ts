@@ -5,6 +5,7 @@ import {freezer, isHINTResponse, readStream} from "./utils";
 import {Error, Response} from "./generated";
 import i18next from "i18next";
 import {GenericResponse, TranslatableState} from "./types";
+import {getSpectrumOutputStatus} from "./store/downloadResults/actions";
 
 declare let appUrl: string;
 
@@ -24,6 +25,8 @@ export interface API<S, E> {
     get<T>(url: string): Promise<void | ResponseWithType<T>>
 
     delete(url: string): Promise<void | true>
+
+    stream<T>(url: string): Promise<void | ResponseWithType<T>>
 }
 
 export class APIService<S extends string, E extends string> implements API<S, E> {
@@ -200,6 +203,64 @@ export class APIService<S extends string, E extends string> implements API<S, E>
             .then((response: AxiosResponse) => this._handleDownloadResponse(response))
             .catch((e: AxiosError) => this._handleDownloadError(e));
     }
+
+    //This proof-of-concept code will be refactored to handle errors and additional functionalities.
+     async stream<T>(url: string): Promise<T> {
+        this._verifyHandlers(url);
+        const fullUrl = this._buildFullUrl(url);
+
+        return fetch(fullUrl, { method: 'GET' })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const stream = response.body;
+
+                if (!stream) {
+                    throw new Error('Response body is not a ReadableStream.');
+                }
+
+                const chunks: Uint8Array[] = [];
+
+                const reader = stream.getReader();
+
+                const readChunks = async (): Promise<Uint8Array[]> => {
+                    const {done, value} = await reader.read();
+                    if (done) return chunks;
+                    if (value) chunks.push(value);
+                    return readChunks();
+                };
+
+                return readChunks();
+            })
+            .then(chunks => {
+                if (chunks.length === 0) {
+                    throw new Error('Empty response body');
+                }
+
+                const concatenatedChunks = new Uint8Array(
+                    chunks.reduce((acc, chunk) => acc + chunk.length, 0)
+                );
+
+                let offset = 0;
+                for (const chunk of chunks) {
+                    concatenatedChunks.set(chunk, offset);
+                    offset += chunk.length;
+                }
+
+                const jsonString = new TextDecoder().decode(concatenatedChunks);
+
+                console.log(JSON.parse(jsonString));
+
+                return JSON.parse(jsonString);
+            })
+            .catch(error => {
+                console.error(error);
+                throw error;
+            });
+    }
+
 
     async postAndReturn<T>(url: string, data?: any): Promise<void | ResponseWithType<T>> {
         this._verifyHandlers(url);

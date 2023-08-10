@@ -6,11 +6,12 @@ import com.github.kittinunf.fuel.httpDownload
 import org.imperial.mrc.hint.*
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
-import org.springframework.http.ResponseEntity
+import org.springframework.http.*
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
+import java.io.ByteArrayInputStream
 
 interface HintrAPIClient
 {
@@ -20,12 +21,12 @@ interface HintrAPIClient
         file: VersionFileWithPath,
         shapePath: String?,
         type: FileType,
-        strict: Boolean
+        strict: Boolean,
     ): ResponseEntity<String>
 
     fun submit(data: Map<String, VersionFileWithPath>, modelRunOptions: ModelOptions): ResponseEntity<String>
     fun getStatus(id: String): ResponseEntity<String>
-    fun getResult(id: String): ResponseEntity<String>
+    fun getResult(id: String): ResponseEntity<StreamingResponseBody>
     fun getPlottingMetadata(iso3: String): ResponseEntity<String>
     fun getModelRunOptions(files: Map<String, VersionFileWithPath>): ResponseEntity<String>
     fun getModelCalibrationOptions(iso3: String): ResponseEntity<String>
@@ -43,7 +44,7 @@ interface HintrAPIClient
     fun downloadOutputSubmit(
         type: String,
         id: String,
-        projectPayload: Map<String, Any?>? = null
+        projectPayload: Map<String, Any?>? = null,
     ): ResponseEntity<String>
     fun downloadOutputStatus(id: String): ResponseEntity<String>
     fun downloadOutputResult(id: String): ResponseEntity<StreamingResponseBody>
@@ -55,8 +56,9 @@ interface HintrAPIClient
 
 @Component
 class HintrFuelAPIClient(
-        appProperties: AppProperties,
-        private val objectMapper: ObjectMapper) : HintrAPIClient, FuelClient(appProperties.apiUrl)
+    appProperties: AppProperties,
+    private val objectMapper: ObjectMapper,
+) : HintrAPIClient, FuelClient(appProperties.apiUrl)
 {
 
     private fun getAcceptLanguage(): String
@@ -79,8 +81,10 @@ class HintrFuelAPIClient(
         return emptyArray()
     }
 
-    override fun validateBaselineIndividual(file: VersionFileWithPath,
-                                            type: FileType): ResponseEntity<String>
+    override fun validateBaselineIndividual(
+        file: VersionFileWithPath,
+        type: FileType,
+    ): ResponseEntity<String>
     {
 
         val json = objectMapper.writeValueAsString(
@@ -90,10 +94,12 @@ class HintrFuelAPIClient(
         return postJson("validate/baseline-individual", json)
     }
 
-    override fun validateSurveyAndProgramme(file: VersionFileWithPath,
-                                            shapePath: String?,
-                                            type: FileType,
-                                            strict: Boolean): ResponseEntity<String>
+    override fun validateSurveyAndProgramme(
+        file: VersionFileWithPath,
+        shapePath: String?,
+        type: FileType,
+        strict: Boolean,
+    ): ResponseEntity<String>
     {
 
         val json = objectMapper.writeValueAsString(
@@ -131,10 +137,25 @@ class HintrFuelAPIClient(
     {
         return get("model/status/${id}")
     }
+    override fun getResult(id: String): ResponseEntity<StreamingResponseBody> {
 
-    override fun getResult(id: String): ResponseEntity<String>
-    {
-        return get("model/result/${id}")
+        val response = get("model/result/${id}")
+
+        val responseBody = response.body!!
+
+        ByteArrayInputStream(responseBody.toByteArray())
+
+        val streamingResponseBody = getOutputStream(responseBody)
+
+        return ResponseEntity(streamingResponseBody, response.headers, response.statusCode)
+    }
+
+    private fun getOutputStream(responseBody: String): StreamingResponseBody {
+        return StreamingResponseBody { outputStream ->
+            println(responseBody)
+            val responseBodyBytes = responseBody.toByteArray()
+            outputStream.write(responseBodyBytes)
+        }
     }
 
     override fun calibrateSubmit(runId: String, calibrationOptions: ModelOptions): ResponseEntity<String>
@@ -220,7 +241,7 @@ class HintrFuelAPIClient(
     override fun downloadOutputSubmit(
         type: String,
         id: String,
-        projectPayload: Map<String, Any?>?
+        projectPayload: Map<String, Any?>?,
     ): ResponseEntity<String>
     {
         if (projectPayload.isNullOrEmpty())

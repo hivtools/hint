@@ -53,7 +53,7 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
                 .ignoreSuccess()
                 .withError(ModelRunMutation.RunResultError)
                 .freezeResponse()
-                .get<ModelResultResponse>(`/model/result/${state.modelRunId}`);
+                .stream<ModelResultResponse>(`/model/result/${state.modelRunId}`);
 
             if (response) {
                 commit({type: ModelRunMutation.WarningsFetched, payload: response.data.warnings});
