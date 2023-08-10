@@ -20,13 +20,13 @@
                         id="version-toggle"
                         :aria-label="`toggle ${getTranslatedValue('versionCountLabelSingle')} ${p.id}`"
                         class="btn btn-xs bg-transparent shadow-none py-0"
-                        @click="toggleVersionMenu">
-                        <vue-feather v-show="!openVersion"
+                        @click="toggleVersionMenu(p.id)">
+                        <vue-feather v-show="!openVersion[p.id]"
                             type="chevron-right"
                             size="20"
                             class="icon when-closed"
                         ></vue-feather>
-                        <vue-feather v-show="openVersion"
+                        <vue-feather v-show="openVersion[p.id]"
                             type="chevron-down"
                             size="20"
                             class="icon when-open"
@@ -39,7 +39,7 @@
                         {{ p.name }}
                     </a>
                     <span class="float-right">
-                    <button href="#" class=" btn btn-sm btn-red-icons"
+                    <button href="#" class="btn btn-sm btn-red-icons"
                             v-tooltip="getTranslatedValue('editProjectNote')"
                             @click.prevent="handleEditProjectNote(p.id)"
                             v-translate:aria-label="'editProjectNote'">
@@ -59,33 +59,33 @@
                 <div class="col-md-2 project-cell updated-cell">
                     {{ format(p.versions[0].updated) }}
                 </div>
-                <div class="col-md-1 project-cell load-cell"
-                     v-tooltip="getTranslatedValue('load')">
+                <div class="col-md-1 project-cell load-cell">
                     <button class=" btn btn-sm btn-red-icons"
+                            v-tooltip="getTranslatedValue('load')"
                             v-translate:aria-label="'load'"
                             @click="loadVersion($event, p.id, p.versions[0].id)">
                         <vue-feather type="refresh-cw" size="20"></vue-feather>
                     </button>
                 </div>
-                <div class="col-md-1 project-cell rename-cell"
-                     v-tooltip="getTranslatedValue('renameProject')">
+                <div class="col-md-1 project-cell rename-cell">
                     <button class="btn btn-sm btn-red-icons"
+                            v-tooltip="getTranslatedValue('renameProject')"
                             v-translate:aria-label="'renameProject'"
                             @click="renameProject($event, p.id)">
                         <vue-feather type="edit" size="20"></vue-feather>
                     </button>
                 </div>
-                <div class="col-md-1 project-cell delete-cell"
-                     v-tooltip="getTranslatedValue('delete')">
+                <div class="col-md-1 project-cell delete-cell">
                     <button class=" btn btn-sm btn-red-icons"
+                            v-tooltip="getTranslatedValue('delete')"
                             v-translate:aria-label="'delete'"
                             @click="deleteProject($event, p.id)">
                         <vue-feather type="trash-2" size="20"></vue-feather>
                     </button>
                 </div>
-                <div class="col-md-1 project-cell copy-cell"
-                     v-tooltip="getTranslatedValue('copyLatestToNewProject')">
+                <div class="col-md-1 project-cell copy-cell">
                     <button class=" btn btn-sm btn-red-icons"
+                            v-tooltip="getTranslatedValue('copyLatestToNewProject')"
                             v-translate:aria-label="'copyLatestToNewProject'"
                             @click="promoteVersion(
                                 $event,
@@ -100,12 +100,12 @@
                     <share-project :project="p"></share-project>
                 </div>
             </div>
-            <b-collapse :id="`versions-${p.id}`" :visible="openVersion">
+            <b-collapse :id="`versions-${p.id}`"
+                        :visible="openVersion[p.id]">
                 <div v-for="v in p.versions"
                      :id="`v-${v.id}`"
                      :key="v.id"
-                     class="row font-italic bg-light py-2"
-                     style="max-width: 100%; margin: 0px;">
+                     class="row font-italic bg-light py-2">
                     <div class="col-md-1 version-cell"></div>
                     <div class="col-md-3 version-cell edit-cell">
                         <span class="float-right">
@@ -123,9 +123,9 @@
                     <div class="col-md-2 version-cell version-updated-cell">
                         {{ format(v.updated) }}
                     </div>
-                    <div class="col-md-1 version-cell load-cell"
-                         v-tooltip="getTranslatedValue('load')">
+                    <div class="col-md-1 version-cell load-cell">
                         <button class=" btn btn-sm btn-red-icons"
+                                v-tooltip="getTranslatedValue('load')"
                                 v-translate:aria-label="'load'"
                                 @click="loadVersion($event, p.id, v.id)">
                             <vue-feather type="refresh-cw" size="20"></vue-feather>
@@ -133,17 +133,17 @@
                     </div>
                     <div class="col-md-1 version-cell">
                     </div>
-                    <div class="col-md-1 version-cell delete-cell"
-                         v-tooltip="getTranslatedValue('delete')">
+                    <div class="col-md-1 version-cell delete-cell">
                         <button class=" btn btn-sm btn-red-icons"
+                                v-tooltip="getTranslatedValue('delete')"
                                 v-translate:aria-label="'delete'"
                                 @click="deleteVersion($event, p.id, v.id)">
                         <vue-feather type="trash-2" size="20"></vue-feather>
                         </button>
                     </div>
-                    <div class="col-md-1 version-cell copy-cell"
-                         v-tooltip="getTranslatedValue('copyToNewProject')">
+                    <div class="col-md-1 version-cell copy-cell">
                         <button class=" btn btn-sm btn-red-icons"
+                                v-tooltip="getTranslatedValue('copyToNewProject')"
                                 v-translate:aria-label="'copyToNewProject'"
                                 @click="promoteVersion(
                                     $event,
@@ -297,7 +297,7 @@
         renameProjectNote: string;
         projectNoteToEdit: number | null;
         editedProjectNote: string;
-        openVersion: boolean
+        openVersion: Record<number, boolean>
     }
 
     interface Computed {
@@ -344,13 +344,19 @@
         getTranslatedValue: (key: string) => string;
         updateVersionNoteAction: (versionPayload: versionPayload) => void
         updateProjectNoteAction: (payload: projectPayload) => void
-        toggleVersionMenu: () => void
+        toggleVersionMenu: (pid: number) => void
     }
 
     export default defineComponentVue2<Data, Methods, Computed, typeof ProjectsMixin>({
         // ! Needs more work on mixins
         extends: ProjectsMixin,
         data() {
+            let openVersion: Record<number, boolean> = {};
+            if (this.projects) {
+                this.projects.forEach(p => {
+                    openVersion[p.id] = false
+                })
+            }
             return {
                 projectToDelete: null,
                 versionToDelete: null,
@@ -366,7 +372,7 @@
                 renamedProjectName: "",
                 editedProjectNote: "",
                 projectNoteToEdit: null,
-                openVersion: false
+                openVersion
             };
         },
         computed: {
@@ -575,8 +581,8 @@
                     lng: this.currentLanguage,
                 });
             },
-            toggleVersionMenu() {
-                this.openVersion = !this.openVersion
+            toggleVersionMenu(pid: number) {
+                this.openVersion[pid] = !this.openVersion[pid]
             },
         },
         components: {

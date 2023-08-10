@@ -8,8 +8,7 @@
                 </label>
                 <div class="align-self-center pl-2">
                     <div v-if="!editing">
-                        <span class="pr-2"
-                              style="vertical-align: middle">
+                        <span class="pr-2 align-middle">
                           {{ keyText }}
                         </span>
                         <span v-if="!key">

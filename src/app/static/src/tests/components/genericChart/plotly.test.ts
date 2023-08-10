@@ -8,7 +8,7 @@ jest.mock("plotly.js-basic-dist", () => ({
 }));
 import * as plotly from "plotly.js-basic-dist";
 import Vue, { nextTick } from "vue";
-import { shallowMount } from "@vue/test-utils";
+import { flushPromises, shallowMount } from "@vue/test-utils";
 import Plotly from "../../../app/components/genericChart/Plotly.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
@@ -200,8 +200,8 @@ describe("Plotly", () => {
         await nextTick();
         const spinnerDiv = wrapper.find("div.text-center");
         expect(spinnerDiv.findComponent(LoadingSpinner).props("size")).toBe("lg");
+        expect((wrapper.find("#chart").element as HTMLElement).style.visibility).toBe("hidden");
         await expectTranslated(spinnerDiv.find("h2"), "Loading chart",
             "Chargement du graphique", "Carregando o gráfico", store);
-        expect((wrapper.find("#chart").element as HTMLElement).style.visibility).toBe("hidden");
     });
 });

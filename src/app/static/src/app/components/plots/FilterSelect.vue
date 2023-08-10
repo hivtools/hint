@@ -1,15 +1,16 @@
 <template>
     <div>
-        <label :class="['font-weight-bold', { 'disabled-label': disabled }]" v-translate="label"></label>
-        <span v-if="labelTooltip"
-              v-tooltip="{
-                    content: `<dl>${labelTooltip}</dl>`,
-                    // Keep the tooltip open when mouse over the popup
-                    popperTriggers: ['hover'],
-                }"
-              class="icon-small">
-            <vue-feather type="help-circle"></vue-feather>
-        </span>
+        <div class="d-flex align-items-center">
+            <label :class="['font-weight-bold', { 'disabled-label': disabled }]" v-translate="label"></label>
+            <span v-if="labelTooltip"
+                v-tooltip="{
+                        content: `<dl>${labelTooltip}</dl>`,
+                        // Keep the tooltip open when mouse over the popup
+                        popperTriggers: ['hover'],
+                    }">
+                <vue-feather type="help-circle" size="20" class="ml-1"></vue-feather>
+            </span>
+        </div>
         <hint-tree-select :multiple="multiple"
                      :clearable="false"
                      :options="options"

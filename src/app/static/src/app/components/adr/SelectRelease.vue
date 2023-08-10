@@ -7,9 +7,9 @@
                 value="useLatest"
                 v-model="choiceADR"
             />
-            <label for="useLatest" v-translate="'useLatest'" class="pr-1"></label>
-            <span class="icon-small" v-tooltip="translate('datasetTooltip')">
-                <vue-feather type="help-circle"></vue-feather>
+            <label for="useLatest" v-translate="'useLatest'" class="ml-1"></label>
+            <span class="icon-small ml-1" v-tooltip="translate('datasetTooltip')">
+                <vue-feather type="help-circle" class="align-middle"></vue-feather>
             </span>
             <br />
         </div>
@@ -20,13 +20,9 @@
                 value="useRelease"
                 v-model="choiceADR"
             />
-            <label
-                for="useRelease"
-                v-translate="'useRelease'"
-                class="pr-1"
-            ></label>
-            <span class="icon-small" v-tooltip="translate('releaseTooltip')">
-                <vue-feather type="help-circle"></vue-feather>
+            <label for="useRelease" v-translate="'useRelease'" class="ml-1"></label>
+            <span class="icon-small ml-1" v-tooltip="translate('releaseTooltip')">
+                <vue-feather type="help-circle" class="align-middle"></vue-feather>
             </span>
             <br />
         </div>
@@ -88,7 +84,7 @@
     }
 
     interface Props {
-        datasetId: string | null;
+        datasetId?: string;
         open?: boolean;
     }
 
@@ -102,7 +98,7 @@
         props: {
             datasetId: {
                 type: String,
-                required: true
+                required: false
             },
             open: {
                 type: Boolean,

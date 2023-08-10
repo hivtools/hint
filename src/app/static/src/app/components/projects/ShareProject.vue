@@ -19,7 +19,6 @@
                                class="form-control"
                                :class="{'is-invalid': email.valid === false}"
                                @blur="() => addEmail(email, index)"
-                               @mouseout="($event.target as HTMLInputElement).blur()"
                                v-model="email.value"/>
                     </div>
                     <div class="col">
@@ -34,23 +33,28 @@
                 <loading-spinner size="sm"></loading-spinner>
             </div>
             <template v-slot:footer>
-                <div class="text-muted help-text"
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div class="text-muted help-text float-left"
                      v-show="showValidationMessage"
-                     v-translate="'emailMultiValidation'">
+                     v-translate="'emailMultiValidation'"
+                     style="width: 60%;">
                 </div>
                 <error-alert v-if="cloneProjectError" :error="cloneProjectError"></error-alert>
-                <button type="button"
-                        class="btn btn-red"
-                        @click="confirmShareProject"
-                        :disabled="invalidEmails || cloningProject"
-                        v-translate="'ok'">
-                </button>
-                <button type="button"
-                        class="btn btn-white"
-                        @mousedown="cancelShareProject"
-                        :disabled="cloningProject"
-                        v-translate="'cancel'">
-                </button>
+                <div class="float-right">
+                    <button type="button"
+                            class="btn btn-red"
+                            @click="confirmShareProject"
+                            :disabled="invalidEmails || cloningProject"
+                            v-translate="'ok'">
+                    </button>
+                    <button type="button"
+                            class="btn btn-white ml-2"
+                            @mousedown="cancelShareProject"
+                            :disabled="cloningProject"
+                            v-translate="'cancel'">
+                    </button>
+                </div>
+            </div>
             </template>
         </modal>
     </div>

@@ -30,7 +30,7 @@ import { StyleValue } from "vue";
     interface Computed {
         inputData: Dict<unknown>,
         data: {
-            data: unknown,
+            data: unknown[],
             layout: Dict<unknown>,
             config: unknown
         },
@@ -87,27 +87,24 @@ import { StyleValue } from "vue";
             }
         },
         methods: {
-            drawChart: function() {
+            drawChart: async function() {
                 this.rendering = true;
-                setTimeout(() => {
-                    try {
-                        const el = this.$refs.chart;
-                        const drawFunc = this.layoutRequired ? Plotly.newPlot : Plotly.react;
-                        this.layoutRequired = false;
-                        drawFunc(el as HTMLElement, this.data.data as any, this.data.layout, this.data.config as any);
-                    }
-                    finally {
-                        this.rendering = false;
-                    }
-                }, 0);
+                const el = this.$refs.chart;
+                const drawFunc = this.layoutRequired ? Plotly.newPlot : Plotly.react;
+                this.layoutRequired = false;
+                await drawFunc(el as HTMLElement, this.data.data as any, this.data.layout, {...this.data.config as any});
+                this.rendering = false;
             }
         },
-        mounted() {
-            this.drawChart();
+        async mounted() {
+            await this.drawChart();
         },
         watch: {
-            data: function() {
-                this.drawChart();
+            data: {
+                handler: async function() {
+                    await this.drawChart();
+                },
+                deep: true
             },
             layoutData: function(newVal, oldVal) {
                 if (oldVal.subplots && newVal.subplots && oldVal.subplots.rows != newVal.subplots.rows) {

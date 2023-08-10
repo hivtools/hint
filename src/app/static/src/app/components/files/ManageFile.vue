@@ -2,7 +2,8 @@
     <div class="form-group">
         <label class="font-weight-bold mb-0" v-translate="label"></label>
         <span id="required" v-if="required"
-              class="small"
+              class="ml-1"
+              style="font-size: small;"
               :class="existingFileName? '': 'text-danger'">(<span v-translate="'required'"></span>)
         </span>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
@@ -24,7 +25,7 @@
                      :upload="upload"
                      :uploading="uploading"
                      @uploading="handleUploading"></file-upload>
-        <error-alert v-if="hasError" :error="error"></error-alert>
+        <error-alert v-if="hasError" :error="error!"></error-alert>
         <reset-confirmation v-if="!dataExplorationMode"
                             :discard-step-warning="modelOptions"
                             :continue-editing="deleteSelectedFile"
@@ -67,8 +68,8 @@
         accept: string,
         label: string,
         valid: boolean,
-        error: Error | null,
-        existingFileName: string,
+        error?: Error | null,
+        existingFileName?: string,
         fromADR?: boolean,
         name: string,
         required?: boolean
@@ -100,11 +101,11 @@
             },
             error: {
                 type: Object,
-                required: true
+                required: false
             },
             existingFileName: {
                 type: String,
-                required: true
+                required: false
             },
             fromADR: {
                 type: Boolean,

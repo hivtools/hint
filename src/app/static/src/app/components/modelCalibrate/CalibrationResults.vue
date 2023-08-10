@@ -17,7 +17,7 @@
                     fixed: true,
                     hideFilter: true,
                 }"
-            @update="updateCalibratePlotSelections({ payload: $event })"
+            @update:selections="updateCalibratePlotSelections({ payload: $event })"
         ></bar-chart-with-filters>
     </div>
 </template>

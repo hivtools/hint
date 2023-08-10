@@ -4,9 +4,12 @@
             <span v-if="formControl.helpText"
                   class="icon-small"
                   v-tooltip="formControl.helpText">
-                <vue-feather type="help-circle"></vue-feather>
+                <vue-feather type="help-circle" class="align-middle"></vue-feather>
             </span>
-            <span v-if="formControl.required" class="small" :class="{'text-danger': valueIsEmpty(formControl.value)}">({{requiredText}})</span>
+            <span v-if="formControl.required"
+                  class="ml-1"
+                  :class="{'text-danger': valueIsEmpty(formControl.value)}"
+                  style="font-size: small;">({{requiredText}})</span>
         </label>
         <component :is="dynamicComponent"
                    v-model:formControl="formControlLocal"

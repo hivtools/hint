@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>
-            <ul class="nav nav-tabs col-12 mb-3">
+            <ul class="nav nav-tabs col-12 mb-3 p-0">
                 <li class="nav-item">
                     <a class="nav-link"
                        :class="{'active': selectedTab === 0}"
@@ -25,14 +25,14 @@
                                 :multiple="false"
                                 :clearable="false"
                                 :options="dataSourceOptions"
-                                :model-value="selectedDataType"
+                                :model-value="`${selectedDataType}`"
                                 @update:model-value="selectDataSource">
                         </hint-tree-select>
                     </div>
                     <filters v-if="showChoropleth"
                             :filters="filters"
                             :selectedFilterOptions="plottingSelections.selectedFilterOptions"
-                            @update="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"></filters>
+                            @update:filters="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"></filters>
                 </div>
                 <div v-if="showChoropleth" class="col-md-9">
                     <choropleth :chartdata="data"

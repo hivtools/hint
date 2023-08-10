@@ -4,7 +4,7 @@ import {flushPromises, mount, shallowMount} from "@vue/test-utils";
 import SelectDataset from "../../../app/components/adr/SelectDataset.vue";
 import SelectRelease from "../../../app/components/adr/SelectRelease.vue";
 import Modal from "../../../app/components/Modal.vue";
-import TreeSelect from "vue3-treeselect"
+import TreeSelect from "@m-kusumgar/vue3-treeselect";
 import {
     mockBaselineState, mockDataExplorationState,
     mockDataset,

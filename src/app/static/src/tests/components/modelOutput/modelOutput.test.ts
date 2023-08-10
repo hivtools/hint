@@ -517,7 +517,7 @@ describe("ModelOutput component", () => {
         const expectedBarchartSelections = {...currentBarchartSelections}
         expectedBarchartSelections.selectedFilterOptions.region = testBarchartFilters[0].options
 
-        barchart.vm.$emit("update", barchartSelections);
+        barchart.vm.$emit("update:selections", barchartSelections);
         expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
     });
 
@@ -558,7 +558,7 @@ describe("ModelOutput component", () => {
         const expectedComparisonPlotSelections = {...currentComparisonPlotSelections}
         expectedComparisonPlotSelections.selectedFilterOptions.region = testComparisonPlotFilters[0].options
 
-        comparisonPlot.vm.$emit("update", comparisonPlotSelections);
+        comparisonPlot.vm.$emit("update:selections", comparisonPlotSelections);
         expect(store.state.plottingSelections.comparisonPlot).toStrictEqual(expectedComparisonPlotSelections);
     });
 
@@ -598,7 +598,7 @@ describe("ModelOutput component", () => {
         const expectedBarchartSelections = {...currentBarchartSelections}
         expectedBarchartSelections.selectedFilterOptions.region = barchartSelections.selectedFilterOptions.region
 
-        barchart.vm.$emit("update", barchartSelections);
+        barchart.vm.$emit("update:selections", barchartSelections);
         expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
     });
 
@@ -638,7 +638,7 @@ describe("ModelOutput component", () => {
         const expectedComparisonPlotSelections = {...currentComparisonPlotSelections}
         expectedComparisonPlotSelections.selectedFilterOptions.region = comparisonPlotSelections.selectedFilterOptions.region
 
-        comparisonPlot.vm.$emit("update", comparisonPlotSelections);
+        comparisonPlot.vm.$emit("update:selections", comparisonPlotSelections);
         expect(store.state.plottingSelections.comparisonPlot).toStrictEqual(expectedComparisonPlotSelections);
     });
 
@@ -670,7 +670,7 @@ describe("ModelOutput component", () => {
         const expectedBarchartSelections = {...currentBarchartSelections}
         expectedBarchartSelections.selectedFilterOptions.region = barchartSelections.selectedFilterOptions.region
 
-        barchart.vm.$emit("update", barchartSelections);
+        barchart.vm.$emit("update:selections", barchartSelections);
         expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
     });
 
@@ -702,7 +702,7 @@ describe("ModelOutput component", () => {
         const expectedComparisonPlotSelections = {...currentComparisonPlotSelections}
         expectedComparisonPlotSelections.selectedFilterOptions.region = comparisonPlotSelections.selectedFilterOptions.region
 
-        comparisonPlot.vm.$emit("update", comparisonPlotSelections);
+        comparisonPlot.vm.$emit("update:selections", comparisonPlotSelections);
         expect(store.state.plottingSelections.comparisonPlot).toStrictEqual(expectedComparisonPlotSelections);
     });
 
@@ -738,7 +738,7 @@ describe("ModelOutput component", () => {
             indicatorId: "prevalence"
         };
 
-        comparisonPlot.vm.$emit("update", comparisonPlotSelections);
+        comparisonPlot.vm.$emit("update:selections", comparisonPlotSelections);
         expect(currentComparisonPlotSelections.xAxisId).toBe("age")
         expect(store.state.plottingSelections.comparisonPlot)
             .toStrictEqual({
@@ -776,7 +776,7 @@ describe("ModelOutput component", () => {
             indicatorId: "TestIndicator"
         };
 
-        comparisonPlot.vm.$emit("update", comparisonPlotSelections);
+        comparisonPlot.vm.$emit("update:selections", comparisonPlotSelections);
         expect(store.state.plottingSelections.comparisonPlot).toStrictEqual(currentComparisonPlotSelections);
     });
 
@@ -827,7 +827,7 @@ describe("ModelOutput component", () => {
             {id: "r1.0", label: "region 1.0"}
         ]
 
-        barchart.vm.$emit("update", barchartSelections);
+        barchart.vm.$emit("update:selections", barchartSelections);
         expect(store.state.plottingSelections.barchart).toStrictEqual(expectedBarchartSelections);
     });
 
@@ -878,7 +878,7 @@ describe("ModelOutput component", () => {
             {id: "r1.0", label: "region 1.0"}
         ]
 
-        comparisonPlot.vm.$emit("update", comparisonPlotSelections);
+        comparisonPlot.vm.$emit("update:selections", comparisonPlotSelections);
         expect(store.state.plottingSelections.comparisonPlot).toStrictEqual(expectedComparisonPlotSelections);
     });
 

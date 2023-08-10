@@ -1,21 +1,17 @@
 <template>
-    <b-form-select class="form-control"
-            v-model="value"
-            :name="formControl.name"
-            :required="formControl.required">
-        <option v-if="!formControl.excludeNullOption" value>{{selectText}}</option>
-        <option v-for="opt in formControl.options"
-                :key="opt.id"
-                :value="opt.id">
-            {{opt.label}}
-        </option>
-    </b-form-select>
+    <hint-tree-select
+            :model-value="value"
+            :multiple="false"
+            :clearable="false"
+            @update:model-value="newVal => value = newVal"
+            :options="formOptions">
+    </hint-tree-select>
 </template>
 
 <script lang="ts">
     import { PropType, defineComponent } from "vue";
-    import {BFormSelect} from "bootstrap-vue-next";
     import {SelectControl} from "./types";
+    import HintTreeSelect from "../../components/HintTreeSelect.vue";
 
     export default defineComponent({
         name: "DynamicFormSelect",
@@ -37,10 +33,18 @@
                 set(newVal: string) {
                     this.$emit("update:formControl", {...this.formControl, value: newVal});
                 }
+            },
+            formOptions() {
+                if (!this.formControl.excludeNullOption) {
+                    const selectOption = {id: "", label: this.selectText}
+                    return [selectOption, ...this.formControl.options];
+                } else {
+                    return this.formControl.options
+                }
             }
         },
         components: {
-            BFormSelect
+            HintTreeSelect
         },
         mounted() {
             if (this.formControl.excludeNullOption && !this.formControl.value) {

@@ -207,6 +207,7 @@ describe("GenericChart component", () => {
 
         const wrapper = getWrapper();
         setTimeout(() => {
+            console.log(wrapper.html())
             expect(wrapper.findAllComponents(DataSource).length).toBe(0);
             expect(wrapper.findAllComponents(Filters).length).toBe(0);
             expect(wrapper.findComponent(Plotly).exists()).toBe(false);
@@ -462,7 +463,7 @@ describe("GenericChart component", () => {
                 age: [{id: "2", label: "2"}],
                 year: [{id: "2020", label: "2020"}]
             };
-            dataset1Filters.vm.$emit("update", newFilterSelections);
+            dataset1Filters.vm.$emit("update:filters", newFilterSelections);
 
             setTimeout(() => {
                 expect(dataset1Filters.props("selectedFilterOptions")).toStrictEqual(newFilterSelections);
@@ -1126,7 +1127,7 @@ describe("GenericChart component", () => {
         const newFilterSelections = {
             type: [{id: "other"}]
         };
-        dataset1Filters.vm.$emit("update", newFilterSelections);
+        dataset1Filters.vm.$emit("update:filters", newFilterSelections);
         await nextTick();
 
         expect(wrapper.find("#page-controls").exists()).toBe(false);

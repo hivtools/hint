@@ -108,7 +108,8 @@ describe("Manage file component", () => {
         });
         expect(wrapper.find("#required").exists()).toBe(true);
         expect(wrapper.find("#required").text()).toBe("(required)");
-        expect(wrapper.find("#required").attributes("class")).toBe("small text-danger");
+        expect(wrapper.find("#required").attributes("class")).toBe("ml-1 text-danger");
+        expect(wrapper.find("#required").attributes("style")).toBe("font-size: small;");
     });
 
     it("renders text for filled form if required is true", () => {
@@ -118,7 +119,8 @@ describe("Manage file component", () => {
         });
         expect(wrapper.find("#required").exists()).toBe(true);
         expect(wrapper.find("#required").text()).toBe("(required)");
-        expect(wrapper.find("#required").attributes("class")).toBe("small");
+        expect(wrapper.find("#required").attributes("class")).toBe("ml-1");
+        expect(wrapper.find("#required").attributes("style")).toBe("font-size: small;");
     });
 
     it("does not render text if required is false", () => {
