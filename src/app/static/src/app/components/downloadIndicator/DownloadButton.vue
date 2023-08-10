@@ -5,8 +5,7 @@
             <span v-translate="name"></span>
             <vue-feather type="download"
                          size="20"
-                         class="icon ml-2"
-                         style="vertical-align: middle;"></vue-feather>
+                         class="icon ml-2 align-middle"></vue-feather>
         </button>
     </div>
 </template>
