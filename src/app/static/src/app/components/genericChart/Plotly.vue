@@ -162,7 +162,7 @@
                         line: {
                             color: lineColor
                         },
-                        hoverTemplate
+                        hovertemplate: hoverTemplate
                     }
                     normalColorPoints.x.sequence = true;
                     normalColorPoints.y.sequence = true;
@@ -214,7 +214,7 @@
                 baseLayout.annotations.keepSingleton = true;
 
                 for (let i = 0; i < areaIds.length; i++) {
-                    const row = Math.floor((i - 1)/this.layoutData.subplots.columns);
+                    const row = Math.floor(i/this.layoutData.subplots.columns);
                     baseLayout[`yaxis${i + 1}`] = {
                         "rangemode": "tozero",
                         "zeroline": false,
