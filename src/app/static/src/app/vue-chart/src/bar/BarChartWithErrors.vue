@@ -192,30 +192,6 @@ export default defineComponent({
                     })
                 });
 
-                /*
-                    We need to pass a customLegendClick event into chartOptions so
-                    that our state can update when a user clicks on the legend and
-                    hides some bars. This is required to coordinate the chart with
-                    the error bars.
-                */
-                const customLegendClick = (e: Event, legendItem: any, legend: any) => {
-                    const index = legendItem.datasetIndex;
-                    const ci = legend.chart;
-                    if (ci.isDatasetVisible(index)) {
-                        this.showLabelErrorBars[index] = false;
-                        setTimeout(() => {
-                            ci.hide(index);
-                        }, 50)
-                        legendItem.hidden = true;
-                    } else {
-                        this.showLabelErrorBars[index] = true;
-                        setTimeout(() => {
-                            ci.show(index);
-                        }, 50)
-                        legendItem.hidden = false;
-                    }
-                }
-
                 return {
                     ...baseChartOptions,
                     plugins: {
@@ -223,7 +199,7 @@ export default defineComponent({
                             annotations: errorLines
                         },
                         legend: {
-                            onClick: customLegendClick
+                            onClick: this.customLegendClick
                         }
                     },
                     scales: {
@@ -246,6 +222,29 @@ export default defineComponent({
             this.errorBarTimeout = setTimeout(() => {
                 this.displayErrorBars = true
             }, 1050)
+        },
+        /*
+            We need to pass a customLegendClick event into chartOptions so
+            that our state can update when a user clicks on the legend and
+            hides some bars. This is required to coordinate the chart with
+            the error bars.
+        */
+        customLegendClick(e: Event, legendItem: any, legend: any) {
+            const index = legendItem.datasetIndex;
+            const ci = legend.chart;
+            if (ci.isDatasetVisible(index)) {
+                this.showLabelErrorBars[index] = false;
+                setTimeout(() => {
+                    ci.hide(index);
+                }, 50)
+                legendItem.hidden = true;
+            } else {
+                this.showLabelErrorBars[index] = true;
+                setTimeout(() => {
+                    ci.show(index);
+                }, 50)
+                legendItem.hidden = false;
+            }
         }
     },
     mounted() {
@@ -260,7 +259,6 @@ export default defineComponent({
         },
         chartDatasetLabels: {
             handler: function(newVal, oldVal) {
-                console.log(this.chartDatasetLabels)
                 this.showLabelErrorBars = this.chartData.datasets!.map(() => true)
             }
         },
