@@ -8,7 +8,7 @@
                         // Keep the tooltip open when mouse over the popup
                         popperTriggers: ['hover'],
                     }">
-                <vue-feather type="help-circle" size="20" style="margin-left: 4px;"></vue-feather>
+                <vue-feather type="help-circle" size="20" class="ml-1"></vue-feather>
             </span>
         </div>
         <hint-tree-select :multiple="multiple"

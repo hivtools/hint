@@ -229,8 +229,8 @@
             xAxisLabelLookup() {
                 return toFilterLabelLookup(this.selections.selectedFilterOptions[this.selections.xAxisId] || []);
             },
-            filtersAsOptions() {
-                return this.filterConfig.filters.map((f: Filter) => ({id: f.id, label: f.label})) as FilterOption[]
+            filtersAsOptions(): FilterOption[] {
+                return this.filterConfig.filters.map((f: Filter) => ({id: f.id, label: f.label}))
             },
             filterXaxisOptions() {
                 if (this.disaggregateIsFixed) {

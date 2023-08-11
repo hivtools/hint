@@ -2,11 +2,12 @@
     <b-row class="my-2">
         <label v-if="controlGroup.label" class="col-form-label col-md-5">{{controlGroup.label}}
             <span v-if="helpText" class="icon-small" v-tooltip="helpText">
-                    <vue-feather type="help-circle" style="vertical-align: middle;"></vue-feather>
+                    <vue-feather type="help-circle" class="align-middle"></vue-feather>
                 </span>
             <span v-if="required"
+                  class="ml-1"
                   :class="{'text-danger': anyValueEmpty(controlGroup)}"
-                  style="margin-left: 4px; font-size: small;">({{requiredText}})</span>
+                  style="font-size: small;">({{requiredText}})</span>
         </label>
         <dynamic-form-control v-for="(control, index) in controlGroup.controls"
                               :key="control.name"

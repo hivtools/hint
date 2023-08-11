@@ -68,17 +68,15 @@ describe("Map control component", () => {
     });
 
 
-    it("emits indicator-changed event with indicator", async () => {
+    it("emits indicator-changed event with indicator", () => {
         const wrapper = mount(MapControl, {props, global: {plugins: [store]}});
         wrapper.findAllComponents(HintTreeSelect)[0].vm.$emit("update:model-value", "art_coverage");
-        await nextTick();
         expect(wrapper.emitted("indicatorChanged")![0][0]).toBe("art_coverage");
     });
 
-    it("emits detail-changed event with detail", async () => {
+    it("emits detail-changed event with detail", () => {
         const wrapper = mount(MapControl, {props, global: {plugins: [store]}});
         wrapper.findAllComponents(HintTreeSelect)[1].vm.$emit("update:model-value", 3);
-        await nextTick();
         expect(wrapper.emitted("detailChanged")![0][0]).toBe(3);
     });
 

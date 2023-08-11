@@ -7,9 +7,9 @@
                 value="useLatest"
                 v-model="choiceADR"
             />
-            <label for="useLatest" v-translate="'useLatest'" style="margin-left: 4px;"></label>
-            <span class="icon-small" v-tooltip="translate('datasetTooltip')">
-                <vue-feather type="help-circle" style="vertical-align: middle; margin-left: 4px;"></vue-feather>
+            <label for="useLatest" v-translate="'useLatest'" class="ml-1"></label>
+            <span class="icon-small ml-1" v-tooltip="translate('datasetTooltip')">
+                <vue-feather type="help-circle" class="align-middle"></vue-feather>
             </span>
             <br />
         </div>
@@ -20,13 +20,9 @@
                 value="useRelease"
                 v-model="choiceADR"
             />
-            <label
-                for="useRelease"
-                v-translate="'useRelease'"
-                style="margin-left: 4px;"
-            ></label>
-            <span class="icon-small" v-tooltip="translate('releaseTooltip')">
-                <vue-feather type="help-circle" style="vertical-align: middle; margin-left: 4px;"></vue-feather>
+            <label for="useRelease" v-translate="'useRelease'" class="ml-1"></label>
+            <span class="icon-small ml-1" v-tooltip="translate('releaseTooltip')">
+                <vue-feather type="help-circle" class="align-middle"></vue-feather>
             </span>
             <br />
         </div>
@@ -64,6 +60,7 @@
     import {ADRMutation} from "../../store/adr/mutations";
     import { BaselineState } from "../../store/baseline/baseline";
     import { PropType, defineComponent } from "vue";
+    import { Release } from "../../types";
 
     interface Data {
         releaseId: string | undefined;
@@ -94,7 +91,7 @@
             };
         },
         computed: {
-            releases: mapStateProp<ADRState, any[]>(
+            releases: mapStateProp<ADRState, Release[]>(
                 namespace,
                 (state: ADRState) => state.releases
             ),
@@ -106,7 +103,7 @@
                 return (this.choiceADR === "useLatest") || !!this.releaseId;
             },
             releaseOptions() {
-                return this.releases.map((d: any) => ({
+                return this.releases.map((d) => ({
                     id: d.id,
                     label: d.name,
                 customLabel: `${d.name}
@@ -131,10 +128,10 @@
             clearReleases: mapMutationByName(namespace, ADRMutation.ClearReleases),
             preSelectRelease(){
                 const selectedReleaseId = this.initialRelease
-                if (selectedReleaseId && this.releases.some((release: any) => release.id === selectedReleaseId)){
+                if (selectedReleaseId && this.releases.some((release) => release.id === selectedReleaseId)){
                     this.choiceADR = "useRelease"
                     this.releaseId = selectedReleaseId;
-                } else if (selectedReleaseId && !this.releases.some((release: any) => release.id === selectedReleaseId)) {
+                } else if (selectedReleaseId && !this.releases.some((release) => release.id === selectedReleaseId)) {
                     this.choiceADR = "useLatest"
                 }
             }
@@ -153,7 +150,7 @@
                 }
             },
             releaseId() {
-                this.$emit("selected-dataset-release", this.releases.find((release: any) => release.id === this.releaseId))
+                this.$emit("selected-dataset-release", this.releases.find((release) => release.id === this.releaseId))
             },
             valid() {
                 this.$emit("valid", this.valid);

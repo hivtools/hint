@@ -1,11 +1,11 @@
 <template>
     <div style="flex:auto">
         <drop-down text="file">
-            <a class="dropdown-item" href="#"
-               @mousedown="handleLoadZip">
+            <p class="dropdown-item mb-0" tabindex="0"
+               @click="$refs.loadZip.click()">
                 <span v-translate="'loadZip'"></span>
-                <vue-feather type="upload" size="20" class="icon"></vue-feather>
-            </a>
+                <vue-feather type="upload" size="20" class="icon ml-1"></vue-feather>
+            </p>
             <input id="upload-zip" v-translate:aria-label="'selectFile'"
                    type="file"
                    style="display: none;" ref="loadZip"
@@ -151,9 +151,9 @@
                 }
             },
             loadZip() {
-                const input = this.getZip();
-                if (input && input.length > 0) {
-                    const file = input[0];
+                const input = this.$refs.loadZip as HTMLInputElement;
+                if (input.files && input.files.length > 0) {
+                    const file = input.files[0];
                     this.clearLoadZipInput();
                     if (this.isGuest) {
                         this.preparingRehydrate(getFormData(file));
@@ -162,9 +162,6 @@
                         this.projectNameZip = true;
                     }
                 }
-            },
-            getZip() {
-                return (this.$refs.loadZip as HTMLInputElement).files
             },
             clearLoadZipInput() {
                 // clearing value because browser does not

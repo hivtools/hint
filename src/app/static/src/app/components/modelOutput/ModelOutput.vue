@@ -2,7 +2,7 @@
     <div>
         <div class="row">
             <div class="col">
-                <ul class="nav nav-tabs col-md-12">
+                <ul class="nav nav-tabs col-md-12 p-0">
                     <li v-for="tab in tabs" class="nav-item" :key="tab">
                         <a class="nav-link"
                            :class="selectedTab === tab ? 'active' :  ''"

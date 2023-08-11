@@ -60,7 +60,7 @@
                 </div>
                 <div v-for="dataSource in chartConfigValues.dataSourceConfigValues.filter(ds => ds.tableConfig)"
                      :key="dataSource.config.id">
-                    <download-indicator :filtered-data="filteredDataWithoutPages![dataSource.config.id]"
+                    <download-indicator :filtered-data="filteredDataWithoutPages ? filteredDataWithoutPages[dataSource.config.id] : []"
                                         :unfiltered-data="unfilteredData[dataSource.config.id]"></download-indicator>
                     <generic-chart-table :table-config="dataSource.tableConfig!"
                                          :filtered-data="chartData[dataSource.config.id]"
@@ -215,13 +215,7 @@
                     selectedFilterOptions: null
                 }
             }), {})
-            // .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => ({
-            //         ...running,
-            //         [dataSource.id]: {
-            //             datasetId: this.availableDatasetIds.find(id => id === dataSource.datasetId) || this.availableDatasetIds[0],
-            //             selectedFilterOptions: null
-            //         }
-            //     }), {});
+
             return {
                 dataSourceSelections,
                 currentPage: 1,

@@ -20,7 +20,7 @@
                     <a href="#" @click="toggleDocumentation">
                         <vue-feather type="info"></vue-feather>
                         How to use these settings
-                        <vue-feather style="vertical-align: top"
+                        <vue-feather class="align-top"
                                    :type="documentationChevronComponent"></vue-feather>
                     </a>
                     <b-collapse v-model="showDocumentation">

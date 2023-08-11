@@ -136,6 +136,8 @@
         deleteANC: () => void
     }
 
+    type PlottingMetadataError = Record<"plottingMetadataError", (this: CustomVue, state: MetadataState) => Error | null>
+
     export default defineComponent({
         name: "UploadInputs",
         computed: {
@@ -163,7 +165,7 @@
                 baselineError: (state: BaselineState) => state.baselineError,
                 validating: (state: BaselineState) => state.validating
             }),
-            ...mapState<MetadataState, {"plottingMetadataError": (this: CustomVue, state: MetadataState) => Error | null}>("metadata", {
+            ...mapState<MetadataState, PlottingMetadataError>("metadata", {
                 plottingMetadataError: (state: MetadataState) => state.plottingMetadataError
             }),
             ...mapRootStateProps({
