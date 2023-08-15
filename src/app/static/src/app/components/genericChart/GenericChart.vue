@@ -24,7 +24,6 @@
                 <div class="chart-container" ref="chartContainer" :style="{height: chartHeight}">
                     <plotly class="chart"
                             v-if="!chartDataIsEmpty"
-                           :chart-metadata="chartConfigValues.chartConfig"
                            :chart-data="chartDataPage"
                            :layout-data="chartConfigValues.layoutData"
                            :style="{height: chartConfigValues.scrollHeight}"></plotly>
@@ -283,7 +282,7 @@
                     }
                 });
 
-                //Provide additional metadata to jsonata relating to subplots (rows and columns)
+                //Provide additional metadata relating to subplots (rows and columns)
                 //and define scroll height
                 const layoutData = {} as Dict<unknown>;
                 let scrollHeight = "100%";

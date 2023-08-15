@@ -3,7 +3,9 @@
         <button class="btn btn-sm mt-2" :class="disabled ? 'btn-secondary' : 'btn-red'"
                 :disabled="disabled">
             <span v-translate="name"></span>
-            <vue-feather type="download" size="20" class="icon ml-2"></vue-feather>
+            <vue-feather type="download"
+                         size="20"
+                         class="icon ml-2 align-middle"></vue-feather>
         </button>
     </div>
 </template>
