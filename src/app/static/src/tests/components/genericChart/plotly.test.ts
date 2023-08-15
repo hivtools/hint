@@ -220,7 +220,7 @@ describe("Plotly", () => {
     };
 
     it("invokes Plotly on render with expected parameters", (done) => {
-        const props = { chartData: chartData(), layoutData };
+        const props = { chartData: chartData(), layoutData } as any;
         const wrapper = shallowMount(Plotly, { props, store });
 
         // Rendering flag should be set while rendering proceeds
@@ -236,7 +236,7 @@ describe("Plotly", () => {
     });
 
     it("invokes Plotly newPlot when layout subplot rows has changed", async () => {
-        const props = { chartData: chartData(), layoutData };
+        const props = { chartData: chartData(), layoutData } as any;
         const wrapper = shallowMount(Plotly, { props, store });
         expect(mockPlotlyNewPlot.mock.calls.length).toBe(0);
         await wrapper.setProps({
@@ -262,7 +262,7 @@ describe("Plotly", () => {
     });
 
     it("invokes plotly again on data change", (done) => {
-       const props = { chartData: chartData(), layoutData };
+       const props = { chartData: chartData(), layoutData } as any;
        const wrapper = shallowMount(Plotly, { props, store });
 
        setTimeout(async () => {
@@ -288,7 +288,7 @@ describe("Plotly", () => {
     });
 
     it("invokes plotly again on layout change", (done) => {
-        const props = { chartData: chartData(), layoutData };
+        const props = { chartData: chartData(), layoutData } as any;
         const wrapper = shallowMount(Plotly, { props, store });
         setTimeout(async () => {
             await wrapper.setProps({
@@ -312,7 +312,7 @@ describe("Plotly", () => {
     });
 
     it("does not render loading spinner when rendering flag is false", () => {
-        const props = { chartData: chartData(), layoutData };
+        const props = { chartData: chartData(), layoutData } as any;
         const wrapper = shallowMount(Plotly, { props, store });
         (wrapper.vm as any).rendering = false;
         expect( wrapper.find("div.text-center").exists()).toBe(false);
@@ -320,7 +320,7 @@ describe("Plotly", () => {
     });
 
     it("renders loading spinner when rendering flag is true", async () => {
-        const props = { chartData: chartData(), layoutData };
+        const props = { chartData: chartData(), layoutData } as any;
         const wrapper = shallowMountWithTranslate(Plotly, store, { props, global: {plugins: [store]} });
         (wrapper.vm as any).rendering = true;
         await nextTick();

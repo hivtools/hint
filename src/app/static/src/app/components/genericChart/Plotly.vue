@@ -17,21 +17,57 @@
     const config = {
         responsive: false,
         scrollZoom: false,
-        modeBarButtonsToRemove: ['zoom2d', 'pan2d', 'select2d', 'lasso2d', 'autoScale2d', 'resetScale2d', 'zoomIn2d', 'zoomOut2d']
+        modeBarButtonsToRemove: [
+            'zoom2d',
+            'pan2d',
+            'select2d',
+            'lasso2d',
+            'autoScale2d',
+            'resetScale2d',
+            'zoomIn2d',
+            'zoomOut2d'
+        ]
     };
 
     const lineColor = "rgb(51, 51, 51)";
     const highlightColor = "rgb(255, 51, 51)";
 
+    type Data = {
+        area_hierarchy: string,
+        area_id: string,
+        area_level?: number,
+        area_name: string,
+        page?: number,
+        plot?: string,
+        quarter?: string,
+        time_period: string,
+        value?: number
+    }
+
+    type ChartData = { data: Data[] } | null
+
+    type Subplots = {
+        columns: number,
+        distinctColumn?: string,
+        heightPerRow?: number,
+        rows: number,
+        subplotsPerPage?: number
+    }
+
+    type LayoutData = {
+        subplots: Subplots,
+        yAxisFormat: string
+    }
+
     export default defineComponent({
         name: "Plotly",
         props: {
             chartData: {
-                type: Object as PropType<Dict<any[]> | null>,
+                type: Object as PropType<ChartData>,
                 required: true
             },
             layoutData: {
-                type: Object as PropType<Dict<any>>,
+                type: Object as PropType<LayoutData>,
                 required: true
             }
         },
@@ -39,18 +75,14 @@
             LoadingSpinner
         },
         data: function() {
+            console.log(this.chartData);
+            console.log(this.layoutData);
             return {
                 rendering: false,
                 layoutRequired: false
             };
         },
         computed: {
-            inputData() { 
-                return {
-                    ...this.chartData,
-                    ...this.layoutData
-                };
-            },
             style() {
                 return {
                     width:'100%',
@@ -70,8 +102,11 @@
                 this.rendering = false;
             },
             getData: async function() {
+                if (!this.chartData) {
+                    return {data: [], layout: {}}
+                }
                 const dataByArea: Record<string, any[]> = {};
-                this.chartData?.data.forEach(dataPoint => {
+                this.chartData.data.forEach(dataPoint => {
                     const areaId = dataPoint.area_id;
                     if (areaId in dataByArea) {
                         dataByArea[areaId].push(dataPoint);
@@ -83,7 +118,7 @@
 
                 const numOfRows = this.layoutData?.subplots?.rows || 1;
                 const subPlotHeight = 1/numOfRows * 0.6;
-                const timePeriods = this.chartData?.data.map(dataPoint => dataPoint.time_period).sort() || [];
+                const timePeriods = this.chartData.data.map(dataPoint => dataPoint.time_period).sort() || [];
                 const firstXAxisVal = timePeriods[0];
                 const lastXAxisVal = timePeriods[timePeriods.length - 1];
 
