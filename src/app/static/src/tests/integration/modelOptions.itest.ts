@@ -5,7 +5,7 @@ import {actions as surveyActions} from "../../app/store/surveyAndProgram/actions
 import { ModelOptionsMutation } from "../../app/store/modelOptions/mutations";
 import { Language } from "../../app/store/translations/locales";
 import {getFormData} from "./helpers";
-import { isDynamicFormMeta } from "../../app/vue-dynamic-form/src";
+import { isDynamicFormMeta } from "@reside-ic/vue-next-dynamic-form";
 
 const fs = require("fs");
 const FormData = require("form-data");

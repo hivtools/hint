@@ -16,7 +16,7 @@ import {
     DynamicControlGroup,
     DynamicControlSection,
     DynamicFormMeta
-} from "./vue-dynamic-form/src/types";
+} from "@reside-ic/vue-next-dynamic-form";
 import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
 import {ModelOptionsState} from "./store/modelOptions/modelOptions";
 import {RootState} from "./root";

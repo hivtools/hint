@@ -7,7 +7,7 @@ import {ModelOptionsState} from "../../../app/store/modelOptions/modelOptions";
 import {ModelOptionsActions} from "../../../app/store/modelOptions/actions";
 import {RootState} from "../../../app/root";
 import {mockModelOptionsState, mockRootState} from "../../mocks";
-import DynamicForm from "../../../app/vue-dynamic-form/src/DynamicForm.vue";
+import {DynamicForm} from "@reside-ic/vue-next-dynamic-form";
 import ResetConfirmation from "../../../app/components/resetConfirmation/ResetConfirmation.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {getters} from "../../../app/store/root/getters";

@@ -1,11 +1,10 @@
-import {mount, shallowMount} from "@vue/test-utils";
+import {shallowMount} from "@vue/test-utils";
 import ModelOptions from "../../../app/components/modelOptions/ModelOptions.vue";
-import DynamicForm from "../../../app/vue-dynamic-form/src/DynamicForm.vue";
-import Vue, { nextTick } from "vue";
+import { nextTick } from "vue";
 import Vuex, {ActionTree, MutationTree} from "vuex";
 import {mockError, mockModelOptionsState, mockOptionsFormMeta, mockRootState} from "../../mocks";
 import {ModelOptionsState} from "../../../app/store/modelOptions/modelOptions";
-import {DynamicControlSection} from "@reside-ic/vue-dynamic-form";
+import {DynamicControlSection, DynamicForm} from "@reside-ic/vue-next-dynamic-form";
 import {ModelOptionsMutation} from "../../../app/store/modelOptions/mutations";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import Tick from "../../../app/components/Tick.vue";

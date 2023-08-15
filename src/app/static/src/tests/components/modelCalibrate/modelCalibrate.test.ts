@@ -3,17 +3,15 @@ import {mockError, mockModelCalibrateState, mockOptionsFormMeta, mockRootState} 
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {RootState} from "../../../app/root";
 import {ModelCalibrateState} from "../../../app/store/modelCalibrate/modelCalibrate";
-import {mount, shallowMount} from "@vue/test-utils";
 import ModelCalibrate from "../../../app/components/modelCalibrate/ModelCalibrate.vue";
 import CalibrationResults from "../../../app/components/modelCalibrate/CalibrationResults.vue";
-import DynamicForm from "../../../app/vue-dynamic-form/src/DynamicForm.vue";
+import {DynamicForm} from "@reside-ic/vue-next-dynamic-form";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {expectTranslated, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
 import Tick from "../../../app/components/Tick.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import {ModelCalibrateMutation} from "../../../app/store/modelCalibrate/mutations";
 import { Language } from "../../../app/store/translations/locales";
-import { nextTick } from "vue";
 
 describe("Model calibrate component", () => {
     const getStore = (state: Partial<ModelCalibrateState> = {}, fetchAction = jest.fn(), submitAction = jest.fn(),
