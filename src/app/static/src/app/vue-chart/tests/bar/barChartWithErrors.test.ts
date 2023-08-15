@@ -29,7 +29,7 @@ describe("chartjsBar component", () => {
         showErrorBars: true
     } as any;
 
-    const expectedPluginConfig = (customLegendClick: Function) => { return {
+    const expectedPluginConfig = (customLegendClick: Function, tooltipLabelCallback: Function) => { return {
         annotation: {
             annotations: [
                 {
@@ -120,6 +120,11 @@ describe("chartjsBar component", () => {
         },
         legend: {
             onClick: customLegendClick,
+        },
+        tooltip: {
+            callbacks: {
+                label: tooltipLabelCallback
+            }
         }
     }}
 
@@ -149,15 +154,26 @@ describe("chartjsBar component", () => {
         await nextTick();
 
         const renderedConfig = vm.chartOptions;
+        const showAllErrorBars = vm.showAllErrorBars;
 
         //Test that the callback to construct the label based on the format func behaves as expected
-        const tooltipLabelCallback = renderedConfig.tooltips.callbacks.label;
-        const renderedLabel = tooltipLabelCallback({datasetIndex: 0, yLabel: 2}, newChartData);
+        const tooltipLabelCallback = renderedConfig.plugins.tooltip.callbacks.label;
+        const renderedLabel = tooltipLabelCallback({
+            datasetIndex: 0,
+            formattedValue: 2,
+            dataset: newChartData.datasets[0]
+        });
         expect(renderedLabel).toBe("dataset1: Value 2");
 
         expect(renderedConfig.responsive).toBe(true);
         expect(renderedConfig.maintainAspectRatio).toBe(false);
-        expect(renderedConfig.plugins).toStrictEqual(expectedPluginConfig(renderedConfig.plugins.legend.onClick));
+        expect(renderedConfig.plugins).toStrictEqual(expectedPluginConfig(
+            renderedConfig.plugins.legend.onClick,
+            tooltipLabelCallback
+        ));
+        expect(renderedConfig.animation).toStrictEqual({
+            onComplete: showAllErrorBars
+        })
         expect(renderedConfig.scales.y.max).toBeCloseTo(0.22);
     });
 
@@ -196,13 +212,23 @@ describe("chartjsBar component", () => {
         const renderedConfig = vm.chartOptions;
 
         //Test that the callback to construct the label based on the format func behaves as expected
-        const tooltipLabelCallback = renderedConfig.tooltips.callbacks.label;
-        const renderedLabel = tooltipLabelCallback({datasetIndex: 0, yLabel: 2}, newChartData);
+        const tooltipLabelCallback = renderedConfig.plugins.tooltip.callbacks.label;
+        const renderedLabel = tooltipLabelCallback({
+            datasetIndex: 0,
+            formattedValue: 2,
+            dataset: newChartData.datasets[0]
+        });
         expect(renderedLabel).toBe("dataset1: Value 2");
 
         expect(renderedConfig.responsive).toBe(true);
         expect(renderedConfig.maintainAspectRatio).toBe(false);
-        expect(renderedConfig.hasOwnProperty("plugins")).toBe(false);
+        expect(renderedConfig.plugins).toStrictEqual({
+            tooltip: {
+                callbacks: {
+                    label: tooltipLabelCallback
+                }
+            }
+        });
     });
 
     it("tooltip label callback deals with incomplete parameters", async () => {
@@ -220,18 +246,18 @@ describe("chartjsBar component", () => {
         await nextTick();
 
         const renderedConfig = vm.chartOptions;
-        const tooltipLabelCallback = renderedConfig.tooltips.callbacks.label;
+        const tooltipLabelCallback = renderedConfig.plugins.tooltip.callbacks.label;
 
         //tooltipItem.datasetIndex is undefined
-        let renderedLabel = tooltipLabelCallback({yLabel: 2}, newChartData);
+        let renderedLabel = tooltipLabelCallback({formattedValue: 2, dataset: newChartData.datasets[0]});
         expect(renderedLabel).toBe("Value 2");
 
         //data.datasets is undefined
-        renderedLabel = tooltipLabelCallback({datasetIndex: 0, yLabel: 2}, {});
+        renderedLabel = tooltipLabelCallback({datasetIndex: 0, formattedValue: 2});
         expect(renderedLabel).toBe("Value 2");
 
         //tooltip.yLabel is undefined - returns dataseries label
-        renderedLabel = tooltipLabelCallback({datasetIndex: 0}, newChartData);
+        renderedLabel = tooltipLabelCallback({datasetIndex: 0, dataset: newChartData.datasets[0]});
         expect(renderedLabel).toBe("dataset1: ");
     });
 
@@ -251,9 +277,14 @@ describe("chartjsBar component", () => {
         await nextTick();
 
         const renderedConfig = vm.chartOptions;
-        const tooltipLabelCallback = renderedConfig.tooltips.callbacks.label;
+        const tooltipLabelCallback = renderedConfig.plugins.tooltip.callbacks.label;
 
-        let renderedLabel = tooltipLabelCallback({ datasetIndex: 0, yLabel: 2, xLabel: "group2" }, propsData.chartData);
+        let renderedLabel = tooltipLabelCallback({
+            datasetIndex: 0,
+            formattedValue: 2,
+            label: "group2",
+            dataset: propsData.chartData.datasets[0]
+        });
         expect(renderedLabel).toBe("dataset1: Value 2 (Value 1.9 - Value 2.1)");
     });
 
@@ -280,38 +311,20 @@ describe("chartjsBar component", () => {
         await nextTick();
 
         const renderedConfig = vm.chartOptions;
-        const tooltipLabelCallback = renderedConfig.tooltips.callbacks.label;
+        const tooltipLabelCallback = renderedConfig.plugins.tooltip.callbacks.label;
 
-        let renderedLabel = tooltipLabelCallback({ datasetIndex: 0, yLabel: 2, xLabel: "group2" }, propsData.chartData);
+        let renderedLabel = tooltipLabelCallback({
+            datasetIndex: 0,
+            formattedValue: 2,
+            label: "group2",
+            dataset: propsData.chartData.datasets[0]
+        });
         expect(renderedLabel).toBe("dataset1: Value 2");
-    });
-
-    it("hide error bars during animations works as expected", async () => {
-        const wrapper = getWrapper();
-        const vm = wrapper.vm as any
-        vm.hideErrorBarsDuringAnimation();
-        expect(vm.displayErrorBars).toBe(false);
-        await new Promise(r => setTimeout(r, 1050));
-        expect(vm.displayErrorBars).toBe(true);
-    });
-
-    it("clears timeout when hide error bars is called twice", async () => {
-        const wrapper = getWrapper();
-        const vm = wrapper.vm as any
-
-        const spy = jest.spyOn(window, "clearTimeout");
-
-        vm.hideErrorBarsDuringAnimation();
-        // mount already creates a timeout
-        expect(spy).toBeCalledTimes(1);
-        
-        vm.hideErrorBarsDuringAnimation();
-        expect(spy).toBeCalledTimes(2);
     });
 
     it("hide error bars gets called on mount, chartData and showLabelErrorBars change", async () => {
         const mockHideErrorBars = jest.fn();
-        BarChartWithErrors.methods!.hideErrorBarsDuringAnimation = mockHideErrorBars;
+        BarChartWithErrors.methods!.hideAllErrorBars = mockHideErrorBars;
 
         const wrapper = shallowMount(BarChartWithErrors, {props: propsData});
         const vm = wrapper.vm as any

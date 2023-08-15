@@ -11,6 +11,10 @@ import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, Li
 import annotationPlugin from "chartjs-plugin-annotation";
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, annotationPlugin);
 
+// amount of padding chart js uses by default for each bar 
+const barPercentage = 0.8;
+const errorBarWeight = 1;
+
 export default defineComponent({
     components: {
         Bar
@@ -60,36 +64,44 @@ export default defineComponent({
             const datasets = chartData.datasets as any[];
 
             const baseChartOptions = {
-                tooltips: {
-                    callbacks: {
-                        label: (tooltipItem: any, data: any) => {
-                            let label = ((typeof tooltipItem.datasetIndex !== "undefined") && data.datasets && data.datasets[tooltipItem.datasetIndex].label)
-                                            || '';
-                            if (label) {
-                                label += ': ';
-                            }
-
-                            if (tooltipItem.yLabel) {
-                                label += formatCallback(tooltipItem.yLabel);
-                            }
-
-                            let minus = null
-                            let plus = null
-
-                            if (this.showErrors && tooltipItem.xLabel && typeof tooltipItem.datasetIndex !== "undefined" && data.datasets && data.datasets[tooltipItem.datasetIndex]) {
-                                const errorBars = (data.datasets[tooltipItem.datasetIndex] as ChartDataSetsWithErrors).errorBars
-                                const xLabelErrorBars = errorBars ? errorBars[tooltipItem.xLabel] : null
-                                if (xLabelErrorBars) {
-                                    minus = xLabelErrorBars.minus
-                                    plus = xLabelErrorBars.plus
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: (context: any) => {
+                                const {
+                                    datasetIndex,
+                                    dataset,
+                                    formattedValue: yLabel,
+                                    label: xLabel
+                                } = context;
+                                let label = ((typeof datasetIndex !== "undefined") && dataset && dataset.label)
+                                                || '';
+                                if (label) {
+                                    label += ': ';
                                 }
+    
+                                if (yLabel) {
+                                    label += formatCallback(yLabel);
+                                }
+    
+                                let minus = null
+                                let plus = null
+    
+                                if (this.showErrors && xLabel && typeof datasetIndex !== "undefined" && dataset) {
+                                    const errorBars = (dataset as ChartDataSetsWithErrors).errorBars
+                                    const xLabelErrorBars = errorBars ? errorBars[xLabel] : null
+                                    if (xLabelErrorBars) {
+                                        minus = xLabelErrorBars.minus
+                                        plus = xLabelErrorBars.plus
+                                    }
+                                }
+    
+                                if ((typeof minus === "number") && (typeof plus === "number")) {
+                                    label = `${label} (${formatCallback(minus)} - ${formatCallback(plus)})`
+                                }
+    
+                                return label;
                             }
-
-                            if ((typeof minus === "number") && (typeof plus === "number")) {
-                                label = `${label} (${formatCallback(minus)} - ${formatCallback(plus)})`
-                            }
-
-                            return label;
                         }
                     }
                 },
@@ -111,11 +123,7 @@ export default defineComponent({
                 const numOfLabels = chartData.labels.length;
                 const numOfBars = numOfDatasets * numOfLabels;
 
-                // amount of padding chart js uses by default for each bar 
-                const barPercentage = 0.8;
-
                 const halfBarWidth = barPercentage/(numOfDatasets * 2);
-                const errorBarWeight = 1;
 
                 visibleDatasetIndices.forEach((datasetId, indexDataset) => {
                     const dataset = datasets[datasetId];
@@ -143,51 +151,27 @@ export default defineComponent({
                         const errorBarWidth = (numOfBars/(numOfBars + 10)) * halfBarWidth * 0.3;
 
                         if (errorBarData[xLabel].minus && errorBarData[xLabel].plus) {
-                            const config = [
-                                {
-                                    borderColor: "#585858",
-                                    drawTime: "afterDatasetsDraw",
-                                    type: "line",
-                                    label: {
-                                        content: label
-                                    },
-                                    display: this.displayErrorBars,
-                                    xMin: barMidPoint,
-                                    xMax: barMidPoint,
-                                    yMin: errorBarData[xLabel].minus,
-                                    yMax: errorBarData[xLabel].plus,
-                                    borderWidth: errorBarWeight
-                                },
-                                {
-                                    borderColor: "#585858",
-                                    drawTime: "afterDatasetsDraw",
-                                    type: "line",
-                                    label: {
-                                        content: label
-                                    },
-                                    display: this.displayErrorBars,
-                                    xMin: barMidPoint - errorBarWidth,
-                                    xMax: barMidPoint + errorBarWidth,
-                                    yMin: errorBarData[xLabel].plus,
-                                    yMax: errorBarData[xLabel].plus,
-                                    borderWidth: errorBarWeight
-                                },
-                                {
-                                    borderColor: "#585858",
-                                    drawTime: "afterDatasetsDraw",
-                                    type: "line",
-                                    label: {
-                                        content: label
-                                    },
-                                    display: this.displayErrorBars,
-                                    xMin: barMidPoint - errorBarWidth,
-                                    xMax: barMidPoint + errorBarWidth,
-                                    yMin: errorBarData[xLabel].minus,
-                                    yMax: errorBarData[xLabel].minus,
-                                    borderWidth: errorBarWeight
-                                },
-                            ];
-                            errorLines.push(...config);
+                            errorLines.push(this.getErrorLineConfig(
+                                label,
+                                barMidPoint,
+                                barMidPoint,
+                                errorBarData[xLabel].minus,
+                                errorBarData[xLabel].plus,
+                            ));
+                            errorLines.push(this.getErrorLineConfig(
+                                label,
+                                barMidPoint - errorBarWidth,
+                                barMidPoint + errorBarWidth,
+                                errorBarData[xLabel].plus,
+                                errorBarData[xLabel].plus,
+                            ));
+                            errorLines.push(this.getErrorLineConfig(
+                                label,
+                                barMidPoint - errorBarWidth,
+                                barMidPoint + errorBarWidth,
+                                errorBarData[xLabel].minus,
+                                errorBarData[xLabel].minus,
+                            ));
                         }
                     })
                 });
@@ -195,6 +179,7 @@ export default defineComponent({
                 return {
                     ...baseChartOptions,
                     plugins: {
+                        ...baseChartOptions.plugins,
                         annotation: {
                             annotations: errorLines
                         },
@@ -206,6 +191,9 @@ export default defineComponent({
                         y: {
                             max: this.chartData.maxValuePlusError * 1.1
                         }
+                    },
+                    animation: {
+                        onComplete: this.showAllErrorBars
                     }
                 }
             } else {
@@ -214,14 +202,11 @@ export default defineComponent({
         }
     },
     methods: {
-        hideErrorBarsDuringAnimation() {
+        hideAllErrorBars() {
             this.displayErrorBars = false;
-            if (this.errorBarTimeout) {
-                window.clearTimeout(this.errorBarTimeout)
-            }
-            this.errorBarTimeout = setTimeout(() => {
-                this.displayErrorBars = true
-            }, 1050)
+        },
+        showAllErrorBars() {
+            this.displayErrorBars = true;
         },
         /*
             We need to pass a customLegendClick event into chartOptions so
@@ -232,28 +217,49 @@ export default defineComponent({
         customLegendClick(e: Event, legendItem: any, legend: any) {
             const index = legendItem.datasetIndex;
             const ci = legend.chart;
-            if (ci.isDatasetVisible(index)) {
-                this.showLabelErrorBars[index] = false;
+            const isDatasetVisible = ci.isDatasetVisible(index);
+            this.showLabelErrorBars[index] = !isDatasetVisible;
+            legendItem.hidden = isDatasetVisible;
+            if (isDatasetVisible) {
                 setTimeout(() => {
                     ci.hide(index);
-                }, 50)
-                legendItem.hidden = true;
+                }, 50);
             } else {
-                this.showLabelErrorBars[index] = true;
                 setTimeout(() => {
                     ci.show(index);
-                }, 50)
-                legendItem.hidden = false;
+                }, 50);
+            }
+        },
+        getErrorLineConfig(
+            label: string,
+            xMin: number,
+            xMax: number,
+            yMin: number,
+            yMax: number
+        ) {
+            return {
+                borderColor: "#585858",
+                drawTime: "afterDatasetsDraw",
+                type: "line",
+                label: {
+                    content: label
+                },
+                display: this.displayErrorBars,
+                xMin,
+                xMax,
+                yMin,
+                yMax,
+                borderWidth: errorBarWeight
             }
         }
     },
     mounted() {
-        this.hideErrorBarsDuringAnimation()
+        this.hideAllErrorBars()
     },
     watch: {
         chartData: {
             handler: function(newVal, oldVal) {
-                this.hideErrorBarsDuringAnimation()
+                this.hideAllErrorBars()
             },
             deep: true
         },
@@ -264,7 +270,7 @@ export default defineComponent({
         },
         showLabelErrorBars: {
             handler: function(newVal, oldVal) {
-                this.hideErrorBarsDuringAnimation()
+                this.hideAllErrorBars()
             },
             deep: true
         }        

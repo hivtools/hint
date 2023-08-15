@@ -207,7 +207,6 @@ describe("GenericChart component", () => {
 
         const wrapper = getWrapper();
         setTimeout(() => {
-            console.log(wrapper.html())
             expect(wrapper.findAllComponents(DataSource).length).toBe(0);
             expect(wrapper.findAllComponents(FiltersComp).length).toBe(0);
             expect(wrapper.findComponent(Plotly).exists()).toBe(false);
@@ -459,7 +458,6 @@ describe("GenericChart component", () => {
 
         setTimeout(() => {
             const dataset1Filters = wrapper.findAllComponents(FiltersComp)[0];
-            console.log(dataset1Filters.html())
             const newFilterSelections = {
                 age: [{id: "2", label: "2"}],
                 year: [{id: "2020", label: "2020"}]
