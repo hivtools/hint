@@ -619,9 +619,6 @@ describe("Plotly", () => {
         expect(layout.xaxis3).toStrictEqual(expectedXAxis);
         expect(layout.xaxis4).toStrictEqual(expectedXAxis);
 
-
-        console.log(layout)
-
         expectYAxis(1, 0.7, layout.yaxis1);
         expectYAxis(1, 0.7, layout.yaxis2);
         expectYAxis(0.5, 0.2, layout.yaxis3);

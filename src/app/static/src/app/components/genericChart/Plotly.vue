@@ -75,8 +75,6 @@
             LoadingSpinner
         },
         data: function() {
-            console.log(this.chartData);
-            console.log(this.layoutData);
             return {
                 rendering: false,
                 layoutRequired: false
