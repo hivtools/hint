@@ -12,11 +12,11 @@ import {currentHintVersion} from "../../hintVersion";
 import {ChangeLanguageAction} from "../language/actions";
 import {ErrorReportDefaultValue} from "../errors/errors";
 
-
 export interface RootActions extends LanguageActions<RootState> {
     validate: (store: ActionContext<RootState, RootState>) => void;
     generateErrorReport: (store: ActionContext<RootState, RootState>,
         payload: ErrorReportManualDetails) => void;
+    rollbackInvalidState: (store: ActionContext<RootState, RootState>) => void;
 }
 
 export const actions: ActionTree<RootState, RootState> & RootActions = {
@@ -29,7 +29,21 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
         const invalidSteps = state.stepper.steps.map((s: StepDescription) => s.number)
             .filter((i: number) => i < maxCompleteOrActive && !completeSteps.includes(i));
 
+        commit({type: RootMutation.SetInvalidSteps, payload: invalidSteps});
+    },
+
+    async rollbackInvalidState(store){
+        const {state, dispatch, commit, rootGetters} = store;
+        const {invalidSteps} = state;
         if (invalidSteps.length > 0) {
+            // Roll back in a new version (if not guest user) so invalid state is available for inspection
+            if (!rootGetters.isGuest) {
+                const stepTextKeys = rootGetters["stepper/stepTextKeys"];
+                const notePrefix = [i18next.t("rolledBackToLastValidStep")];
+                const noteSteps = invalidSteps.map((stepNumber) =>
+                    i18next.t(stepTextKeys[stepNumber]) || stepNumber.toString()).join(", ");
+                await dispatch("projects/newVersion", notePrefix + noteSteps);
+            }
 
             //Invalidate any steps which come after the first invalid step
             const maxValidStep = Math.min(...invalidSteps) - 1;
@@ -48,14 +62,8 @@ export const actions: ActionTree<RootState, RootState> & RootActions = {
             }
 
             commit({type: RootMutation.Reset, payload: maxValidStep});
-            commit({type: RootMutation.ResetSelectedDataType});
 
-            commit({
-                type: "load/LoadFailed",
-                payload: {
-                    detail: i18next.t("loadFailedErrorDetail")
-                }
-            });
+            commit({type: RootMutation.ResetSelectedDataType});
         }
     },
 

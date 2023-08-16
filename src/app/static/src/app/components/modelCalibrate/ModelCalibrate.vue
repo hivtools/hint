@@ -136,6 +136,7 @@
         methods: {
             update: mapMutationByName(namespace, ModelCalibrateMutation.Update),
             submitCalibrate: mapActionByName(namespace, "submit"),
+            resumeCalibrate: mapActionByName(namespace, "resumeCalibrate"),
             fetchOptions: mapActionByName(namespace, "fetchModelCalibrateOptions"),
             submitForm() {
                 (this.$refs.form as any).submit();
@@ -150,6 +151,7 @@
         },
         mounted() {
             this.fetchOptions();
+            this.resumeCalibrate();
         }
     });
 </script>

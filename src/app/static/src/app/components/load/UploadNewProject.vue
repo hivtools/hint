@@ -26,10 +26,7 @@
                 </button>
             </template>
         </modal>
-        <load-error-modal :has-error="hasError"
-                          :load-error="loadError!"
-                          :clear-load-error="clearLoadError"/>
-
+        <load-error-modal />
         <upload-progress :open-modal="preparing" :cancel="cancelRehydration"/>
     </div>
 </template>
@@ -67,14 +64,11 @@
         },
         methods: {
             cancelRehydration: mapMutationByName("load", "RehydrateCancel"),
-            clearLoadError: mapActionByName("load", "clearLoadState"),
             setProjectName: mapMutationByName("load", "SetProjectName"),
             getProjects: mapActionByName("projects", "getProjects")
         },
         computed: {
             ...mapStateProps("load", {
-                hasError: (state: LoadState) => state.loadingState === LoadingState.LoadFailed,
-                loadError: (state: LoadState) => state.loadError && state.loadError.detail,
                 preparing: (state: LoadState) => state.preparing
             }),
             disableCreate() {

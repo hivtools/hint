@@ -1,3 +1,31 @@
+# hint 2.38.1
+
+* Improve Load Failed dialog guidance
+
+# hint 2.38.0
+
+* Include invalid steps in new project version note on rollback
+
+# hint 2.37.2
+
+* Fix Retry load for guest user
+
+# hint 2.37.1
+
+* Fix Input Time Series plots with single values
+
+# hint 2.37.0
+
+* Auth0 single sign on authorization integration 
+
+# hint 2.36.0
+
+* Projects link on invalid state dialog
+
+# hint 2.35.0
+
+* Allow retry on project load fail
+
 # hint 2.34.0
 
 * Change download approach for remaining download files

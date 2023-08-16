@@ -3,30 +3,31 @@ import {initialModelRunState} from "../../app/store/modelRun/modelRun";
 import {initialModelOptionsState} from "../../app/store/modelOptions/modelOptions";
 
 import {
+    mockADRState,
     mockAncResponse,
     mockBaselineState,
+    mockDownloadResultsState,
     mockError,
     mockErrorsState,
+    mockGenericChartState,
     mockLoadState,
     mockMetadataState,
+    mockModelCalibrateState,
     mockModelOptionsState,
     mockModelOutputState,
     mockModelRunState,
-    mockModelCalibrateState,
     mockPlottingSelections,
     mockRootState,
     mockStepperState,
     mockSurveyAndProgramState,
-    mockDownloadResultsState,
-    mockSurveyResponse, mockADRState, mockGenericChartState
-
+    mockSurveyResponse
 } from "../mocks";
 import {DataType} from "../../app/store/surveyAndProgram/surveyAndProgram";
 import {RootState} from "../../app/root";
 import {
     BarchartSelections,
-    ScaleType,
-    initialPlottingSelectionsState
+    initialPlottingSelectionsState,
+    ScaleType
 } from "../../app/store/plottingSelections/plottingSelections";
 import {initialMetadataState} from "../../app/store/metadata/metadata";
 import {initialModelOutputState} from "../../app/store/modelOutput/modelOutput";
@@ -43,6 +44,11 @@ describe("Root mutations", () => {
     beforeAll(() => {
         router.push('/login')
     })
+
+    afterEach(() => {
+        // restore the spy created with spyOn
+        jest.restoreAllMocks();
+    });
 
     const populatedState = function () {
         return mockRootState({
@@ -328,5 +334,48 @@ describe("Root mutations", () => {
 
         mutations.SetUpdatingLanguage(state, {payload: false});
         expect(state.updatingLanguage).toBe(false);
+    });
+
+    it("can set invalidSteps", () => {
+        const state = mockRootState();
+        mutations.SetInvalidSteps(state, {payload: [2]});
+        expect(state.invalidSteps).toStrictEqual([2]);
+    });
+
+    it("resetOutput stops any polling", () => {
+        const state = mockRootState({
+            modelRun: mockModelRunState({statusPollId: 98}),
+            modelCalibrate: mockModelCalibrateState({statusPollId: 99})
+        });
+        const spy = jest.spyOn(window, "clearInterval");
+
+        mutations.ResetOutputs(state);
+
+        expect(state.modelRun.statusPollId).toBe(-1);
+        expect(state.modelCalibrate.statusPollId).toBe(-1);
+        expect(spy).toHaveBeenCalledTimes(2);
+        expect(spy).toHaveBeenNthCalledWith(1, 98);
+        expect(spy).toHaveBeenNthCalledWith(2, 99);
+    });
+
+    it("resetOutput stops any download polling", () => {
+        const state = populatedState();
+        state.downloadResults.spectrum.statusPollId = 96;
+        state.downloadResults.coarseOutput.statusPollId = 97;
+        state.downloadResults.summary.statusPollId = 98;
+        state.downloadResults.comparison.statusPollId = 99;
+        const spy = jest.spyOn(window, "clearInterval");
+
+        mutations.ResetDownload(state);
+
+        expect(state.downloadResults.spectrum.statusPollId).toBe(-1);
+        expect(state.downloadResults.summary.statusPollId).toBe(-1);
+        expect(state.downloadResults.coarseOutput.statusPollId).toBe(-1);
+        expect(state.downloadResults.comparison.statusPollId).toBe(-1);
+        expect(spy).toHaveBeenCalledTimes(4);
+        expect(spy).toHaveBeenNthCalledWith(1, 96);
+        expect(spy).toHaveBeenNthCalledWith(2, 97);
+        expect(spy).toHaveBeenNthCalledWith(3, 98);
+        expect(spy).toHaveBeenNthCalledWith(4, 99);
     });
 });

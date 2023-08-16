@@ -26,7 +26,23 @@ class ADRClientBuilder(val appProperties: AppProperties,
         val userId = this.session.getUserProfile().id
         val encryptedKey = this.userRepository.getADRKey(userId) ?: throw UserException("noADRKey")
         val apiKey = this.encryption.decrypt(encryptedKey)
-        return ADRFuelClient(this.appProperties, apiKey, this.logger)
+        return ADRFuelClient(this.appProperties.adrUrl, apiKey, this.logger)
+    }
+
+    fun buildSSO(): ADRClient
+    {
+        val token = this.session.getAccessToken()
+
+        if (token.isEmpty())
+        {
+            logger.info("There was a problem retrieving access token from Auth0")
+        }
+
+        return ADRFuelClient(
+            this.appProperties.oauth2ClientAdrServerUrl,
+            "Bearer $token",
+            this.logger
+        )
     }
 }
 
@@ -38,10 +54,10 @@ interface ADRClient
     fun postFile(url: String, parameters: List<Pair<String, Any?>>, file: Pair<String, File>): ResponseEntity<String>
 }
 
-class ADRFuelClient(appProperties: AppProperties,
+class ADRFuelClient(baseUrl: String,
                     private val apiKey: String,
                     private val logger: GenericLogger)
-    : FuelClient(appProperties.adrUrl + "api/3/action"), ADRClient
+    : FuelClient(baseUrl + "api/3/action"), ADRClient
 {
     private val header = Pair("Authorization", apiKey)
 

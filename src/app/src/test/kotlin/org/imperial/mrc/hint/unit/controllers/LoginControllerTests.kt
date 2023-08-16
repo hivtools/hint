@@ -1,9 +1,11 @@
 package org.imperial.mrc.hint.unit.controllers
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.controllers.LoginController
 import org.imperial.mrc.hint.security.Session
@@ -18,6 +20,21 @@ import java.net.URI
 
 class LoginControllerTests
 {
+
+    private val clientId = "fakeId"
+    private val appUrl = "https://naomi.com"
+    private val clientUrl = "oAuth2tenant.com"
+    private val audience = "naomi"
+    private val scope = "openid+profile+email+access:adr"
+
+    private val mockProperties = mock<AppProperties> {
+        on { oauth2ClientUrl } doReturn clientUrl
+        on { applicationUrl } doReturn appUrl
+        on { oauth2ClientId } doReturn clientId
+        on { oauth2ClientAudience } doReturn audience
+        on { oauth2ClientScope } doReturn scope
+    }
+
     @Test
     fun `can get login view and model with no query string`()
     {
@@ -123,6 +140,7 @@ class LoginControllerTests
     @Test
     fun `can redirect to auth0 login page`()
     {
+        /*
         val clientId = "fakeId"
         val appUrl = "https://naomi.com"
         val clientUrl = "oauth2tenant.com"
@@ -135,6 +153,8 @@ class LoginControllerTests
             on { oauth2ClientAudience } doReturn audience
             on { oauth2LoginMethod } doReturn true
         }
+
+         */
 
         val mockRequest = mock<HttpServletRequest>()
 
@@ -153,7 +173,7 @@ class LoginControllerTests
         httpHeader.location = URI(
             "https://$clientUrl/authorize?response_type=code&client_id=$clientId&" +
                     "state=$encodedState&" +
-                    "scope=openid+profile+email+read:dataset&audience=$audience&" +
+                    "scope=$scope&audience=$audience&" +
                     "redirect_uri=$appUrl/callback/oauth2Client"
         )
 
@@ -165,10 +185,12 @@ class LoginControllerTests
     @Test
     fun `can redirect to auth0 signup page`()
     {
+        /*
         val clientId = "fakeId"
         val appUrl = "https://naomi.com"
         val clientUrl = "oauth2tenant.com"
         val audience = "naomi"
+        val scope = "openid+profile+email+access:adr"
 
         val mockProperties = mock<AppProperties>{
             on { oauth2ClientUrl } doReturn clientUrl
@@ -176,7 +198,10 @@ class LoginControllerTests
             on { oauth2ClientId } doReturn clientId
             on { oauth2ClientAudience } doReturn audience
             on { oauth2LoginMethod } doReturn true
+            on { oauth2ClientScope } doReturn scope
         }
+
+         */
 
         val mockRequest = mock<HttpServletRequest>()
 
@@ -195,12 +220,30 @@ class LoginControllerTests
         httpHeader.location = URI(
             "https://$clientUrl/authorize?response_type=code&client_id=$clientId&" +
                     "state=$encodedState&" +
-                    "scope=openid+profile+email+read:dataset&audience=$audience&" +
+                    "scope=$scope&audience=$audience&" +
                     "redirect_uri=$appUrl/callback/oauth2Client&screen_hint=signup"
         )
 
         assertEquals(result.statusCode, HttpStatus.SEE_OTHER)
 
         assertEquals(result.headers.location, httpHeader.location)
+    }
+
+    @Test
+    fun `can get sso login method`()
+    {
+        val mockRequest = mock<HttpServletRequest>()
+
+        val mockSession = mock<Session>()
+
+        val sut = LoginController(mockRequest, mockSession, ConfiguredAppProperties())
+
+        val result = sut.isSSOLoginMethod()
+
+        assertThat(result.statusCode).isEqualTo(HttpStatus.OK)
+
+        val resultJson = ObjectMapper().readTree(result.body)["data"]
+
+        assertThat(resultJson.asBoolean()).isEqualTo(false)
     }
 }

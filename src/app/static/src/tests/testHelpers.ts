@@ -2,11 +2,12 @@ import {mockAxios, mockBaselineState, mockError, mockFailure, mockRootState} fro
 import {ActionContext, MutationTree, Store} from "vuex";
 import {PayloadWithType, TranslatableState} from "../app/types";
 import {DOMWrapper} from "@vue/test-utils";
-import {Language} from "../app/store/translations/locales";
+import {Language, Translations} from "../app/store/translations/locales";
 import registerTranslations from "../app/store/translations/registerTranslations";
 import {LanguageMutation} from "../app/store/language/mutations";
 import ErrorReport from "../app/components/ErrorReport.vue";
 import {DataExplorationState} from "../app/store/dataExploration/dataExploration";
+import {VNode} from "vue";
 import { VueWrapper, mount, shallowMount } from "@vue/test-utils";
 import translate from "../app/directives/translate";
 import { nextTick } from "vue";
@@ -99,7 +100,24 @@ export const expectTranslated = async (element: DOMWrapper<any>,
                                  portugueseText: string,
                                  store: Store<DataExplorationState>,
                                  attribute?: string) =>
-    await expectTranslatedWithStoreType<DataExplorationState>(element, englishText, frenchText, portugueseText, store, attribute);
+    expectTranslatedWithStoreType<DataExplorationState>(element, englishText, frenchText, portugueseText, store, attribute);
+
+export const expectHasTranslationKey = (element: DOMWrapper<any>,
+                                        mockTranslate: Mock,
+                                        translationKey: keyof Translations,
+                                        attribute?: string) => {
+    const relevantCall = mockTranslate.mock.calls.filter((call) => call[0] === element.element);
+    expect(relevantCall.length).toBeGreaterThanOrEqual(1);
+    if (attribute) {
+        const relevantAttributeCall = relevantCall.filter((call) => call[1].arg === attribute);
+        expect(relevantAttributeCall[0][1].value).toBe(translationKey);
+    } else {
+        expect(relevantCall[0][1].value).toBe(translationKey);
+    }
+    // const vNode = (element.vm ? element.vm.$vnode : (element as any).vnode) as VNode; // support component and element wrappers
+    // const elTranslationKey = vNode.data?.directives?.find(dir => dir.name === "translate" && dir.arg === attribute)?.value;
+    // expect(elTranslationKey).toBe(translationKey);
+};
 
 export const expectChangeLanguageMutations = (commit: Mock) => {
     expect(commit.mock.calls[0][0]).toStrictEqual({

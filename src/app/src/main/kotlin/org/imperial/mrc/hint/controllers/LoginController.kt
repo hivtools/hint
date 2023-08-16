@@ -7,6 +7,8 @@ import org.springframework.ui.set
 import org.springframework.web.bind.annotation.GetMapping
 import javax.servlet.http.HttpServletRequest
 import org.imperial.mrc.hint.AppProperties
+import org.imperial.mrc.hint.models.SuccessResponse
+import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.security.oauth2.OAuth2AuthenticationRedirection
 import org.springframework.http.ResponseEntity
 
@@ -62,5 +64,11 @@ class LoginController(
     fun registerRedirection(): ResponseEntity<String>
     {
         return oauth2RegisterRedirect()
+    }
+
+    @GetMapping("/sso")
+    fun isSSOLoginMethod(): ResponseEntity<String>
+    {
+        return SuccessResponse(appProperties.oauth2LoginMethod).asResponseEntity()
     }
 }

@@ -70,7 +70,8 @@ export interface RootState extends DataExplorationState {
     projects: ProjectsState
     currentUser: string,
     downloadResults: DownloadResultsState,
-    downloadIndicator: DownloadIndicatorState
+    downloadIndicator: DownloadIndicatorState,
+    invalidSteps: number[]
 }
 
 export interface ReadyState {
@@ -172,7 +173,8 @@ export const emptyState = (): RootState => {
         currentUser: currentUser,
         downloadResults: initialDownloadResultsState(),
         dataExplorationMode: false,
-        downloadIndicator: initialDownloadIndicatorState()
+        downloadIndicator: initialDownloadIndicatorState(),
+        invalidSteps: []
     }
 };
 

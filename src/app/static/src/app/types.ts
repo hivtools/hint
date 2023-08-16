@@ -1,5 +1,5 @@
 import {Payload} from "vuex";
-import {FilterOption, Error, Warning, VersionInfo} from "./generated";
+import {Error, FilterOption, VersionInfo, Warning} from "./generated";
 import {Language} from "./store/translations/locales";
 
 export interface PayloadWithType<T> extends Payload {
@@ -369,4 +369,8 @@ export interface StepperNavigationProps {
 
 export enum Step {
     ModelOptions = 3
+}
+
+export interface PollingState {
+    statusPollId: number
 }

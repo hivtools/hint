@@ -11,7 +11,7 @@ import org.pac4j.oauth.credentials.extractor.OAuth20CredentialsExtractor
 import java.util.*
 
 class OAuth2CredentialExtractor(
-    val config: OAuth20Configuration,
+    config: OAuth20Configuration,
     client: IndirectClient,
 ) : OAuth20CredentialsExtractor(config, client)
 {

@@ -8,7 +8,6 @@ import org.imperial.mrc.hint.AppProperties
 import org.imperial.mrc.hint.FileManager
 import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.ADRClient
-import org.imperial.mrc.hint.clients.ADRClientBuilder
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.controllers.ADRController
 import org.imperial.mrc.hint.controllers.HintrController
@@ -18,6 +17,7 @@ import org.imperial.mrc.hint.md5sum
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
+import org.imperial.mrc.hint.service.ADRService
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -127,7 +127,7 @@ class ADRControllerTests : HintrControllerTests()
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
@@ -154,7 +154,7 @@ class ADRControllerTests : HintrControllerTests()
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
@@ -181,7 +181,7 @@ class ADRControllerTests : HintrControllerTests()
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn makeFakeSuccessResponse()
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
@@ -210,7 +210,7 @@ class ADRControllerTests : HintrControllerTests()
         val mockClient = mock<ADRClient> {
             on { get(expectedUrl) } doReturn badResponse
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
@@ -237,7 +237,7 @@ class ADRControllerTests : HintrControllerTests()
                     .ok()
                     .body("whatever")
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
@@ -264,7 +264,7 @@ class ADRControllerTests : HintrControllerTests()
                     .ok()
                     .body("whatever")
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
@@ -290,7 +290,7 @@ class ADRControllerTests : HintrControllerTests()
                     .ok()
                     .body("whatever")
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
@@ -469,7 +469,7 @@ class ADRControllerTests : HintrControllerTests()
                                 "package_id" to "dataset1")), any())
             } doReturn ResponseEntity.ok().body("whatever")
         }
-        val mockBuilder: ADRClientBuilder = mock {
+        val mockBuilder: ADRService = mock {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties, mock(), mockAPIClient,
@@ -503,7 +503,7 @@ class ADRControllerTests : HintrControllerTests()
                         any())
             } doReturn ResponseEntity.ok().body("whatever")
         }
-        val mockBuilder: ADRClientBuilder = mock {
+        val mockBuilder: ADRService = mock {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties, mock(), mockAPIClient,
@@ -535,7 +535,7 @@ class ADRControllerTests : HintrControllerTests()
                         any())
             } doReturn ResponseEntity.ok().body("whatever")
         }
-        val mockBuilder: ADRClientBuilder = mock {
+        val mockBuilder: ADRService = mock {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties, mock(), mockAPIClient,
@@ -577,7 +577,7 @@ class ADRControllerTests : HintrControllerTests()
             on { get("resource_show?id=testResId") } doReturn ResponseEntity.ok()
                     .body("""{"data": {"hash": "xyz987"}}""")
         }
-        val mockBuilder: ADRClientBuilder = mock {
+        val mockBuilder: ADRService = mock {
             on { build() } doReturn mockClient
         }
 
@@ -713,7 +713,7 @@ class ADRControllerTests : HintrControllerTests()
 
             on { get("resource_show?id=resource1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
         }
-        val mockBuilder: ADRClientBuilder = mock {
+        val mockBuilder: ADRService = mock {
             on { build() } doReturn mockClient
         }
 
@@ -737,7 +737,7 @@ class ADRControllerTests : HintrControllerTests()
         val mockClient: ADRClient = mock {
             on { get("resource_show?id=resource1") } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(null)
         }
-        val mockBuilder: ADRClientBuilder = mock {
+        val mockBuilder: ADRService = mock {
             on { build() } doReturn mockClient
         }
 
@@ -763,7 +763,7 @@ class ADRControllerTests : HintrControllerTests()
         val mockClient: ADRClient = mock {
             on { get("resource_show?id=resource1") } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
         }
-        val mockBuilder: ADRClientBuilder = mock {
+        val mockBuilder: ADRService = mock {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties,
@@ -826,7 +826,7 @@ class ADRControllerTests : HintrControllerTests()
             on { postFile(any(), any(), any()) } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")
             on { get(any()) } doReturn ResponseEntity.ok().body(objectMapper.writeValueAsString(data))
         }
-        val mockBuilder: ADRClientBuilder = mock {
+        val mockBuilder: ADRService = mock {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(mock(), mock(), mockBuilder, objectMapper, mockProperties,
@@ -863,7 +863,7 @@ class ADRControllerTests : HintrControllerTests()
                     .ok()
                     .body("whatever")
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
@@ -893,7 +893,7 @@ class ADRControllerTests : HintrControllerTests()
                     .ok()
                     .body("whatever")
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
@@ -927,7 +927,7 @@ class ADRControllerTests : HintrControllerTests()
                     .ok()
                     .body("deleted release")
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
@@ -959,7 +959,7 @@ class ADRControllerTests : HintrControllerTests()
                     .ok()
                     .body("whatever")
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
@@ -989,7 +989,7 @@ class ADRControllerTests : HintrControllerTests()
                     .body(objectMapper.writeValueAsString(data))
             on { post("/version_delete", listOf("version_id" to "other-id")) } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
@@ -1014,7 +1014,7 @@ class ADRControllerTests : HintrControllerTests()
         val mockClient = mock<ADRClient> {
             on { get("/dataset_version_list?dataset_id=dataset-1") } doReturn ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Bad Gateway")
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(
@@ -1046,7 +1046,7 @@ class ADRControllerTests : HintrControllerTests()
                     .ok()
                     .body("whatever")
         }
-        val mockBuilder = mock<ADRClientBuilder> {
+        val mockBuilder = mock<ADRService> {
             on { build() } doReturn mockClient
         }
         val sut = ADRController(

@@ -16,8 +16,12 @@ import { Language } from "../../../app/store/translations/locales";
 import { nextTick } from "vue";
 
 describe("Model calibrate component", () => {
-    const getStore = (state: Partial<ModelCalibrateState> = {}, fetchAction = jest.fn(), submitAction = jest.fn(),
-                      updateMutation = jest.fn(), rootState: Partial<RootState> = {}) => {
+    const getStore = (state: Partial<ModelCalibrateState> = {},
+                      fetchAction = jest.fn(),
+                      submitAction = jest.fn(),
+                      resumeCalibrateAction = jest.fn(),
+                      updateMutation = jest.fn(),
+                      rootState: Partial<RootState> = {}) => {
         const store = new Vuex.Store({
             state: mockRootState(rootState),
             modules: {
@@ -26,7 +30,8 @@ describe("Model calibrate component", () => {
                     state: mockModelCalibrateState(state),
                     actions: {
                         fetchModelCalibrateOptions: fetchAction,
-                        submit: submitAction
+                        submit: submitAction,
+                        resumeCalibrate: resumeCalibrateAction
                     },
                     mutations: {
                         [ModelCalibrateMutation.Update]: updateMutation
@@ -88,7 +93,7 @@ describe("Model calibrate component", () => {
     });
 
     it("translates required text", () => {
-        const store = getStore({}, jest.fn(), jest.fn(), jest.fn(), {language: Language.fr});
+        const store = getStore({}, jest.fn(), jest.fn(), jest.fn(), jest.fn(), {language: Language.fr});
         const wrapper = shallowMountWithTranslate(ModelCalibrate, store, {
             global: {
                 plugins: [store]
@@ -98,7 +103,7 @@ describe("Model calibrate component", () => {
     });
 
     it("translates select text", () => {
-        const store = getStore({}, jest.fn(), jest.fn(), jest.fn(), {language: Language.fr});
+        const store = getStore({}, jest.fn(), jest.fn(), jest.fn(), jest.fn(), {language: Language.fr});
         const wrapper = shallowMountWithTranslate(ModelCalibrate, store, {
             global: {
                 plugins: [store]
@@ -147,7 +152,7 @@ describe("Model calibrate component", () => {
 
     it("setting options value commits update mutation", async () => {
         const mockUpdate = jest.fn();
-        const store = getStore({optionsFormMeta: mockOptionsFormMeta()}, jest.fn(), jest.fn(), mockUpdate);
+        const store = getStore({optionsFormMeta: mockOptionsFormMeta()}, jest.fn(), jest.fn(), jest.fn(), mockUpdate);
         const wrapper = mountWithTranslate(ModelCalibrate, store, {
             global: {
                 plugins: [store]
@@ -194,5 +199,12 @@ describe("Model calibrate component", () => {
         const wrapper = getWrapper(store);
         expect(wrapper.findComponent(CalibrationResults).exists()).toBe(false);
         expect(wrapper.find("#reviewResults").exists()).toBe(false)
+    });
+
+    it("calls resume calibrate on mount", () => {
+        const mockResumeCalibrate = jest.fn();
+        const store = getStore({}, jest.fn(), jest.fn(), mockResumeCalibrate, jest.fn());
+        getWrapper(store);
+        expect(mockResumeCalibrate.mock.calls.length).toBe(1);
     });
 });

@@ -23,6 +23,14 @@ describe("ADR non-dataset actions", () => {
         expect(commit.mock.calls[0][0]["payload"]).toBe("123");
     });
 
+    it("can sso login method", async () => {
+        const commit = jest.fn();
+        await actions.ssoLoginMethod({commit, rootState} as any);
+
+        expect(commit.mock.calls[0][0]["type"]).toBe(ADRMutation.SetSSOLogin);
+        expect(commit.mock.calls[0][0]["payload"]).toBe(false);
+    });
+
     it("can save ADR key", async () => {
         const commit = jest.fn();
         await actions.saveKey({commit, state, rootState} as any, "1234");

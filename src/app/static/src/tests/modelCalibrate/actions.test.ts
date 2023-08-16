@@ -1,11 +1,13 @@
 import {
-    mockAxios, mockBaselineState,
+    mockAxios,
+    mockBaselineState,
     mockError,
     mockFailure,
     mockModelCalibrateState,
     mockModelRunState,
     mockRootState,
-    mockSuccess, mockWarning
+    mockSuccess,
+    mockWarning
 } from "../mocks";
 import {actions} from "../../app/store/modelCalibrate/actions";
 import {ModelCalibrateMutation} from "../../app/store/modelCalibrate/mutations";
@@ -93,7 +95,7 @@ describe("ModelCalibrate actions", () => {
         expect(dispatch.mock.calls.length).toBe(0);
     });
 
-    it("poll commits status when successfully fetched",  (done) => {
+    it("poll commits status when successfully fetched", (done) => {
         mockAxios.onGet(`/model/calibrate/status/1234`)
             .reply(200, mockSuccess("TEST DATA"));
 
@@ -139,7 +141,7 @@ describe("ModelCalibrate actions", () => {
         }, 2100);
     });
 
-    it("poll dispatches getResult when status done",  (done) => {
+    it("poll dispatches getResult when status done", (done) => {
         mockAxios.onGet(`/model/calibrate/status/1234`)
             .reply(200, mockSuccess("TEST DATA"));
 
@@ -427,5 +429,34 @@ describe("ModelCalibrate actions", () => {
             payload: mockError("Test Error")
         });
         expect(mockAxios.history.get.length).toBe(1);
+    });
+
+    it("resume calibrate starts polling if calibration started but no result fetched", async () => {
+        const dispatch = jest.fn();
+        const initialState = mockModelCalibrateState();
+        await actions.resumeCalibrate({dispatch, state: initialState} as any);
+
+        expect(dispatch.mock.calls.length).toBe(0);
+
+        const completeState = mockModelCalibrateState(
+            {calibrating: false, complete: true, calibrateId: "123"});
+        await actions.resumeCalibrate({dispatch, state: completeState} as any);
+
+        expect(dispatch.mock.calls.length).toBe(0);
+
+        const incompleteState = mockModelCalibrateState(
+            {calibrating: true, complete: false, calibrateId: "123"});
+        await actions.resumeCalibrate({dispatch, state: incompleteState} as any);
+
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("poll");
+
+        // Following state should not be possible but checking for completeness
+        const brokenState = mockModelCalibrateState(
+            {calibrating: true, complete: false, calibrateId: ""});
+        await actions.resumeCalibrate({dispatch, state: completeState} as any);
+
+        // No new polls
+        expect(dispatch.mock.calls.length).toBe(1);
     });
 });

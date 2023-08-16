@@ -17,12 +17,14 @@ class OAuth2AuthenticationRedirectionTests
     private val appUrl = "https://naomi.com"
     private val clientUrl = "oAuth2tenant.com"
     private val audience = "naomi"
+    private val scope = "openid+profile+email+access:adr"
 
-    private val mockProperties = mock<AppProperties>{
+    private val mockProperties = mock<AppProperties> {
         on { oauth2ClientUrl } doReturn clientUrl
         on { applicationUrl } doReturn appUrl
         on { oauth2ClientId } doReturn clientId
         on { oauth2ClientAudience } doReturn audience
+        on { oauth2ClientScope } doReturn scope
     }
 
     @Test
@@ -43,7 +45,7 @@ class OAuth2AuthenticationRedirectionTests
         httpHeader.location = URI(
             "https://$clientUrl/authorize?response_type=code&client_id=$clientId&" +
                     "state=$encodedState&" +
-                    "scope=openid+profile+email+read:dataset&audience=$audience&" +
+                    "scope=$scope&audience=$audience&" +
                     "redirect_uri=$appUrl/callback/oauth2Client"
         )
 
@@ -82,7 +84,7 @@ class OAuth2AuthenticationRedirectionTests
         httpHeader.location = URI(
             "https://$clientUrl/authorize?response_type=code&client_id=$clientId&" +
                     "state=$encodedState&" +
-                    "scope=openid+profile+email+read:dataset&audience=$audience&" +
+                    "scope=$scope&audience=$audience&" +
                     "redirect_uri=$appUrl/callback/oauth2Client&screen_hint=signup"
         )
 

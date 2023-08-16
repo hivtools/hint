@@ -14,6 +14,7 @@ export interface ADRState {
     adrError: Error | null,
     schemas: ADRSchemas | null,
     userCanUpload: boolean
+    ssoLogin: boolean
 }
 
 export const initialADRState = (): ADRState => {
@@ -25,7 +26,8 @@ export const initialADRState = (): ADRState => {
         adrError: null,
         schemas: null,
         fetchingDatasets: false,
-        userCanUpload: false
+        userCanUpload: false,
+        ssoLogin: false
     }
 };
 

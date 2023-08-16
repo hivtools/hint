@@ -1,78 +1,110 @@
 import {mount} from "@vue/test-utils";
 import LoadErrorModal from "../../../app/components/load/LoadErrorModal.vue"
+import Vuex from "vuex";
+import {emptyState, RootState} from "../../../app/root";
+import {LoadingState} from "../../../app/store/load/state";
+import {expectHasTranslationKey, expectTranslated, mountWithTranslate} from "../../testHelpers";
+import registerTranslations from "../../../app/store/translations/registerTranslations";
+
+const mockClearLoadError = jest.fn();
+
+const getStore = (hasError: boolean, loadError: string) => {
+    return new Vuex.Store<RootState>({
+        state: emptyState() as any,
+        modules: {
+            load: {
+                namespaced: true,
+                state: {
+                    loadingState: hasError ? LoadingState.LoadFailed : LoadingState.NotLoading,
+                    loadError: {
+                        detail: loadError
+                    }
+                },
+                actions: {
+                    clearLoadState: mockClearLoadError
+                }
+            }
+        }
+    });
+};
 
 describe("loadErrorModal", () => {
+
+    const mockTranslate = jest.fn();
 
     beforeEach(() => {
         jest.resetAllMocks()
     })
 
-    const mockFunction = jest.fn()
-    const mockTranslate = jest.fn()
-
-    const errorProps = {
-        hasError: false,
-        loadError: "",
-        clearLoadError: mockFunction,
-    }
-
-    const openErrorProps = {
-        hasError: true,
-        loadError: "Test Error Message",
-        clearLoadError: mockFunction,
-    }
-
-    const getWrapper = (props = errorProps) => {
+    const getWrapper = (hasError: boolean =  true, loadError: string = "Test Error Message") => {
+        const store = getStore(hasError, loadError);
         return mount(LoadErrorModal, {
-            props: props,
-            directives: {
-                translate: mockTranslate
+            global: {
+                plugins: [store],
+                directives: {
+                    translate: mockTranslate
+                }
             }
         })
     }
 
-    it("can render error modal as expected", () => {
-        const wrapper = getWrapper()
+    it("can render error modal as expected when there is no load error", () => {
+        const wrapper = getWrapper(false);
         const modal = wrapper.find(".modal")
         expect(modal.attributes()).toEqual({
             class: "modal",
             style: "display: none;"
         })
-    })
+    });
 
-    it("opens error modal", () => {
-        const wrapper = getWrapper(openErrorProps)
-        const modal = wrapper.find(".modal")
-        expect(modal.attributes()).toEqual({
-            class: "modal show",
-            style: "display: block;",
-        })
-        expect(mockFunction.mock.calls.length).toBe(0)
-    })
 
-    it("can display error text and translates elements", () => {
-        const wrapper = getWrapper(openErrorProps)
+   it("can display error text and translates elements when there is load error", () => {
+        const wrapper = getWrapper()
         const modal = wrapper.find(".modal")
-        expect(mockFunction.mock.calls.length).toBe(0)
+        expect(mockClearLoadError.mock.calls.length).toBe(0)
         expect(modal.find("p").text()).toBe("Test Error Message")
 
-        expect(mockTranslate.mock.calls.length).toBe(2)
+        expect(mockTranslate.mock.calls.length).toBe(3)
         expect(mockTranslate.mock.calls[0][1].value).toBe("loadError")
         expect(mockTranslate.mock.calls[1][1].value).toBe("ok")
-    })
+        expect(mockTranslate.mock.calls[2][1].value).toBe("ok")
+    });
 
-    it("trigger can invoke clearLoadError modal", async () => {
-        const wrapper = getWrapper(openErrorProps)
+    it("click OK can invoke clearLoadError modal", async () => {
+        const wrapper = getWrapper()
         const okButton = wrapper.find(".modal button")
         expect(okButton.attributes()).toEqual(
             {
-                "aria-label": "Close",
                 "class": "btn btn-red",
                 "data-dismiss": "modal",
+                "id": "ok-load-error",
                 "type": "button"
             })
-        expect(mockFunction.mock.calls.length).toBe(0)
+        expectHasTranslationKey(okButton, mockTranslate, "ok", "aria-label");
+        expect(mockClearLoadError.mock.calls.length).toBe(0)
         await okButton.trigger("click")
-        expect(mockFunction.mock.calls.length).toBe(1)
-    })
-})
+        expect(mockClearLoadError.mock.calls.length).toBe(1)
+    });
+});
+
+describe("loadErrorModal translations", () => {
+    const getWrapper = (hasError: boolean =  true, loadError: string = "Test Error Message", invalidSteps: number[] = [])  => {
+        const store = getStore(hasError, loadError);
+        registerTranslations(store);
+        return mountWithTranslate(LoadErrorModal, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+    };
+
+    it("can display expected translations when there is load error", () => {
+        const wrapper = getWrapper();
+        const store = wrapper.vm.$store;
+        expectTranslated(wrapper.find("h4"), "Load Error", "Erreur de chargement",
+            "Erro de carregamento", store);
+        const button = wrapper.find("button#ok-load-error");
+        expectTranslated(button, "OK", "OK", "OK", store);
+        expectTranslated(button, "OK", "OK", "OK", store, "aria-label");
+    });
+});

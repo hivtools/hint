@@ -24,6 +24,7 @@ import org.springframework.util.LinkedMultiValueMap
 class ADRTests : SecureIntegrationTests()
 {
     val ADR_KEY = "4c69b103-4532-4b30-8a37-27a15e56c0bb"
+    val ADR_TEST_DATASET_NAME = "antarctica-country-estimates-2024-1-2"
 
     @ParameterizedTest
     @EnumSource(IsAuthorized::class)
@@ -86,7 +87,7 @@ class ADRTests : SecureIntegrationTests()
     {
         testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
 
-        val name = "antarctica-country-estimates-2022-1"
+        val name = ADR_TEST_DATASET_NAME
         val release = "1.0"
 
         val result = testRestTemplate.getForEntity<String>("/adr/datasets/$name?release=$release")
@@ -391,7 +392,7 @@ class ADRTests : SecureIntegrationTests()
             testRestTemplate.postForEntity<String>("/adr/key", getPostEntityWithKey())
             val resultWithResources = testRestTemplate.getForEntity<String>("/adr/datasets?showInaccessible=false")
             val data = ObjectMapper().readTree(resultWithResources.body!!)["data"]
-            val dataset = data.find { it["name"].textValue() == "antarctica-country-estimates-2023" }
+            val dataset = data.find { it["name"].textValue() == ADR_TEST_DATASET_NAME }
             val resource = dataset!!["resources"].find { it["resource_type"].textValue() == type }
             resource!!["url"].textValue()
         }
@@ -441,7 +442,7 @@ class ADRTests : SecureIntegrationTests()
         return if (isAuthorized == IsAuthorized.TRUE)
         {
             val data = ObjectMapper().readTree(getDatasets(isAuthorized).body!!)["data"]
-            val dataset = data.find { it["name"].textValue() == "antarctica-country-estimates-2023" }
+            val dataset = data.find { it["name"].textValue() == ADR_TEST_DATASET_NAME }
             val resource = dataset!!["resources"].find { it["resource_type"].textValue() == type }
             resource!!["id"].textValue()
         } else "fake"
