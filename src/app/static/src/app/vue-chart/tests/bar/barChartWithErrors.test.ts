@@ -160,7 +160,7 @@ describe("chartjsBar component", () => {
         const tooltipLabelCallback = renderedConfig.plugins.tooltip.callbacks.label;
         const renderedLabel = tooltipLabelCallback({
             datasetIndex: 0,
-            formattedValue: 2,
+            raw: 2,
             dataset: newChartData.datasets[0]
         });
         expect(renderedLabel).toBe("dataset1: Value 2");
@@ -215,7 +215,7 @@ describe("chartjsBar component", () => {
         const tooltipLabelCallback = renderedConfig.plugins.tooltip.callbacks.label;
         const renderedLabel = tooltipLabelCallback({
             datasetIndex: 0,
-            formattedValue: 2,
+            raw: 2,
             dataset: newChartData.datasets[0]
         });
         expect(renderedLabel).toBe("dataset1: Value 2");
@@ -249,11 +249,11 @@ describe("chartjsBar component", () => {
         const tooltipLabelCallback = renderedConfig.plugins.tooltip.callbacks.label;
 
         //tooltipItem.datasetIndex is undefined
-        let renderedLabel = tooltipLabelCallback({formattedValue: 2, dataset: newChartData.datasets[0]});
+        let renderedLabel = tooltipLabelCallback({raw: 2, dataset: newChartData.datasets[0]});
         expect(renderedLabel).toBe("Value 2");
 
         //data.datasets is undefined
-        renderedLabel = tooltipLabelCallback({datasetIndex: 0, formattedValue: 2});
+        renderedLabel = tooltipLabelCallback({datasetIndex: 0, raw: 2});
         expect(renderedLabel).toBe("Value 2");
 
         //tooltip.yLabel is undefined - returns dataseries label
@@ -281,7 +281,7 @@ describe("chartjsBar component", () => {
 
         let renderedLabel = tooltipLabelCallback({
             datasetIndex: 0,
-            formattedValue: 2,
+            raw: 2,
             label: "group2",
             dataset: propsData.chartData.datasets[0]
         });
@@ -315,7 +315,7 @@ describe("chartjsBar component", () => {
 
         let renderedLabel = tooltipLabelCallback({
             datasetIndex: 0,
-            formattedValue: 2,
+            raw: 2,
             label: "group2",
             dataset: propsData.chartData.datasets[0]
         });
