@@ -74,7 +74,6 @@ export default defineComponent({
                                     raw: yLabel,
                                     label: xLabel
                                 } = context;
-                                console.log(context)
                                 let label = ((typeof datasetIndex !== "undefined") && dataset && dataset.label)
                                                 || '';
                                 if (label) {
