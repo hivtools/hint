@@ -5,7 +5,7 @@ import {FilterOption} from "../../generated";
 import {rootOptionChildren} from "../../utils";
 import {Language} from "../translations/locales";
 import {DataExplorationState} from "../dataExploration/dataExploration";
-import {BaselineState} from "../baseline/baseline";
+import {localStorageManager} from "../../localStorageManager";
 
 function response(state: SurveyAndProgramState) {
     switch (state.selectedDataType) {
@@ -87,7 +87,7 @@ export const getters = {
             allowMultiple: false
         });
 
-        const lng = rootState.language;
+        const lng = localStorageManager.getLanguageState()
         const sexFilterOptionsForType =
             state.selectedDataType == DataType.Survey || state.selectedDataType == DataType.Program ? sexFilterOptions(lng) : [];
 

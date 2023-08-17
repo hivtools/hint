@@ -61,7 +61,7 @@
     import Tick from "../Tick.vue";
 
     import {
-        mapActionByName,
+        mapActionByName, mapGetterByName,
         mapMutationByName,
         mapStateProp,
         mapStateProps,
@@ -136,10 +136,7 @@
             showCalibrateResults() {
                 return this.calibrationPlotGenerated && this.complete
             },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
+            currentLanguage: mapGetterByName(null, "language"),
             selectText() {
                 return i18next.t("select", { lng: this.currentLanguage });
             },

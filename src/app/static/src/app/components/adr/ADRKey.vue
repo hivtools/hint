@@ -63,7 +63,7 @@
 </template>
 <script lang="ts">
     import Vue from "vue";
-    import {mapActionsByNames, mapStateProp} from "../../utils";
+    import {mapActionsByNames, mapGetterByName, mapStateProp} from "../../utils";
     import {Error} from "../../generated"
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
@@ -109,8 +109,7 @@
                 (state: ADRState) => state.key),
             adrProfileUrl: mapStateProp<ADRState, string>(namespace,
                 (state: ADRState) => `${state.schemas?.baseUrl}/me`),
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
+            currentLanguage: mapGetterByName(null, "language"),
             error: mapStateProp<ADRState, Error | null>(namespace,
                 (state: ADRState) => state.keyError),
             keyText() {

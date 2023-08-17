@@ -35,7 +35,7 @@
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
     import {Language} from "../../store/translations/locales";
-    import {HelpFile, mapStateProp} from "../../utils";
+    import {HelpFile, mapGetterByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import HintrVersionMenu from "./HintrVersionMenu.vue";
     import OnlineSupportMenu from "./OnlineSupportMenu.vue";
@@ -47,16 +47,18 @@
 
     interface Computed {
         helpFilename: string
+        language: Language
     }
+
     export default Vue.extend<unknown, unknown, Computed, Props>({
         computed: {
-            helpFilename: mapStateProp<RootState, string>(null,
-                (state: RootState) => {
-                    if (state.language == Language.fr) {
-                        return HelpFile.french;
-                    }
-                    return HelpFile.english;
-                }),
+            language: mapGetterByName(null, "language"),
+            helpFilename: function () {
+                if (this.language == Language.fr) {
+                    return HelpFile.french;
+                }
+                return HelpFile.english;
+            },
             ...mapGetters(["isGuest"])
         },
         props: {

@@ -5,8 +5,9 @@ import {Language} from "../translations/locales";
 import {TranslatableState} from "../../types";
 import {DataExplorationState} from "../dataExploration/dataExploration";
 import {RootState} from "../../root";
+import {localStorageManager} from "../../localStorageManager";
 
-export async function changeLanguage<T extends TranslatableState>({commit}: ActionContext<T, T>, lang: Language) {
+export async function changeLanguage<T>({commit}: ActionContext<T, T>, lang: Language) {
     await i18next.changeLanguage(lang);
     commit({type: LanguageMutation.ChangeLanguage, payload: lang})
 }
@@ -19,7 +20,7 @@ export const ChangeLanguageAction = async (context: ActionContext<DataExploratio
 
     const {commit, dispatch, rootState} = context;
 
-    if (rootState.language === payload) {
+    if (localStorageManager.getLanguageState() === payload) {
         return;
     }
 

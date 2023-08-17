@@ -82,7 +82,7 @@
         UploadFile
     } from "../../types";
     import {BaselineState} from "../../store/baseline/baseline";
-    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapStateProp, mapStateProps} from "../../utils";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
     import {HelpCircleIcon} from "vue-feather-icons";
     import {VTooltip} from "v-tooltip";
@@ -211,10 +211,7 @@
             createRelease() {
                 return this.choiceUpload === 'createRelease';
             },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
+            currentLanguage: mapGetterByName(null, "language"),
             uploadableFiles: mapStateProp<ADRUploadState, Dict<UploadFile>>("adrUpload",
                 (state) => state.uploadFiles!
             ),

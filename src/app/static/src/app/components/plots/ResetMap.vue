@@ -15,7 +15,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {LControl} from 'vue2-leaflet';
-    import {mapStateProp} from "../../utils";
+    import {mapGetterByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {RefreshCwIcon} from "vue-feather-icons";
     import i18next from "i18next";
@@ -35,10 +35,7 @@
             LControl
         },
         computed: {
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            )
+            currentLanguage: mapGetterByName(null, "language")
         },
         methods: {
             tooltipContent(tooltipValue: string) {

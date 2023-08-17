@@ -14,7 +14,7 @@
 <script lang="ts">
 
     import Vue from "vue";
-    import {mapActionByName, mapStateProp} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapStateProp} from "../../utils";
     import DropDown from "./DropDown.vue";
     import {DataExplorationState} from "../../store/dataExploration/dataExploration";
 
@@ -28,8 +28,7 @@
 
     export default Vue.extend<unknown, Methods, Computed, unknown>({
         computed: {
-            currentLanguage: mapStateProp<DataExplorationState, string>(null,
-                (state: DataExplorationState) => state.language.toUpperCase())
+            currentLanguage: mapGetterByName(null, "language")
         },
         methods: {
             changeLanguage: mapActionByName<File>(null, "changeLanguage")

@@ -40,6 +40,7 @@
     import {PasswordState} from "../../store/password/password";
     import LoggedOutHeader from "../header/LoggedOutHeader.vue";
     import {Language} from "../../store/translations/locales";
+    import {mapActionByName, mapGetterByName} from "../../utils";
 
     export default Vue.extend({
         name: "ResetPassword",
@@ -49,18 +50,21 @@
                 password: ""
             };
         },
-        computed: mapState<PasswordState>({
-            error: (state: PasswordState) => state.resetPasswordError,
-            hasError: (state: PasswordState) => !!state.resetPasswordError,
-            passwordWasReset: (state: PasswordState) => state.passwordWasReset,
-            language: (state: PasswordState) => state.language
-        }),
+        computed: {
+            ...mapState<PasswordState>({
+                error: (state: PasswordState) => state.resetPasswordError,
+                hasError: (state: PasswordState) => !!state.resetPasswordError,
+                passwordWasReset: (state: PasswordState) => state.passwordWasReset
+            }),
+            language: mapGetterByName(null, "language")
+        },
         components: {
             ErrorAlert,
             LoggedOutHeader
         },
         methods: {
-            ...mapActions({resetPassword: 'resetPassword'}),
+           // ...mapActions({resetPassword: 'resetPassword'}),
+            resetPassword: mapActionByName("password", "resetPassword"),
             handleResetPassword: function (event: Event) {
                 event.preventDefault();
                 const form = this.$refs.resetPasswordForm as HTMLFieldSetElement;

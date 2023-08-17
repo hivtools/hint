@@ -275,7 +275,7 @@
         Trash2Icon
     } from "vue-feather-icons";
     import Modal from "../Modal.vue";
-    import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
+    import {formatDateTime, mapActionByName, mapGetterByName, mapStateProp, versionLabel} from "../../utils";
     import {CreateProjectPayload, projectPayload, versionPayload} from "../../store/projects/actions";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
@@ -400,10 +400,7 @@
                     lng: this.currentLanguage,
                 });
             },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            )
+            currentLanguage: mapGetterByName(null, "language")
         },
         methods: {
             format(date: string) {

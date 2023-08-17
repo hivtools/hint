@@ -1,4 +1,3 @@
-import {Language} from "../translations/locales";
 import {currentHintVersion} from "../../hintVersion";
 import {hintrVersion, HintrVersionState, initialHintrVersionState} from "../hintrVersion/hintrVersion";
 import {adr, ADRState, initialADRState} from "../adr/adr";
@@ -45,7 +44,6 @@ export interface DataExplorationState extends TranslatableState {
 
 export const initialDataExplorationState = (): DataExplorationState => {
     return {
-        language: Language.en,
         version: currentHintVersion,
         updatingLanguage: false,
         hintrVersion: initialHintrVersionState(),

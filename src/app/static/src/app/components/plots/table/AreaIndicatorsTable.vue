@@ -25,7 +25,7 @@
     import {findPath, iterateDataValues, formatOutput} from "../utils";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
     import {Dict, Field, Filter} from "../../../types";
-    import {flattenOptions, flattenToIdSet, mapStateProp} from "../../../utils";
+    import {flattenOptions, flattenToIdSet, mapGetterByName, mapStateProp} from "../../../utils";
     import {RootState} from "../../../root";
     import {Language} from "../../../store/translations/locales";
 
@@ -197,8 +197,7 @@
                 })
                 return fields
             },
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language)
+            currentLanguage: mapGetterByName(null, "language")
         },
         components: {
             TableView

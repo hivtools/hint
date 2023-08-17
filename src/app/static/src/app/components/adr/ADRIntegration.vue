@@ -62,10 +62,7 @@
             hasUploadPermission: mapStateProp<ADRState, boolean>(namespace,
                 (state: ADRState) => state.userCanUpload),
 
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
+            currentLanguage: mapGetterByName(null, "language"),
             selectedDataset: mapStateProp<BaselineState, Dataset | null>("baseline",
                 (state: BaselineState) => state.selectedDataset)
         },

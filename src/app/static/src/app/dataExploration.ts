@@ -10,6 +10,7 @@ import VueRouter, {NavigationGuardNext} from "vue-router";
 import {Route} from "vue-router/types/router";
 import {router} from "./router";
 import Accessibility from "./components/Accessibility.vue";
+import {mapGetterByName} from "./utils";
 
 Vue.use(Vuex);
 Vue.use(VueRouter);
@@ -44,7 +45,7 @@ export const dataExplorationApp = new Vue({
         DataExploration
     },
     computed: mapState<DataExplorationState>({
-        language: (state: DataExplorationState) => state.language
+        language: mapGetterByName(null, "language")
     }),
     methods: {
         ...mapActions({loadBaseline: 'baseline/getBaselineData'}),

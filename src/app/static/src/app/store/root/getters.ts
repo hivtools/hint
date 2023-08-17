@@ -4,11 +4,13 @@ import {DownloadSubmitRequest, Error, Note, VersionInfo} from "../../generated"
 import {Warning} from "../../generated";
 import {Dict, StepWarnings, Version} from "../../types";
 import {extractErrors, formatToLocalISODateTime} from "../../utils";
+import {localStorageManager} from "../../localStorageManager";
 
 interface RootGetters {
     isGuest: Getter<RootState, RootState>
     warnings: Getter<RootState, RootState>
     projectState: Getter<RootState, RootState>
+    language: Getter<RootState, RootState>
 }
 
 const warningStepLocationMapping: Dict<string> = {
@@ -23,6 +25,10 @@ const warningStepLocationMapping: Dict<string> = {
 export const getters: RootGetters & GetterTree<RootState, RootState> = {
     isGuest: (state: RootState) => {
         return state.currentUser == "guest";
+    },
+
+    language: () => {
+        return localStorageManager.getLanguageState()
     },
 
     projectState: (rootState: RootState): DownloadSubmitRequest => {

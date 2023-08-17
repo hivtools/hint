@@ -10,7 +10,6 @@ export interface PasswordState extends TranslatableState {
 }
 
 export const initialPasswordState: PasswordState = {
-    language: Language.en,
     updatingLanguage: false,
     resetLinkRequested: false,
     requestResetLinkError: null,

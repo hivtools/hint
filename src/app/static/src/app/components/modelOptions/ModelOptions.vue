@@ -35,12 +35,10 @@
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
 
-    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProp, mapStateProps} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapMutationByName, mapStateProps} from "../../utils";
     import {ModelOptionsMutation} from "../../store/modelOptions/mutations";
     import {ModelOptionsState} from "../../store/modelOptions/modelOptions";
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
-    import {StepDescription} from "../../store/stepper/stepper";
-    import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import ErrorAlert from "../ErrorAlert.vue";
 
@@ -90,8 +88,7 @@
                 hasOptionsError: state => !!state.optionsError,
                 optionsError: state => state.optionsError
             }),
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
+            currentLanguage: mapGetterByName(null, "language"),
             selectText() {
                 return i18next.t("select", {lng: this.currentLanguage})
             },

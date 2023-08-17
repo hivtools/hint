@@ -24,7 +24,7 @@
     import Vue from "vue";
     import { AlertTriangleIcon } from "vue-feather-icons";
     import i18next from "i18next";
-    import { mapStateProp } from "../utils";
+    import {mapGetterByName, mapStateProp} from "../utils";
     import { RootState } from "../root";
     import { Language } from "../store/translations/locales";
     import { Warning } from "../generated";
@@ -89,10 +89,7 @@
             warningsLengthy(){
                 return this.fullBoxHeight > this.maxBoxHeight
             },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
+            currentLanguage: mapGetterByName(null, "language"),
             buttonText(){
                 return i18next.t(this.showFullBox ? "showLess" : "showMore", { lng: this.currentLanguage });
             },

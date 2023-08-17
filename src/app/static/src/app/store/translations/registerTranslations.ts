@@ -4,10 +4,11 @@ import {Store} from "vuex";
 import Vue from "vue";
 import translate from "../../directives/translate";
 import {TranslatableState} from "../../types";
+import {localStorageManager} from "../../localStorageManager";
 
 export default <S extends TranslatableState>(store: Store<S>) => {
     i18next.init({
-        lng: store.state.language,
+        lng: localStorageManager.getLanguageState()?.toString(),
         resources: {
             en: {translation: locales.en},
             fr: {translation: locales.fr},

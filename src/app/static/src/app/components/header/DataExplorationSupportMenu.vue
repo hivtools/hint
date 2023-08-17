@@ -27,7 +27,7 @@
     import Vue from "vue";
     import DropDown from "./DropDown.vue";
     import i18next from "i18next";
-    import {mapActionByName, mapStateProp} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapStateProp} from "../../utils";
     import ErrorReport from "../ErrorReport.vue"
     import {Language} from "../../store/translations/locales";
     import {DataExplorationState} from "../../store/dataExploration/dataExploration";
@@ -55,8 +55,7 @@
             }
         },
         computed: {
-            currentLanguage: mapStateProp<DataExplorationState, Language>(null,
-                (state: DataExplorationState) => state.language),
+            currentLanguage: mapGetterByName(null, "language"),
             support() {
                 return i18next.t("support", this.currentLanguage)
             }

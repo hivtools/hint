@@ -1,6 +1,7 @@
 import {RootState} from "./root";
 import {currentHintVersion} from "./hintVersion";
 import {DataExplorationState} from "./store/dataExploration/dataExploration";
+import {Language} from "./store/translations/locales";
 
 const getAppStateKey = (dataExplorationMode: boolean) => {
     const appType = dataExplorationMode ? "hintAppState_explore" : "hintAppState";
@@ -28,7 +29,7 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
             surveyAndProgram,
             stepper: state.stepper,
             hintrVersion: state.hintrVersion,
-            language: state.language
+            //language: state.language
         }
 
     } else {
@@ -55,7 +56,7 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
             },
             stepper: rootState.stepper,
             hintrVersion: state.hintrVersion,
-            language: state.language
+            //language: state.language
         };
     }
 };
@@ -63,6 +64,14 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
 declare const currentUser: string;
 
 export class LocalStorageManager {
+
+    saveLanguageState = (lang: Language) => {
+        localStorage.setItem("language", lang);
+    }
+
+    getLanguageState = (): Language => {
+        return localStorage.getItem("language") as Language;
+    }
 
     saveState = (state: DataExplorationState) => {
         const partialState = serialiseState(state);

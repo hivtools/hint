@@ -133,7 +133,7 @@
         mapMutationByName,
         mapMutationsByNames,
         mapStateProp,
-        mapStateProps,mapActionByName
+        mapStateProps, mapActionByName, mapGetterByName
     } from "../../utils";
     import {
         BarchartSelections,
@@ -281,8 +281,7 @@
             barchartSelections() {
                 return this.$store.state.plottingSelections.barchart
             },
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
+            currentLanguage: mapGetterByName(null, "language"),
             barchartFilterConfig() {
                 return filterConfig(this.currentLanguage, this.barchartFilters)
             },

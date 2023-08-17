@@ -88,7 +88,7 @@
     import {DataType, SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
     import {Feature} from "geojson";
     import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
-    import {mapActionByName, mapGettersByNames, mapStateProp} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapGettersByNames, mapStateProp} from "../../utils";
     import {
         ChoroplethSelections,
         PlottingSelectionsState
@@ -173,10 +173,7 @@
             ...mapGettersByNames(namespace, ["data", "filters", "countryAreaFilterOption"]),
             ...mapGetters("metadata", ["sapIndicatorsMetadata"]),
             ...mapGetters("plottingSelections", ["selectedSAPColourScales"]),
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
+            currentLanguage: mapGetterByName(null, "language"),
             filterTableIndicators() {
                 return this.sapIndicatorsMetadata.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.plottingSelections.indicatorId)
             },

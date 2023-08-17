@@ -302,10 +302,7 @@
             select() {
                 return i18next.t("select", {lng: this.currentLanguage});
             },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
+            currentLanguage: mapGetterByName(null, "language"),
             disableImport() {
                 return !this.newDatasetId || !this.valid
             }

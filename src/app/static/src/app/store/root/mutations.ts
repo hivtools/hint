@@ -39,7 +39,6 @@ export const mutations: MutationTree<RootState> = {
         const resetState: RootState = {
             version: state.version,
             hintrVersion: state.hintrVersion,
-            language: state.language,
             updatingLanguage: false,
             invalidSteps: [],
             adr: state.adr,
@@ -85,7 +84,6 @@ export const mutations: MutationTree<RootState> = {
     [RootMutation.SetProject](state: RootState, action: PayloadWithType<Project>) {
         const resetState: RootState = {
             ...emptyState(),
-            language: state.language,
             hintrVersion: state.hintrVersion,
             adr: state.adr,
             genericChart: {

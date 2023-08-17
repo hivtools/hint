@@ -57,7 +57,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import { mapActionByName, mapStateProp, mapMutationByName } from "../../utils";
+    import {mapActionByName, mapStateProp, mapMutationByName, mapGetterByName} from "../../utils";
     import TreeSelect from "@riophae/vue-treeselect";
     import { ADRState } from "../../store/adr/adr";
     import { HelpCircleIcon } from "vue-feather-icons";
@@ -137,10 +137,7 @@
             useRelease() {
                 return this.choiceADR === "useRelease";
             },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
+            currentLanguage: mapGetterByName(null, "language")
         },
         methods: {
             getReleases: mapActionByName(namespace, "getReleases"),

@@ -59,7 +59,7 @@
     import Vue from "vue";
     import DropDown from "./DropDown.vue";
     import i18next from "i18next";
-    import {mapActionByName, mapStateProp} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import ErrorReport from "../ErrorReport.vue";
@@ -111,19 +111,17 @@
             },
             steps: mapStateProp<StepperState, StepDescription[]>("stepper", state => state.steps),
             projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
+            currentLanguage: mapGetterByName(null, "language"),
             support() {
                 return i18next.t("support", this.currentLanguage)
             },
-            troubleFilename: mapStateProp<RootState, string>(null,
-                (state: RootState) => {
-                    let filename = "index-en.html";
-                    if (state.language == Language.fr) {
-                        filename = "index-fr.html";
-                    }
-                    return filename;
-                }),
+            troubleFilename: function () {
+                let filename = "index-en.html";
+                if (this.currentLanguage == Language.fr) {
+                    filename = "index-fr.html";
+                }
+                return filename
+            },
             faqLocation() {
                 return "https://mrc-ide.github.io/naomi-troubleshooting/" + this.troubleFilename;
             }

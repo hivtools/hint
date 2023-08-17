@@ -35,7 +35,7 @@
 <script lang="ts">
     import Vue from "vue";
     import i18next from "i18next";
-    import {mapStateProp} from "../../../utils";
+    import {mapGetterByName, mapStateProp} from "../../../utils";
     import {BButton, BFormGroup, BFormInput, BInputGroup, BInputGroupAppend, BTable} from 'bootstrap-vue';
     import {RootState} from "../../../root";
     import {Language} from "../../../store/translations/locales";
@@ -79,8 +79,7 @@
             },
         },
         computed: {
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language)
+            currentLanguage: mapGetterByName(null, "language")
         },
         components: {
             BTable,

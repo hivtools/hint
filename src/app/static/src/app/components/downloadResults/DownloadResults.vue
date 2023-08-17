@@ -78,7 +78,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {mapActionByName, mapStateProp, mapMutationByName, mapStateProps} from "../../utils";
+    import {mapActionByName, mapStateProp, mapMutationByName, mapStateProps, mapGetterByName} from "../../utils";
     import {UploadIcon} from "vue-feather-icons";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
@@ -86,7 +86,6 @@
     import Tick from "../Tick.vue";
     import Cross from "../Cross.vue";
     import {Language} from "../../store/translations/locales";
-    import {RootState} from "../../root";
     import ErrorAlert from "../ErrorAlert.vue";
     import i18next from "i18next";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
@@ -170,10 +169,7 @@
                     lng: this.currentLanguage,
                 });
             },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
+            currentLanguage: mapGetterByName(null, "language"),
             translation() {
                 return {
                     spectrum: {header: 'exportOutputs', button: 'export'},

@@ -154,8 +154,7 @@
             }
         },
         computed: {
-            currentLanguage: mapStateProp<DataExplorationState, Language>(null,
-                (state: DataExplorationState) => state.language),
+            currentLanguage: mapGetterByName(null, "language"),
             errorReportError: mapStateProp<ErrorsState, Error | null>(
                 "errors",
                 (state: ErrorsState) => state.errorReportError),

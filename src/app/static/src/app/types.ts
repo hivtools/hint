@@ -308,7 +308,7 @@ export interface ErrorReport extends ErrorReportManualDetails {
 }
 
 export interface TranslatableState {
-    language: Language
+//    language: Language
     updatingLanguage: boolean
 }
 

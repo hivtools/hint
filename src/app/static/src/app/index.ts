@@ -12,6 +12,7 @@ import {RootState} from "./root";
 import VueRouter, {NavigationGuardNext} from "vue-router";
 import {Route} from "vue-router/types/router";
 import {Language} from "./store/translations/locales";
+import {mapGetterByName} from "./utils";
 
 Vue.use(VueRouter);
 
@@ -43,7 +44,7 @@ export const app = new Vue({
         Errors
     },
     computed: mapState<RootState>({
-        language: (state: RootState) => state.language
+        language: mapGetterByName(null, "language")
     }),
     methods: {
         ...mapActions({loadBaseline: 'baseline/getBaselineData'}),

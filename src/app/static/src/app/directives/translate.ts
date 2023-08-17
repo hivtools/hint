@@ -4,8 +4,9 @@ import {DirectiveOptions, VNode} from "vue";
 import {Language} from "../store/translations/locales";
 import {DirectiveBinding} from "vue/types/options";
 import {TranslatableState} from "../types";
+import {localStorageManager} from "../localStorageManager";
 
-export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions => {
+export default <S>(store: Store<S>): DirectiveOptions => {
 
     function _validateBinding(binding: DirectiveBinding, vnode: VNode): boolean {
         if (!binding.value) {
@@ -31,16 +32,25 @@ export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions 
     function _addWatcher(el: HTMLElement, binding: DirectiveBinding) {
         const ele = el as any;
         ele.__lang_unwatch__ = ele.__lang_unwatch__ || {};
+
+        // Function to update the element's text content based on language
+        const updateTextContent = (lng: Language) => {
+            _translateText(lng, el, binding);
+        };
+
+        const languageWatcher = () => {
+            const storedLanguage = localStorageManager.getLanguageState();
+            if (storedLanguage) {
+                updateTextContent(storedLanguage);
+            }
+        };
+
         if (binding.arg) {
             // this is an attribute binding
-            ele.__lang_unwatch__[binding.arg] = store.watch(state => state.language, lng => {
-                _translateText(lng, el, binding);
-            })
+            ele.__lang_unwatch__[binding.arg] = languageWatcher;
         } else {
             // this is a default, i.e. innerHTML, binding
-            ele.__lang_unwatch__["innerHTML"] = store.watch(state => state.language, lng => {
-                _translateText(lng, el, binding);
-            })
+            ele.__lang_unwatch__['innerHTML'] = languageWatcher;
         }
     }
 
@@ -59,7 +69,8 @@ export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions 
     return {
         bind(el, binding, vnode: VNode) {
             if (!_validateBinding(binding, vnode)) return;
-            _translateText(store.state.language, el, binding);
+            const storedLanguage = localStorageManager.getLanguageState();
+            _translateText(storedLanguage, el, binding);
             _addWatcher(el, binding);
         },
         update(el, binding, vnode) {
@@ -70,7 +81,8 @@ export default <S extends TranslatableState>(store: Store<S>): DirectiveOptions 
             _removeWatcher(el, binding);
 
             // now re-add them with the new binding properties
-            _translateText(store.state.language, el, binding);
+            const storedLanguage = localStorageManager.getLanguageState();
+            _translateText(storedLanguage, el, binding);
             _addWatcher(el, binding);
         },
         unbind(el, binding) {

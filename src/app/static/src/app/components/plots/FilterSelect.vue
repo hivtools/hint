@@ -26,7 +26,7 @@
     import i18next from "i18next";
     import Vue from "vue";
     import Treeselect from '@riophae/vue-treeselect';
-    import {flattenOptions, mapStateProp} from "../../utils";
+    import {flattenOptions, mapGetterByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import {FilterOption} from "../../generated";
@@ -79,8 +79,7 @@
             treeselectValue() {
                 return this.disabled ? null : this.value;
             },
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language),
+            currentLanguage: mapGetterByName(null, "language"),
             placeholder() {
                 const key = this.disabled ? "notUsed" : "select";
                 return i18next.t(key, this.currentLanguage)

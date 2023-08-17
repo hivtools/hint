@@ -151,7 +151,6 @@ declare const currentUser: string;
 
 export const emptyState = (): RootState => {
     return {
-        language: Language.en,
         version: currentHintVersion,
         updatingLanguage: false,
         hintrVersion: initialHintrVersionState(),

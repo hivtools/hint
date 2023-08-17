@@ -25,7 +25,7 @@
 <script lang="ts">
     import Vue from "vue";
     import i18next from "i18next";
-    import { Language, Translations } from "../../store/translations/locales";
+    import { Language } from "../../store/translations/locales";
     import {
         BarchartIndicator,
         Filter,
@@ -35,6 +35,7 @@
         BarChartWithFilters
     } from "@reside-ic/vue-charts";
     import {
+        mapGetterByName,
         mapGettersByNames,
         mapMutationByName,
         mapMutationsByNames,
@@ -102,10 +103,7 @@
             selections() {
                 return this.$store.state.plottingSelections.calibratePlot;
             },
-            currentLanguage: mapStateProp<RootState, Language>(
-                null,
-                (state: RootState) => state.language
-            ),
+            currentLanguage: mapGetterByName(null, "language")
         },
         methods: {
             ...mapMutationsByNames("plottingSelections", [

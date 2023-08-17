@@ -98,7 +98,7 @@
     import Filters from "../plots/Filters.vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
-    import {mapActionByName, mapStateProp} from "../../utils";
+    import {mapActionByName, mapGetterByName, mapStateProp} from "../../utils";
     import {GenericChartState} from "../../store/genericChart/genericChart";
     import {getDatasetPayload} from "../../store/genericChart/actions";
     import {FilterOption} from "../../generated";
@@ -212,9 +212,7 @@
             }
         },
         computed: {
-            currentLanguage: mapStateProp<RootState, Language>(null,
-                (state: RootState) => state.language
-            ),
+            currentLanguage: mapGetterByName(null, "language"),
             datasets:  mapStateProp<GenericChartState, Record<string, GenericChartDataset>>(namespace,
                 (state: GenericChartState) => state.datasets),
             error: mapStateProp<GenericChartState, Error | null>(namespace,
