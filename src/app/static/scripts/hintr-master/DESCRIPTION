@@ -1,0 +1,54 @@
+Package: hintr
+Title: R API for calling naomi district level HIV model
+Version: 1.1.15
+Authors@R: 
+    person(given = "Robert",
+           family = "Ashton",
+           role = c("aut", "cre"),
+           email = "r.ashton@imperial.ac.uk")
+Description: R API for calling naomi district level HIV model.
+Depends: R (>= 3.5.0)
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Additional_repositories: https://mrc-ide.r-universe.dev 
+Imports:
+    data.table,
+    digest,
+    docopt,
+    geojsonio (>= 0.8.0),
+    ids,
+    jsonlite (>= 1.2.2),
+    lgr,
+    naomi (>= 2.9.10),
+    naomi.options (>= 1.1.0),
+    porcelain (>= 0.1.8),
+    qs,
+    R6,
+    rrq (>= 0.7.0),
+    specio (>= 0.1.4),
+    storr,
+    traduire (>= 0.0.5),
+    V8,
+    yaml,
+    zip
+Suggests:
+    callr,
+    covr,
+    httr,
+    jsonvalidate,
+    mockr,
+    mockery,
+    ps,
+    redux,
+    ssh,
+    testthat (>= 2.1.0),
+    withr
+Remotes:
+    mrc-ide/geojsonio,
+    mrc-ide/rrq,
+    mrc-ide/mockr
+Config/testthat/edition: 3
+Config/testthat/parallel: true

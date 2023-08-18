@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "error" : { "$ref": "ErrorCode.schema.json" },
+    "detail" : { "type": ["string", "null"] },
+    "key": { "type": "string" },
+    "job_id": { "type": "string" }
+  },
+  "additionalProperties": true,
+  "required": [ "error", "detail" ]
+}

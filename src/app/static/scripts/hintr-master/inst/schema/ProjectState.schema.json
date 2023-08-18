@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "async_run_options": {
+      "type": "object",
+      "properties": {
+        "options": { "type": "object" },
+        "id": { "type": "string" }
+      },
+      "additionalProperties": false,
+      "required": [ "options", "id" ]
+    }
+  },
+  "type": "object",
+  "properties": {
+    "datasets": { "$ref": "InputDatasets.schema.json" },
+    "model_fit": { "$ref": "#/definitions/async_run_options" },
+    "calibrate": { "$ref": "#/definitions/async_run_options" },
+    "version": { "$ref": "VersionInfo.schema.json" }
+  },
+  "additionalProperties": false,
+  "required": [
+    "datasets",
+    "model_fit",
+    "calibrate",
+    "version"
+  ]
+}

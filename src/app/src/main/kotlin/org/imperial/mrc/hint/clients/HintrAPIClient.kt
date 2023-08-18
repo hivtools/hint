@@ -31,7 +31,8 @@ interface HintrAPIClient
     fun getModelCalibrationOptions(iso3: String): ResponseEntity<String>
     fun calibrateSubmit(runId: String, calibrationOptions: ModelOptions): ResponseEntity<String>
     fun getCalibrateStatus(id: String): ResponseEntity<String>
-    fun getCalibrateResult(id: String): ResponseEntity<String>
+    fun getCalibrateResultMetadata(id: String): ResponseEntity<String>
+    fun getCalibrateResultData(id: String): ResponseEntity<String>
     fun getCalibratePlot(id: String): ResponseEntity<String>
     fun getComparisonPlot(id: String): ResponseEntity<String>
     fun cancelModelRun(id: String): ResponseEntity<String>
@@ -148,9 +149,14 @@ class HintrFuelAPIClient(
         return get("calibrate/status/${id}")
     }
 
-    override fun getCalibrateResult(id: String): ResponseEntity<String>
+    override fun getCalibrateResultMetadata(id: String): ResponseEntity<String>
     {
-        return get("calibrate/result/${id}")
+        return get("calibrate/result/metadata/${id}")
+    }
+
+    override fun getCalibrateResultData(id: String): ResponseEntity<String>
+    {
+        return get("calibrate/result/data/${id}")
     }
 
     override fun getCalibratePlot(id: String): ResponseEntity<String>

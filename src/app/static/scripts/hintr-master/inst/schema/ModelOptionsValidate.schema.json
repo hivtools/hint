@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "valid": {
+      "enum": [
+        true
+      ]
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "$ref": "Warning.schema.json"  }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "valid", "warnings"
+  ]
+}

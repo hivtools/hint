@@ -103,6 +103,100 @@ export interface BarchartMetadata {
     };
   };
 }
+export interface CalibrateDataResponse {
+  data: {
+    area_id: string;
+    sex: string;
+    age_group: string;
+    calendar_quarter: string;
+    indicator: string;
+    mode: number | null;
+    mean: number | null;
+    lower: number | null;
+    upper: number | null;
+    [k: string]: any;
+  }[];
+  [k: string]: any;
+}
+export interface CalibrateMetadataResponse {
+  plottingMetadata: {
+    barchart: {
+      indicators: {
+        indicator: string;
+        value_column: string;
+        indicator_column: string;
+        indicator_value: string;
+        indicator_sort_order?: number;
+        name: string;
+        error_low_column: string;
+        error_high_column: string;
+        scale: number;
+        accuracy: number | null;
+        format: string;
+      }[];
+      filters: {
+        id: string;
+        column_id: string;
+        label: string;
+        options: {
+          label: string;
+          id: string;
+          description?: string;
+        }[];
+        use_shape_regions?: boolean | null;
+      }[];
+      defaults?: {
+        indicator_id: string;
+        x_axis_id: string;
+        disaggregate_by_id: string;
+        selected_filter_options: {
+          [k: string]: any;
+        };
+      };
+    };
+    choropleth: {
+      indicators: {
+        indicator: string;
+        value_column: string;
+        error_low_column?: string;
+        error_high_column?: string;
+        indicator_column?: string;
+        indicator_value?: string;
+        indicator_sort_order?: number;
+        name: string;
+        min: number;
+        max: number;
+        colour: string;
+        invert_scale: boolean;
+        scale: number;
+        accuracy: number | null;
+        format: string;
+      }[];
+      filters: {
+        id: string;
+        column_id: string;
+        label: string;
+        options: {
+          label: string;
+          id: string;
+          description?: string;
+        }[];
+        use_shape_regions?: boolean | null;
+      }[];
+    };
+  };
+  warnings: {
+    text: string;
+    locations: (
+      | "review_inputs"
+      | "model_options"
+      | "model_fit"
+      | "model_calibrate"
+      | "review_output"
+      | "download_results")[];
+  }[];
+  [k: string]: any;
+}
 export type CalibratePlotData = {
   data_type: "spectrum" | "calibrated" | "raw" | "calibration_ratio";
   spectrum_region_code: string;
@@ -575,7 +669,6 @@ export interface DownloadSubmitRequest {
 export interface DownloadSubmitResponse {
   id: string;
 }
-export type ErrorCode = string;
 export interface Error {
   error: string;
   detail: string | null;
@@ -583,6 +676,7 @@ export interface Error {
   job_id?: string;
   [k: string]: any;
 }
+export type ErrorCode = string;
 export interface File {
   path: string | null;
   filename: string;

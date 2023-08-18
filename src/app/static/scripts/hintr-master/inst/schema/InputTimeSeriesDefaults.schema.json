@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties" : {
+    "selected_filter_options": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": { "$ref": "ColumnValues.schema.json" }
+      },
+      "additionalProperties": true,
+      "anyOf": [
+        { "required": [ "plot_type", "area_level", "quarter" ] },
+        { "required": [ "plot_type", "area_level", "age", "quarter" ] }
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [ "selected_filter_options" ]
+}

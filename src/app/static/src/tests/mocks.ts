@@ -21,7 +21,7 @@ import {
     SurveyFilters,
     SurveyResponse,
     ValidateBaselineResponse,
-    Error, CalibrateResultResponse, Warning, DownloadSubmitRequest, ComparisonPlotResponse
+    Error, CalibrateResultResponse, Warning, DownloadSubmitRequest, ComparisonPlotResponse, CalibrateMetadataResponse
 } from "../app/generated";
 import {initialModelRunState, ModelRunState} from "../app/store/modelRun/modelRun";
 import {emptyState, RootState} from "../app/root";
@@ -392,6 +392,22 @@ export const mockCalibrateResultResponse = (props: Partial<CalibrateResultRespon
             mode: 0.5,
             upper: 0.5
         }],
+        warnings: [],
+        ...props
+    }
+};
+
+export const mockCalibrateMetadataResponse = (props: Partial<CalibrateMetadataResponse> = {})
+    : CalibrateMetadataResponse => {
+    return {
+        plottingMetadata: {
+            barchart: {
+                indicators: [], filters: []
+            },
+            choropleth: {
+                indicators: [], filters: []
+            }
+        },
         warnings: [],
         ...props
     }

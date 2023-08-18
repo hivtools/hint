@@ -5,6 +5,8 @@ import {api} from "../../apiService";
 import {RootState} from "../../root";
 import {ModelCalibrateMutation} from "./mutations";
 import {
+    CalibrateDataResponse,
+    CalibrateMetadataResponse,
     CalibrateResultResponse,
     FilterOption,
     ModelResultResponse,
@@ -69,28 +71,15 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     },
 
     async getResult(context) {
-        const {commit, dispatch, state} = context;
-        const calibrateId = state.calibrateId;
+        const {commit, state} = context;
 
         if (state.status.done) {
-            const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
-                .ignoreSuccess()
-                .withError(ModelCalibrateMutation.SetError)
-                .freezeResponse()
-                .get<CalibrateResultResponse>(`model/calibrate/result/${calibrateId}`);
+            const actions = [
+                getResultMetadata(context),
+                getResultData(context)
+            ];
 
-            if (response) {
-                const data = response.data;
-                commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: data});
-                commit({type: ModelCalibrateMutation.WarningsFetched, payload: data.warnings});
-
-                selectFilterDefaults(data, commit, PlottingSelectionsMutations.updateBarchartSelections)
-                commit(ModelCalibrateMutation.Calibrated);
-                if (switches.modelCalibratePlot) {
-                    dispatch("getCalibratePlot");
-                }
-                await dispatch("getComparisonPlot");
-            }
+            await Promise.all(actions);
         }
         commit(ModelCalibrateMutation.Ready);
     },
@@ -138,6 +127,45 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     }
 };
 
+export const getResultMetadata = async function (context: ActionContext<ModelCalibrateState, RootState>) {
+    const {commit, dispatch, state} = context;
+    const calibrateId = state.calibrateId;
+
+    const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
+        .ignoreSuccess()
+        .withError(ModelCalibrateMutation.SetError)
+        .freezeResponse()
+        .get<CalibrateMetadataResponse>(`model/calibrate/result/metadata/${calibrateId}`);
+
+    if (response) {
+        const data = response.data;
+        commit({type: ModelCalibrateMutation.Metadata, payload: data});
+
+        selectFilterDefaults(data, commit, PlottingSelectionsMutations.updateBarchartSelections)
+        commit(ModelCalibrateMutation.Calibrated);
+        if (switches.modelCalibratePlot) {
+            dispatch("getCalibratePlot");
+        }
+        await dispatch("getComparisonPlot");
+    }
+}
+
+export const getResultData = async function (context: ActionContext<ModelCalibrateState, RootState>) {
+    const {commit, state} = context;
+    const calibrateId = state.calibrateId;
+
+    const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
+        .ignoreSuccess()
+        .withError(ModelCalibrateMutation.SetError)
+        .freezeResponse()
+        .get<CalibrateDataResponse>(`model/calibrate/result/data/${calibrateId}`);
+
+    if (response) {
+        const data = response.data;
+        commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: data});
+    }
+}
+
 export const getCalibrateStatus = async function (context: ActionContext<ModelCalibrateState, RootState>) {
     const {dispatch, state} = context;
     const calibrateId = state.calibrateId;
@@ -152,7 +180,7 @@ export const getCalibrateStatus = async function (context: ActionContext<ModelCa
         });
 };
 
-const selectFilterDefaults = (data: CalibrateResultResponse, commit: Commit, mutationName: string) => {
+const selectFilterDefaults = (data: CalibrateMetadataResponse, commit: Commit, mutationName: string) => {
     if (data?.plottingMetadata?.barchart?.defaults) {
         const defaults = data.plottingMetadata.barchart.defaults;
         const unfrozenDefaultOptions = Object.keys(defaults.selected_filter_options)
