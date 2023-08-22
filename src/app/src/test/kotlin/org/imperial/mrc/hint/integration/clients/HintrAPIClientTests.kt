@@ -107,10 +107,19 @@ class HintrApiClientTests
     }
 
     @Test
-    fun `can get calibrate result`()
+    fun `can get calibrate result data`()
     {
         val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
-        val result = sut.getCalibrateResult("1234")
+        val result = sut.getCalibrateResultData("1234")
+        assertThat(result.statusCodeValue).isEqualTo(400)
+        JSONValidator().validateError(result.body!!, "FAILED_TO_RETRIEVE_RESULT")
+    }
+
+    @Test
+    fun `can get calibrate result metadata`()
+    {
+        val sut = HintrFuelAPIClient(ConfiguredAppProperties(), ObjectMapper())
+        val result = sut.getCalibrateResultMetadata("1234")
         assertThat(result.statusCodeValue).isEqualTo(400)
         JSONValidator().validateError(result.body!!, "FAILED_TO_RETRIEVE_RESULT")
     }
