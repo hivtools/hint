@@ -30,8 +30,7 @@
 <script lang="ts">
     import { defineComponent } from "vue";
     import i18next from "i18next";
-    import {DynamicFormData, DynamicFormMeta} from "../../vue-dynamic-form/src/types";
-    import DynamicForm from "../../vue-dynamic-form/src/DynamicForm.vue";
+    import {DynamicFormData, DynamicFormMeta, DynamicForm} from "@reside-ic/vue-next-dynamic-form";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
 

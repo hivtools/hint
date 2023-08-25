@@ -13,7 +13,7 @@ import {addCheckSum} from "../../app/utils";
 import {localStorageManager} from "../../app/localStorageManager";
 import {currentHintVersion} from "../../app/hintVersion";
 import {ProjectRehydrateStatusResponse} from "../../app/generated";
-import {DynamicControlType} from "@reside-ic/vue-dynamic-form";
+import {DynamicControlType} from "@reside-ic/vue-next-dynamic-form";
 import {RootState} from "../../app/root";
 import {router} from "../../app/router";
 

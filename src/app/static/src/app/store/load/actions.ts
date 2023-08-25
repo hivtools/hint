@@ -13,7 +13,7 @@ import {router} from "../../router";
 import {currentHintVersion} from "../../hintVersion";
 import {initialStepperState} from "../stepper/stepper";
 import {ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generated";
-import {DynamicFormData} from "../../vue-dynamic-form/src/types";
+import {DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult" | "SetProjectName" | "RehydrateCancel"

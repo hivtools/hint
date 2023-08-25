@@ -51,8 +51,7 @@
 </template>
 <script lang="ts">
     import i18next from "i18next";
-    import { DynamicFormMeta } from "../../vue-dynamic-form/src/types";
-    import { DynamicForm } from "../../vue-dynamic-form/src";
+    import { DynamicFormMeta, DynamicForm } from "@reside-ic/vue-next-dynamic-form";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
     import {
