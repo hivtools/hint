@@ -105,7 +105,7 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
         const {modelCalibrate} = savedState
 
-        // Backward compatibility
+        // Backward compatibility fix: projects which calibrated before mrc-4538 have metadata embedded in result
         if (modelCalibrate?.result && modelCalibrate.result.plottingMetadata) {
             savedState = {
                 ...savedState,
