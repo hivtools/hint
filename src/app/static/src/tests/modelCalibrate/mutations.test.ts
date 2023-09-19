@@ -176,7 +176,7 @@ describe("ModelCalibrate mutations", () => {
     it("sets and clears metadata", () => {
         const testState = mockModelCalibrateState();
         const metadata = {plottingMetadata: "Test metadata", warnings: [mockWarning()]}
-        mutations.Metadata(testState, {payload: metadata});
+        mutations.MetadataFetched(testState, {payload: metadata});
         expect(testState.warnings).toEqual([mockWarning()]);
         expect(testState.metadata).toEqual(metadata);
         mutations.ClearWarnings(testState);

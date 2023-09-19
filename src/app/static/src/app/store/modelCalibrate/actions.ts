@@ -139,7 +139,7 @@ export const getResultMetadata = async function (context: ActionContext<ModelCal
 
     if (response) {
         const data = response.data;
-        commit({type: ModelCalibrateMutation.Metadata, payload: data});
+        commit({type: ModelCalibrateMutation.MetadataFetched, payload: data});
 
         selectFilterDefaults(data, commit, PlottingSelectionsMutations.updateBarchartSelections)
         commit(ModelCalibrateMutation.Calibrated);

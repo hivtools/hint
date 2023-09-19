@@ -207,7 +207,7 @@ describe("ModelCalibrate actions", () => {
 
         expect(commit.mock.calls.length).toBe(5);
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: "Metadata",
+            type: "MetadataFetched",
             payload: testResult
         });
         expect(commit.mock.calls[1][0]).toStrictEqual({
@@ -295,7 +295,7 @@ describe("ModelCalibrate actions", () => {
 
         expect(commit.mock.calls.length).toBe(4);
         expect(commit.mock.calls[0][0]).toStrictEqual({
-            type: ModelCalibrateMutation.Metadata,
+            type: ModelCalibrateMutation.MetadataFetched,
             payload: "OK"
         });
         expect(commit.mock.calls[1][0]).toStrictEqual("Calibrated");

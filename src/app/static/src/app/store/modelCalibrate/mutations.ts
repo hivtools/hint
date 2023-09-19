@@ -33,7 +33,7 @@ export enum ModelCalibrateMutation {
     CalibrateResultFetched = "CalibrateResultFetched",
     ClearWarnings = "ClearWarnings",
     ResetIds = "ResetIds",
-    Metadata = "Metadata"
+    MetadataFetched = "MetadataFetched"
 }
 
 export const ModelCalibrateUpdates = [
@@ -130,7 +130,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.statusPollId = action.payload;
     },
 
-    [ModelCalibrateMutation.Metadata](state: ModelCalibrateState,
+    [ModelCalibrateMutation.MetadataFetched](state: ModelCalibrateState,
                                              action: PayloadWithType<CalibrateMetadataResponse>) {
         state.warnings = action.payload.warnings
         state.metadata = action.payload
