@@ -63,15 +63,14 @@ declare const currentUser: string;
 
 export class LocalStorageManager {
 
-    saveLanguageState = (lang: Language) => {
+    saveLanguage = (lang: Language) => {
         localStorage.setItem("language", lang);
     }
 
-    getLanguageState = (): Language => {
+    getLanguage = (): Language => {
         const storedLang = localStorage.getItem("language")
         return storedLang ? storedLang as Language : Language.en;
     }
-
 
     saveState = (state: DataExplorationState) => {
         const partialState = serialiseState(state);
@@ -97,7 +96,7 @@ export class LocalStorageManager {
              * For smooth compatibility, code uses local storage persisted language state,
              * and default to English if needed.
              */
-            return {...partialRootState, ...{language: this.getLanguageState()}}
+            return {...partialRootState, language: this.getLanguage()}
         } else {
             return null;
         }

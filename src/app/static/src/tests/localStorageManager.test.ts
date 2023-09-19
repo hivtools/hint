@@ -210,9 +210,9 @@ describe("LocalStorageManager", () => {
     it("can set and get language from local storage", () => {
         const spy = jest.spyOn(Storage.prototype, "setItem");
 
-        localStorageManager.saveLanguageState(Language.pt);
+        localStorageManager.saveLanguage(Language.pt);
 
-        expect(localStorageManager.getLanguageState()).toBe(Language.pt)
+        expect(localStorageManager.getLanguage()).toBe(Language.pt)
 
         expect(spy.mock.calls[0][1]).toBe(Language.pt)
     });
