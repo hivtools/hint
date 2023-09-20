@@ -1,15 +1,17 @@
-import {mockAxios, mockBaselineState, mockError, mockFailure, mockFile, mockRootState} from "./mocks";
+import {mockAxios, mockBaselineState, mockError, mockFailure, mockRootState} from "./mocks";
 import {ActionContext, MutationTree, Store} from "vuex";
 import {PayloadWithType, TranslatableState} from "../app/types";
-import {Wrapper} from "@vue/test-utils";
-import {RootState} from "../app/root";
+import {DOMWrapper} from "@vue/test-utils";
 import {Language, Translations} from "../app/store/translations/locales";
 import registerTranslations from "../app/store/translations/registerTranslations";
 import {LanguageMutation} from "../app/store/language/mutations";
-import Mock = jest.Mock;
 import ErrorReport from "../app/components/ErrorReport.vue";
 import {DataExplorationState} from "../app/store/dataExploration/dataExploration";
 import {VNode} from "vue";
+import { VueWrapper, mount, shallowMount } from "@vue/test-utils";
+import translate from "../app/directives/translate";
+import { nextTick } from "vue";
+import Mock = jest.Mock;
 
 export function expectEqualsFrozen(args: PayloadWithType<any>, expected: PayloadWithType<any>) {
     expect(Object.isFrozen(args["payload"])).toBe(true);
@@ -69,27 +71,30 @@ export function expectAllMutationsDefined(mutationDefinitions: any, mutationTree
     }
 }
 
-export function expectTranslatedWithStoreType<T extends TranslatableState>(element: Wrapper<any>,
+export async function expectTranslatedWithStoreType<T extends TranslatableState>(element: DOMWrapper<any>,
                                                                            englishText: string,
                                                                            frenchText: string,
                                                                            portugueseText: string,
                                                                            store: Store<T>,
                                                                            attribute?: string) {
+    const value = () => attribute ? element.attributes(attribute) : element.text();
     store.state.language = Language.en;
     registerTranslations(store);
-    const value = () => attribute ? element.attributes(attribute) : element.text();
+    await nextTick();
     expect(value()).toBe(englishText);
 
     store.state.language = Language.fr;
     registerTranslations(store);
+    await nextTick();
     expect(value()).toBe(frenchText);
 
     store.state.language = Language.pt;
     registerTranslations(store);
+    await nextTick();
     expect(value()).toBe(portugueseText);
 }
 
-export const expectTranslated = (element: Wrapper<any>,
+export const expectTranslated = async (element: DOMWrapper<any>,
                                  englishText: string,
                                  frenchText: string,
                                  portugueseText: string,
@@ -97,10 +102,21 @@ export const expectTranslated = (element: Wrapper<any>,
                                  attribute?: string) =>
     expectTranslatedWithStoreType<DataExplorationState>(element, englishText, frenchText, portugueseText, store, attribute);
 
-export const expectHasTranslationKey = (element: Wrapper<any>, translationKey: keyof Translations, attribute?: string) => {
-    const vNode = (element.vm ? element.vm.$vnode : (element as any).vnode) as VNode; // support component and element wrappers
-    const elTranslationKey = vNode.data?.directives?.find(dir => dir.name === "translate" && dir.arg === attribute)?.value;
-    expect(elTranslationKey).toBe(translationKey);
+export const expectHasTranslationKey = (element: DOMWrapper<any>,
+                                        mockTranslate: Mock,
+                                        translationKey: keyof Translations,
+                                        attribute?: string) => {
+    const relevantCall = mockTranslate.mock.calls.filter((call) => call[0] === element.element);
+    expect(relevantCall.length).toBeGreaterThanOrEqual(1);
+    if (attribute) {
+        const relevantAttributeCall = relevantCall.filter((call) => call[1].arg === attribute);
+        expect(relevantAttributeCall[0][1].value).toBe(translationKey);
+    } else {
+        expect(relevantCall[0][1].value).toBe(translationKey);
+    }
+    // const vNode = (element.vm ? element.vm.$vnode : (element as any).vnode) as VNode; // support component and element wrappers
+    // const elTranslationKey = vNode.data?.directives?.find(dir => dir.name === "translate" && dir.arg === attribute)?.value;
+    // expect(elTranslationKey).toBe(translationKey);
 };
 
 export const expectChangeLanguageMutations = (commit: Mock) => {
@@ -119,14 +135,51 @@ export const expectChangeLanguageMutations = (commit: Mock) => {
     });
 };
 
-export const expectErrorReportOpen = (wrapper: Wrapper<any>, row = 0) => {
-    const link = wrapper.findAll(".dropdown-item").at(row);
-    link.trigger("click");
-
-    expect(wrapper.find(ErrorReport).props("open")).toBe(true);
+export const expectErrorReportOpen = async (wrapper: VueWrapper<any>, row = 0) => {
+    const link = wrapper.findAll(".dropdown-item")[row];
+    await link.trigger("click");
+    expect(wrapper.findComponent(ErrorReport).props("open")).toBe(true);
 }
 
 export function expectArraysEqual(result: any[], expected: any[]) {
     expect(result).toEqual(expect.arrayContaining(expected));
     expect(expected).toEqual(expect.arrayContaining(result));
+}
+
+/*
+This are functions that let us easily put in the translate directive into mount and shallowMount test
+functions. There are ts-ignores as shallowMount/mount require a DefineComponent type as their first
+argument however if we replace the C generic type below to "C extends DefineComponent" then we get
+typescript errors when we use shallowMountWithTranslate with our normal vue components.
+
+Since this is just for testing, ts-ignore was used for this special case.
+*/
+// @ts-ignore
+export function shallowMountWithTranslate<T extends TranslatableState, C>(component: C, store: Store<T>, options?: any): VueWrapper<InstanceType<C>> {
+    // @ts-ignore
+    return shallowMount(component, {
+        ...options,
+        global: {
+            ...options?.global,
+            directives: {
+                ...options?.global?.directives,
+                translate: translate(store)
+            }
+        }
+    });
+}
+
+// @ts-ignore
+export function mountWithTranslate<T extends TranslatableState, C>(component: C, store: Store<T>, options?: any): VueWrapper<InstanceType<C>> {
+    // @ts-ignore
+    return mount(component, {
+        ...options,
+        global: {
+            ...options?.global,
+            directives: {
+                ...options?.global?.directives,
+                translate: translate(store)
+            }
+        }
+    });
 }

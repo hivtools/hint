@@ -4,6 +4,7 @@ import Table from "../../../app/components/plots/table/Table.vue";
 import Vuex from "vuex";
 import {Language} from "../../../app/store/translations/locales";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import { mountWithTranslate } from "../../testHelpers";
 
 describe("GenericChartTable component", () => {
     const tableConfig = {
@@ -91,13 +92,13 @@ describe("GenericChartTable component", () => {
     };
 
     const getWrapper = (filteredData = data, valueFormat = "") => {
-        const propsData = {tableConfig, filteredData, columns, selectedFilterOptions, valueFormat};
-        return shallowMount(GenericChartTable, {propsData});
+        const props = {tableConfig, filteredData, columns, selectedFilterOptions, valueFormat} as any;
+        return shallowMount(GenericChartTable, {props});
     };
 
     it("renders table component with expected fields", () => {
         const wrapper = getWrapper();
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
         const expectedFields = [
             {key: "area_name", label: "area_name", sortable: true, sortByFormatted: true},
             {key: "area_level_id", label: "Area level", sortable: true, sortByFormatted: true},
@@ -109,7 +110,7 @@ describe("GenericChartTable component", () => {
 
     it("renders table component with expected labelled data", () => {
         const wrapper = getWrapper();
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
         const expectedData = [
             {area_name: "Malawi", area_level_id: "Country", age_group: "0-15", value: 200},
             {area_name: "Chitipa", area_level_id: "Region", age_group: "15-49", value: 100}
@@ -124,7 +125,7 @@ describe("GenericChartTable component", () => {
         ];
         const valueFormat = ".1%";
         const wrapper = getWrapper(data, valueFormat);
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
         const expectedData = [
             {area_name: "Malawi", area_level_id: "Country", age_group: "0-15", value: "20.0%"},
             {area_name: "Chitipa", area_level_id: "Region", age_group: "15-49", value: "10.0%"}
@@ -153,14 +154,14 @@ describe("GenericChartTable component", () => {
             {...data[1], area_level_id_2: 0}
         ];
 
-        const propsData = {
+        const props = {
             tableConfig: tableConfigWithTwoAreaIdColumns,
             filteredData: filteredDataWithTwoAreaIdColumns,
             columns,
             selectedFilterOptions
-        };
-        const wrapper = shallowMount(GenericChartTable, {propsData});
-        const table = wrapper.find(Table);
+        } as any;
+        const wrapper = shallowMount(GenericChartTable, {props});
+        const table = wrapper.findComponent(Table);
         const expectedData = [
             {area_name: "Malawi", area_level_id: "Country", area_level_id_2: "Region", age_group: "0-15", value: 200},
             {area_name: "Chitipa", area_level_id: "Region", area_level_id_2: "Country", age_group: "15-49", value: 100}
@@ -231,18 +232,17 @@ describe("GenericChartTable component", () => {
         {area_name: "Southern", area_id: "MWI_2", value: 150}
     ];
 
-    const propsDataWithHierarchy = {
+    const propsWithHierarchy = {
         tableConfig: tableConfigWithHierarchy,
         filteredData: filteredDataWithHierarchy,
         columns: columnsWithHierarchy,
-
         selectedFilterOptions
-    };
+    } as any;
 
     it("renders table component with hierarchy column", () => {
-        const wrapper = shallowMount(GenericChartTable, {propsData: propsDataWithHierarchy});
+        const wrapper = shallowMount(GenericChartTable, {props: propsWithHierarchy});
 
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
         const expectedData = [
             {area_name: "Malawi", value: 200, area_name_hierarchy: ""},
             {area_name: "Chitipa", value: 100, area_name_hierarchy: "Malawi/Northern"},
@@ -262,17 +262,17 @@ describe("GenericChartTable component", () => {
             state: {language: Language.en, updatingLanguage: false}
         });
         registerTranslations(store);
-        const wrapper = mount(GenericChartTable, {propsData: propsDataWithHierarchy, store});
+        const wrapper = mountWithTranslate(GenericChartTable, store, {props: propsWithHierarchy, global: {plugins: [store]}});
 
-        const table = wrapper.find(Table);
+        const table = wrapper.findComponent(Table);
         const rows = table.findAll("tr");
-        expect(rows.at(1).findAll("td").at(0).find("div.column-data").text()).toBe("Malawi");
-        expect(rows.at(1).findAll("td").at(0).find("div.small").text()).toBe("");
+        expect(rows[1].findAll("td")[0].find("div.column-data").text()).toBe("Malawi");
+        expect(rows[1].findAll("td")[0].find("div.small").text()).toBe("");
 
-        expect(rows.at(2).findAll("td").at(0).find("div.column-data").text()).toBe("Chitipa");
-        expect(rows.at(2).findAll("td").at(0).find("div.small").text()).toBe("Malawi/Northern");
+        expect(rows[2].findAll("td")[0].find("div.column-data").text()).toBe("Chitipa");
+        expect(rows[2].findAll("td")[0].find("div.small").text()).toBe("Malawi/Northern");
 
-        expect(rows.at(3).findAll("td").at(0).find("div.column-data").text()).toBe("Southern");
-        expect(rows.at(3).findAll("td").at(0).find("div.small").text()).toBe("Malawi");
+        expect(rows[3].findAll("td")[0].find("div.column-data").text()).toBe("Southern");
+        expect(rows[3].findAll("td")[0].find("div.small").text()).toBe("Malawi");
     });
 });

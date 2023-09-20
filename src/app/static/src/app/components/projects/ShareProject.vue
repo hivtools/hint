@@ -4,7 +4,7 @@
                 v-tooltip="tooltipShare"
                 @click="shareProject"
                 v-translate:aria-label="'share'">
-            <share-2-icon size="20"></share-2-icon>
+            <vue-feather type="share-2" size="20"></vue-feather>
         </button>
         <modal :open="open">
             <h4 v-translate="'shareProject'"></h4>
@@ -14,12 +14,11 @@
                     <div class="col">
                         <input autocomplete="no"
                                v-translate:aria-label="'enterEmail'"
-                               @keyup.enter="$event.target.blur()"
+                               @keyup.enter="($event.target as HTMLInputElement).blur()"
                                @keyup.delete="removeEmail(email, index)"
                                class="form-control"
                                :class="{'is-invalid': email.valid === false}"
                                @blur="() => addEmail(email, index)"
-                               @mouseout="$event.target.blur()"
                                v-model="email.value"/>
                     </div>
                     <div class="col">
@@ -34,23 +33,28 @@
                 <loading-spinner size="sm"></loading-spinner>
             </div>
             <template v-slot:footer>
-                <div class="text-muted help-text"
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div class="text-muted help-text float-left"
                      v-show="showValidationMessage"
-                     v-translate="'emailMultiValidation'">
+                     v-translate="'emailMultiValidation'"
+                     style="width: 60%;">
                 </div>
-                <error-alert v-if="cloneProjectError" :error="cloneProjectError"></error-alert>
-                <button type="button"
-                        class="btn btn-red"
-                        @click="confirmShareProject"
-                        :disabled="invalidEmails || cloningProject"
-                        v-translate="'ok'">
-                </button>
-                <button type="button"
-                        class="btn btn-white"
-                        @mousedown="cancelShareProject"
-                        :disabled="cloningProject"
-                        v-translate="'cancel'">
-                </button>
+                <error-alert v-if="cloneProjectError" :error="cloneProjectError!"></error-alert>
+                <div class="float-right">
+                    <button type="button"
+                            class="btn btn-red"
+                            @click="confirmShareProject"
+                            :disabled="invalidEmails || cloningProject"
+                            v-translate="'ok'">
+                    </button>
+                    <button type="button"
+                            class="btn btn-white ml-2"
+                            @mousedown="cancelShareProject"
+                            :disabled="cloningProject"
+                            v-translate="'cancel'">
+                    </button>
+                </div>
+            </div>
             </template>
         </modal>
     </div>
@@ -58,61 +62,37 @@
 
 <script lang="ts">
     import {Project} from "../../types";
-    import Vue from "vue";
     import Modal from "../Modal.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {mapActionByName, mapStatePropByName} from "../../utils";
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
     import ErrorAlert from "../ErrorAlert.vue";
-    import {CloneProjectPayload} from "../../store/projects/actions";
-    import {Share2Icon} from "vue-feather-icons";
-    import {VTooltip} from 'v-tooltip';
+    import VueFeather from "vue-feather";
+    import { PropType, defineComponent } from "vue";
+import { Error } from "../../generated";
 
-    interface EmailToShareWith {
+    interface RecipientEmail {
         value: string
         valid: boolean | null
         validationMessage: string
     }
 
     interface Data {
-        emailsToShareWith: EmailToShareWith[]
+        emailsToShareWith: RecipientEmail[]
         open: boolean
-    }
-
-    interface Props {
-        project: Project
-    }
-
-    interface Computed {
-        currentLanguage: Language,
-        instructions: string
-        invalidEmails: boolean
-        cloneProjectError: Error | null
-        cloningProject: boolean
-        tooltipShare: string
-        showValidationMessage: boolean
-    }
-
-    interface Methods {
-        addEmail: (email: EmailToShareWith, index: number) => void
-        removeEmail: (email: EmailToShareWith, index: number) => void
-        shareProject: (e: Event) => void
-        confirmShareProject: () => void
-        cancelShareProject: () => void
-        userExists: (email: string) => Promise<boolean>
-        cloneProject: (payload: CloneProjectPayload) => void
     }
 
     declare const currentUser: string;
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent({
         props: {
             project: {
-                type: Object
+                type: Object as PropType<Project>,
+                required: true
             }
         },
-        data() {
+        data(): Data {
             return {
                 emailsToShareWith: [{value: "", valid: null, validationMessage: ""}],
                 open: false
@@ -121,7 +101,7 @@
         methods: {
             cloneProject: mapActionByName("projects", "cloneProject"),
             userExists: mapActionByName("projects", "userExists"),
-            addEmail(e: EmailToShareWith, index: number) {
+            addEmail(e: RecipientEmail, index: number) {
                 if (e.value && index == this.emailsToShareWith.length - 1) {
                     this.emailsToShareWith.push({
                         value: "",
@@ -129,13 +109,13 @@
                         validationMessage: ""
                     });
                 }
-                this.emailsToShareWith.map(async (email: EmailToShareWith, index: number) => {
+                this.emailsToShareWith.map(async (email: RecipientEmail, index: number) => {
                     if (email.value) {
                         let invalidMsg = null;
                         const emailValue = email.value.toLowerCase()
                         if (emailValue == currentUser.toLowerCase()) {
                             invalidMsg = "projectsNoSelfShare";
-                        } else if (this.emailsToShareWith.filter(val => val.value.toLowerCase() === emailValue).length > 1) {
+                        } else if (this.emailsToShareWith.filter((val: RecipientEmail) => val.value.toLowerCase() === emailValue).length > 1) {
                             invalidMsg = "duplicateEmails";
                         } else {
                             const result = await this.userExists(emailValue);
@@ -152,7 +132,7 @@
                     }
                 });
             },
-            removeEmail(email: EmailToShareWith, index: number) {
+            removeEmail(email: RecipientEmail, index: number) {
                 // if email has been deleted and this is not the last input
                 // remove from UI
                 if (!email.value && index < this.emailsToShareWith.length - 1) {
@@ -165,8 +145,8 @@
             },
             confirmShareProject() {
                 const emails = this.emailsToShareWith
-                    .filter(e => e.value)
-                    .map(e => e.value);
+                    .filter((e: RecipientEmail) => e.value)
+                    .map((e: RecipientEmail) => e.value);
                 if (emails.length > 0) {
                     this.cloneProject({emails, projectId: this.project.id})
                 }
@@ -185,11 +165,11 @@
             },
             invalidEmails() {
                 //Invalid state until all emails evaluated as valid = true (may not have blurred yet)...
-                return this.emailsToShareWith.filter(e => e.value && !e.valid).length > 0
+                return this.emailsToShareWith.filter((e: RecipientEmail) => e.value && !e.valid).length > 0
             },
             showValidationMessage() {
                 //...however only show error message if any confirmed to be valid = false
-                return this.emailsToShareWith.filter(e => e.value && e.valid === false).length > 0
+                return this.emailsToShareWith.filter((e: RecipientEmail) => e.value && e.valid === false).length > 0
             },
             tooltipShare() {
                 return i18next.t("share", {
@@ -201,10 +181,7 @@
             Modal,
             LoadingSpinner,
             ErrorAlert,
-            Share2Icon
-        },
-        directives: {
-            tooltip: VTooltip
+            VueFeather
         },
         watch: {
             cloningProject(newVal: boolean) {

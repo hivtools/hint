@@ -9,11 +9,31 @@
 </template>
 
 <script lang="ts">
+    import { defineComponent } from 'vue';
 
-    import Vue from "vue";
-
-    export default Vue.extend({
-        props: ["active", "number", "textKey", "enabled", "complete"]
+    export default defineComponent({
+        props: {
+            active: {
+                type: Boolean,
+                required: true
+            },
+            number: {
+                type: Number,
+                required: true
+            },
+            textKey: {
+                type: String,
+                required: true
+            },
+            enabled: {
+                type: Boolean,
+                required: true
+            },
+            complete: {
+                type: Boolean,
+                required: true
+            }
+        }
     })
 
 </script>

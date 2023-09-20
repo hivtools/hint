@@ -21,7 +21,7 @@ RUN apt-get install -y \
 
 ## Use the same version of playwright as is installed in package.json
 ## otherwise when tests run it will fail to locate chromium executable
-RUN npm install @playwright/test@1.28.1
+RUN npm install @playwright/test@1.35.1
 RUN npx playwright install chromium
 RUN npx playwright install-deps chromium
 

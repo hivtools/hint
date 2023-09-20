@@ -25,6 +25,10 @@ and [hintr](https://github.com/mrc-ide/hintr) and add a test user with username 
 1. Run `npm run build` from `src/app/static` to compile front-end dependencies.
 1. Run app from your IDE or by `./src/gradlew -p src :app:bootRun` to serve the app on port 8080
 
+To run with hot reloading of the front end, after installing npm packages and running development dependencies.
+1. Open a terminal at `src/app/static` and run `npm run serve`
+1. In another terminal, from the root run `src/gradlew -PhotReload=true -p src app:bootRun`
+
 For more information about developing the front-end see [src/app/static/README](https://github.com/mrc-ide/hint/blob/master/src/app/static/README.md)
 
 For more information on Generic Chart, see [/docs/GenericChart.md](https://github.com/mrc-ide/hint/blob/mrc-2537/docs/GenericChart.md)

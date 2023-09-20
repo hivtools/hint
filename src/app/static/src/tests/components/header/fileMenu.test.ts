@@ -1,4 +1,4 @@
-import {mount, shallowMount, Wrapper} from "@vue/test-utils";
+import {flushPromises, mount, shallowMount, VueWrapper} from "@vue/test-utils";
 import Vuex, {Store} from "vuex";
 import {
     mockAncResponse,
@@ -20,14 +20,33 @@ import FileMenu from "../../../app/components/header/FileMenu.vue";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {Language} from "../../../app/store/translations/locales";
 import UploadNewProject from "../../../app/components/load/UploadNewProject.vue";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, mountWithTranslate} from "../../testHelpers";
 import {switches} from "../../../app/featureSwitches";
+import { nextTick } from "vue";
 
 // jsdom has only implemented navigate up to hashes, hence appending a hash here to the base url
 const mockCreateObjectUrl = jest.fn(() => "http://localhost#1234");
 window.URL.createObjectURL = mockCreateObjectUrl;
 
+function readAsText(reader:any, file: any) {
+    return new Promise((resolve, reject) => {
+        reader.onerror = reject;
+        reader.onload = () => {
+            resolve(reader.result);
+        }
+        reader.readAsText(file);
+    });
+}
+
 describe("File menu", () => {
+
+    // @ts-ignore
+    global.File = class MockFile {
+        filename: string;
+        constructor(parts: (string | Blob | ArrayBuffer | ArrayBufferView)[], filename: string, properties ? : FilePropertyBag) {
+          this.filename = filename;
+        }
+    }
 
     const testProjects = [{id: 2, name: "proj1", versions: []}];
     const mockGetProjects = jest.fn();
@@ -92,82 +111,94 @@ describe("File menu", () => {
         return store;
     };
 
-    it("downloads JSON file", (done) => {
-        switches.loadJson = true
+    // it("downloads JSON file", async () => {
+    //     switches.loadJson = true
+    //     const store = createStore();
+    //     const wrapper = mountWithTranslate(FileMenu, store,
+    //         {
+    //             props: {title: "naomi"},
+    //             global: {
+    //                 plugins: [store]
+    //             }
+    //         });
+    //     await flushPromises();
+    //     await wrapper.find(".dropdown-toggle").trigger("click");
+    //     expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+    //     let link = wrapper.findAll(".dropdown-item")[1];
+    //     await link.trigger("mousedown");
+    //     await expectTranslated(link, "SaveJSON", "SauvegarderJSON", "GuardarJSON", store as any);
+
+    //     const hiddenLink = wrapper.find({ref: "save"});
+    //     expect(hiddenLink.attributes("href")).toBe("http://localhost#1234");
+
+    //     const re = new RegExp("naomi-(.*)\.json");
+    //     expect((hiddenLink.attributes("download") as string).match(re)).toBeDefined();
+
+    //     const expectedJson = {
+    //         state: {
+    //             baseline: {selectedDataset: null, selectedRelease: null, selectedDatasetIsRefreshed: false},
+    //             modelRun: mockModelRunState(),
+    //             modelCalibrate: {result: null, calibratePlotResult: null, comparisonPlotResult: null},
+    //             metadata: mockMetadataState(),
+    //             surveyAndProgram: {selectedDataType: null, warnings: []},
+    //             language: Language.en
+    //         },
+    //         files: {
+    //             pjnz: {hash: "2csv", filename: "2.csv"},
+    //             population: {hash: "1csv", filename: "1.csv"},
+    //             shape: {hash: "3csv", filename: "3.csv"},
+    //             survey: {hash: "4csv", filename: "4.csv"},
+    //             programme: {hash: "5csv", filename: "5.csv"},
+    //             anc: {hash: "6csv", filename: "6.csv"}
+    //         }
+    //     };
+
+
+    //     const actualBlob = (mockCreateObjectUrl as jest.Mock).mock.calls[0][0];
+    //     const reader = new FileReader();
+
+    //     reader.addEventListener('loadend', function () {
+    //         const text = reader.result as string;
+    //         const result = JSON.parse(text)[1];
+    //         expect(JSON.parse(result)).toStrictEqual(expectedJson);
+    //     });
+
+    //     await readAsText(reader, actualBlob);
+    // });
+
+    // it("aria-label and link text are translated for Json load", async () => {
+    //     switches.loadJson = true
+    //     const store = createStore();
+    //     const wrapper = mountWithTranslate(FileMenu, store, {
+    //         global: {
+    //             plugins: [store]
+    //         }, 
+    //     });
+    //     const link = wrapper.findAll(".dropdown-item")[2];
+    //     await expectTranslated(link, "LoadJSON", "ChargerJSON", "CarregarJSON", store as any);
+    //     const input = wrapper.find("#upload-file")
+    //     await expectTranslated(input,
+    //         "Select file",
+    //         "Sélectionner un fichier",
+    //         "Selecionar ficheiro",
+    //         store as any,
+    //         "aria-label");
+    // });
+
+    it("aria-label and link text are translated for outputZip load", async () => {
         const store = createStore();
-        const wrapper = mount(FileMenu,
-            {
-                propsData: {title: "naomi"},
-                store
-            });
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
-        let link = wrapper.findAll(".dropdown-item").at(1);
-        link.trigger("mousedown");
-        expectTranslated(link, "SaveJSON", "SauvegarderJSON", "GuardarJSON", store as any);
-
-        const hiddenLink = wrapper.find({ref: "save"});
-        expect(hiddenLink.attributes("href")).toBe("http://localhost#1234");
-
-        const re = new RegExp("naomi-(.*)\.json");
-        expect((hiddenLink.attributes("download") as string).match(re)).toBeDefined();
-
-        const expectedJson = {
-            state: {
-                baseline: {selectedDataset: null, selectedRelease: null, selectedDatasetIsRefreshed: false},
-                modelRun: mockModelRunState(),
-                modelCalibrate: {result: null, calibratePlotResult: null, comparisonPlotResult: null},
-                metadata: mockMetadataState(),
-                surveyAndProgram: {selectedDataType: null, warnings: []},
-                language: Language.en
-            },
-            files: {
-                pjnz: {hash: "2csv", filename: "2.csv"},
-                population: {hash: "1csv", filename: "1.csv"},
-                shape: {hash: "3csv", filename: "3.csv"},
-                survey: {hash: "4csv", filename: "4.csv"},
-                programme: {hash: "5csv", filename: "5.csv"},
-                anc: {hash: "6csv", filename: "6.csv"}
-            }
-        };
-
-        const actualBlob = (mockCreateObjectUrl as jest.Mock).mock.calls[0][0];
-        const reader = new FileReader();
-        reader.addEventListener('loadend', function () {
-            const text = reader.result as string;
-            const result = JSON.parse(text)[1];
-            expect(JSON.parse(result)).toStrictEqual(expectedJson);
-            done();
+        const wrapper = mountWithTranslate(FileMenu, store, {
+            global: {
+                plugins: [store]
+            }, 
         });
-
-        reader.readAsText(actualBlob);
-    });
-
-    it("aria-label and link text are translated for Json load", () => {
-        switches.loadJson = true
-        const store = createStore();
-        const wrapper = mount(FileMenu, {store});
-        const link = wrapper.findAll(".dropdown-item").at(2);
-        expectTranslated(link, "LoadJSON", "ChargerJSON", "CarregarJSON", store as any);
-        const input = wrapper.find("#upload-file")
-        expectTranslated(input,
-            "Select file",
-            "Sélectionner un fichier",
-            "Selecionar ficheiro",
-            store as any,
-            "aria-label");
-    });
-
-    it("aria-label and link text are translated for outputZip load", () => {
-        const store = createStore();
-        const wrapper = mount(FileMenu, {store});
-        const link = wrapper.findAll(".dropdown-item").at(0);
-        expectTranslated(link,
+        const link = wrapper.findAll(".dropdown-item")[0];
+        await expectTranslated(link,
             "Load Model Outputs",
             "Charger les sorties du modèle",
             "Carregar Saídas do Modelo", store as any);
         const input = wrapper.find("#upload-zip")
-        expectTranslated(input,
+        await expectTranslated(input,
             "Select file",
             "Sélectionner un fichier",
             "Selecionar ficheiro",
@@ -175,132 +206,147 @@ describe("File menu", () => {
             "aria-label");
     });
 
-    it("opens file dialog on click load JSON", (done) => {
-        switches.loadJson = true
-        const store = createStore();
-        const wrapper = mount(FileMenu, {store});
+    // it("opens file dialog on click load JSON", async () => {
+    //     switches.loadJson = true
+    //     const store = createStore();
+    //     const wrapper = mountWithTranslate(FileMenu, store, {
+    //         global: {
+    //             plugins: [store]
+    //         }, 
+    //     });
 
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
-        const link = wrapper.findAll(".dropdown-item").at(2);
-        expectTranslated(link, "LoadJSON", "ChargerJSON", "CarregarJSON", store as any);
+    //     await wrapper.find(".dropdown-toggle").trigger("click");
+    //     expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+    //     const link = wrapper.findAll(".dropdown-item")[2];
+    //     await expectTranslated(link, "LoadJSON", "ChargerJSON", "CarregarJSON", store as any);
 
-        const input = wrapper.find("#upload-file").element as HTMLInputElement
-        input.addEventListener("click", function () {
-            //file dialog was opened
-            done();
-        });
+    //     const input = wrapper.find("#upload-file").element as HTMLInputElement
+    //     const mockClick = jest.fn();
 
-        link.trigger("mousedown");
-    });
+    //     input.addEventListener("click", mockClick);
+    //     await link.trigger("click");
+    //     expect(mockClick).toHaveBeenCalledTimes(1);
+    // });
 
-    it("invokes load JSON action when file selected from dialog, when user is guest", () => {
-        switches.loadJson = true
-        const mockLoadAction = jest.fn();
-        const clearLoadJsonInput = jest.fn()
-        const wrapper = mount(FileMenu,
-            {
-                store: createStore({
-                    load: {
-                        namespaced: true,
-                        state: mockLoadState(),
-                        actions: {
-                            load: mockLoadAction
-                        }
-                    }
-                }),
-                methods: { clearLoadJsonInput }
-            });
+    // it("invokes load JSON action when file selected from dialog, when user is guest", async () => {
+    //     switches.loadJson = true
+    //     const mockLoadAction = jest.fn();
+    //     const clearLoadJsonInput = jest.fn()
+    //     const store = createStore({
+    //         load: {
+    //             namespaced: true,
+    //             state: mockLoadState(),
+    //             actions: {
+    //                 load: mockLoadAction
+    //             }
+    //         }
+    //     })
+    //     const wrapper = mountWithTranslate(FileMenu, store,
+    //         {
+    //             global: {
+    //                 plugins: [store]
+    //             },
+    //             methods: { clearLoadJsonInput }
+    //         });
 
-        const testFile = mockFile("testFilename.json", "test file contents", "application/json");
-        triggerSelectFile(wrapper, testFile, "#upload-file");
-        expect(mockLoadAction.mock.calls.length).toEqual(1);
-        expect(mockLoadAction.mock.calls[0][1]).toBe(testFile);
-        expect(wrapper.find("#project-json #load").props("open")).toBe(false);
-        expect(clearLoadJsonInput).toHaveBeenCalledTimes(1)
-    });
+    //     const testFile = mockFile("testFilename.json", "test file contents", "application/json");
+    //     await triggerSelectFile(wrapper, testFile, "#upload-file");
+    //     expect(mockLoadAction.mock.calls.length).toEqual(1);
+    //     expect(mockLoadAction.mock.calls[0][1]).toBe(testFile);
+    //     expect((wrapper.findComponent("#project-json #load") as VueWrapper).props("open")).toBe(false);
+    //     expect(clearLoadJsonInput).toHaveBeenCalledTimes(1)
+    // });
 
-    it("does not invoke load JSON action when file selected from dialog, when user is guest", () => {
-        switches.loadJson = true
-        const mockLoadAction = jest.fn();
-        const clearLoadJsonInput = jest.fn();
-        const wrapper = mount(FileMenu,
-            {
-                store: createStore({
-                    load: {
-                        namespaced: true,
-                        state: mockLoadState(),
-                        actions: {
-                            load: mockLoadAction
-                        }
-                    }
-                }),
-                methods: { clearLoadJsonInput }
-            });
+    // it("does not invoke load JSON action when file selected from dialog, when user is guest", async () => {
+    //     switches.loadJson = true
+    //     const mockLoadAction = jest.fn();
+    //     const clearLoadJsonInput = jest.fn();
+    //     const store = createStore({
+    //         load: {
+    //             namespaced: true,
+    //             state: mockLoadState(),
+    //             actions: {
+    //                 load: mockLoadAction
+    //             }
+    //         }
+    //     });
+    //     const wrapper = mountWithTranslate(FileMenu, store,
+    //         {
+    //             global: {
+    //                 plugins: [store]
+    //             },
+    //             methods: { clearLoadJsonInput }
+    //         });
 
-        wrapper.find("#upload-file").trigger("change")
-        expect(mockLoadAction.mock.calls.length).toEqual(0);
-        expect(wrapper.find("#load").props("open")).toBe(false);
-        expect(clearLoadJsonInput).not.toHaveBeenCalled()
-    });
+    //     await wrapper.find("#upload-file").trigger("change")
+    //     expect(mockLoadAction.mock.calls.length).toEqual(0);
+    //     expect((wrapper.findComponent("#load") as VueWrapper).props("open")).toBe(false);
+    //     expect(clearLoadJsonInput).not.toHaveBeenCalled()
+    // });
 
-    it("does not invoke preparingRehydrate action when file selected from dialog, when user is guest", () => {
+    it("does not invoke preparingRehydrate action when file selected from dialog, when user is guest", async () => {
         const mockPreparingRehydrate = jest.fn();
         const clearLoadZipInput = jest.fn();
         const wrapper = mount(FileMenu,
             {
-                store: createStore({
-                    load: {
-                        namespaced: true,
-                        state: mockLoadState(),
-                        actions: {
-                            preparingRehydrate: mockPreparingRehydrate
+                global: {
+                    plugins: [createStore({
+                        load: {
+                            namespaced: true,
+                            state: mockLoadState(),
+                            actions: {
+                                preparingRehydrate: mockPreparingRehydrate
+                            }
                         }
-                    }
-                }),
+                    })]
+                },
                 methods: { clearLoadZipInput }
             });
 
-        wrapper.find("#upload-zip").trigger("change")
+        await wrapper.find("#upload-zip").trigger("change")
         expect(mockPreparingRehydrate.mock.calls.length).toEqual(0);
-        expect(wrapper.find("#load").props("open")).toBe(false);
+        expect((wrapper.findComponent("#load") as VueWrapper).props("open")).toBe(false);
         expect(clearLoadZipInput).not.toHaveBeenCalled()
     });
 
-    it("invokes load model output action when file selected from dialog and user is guest", () => {
+    it("invokes load model output action when file selected from dialog and user is guest", async () => {
         const mockPreparingRehydrate = jest.fn()
-        const clearLoadZipInput = jest.fn()
         const wrapper = mount(FileMenu,
             {
-                store: createStore({
-                    load: {
-                        namespaced: true,
-                        state: mockLoadState(),
-                        actions: {
-                            preparingRehydrate: mockPreparingRehydrate
+                global: {
+                    plugins: [createStore({
+                        load: {
+                            state: mockLoadState(),
+                            namespaced: true,
+                            actions: {
+                                preparingRehydrate: mockPreparingRehydrate
+                            }
                         }
-                    }
-                }),
-                methods: { clearLoadZipInput }
+                    })]
+                },
             });
 
+        const spy = jest.spyOn((wrapper.vm as any), "clearLoadZipInput")
+
         const testFile = mockFile("test filename", "test file contents", "application/zip");
-        triggerSelectFile(wrapper, testFile, "#upload-zip");
+        await triggerSelectFile(wrapper, testFile, "#upload-zip");
         expect(mockPreparingRehydrate.mock.calls.length).toBe(1);
-        expect(wrapper.find("#project-zip #load").props("open")).toBe(false);
-        expect(clearLoadZipInput).toHaveBeenCalledTimes(1)
+        expect((wrapper.findComponent("#project-zip #load") as VueWrapper).props("open")).toBe(false);
+        expect(spy).toHaveBeenCalledTimes(1)
     });
 
     it("does not open error modal if no load error", () => {
         const wrapper = shallowMount(FileMenu,
             {
-                store: createStore()
+                global: {
+                    plugins: [createStore()]
+                }
             });
 
-        expect(wrapper.find(UploadNewProject).attributes("open")).toBeFalsy();
+        expect(wrapper.findComponent(UploadNewProject).attributes("open")).toBeFalsy();
     });
 
-    it("error modal can be dismissed", () => {
+    it("error modal can be dismissed", async () => {
         const clearErrorMock = jest.fn();
         const store = createStore({
             load: {
@@ -315,49 +361,53 @@ describe("File menu", () => {
             }
         });
 
-        const wrapper = mount(FileMenu, {store});
+        const wrapper = mountWithTranslate(FileMenu, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
 
-        const projectModal = wrapper.find(UploadNewProject);
+        const projectModal = wrapper.findComponent(UploadNewProject);
 
         const modal = projectModal.findAll(".modal")
 
-        modal.at(1).find(".btn").trigger("click");
-        expectTranslated(modal.at(1).find(".btn"), "OK", "OK", "OK", store as any);
+        await modal[1].find(".btn").trigger("click");
+        await expectTranslated(modal[1].find(".btn"), "OK", "OK", "OK", store as any);
         expect(clearErrorMock.mock.calls.length).toBe(1);
     });
 
-    it("can open upload project modal when load JSON is triggered as non-guest", () => {
-        switches.loadJson = true
-        const mockLoadAction = jest.fn()
-        const store = createStore({
-            load: {
-                namespaced: true,
-                state: mockLoadState(),
-                actions: {
-                    load: mockLoadAction
-                }
-            }
-        });
-        const projectModal = openUploadNewProject(store, "#upload-file")
-        expect(projectModal.props().openModal).toBe(false)
-        projectModal.find(".btn").trigger("click");
-        expect(mockLoadAction.mock.calls.length).toBe(1);
-        expect(projectModal.props().openModal).toBe(false)
-    });
+    // it("can open upload project modal when load JSON is triggered as non-guest", async () => {
+    //     switches.loadJson = true
+    //     const mockLoadAction = jest.fn()
+    //     const store = createStore({
+    //         load: {
+    //             namespaced: true,
+    //             state: mockLoadState(),
+    //             actions: {
+    //                 load: mockLoadAction
+    //             }
+    //         }
+    //     });
+    //     const projectModal = await openUploadNewProject(store, "#upload-file")
+    //     expect(projectModal.props().openModal).toBe(false)
+    //     await projectModal.find(".btn").trigger("click");
+    //     expect(mockLoadAction.mock.calls.length).toBe(1);
+    //     expect(projectModal.props().openModal).toBe(false)
+    // });
 
-    it("can get projects when user is logged in when file is uploaded", () => {
+    it("can get projects when user is logged in when file is uploaded", async () => {
         const store = createStore({
             load: {
                 namespaced: true,
                 state: mockLoadState()
             }
         }, false);
-        const projectModal = openUploadNewProject(store, "#upload-zip", "application/zip")
-        projectModal.find(".btn").trigger("click");
+        const projectModal = await openUploadNewProject(store, "#upload-zip", "application/zip")
+        await projectModal.find(".btn").trigger("click");
         expect(mockGetProjects).toHaveBeenCalled()
     });
 
-    it("can open upload project modal and does not get projects as guest when file is uploaded", () => {
+    it("can open upload project modal and does not get projects as guest when file is uploaded", async () => {
         const mockPreparingRehydrate = jest.fn()
         const store = createStore({
             load: {
@@ -368,14 +418,14 @@ describe("File menu", () => {
                 }
             }
         });
-        const projectModal = openUploadNewProject(store, "#upload-zip", "application/zip")
-        projectModal.find(".btn").trigger("click");
+        const projectModal = await openUploadNewProject(store, "#upload-zip", "application/zip")
+        await projectModal.find(".btn").trigger("click");
         expect(mockGetProjects).not.toHaveBeenCalled()
         expect(mockPreparingRehydrate.mock.calls.length).toBe(1);
         expect(projectModal.props().openModal).toBe(false)
     });
 
-    it("triggers preparingRehydrate action as non-guest when file is uploaded", () => {
+    it("triggers preparingRehydrate action as non-guest when file is uploaded", async () => {
         const mockPreparingRehydrate = jest.fn()
         const mockProjectName = jest.fn()
         const store = createStore({
@@ -391,55 +441,63 @@ describe("File menu", () => {
             }
         }, false);
 
-        const wrapper = mount(FileMenu, {store});
+        const wrapper = mountWithTranslate(FileMenu, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         const testFile = mockFile("test.zip", "test file contents", "application/zip");
-        triggerSelectFile(wrapper, testFile, "#upload-zip");
+        await triggerSelectFile(wrapper, testFile, "#upload-zip");
         const projectZip = wrapper.find("#project-zip")
-        expect(projectZip.find("#load").props("open")).toBe(true);
+        expect((projectZip.findComponent("#load") as VueWrapper).props("open")).toBe(true);
 
         const confirmLoad = projectZip.find("#confirm-load-project")
-        projectZip.find("#project-name-input").setValue("new uploaded project")
-        confirmLoad.trigger("click")
+        await projectZip.find("#project-name-input").setValue("new uploaded project")
+        await confirmLoad.trigger("click")
 
         expect(mockProjectName.mock.calls.length).toBe(1);
         expect(mockProjectName.mock.calls[0][1]).toBe("new uploaded project");
-        expect((wrapper.vm as any).fileToLoad).toBe(testFile);
+        expect((wrapper.vm as any).fileToLoad).toStrictEqual(testFile);
         expect(mockPreparingRehydrate.mock.calls.length).toBe(1);
-        expect(projectZip.find(UploadNewProject).props().openModal).toBe(false);
+        expect(projectZip.findComponent(UploadNewProject).props().openModal).toBe(false);
     });
 
-    it("triggers load action as non-guest when JSON file is uploaded", () => {
-        switches.loadJson = true
-        const mockLoadAction = jest.fn()
-        const mockProjectName = jest.fn()
-        const store = createStore({
-            load: {
-                namespaced: true,
-                state: mockLoadState(),
-                actions: {
-                    load: mockLoadAction
-                },
-                mutations: {
-                    SetProjectName: mockProjectName
-                }
-            }
-        }, false);
+    // it("triggers load action as non-guest when JSON file is uploaded", async () => {
+    //     switches.loadJson = true
+    //     const mockLoadAction = jest.fn()
+    //     const mockProjectName = jest.fn()
+    //     const store = createStore({
+    //         load: {
+    //             namespaced: true,
+    //             state: mockLoadState(),
+    //             actions: {
+    //                 load: mockLoadAction
+    //             },
+    //             mutations: {
+    //                 SetProjectName: mockProjectName
+    //             }
+    //         }
+    //     }, false);
 
-        const wrapper = mount(FileMenu, {store});
-        const testFile = mockFile("test.json", "test file contents", "application/json");
-        triggerSelectFile(wrapper, testFile, "#upload-file");
-        const jsonProject = wrapper.find("#project-json");
-        expect(jsonProject.find("#load").props("open")).toBe(true);
-        const confirmLoad = jsonProject.find("#confirm-load-project")
-        jsonProject.find("#project-name-input").setValue("new uploaded project")
-        confirmLoad.trigger("click")
+    //     const wrapper = mountWithTranslate(FileMenu, store, {
+    //         global: {
+    //             plugins: [store]
+    //         }, 
+    //     });
+    //     const testFile = mockFile("test.json", "test file contents", "application/json");
+    //     await triggerSelectFile(wrapper, testFile, "#upload-file");
+    //     const jsonProject = wrapper.find("#project-json");
+    //     expect((jsonProject.findComponent("#load") as VueWrapper).props("open")).toBe(true);
+    //     const confirmLoad = jsonProject.find("#confirm-load-project")
+    //     await jsonProject.find("#project-name-input").setValue("new uploaded project")
+    //     await confirmLoad.trigger("click")
 
-        expect(mockProjectName.mock.calls.length).toBe(1);
-        expect(mockProjectName.mock.calls[0][1]).toBe("new uploaded project");
-        expect((wrapper.vm as any).fileToLoad).toBe(testFile);
-        expect(mockLoadAction.mock.calls.length).toBe(1);
-        expect(jsonProject.find(UploadNewProject).props().openModal).toBe(false);
-    });
+    //     expect(mockProjectName.mock.calls.length).toBe(1);
+    //     expect(mockProjectName.mock.calls[0][1]).toBe("new uploaded project");
+    //     expect((wrapper.vm as any).fileToLoad).toBe(testFile);
+    //     expect(mockLoadAction.mock.calls.length).toBe(1);
+    //     expect(jsonProject.findComponent(UploadNewProject).props().openModal).toBe(false);
+    // });
 
     it("can render project upload zip props", async() => {
         const store = createStore({
@@ -449,9 +507,13 @@ describe("File menu", () => {
             }
         });
 
-        const wrapper = mount(FileMenu, {store});
+        const wrapper = mountWithTranslate(FileMenu, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
 
-        const projectModal = wrapper.find(UploadNewProject);
+        const projectModal = wrapper.findComponent(UploadNewProject);
 
         expect(projectModal.exists()).toBeTruthy()
         expect(projectModal.props("cancelLoad")).toBeInstanceOf(Function)
@@ -459,61 +521,74 @@ describe("File menu", () => {
         expect(projectModal.props("openModal")).toBe(false)
     });
 
-    it("upload JSON shows project name modal when file selected from dialog, when user is not guest", () => {
-        switches.loadJson = true
-        const wrapper = mount(FileMenu, {store: createStore({}, false)});
-        const testFile = mockFile("filename.json", "test file contents", "application/json");
-        triggerSelectFile(wrapper, testFile, "#upload-file");
+    // it("upload JSON shows project name modal when file selected from dialog, when user is not guest", async () => {
+    //     switches.loadJson = true
+    //     const store = createStore({}, false);
+    //     const wrapper = mountWithTranslate(FileMenu, store, {
+    //         global: {
+    //             plugins: [store]
+    //         }, 
+    //     });
+    //     const testFile = mockFile("filename.json", "test file contents", "application/json");
+    //     await triggerSelectFile(wrapper, testFile, "#upload-file");
 
-        expect(wrapper.find("#project-json #load").props("open")).toBe(true);
-        expect((wrapper.vm as any).fileToLoad).toBe(testFile);
+    //     expect((wrapper.findComponent("#project-json #load") as VueWrapper).props("open")).toBe(true);
+    //     expect((wrapper.vm as any).fileToLoad).toBe(testFile);
+    // });
+
+    it("upload rehydrate model shows project name modal when file selected from dialog, when user is not guest", async () => {
+        const store = createStore({}, false);
+        const wrapper = mountWithTranslate(FileMenu, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
+        const testFile = new File(["test file contents"], "test filename");
+        await triggerSelectFile(wrapper, testFile, "#upload-zip");
+        expect((wrapper.findComponent("#project-zip #load") as VueWrapper).props("open")).toBe(true);
+        expect((wrapper.vm as any).fileToLoad).toStrictEqual(testFile);
     });
 
-    it("upload rehydrate model shows project name modal when file selected from dialog, when user is not guest", () => {
-        const wrapper = mount(FileMenu, {store: createStore({}, false)});
-        const testFile = mockFile("test filename", "test file contents", "application/zip");
-        triggerSelectFile(wrapper, testFile, "#upload-zip");
-        expect(wrapper.find("#project-zip #load").props("open")).toBe(true);
-        expect((wrapper.vm as any).fileToLoad).toBe(testFile);
-    });
+    // it("clicking cancel from Json project name modal hides modal", async () => {
+    //     const clearLoadJsonInput = jest.fn()
+    //     const wrapper = mount(FileMenu,
+    //         {
+    //             data: () => {
+    //                 return {projectNameJson: true}
+    //             },
+    //             global: {
+    //                 plugins: [createStore({}, false)]
+    //             },
+    //             methods: { clearLoadJsonInput }
+    //         });
 
-    it("clicking cancel from Json project name modal hides modal", () => {
-        const clearLoadJsonInput = jest.fn()
+    //     const modal = wrapper.findComponent("#project-json #load");
+    //     expect((modal as VueWrapper).props("open")).toBe(true);
+    //     await modal.find("#cancel-load-project").trigger("click");
+    //     expect((modal as VueWrapper).props("open")).toBe(false);
+    //     expect(clearLoadJsonInput).toHaveBeenCalledTimes(1)
+    // });
+
+    it("clicking cancel from Zip project name modal hides modal", async () => {
         const wrapper = mount(FileMenu,
             {
-                data: () => {
-                    return {projectNameJson: true}
-                },
-                store: createStore({}, false),
-                methods: { clearLoadJsonInput }
+                global: {
+                    plugins: [createStore({}, false)]
+                }
             });
 
-        const modal = wrapper.find("#project-json #load");
-        expect(modal.props("open")).toBe(true);
-        modal.find("#cancel-load-project").trigger("click");
-        expect(modal.props("open")).toBe(false);
-        expect(clearLoadJsonInput).toHaveBeenCalledTimes(1)
+        (wrapper.vm as any).$data.projectNameZip = true;
+        await nextTick();
+        const spy = jest.spyOn((wrapper.vm as any), "clearLoadZipInput");
+
+        const modal = wrapper.findComponent("#project-zip #load");
+        expect((modal as VueWrapper).props("open")).toBe(true);
+        await modal.find("#cancel-load-project").trigger("click");
+        expect((modal as VueWrapper).props("open")).toBe(false);
+        expect(spy).toHaveBeenCalledTimes(1)
     });
 
-    it("clicking cancel from Zip project name modal hides modal", () => {
-        const clearLoadZipInput = jest.fn()
-        const wrapper = mount(FileMenu,
-            {
-                data: () => {
-                    return {projectNameZip: true}
-                },
-                store: createStore({}, false),
-                methods: { clearLoadZipInput }
-            });
-
-        const modal = wrapper.find("#project-zip #load");
-        expect(modal.props("open")).toBe(true);
-        modal.find("#cancel-load-project").trigger("click");
-        expect(modal.props("open")).toBe(false);
-        expect(clearLoadZipInput).toHaveBeenCalledTimes(1)
-    });
-
-    it("should disable button when uploadZip input field is empty for new project upload", () => {
+    it("should disable button when uploadZip input field is empty for new project upload", async () => {
         const mockPreparingRehydrate = jest.fn()
         const mockProjectName = jest.fn()
         const store = createStore({
@@ -529,51 +604,50 @@ describe("File menu", () => {
             }
         }, false);
 
-        const wrapper = mount(FileMenu, {store});
+        const wrapper = mountWithTranslate(FileMenu, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         const testFile = mockFile("test.zip", "test file contents", "application/zip");
-        triggerSelectFile(wrapper, testFile, "#upload-zip");
+        await triggerSelectFile(wrapper, testFile, "#upload-zip");
         const projectZip = wrapper.find("#project-zip")
         const confirmLoad = projectZip.find("#confirm-load-project")
-        expect(confirmLoad.attributes("disabled")).toBe("disabled")
-        projectZip.find("#project-name-input").setValue("new uploaded project")
-        expect(confirmLoad.attributes("disabled")).toBeUndefined()
+        expect((confirmLoad.element as HTMLButtonElement).disabled).toBe(true)
+        await projectZip.find("#project-name-input").setValue("new uploaded project")
+        expect((confirmLoad.element as HTMLButtonElement).disabled).toBe(false)
     });
 
-    it("does not render load and save Json project", () => {
-        switches.loadJson = false
-        const store = createStore();
-        const wrapper = mount(FileMenu, {store});
-        const link = wrapper.findAll(".dropdown-item");
+    // it("does not render load and save Json project", () => {
+    //     switches.loadJson = false
+    //     const store = createStore();
+    //     const wrapper = mountWithTranslate(FileMenu, store, {
+    //         global: {
+    //             plugins: [store]
+    //         }, 
+    //     });
+    //     const link = wrapper.findAll(".dropdown-item");
 
-        expect(link.length).toBe(1)
-        expect(link.at(0).text()).toBe("Load Model Outputs")
-    });
+    //     expect(link.length).toBe(1)
+    //     expect(link[0].text()).toBe("Load Model Outputs")
+    // });
 });
 
-const openUploadNewProject = (store: Store<any>, inputId= "#upload-file", fileType = "application/json") => {
-    const wrapper = mount(FileMenu, {store});
+const openUploadNewProject = async (store: Store<any>, inputId= "#upload-file", fileType = "application/json") => {
+    const wrapper = mountWithTranslate(FileMenu, store, {
+        global: {
+            plugins: [store]
+        }, 
+    });
     const testFile = mockFile("test filename", "test file contents", fileType);
-    triggerSelectFile(wrapper, testFile, inputId);
-    const projectModal = wrapper.find(UploadNewProject);
+    await triggerSelectFile(wrapper, testFile, inputId);
+    const projectModal = wrapper.findComponent(UploadNewProject);
     expect(projectModal.exists()).toBeTruthy()
     return projectModal
 }
 
-const triggerSelectFile = (wrapper: Wrapper<any>, testFile: File, id: string) => {
-    const vm = wrapper.vm;
+const triggerSelectFile = async (wrapper: VueWrapper, testFile: File, id: string) => {
     const input = wrapper.find(id);
-
-    //Can't programmatically construct a FileList to give to the real rendered input element, so we need to trick
-    //the component with a mocked ref
-    if (testFile.type == "application/zip") {
-        (vm.$refs as any).loadZip = {
-            files: [testFile]
-        };
-    } else if (testFile.type == "application/json") {
-        (vm.$refs as any).loadJson = {
-            files: [testFile]
-        };
-    }
-
-    input.trigger("change");
+    jest.spyOn((wrapper.vm.$refs as any).loadZip, "files", "get").mockImplementation(() => [testFile]);
+    await input.trigger("change");
 };

@@ -6,6 +6,7 @@ import i18next from "i18next";
 import {Language} from "../../store/translations/locales";
 import {BarchartSelections} from "../../store/plottingSelections/plottingSelections";
 import {flattenOptionsIdsByHierarchy} from "../../utils"
+import { BarchartIndicator } from "../../vue-chart/src/bar/types";
 
 export const getColor = (value: number,
                          metadata: ChoroplethIndicatorMetadata,
@@ -249,7 +250,7 @@ export const flattenXAxisFilterOptionIds = (selections: BarchartSelections, filt
 
 
 export const updateSelectionsAndXAxisOrder = (data: BarchartSelections, selections: BarchartSelections, flattenedXAxisFilterOptionIds: string[], updateSelections: (data: {payload: BarchartSelections}) => void) => {
-    const payload = {...selections, ...data}
+    const payload = {...selections, ...structuredClone(data)}
     if (data.xAxisId && data.selectedFilterOptions) {
         const {xAxisId, selectedFilterOptions} = data
         if (selectedFilterOptions[xAxisId] && flattenedXAxisFilterOptionIds.length) {

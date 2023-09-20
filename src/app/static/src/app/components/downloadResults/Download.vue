@@ -5,7 +5,7 @@
                 :disabled="disabled"
                 @click="download">
             <span v-translate="translateKey.button"></span>
-            <download-icon size="20" class="icon ml-2" style="margin-top: -4px;"></download-icon>
+            <vue-feather type="download" size="20" class="icon ml-2" style="margin-top: -4px;"></vue-feather>
         </button>
         <div>
             <download-status id="progress"
@@ -17,31 +17,16 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import DownloadStatus from "./DownloadStatus.vue";
     import ErrorAlert from "../ErrorAlert.vue";
-    import {DownloadIcon} from "vue-feather-icons";
-    import {DownloadResultsDependency} from "../../types";
+    import VueFeather from "vue-feather";
+    import { defineComponent } from "vue";
 
-    interface downloadTranslate {
-        header: string,
-        button: string
-    }
 
-    interface Props {
-        file: DownloadResultsDependency,
-        translateKey: downloadTranslate,
-        disabled: boolean
-    }
-
-    interface Methods {
-        download: () => void
-    }
-
-    export default Vue.extend<unknown, Methods, unknown, Props>({
+    export default defineComponent({
         name: "Download",
         components: {
-            DownloadIcon,
+            VueFeather,
             ErrorAlert,
             DownloadStatus
         },
@@ -61,7 +46,7 @@
         },
         methods: {
             download() {
-                this.$emit("click")
+                this.$emit("trigger-download")
             }
         }
     })

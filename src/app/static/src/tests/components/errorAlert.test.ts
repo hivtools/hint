@@ -4,7 +4,7 @@ import {mockError} from "../mocks";
 import Vuex from "vuex";
 import {Language} from "../../app/store/translations/locales";
 import registerTranslations from "../../app/store/translations/registerTranslations";
-import {expectTranslated} from "../testHelpers";
+import {expectTranslated, shallowMountWithTranslate} from "../testHelpers";
 
 describe("Error alert component", () => {
 
@@ -26,9 +26,11 @@ describe("Error alert component", () => {
     registerTranslations(store);
 
     it("renders error message", () => {
-        const wrapper = shallowMount(ErrorAlert, {
-            propsData: noJobIdProps,
-            store
+        const wrapper = shallowMountWithTranslate(ErrorAlert, store, {
+            props: noJobIdProps,
+            global: {
+                plugins: [store]
+            }
         });
 
         expect(wrapper.find(".error-message").text()).toBe("Error text");
@@ -38,30 +40,34 @@ describe("Error alert component", () => {
     });
 
     it("renders error value if detail is not present", () => {
-        const wrapper = shallowMount(ErrorAlert, {
-            propsData: {
+        const wrapper = shallowMountWithTranslate(ErrorAlert, store, {
+            props: {
                 error: {
                     error: "TEST ERROR TYPE",
                     detail: null
                 }
             },
-            store
+            global: {
+                plugins: [store]
+            }
         });
 
         expect(wrapper.find(".error-message").text()).toBe("TEST ERROR TYPE");
     });
 
-    it("shows job ID if present", () => {
-        const wrapper = shallowMount(ErrorAlert, {
-            propsData: jobIdProps,
-            store
+    it("shows job ID if present", async () => {
+        const wrapper = shallowMountWithTranslate(ErrorAlert, store, {
+            props: jobIdProps,
+            global: {
+                plugins: [store]
+            }
         });
 
         expect(wrapper.find(".error-message").text()).toBe("Error text");
         expect(wrapper.find("div").classes()).toStrictEqual(["pt-1", "text-danger"]);
         expect(wrapper.find(".error-job-id").text()).toBe("Job ID: 12345abc");
         const jobId = wrapper.find(".error-job-id").find("span");
-        expectTranslated(jobId, "Job ID", "ID du job",
+        await expectTranslated(jobId, "Job ID", "ID du job",
             "ID de job", store as any);
     });
 });

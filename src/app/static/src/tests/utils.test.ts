@@ -18,7 +18,7 @@ import {
     extractFilenameFrom
 } from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
-import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {AxiosResponse} from "axios";
 
 describe("utils", () => {

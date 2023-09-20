@@ -1,42 +1,44 @@
 import i18next from "i18next";
-import Vue from "vue";
+import { createApp } from "vue";
 import Vuex from "vuex";
-import {Language, locales} from "../app/store/translations/locales";
+import { Language, locales } from "../app/store/translations/locales";
+import { RootState } from "../app/root";
+import Hint from "../app/components/Hint.vue";
 
-// create mock element for app to attach to
-const app = document.createElement('div');
-app.setAttribute('id', 'app');
-document.body.appendChild(app);
-
-// implement innerText as its not implemented in jest/jsdom
-// https://github.com/jsdom/jsdom/issues/1245
+// Implement innerText as it's not implemented in Jest/jsdom
+// Reference: https://github.com/jsdom/jsdom/issues/1245
 Object.defineProperty((global as any).Element.prototype, 'innerText', {
     get() {
-        return this.textContent
+        return this.textContent;
     },
     set(value: string) {
-        this.textContent = value
+        this.textContent = value;
     },
-    configurable: true
+    configurable: true,
 });
 
 i18next.init({
     lng: Language.en,
     resources: {
-        en: {translation: locales.en},
-        fr: {translation: locales.fr},
-        pt: {translation: locales.pt}
+        en: { translation: locales.en },
+        fr: { translation: locales.fr },
+        pt: { translation: locales.pt },
     },
-    fallbackLng: Language.en
+    fallbackLng: Language.en,
 });
 
-Vue.use(Vuex);
-Vue.config.productionTip = false;
+const app = createApp(Hint);
+const store = new Vuex.Store<RootState>({});
+app.use(store);
 
+// Override console.error to throw an error
 global.console.error = (message: any) => {
-    throw (message instanceof Error ? message : new Error(message))
-}
+    throw message instanceof Error ? message : new Error(message);
+};
 
+global.console.warn = () => null;
+
+// Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
-    fail(err);
+    throw err;
 });

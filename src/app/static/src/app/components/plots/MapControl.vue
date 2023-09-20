@@ -6,24 +6,24 @@
                     <label class="col-3 col-form-label" v-translate="'indicator'">
                     </label>
                     <div class="col">
-                        <tree-select :value="indicator"
+                        <hint-tree-select :model-value="indicator"
                                      :multiple="false"
                                      :clearable="false"
                                      :searchable="false"
                                      :options="indicatorOptions"
-                                     @input="indicatorChanged"></tree-select>
+                                     @update:model-value="indicatorChanged"></hint-tree-select>
                     </div>
                 </div>
                 <div class="row form-group">
                     <label class="col-3 col-form-label" v-translate="'detail'">
                     </label>
                     <div class="col">
-                        <tree-select v-model="detail"
+                        <hint-tree-select :model-value="`${detail}`"
                                      :multiple="false"
                                      :clearable="false"
                                      :searchable="false"
                                      :options="detailOptions"
-                                     @input="$emit('detail-changed', detail)"></tree-select>
+                                     @update:model-value="detailChanged"></hint-tree-select>
                     </div>
                 </div>
             </form>
@@ -32,53 +32,41 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import TreeSelect from '@riophae/vue-treeselect'
-    import {LControl} from 'vue2-leaflet';
+    import HintTreeSelect from "../HintTreeSelect.vue";
+    import {LControl} from "@vue-leaflet/vue-leaflet";
     import {ChoroplethIndicatorMetadata} from "../../generated";
     import {LevelLabel} from "../../types";
+    import { PropType, defineComponent } from "vue";
 
-    interface Data {
-        detail: any;
-        optionsLoaded: boolean;
-    }
-
-    interface Props {
-        indicator: string,
-        initialDetail: number,
-        showIndicators: boolean,
-        indicatorsMetadata: ChoroplethIndicatorMetadata[],
-        levelLabels: LevelLabel[]
-    }
-
-    interface Option {
-        id: any;
-        label: string;
-    }
-
-    interface Computed {
-        detailOptions: Option[]
-        indicatorOptions: Option[]
-    }
-
-    interface Methods {
-        indicatorChanged: (newVal: string) => void;
-    }
-
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent({
         name: 'MapControl',
         components: {
-            TreeSelect,
+            HintTreeSelect,
             LControl
         },
         props: {
-            indicator: String,
-            initialDetail: Number,
-            showIndicators: Boolean,
-            indicatorsMetadata: Array,
-            levelLabels: Array
+            indicator: {
+                type: String,
+                required: false
+            },
+            initialDetail: {
+                type: Number,
+                required: false
+            },
+            showIndicators: {
+                type: Boolean,
+                required: true
+            },
+            indicatorsMetadata: {
+                type: Array as PropType<ChoroplethIndicatorMetadata[]>,
+                required: false
+            },
+            levelLabels: {
+                type: Array as PropType<LevelLabel[]>,
+                required: true
+            }
         },
-        data(): Data {
+        data() {
             return {
                 optionsLoaded: false,
                 detail: this.initialDetail
@@ -86,19 +74,26 @@
         },
         computed: {
             detailOptions: function () {
-                return this.levelLabels.filter(l => l.display).map(l => {
+                return this.levelLabels.filter((l: LevelLabel) => l.display).map((l: LevelLabel) => {
                     return {id: l.id, label: l.area_level_label}
                 });
             },
             indicatorOptions: function () {
-                return this.indicatorsMetadata.map((i: ChoroplethIndicatorMetadata) => {
-                    return {id: i.indicator, label: i.name};
-                });
+                if (this.indicatorsMetadata) {
+                    return this.indicatorsMetadata.map((i: ChoroplethIndicatorMetadata) => {
+                        return {id: i.indicator, label: i.name};
+                    });
+                } else {
+                    return []
+                }
             }
         },
         methods: {
             indicatorChanged: function (newVal: string) {
-                this.$emit("indicator-changed", newVal);
+                this.$emit("indicatorChanged", newVal);
+            },
+            detailChanged: function (newVal: number) {
+                this.$emit("detailChanged", newVal);
             }
         }
     });

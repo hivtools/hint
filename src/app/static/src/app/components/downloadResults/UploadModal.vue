@@ -6,18 +6,21 @@
                 <div id="dataset-id" class="mt-4">
                     <span v-translate="'uploadFileDataset'"></span>
                     <span>{{ dataset }}</span></div>
-                <div class="pt-3 text-danger" id="output-file-error" v-if="outputFileError" v-translate="outputFileError"></div>
+                <div class="pt-3 text-danger" id="output-file-error" v-if="outputFileError"
+                v-translate="isOutputFileErrorKey ? outputFileError : ''">
+                    {{ isOutputFileErrorKey ? '' : outputFileError }}
+                </div>
                 <div class="pt-3 form-check form-check-inline">
                     <input type="radio"
                            id="createRelease"
-                           :disabled="outputFileError"
+                           :disabled="!!outputFileError"
                            value="createRelease"
                            v-model="choiceUpload"
                            class="form-check-input"/>
                     <span class="form-check-label pl-2">
                         <label for="createRelease" v-translate="'createRelease'" class="d-inline"></label>
                         <span class="icon-small d-inline" v-tooltip="translate('createReleaseTooltip')">
-                            <help-circle-icon></help-circle-icon>
+                            <vue-feather type="help-circle"></vue-feather>
                         </span>
                     </span>
                     <br/>
@@ -31,7 +34,7 @@
                     <span class="form-check-label pl-2">
                         <label for="uploadFiles" v-translate="'uploadFiles'" class="d-inline"></label>
                         <span class="icon-small d-inline" v-tooltip="translate('uploadFilesTooltip')">
-                            <help-circle-icon></help-circle-icon>
+                            <vue-feather type="help-circle"></vue-feather>
                         </span>
                     </span>
                     <br/>
@@ -75,7 +78,6 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import Modal from "../Modal.vue";
     import {
         Dict, DownloadResultsDependency,
@@ -84,12 +86,12 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
-    import {HelpCircleIcon} from "vue-feather-icons";
-    import {VTooltip} from "v-tooltip";
+    import VueFeather from "vue-feather";
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
+    import { defineComponent } from "vue";
 
     interface Methods {
         uploadFilesToADRAction: (selectedUploadFiles: { uploadFiles: UploadFile[], createRelease: boolean }) => void;
@@ -115,7 +117,8 @@
         uploadFileSections: Array<Dict<UploadFile>>
         currentLanguage: Language;
         createRelease: boolean
-        outputFileError:  string | null
+        outputFileError:  string | null,
+        isOutputFileErrorKey: boolean
     }
 
     interface Data {
@@ -127,7 +130,7 @@
     const outputFileTypes = ["outputZip", "outputSummary", "outputComparison"];
     const inputFileTypes = ["anc", "programme", "pjnz", "population", "shape", "survey"];
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponent({
         name: "UploadModal",
         data(): Data {
             return {
@@ -142,7 +145,7 @@
                 "uploadFilesToADR"
             ),
             confirmUpload() {
-                this.selectedUploadFiles = this.uploadFilesToAdr.map(value => this.uploadableFiles[value]);
+                this.selectedUploadFiles = this.uploadFilesToAdr.map((value: string) => this.uploadableFiles[value]);
                 this.sendUploadFilesToADR();
             },
             sendUploadFilesToADR() {
@@ -154,7 +157,7 @@
             handleCancel() {
                 this.$emit("close")
             },
-            translate(text) {
+            translate(text: string) {
                 return i18next.t(text, {lng: this.currentLanguage});
             },
             setDefaultCheckedItems: function () {
@@ -162,7 +165,7 @@
                     .filter(key => this.uploadableFiles.hasOwnProperty(key))
             },
             //show and upload only successfully downloaded outputFiles in upload modal
-            outputFileIsAvailable: function (key) {
+            outputFileIsAvailable: function (key: string) {
                 if (key === "outputZip" && !(this.spectrum.error || this.spectrum.metadataError)) {
                     return true
                 } else if (key === "outputSummary" && !(this.summary.error || this.summary.metadataError)) {
@@ -173,11 +176,11 @@
 
                 return false
             },
-            getSectionHeading: function (sectionIndex) {
+            getSectionHeading: function (sectionIndex: number) {
                 const hasOutputFile = Object.keys(this.uploadFileSections[0]).length > 0
                 return sectionIndex === 0 ? (hasOutputFile ? 'outputFiles' : '') : 'inputFiles';
             },
-            translatedOutputFileError: function (key) {
+            translatedOutputFileError: function (key: string) {
                 return i18next.t("downloadOutputsError", {
                     outputFileType: this.translate(key),
                     lng: this.currentLanguage,
@@ -185,12 +188,12 @@
             }
         },
         computed: {
-            ...mapStateProps<DownloadResultsState, keyof ComputedFromDownloadResults>("downloadResults", {
-                summary: (state => state.summary),
-                spectrum: (state => state.spectrum),
-                comparison: (state => state.comparison)
+            ...mapStateProps("downloadResults", {
+                summary: ((state: DownloadResultsState) => state.summary),
+                spectrum: ((state: DownloadResultsState) => state.spectrum),
+                comparison: ((state: DownloadResultsState) => state.comparison)
             }),
-            outputFileError() {
+            outputFileError(): string | null {
                 if ((this.summary.error || this.summary.metadataError) &&
                     (this.spectrum.error || this.spectrum.metadataError)) {
                     return "downloadSpectrumAndSummaryError"
@@ -200,15 +203,14 @@
 
                 } else if (this.spectrum.error || this.spectrum.metadataError) {
                     return this.translatedOutputFileError("downloadSpectrum")
-                }else if (this.comparison.error || this.comparison.metadataError) {
+                } else if (this.comparison.error || this.comparison.metadataError) {
                     return this.translatedOutputFileError("downloadComparison")
                 }
-
                 return null
             },
             dataset: mapStateProp<BaselineState, string | undefined>("baseline",
                 (state: BaselineState) => state.selectedDataset?.title),
-            createRelease() {
+            createRelease(): boolean {
                 return this.choiceUpload === 'createRelease';
             },
             currentLanguage: mapStateProp<RootState, Language>(
@@ -218,7 +220,7 @@
             uploadableFiles: mapStateProp<ADRUploadState, Dict<UploadFile>>("adrUpload",
                 (state) => state.uploadFiles!
             ),
-            uploadFileSections() {
+            uploadFileSections(): any[] {
                 if (this.uploadableFiles) {
                     return Object.keys(this.uploadableFiles).reduce((sections, key) => {
                         if (outputFileTypes.includes(key)) {
@@ -233,11 +235,14 @@
                 } else {
                     return [];
                 }
+            },
+            isOutputFileErrorKey(): boolean {
+                return this.outputFileError === "downloadSpectrumAndSummaryError"
             }
         },
         components: {
             Modal,
-            HelpCircleIcon
+            VueFeather
         },
         watch: {
             choiceUpload() {
@@ -245,9 +250,6 @@
                     this.setDefaultCheckedItems()
                 }
             }
-        },
-        directives: {
-            tooltip: VTooltip,
         },
         mounted() {
             if (this.outputFileError) {

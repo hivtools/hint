@@ -17,17 +17,20 @@
             <div :id="`p-${p.id}`" class="row py-2">
                 <div class="col-md-1 project-cell">
                     <button
-                        v-b-toggle="`versions-${p.id}`"
+                        id="version-toggle"
                         :aria-label="`toggle ${getTranslatedValue('versionCountLabelSingle')} ${p.id}`"
-                        class="btn btn-xs bg-transparent shadow-none py-0">
-                        <chevron-right-icon
+                        class="btn btn-xs bg-transparent shadow-none py-0"
+                        @click="toggleVersionMenu(p.id)">
+                        <vue-feather v-show="!openVersion[p.id]"
+                            type="chevron-right"
                             size="20"
                             class="icon when-closed"
-                        ></chevron-right-icon>
-                        <chevron-down-icon
+                        ></vue-feather>
+                        <vue-feather v-show="openVersion[p.id]"
+                            type="chevron-down"
                             size="20"
                             class="icon when-open"
-                        ></chevron-down-icon>
+                        ></vue-feather>
                     </button>
                 </div>
                 <div class="col-md-3 project-cell name-cell">
@@ -36,11 +39,11 @@
                         {{ p.name }}
                     </a>
                     <span class="float-right">
-                    <button href="#" class=" btn btn-sm btn-red-icons"
+                    <button href="#" class="btn btn-sm btn-red-icons"
                             v-tooltip="getTranslatedValue('editProjectNote')"
                             @click.prevent="handleEditProjectNote(p.id)"
                             v-translate:aria-label="'editProjectNote'">
-                        <file-text-icon size="20"></file-text-icon>
+                        <vue-feather type="file-text" size="20"></vue-feather>
                     </button>
                     </span>
                     <small v-if="p.sharedBy" class="text-muted d-flex">
@@ -56,40 +59,40 @@
                 <div class="col-md-2 project-cell updated-cell">
                     {{ format(p.versions[0].updated) }}
                 </div>
-                <div class="col-md-1 project-cell load-cell"
-                     v-tooltip="getTranslatedValue('load')">
+                <div class="col-md-1 project-cell load-cell">
                     <button class=" btn btn-sm btn-red-icons"
+                            v-tooltip="getTranslatedValue('load')"
                             v-translate:aria-label="'load'"
                             @click="loadVersion($event, p.id, p.versions[0].id)">
-                        <refresh-cw-icon size="20"></refresh-cw-icon>
+                        <vue-feather type="refresh-cw" size="20"></vue-feather>
                     </button>
                 </div>
-                <div class="col-md-1 project-cell rename-cell"
-                     v-tooltip="getTranslatedValue('renameProject')">
+                <div class="col-md-1 project-cell rename-cell">
                     <button class="btn btn-sm btn-red-icons"
+                            v-tooltip="getTranslatedValue('renameProject')"
                             v-translate:aria-label="'renameProject'"
                             @click="renameProject($event, p.id)">
-                        <edit-icon size="20"></edit-icon>
+                        <vue-feather type="edit" size="20"></vue-feather>
                     </button>
                 </div>
-                <div class="col-md-1 project-cell delete-cell"
-                     v-tooltip="getTranslatedValue('delete')">
+                <div class="col-md-1 project-cell delete-cell">
                     <button class=" btn btn-sm btn-red-icons"
+                            v-tooltip="getTranslatedValue('delete')"
                             v-translate:aria-label="'delete'"
                             @click="deleteProject($event, p.id)">
-                        <trash-2-icon size="20"></trash-2-icon>
+                        <vue-feather type="trash-2" size="20"></vue-feather>
                     </button>
                 </div>
-                <div class="col-md-1 project-cell copy-cell"
-                     v-tooltip="getTranslatedValue('copyLatestToNewProject')">
+                <div class="col-md-1 project-cell copy-cell">
                     <button class=" btn btn-sm btn-red-icons"
+                            v-tooltip="getTranslatedValue('copyLatestToNewProject')"
                             v-translate:aria-label="'copyLatestToNewProject'"
                             @click="promoteVersion(
                                 $event,
                                 p.id,
                                 p.versions[0].id,
                                 p.versions[0].versionNumber)">
-                        <copy-icon size="20"></copy-icon>
+                        <vue-feather type="copy" size="20"></vue-feather>
                     </button>
                 </div>
 
@@ -97,7 +100,8 @@
                     <share-project :project="p"></share-project>
                 </div>
             </div>
-            <b-collapse :id="`versions-${p.id}`">
+            <b-collapse :id="`versions-${p.id}`"
+                        :visible="openVersion[p.id]">
                 <div v-for="v in p.versions"
                      :id="`v-${v.id}`"
                      :key="v.id"
@@ -109,7 +113,7 @@
                                     v-tooltip="getTranslatedValue('editVersionNote')"
                                     v-translate:aria-label="'editVersionNote'"
                                     @click.prevent="handleEditVersionNote(p.id, v.id, v.versionNumber)">
-                            <file-text-icon size="20"></file-text-icon>
+                            <vue-feather type="file-text" size="20"></vue-feather>
                             </button>
                         </span>
                     </div>
@@ -119,40 +123,40 @@
                     <div class="col-md-2 version-cell version-updated-cell">
                         {{ format(v.updated) }}
                     </div>
-                    <div class="col-md-1 version-cell load-cell"
-                         v-tooltip="getTranslatedValue('load')">
+                    <div class="col-md-1 version-cell load-cell">
                         <button class=" btn btn-sm btn-red-icons"
+                                v-tooltip="getTranslatedValue('load')"
                                 v-translate:aria-label="'load'"
                                 @click="loadVersion($event, p.id, v.id)">
-                            <refresh-cw-icon size="20"></refresh-cw-icon>
+                            <vue-feather type="refresh-cw" size="20"></vue-feather>
                         </button>
                     </div>
                     <div class="col-md-1 version-cell">
                     </div>
-                    <div class="col-md-1 version-cell delete-cell"
-                         v-tooltip="getTranslatedValue('delete')">
+                    <div class="col-md-1 version-cell delete-cell">
                         <button class=" btn btn-sm btn-red-icons"
+                                v-tooltip="getTranslatedValue('delete')"
                                 v-translate:aria-label="'delete'"
                                 @click="deleteVersion($event, p.id, v.id)">
-                            <trash-2-icon size="20"></trash-2-icon>
+                        <vue-feather type="trash-2" size="20"></vue-feather>
                         </button>
                     </div>
-                    <div class="col-md-1 version-cell copy-cell"
-                         v-tooltip="getTranslatedValue('copyToNewProject')">
+                    <div class="col-md-1 version-cell copy-cell">
                         <button class=" btn btn-sm btn-red-icons"
+                                v-tooltip="getTranslatedValue('copyToNewProject')"
                                 v-translate:aria-label="'copyToNewProject'"
                                 @click="promoteVersion(
                                     $event,
                                     p.id,
                                     v.id,
                                     v.versionNumber)">
-                            <copy-icon size="20"></copy-icon>
+                            <vue-feather type="copy" size="20"></vue-feather>
                         </button>
                     </div>
                 </div>
             </b-collapse>
         </div>
-        <modal :open="projectToDelete || versionToDelete">
+        <modal :open="!!projectToDelete || !!versionToDelete">
             <h4 v-if="projectToDelete" v-translate="'deleteProject'"></h4>
             <h4 v-if="versionToDelete" v-translate="'deleteVersion'"></h4>
             <template v-slot:footer>
@@ -168,7 +172,7 @@
                     v-translate="'cancel'"></button>
             </template>
         </modal>
-        <modal :open="versionToPromote">
+        <modal :open="!!versionToPromote">
             <h4 v-html="promoteVersionHeader" id="promoteVersionHeader"></h4>
             <label class="h5" for="new-project-name" v-translate="'enterProjectName'"></label>
             <input type="text"
@@ -193,7 +197,7 @@
                         v-translate="'cancel'"></button>
             </template>
         </modal>
-        <modal :open="projectToRename">
+        <modal :open="!!projectToRename">
             <label class="h4" for="rename-project" v-translate="'renameProjectHeader'"></label>
             <input type="text"
                    id="rename-project"
@@ -223,7 +227,7 @@
             </template>
         </modal>
 
-        <modal :open="versionNoteToEdit || projectNoteToEdit">
+        <modal :open="!!versionNoteToEdit || !!projectNoteToEdit">
             <div v-if="versionNoteToEdit">
                 <label class="h4" for="edit-note-id"
                        v-html="editVersionNoteHeader"
@@ -264,25 +268,17 @@
 <script lang="ts">
     import i18next from "i18next";
     import {Project, Version, VersionIds} from "../../types";
-    import {BCollapse, VBToggle} from "bootstrap-vue";
-    import {
-        ChevronDownIcon,
-        ChevronRightIcon,
-        CopyIcon,
-        EditIcon,
-        FileTextIcon,
-        RefreshCwIcon,
-        Trash2Icon
-    } from "vue-feather-icons";
+    import {BCollapse, vBToggle} from "bootstrap-vue-next";
+    import VueFeather from "vue-feather";
     import Modal from "../Modal.vue";
     import {formatDateTime, mapActionByName, mapStateProp, versionLabel} from "../../utils";
-    import {CreateProjectPayload, projectPayload, versionPayload} from "../../store/projects/actions";
+    import {projectPayload, versionPayload} from "../../store/projects/actions";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import ProjectsMixin from "./ProjectsMixin";
     import ShareProject from "./ShareProject.vue";
-    import {VTooltip} from 'v-tooltip';
     import {projects} from "../../store/projects/projects";
+    import { defineComponent } from "vue";
 
     const namespace = "projects";
 
@@ -301,56 +297,18 @@
         renameProjectNote: string;
         projectNoteToEdit: number | null;
         editedProjectNote: string;
+        openVersion: Record<number, boolean>
     }
 
-    interface Computed {
-        disableCreate: boolean;
-        disableRename: boolean;
-        currentLanguage: Language;
-        promoteVersionHeader: string;
-        editVersionNoteHeader: string;
-        editVersionNoteSubHeader: string;
-        editProjectNoteSubHeader: string;
-    }
-
-    interface Methods {
-        format: (date: string) => void;
-        loadVersion: (event: Event, projectId: number, versionId: string) => void;
-        handleEditVersionNote: (projectId: number, versionId: string, versionNumber: number) => void;
-        handleEditProjectNote: (projectId: number) => void;
-        loadAction: (version: VersionIds) => void;
-        versionCountLabel: (project: Project) => string;
-        deleteProject: (event: Event, projectId: number) => void;
-        deleteVersion: (event: Event, projectId: number, versionId: string) => void;
-        promoteVersion: (
-            event: Event,
-            projectId: number,
-            versionId: string,
-            versionNumber: number
-        ) => void;
-        cancelPromotion: () => void;
-        cancelDelete: () => void;
-        confirmDelete: () => void;
-        confirmPromotion: (name: string) => void;
-        deleteProjectAction: (projectId: number) => void;
-        deleteVersionAction: (versionIds: VersionIds) => void;
-        promoteVersionAction: (versionPayload: versionPayload) => void;
-        renameProjectAction: (projectPayload: projectPayload) => void;
-        createProject: (name: CreateProjectPayload) => void;
-        getProjects: () => void;
-        versionLabel: (version: Version) => string;
-        renameProject: (event: Event, projectId: number) => void;
-        cancelRename: () => void;
-        confirmRename: (name: string) => void;
-        cancelNoteEditing: () => void;
-        confirmNoteEditing: () => void;
-        getTranslatedValue: (key: string) => string;
-        updateVersionNoteAction: (versionPayload: versionPayload) => void
-        updateProjectNoteAction: (payload: projectPayload) => void
-    }
-
-    export default ProjectsMixin.extend<Data, Methods, Computed, unknown>({
-        data() {
+    export default defineComponent({
+        extends: ProjectsMixin,
+        data(): Data {
+            let openVersion: Record<number, boolean> = {};
+            if (this.projects) {
+                this.projects.forEach(p => {
+                    openVersion[p.id] = false
+                })
+            }
             return {
                 projectToDelete: null,
                 versionToDelete: null,
@@ -365,7 +323,8 @@
                 renameProjectNote: "",
                 renamedProjectName: "",
                 editedProjectNote: "",
-                projectNoteToEdit: null
+                projectNoteToEdit: null,
+                openVersion
             };
         },
         computed: {
@@ -414,16 +373,16 @@
                 this.loadAction({projectId, versionId});
             },
             handleEditVersionNote(projectId: number, versionId: string, versionNumber: number) {
-                const project = this.projects.find(project => project.id === projectId)!
+                const project = this.projects.find((project: Project) => project.id === projectId)!
                 this.displayProjectName = project.name;
                 this.editedNote = project.versions
-                    .find(version => version.versionNumber === versionNumber)!.note || "";
+                    .find((version: Version) => version.versionNumber === versionNumber)!.note || "";
 
                 this.versionNoteToEdit = {projectId, versionId};
                 this.selectedVersionNumber = `v${versionNumber}`;
             },
             handleEditProjectNote(projectId: number) {
-                const project = this.projects.find(project => project.id === projectId)!;
+                const project = this.projects.find((project: Project) => project.id === projectId)!;
                 this.displayProjectName = project.name;
                 this.editedNote = project.note || "";
 
@@ -431,7 +390,7 @@
             },
             renameProject(event: Event, projectId: number) {
                 event.preventDefault();
-                this.projects.filter(project => {
+                this.projects.filter((project: Project) => {
                     if (project.id === projectId) {
                         this.renamedProjectName = project.name
                         this.renameProjectNote = project.note || ""
@@ -443,7 +402,7 @@
                 this.projectToRename = null;
                 this.renamedProjectName = '';
             },
-            async confirmRename(name) {
+            async confirmRename(name: string) {
                 if (this.projectToRename) {
                     const projectPayload: projectPayload = {
                         projectId: this.projectToRename!,
@@ -500,7 +459,7 @@
                 versionNumber: number
             ) {
                 event.preventDefault();
-                this.projects.filter(project => {
+                this.projects.filter((project: Project) => {
                     if (project.id === projectId) {
                         this.newProjectName = project.name
                         this.versionNote = project.versions.find(version => version.id === versionId)!.note || "";
@@ -526,7 +485,7 @@
                     this.versionToDelete = null;
                 }
             },
-            async confirmPromotion(name) {
+            async confirmPromotion(name: string) {
                 if (this.versionToPromote && this.newProjectName) {
                     const versionPayload: versionPayload = {
                         version: this.versionToPromote!,
@@ -573,24 +532,23 @@
                 return i18next.t(key, {
                     lng: this.currentLanguage,
                 });
-            }
+            },
+            toggleVersionMenu(pid: number) {
+                this.openVersion[pid] = !this.openVersion[pid]
+            },
         },
         components: {
             BCollapse,
-            ChevronDownIcon,
-            ChevronRightIcon,
-            CopyIcon,
-            Trash2Icon,
-            FileTextIcon,
-            RefreshCwIcon,
-            EditIcon,
+            VueFeather,
             Modal,
             ShareProject,
-        },
-        directives: {
-            "b-toggle": VBToggle,
-            "tooltip": VTooltip
         }
     });
 </script>
 
+<style>
+    #version-toggle[aria-expanded="true"] > .when-closed,
+    #version-toggle[aria-expanded="false"] > .when-open {
+        display: none;
+    }
+</style>
