@@ -6,20 +6,15 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import { PropType, defineComponent } from "vue";
     import {Error} from "../generated";
 
-    interface Props {
-        error: Error
-    }
-
-    interface Computed {
-        message: string
-    }
-
-    export default Vue.extend<unknown, unknown, Computed, Props>({
+    export default defineComponent({
         props: {
-            "error": Object
+            error: {
+                type: Object as PropType<Error>,
+                required: true
+            }
         },
         computed: {
             message: function () {

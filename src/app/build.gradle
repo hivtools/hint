@@ -81,11 +81,21 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
     }
 }
 
-
 task compileFrontEnd() {
+    onlyIf {
+        hotReload != "true"
+    }
     doLast {
         exec {
             commandLine "npm", "run", "build", "--prefix=$projectDir/static/"
+        }
+    }
+}
+
+task copyAssets() {
+    doLast {
+        exec {
+            commandLine "npm", "run", "copy", "--prefix=$projectDir/static/"
         }
     }
 }
@@ -96,4 +106,4 @@ bootRun {
     bootRun.systemProperty 'spring.profiles.active', springProfile
 }
 
-processResources.dependsOn 'compileFrontEnd'
+processResources.dependsOn 'compileFrontEnd', 'copyAssets'

@@ -6,30 +6,30 @@ describe("modal", () => {
     it("is displayed when open is true", () => {
 
         const wrapper = shallowMount(Modal, {
-            propsData: {
+            props: {
                 open: true
             }
         });
-        expect(wrapper.find(".modal").element.style.display).toBe("block");
+        expect((wrapper.find(".modal").element as HTMLElement).style.display).toBe("block");
         expect(wrapper.findAll(".modal-backdrop").length).toBe(1);
     });
 
     it("is not displayed when open is false", () => {
 
         const wrapper = shallowMount(Modal, {
-            propsData: {
+            props: {
                 open: false
             }
         });
 
-        expect(wrapper.find(".modal").element.style.display).toBe("none");
+        expect((wrapper.find(".modal").element as HTMLElement).style.display).toBe("none");
         expect(wrapper.findAll(".modal-backdrop").length).toBe(0);
     });
 
     it("displays child content in body", () => {
 
         const wrapper = shallowMount(Modal, {
-            propsData: {
+            props: {
                 open: true
             },
             slots: {
@@ -42,7 +42,7 @@ describe("modal", () => {
 
     it("does not include footer if footer slot is missing", () => {
         const wrapper = shallowMount(Modal, {
-            propsData: {
+            props: {
                 open: true
             },
             slots: {
@@ -55,7 +55,7 @@ describe("modal", () => {
 
     it("includes footer slot if provided", () => {
         const wrapper = shallowMount(Modal, {
-            propsData: {
+            props: {
                 open: true
             },
             slots: {

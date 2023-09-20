@@ -1,71 +1,62 @@
 <template>
     <div>
-        <label :class="['font-weight-bold', { 'disabled-label': disabled }]" v-translate="label"></label>
-        <span v-if="labelTooltip"
-              v-tooltip="{
-                    content: `<dl>${labelTooltip}</dl>`,
-                    classes: 'filter-select',
-                    autoHide: false
-                }"
-              class="icon-small">
-            <help-circle-icon></help-circle-icon>
-        </span>
-        <treeselect :multiple=multiple
-                    :clearable="false"
-                    :options=options
-                    :value=treeselectValue
-                    :disabled=disabled
-                    :placeholder=placeholder
-                    @input="input"
-                    @select="select"
-                    @deselect="deselect"></treeselect>
+        <div class="d-flex align-items-center">
+            <label :class="['font-weight-bold', { 'disabled-label': disabled }]" v-translate="label"></label>
+            <span v-if="labelTooltip"
+                v-tooltip="{
+                        content: `<dl>${labelTooltip}</dl>`,
+                        // Keep the tooltip open when mouse over the popup
+                        popperTriggers: ['hover'],
+                    }">
+                <vue-feather type="help-circle" size="20" class="ml-1"></vue-feather>
+            </span>
+        </div>
+        <hint-tree-select :multiple="multiple"
+                     :clearable="false"
+                     :options="options"
+                     :model-value="treeselectValue"
+                     :disabled="disabled"
+                     :placeholder="placeholder"
+                     @update:model-value="input"
+                     @select="select"
+                     @deselect="deselect"></hint-tree-select>
     </div>
 </template>
 
 <script lang="ts">
     import i18next from "i18next";
-    import Vue from "vue";
-    import Treeselect from '@riophae/vue-treeselect';
+    import HintTreeSelect from "../HintTreeSelect.vue";
     import {flattenOptions, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import {FilterOption} from "../../generated";
-    import {HelpCircleIcon} from "vue-feather-icons";
-    import {VTooltip} from "v-tooltip";
+    import VueFeather from "vue-feather";
+    import { PropType, defineComponent } from "vue";
 
-    interface Methods {
-        input: (value: string[]) => void
-        select: (node: FilterOption) => void
-        deselect: (node: FilterOption) => void
-    }
-
-    interface Computed {
-        treeselectValue: string[] | string | null
-        currentLanguage: Language
-        placeholder: string,
-        labelTooltip: string
-    }
-
-    interface Props {
-        multiple: boolean,
-        label: string,
-        disabled: boolean,
-        options: FilterOption[],
-        value: string[] | string
-    }
-
-    interface Data {
-        selectedOptions: any
-    }
-
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent({
         name: "FilterSelect",
         props: {
-            multiple: Boolean,
-            label: String,
-            disabled: Boolean,
-            options: Array,
-            value: [Array, String]
+            multiple: {
+                type: Boolean,
+                required: false
+            },
+            label: {
+                type: String,
+                required: true
+            },
+            disabled: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
+            options: {
+                type: Array as PropType<FilterOption[]>,
+                required: true
+            },
+            value: {
+                type: [Array, String] as PropType<string | string[]>,
+                required: true
+            }
         },
         data() {
             const idArray = Array.isArray(this.value) ? this.value : [this.value];
@@ -87,7 +78,7 @@
             },
             labelTooltip() {
                 return this.options.reduce(
-                    (lines, option) => lines.concat(option.description ? `<dt>${option.label}</dt><dd>${option.description}</dd>` : []),
+                    (lines: string[], option: FilterOption) => lines.concat(option.description ? `<dt>${option.label}</dt><dd>${option.description}</dd>` : []),
                     [] as string[]
                 ).join('');
             }
@@ -104,20 +95,16 @@
                 } else {
                     this.selectedOptions.push(node);
                 }
-                this.$emit("select", this.selectedOptions);
+                this.$emit("update:filter-select", this.selectedOptions);
             },
             deselect(node: FilterOption) {
                 this.selectedOptions = this.selectedOptions.filter((n: any) => n.id != node.id);
-                this.$emit("select", this.selectedOptions);
+                this.$emit("update:filter-select", this.selectedOptions);
             }
         },
         components: {
-            Treeselect,
-            HelpCircleIcon
-        },
-        directives: {
-            tooltip: VTooltip
+            HintTreeSelect,
+            VueFeather
         }
     });
 </script>
-

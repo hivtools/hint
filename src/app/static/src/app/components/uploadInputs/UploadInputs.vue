@@ -76,7 +76,7 @@
                     <loading-spinner size="xs"></loading-spinner>
                     <span v-translate="'validating'"></span>
                 </div>
-                <error-alert v-if="hasBaselineError" :error="baselineError"></error-alert>
+                <error-alert v-if="hasBaselineError" :error="baselineError!"></error-alert>
             </div>
         </div>
     </div>
@@ -84,8 +84,7 @@
 
 <script lang="ts">
 
-    import Vue from "vue";
-    import {mapActions, mapState} from "vuex";
+    import {CustomVue, mapActions, mapState} from "vuex";
     import {BaselineState} from "../../store/baseline/baseline";
     import {PartialFileUploadProps} from "../../types";
     import {MetadataState} from "../../store/metadata/metadata";
@@ -94,59 +93,100 @@
     import ManageFile from "../files/ManageFile.vue";
     import {RootState} from "../../root";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
-    import {mapStatePropByName} from "../../utils";
+    import {mapRootStateProps, mapStatePropByName, mapStateProps} from "../../utils";
+    import { Error } from "../../generated";
+    import { defineComponent } from "vue";
 
     const namespace = 'baseline';
 
-    export default Vue.extend({
+    interface ADRResponse {
+        valid: boolean,
+        error: Error | null,
+        fromADR?: boolean,
+        existingFileName: string
+    }
+
+    interface Computed {
+        country: string,
+        pjnz: ADRResponse,
+        shape: ADRResponse,
+        population: ADRResponse,
+        hasBaselineError: boolean,
+        baselineError: Error | null,
+        validating: boolean,
+        plottingMetadataError: Error | null,
+        anc: ADRResponse,
+        survey: ADRResponse,
+        programme: ADRResponse,
+        dataExplorationMode: boolean
+    }
+
+    interface Methods {
+        uploadPJNZ: (formData: FormData) => void,
+        uploadShape: (formData: FormData) => void,
+        uploadPopulation: (formData: FormData) => void,
+        deletePJNZ: () => void,
+        deleteShape: () => void,
+        deletePopulation: () => void,
+        uploadSurvey: (formData: FormData) => void,
+        uploadProgram: (formData: FormData) => void,
+        uploadANC: (formData: FormData) => void,
+        deleteSurvey: () => void,
+        deleteProgram: () => void,
+        deleteANC: () => void
+    }
+
+    type PlottingMetadataError = Record<"plottingMetadataError", (this: CustomVue, state: MetadataState) => Error | null>
+
+    export default defineComponent({
         name: "UploadInputs",
         computed: {
-            ...mapState<BaselineState>(namespace, {
+            ...mapStateProps(namespace, {
                 country: (state: BaselineState) => state.country,
                 pjnz: (state: BaselineState) => ({
                     valid: !!state.country,
                     error: state.pjnzError,
                     fromADR: !!state.pjnz?.fromADR,
                     existingFileName: (state.pjnz && state.pjnz.filename) || state.pjnzErroredFile
-                } as PartialFileUploadProps),
+                }),
                 shape: (state: BaselineState) => ({
                     valid: state.shape != null,
                     error: state.shapeError,
                     fromADR: !!state.shape?.fromADR,
                     existingFileName: (state.shape && state.shape.filename) || state.shapeErroredFile
-                } as PartialFileUploadProps),
+                }),
                 population: (state: BaselineState) => ({
                     valid: state.population != null,
                     error: state.populationError,
                     fromADR: !!state.population?.fromADR,
                     existingFileName: (state.population && state.population.filename) || state.populationErroredFile
-                } as PartialFileUploadProps),
+                }),
                 hasBaselineError: (state: BaselineState) => !!state.baselineError,
                 baselineError: (state: BaselineState) => state.baselineError,
                 validating: (state: BaselineState) => state.validating
             }),
-            ...mapState<MetadataState>("metadata", {
+            ...mapState<MetadataState, PlottingMetadataError>("metadata", {
                 plottingMetadataError: (state: MetadataState) => state.plottingMetadataError
             }),
-            ...mapState<RootState>({
+            ...mapRootStateProps({
                 anc: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     valid: !!surveyAndProgram.anc,
                     fromADR: !!surveyAndProgram.anc?.fromADR,
                     error: surveyAndProgram.ancError,
                     existingFileName: (surveyAndProgram.anc && surveyAndProgram.anc.filename)|| surveyAndProgram.ancErroredFile
-                } as PartialFileUploadProps),
+                }),
                 programme: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     valid: surveyAndProgram.program != null,
                     fromADR: !!surveyAndProgram.program?.fromADR,
                     error: surveyAndProgram.programError,
                     existingFileName: (surveyAndProgram.program && surveyAndProgram.program.filename) || surveyAndProgram.programErroredFile
-                } as PartialFileUploadProps),
+                }),
                 survey: ({surveyAndProgram}: {surveyAndProgram: SurveyAndProgramState}) => ({
                     valid: surveyAndProgram.survey != null,
                     fromADR: !!surveyAndProgram.survey?.fromADR,
                     error: surveyAndProgram.surveyError,
                     existingFileName: (surveyAndProgram.survey && surveyAndProgram.survey.filename) || surveyAndProgram.surveyErroredFile
-                } as PartialFileUploadProps)
+                })
             }),
             dataExplorationMode: mapStatePropByName(null, "dataExplorationMode"),
         },

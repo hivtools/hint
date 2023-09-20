@@ -1,11 +1,31 @@
-import Vue from 'vue';
-import Vuex from 'vuex';
+import Vuex, { StoreOptions } from 'vuex';
 import {RootState, storeOptions} from "./root";
 import registerTranslations from "./store/translations/registerTranslations";
+import { DataExplorationState } from './store/dataExploration/dataExploration';
+import { storeOptions as storeOptionsDataExploration } from './store/dataExploration/dataExploration';
+import {initialPasswordState, PasswordState} from "./store/password/password";
+import {actions} from './store/password/actions';
+import {mutations} from './store/password/mutations';
 
-Vue.use(Vuex);
-
+// Main app
 export const store = new Vuex.Store<RootState>(storeOptions);
 registerTranslations(store);
+
+// Data exploration app
+export const storeDataExploration = new Vuex.Store<DataExplorationState>(storeOptionsDataExploration);
+registerTranslations(storeDataExploration);
+
+// Forgot password app
+export const passwordStoreOptions: StoreOptions<PasswordState> = {
+    state: initialPasswordState,
+    actions,
+    mutations
+};
+
+export const storePassword = new Vuex.Store<PasswordState>(passwordStoreOptions);
+registerTranslations(storePassword);
+
+// Reset password app
+
 
 export const inactiveFeatures: string[] = [];

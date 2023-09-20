@@ -85,15 +85,14 @@
     </svg>
 </template>
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponent } from "vue";
 
-    interface Props {
-        size: string
-    }
-
-    export default Vue.extend<unknown, unknown, unknown, Props>({
+    export default defineComponent({
         props: {
-            size: String
+            size: {
+                type: String,
+                required: true
+            }
         },
         computed: {
             height() {

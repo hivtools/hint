@@ -4,6 +4,7 @@ import {ScaleType} from "../../../app/store/plottingSelections/plottingSelection
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
+import { mountWithTranslate, shallowMountWithTranslate } from '../../testHelpers';
 
 describe("MapAdjustScale component", () => {
 
@@ -16,7 +17,7 @@ describe("MapAdjustScale component", () => {
     });
     registerTranslations(store);
 
-    const propsData = {
+    const props = {
         name: "test",
         metadata: {
             max: 2,
@@ -36,14 +37,21 @@ describe("MapAdjustScale component", () => {
 
     it("does not render if show is false", () => {
         const wrapper = shallowMount(MapAdjustScale, {
-            store, propsData: {...propsData, show: false}
+            props: {...props, show: false},
+            global: {
+                plugins: [store]
+            }
         });
 
         expect(wrapper.findAll("div").length).toBe(0);
     });
 
     it("renders radio button names as expected", () => {
-        const wrapper = shallowMount(MapAdjustScale, {store, propsData});
+        const wrapper = shallowMountWithTranslate(MapAdjustScale, store, {
+            global: {
+                plugins: [store]
+            }, props
+        });
         const name = "test-scaleType";
         expect((wrapper.find("#type-input-default").element as HTMLInputElement).name).toBe(name);
         expect((wrapper.find("#type-input-custom").element as HTMLInputElement).name).toBe(name);
@@ -52,7 +60,11 @@ describe("MapAdjustScale component", () => {
     });
 
     it("renders as expected with default scale", () => {
-        const wrapper = mount(MapAdjustScale, {store, propsData});
+        const wrapper = mountWithTranslate(MapAdjustScale, store, {
+            global: {
+                plugins: [store]
+            }, props
+        });
 
         expect((wrapper.find("#type-input-default").element as HTMLInputElement).checked).toBe(true);
         expect((wrapper.find("#type-input-custom").element as HTMLInputElement).checked).toBe(false);
@@ -64,13 +76,17 @@ describe("MapAdjustScale component", () => {
     });
 
     it("renders as expected with custom scale", () => {
-        const wrapper = mount(MapAdjustScale, {store, propsData: {
-            ...propsData,
-            scale: {
+        const wrapper = mountWithTranslate(MapAdjustScale, store, {
+            props: {
+                ...props,
+                scale: {
                     type: ScaleType.Custom,
                     customMin: 0,
                     customMax: 1
                 }
+            },
+            global: {
+                plugins: [store]
             }
         });
 
@@ -89,18 +105,21 @@ describe("MapAdjustScale component", () => {
         expect(wrapper.find("#custom-max-input").attributes("min")).toBe("0");
         expect(wrapper.find("#custom-max-input").attributes("step")).toBe("0.1");
         expect(wrapper.findAll("p").length).toBe(1);
-        expect(wrapper.findAll("p").at(0).text()).toBe("");
+        expect(wrapper.findAll("p")[0].text()).toBe("");
     });
 
     it("renders as expected with full dynamic scale", () => {
         const wrapper = mount(MapAdjustScale, {
-            store, propsData: {
-                ...propsData,
+            props: {
+                ...props,
                 scale: {
                     type: ScaleType.DynamicFull,
                     customMin: 0,
                     customMax: 1
                 }
+            },
+            global: {
+                plugins: [store]
             }
         });
 
@@ -114,9 +133,9 @@ describe("MapAdjustScale component", () => {
     });
 
     it("renders scale input modifier when scale parameter given", () => {
-        const wrapper = mount(MapAdjustScale, {
-            store, propsData: {
-                ...propsData,
+        const wrapper = mountWithTranslate(MapAdjustScale, store, {
+            props: {
+                ...props,
                 metadata: {
                     max: 2,
                     min: 1,
@@ -129,22 +148,28 @@ describe("MapAdjustScale component", () => {
                     customMin: 2,
                     customMax: 3
                 }
+            },
+            global: {
+                plugins: [store]
             }
         });
         expect(wrapper.findAll("p").length).toBe(2);
-        expect(wrapper.findAll("p").at(0).text()).toBe("x 100");
-        expect(wrapper.findAll("p").at(1).text()).toBe("x 100");
+        expect(wrapper.findAll("p")[0].text()).toBe("x 100");
+        expect(wrapper.findAll("p")[1].text()).toBe("x 100");
     });
 
     it("renders as expected with filtered dynamic scale", () => {
         const wrapper = mount(MapAdjustScale, {
-            store, propsData: {
-                ...propsData,
+            props: {
+                ...props,
                 scale: {
                     type: ScaleType.DynamicFiltered,
                     customMin: 0,
                     customMax: 1
                 }
+            },
+            global: {
+                plugins: [store]
             }
         });
 
@@ -158,7 +183,11 @@ describe("MapAdjustScale component", () => {
     });
 
     it("renders static scale controls as expected", () => {
-        const wrapper = mount(MapAdjustScale, {store, propsData});
+        const wrapper = mountWithTranslate(MapAdjustScale, store, {
+            global: {
+                plugins: [store]
+            }, props
+        });
 
         expect(wrapper.find(".static-container").exists()).toBe(true);
         expect(wrapper.find(".static-default").exists()).toBe(true);
@@ -166,50 +195,54 @@ describe("MapAdjustScale component", () => {
         expect(wrapper.find(".static-custom-values").exists()).toBe(true);
     });
 
-    it("emits update event when type changes", () => {
-        const wrapper = mount(MapAdjustScale, {store, propsData});
+    it("emits update event when type changes", async () => {
+        const wrapper = mountWithTranslate(MapAdjustScale, store, {
+            global: {
+                plugins: [store]
+            }, props
+        });
 
-        wrapper.find("#type-input-custom").trigger("change");
+        await wrapper.find("#type-input-custom").trigger("change");
 
-        expect(wrapper.emitted("update").length).toBe(1);
-        expect(wrapper.emitted("update")[0][0]).toStrictEqual({
+        expect(wrapper.emitted("update")!.length).toBe(1);
+        expect(wrapper.emitted("update")![0][0]).toStrictEqual({
             type: ScaleType.Custom,
             customMin: 0,
             customMax: 1
         });
 
-        wrapper.find("#type-input-default").trigger("change");
+        await wrapper.find("#type-input-default").trigger("change");
 
-        expect(wrapper.emitted("update").length).toBe(2);
-        expect(wrapper.emitted("update")[1][0]).toStrictEqual({
+        expect(wrapper.emitted("update")!.length).toBe(2);
+        expect(wrapper.emitted("update")![1][0]).toStrictEqual({
             type: ScaleType.Default,
             customMin: 0,
             customMax: 1
         });
 
-        wrapper.find("#type-input-dynamic-full").trigger("change");
+        await wrapper.find("#type-input-dynamic-full").trigger("change");
 
-        expect(wrapper.emitted("update").length).toBe(3);
-        expect(wrapper.emitted("update")[1][0]).toStrictEqual({
+        expect(wrapper.emitted("update")!.length).toBe(3);
+        expect(wrapper.emitted("update")![1][0]).toStrictEqual({
             type: ScaleType.DynamicFull,
             customMin: 0,
             customMax: 1
         });
 
-        wrapper.find("#type-input-dynamic-filtered").trigger("change");
+        await wrapper.find("#type-input-dynamic-filtered").trigger("change");
 
-        expect(wrapper.emitted("update").length).toBe(4);
-        expect(wrapper.emitted("update")[1][0]).toStrictEqual({
+        expect(wrapper.emitted("update")!.length).toBe(4);
+        expect(wrapper.emitted("update")![1][0]).toStrictEqual({
             type: ScaleType.DynamicFiltered,
             customMin: 0,
             customMax: 1
         });
     });
 
-    it("emits update event when custom min or max changes", () => {
+    it("emits update event when custom min or max changes", async () => {
         const wrapper = mount(MapAdjustScale, {
-            store, propsData: {
-                ...propsData,
+            store, props: {
+                ...props,
                 scale: {
                     type: ScaleType.Custom,
                     customMin: 0,
@@ -218,29 +251,27 @@ describe("MapAdjustScale component", () => {
             }
         });
 
-        wrapper.find("#custom-min-input").setValue("0.5");
-        wrapper.find("#custom-min-input").trigger("change");
-        expect(wrapper.emitted("update").length).toBe(1);
-        expect(wrapper.emitted("update")[0][0]).toStrictEqual({
+        await wrapper.find("#custom-min-input").setValue("0.5");
+        expect(wrapper.emitted("update")!.length).toBe(1);
+        expect(wrapper.emitted("update")![0][0]).toStrictEqual({
             type: ScaleType.Custom,
             customMin: 0.5,
             customMax: 1
         });
 
-        wrapper.find("#custom-max-input").setValue("1.5");
-        wrapper.find("#custom-max-input").trigger("keyup");
-        expect(wrapper.emitted("update").length).toBe(2);
-        expect(wrapper.emitted("update")[1][0]).toStrictEqual({
+        await wrapper.find("#custom-max-input").setValue("1.5");
+        expect(wrapper.emitted("update")!.length).toBe(2);
+        expect(wrapper.emitted("update")![1][0]).toStrictEqual({
             type: ScaleType.Custom,
             customMin: 0.5,
             customMax: 1.5
         });
     });
 
-    it("does not emit update event when type is Custom and custom max is not greater than custom min", () => {
+    it("does not emit update event when type is Custom and custom max is not greater than custom min", async () => {
         const wrapper = mount(MapAdjustScale, {
-            store, propsData: {
-                ...propsData,
+            store, props: {
+                ...props,
                 scale: {
                     type: ScaleType.Custom,
                     customMin: 0,
@@ -249,20 +280,20 @@ describe("MapAdjustScale component", () => {
             }
         });
 
-        wrapper.find("#custom-max-input").setValue("0");
-        wrapper.find("#custom-max-input").trigger("change");
-        expect(wrapper.emitted("update")).toBeUndefined();
+        await wrapper.find("#custom-max-input").setValue("0");
+        await wrapper.find("#custom-max-input").trigger("change");
+        expect(wrapper.emitted("update")!).toBeUndefined();
 
         //Should emit event when change to default
-        wrapper.find("#type-input-default").trigger("change");
-        expect(wrapper.emitted("update").length).toBe(1);
+        await wrapper.find("#type-input-default").trigger("change");
+        expect(wrapper.emitted("update")!.length).toBe(1);
     });
 
-    it("updates scaleToAdjust when scale property changes", () => {
+    it("updates scaleToAdjust when scale property changes", async () => {
         const wrapper = mount(MapAdjustScale, {
             name: "test",
-            store, propsData: {
-                ...propsData,
+            store, props: {
+                ...props,
                 metadata: {
                     max: 2,
                     min: 1,
@@ -283,7 +314,7 @@ describe("MapAdjustScale component", () => {
             customMin: 1,
             customMax: 2
         };
-        wrapper.setProps({scale: newScale});
+        await wrapper.setProps({scale: newScale});
 
         expect((wrapper.vm as any).scaleToAdjust).toStrictEqual(newScale);
     });

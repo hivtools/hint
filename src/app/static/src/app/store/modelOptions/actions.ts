@@ -1,6 +1,6 @@
 import {ModelOptionsState} from "./modelOptions";
 import {ActionContext, ActionTree} from "vuex";
-import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {api} from "../../apiService";
 import {RootState} from "../../root";
 import {ModelOptionsMutation} from "./mutations";

@@ -56,7 +56,6 @@
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
     import DropDown from "./DropDown.vue";
     import i18next from "i18next";
     import {mapActionByName, mapStateProp} from "../../utils";
@@ -66,31 +65,9 @@
     import {ProjectsState} from "../../store/projects/projects";
     import {StepDescription, StepperState} from "../../store/stepper/stepper";
     import {ErrorReportManualDetails} from "../../types";
+    import { defineComponent } from "vue";
 
-    interface Computed {
-        support: string
-        currentLanguage: Language
-        troubleFilename: string
-        faqLocation: string
-        projectName: string | undefined
-        currentSection: string
-        currentSectionKey: string
-        steps: StepDescription[]
-    }
-
-    interface Data {
-        errorReportOpen: boolean
-        section: string,
-    }
-
-    interface Methods {
-        toggleErrorReportModal: () => void
-        sendErrorReport: (errorReport: ErrorReportManualDetails) => void
-        generateErrorReport: (payload: ErrorReportManualDetails) => void
-        projectSection: () => void
-    }
-
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponent({
         data: function () {
             return {
                 errorReportOpen: false,
@@ -102,7 +79,7 @@
                 return state.steps[state.activeStep - 1].textKey;
             }),
             currentSection: {
-                get() {
+                get(): string {
                     return this.section || this.currentSectionKey
                 },
                 set(newVal: string) {
@@ -113,7 +90,7 @@
             projectName: mapStateProp<ProjectsState, string | undefined>("projects", state => state.currentProject?.name),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
-            support() {
+            support(): string {
                 return i18next.t("support", this.currentLanguage)
             },
             troubleFilename: mapStateProp<RootState, string>(null,
@@ -124,14 +101,14 @@
                     }
                     return filename;
                 }),
-            faqLocation() {
+            faqLocation(): string {
                 return "https://mrc-ide.github.io/naomi-troubleshooting/" + this.troubleFilename;
             }
         },
         methods: {
             generateErrorReport: mapActionByName(null,
                 "generateErrorReport"),
-            async sendErrorReport(errorReport) {
+            async sendErrorReport(errorReport: ErrorReportManualDetails) {
                 await this.generateErrorReport({
                     section: this.currentSection,
                     ...errorReport

@@ -8,7 +8,7 @@
                 <router-link id="projects-link" v-if="!isGuest" to="/projects" class="ml-2 pr-2 border-right"
                              v-translate="'projects'"
                              style="flex:none"></router-link>
-                <file-menu :title="title"></file-menu>
+                <file-menu :title="title || ''"></file-menu>
                 <span v-if="!isGuest" class="pr-2 mr-2 border-right text-white">
                     <span v-translate="'loggedInAs'"></span> {{ user }}
                 </span>
@@ -29,8 +29,6 @@
     </header>
 </template>
 <script lang="ts">
-
-    import Vue from "vue";
     import {mapGetters} from 'vuex';
     import FileMenu from "./FileMenu.vue";
     import LanguageMenu from "./LanguageMenu.vue";
@@ -39,16 +37,9 @@
     import {RootState} from "../../root";
     import HintrVersionMenu from "./HintrVersionMenu.vue";
     import OnlineSupportMenu from "./OnlineSupportMenu.vue";
+    import { defineComponent } from "vue";
 
-    interface Props {
-        title: string,
-        user: string
-    }
-
-    interface Computed {
-        helpFilename: string
-    }
-    export default Vue.extend<unknown, unknown, Computed, Props>({
+    export default defineComponent({
         computed: {
             helpFilename: mapStateProp<RootState, string>(null,
                 (state: RootState) => {
@@ -60,8 +51,14 @@
             ...mapGetters(["isGuest"])
         },
         props: {
-            title: String,
-            user: String
+            title: {
+                type: String,
+                required: false
+            },
+            user: {
+                type: String,
+                required: false
+            }
         },
         components: {
             FileMenu,

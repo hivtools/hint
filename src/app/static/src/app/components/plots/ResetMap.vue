@@ -6,32 +6,27 @@
                 href="#" :title="tooltipContent('resetView')" 
                 role="button" 
                 :aria-label="tooltipContent('resetView')">
-                <refresh-cw-icon size="20"></refresh-cw-icon>
+                <vue-feather type="refresh-cw"
+                             size="20"
+                             class="align-middle"
+                             style="margin-bottom: 3px; margin-right: 1px;"></vue-feather>
             </a>
         </div>                    
     </l-control>
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import {LControl} from 'vue2-leaflet';
+    import {LControl} from "@vue-leaflet/vue-leaflet";
     import {mapStateProp} from "../../utils";
     import {RootState} from "../../root";
-    import {RefreshCwIcon} from "vue-feather-icons";
+    import VueFeather from "vue-feather";
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
+    import { defineComponent } from "vue";
 
-    interface Computed {
-        currentLanguage: Language
-    }
-
-    interface Methods {
-        tooltipContent: (tooltipValue: string) => string
-    }
-
-    export default Vue.extend<unknown, Methods, Computed>({
+    export default defineComponent({
         components: {
-            RefreshCwIcon,
+            VueFeather,
             LControl
         },
         computed: {

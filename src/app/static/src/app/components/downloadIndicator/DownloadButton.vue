@@ -1,39 +1,32 @@
 <template>
-    <div id="download-button">
+    <div id="download-button" class="d-inline-block">
         <button class="btn btn-sm mt-2" :class="disabled ? 'btn-secondary' : 'btn-red'"
-                :disabled="disabled"
-                @click="download">
+                :disabled="disabled">
             <span v-translate="name"></span>
-            <download-icon size="20" class="icon ml-2"></download-icon>
+            <vue-feather type="download"
+                         size="20"
+                         class="icon ml-2 align-middle"></vue-feather>
         </button>
     </div>
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import {DownloadIcon} from "vue-feather-icons";
+    import { defineComponent } from "vue";
+    import VueFeather from "vue-feather";
 
-    interface Props {
-        disabled: boolean
-        name: string
-    }
-
-    interface Method {
-        download: () => void
-    }
-
-    export default Vue.extend<unknown, Method, unknown, Props>({
+    export default defineComponent({
         name: "downloadButton",
         components: {
-            DownloadIcon
+            VueFeather
         },
         props: {
-            name: String,
-            disabled: Boolean
-        },
-        methods: {
-            download() {
-                this.$emit("click")
+            name: {
+                type: String,
+                required: true
+            },
+            disabled: {
+                type: Boolean,
+                required: true
             }
         }
     });

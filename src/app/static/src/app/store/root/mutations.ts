@@ -12,7 +12,7 @@ import {DataType, initialSurveyAndProgramState} from "../surveyAndProgram/survey
 import {PayloadWithType, PollingState, Project} from "../../types";
 import {mutations as languageMutations} from "../language/mutations";
 import {initialProjectsState} from "../projects/projects";
-import {router} from '../../router';
+import {router} from "../../router"
 import {initialModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 import {initialADRUploadState} from "../adrUpload/adrUpload";
 import {initialDownloadResultsState} from "../downloadResults/downloadResults";
@@ -106,7 +106,7 @@ export const mutations: MutationTree<RootState> = {
         state.modelRun.ready = true;
         state.modelCalibrate.ready = true;
 
-        if (router.currentRoute.path !== "/") {
+        if (router.currentRoute.value.path !== "/") {
             router.push("/");
         }
     },

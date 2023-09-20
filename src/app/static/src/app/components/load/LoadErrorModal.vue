@@ -18,26 +18,17 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue"
+    import { defineComponent } from "vue";
     import Modal from "../Modal.vue";
-    import {mapActionByName, mapStateProp, mapStateProps} from "../../utils";
+    import {mapActionByName, mapStateProps} from "../../utils";
     import {LoadingState, LoadState} from "../../store/load/state";
 
-    interface LoadComputed  {
-        loadError: string
-        hasError: boolean
-    }
-
-    interface Methods {
-        clearLoadError: () => void
-    }
-
-    export default Vue.extend<unknown, Methods, LoadComputed>({
+    export default defineComponent({
         name: "LoadErrorModal",
         computed: {
-            ...mapStateProps<LoadState, keyof LoadComputed>("load", {
-              hasError: state => state.loadingState === LoadingState.LoadFailed,
-              loadError: state => state.loadError && state.loadError.detail
+            ...mapStateProps("load", {
+              hasError: (state: LoadState) => state.loadingState === LoadingState.LoadFailed,
+              loadError: (state: LoadState) => state.loadError && state.loadError.detail
             })
         },
         methods: {

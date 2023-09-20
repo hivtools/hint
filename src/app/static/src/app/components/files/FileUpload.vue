@@ -26,31 +26,32 @@
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin"
     import {Step} from "../../types";
-
-    interface Methods {
-        handleFileSelect: () => void
-        uploadSelectedFile: () => void
-        cancelEdit: () => void
-    }
+    import { PropType, defineComponent } from "vue";
 
     interface Data {
         showUploadConfirmation: boolean
         modelOptions: number
     }
 
-    interface Props {
-        upload: (formData: FormData) => void,
-        accept: string,
-        name: string,
-        uploading: boolean
-    }
-
-    export default ResetConfirmationMixin.extend<Data, Methods, unknown, Props>({
+    export default defineComponent({
+        extends: ResetConfirmationMixin,
         props: {
-            "upload": Function,
-            "accept": String,
-            "name": String,
-            "uploading": Boolean
+            upload: {
+                type: Function as PropType<(formData: FormData) => void>,
+                required: true
+            },
+            accept: {
+                type: String,
+                required: true
+            },
+            name: {
+                type: String,
+                required: true
+            },
+            uploading: {
+                type: Boolean,
+                required: true
+            }
         },
         data(): Data {
             return {

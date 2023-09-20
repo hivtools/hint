@@ -6,51 +6,34 @@
             <div class="pt-3" id="adr-capacity" v-if="selectedDataset">
                 <span class="font-weight-bold align-self-stretch" v-translate="'adrAccessLevel'"></span>
                 <span v-tooltip="handleUploadPermission(hasUploadPermission, true)">
-                    <span class="text-danger">{{ handleUploadPermission(hasUploadPermission, false) }}</span>
+                    <span class="text-danger ml-1">{{ handleUploadPermission(hasUploadPermission, false) }}</span>
                 </span>
             </div>
         </div>
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue";
     import {mapActionByName, mapStateProp, mapGetterByName} from "../../utils";
-    import adrKey from "./ADRKey.vue";
+    import AdrKey from "./ADRKey.vue";
     import SelectDataset from "./SelectDataset.vue";
     import {ADRState} from "../../store/adr/adr";
-    import {VTooltip} from "v-tooltip";
     import i18next from "i18next";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import {BaselineState} from "../../store/baseline/baseline";
     import {Dataset} from "../../types";
-
-    interface Methods {
-        getDatasets: () => void
-        fetchADRKey: () => void
-        getUserCanUpload: () => void
-        handleUploadPermission: (isADRWriter: boolean, isTooltip: boolean) => string | null
-        getTranslation: (key: string) => string
-        ssoLoginMethod: () => void
-    }
-
-    interface Computed {
-        isGuest: boolean
-        loggedIn: boolean
-        key: string | null,
-        hasUploadPermission: boolean,
-        currentLanguage: Language
-        selectedDataset: Dataset | null
-        ssoLogin: boolean
-    }
+    import {defineComponent} from "vue";
 
     const namespace = "adr";
 
-    export default Vue.extend<unknown, Methods, Computed, unknown>({
-        components: {adrKey, SelectDataset},
+    export default defineComponent({
+        components: {
+            "adr-key": AdrKey,
+            "select-dataset": SelectDataset
+        },
         computed: {
             isGuest: mapGetterByName(null, "isGuest"),
-            loggedIn() {
+            loggedIn(): boolean {
                 return !this.isGuest
             },
             ssoLogin: mapStateProp<ADRState, boolean>(namespace,
@@ -99,7 +82,7 @@
                 });
             }
         },
-        created() {
+        beforeMount() {
             if (this.loggedIn) {
 
                 if (!this.ssoLogin) {
@@ -123,9 +106,6 @@
             if (this.loggedIn) {
                 this.ssoLoginMethod()
             }
-        },
-        directives: {
-            "tooltip": VTooltip
         }
     })
 </script>

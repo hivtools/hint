@@ -22,7 +22,6 @@ export const actions: ActionTree<ModelRunState, RootState> & ModelRunActions = {
         if (state.statusPollId !== -1) {
             commit(ModelRunMutation.RunCancelled);
         }
-
         await api<ModelRunMutation, ModelRunMutation>(context)
             .withSuccess(ModelRunMutation.ModelRunStarted)
             .withError(ModelRunMutation.ModelRunError)

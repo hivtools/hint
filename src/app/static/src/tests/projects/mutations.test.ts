@@ -1,10 +1,18 @@
 import {mockProjectsState} from "../mocks";
 import {mutations, ProjectsMutations} from "../../app/store/projects/mutations";
-import {router} from '../../app/router';
+import {router} from "../../app/router";
 
 describe("Projects mutations", () => {
     const testNow = Date.now();
-    global.Date.now = jest.fn(() => testNow);
+
+    beforeAll(() => {
+        jest.useFakeTimers('modern');
+        jest.setSystemTime(testNow);
+    });
+
+    afterAll(() => {
+        jest.useRealTimers();
+    });
 
     const mockProject = {
         id: 1,

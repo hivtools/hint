@@ -2,7 +2,8 @@
     <div class="form-group">
         <label class="font-weight-bold mb-0" v-translate="label"></label>
         <span id="required" v-if="required"
-              class="small"
+              class="ml-1"
+              style="font-size: small;"
               :class="existingFileName? '': 'text-danger'">(<span v-translate="'required'"></span>)
         </span>
         <tick color="#e31837" v-if="valid" width="20px"></tick>
@@ -24,7 +25,7 @@
                      :upload="upload"
                      :uploading="uploading"
                      @uploading="handleUploading"></file-upload>
-        <error-alert v-if="hasError" :error="error"></error-alert>
+        <error-alert v-if="hasError" :error="error!"></error-alert>
         <reset-confirmation v-if="!dataExplorationMode"
                             :discard-step-warning="modelOptions"
                             :continue-editing="deleteSelectedFile"
@@ -41,6 +42,7 @@
     import {Error} from "../../generated";
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
     import {Step} from "../../types";
+    import { PropType, defineComponent } from "vue";
 
     interface Data {
         uploading: boolean
@@ -48,43 +50,50 @@
         modelOptions: number
     }
 
-    interface Computed {
-        hasError: boolean
-    }
-
-    interface Methods {
-        deleteSelectedFile: () => void
-        handleFileDelete: () => void
-        cancelEdit: () => void
-        handleUploading: () => void
-    }
-
-    interface Props {
-        upload: (formData: FormData) => void,
-        deleteFile: () => void,
-        accept: string,
-        label: string,
-        valid: boolean,
-        error: Error,
-        existingFileName: string,
-        fromADR: boolean,
-        name: string,
-        required: boolean
-    }
-
-    export default ResetConfirmationMixin.extend<Data, Methods, Computed, Props>({
+    export default defineComponent({
+        extends: ResetConfirmationMixin,
         name: "FileSelect",
         props: {
-            "upload": Function,
-            "deleteFile": Function,
-            "accept": String,
-            "label": String,
-            "valid": Boolean,
-            "error": Object,
-            "existingFileName": String,
-            "fromADR": Boolean,
-            "name": String,
-            "required": Boolean
+            upload: {
+                type: Function as PropType<(formData: FormData) => void>,
+                required: true
+            },
+            deleteFile: {
+                type: Function as PropType<() => void>,
+                required: true
+            },
+            accept: {
+                type: String,
+                required: true
+            },
+            label: {
+                type: String,
+                required: true
+            },
+            valid: {
+                type: Boolean,
+                required: true
+            },
+            error: {
+                type: [Object, null] as PropType<Error | null>,
+                required: false
+            },
+            existingFileName: {
+                type: [String, null] as PropType<string | null>,
+                required: true
+            },
+            fromADR: {
+                type: Boolean,
+                required: false
+            },
+            name: {
+                type: String,
+                required: true
+            },
+            required: {
+                type: Boolean,
+                required: false
+            }
         },
         data(): Data {
             return {

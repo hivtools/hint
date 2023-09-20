@@ -13,7 +13,7 @@ import {addCheckSum} from "../../app/utils";
 import {localStorageManager} from "../../app/localStorageManager";
 import {currentHintVersion} from "../../app/hintVersion";
 import {ProjectRehydrateStatusResponse} from "../../app/generated";
-import {DynamicControlType} from "@reside-ic/vue-dynamic-form";
+import {DynamicControlType} from "@reside-ic/vue-next-dynamic-form";
 import {RootState} from "../../app/root";
 import {router} from "../../app/router";
 
@@ -32,55 +32,6 @@ describe("Load actions", () => {
         (console.log as jest.Mock).mockClear();
         (console.info as jest.Mock).mockClear();
     });
-
-    const rehydrateResultResponse = {
-        state: {
-            datasets: {
-                pjnz: {
-                    path: "uploads/test.csv",
-                    filename: "test"
-                },
-                population: {
-                    path: "uploads/test.csv",
-                    filename: "test"
-                },
-                shape: {
-                    path: "uploads/test.csv",
-                    filename: "test"
-                },
-                anc: {
-                    path: "uploads/test.csv",
-                    filename: "test"
-                },
-                survey: {
-                    path: "uploads/test.csv",
-                    filename: "test"
-                },
-                programme: {
-                    path: "uploads/test.csv",
-                    filename: "test"
-                }
-            },
-            calibrate: {
-                id: "123",
-                options: {}
-            },
-            model_fit: {
-                id: "100",
-                options: {}
-            },
-            version: {hintr: "1", naomi: "2", rrq: "3"}
-        }
-    }
-
-    const RunningStatusResponse: ProjectRehydrateStatusResponse = {
-        id: "db0c4957aea4b32c507ac02d63930110",
-        done: true,
-        progress: ["Generating summary report"],
-        status: "COMPLETE",
-        success: true,
-        queue: 0
-    }
 
     it("load reads blob and dispatches setFiles action", (done) => {
         const dispatch = jest.fn();
@@ -165,7 +116,7 @@ describe("Load actions", () => {
         });
     });
 
-    it("loadVersion pushes home route if not already there", (done) => {
+    it("loadVersion pushes home route if not already there", async () => {
         mockAxios.onPost(`/session/files/`)
             .reply(200, mockSuccess({}));
         const commit = jest.fn();
@@ -173,17 +124,15 @@ describe("Load actions", () => {
         const state = mockLoadState({loadingState: LoadingState.UpdatingState});
 
         const routerSpy = jest.spyOn(router, "push");
-        router.push("/projects");
+        await router.push("/projects");
 
         actions.loadFromVersion({commit, dispatch, state, rootState} as any, {
             files: "files",
             state: JSON.stringify({stepper: {}})
         });
-        setTimeout(() => {
-            expect(routerSpy).toHaveBeenCalledTimes(2);
-            expect(routerSpy.mock.calls[1][0]).toBe("/");
-            done();
-        });
+
+        expect(routerSpy).toHaveBeenCalledTimes(2);
+        expect(routerSpy.mock.calls[1][0]).toBe("/");
     });
 
     it("updates store state after successful setFiles post", async () => {
@@ -618,6 +567,55 @@ describe("Load actions", () => {
             done();
         });
     });
+
+    const rehydrateResultResponse = {
+        state: {
+            datasets: {
+                pjnz: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                },
+                population: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                },
+                shape: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                },
+                anc: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                },
+                survey: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                },
+                programme: {
+                    path: "uploads/test.csv",
+                    filename: "test"
+                }
+            },
+            calibrate: {
+                id: "123",
+                options: {}
+            },
+            model_fit: {
+                id: "100",
+                options: {}
+            },
+            version: {hintr: "1", naomi: "2", rrq: "3"}
+        }
+    }
+
+    const RunningStatusResponse: ProjectRehydrateStatusResponse = {
+        id: "db0c4957aea4b32c507ac02d63930110",
+        done: true,
+        progress: ["Generating summary report"],
+        status: "COMPLETE",
+        success: true,
+        queue: 0
+    }
 
     it("can pollRehydrate status and dispatches PollingStatusStarted action",  (done) => {
         mockAxios.onGet(`rehydrate/status/1`)

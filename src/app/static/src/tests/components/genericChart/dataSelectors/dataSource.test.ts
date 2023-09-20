@@ -2,7 +2,7 @@ import {shallowMount} from "@vue/test-utils";
 import Vuex from "vuex";
 import registerTranslations from "../../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../../app/root";
-import {expectTranslated} from "../../../testHelpers";
+import {expectTranslated, shallowMountWithTranslate} from "../../../testHelpers";
 import DataSource from "../../../../app/components/genericChart/dataSelectors/DataSource.vue";
 
 describe("DataSource component", () => {
@@ -16,8 +16,8 @@ describe("DataSource component", () => {
     const getWrapper = () => {
         const store = new Vuex.Store({state: emptyState()});
         registerTranslations(store);
-        const propsData = {config, datasets, value};
-        return shallowMount(DataSource, {store, propsData});
+        const props = {config, datasets, value};
+        return shallowMountWithTranslate(DataSource, store, {global: {plugins: [store]}, props});
     };
 
     it("renders as expected", () => {
@@ -31,18 +31,18 @@ describe("DataSource component", () => {
 
         const options = wrapper.find("select").findAll("option");
         expect(options.length).toBe(2);
-        expect(options.at(0).attributes("value")).toBe("dataset1");
-        expectTranslated(options.at(0), "ANC Testing", "Test de clinique prénatale",
+        expect(options[0].attributes("value")).toBe("dataset1");
+        expectTranslated(options[0], "ANC Testing", "Test de clinique prénatale",
             "Teste da CPN", wrapper.vm.$store);
 
-        expect(options.at(1).attributes("value")).toBe("dataset2");
-        expectTranslated(options.at(1), "ART", "TARV", "TARV", wrapper.vm.$store);
+        expect(options[1].attributes("value")).toBe("dataset2");
+        expectTranslated(options[1], "ART", "TARV", "TARV", wrapper.vm.$store);
     });
 
     it("emits update when value changes", async () => {
         const wrapper = getWrapper();
-        await wrapper.find("select").findAll("option").at(0).setSelected();
-        expect(wrapper.emitted("update").length).toBe(1);
-        expect(wrapper.emitted("update")[0]).toStrictEqual(["dataset1"]);
+        await wrapper.find("select").findAll("option")[0].setValue();
+        expect(wrapper.emitted("update")!?.length).toBe(1);
+        expect(wrapper.emitted("update")![0]).toStrictEqual(["dataset1"]);
     });
 });

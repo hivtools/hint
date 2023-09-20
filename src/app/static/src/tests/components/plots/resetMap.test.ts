@@ -1,34 +1,38 @@
-import {createLocalVue, shallowMount} from "@vue/test-utils";
 import ResetMap from "../../../app/components/plots/ResetMap.vue";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, mountWithTranslate} from "../../testHelpers";
 import Vuex from "vuex";
-import {LControl} from "vue2-leaflet";
 
-const localVue = createLocalVue();
+jest.mock("@vue-leaflet/vue-leaflet", () => {
+    const LControl = {
+        template: "<div id='l-control-mock'><slot></slot></div>"
+    }
+    return { LControl }
+});
+
 const store = new Vuex.Store({
     state: emptyState()
 });
 registerTranslations(store);
 
 const getWrapper = () => {
-    return shallowMount(ResetMap, {store, localVue});
+    return mountWithTranslate(ResetMap, store, {global: {plugins: [store]}});
 };
 
 describe("ResetMap component", () => {
 
-    it("render can display button on map and emit reset view when button clicked", () => {
+    it("render can display button on map and emit reset view when button clicked", async () => {
         const wrapper = getWrapper();
-        expect(wrapper.findAll(LControl).length).toBe(1)
-        const button = wrapper.find(LControl).find('div').find('a')
-        expectTranslated(button, 'Reset view', 'Réinitialiser la vue',
+        expect(wrapper.findAll("#l-control-mock").length).toBe(1)
+        const button = wrapper.find("#l-control-mock").find('div').find('a')
+        await expectTranslated(button, 'Reset view', 'Réinitialiser la vue',
             "Repor vista", store, "aria-label");
-        expectTranslated(button, 'Reset view', 'Réinitialiser la vue',
+        await expectTranslated(button, 'Reset view', 'Réinitialiser la vue',
             "Repor vista", store, "title");
         
-        button.trigger("click")
-        expect(wrapper.emitted("reset-view")).toBeTruthy();
+        await button.trigger("click")
+        expect(wrapper.emitted("reset-view")!).toBeTruthy();
     });
 
 });
