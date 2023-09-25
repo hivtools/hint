@@ -1,6 +1,7 @@
 package org.imperial.mrc.hint
 
 import org.springframework.http.ResponseEntity
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.jooq.tools.json.JSONArray
 import org.jooq.tools.json.JSONObject
@@ -25,7 +26,7 @@ fun getDBConnFromPathResponse(res: ResponseEntity<String>): Connection? {
     return DriverManager.getConnection("jdbc:duckdb:.${pathText}", readOnlyProp)
 }
 
-val defaultQuery = """SELECT
+const val defaultQuery = """SELECT
 age_group,area_id,
 calendar_quarter,
 indicator,
@@ -65,7 +66,7 @@ fun convertToJSONArray(resultSet: ResultSet): JSONArray {
     return jsonArray
 }
 
-fun getResponseEntity(dataObj: JSONObject?, textStatus: String, status: Int, err: String?): ResponseEntity<String> {
+fun getResponseEntity(dataObj: JSONObject?, textStatus: String, status: HttpStatus, err: String?): ResponseEntity<String> {
     val errArr = JSONArray(listOf(JSONObject(mapOf("error" to "FAILED_TO_RETRIEVE_RESULT", "detail" to err))))
     val resObj = JSONObject(mapOf(
         "status" to textStatus,

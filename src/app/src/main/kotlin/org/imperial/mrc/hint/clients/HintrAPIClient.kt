@@ -12,6 +12,7 @@ import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import org.jooq.tools.json.JSONObject
+import org.springframework.http.HttpStatus
 
 interface HintrAPIClient
 {
@@ -160,14 +161,29 @@ class HintrFuelAPIClient(
         val dataPathRes = get("calibrate/result/path/${id}")
         val conn = getDBConnFromPathResponse(dataPathRes)
         if (conn == null) {
-            return getResponseEntity(null, "failure", 400, "Could not connect to the database")
+            return getResponseEntity(
+                null,
+                "failure",
+                HttpStatus.NOT_FOUND,
+                "Could not connect to the database"
+            )
         }
         try {
             val plotData = getDataFromQuery(conn, null)
             val plotDataObj = JSONObject(mapOf("data" to plotData))
-            return getResponseEntity(plotDataObj, "success", 200, null)
+            return getResponseEntity(
+                plotDataObj,
+                "success",
+                HttpStatus.OK,
+                null
+            )
         } catch (err: Exception) {
-            return getResponseEntity(null, "failure", 400, err.message)
+            return getResponseEntity(
+                null,
+                "failure",
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                err.message
+            )
         }
     }
 

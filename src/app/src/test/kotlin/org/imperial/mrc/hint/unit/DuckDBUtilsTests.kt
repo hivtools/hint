@@ -7,9 +7,7 @@ import org.imperial.mrc.hint.getDataFromQuery
 import org.assertj.core.api.Assertions.assertThat
 import org.jooq.tools.json.JSONArray
 import org.jooq.tools.json.JSONObject
-import org.skyscreamer.jsonassert.JSONAssert
 import com.fasterxml.jackson.databind.ObjectMapper
-import net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
 
 class DuckDBUtilsTests
 {
@@ -74,5 +72,6 @@ class DuckDBUtilsTests
         val plotDataTree = ObjectMapper().readTree(plotData!!.toString())
         val expectedDataTree = ObjectMapper().readTree(expectedData.toString())
         assert(plotDataTree.equals(expectedDataTree))
+        conn.close()
     }
 }
