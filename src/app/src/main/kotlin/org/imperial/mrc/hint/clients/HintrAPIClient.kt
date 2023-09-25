@@ -166,8 +166,8 @@ class HintrFuelAPIClient(
             return getResponseEntity(
                 null,
                 "failure",
-                HttpStatus.NOT_FOUND,
-                "Could not connect to the database"
+                HttpStatus.BAD_REQUEST,
+                "Failed to fetch result"
             )
         }
         try {
