@@ -157,6 +157,7 @@ class HintrFuelAPIClient(
         return get("calibrate/result/metadata/${id}")
     }
 
+    @Suppress("ReturnCount")
     override fun getCalibrateResultData(id: String): ResponseEntity<String>
     {
         val dataPathRes = get("calibrate/result/path/${id}")
