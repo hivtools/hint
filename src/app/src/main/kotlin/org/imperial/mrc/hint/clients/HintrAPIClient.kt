@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
+import org.jooq.tools.json.JSONObject
 
 interface HintrAPIClient
 {
@@ -156,7 +157,18 @@ class HintrFuelAPIClient(
 
     override fun getCalibrateResultData(id: String): ResponseEntity<String>
     {
-        return get("calibrate/result/data/${id}")
+        val dataPathRes = get("calibrate/result/path/${id}")
+        val conn = getDBConnFromPathResponse(dataPathRes)
+        if (conn == null) {
+            return getResponseEntity(null, "failure", 400, "Could not connect to the database")
+        }
+        try {
+            val plotData = getDataFromQuery(conn, null)
+            val plotDataObj = JSONObject(mapOf("data" to plotData))
+            return getResponseEntity(plotDataObj, "success", 200, null)
+        } catch (err: Exception) {
+            return getResponseEntity(null, "failure", 400, err.message)
+        }
     }
 
     override fun getCalibratePlot(id: String): ResponseEntity<String>
