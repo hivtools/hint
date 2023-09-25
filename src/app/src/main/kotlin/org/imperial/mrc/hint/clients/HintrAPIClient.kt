@@ -13,6 +13,7 @@ import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
 import org.jooq.tools.json.JSONObject
 import org.springframework.http.HttpStatus
+import java.sql.SQLException
 
 interface HintrAPIClient
 {
@@ -177,7 +178,7 @@ class HintrFuelAPIClient(
                 HttpStatus.OK,
                 null
             )
-        } catch (err: Exception) {
+        } catch (err: SQLException) {
             return getResponseEntity(
                 null,
                 "failure",

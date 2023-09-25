@@ -14,6 +14,17 @@ import java.sql.ResultSet
 import java.lang.Exception
 import com.fasterxml.jackson.databind.ObjectMapper
 
+const val DEFAULT_QUERY = """SELECT
+age_group,area_id,
+calendar_quarter,
+indicator,
+ROUND(lower, 4) AS lower,
+ROUND(mean, 4) AS mean,
+ROUND(mode, 4) AS mode,
+sex,
+ROUND(upper, 4) AS upper
+FROM data"""
+
 fun getDBConnFromPathResponse(res: ResponseEntity<String>): Connection? {   
     val jsonBody = ObjectMapper().readTree(res.body?.toString())
     val path = jsonBody?.get("data")?.get("path")
@@ -26,20 +37,9 @@ fun getDBConnFromPathResponse(res: ResponseEntity<String>): Connection? {
     return DriverManager.getConnection("jdbc:duckdb:.${pathText}", readOnlyProp)
 }
 
-const val defaultQuery = """SELECT
-age_group,area_id,
-calendar_quarter,
-indicator,
-ROUND(lower, 4) AS lower,
-ROUND(mean, 4) AS mean,
-ROUND(mode, 4) AS mode,
-sex,
-ROUND(upper, 4) AS upper
-FROM data"""
-
 fun getDataFromQuery(conn: Connection, userQuery: String?): JSONArray? {
     try {
-        var query = defaultQuery
+        var query = DEFAULT_QUERY
         if (userQuery != null) {
             query = userQuery
         }
@@ -66,7 +66,12 @@ fun convertToJSONArray(resultSet: ResultSet): JSONArray {
     return jsonArray
 }
 
-fun getResponseEntity(dataObj: JSONObject?, textStatus: String, status: HttpStatus, err: String?): ResponseEntity<String> {
+fun getResponseEntity(
+    dataObj: JSONObject?,
+    textStatus: String,
+    status: HttpStatus,
+    err: String?
+): ResponseEntity<String> {
     val errArr = JSONArray(listOf(JSONObject(mapOf("error" to "FAILED_TO_RETRIEVE_RESULT", "detail" to err))))
     val resObj = JSONObject(mapOf(
         "status" to textStatus,
