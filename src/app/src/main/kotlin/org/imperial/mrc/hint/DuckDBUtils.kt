@@ -20,9 +20,9 @@ fun getDBConnFromPathResponse(res: ResponseEntity<String>): Connection? {
         return null
     }
     val pathText = path.textValue()
-    val ro_prop = Properties()
-    ro_prop.setProperty("duckdb.read_only", "true")
-    return DriverManager.getConnection("jdbc:duckdb:.${pathText}", ro_prop)
+    val readOnlyProp = Properties()
+    readOnlyProp.setProperty("duckdb.read_only", "true")
+    return DriverManager.getConnection("jdbc:duckdb:.${pathText}", readOnlyProp)
 }
 
 val defaultQuery = """SELECT
@@ -46,8 +46,6 @@ fun getDataFromQuery(conn: Connection, userQuery: String?): JSONArray? {
         val resultSet = stmt.executeQuery(query)
         val jsonArray = convertToJSONArray(resultSet)
         return jsonArray
-    } catch (err: Exception) {
-        throw Exception(err)
     } finally {
         conn.close()
     }
@@ -57,8 +55,8 @@ fun convertToJSONArray(resultSet: ResultSet): JSONArray {
     val jsonArray = JSONArray()
     while (resultSet.next()) {
         val obj = JSONObject()
-        val total_rows = resultSet.metaData.columnCount
-        for (i in 0 until total_rows) {
+        val totalRows = resultSet.metaData.columnCount
+        for (i in 0 until totalRows) {
             obj[resultSet.metaData.getColumnLabel(i + 1)
                 .lowercase(Locale.getDefault())] = resultSet.getObject(i + 1)
         }

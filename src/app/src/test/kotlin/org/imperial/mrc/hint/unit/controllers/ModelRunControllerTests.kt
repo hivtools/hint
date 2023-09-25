@@ -134,8 +134,6 @@ class ModelRunControllerTests
         val sut = ModelRunController(mockFileManager, mockAPIClient)
 
         val result = sut.calibrateResultData("testId")
-        print(mockResponse)
-        print(result)
         assertThat(result).isSameAs(mockResponse)
     }
 
