@@ -4,7 +4,7 @@
             <div class="col-sm">
                 <div id="spectrum-download">
                     <download :translate-key="translation.spectrum"
-                              @click="downloadSpectrumOutput"
+                              @trigger-download="downloadSpectrumOutput"
                               :disabled="!spectrum.downloadId || spectrum.preparing"
                               :file="spectrum"/>
                     <div class="pb-2">
@@ -13,7 +13,7 @@
                 </div>
                 <div id="coarse-output-download">
                     <download :translate-key="translation.coarse"
-                              @click="downloadCoarseOutput"
+                              @trigger-download="downloadCoarseOutput"
                               :disabled="!coarseOutput.downloadId || coarseOutput.preparing"
                               :file="coarseOutput"/>
                     <div class="pb-2">
@@ -22,7 +22,7 @@
                 </div>
                 <div id="summary-download">
                     <download :translate-key="translation.summary"
-                              @click="downloadSummaryReport"
+                              @trigger-download="downloadSummaryReport"
                               :disabled="!summary.downloadId || summary.preparing"
                               :file="summary"/>
                     <div class="pb-2">
@@ -31,7 +31,7 @@
                 </div>
                 <div id="comparison-download" v-if="comparisonSwitch">
                     <download :translate-key="translation.comparison"
-                              @click="downloadComparisonReport"
+                              @trigger-download="downloadComparisonReport"
                               :disabled="!comparison.downloadId || comparison.preparing"
                               :file="comparison"/>
                     <error-alert v-if="comparison.downloadError" :error="comparison.downloadError"></error-alert>
@@ -44,7 +44,7 @@
                         :class="uploading || isPreparing ? 'btn-secondary' : 'btn-red'"
                         :disabled="uploading || isPreparing">
                     <span v-translate="'upload'"></span>
-                    <upload-icon size="20" class="icon ml-2" style="margin-top: -4px;"></upload-icon>
+                    <vue-feather type="upload" size="20" class="icon ml-2" style="margin-top: -4px;"></vue-feather>
                 </button>
                 <div id="uploading" v-if="uploading" class="d-flex align-items-end">
                     <loading-spinner size="xs"></loading-spinner>
@@ -77,9 +77,8 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import {mapActionByName, mapStateProp, mapMutationByName, mapStateProps} from "../../utils";
-    import {UploadIcon} from "vue-feather-icons";
+    import VueFeather from "vue-feather";
     import UploadModal from "./UploadModal.vue";
     import {ADRState} from "../../store/adr/adr";
     import LoadingSpinner from "../LoadingSpinner.vue";
@@ -91,54 +90,16 @@
     import i18next from "i18next";
     import {ADRUploadState} from "../../store/adrUpload/adrUpload";
     import {DownloadResultsState} from "../../store/downloadResults/downloadResults";
-    import {DownloadResultsDependency} from "../../types";
     import Download from "./Download.vue";
-    import {Error} from "../../generated"
     import {switches} from "../../featureSwitches";
-
-    interface ComputedFromADRUpload {
-        uploading: boolean,
-        uploadComplete: boolean,
-        releaseCreated: boolean,
-        releaseFailed: boolean,
-        uploadError: Error | null,
-        currentFileUploading: number | null,
-        totalFilesUploading: number | null
-    }
-
-    interface ComputedFromDownloadResults {
-        spectrum: DownloadResultsDependency,
-        coarseOutput: DownloadResultsDependency,
-        summary: DownloadResultsDependency,
-        comparison: DownloadResultsDependency
-    }
-
-    interface Computed extends ComputedFromADRUpload, ComputedFromDownloadResults {
-        uploadingStatus: string,
-        currentLanguage: Language,
-        hasUploadPermission: boolean,
-        translation: Record<string, any>,
-        isPreparing: boolean
-    }
-
-    interface Methods {
-        handleUploadModal: () => void
-        getUserCanUpload: () => void
-        getUploadFiles: () => void
-        clearStatus: () => void;
-        prepareOutputs: () => void
-        downloadSummaryReport: () => void
-        downloadSpectrumOutput: () => void
-        downloadCoarseOutput: () => void
-        downloadComparisonReport: () => void
-    }
+    import { defineComponent } from "vue";
 
     interface Data {
         uploadModalOpen: boolean,
         comparisonSwitch: boolean
     }
 
-    export default Vue.extend<Data, Methods, Computed>({
+    export default defineComponent({
         name: "downloadResults",
         data() {
             return {
@@ -148,22 +109,22 @@
         },
         computed: {
             hasUploadPermission: mapStateProp<ADRState, boolean>("adr", (state: ADRState) => state.userCanUpload),
-            ...mapStateProps<DownloadResultsState, keyof ComputedFromDownloadResults>("downloadResults", {
-                spectrum: (state => state.spectrum),
-                summary: (state => state.summary),
-                coarseOutput: (state => state.coarseOutput),
-                comparison: (state => state.comparison)
+            ...mapStateProps("downloadResults", {
+                spectrum: ((state: DownloadResultsState) => state.spectrum),
+                summary: ((state: DownloadResultsState) => state.summary),
+                coarseOutput: ((state: DownloadResultsState) => state.coarseOutput),
+                comparison: ((state: DownloadResultsState) => state.comparison)
             }),
-            ...mapStateProps<ADRUploadState, keyof ComputedFromADRUpload>("adrUpload", {
-                uploading: (state => state.uploading),
-                uploadComplete: (state => state.uploadComplete),
-                releaseCreated: (state => state.releaseCreated),
-                releaseFailed: (state => state.releaseFailed),
-                uploadError: (state => state.uploadError),
-                currentFileUploading: (state => state.currentFileUploading),
-                totalFilesUploading: (state => state.totalFilesUploading)
+            ...mapStateProps("adrUpload", {
+                uploading: ((state: ADRUploadState) => state.uploading),
+                uploadComplete: ((state: ADRUploadState) => state.uploadComplete),
+                releaseCreated: ((state: ADRUploadState) => state.releaseCreated),
+                releaseFailed: ((state: ADRUploadState) => state.releaseFailed),
+                uploadError: ((state: ADRUploadState) => state.uploadError),
+                currentFileUploading: ((state: ADRUploadState) => state.currentFileUploading),
+                totalFilesUploading: ((state: ADRUploadState) => state.totalFilesUploading)
             }),
-            uploadingStatus() {
+            uploadingStatus(): string {
                 return i18next.t("uploadingStatus", {
                     fileNumber: this.currentFileUploading,
                     totalFiles: this.totalFilesUploading,
@@ -174,7 +135,7 @@
                 null,
                 (state: RootState) => state.language
             ),
-            translation() {
+            translation(): Record<string, any> {
                 return {
                     spectrum: {header: 'exportOutputs', button: 'export'},
                     coarse: {header: 'downloadCoarseOutput', button: 'download'},
@@ -182,7 +143,7 @@
                     comparison: {header: 'downloadComparisonReport', button: 'download'}
                 }
             },
-            isPreparing() {
+            isPreparing(): boolean {
                 return this.summary.preparing || this.spectrum.preparing || this.coarseOutput.preparing || this.comparison.preparing
             }
         },
@@ -208,7 +169,7 @@
             this.clearStatus();
         },
         components: {
-            UploadIcon,
+            VueFeather,
             LoadingSpinner,
             Tick,
             Cross,

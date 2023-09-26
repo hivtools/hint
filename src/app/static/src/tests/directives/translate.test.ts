@@ -2,6 +2,8 @@ import {mount, shallowMount} from "@vue/test-utils";
 import Vuex from "vuex";
 import registerTranslations from "../../app/store/translations/registerTranslations";
 import {Language} from "../../app/store/translations/locales";
+import { mountWithTranslate, shallowMountWithTranslate } from "../testHelpers";
+import { nextTick } from "vue";
 
 describe("translate directive", () => {
 
@@ -48,82 +50,128 @@ describe("translate directive", () => {
 
     it("initialises the attribute with the translated text", () => {
         const store = createStore();
-        const rendered = shallowMount(TranslateAttributeTest, {store});
+        const rendered = shallowMountWithTranslate(TranslateAttributeTest, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expect((rendered.find("input").element as HTMLInputElement).value).toBe("Validate");
     });
 
     it("makes translated text lowercase if modifier specified", () => {
         const store = createStore();
-        const rendered = shallowMount(TranslateLowercaseAttributeTest, {store});
+        const rendered = shallowMountWithTranslate(TranslateLowercaseAttributeTest, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expect((rendered.find("input").element as HTMLInputElement).value).toBe("validate");
     });
 
-    it("translates the attribute when the store language changes", () => {
+    it("translates the attribute when the store language changes", async () => {
         const store = createStore();
-        const rendered = shallowMount(TranslateAttributeTest, {store});
+        const rendered = shallowMountWithTranslate(TranslateAttributeTest, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expect((rendered.find("input").element as HTMLInputElement).value).toBe("Validate");
         store.state.language = Language.fr;
+        await nextTick();
         expect((rendered.find("input").element as HTMLInputElement).value).toBe("Valider");
     });
 
     it("initialises inner text with translated text", () => {
         const store = createStore();
-        const renderedStatic = mount(TranslateInnerTextTestStatic, {store});
+        const renderedStatic = mountWithTranslate(TranslateInnerTextTestStatic, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expect(renderedStatic.find("h4").text()).toBe("Validate");
 
-        const renderedDynamic = mount(TranslateInnerTextTestDynamic, {store});
+        const renderedDynamic = mountWithTranslate(TranslateInnerTextTestDynamic, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expect(renderedDynamic.find("h4").text()).toBe("Validate");
     });
 
-    it("translates static inner text when the store language changes", () => {
+    it("translates static inner text when the store language changes", async () => {
         const store = createStore();
-        const rendered = shallowMount(TranslateInnerTextTestStatic, {store});
+        const rendered = shallowMountWithTranslate(TranslateInnerTextTestStatic, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expect(rendered.find("h4").text()).toBe("Validate");
         store.state.language = Language.fr;
+        await nextTick();
         expect(rendered.find("h4").text()).toBe("Valider");
     });
 
-    it("translates dynamic inner text when the store language changes", () => {
+    it("translates dynamic inner text when the store language changes", async () => {
         const store = createStore();
-        const rendered = shallowMount(TranslateInnerTextTestDynamic, {store});
+        const rendered = shallowMountWithTranslate(TranslateInnerTextTestDynamic, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expect(rendered.find("h4").text()).toBe("Validate");
         store.state.language = Language.fr;
+        await nextTick();
         expect(rendered.find("h4").text()).toBe("Valider");
     });
 
-    it("updates dynamic inner text when the key changes", () => {
+    it("updates dynamic inner text when the key changes", async () => {
         const store = createStore();
-        const rendered = shallowMount(TranslateInnerTextTestDynamic, {store});
+        const rendered = shallowMountWithTranslate(TranslateInnerTextTestDynamic, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expect(rendered.find("h4").text()).toBe("Validate");
-        rendered.setData({
+        await rendered.setData({
             text: "email"
         });
         expect(rendered.find("h4").text()).toBe("Email address");
     });
 
-    it("can update language and key in any order", () => {
+    it("can update language and key in any order", async () => {
         const store = createStore();
-        const rendered = shallowMount(TranslateInnerTextTestDynamic, {store});
+        const rendered = shallowMountWithTranslate(TranslateInnerTextTestDynamic, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expect(rendered.find("h4").text()).toBe("Validate");
         store.state.language = Language.fr;
+        await nextTick();
         expect(rendered.find("h4").text()).toBe("Valider");
-        rendered.setData({
+        await rendered.setData({
             text: "email"
         });
         expect(rendered.find("h4").text()).toBe("Adresse e-mail");
         store.state.language = Language.en;
+        await nextTick();
         expect(rendered.find("h4").text()).toBe("Email address");
     });
 
-    it("can support multiple directives for different attributes on the same element", () => {
+    it("can support multiple directives for different attributes on the same element", async () => {
         const store = createStore();
-        const rendered = shallowMount(TranslateMultiple, {store});
+        const rendered = shallowMountWithTranslate(TranslateMultiple, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         let input = (rendered.find("input").element as HTMLInputElement);
         expect(input.value).toBe("Validate");
         expect(input.placeholder).toBe("Email address");
         expect(input.innerText).toBe("Logout");
 
         store.state.language = Language.fr;
+        await nextTick();
 
         input = (rendered.find("input").element as HTMLInputElement);
         expect(input.value).toBe("Valider");
@@ -136,7 +184,11 @@ describe("translate directive", () => {
             template: '<h4 v-translate=""></h4>'
         };
         const store = createStore();
-        const rendered = shallowMount(InvalidBinding, {store});
+        const rendered = shallowMountWithTranslate(InvalidBinding, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
         expect(rendered.find("h4").text()).toBe("");
         expect((console.warn as jest.Mock).mock.calls[0][0])
             .toBe("v-translate directive declared without a value");
@@ -144,16 +196,32 @@ describe("translate directive", () => {
 
     it("unwatches on unbind", () => {
         const store = createStore();
-        const renderedAttribute = shallowMount(TranslateAttributeTest, {store});
-        const renderedText = shallowMount(TranslateInnerTextTestDynamic, {store});
-        const renderedMultiple = shallowMount(TranslateMultiple, {store});
-        expect((store._watcherVM as any)._watchers.length).toBe(5);
-        renderedAttribute.destroy();
-        expect((store._watcherVM as any)._watchers.length).toBe(4);
-        renderedText.destroy();
-        expect((store._watcherVM as any)._watchers.length).toBe(3);
-        renderedMultiple.destroy();
-        expect((store._watcherVM as any)._watchers.length).toBe(0);
+        const renderedAttribute = shallowMountWithTranslate(TranslateAttributeTest, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
+        const renderedText = shallowMountWithTranslate(TranslateInnerTextTestDynamic, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
+        const renderedMultiple = shallowMountWithTranslate(TranslateMultiple, store, {
+            global: {
+                plugins: [store]
+            }, 
+        });
+        expect((renderedAttribute.element as any).__lang_unwatch__).toHaveProperty("value")
+        expect((renderedText.element as any).__lang_unwatch__).toHaveProperty("innerHTML")
+        expect((renderedMultiple.element as any).__lang_unwatch__).toHaveProperty("innerHTML")
+        expect((renderedMultiple.element as any).__lang_unwatch__).toHaveProperty("placeholder")
+        expect((renderedMultiple.element as any).__lang_unwatch__).toHaveProperty("value")
+        renderedAttribute.unmount();
+        expect((renderedAttribute.element as any).__lang_unwatch__).toStrictEqual({})
+        renderedText.unmount();
+        expect((renderedText.element as any).__lang_unwatch__).toStrictEqual({})
+        renderedMultiple.unmount();
+        expect((renderedMultiple.element as any).__lang_unwatch__).toStrictEqual({})
     });
 
 });

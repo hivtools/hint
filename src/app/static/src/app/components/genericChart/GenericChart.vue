@@ -9,11 +9,11 @@
                                  :value="ds.selections.datasetId"
                                  @update="updateDataSource(ds.config.id, $event)">
                     </data-source>
-                    <filters v-if="ds.config.showFilters && ds.filters && ds.selections.selectedFilterOptions"
+                    <filters-comp v-if="ds.config.showFilters && ds.filters && ds.selections.selectedFilterOptions"
                                 :filters="ds.filters"
                                 :selected-filter-options="ds.selections.selectedFilterOptions"
-                                @update="updateSelectedFilterOptions(ds.config.id, $event)">
-                    </filters>
+                                @update:filters="updateSelectedFilterOptions(ds.config.id, $event)">
+                    </filters-comp>
                 </div>
                 <div id="chart-description"
                      v-if="chartConfigValues.description"
@@ -23,8 +23,7 @@
             <div class="col-9" style="position: relative;">
                 <div class="chart-container" ref="chartContainer" :style="{height: chartHeight}">
                     <plotly class="chart"
-                            v-if="!this.chartDataIsEmpty"
-                           :chart-metadata="chartConfigValues.chartConfig"
+                            v-if="!chartDataIsEmpty"
                            :chart-data="chartDataPage"
                            :layout-data="chartConfigValues.layoutData"
                            :style="{height: chartConfigValues.scrollHeight}"></plotly>
@@ -43,7 +42,7 @@
                             v-translate:aria-label="'previousPage'"
                             :disabled="!prevPageEnabled"
                             @click="currentPage--">
-                        <chevron-left-icon size="20"></chevron-left-icon>
+                        <vue-feather type="chevron-left" size="20"></vue-feather>
                     </button>
                     <span id="page-number">
                         {{pageNumberText}}
@@ -54,18 +53,18 @@
                             v-translate:aria-label="'nextPage'"
                             :disabled="!nextPageEnabled"
                             @click="currentPage++">
-                        <chevron-right-icon size="20"></chevron-right-icon>
+                        <vue-feather type="chevron-right" size="20"></vue-feather>
                     </button>
                     <hr/>
                 </div>
                 <div v-for="dataSource in chartConfigValues.dataSourceConfigValues.filter(ds => ds.tableConfig)"
                      :key="dataSource.config.id">
-                    <download-indicator :filtered-data="filteredDataWithoutPages[dataSource.config.id]"
+                    <download-indicator :filtered-data="filteredDataWithoutPages ? filteredDataWithoutPages[dataSource.config.id] : []"
                                         :unfiltered-data="unfilteredData[dataSource.config.id]"></download-indicator>
-                    <generic-chart-table :table-config="dataSource.tableConfig"
+                    <generic-chart-table :table-config="dataSource.tableConfig!"
                                          :filtered-data="chartData[dataSource.config.id]"
-                                         :columns="dataSource.columns"
-                                         :selected-filter-options="dataSource.selections.selectedFilterOptions"
+                                         :columns="dataSource.columns!"
+                                         :selected-filter-options="dataSource.selections.selectedFilterOptions!"
                                          :value-format="valueFormat"
                     ></generic-chart-table>
                 </div>
@@ -85,29 +84,31 @@
 
 <script lang="ts">
     import i18next from "i18next";
-    import Vue from "vue";
-    import {ChevronLeftIcon, ChevronRightIcon} from "vue-feather-icons";
+    import VueFeather from "vue-feather";
     import {
         DataSourceConfig,
+        DatasetConfig,
+        DatasetFilterConfig,
         Dict, DisplayFilter, GenericChartColumn, GenericChartColumnValue,
         GenericChartDataset,
         GenericChartMetadata,
         GenericChartMetadataResponse, GenericChartTableConfig
     } from "../../types";
     import DataSource from "./dataSelectors/DataSource.vue";
-    import Filters from "../plots/Filters.vue";
+    import FiltersComp from "../plots/Filters.vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import {mapActionByName, mapStateProp} from "../../utils";
     import {GenericChartState} from "../../store/genericChart/genericChart";
     import {getDatasetPayload} from "../../store/genericChart/actions";
-    import {FilterOption} from "../../generated";
+    import {Error, FilterOption} from "../../generated";
     import Plotly from "./Plotly.vue";
     import {filterData, genericChartColumnsToFilters, numeralJsToD3format} from "./utils";
     import GenericChartTable from "./GenericChartTable.vue";
     import {Language} from "../../store/translations/locales";
     import {RootState} from "../../root";
     import DownloadIndicator from "../downloadIndicator/DownloadIndicator.vue";
+    import { PropType, defineComponent } from "vue";
 
     interface DataSourceConfigValues {
         selections: DataSourceSelections
@@ -141,7 +142,7 @@
     interface Props {
         metadata: GenericChartMetadataResponse
         chartId: string
-        chartHeight: string
+        chartHeight?: string
         availableDatasetIds: string[]
     }
 
@@ -159,7 +160,7 @@
         pageNumberText: string
         prevPageEnabled: boolean
         nextPageEnabled: boolean
-        unfilteredData: Dict<unknown[]> | null
+        unfilteredData: Dict<unknown[]>
         filteredDataWithoutPages: Dict<unknown[]> | null
     }
 
@@ -174,35 +175,45 @@
 
     const namespace = "genericChart";
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent({
         name: "GenericChart",
         props: {
-            metadata: Object,
-            chartId: String,
-            chartHeight: String,
-            availableDatasetIds: Array
+            metadata: {
+                type: Object as PropType<GenericChartMetadataResponse>,
+                required: true
+            },
+            chartId: {
+                type: String,
+                required: true
+            },
+            chartHeight: {
+                type: String,
+                required: false
+            },
+            availableDatasetIds: {
+                type: Array,
+                required: true
+            }
         },
         components: {
             DownloadIndicator,
-            ChevronLeftIcon,
-            ChevronRightIcon,
+            VueFeather,
             DataSource,
-            Filters,
+            FiltersComp,
             Plotly,
             GenericChartTable,
             ErrorAlert,
             LoadingSpinner
         },
-        data: function() {
+        data: function(): Data {
             const chart = this.metadata[this.chartId];
             const dataSourceSelections = chart.dataSelectors.dataSources
-                .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => ({
-                    ...running,
-                    [dataSource.id]: {
-                        datasetId: this.availableDatasetIds.find(id => id === dataSource.datasetId) || this.availableDatasetIds[0],
-                        selectedFilterOptions: null
-                    }
-                }), {});
+            .reduce((running: Record<string, DataSourceSelections>, dataSource: DataSourceConfig) => Object.assign(running, {
+                [dataSource.id]: {
+                    datasetId: this.availableDatasetIds.find(id => id === dataSource.datasetId) || this.availableDatasetIds[0],
+                    selectedFilterOptions: null
+                }
+            }), {})
 
             return {
                 dataSourceSelections,
@@ -235,9 +246,9 @@
                     let filterColumns: GenericChartColumn[] = [];
                     if (datasetConfig.filters) {
                         // Only include columns which are configured as filters in the dataset config
-                        const configuredFilterIds = datasetConfig.filters.map(filter => filter.id);
+                        const configuredFilterIds = datasetConfig.filters.map((filter: DatasetFilterConfig) => filter.id);
                         const allColumns = this.datasets[datasetId]?.metadata.columns || [];
-                        filterColumns = allColumns.filter(column => configuredFilterIds.includes(column.id));
+                        filterColumns = allColumns.filter((column: GenericChartColumn) => configuredFilterIds.includes(column.id));
                     }
                     result[datasetId] = genericChartColumnsToFilters(filterColumns, datasetConfig.filters);
                 }
@@ -259,7 +270,7 @@
                 return "";
             },
             chartConfigValues() {
-                const dataSourceConfigValues = this.chartMetadata.dataSelectors.dataSources.map((dataSourceConfig) => {
+                const dataSourceConfigValues = this.chartMetadata.dataSelectors.dataSources.map((dataSourceConfig: DataSourceConfig) => {
                     const selections = this.dataSourceSelections[dataSourceConfig.id];
                     return {
                         selections,
@@ -267,11 +278,11 @@
                         config: dataSourceConfig,
                         columns: this.datasets[selections.datasetId]?.metadata.columns,
                         filters: this.filters[selections.datasetId],
-                        tableConfig: this.chartMetadata.datasets.find(d => d.id === selections.datasetId)?.table
+                        tableConfig: this.chartMetadata.datasets.find((d: DatasetConfig) => d.id === selections.datasetId)?.table
                     }
                 });
 
-                //Provide additional metadata to jsonata relating to subplots (rows and columns)
+                //Provide additional metadata relating to subplots (rows and columns)
                 //and define scroll height
                 const layoutData = {} as Dict<unknown>;
                 let scrollHeight = "100%";
@@ -349,7 +360,7 @@
             },
             chartDataIsEmpty() {
                 return !this.chartData ||
-                    !Object.values(this.chartData).some(e => e.length);
+                    !Object.values(this.chartData).some((e: any) => e.length);
 
             },
             chartDataPage() {
@@ -378,7 +389,7 @@
             getDataset: mapActionByName(namespace, 'getDataset'),
             async ensureDataset(datasetId: string) {
                 if (datasetId && !this.datasets[datasetId]) {
-                    const datasetConfig = this.chartMetadata.datasets.find(dataset => dataset.id === datasetId)!;
+                    const datasetConfig = this.chartMetadata.datasets.find((dataset: DatasetConfig) => dataset.id === datasetId)!;
                     await this.getDataset({datasetId, url: datasetConfig.url});
                 }
             },

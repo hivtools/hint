@@ -64,7 +64,7 @@ export interface Filter {
 }
 
 export interface DisplayFilter extends Filter {
-    allowMultiple: boolean
+    allowMultiple?: boolean
 }
 
 export interface NumericRange {

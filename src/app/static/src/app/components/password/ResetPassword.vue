@@ -21,7 +21,7 @@
                         </div>
                     </form>
                     <div v-if="hasError">
-                        <error-alert :error="error"></error-alert>
+                        <error-alert :error="error!"></error-alert>
                         <div id="request-new-link" v-translate="'resetTokenInvalid'">
                         </div>
                     </div>
@@ -34,27 +34,39 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import ErrorAlert from "../ErrorAlert.vue";
     import {mapActions, mapState} from "vuex";
     import {PasswordState} from "../../store/password/password";
     import LoggedOutHeader from "../header/LoggedOutHeader.vue";
     import {Language} from "../../store/translations/locales";
+    import { mapStateProps } from "../../utils";
+    import { defineComponent } from "vue";
 
-    export default Vue.extend({
+    export default defineComponent({
         name: "ResetPassword",
-        props: ["token", "title"],
+        props: {
+            title: {
+                type: String,
+                required: true
+            },
+            token: {
+                type: String,
+                required: true
+            }
+        },
         data: () => {
             return {
                 password: ""
             };
         },
-        computed: mapState<PasswordState>({
-            error: (state: PasswordState) => state.resetPasswordError,
-            hasError: (state: PasswordState) => !!state.resetPasswordError,
-            passwordWasReset: (state: PasswordState) => state.passwordWasReset,
-            language: (state: PasswordState) => state.language
-        }),
+        computed: {
+            ...mapStateProps( "password", {
+                error: (state: PasswordState) => state.resetPasswordError,
+                hasError: (state: PasswordState) => !!state.resetPasswordError,
+                passwordWasReset: (state: PasswordState) => state.passwordWasReset,
+                language: (state: PasswordState) => state.language
+            })
+        },
         components: {
             ErrorAlert,
             LoggedOutHeader

@@ -7,9 +7,9 @@
                 value="useLatest"
                 v-model="choiceADR"
             />
-            <label for="useLatest" v-translate="'useLatest'" class="pr-1"></label>
-            <span class="icon-small" v-tooltip="translate('datasetTooltip')">
-                <help-circle-icon></help-circle-icon>
+            <label for="useLatest" v-translate="'useLatest'" class="ml-1"></label>
+            <span class="icon-small ml-1" v-tooltip="translate('datasetTooltip')">
+                <vue-feather type="help-circle" class="align-middle"></vue-feather>
             </span>
             <br />
         </div>
@@ -20,13 +20,9 @@
                 value="useRelease"
                 v-model="choiceADR"
             />
-            <label
-                for="useRelease"
-                v-translate="'useRelease'"
-                class="pr-1"
-            ></label>
-            <span class="icon-small" v-tooltip="translate('releaseTooltip')">
-                <help-circle-icon></help-circle-icon>
+            <label for="useRelease" v-translate="'useRelease'" class="ml-1"></label>
+            <span class="icon-small ml-1" v-tooltip="translate('releaseTooltip')">
+                <vue-feather type="help-circle" class="align-middle"></vue-feather>
             </span>
             <br />
         </div>
@@ -36,84 +32,66 @@
             class="font-weight-bold"
             v-translate="'releases'"
         ></label>
-        <tree-select
+        <hint-tree-select
             id="releaseSelector"
             :multiple="false"
             :searchable="true"
             :options="releaseOptions"
             :placeholder="translate('select')"
             :disabled="!useRelease"
-            v-model="releaseId"
-        >
-            <label
-                slot="option-label"
-                slot-scope="{ node }"
-                v-html="node.raw.customLabel"
-            >
-            </label>
-        </tree-select>
+            :model-value="releaseId"
+            @update:model-value="newVal => releaseId = newVal">
+            <template v-slot:option-label="{node}">
+                <label v-html="node.raw.customLabel">
+                </label>
+            </template>
+        </hint-tree-select>
     </div>
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import { mapActionByName, mapStateProp, mapMutationByName } from "../../utils";
-    import TreeSelect from "@riophae/vue-treeselect";
+    import HintTreeSelect from "../HintTreeSelect.vue";
     import { ADRState } from "../../store/adr/adr";
-    import { HelpCircleIcon } from "vue-feather-icons";
-    import { VTooltip } from "v-tooltip";
+    import VueFeather from "vue-feather";
     import i18next from "i18next";
     import { Language } from "../../store/translations/locales";
     import { RootState } from "../../root";
     import {ADRMutation} from "../../store/adr/mutations";
-    import { Release } from "../../types";
     import { BaselineState } from "../../store/baseline/baseline";
+    import { PropType, defineComponent } from "vue";
+    import { Release } from "../../types";
 
     interface Data {
         releaseId: string | undefined;
         choiceADR: "useLatest" | "useRelease";
     }
 
-    interface Methods {
-        getReleases: (id: string) => void;
-        clearReleases: () => void;
-        translate(text: string): string;
-        preSelectRelease: () => void;
-    }
-
-    interface Computed {
-        releases: Release[];
-        initialRelease: string | undefined;
-        valid: boolean;
-        releaseOptions: any[];
-        useRelease: boolean;
-        currentLanguage: Language;
-    }
-
-    interface Props {
-        datasetId: string | null;
-        open: boolean;
-    }
-
     const namespace = "adr";
 
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent({
         components: {
-            TreeSelect,
-            HelpCircleIcon,
+            HintTreeSelect,
+            VueFeather,
         },
         props: {
-            datasetId: String,
-            open: Boolean
+            datasetId: {
+                type: [String, null] as PropType<string | null>,
+                required: true
+            },
+            open: {
+                type: Boolean,
+                required: false
+            }
         },
-        data() {
+        data(): Data {
             return {
                 releaseId: undefined,
                 choiceADR: "useLatest",
             };
         },
         computed: {
-            releases: mapStateProp<ADRState, any[]>(
+            releases: mapStateProp<ADRState, Release[]>(
                 namespace,
                 (state: ADRState) => state.releases
             ),
@@ -144,16 +122,16 @@
         },
         methods: {
             getReleases: mapActionByName(namespace, "getReleases"),
-            translate(text) {
+            translate(text: string) {
                 return i18next.t(text, { lng: this.currentLanguage });
             },
             clearReleases: mapMutationByName(namespace, ADRMutation.ClearReleases),
             preSelectRelease(){
                 const selectedReleaseId = this.initialRelease
-                if (selectedReleaseId && this.releases.some(release => release.id === selectedReleaseId)){
+                if (selectedReleaseId && this.releases.some((release) => release.id === selectedReleaseId)){
                     this.choiceADR = "useRelease"
                     this.releaseId = selectedReleaseId;
-                } else if (selectedReleaseId && !this.releases.some(release => release.id === selectedReleaseId)) {
+                } else if (selectedReleaseId && !this.releases.some((release) => release.id === selectedReleaseId)) {
                     this.choiceADR = "useLatest"
                 }
             }
@@ -172,7 +150,7 @@
                 }
             },
             releaseId() {
-                this.$emit("selected-dataset-release", this.releases.find(release => release.id === this.releaseId))
+                this.$emit("selected-dataset-release", this.releases.find((release) => release.id === this.releaseId))
             },
             valid() {
                 this.$emit("valid", this.valid);
@@ -190,9 +168,6 @@
             this.preSelectRelease();
             this.$emit("selected-dataset-release", this.releaseId);
             this.$emit("valid", this.valid);
-        },
-        directives: {
-            tooltip: VTooltip,
-        },
+        }
     });
 </script>

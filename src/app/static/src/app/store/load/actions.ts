@@ -13,7 +13,7 @@ import {router} from "../../router";
 import {currentHintVersion} from "../../hintVersion";
 import {initialStepperState} from "../stepper/stepper";
 import {CalibrateResultResponse, ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generated";
-import {DynamicFormData} from "@reside-ic/vue-dynamic-form";
+import {DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult" | "SetProjectName" | "RehydrateCancel"
@@ -87,13 +87,12 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
         const completeLoad = () => {
             getFilesAndLoad(context, versionDetails.files, JSON.parse(versionDetails.state));
-        }
+        };
 
         const home = "/";
-        if (router.currentRoute.path === home) {
-            completeLoad();
-        } else {
-            router.push(home, completeLoad);
+        completeLoad();
+        if (router.currentRoute.value.path !== home) {
+            router.push(home);
         }
     },
 

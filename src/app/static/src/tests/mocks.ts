@@ -45,7 +45,7 @@ import {ADRUploadState, initialADRUploadState} from "../app/store/adrUpload/adrU
 import {DownloadResultsState, initialDownloadResultsState} from "../app/store/downloadResults/downloadResults";
 import {GenericChartState, initialGenericChartState} from "../app/store/genericChart/genericChart";
 import {DataExplorationState, initialDataExplorationState} from "../app/store/dataExploration/dataExploration";
-import {DynamicControlType, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {DynamicControlType, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 
 export const mockAxios = new MockAdapter(axios);
 

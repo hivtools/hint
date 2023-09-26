@@ -7,49 +7,39 @@
                            :label="filter.label"
                            :options="filter.options"
                            :disabled="filter.options.length===0"
-                           @select="onFilterSelect(filter, $event)"></filter-select>
+                           @update:filter-select="onFilterSelect(filter, $event)"></filter-select>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import FilterSelect from "./FilterSelect.vue";
     import {Dict, DisplayFilter} from "../../types";
     import {FilterOption} from "../../generated";
+    import { PropType, defineComponent } from "vue";
 
-    interface Props {
-        filters: DisplayFilter[],
-        selectedFilterOptions: Dict<FilterOption[]>,
-    }
-
-    interface Methods {
-        getSelectedFilterValues: (filterId: string) => string[],
-        onFilterSelect: (filter: DisplayFilter, selectedOptions: FilterOption[]) => void
-    }
-
-    const props = {
-        filters: {
-            type: Array
-        },
-        selectedFilterOptions: {
-            type: Object
-        }
-    };
-
-    export default Vue.extend<unknown, Methods, unknown, Props>({
+    export default defineComponent({
         name: "Filters",
         components: {FilterSelect},
-        props: props,
+        props: {
+            filters: {
+                type: Array as PropType<DisplayFilter[]>,
+                required: true
+            },
+            selectedFilterOptions: {
+                type: Object as PropType<Dict<FilterOption[]>>,
+                required: true
+            }
+        },
         methods: {
             getSelectedFilterValues(filterId: string) {
-                return (this.selectedFilterOptions[filterId] || []).map(o => o.id);
+                return (this.selectedFilterOptions[filterId] || []).map((o: FilterOption) => o.id);
             },
             onFilterSelect(filter: DisplayFilter, selectedOptions: FilterOption[]) {
                 const newSelectedFilterOptions = {...this.selectedFilterOptions};
                 newSelectedFilterOptions[filter.id] = selectedOptions;
 
-                this.$emit("update", newSelectedFilterOptions);
+                this.$emit("update:filters", newSelectedFilterOptions);
             },
         }
     });

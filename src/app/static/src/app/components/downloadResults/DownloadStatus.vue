@@ -10,14 +10,14 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue"
+    import { defineComponent } from "vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
 
     interface Props {
         preparing: boolean,
         translateKey: string
     }
-    export default Vue.extend<unknown, unknown, unknown, Props>({
+    export default defineComponent({
         name: "DownloadStatus",
         components: {
             LoadingSpinner

@@ -1,45 +1,45 @@
 <template>
     <div class="row">
-        <filters class="col-md-3" v-if="includeFilters"
+        <filters-comp class="col-md-3" v-if="includeFilters"
                  :filters="filters"
                  :selectedFilterOptions="selections.selectedFilterOptions"
-                 @update="onFilterSelectionsChange"></filters>
+                 @update:filters="onFilterSelectionsChange"></filters-comp>
         <div id="chart" :class="includeFilters ? 'col-md-9' : 'col-md-12'">
-            <l-map ref="map" style="height: 800px; width: 100%">
-                <template v-for="feature in currentFeatures">
-                    <l-geo-json ref="" :key="feature.id"
-                                :geojson="feature"
+            <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds">
+                <template v-for="feature in currentFeatures" :key="feature.properties.area_id">
+                    <l-geo-json :geojson="feature"
                                 :options="options"
-                                :optionsStyle="{...style, fillColor: getColor(feature)}">
+                                :optionsStyle="() => {return {...style, fillColor: getColor(feature)}}">
                     </l-geo-json>
                 </template>
                 <map-empty-feature v-if="emptyFeature"></map-empty-feature>
                 <reset-map v-else @reset-view="updateBounds"></reset-map>
-                <map-control :initialDetail=selections.detail
-                             :indicator=selections.indicatorId
-                             :show-indicators="true"
-                             :indicators-metadata="indicators"
-                             :level-labels="featureLevels"
-                             @detail-changed="onDetailChange"
-                             @indicator-changed="onIndicatorChange"></map-control>
-                <map-legend v-show="!emptyFeature"
-                            :metadata="colorIndicator"
-                            :colour-scale="indicatorColourScale"
-                            :colour-range="colourRange"
-                            @update="updateColourScale"></map-legend>
+                <template>
+                    <map-control :initialDetail="selections.detail"
+                                :indicator="selections.indicatorId"
+                                :show-indicators="true"
+                                :indicators-metadata="indicators"
+                                :level-labels="featureLevels"
+                                @detail-changed="onDetailChange"
+                                @indicator-changed="onIndicatorChange"></map-control>
+                    <map-legend v-show="!emptyFeature"
+                                :metadata="colorIndicator"
+                                :colour-scale="indicatorColourScale"
+                                :colour-range="colourRange"
+                                @update="updateColourScale"></map-legend>
+                </template>
             </l-map>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import {Feature} from "geojson";
-    import {LGeoJson, LMap} from "vue2-leaflet";
+    import {LGeoJson, LMap} from "@vue-leaflet/vue-leaflet";
     import {GeoJSON, Layer, GeoJSONOptions} from "leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
-    import Filters from "../Filters.vue";
+    import FiltersComp from "../Filters.vue";
     import MapEmptyFeature from "../MapEmptyFeature.vue";
     import ResetMap from "../ResetMap.vue";
     import {ChoroplethIndicatorMetadata, FilterOption, NestedFilterOption} from "../../../generated";
@@ -53,19 +53,9 @@
     import {getFeatureIndicator, initialiseScaleFromMetadata} from "./utils";
     import {Dict, Filter, IndicatorValuesDict, LevelLabel, NumericRange} from "../../../types";
     import {flattenOptions, flattenToIdSet} from "../../../utils";
+    import { PropType, defineComponent } from "vue";
 
-    interface Props {
-        features: Feature[],
-        featureLevels: LevelLabel[]
-        indicators: ChoroplethIndicatorMetadata[],
-        chartdata: any[],
-        filters: Filter[],
-        selections: ChoroplethSelections,
-        colourScales: ScaleSelections,
-        areaFilterId: string,
-        includeFilters: boolean
-        roundFormatOutput: boolean
-    }
+   
 
     interface Data {
         style: any,
@@ -107,52 +97,60 @@
         emptyFeature: boolean
     }
 
-    const props = {
-        features: {
-            type: Array
-        },
-        featureLevels: {
-            type: Array
-        },
-        indicators: {
-            type: Array
-        },
-        chartdata: {
-            type: Array
-        },
-        filters: {
-            type: Array
-        },
-        selections: {
-            type: Object
-        },
-        colourScales: {
-            type: Object
-        },
-        areaFilterId: {
-            type: String
-        },
-        includeFilters: {
-            type: Boolean
-        },
-        roundFormatOutput: {
-            type: Boolean,
-            default: true
-        }
-    };
-
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent({
         name: "Choropleth",
         components: {
             LMap,
             LGeoJson,
             MapControl,
             MapLegend,
-            Filters,
+            FiltersComp,
             MapEmptyFeature,
             ResetMap
         },
-        props: props,
+        props: {
+            features: {
+                type: Array as PropType<Feature[]>,
+                required: true
+            },
+            featureLevels: {
+                type: Array as PropType<LevelLabel[]>,
+                required: true
+            },
+            indicators: {
+                type: Array as PropType<ChoroplethIndicatorMetadata[]>,
+                required: true
+            },
+            chartdata: {
+                type: Array as PropType<any[]>,
+                required: true
+            },
+            filters: {
+                type: Array as PropType<Filter[]>,
+                required: true
+            },
+            selections: {
+                type: Object as PropType<ChoroplethSelections>,
+                required: true
+            },
+            colourScales: {
+                type: Object as PropType<ScaleSelections>,
+                required: true
+            },
+            areaFilterId: {
+                type: String,
+                required: true
+            },
+            includeFilters: {
+                type: Boolean,
+                required: true
+            },
+            roundFormatOutput: {
+                type: Boolean,
+                required: false,
+                default: true
+            }
+        },
         data(): Data {
             return {
                 style: {
@@ -163,12 +161,12 @@
         },
         computed: {
             initialised() {
-                const unsetFilters = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
+                const unsetFilters: Filter[] = this.nonAreaFilters.filter((f: Filter) => !this.selections.selectedFilterOptions[f.id]);
                 return unsetFilters.length == 0 && this.selections.detail > -1 &&
                     !!this.selections.indicatorId && !!this.colorIndicator;
             },
             emptyFeature() {
-                const nonEmptyFeature = (this.currentFeatures.filter(filtered => !!this.featureIndicators[filtered.properties!.area_id]))
+                const nonEmptyFeature = (this.currentFeatures.filter((filtered: Feature) => !!this.featureIndicators[filtered.properties!.area_id]))
                 return nonEmptyFeature.length == 0
             },
             colourRange() {
@@ -192,7 +190,7 @@
                                 this.colorIndicator,
                                 this.nonAreaFilters,
                                 this.selections.selectedFilterOptions,
-                                this.selectedAreaIds.filter(a => this.currentLevelFeatureIds.indexOf(a) > -1)
+                                this.selectedAreaIds.filter((a: string) => this.currentLevelFeatureIds.indexOf(a) > -1)
                             );
                         case ScaleType.Custom:
                             return {
@@ -206,12 +204,12 @@
                 }
             },
             selectedAreaIds() {
-                const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map(o => o.id), this.flattenedAreas);
+                const selectedAreaIdSet = flattenToIdSet(this.selectedAreaFilterOptions.map((o: FilterOption) => o.id), this.flattenedAreas);
 
                 //Should also ensure include top level (country) included if no filters selected
                 const selectedOptions = this.selections.selectedFilterOptions[this.areaFilterId];
                 if (!selectedOptions || selectedOptions.length == 0) {
-                    this.currentLevelFeatureIds.forEach(id => selectedAreaIdSet.add(id));
+                    this.currentLevelFeatureIds.forEach((id: string) => selectedAreaIdSet.add(id));
                 }
 
                 return Array.from(selectedAreaIdSet);
@@ -231,7 +229,7 @@
                 }
             },
             featuresByLevel() {
-                const result = {} as any;
+                const result = {} as { [k: number]: Feature[] };
                 this.featureLevels.forEach((l: any) => {
                     if (l.display) {
                         result[l.id] = [];
@@ -244,7 +242,6 @@
                         result[adminLevel].push(feature);
                     }
                 });
-
                 return result;
             },
             maxLevel() {
@@ -255,7 +252,7 @@
                 return this.featuresByLevel[this.selections.detail] || [];
             },
             currentLevelFeatureIds() {
-                return this.currentFeatures.map(f => f.properties!["area_id"]);
+                return this.currentFeatures.map((f: Feature) => f.properties!["area_id"]);
             },
             indicatorNameLookup() {
                 return toIndicatorNameLookup(this.indicators)
@@ -278,12 +275,12 @@
             },
             selectedAreaFeatures(): Feature[] {
                 if (this.initialised) {
-                    return this.selectedAreaFilterOptions.map(o => this.getFeatureFromAreaId(o.id)!);
+                    return this.selectedAreaFilterOptions.map((o: FilterOption) => this.getFeatureFromAreaId(o.id)!);
                 }
                 return [];
             },
             colorIndicator(): ChoroplethIndicatorMetadata | undefined {
-                return this.indicators.find(i => i.indicator == this.selections.indicatorId);
+                return this.indicators.find((i: ChoroplethIndicatorMetadata) => i.indicator == this.selections.indicatorId);
             },
             indicatorColourScale(): ScaleSettings | null {
                 const current = this.colourScales[this.selections.indicatorId];
@@ -342,7 +339,7 @@
                     this.onDetailChange(this.maxLevel);
                 }
 
-                if (!this.selections.indicatorId || !this.indicators.some(i => i.indicator == this.selections.indicatorId)) {
+                if (!this.selections.indicatorId || !this.indicators.some((i: ChoroplethIndicatorMetadata) => i.indicator == this.selections.indicatorId)) {
                     const indicator = this.indicatorNameLookup.prevalence ? "prevalence" : this.indicators[0].indicator;
                     this.changeSelections({indicatorId: indicator});
                 }
@@ -351,7 +348,7 @@
                 const refreshSelected = this.nonAreaFilters.reduce((obj: any, current: Filter) => {
                     const currentOptionIds = current.options.map(o => o.id);
                     let newSels = existingFilterSels[current.id] ?
-                        existingFilterSels[current.id].filter(o => currentOptionIds.indexOf(o.id) > -1) : [];
+                        existingFilterSels[current.id].filter((o: FilterOption) => currentOptionIds.indexOf(o.id) > -1) : [];
 
                     if (newSels.length == 0) {
                         newSels = current.options.length > 0 ? [current.options[0]] : [];
@@ -367,10 +364,10 @@
             },
             updateBounds: function () {
                 if (this.initialised) {
-                    const map = this.$refs.map as LMap;
-
-                    if (map && map.fitBounds) {
-                        map.fitBounds(this.selectedAreaFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
+                    let map = this.$refs.map as any;
+                    
+                    if (map && map.leafletObject) {
+                        map.leafletObject.fitBounds(this.selectedAreaFeatures.map((f: Feature) => new GeoJSON(f).getBounds()) as any);
                     }
                 }
             },
@@ -397,7 +394,7 @@
                 this.changeSelections({selectedFilterOptions: newSelections});
             },
             changeSelections(newSelections: Partial<ChoroplethSelections>) {
-                this.$emit("update", newSelections)
+                this.$emit("update:selections", newSelections)
             },
             updateColourScale: function (scale: ScaleSettings) {
                 const newColourScales = {...this.colourScales};
@@ -411,14 +408,7 @@
                 return {id: node.indicator, label: node.name};
             }
         },
-        watch:
-            {
-                initialised: function (newVal: boolean) {
-                    this.updateBounds();
-                },
-                selectedAreaFeatures: function (newVal) {
-                    this.updateBounds();
-                },
+        watch: {
                 filters: function () {
                     this.initialise();
                 },
@@ -426,11 +416,11 @@
                     this.initialise();
                 },
             },
-        created() {
+        beforeMount() {
             this.initialise();
         },
-        mounted() {
+        updated() {
             this.updateBounds();
-        }
+        },
     });
 </script>

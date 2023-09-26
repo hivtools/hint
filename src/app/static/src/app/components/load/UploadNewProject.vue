@@ -38,40 +38,26 @@
     import {LoadingState, LoadState} from "../../store/load/state";
     import LoadErrorModal from "./LoadErrorModal.vue";
     import ProjectsMixin from "../projects/ProjectsMixin";
+    import { PropType, defineComponent } from "vue";
 
-    interface Props {
-        openModal: boolean
-        submitLoad: () => void
-        cancelLoad: () => void
-    }
-
-    interface Data {
-        uploadProjectName: string
-    }
-
-    interface Methods {
-        cancelRehydration: () => void;
-        setProjectName: (name: string) => void;
-        getProjects: () => void;
-    }
-
-    interface LoadComputed {
-        preparing: boolean
-    }
-
-    interface Computed extends  LoadComputed {
-        disableCreate: boolean
-        isGuest: boolean
-    }
-
-    export default ProjectsMixin.extend<Data, Methods, Computed, Props>({
+    export default defineComponent({
+        extends: ProjectsMixin,
         name: "UploadNewProject",
         props: {
-            openModal: Boolean,
-            submitLoad: Function,
-            cancelLoad: Function
+            openModal: {
+                type: Boolean,
+                required: true
+            },
+            submitLoad: {
+                type: Function as PropType<() => void>,
+                required: true
+            },
+            cancelLoad: {
+                type: Function as PropType<() => void>,
+                required: true
+            }
         },
-        data(): Data {
+        data() {
             return {
                 uploadProjectName: ""
             }
@@ -82,8 +68,8 @@
             getProjects: mapActionByName("projects", "getProjects")
         },
         computed: {
-            ...mapStateProps<LoadState, keyof LoadComputed>("load", {
-                preparing: state => state.preparing
+            ...mapStateProps("load", {
+                preparing: (state: LoadState) => state.preparing
             }),
             disableCreate() {
                 return !this.uploadProjectName || this.invalidName(this.uploadProjectName)
@@ -96,7 +82,7 @@
             LoadErrorModal
         },
         watch: {
-            uploadProjectName(newValue) {
+            uploadProjectName(newValue) {ProjectsMixin
                 this.setProjectName(newValue)
             }
         },

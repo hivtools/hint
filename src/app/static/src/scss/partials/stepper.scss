@@ -9,8 +9,8 @@
     margin: 0 auto;
     display: block;
 
-    @extend .rounded-circle;
-    @extend .mb-1;
+    @extend .rounded-circle !optional;
+    @extend .mb-1 !optional;
 
     height: 50px;
     width: 50px;

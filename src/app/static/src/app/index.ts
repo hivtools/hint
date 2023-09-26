@@ -1,71 +1,86 @@
-import Vue from "vue";
-import {store} from "./main"
-import {router} from "./router";
-import UserHeader from "./components/header/UserHeader.vue";
-import Errors from "./components/Errors.vue";
-import Stepper from "./components/Stepper.vue";
-import Projects from "./components/projects/Projects.vue";
-import Accessibility from "./components/Accessibility.vue";
-import Privacy from "./components/Privacy.vue";
-import {mapActions, mapState} from "vuex";
-import {RootState} from "./root";
-import VueRouter, {NavigationGuardNext} from "vue-router";
-import {Route} from "vue-router/types/router";
-import {Language} from "./store/translations/locales";
+import {createApp} from "vue";
+import {store, storeDataExploration, storePassword} from "./main"
+import {router, routerDataExploration} from "./router"
+import translate from "./directives/translate";
+import FloatingVue from "floating-vue";
+import Hint from "./components/Hint.vue"
+import HintDataExploration from "./components/HintDataExploration.vue";
+import ForgotPassword from "./components/password/ForgotPassword.vue";
+import ResetPassword from "./components/password/ResetPassword.vue";
+import 'floating-vue/dist/style.css';
+import "../scss/style.scss";
+import "bootstrap/scss/bootstrap-grid.scss";
 
-Vue.use(VueRouter);
+const mountEl = document.querySelector("#app");
+const mountElDataExploration = document.querySelector("#dataExplorationApp");
+const mountElForgotPassword = document.querySelector("#forgotPasswordApp");
+const mountElResetPassword = document.querySelector("#resetPasswordApp");
 
-export const beforeEnter = (to: Route, from: Route, next: NavigationGuardNext) => {
-    if (store.state.currentUser === "guest" && !sessionStorage.getItem("asGuest")) {
-        window.location.assign("/login");
-    } else {
-        next();
+// tooltip options
+const options = {
+    // Set float distance so that the arrow does not overlap
+    // the tooltip icon. This was causing multiple mouse
+    // events to be triggered causing the tooltip to flicker
+    distance: 12,
+    themes: {
+        'tooltip': {
+            html: true,
+            delay: {
+                show: 0,
+                hide: 0,
+            },
+        },
     }
 }
 
-router.addRoutes([
-    {
-        path: "/",
-        component: Stepper,
-        beforeEnter
-    },
-    {path: "/accessibility", component: Accessibility},
-    {path: "/privacy", component: Privacy},
-    {path: "/projects", component: Projects}
-]);
+const getApp = () => {
+    if (mountEl) {
+        const app = createApp(Hint, {...(mountEl as HTMLDivElement).dataset});
+        app.use(store);
+        app.use(router);
 
-export const app = new Vue({
-    el: "#app",
-    store,
-    router,
-    components: {
-        UserHeader,
-        Errors
-    },
-    computed: mapState<RootState>({
-        language: (state: RootState) => state.language
-    }),
-    methods: {
-        ...mapActions({loadBaseline: 'baseline/getBaselineData'}),
-        ...mapActions({loadSurveyAndProgram: 'surveyAndProgram/getSurveyAndProgramData'}),
-        ...mapActions({loadModelRun: 'modelRun/getResult'}),
-        ...mapActions({loadModelCalibrate: 'modelCalibrate/getResult'}),
-        ...mapActions({getADRSchemas: 'adr/getSchemas'}),
-        ...mapActions({getCurrentProject: 'projects/getCurrentProject'}),
-        ...mapActions({getGenericChartMetadata: 'genericChart/getGenericChartMetadata'})
-    },
-    beforeMount: function () {
-        this.loadBaseline();
-        this.loadSurveyAndProgram();
-        this.loadModelRun();
-        this.loadModelCalibrate();
-        this.getADRSchemas();
-        this.getGenericChartMetadata();
-        this.getCurrentProject();
-    },
-    watch: {
-        language(newVal: Language) {
-            document.documentElement.lang = newVal
-        }
+        app.use(FloatingVue, options);
+
+        app.directive("translate", translate(store));
+        app.config.globalProperties.$store = store;
+
+        app.mount('#app');
+
+        return app
+    } else if (mountElDataExploration) {
+        const app = createApp(HintDataExploration, {...(mountElDataExploration as HTMLDivElement).dataset});
+        app.use(storeDataExploration);
+        app.use(routerDataExploration);
+
+        app.use(FloatingVue, options);
+        app.directive("translate", translate(storeDataExploration));
+        
+        app.mount('#dataExplorationApp');
+        
+        return app
+    } else if (mountElForgotPassword) {
+        const app = createApp(ForgotPassword, {...(mountElForgotPassword as HTMLDivElement).dataset});
+        app.use(storePassword);
+
+        app.use(FloatingVue, options);
+        app.directive("translate", translate(storePassword));
+
+        app.mount("#forgotPasswordApp");
+
+        return app
+    } else if (mountElResetPassword) {
+        const app = createApp(ResetPassword, {...(mountElResetPassword as HTMLDivElement).dataset});
+        app.use(storePassword);
+
+        app.use(FloatingVue, options);
+        app.directive("translate", translate(storePassword));
+
+        app.mount("#resetPasswordApp");
+
+        return app
+    } else {
+        return {}
     }
-});
+}
+
+export default getApp();

@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue"
+    import {defineComponent} from "vue"
     import Modal from "../Modal.vue";
     import {mapActionByName, mapGetterByName, mapStateProp, mapStateProps} from "../../utils";
     import {RootState} from "../../root";
@@ -59,34 +59,20 @@
       steps: StepDescription[]
     }
 
-    interface Computed extends ProjectComputed, StepperComputed {
-      invalidSteps: number[],
-      hasInvalidSteps: boolean,      
-      isGuest: boolean,
-      stepTextKeys: Record<number, string>
-    }
-
-    interface Methods {
-      rollbackInvalidState: () => void,
-      loadVersion: (versionIds: VersionIds) => void,
-      retryLoad: () => void,
-      stepTextKey: (stepNumber: number) => string
-    }
-
-    export default Vue.extend<unknown, Methods, Computed>({
+    export default defineComponent({
         name: "LoadInvalidModal",
         computed: {
-          ...mapStateProps<ProjectsState, keyof ProjectComputed>("projects", {
-            currentProject: state => state.currentProject,
-            currentVersion: state => state.currentVersion
+          ...mapStateProps("projects", {
+            currentProject: (state: ProjectsState) => state.currentProject,
+            currentVersion: (state: ProjectsState) => state.currentVersion
           }),
-          ...mapStateProps<StepperState, keyof StepperComputed>("stepper", {
-            steps: state => state.steps
+          ...mapStateProps("stepper", {
+            steps: (state: StepperState) => state.steps
           }),
           invalidSteps: mapStateProp<RootState, number[]>(null, (state) => state.invalidSteps),
           isGuest: mapGetterByName(null, "isGuest"),
           stepTextKeys: mapGetterByName("stepper", "stepTextKeys"),
-          hasInvalidSteps: function() { return this.invalidSteps?.length > 0; }
+          hasInvalidSteps: function(): boolean { return this.invalidSteps?.length > 0; }
         },
         methods: {
           rollbackInvalidState: mapActionByName(null, "rollbackInvalidState"),

@@ -1,4 +1,3 @@
-import jsonata from "jsonata";
 import {actions} from "../../../app/store/genericChart/actions";
 import {login, rootState} from "../integrationTest";
 import {GenericChartDataset, GenericChartMetadataResponse} from "../../../app/types";

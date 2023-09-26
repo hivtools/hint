@@ -22,7 +22,7 @@
                                v-on:click="handleRequestResetLink"/>
                     </div>
                 </form>
-                <error-alert v-if="hasError" :error="error"></error-alert>
+                <error-alert v-if="hasError" :error="error!"></error-alert>
                 <div v-if="resetLinkRequested"
                      class="alert alert-success mt-4"
                      role="alert"
@@ -34,27 +34,35 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import ErrorAlert from "../ErrorAlert.vue";
-    import {mapActions, mapState} from "vuex";
+    import {mapActions} from "vuex";
     import {PasswordState} from "../../store/password/password";
     import LoggedOutHeader from "../header/LoggedOutHeader.vue";
     import {Language} from "../../store/translations/locales";
+    import { mapStateProps } from "../../utils";
+    import { defineComponent } from "vue";
 
-    export default Vue.extend({
+    export default defineComponent({
         name: "ForgotPassword",
-        props: ["title"],
+        props: {
+            title: {
+                type: String,
+                required: true
+            }
+        },
         data: () => {
             return {
                 email: ""
             };
         },
-        computed: mapState<PasswordState>({
+        computed: {
+        ...mapStateProps("password", {
             error: (state: PasswordState) => state.requestResetLinkError,
             hasError: (state: PasswordState) => !!state.requestResetLinkError,
             resetLinkRequested: (state: PasswordState) => state.resetLinkRequested,
             language: (state: PasswordState) => state.language
-        }),
+        })
+        },
         components: {
             ErrorAlert,
             LoggedOutHeader

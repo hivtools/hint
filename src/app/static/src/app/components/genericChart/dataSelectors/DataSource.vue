@@ -11,29 +11,22 @@
 
 <script lang="ts">
     import {DatasetConfig, DataSourceConfig} from "../../../types";
-    import Vue from "vue";
+    import { defineComponent, PropType } from "vue";
 
-    interface Props {
-        config: DataSourceConfig,
-        datasets: DatasetConfig[],
-        value: string
-    }
-
-    interface Computed {
-        selected: string
-    }
-
-    export default Vue.extend<unknown, unknown, Computed, Props>( {
+    export default defineComponent({
         name: "DataSource",
         props: {
             config: {
-                type: Object
+                type: Object as PropType<DataSourceConfig>,
+                required: true
             },
             datasets: {
-                type: Array
+                type: Array as PropType<DatasetConfig[]>,
+                required: true
             },
             value: {
-                type: String
+                type: String as PropType<string>,
+                required: true
             }
         },
         computed: {

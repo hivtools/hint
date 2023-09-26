@@ -1,11 +1,13 @@
-import {mount, RouterLinkStub} from "@vue/test-utils";
+import {flushPromises, mount, RouterLinkStub} from "@vue/test-utils";
 import LoadInvalidModal from "../../../app/components/load/LoadInvalidModal.vue"
 import Vuex from "vuex";
 import {emptyState, RootState} from "../../../app/root";
 import {initialStepperState} from "../../../app/store/stepper/stepper";
-import {expectHasTranslationKey, expectTranslated} from "../../testHelpers";
+import {expectHasTranslationKey, expectTranslated, mountWithTranslate} from "../../testHelpers";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {getters as stepperGetters} from "../../../app/store/stepper/getters";
+import { nextTick } from "vue";
+import translate from "../../../app/directives/translate";
 
 const mockRollbackInvalidState = jest.fn();
 const mockLoadVersion = jest.fn();
@@ -14,7 +16,7 @@ const stubs = {
 };
 
 const getStore = (invalidSteps: number[], isGuest: boolean) => {
-    return new Vuex.Store<RootState>({
+    const store = new Vuex.Store<RootState>({
         state: {
             ...emptyState(),
             invalidSteps
@@ -47,6 +49,8 @@ const getStore = (invalidSteps: number[], isGuest: boolean) => {
             }
         }
     });
+    registerTranslations(store);
+    return store;
 };
 
 describe("loadInvalidModal", () => {
@@ -73,11 +77,13 @@ describe("loadInvalidModal", () => {
     const getWrapper = (invalidSteps: number[] = [], isGuest: boolean = false) => {
         const store = getStore(invalidSteps, isGuest);
         return mount(LoadInvalidModal, {
-            store,
-            directives: {
-                translate: mockTranslate
-            },
-            stubs
+            global: {
+                plugins: [store],
+                directives: {
+                    translate: mockTranslate
+                },
+                stubs
+            }
         })
     }
 
@@ -92,41 +98,41 @@ describe("loadInvalidModal", () => {
 
     it("can render error modal as expected where there are invalid steps", () => {
         const wrapper = getWrapper([2, 3]);
-        expectHasTranslationKey(wrapper.find("span#load-invalid-steps"), "loadInvalidSteps");
+        expectHasTranslationKey(wrapper.find("span#load-invalid-steps"), mockTranslate, "loadInvalidSteps");
         const stepsListItems = wrapper.findAll("ul#load-invalid-steps-list li");
         expect(stepsListItems.length).toBe(2);
-        expectHasTranslationKey(stepsListItems.at(0), "reviewInputs");
-        expectHasTranslationKey(stepsListItems.at(1), "modelOptions");
-        expectHasTranslationKey(wrapper.find("span#load-invalid-action-prefix"), "loadInvalidActionPrefix");
-        expectHasTranslationKey(wrapper.find("span#load-invalid-first-invalid"), "reviewInputs");
-        expectHasTranslationKey(wrapper.find("span#load-invalid-action-suffix"), "loadInvalidActionSuffix");
-        expectHasTranslationKey(wrapper.find("p#load-invalid-steps-rollback-info"), "loadInvalidStepsRollbackInfo");
+        expectHasTranslationKey(stepsListItems[0], mockTranslate, "reviewInputs");
+        expectHasTranslationKey(stepsListItems[1], mockTranslate, "modelOptions");
+        expectHasTranslationKey(wrapper.find("span#load-invalid-action-prefix"), mockTranslate, "loadInvalidActionPrefix");
+        expectHasTranslationKey(wrapper.find("span#load-invalid-first-invalid"), mockTranslate, "reviewInputs");
+        expectHasTranslationKey(wrapper.find("span#load-invalid-action-suffix"), mockTranslate, "loadInvalidActionSuffix");
+        expectHasTranslationKey(wrapper.find("p#load-invalid-steps-rollback-info"), mockTranslate, "loadInvalidStepsRollbackInfo");
         expect(wrapper.find("#load-invalid-steps-rollback-info-guest").exists()).toBe(false);
 
         const retryBtn = wrapper.find("button#retry-load");
-        expectHasTranslationKey(retryBtn, "retry");
-        expectHasTranslationKey(retryBtn, "retry", "aria-label");
+        expectHasTranslationKey(retryBtn, mockTranslate, "retry");
+        expectHasTranslationKey(retryBtn, mockTranslate, "retry", "aria-label");
         const rollbackBtn = wrapper.find("button#rollback-load");
-        expectHasTranslationKey(rollbackBtn, "rollback");
-        expectHasTranslationKey(rollbackBtn, "rollback", "aria-label");
+        expectHasTranslationKey(rollbackBtn, mockTranslate, "rollback");
+        expectHasTranslationKey(rollbackBtn, mockTranslate, "rollback", "aria-label");
     });
 
     it("renders rollback information for guest user", () => {
         const wrapper = getWrapper([2, 3], true);
         const info = wrapper.find("p#load-invalid-steps-rollback-info-guest");
-        expectHasTranslationKey(info, "loadInvalidStepsRollbackInfoGuest");
+        expectHasTranslationKey(info, mockTranslate, "loadInvalidStepsRollbackInfoGuest");
         expect(wrapper.find("#load-invalid-steps-rollback-info").exists()).toBe(false);
     });
 
     it("displays Projects page link if not guest user", () => {
         const wrapper = getWrapper([1]);
         const projectsPara = wrapper.find("p#load-invalid-projects");
-        expectHasTranslationKey(projectsPara.find("span#load-invalid-projects-prefix"), "loadInvalidStepsProjectLinkPrefix");
-        const routerLink = projectsPara.find(RouterLinkStub);
+        expectHasTranslationKey(projectsPara.find("span#load-invalid-projects-prefix"), mockTranslate, "loadInvalidStepsProjectLinkPrefix");
+        const routerLink = projectsPara.findComponent(RouterLinkStub);
         expect(routerLink.props("to")).toBe("/projects");
-        expectHasTranslationKey(routerLink, "projects");
-        expectHasTranslationKey(routerLink, "projects", "aria-label");
-        expectHasTranslationKey(projectsPara.find("span#load-invalid-projects-suffix"), "loadInvalidStepsProjectLinkSuffix");
+        expectHasTranslationKey(routerLink as any, mockTranslate, "projects");
+        expectHasTranslationKey(routerLink as any, mockTranslate, "projects", "aria-label");
+        expectHasTranslationKey(projectsPara.find("span#load-invalid-projects-suffix"), mockTranslate, "loadInvalidStepsProjectLinkSuffix");
     });
 
     it("does not display Projects page link if guest user", () => {
@@ -156,73 +162,78 @@ describe("loadInvalidModal", () => {
 });
 
 describe("loadInvalidModal translations", () => {
+    const mockTranslate = jest.fn();
     const getWrapper = (invalidSteps: number[] = [], isGuest: boolean = false)  => {
         const store = getStore(invalidSteps, isGuest);
-        registerTranslations(store);
-        return mount(LoadInvalidModal, { store, stubs });
+        return mountWithTranslate(LoadInvalidModal, store, {
+            global: {
+                plugins: [store],
+                stubs,
+            }
+        });
     };
 
-    it("can display expected translations where there are invalid steps", () => {
+    it("can display expected translations where there are invalid steps", async () => {
         const wrapper = getWrapper([2, 3]);
         const store = wrapper.vm.$store;
 
-        expectTranslated(wrapper.find("span#load-invalid-steps"), "There was a problem loading the following steps:",
+        await expectTranslated(wrapper.find("span#load-invalid-steps"), "There was a problem loading the following steps:",
             "Un problème est survenu lors du chargement des étapes suivantes:",
             "Ocorreu um problema ao carregar as seguintes etapas:", store);
 
 
         const stepsListItems = wrapper.findAll("ul#load-invalid-steps-list li");
 
-        expectTranslated(stepsListItems.at(0), "Review inputs", "Examiner les entrées",
+        await expectTranslated(stepsListItems[0], "Review inputs", "Examiner les entrées",
             "Analise as entradas", store);
-        expectTranslated(stepsListItems.at(1), "Model options", "Options des modèles",
+        await expectTranslated(stepsListItems[1], "Model options", "Options des modèles",
             "Opções de modelos", store);
 
-        expectTranslated(wrapper.find("span#load-invalid-action-prefix"),
+        await expectTranslated(wrapper.find("span#load-invalid-action-prefix"),
             "Please Retry load. If the problem persists, Rollback to re-run from the",
             "Veuillez Refaire de charger. Si le problème persiste, Revenir en arrière pour relancer à partir du",
             "Por favor Tente carregar novamente. Se o problema persistir, Reverter para executar novamente a partir do", store);
 
-        expectTranslated(wrapper.find("span#load-invalid-first-invalid"), "Review inputs", "Examiner les entrées",
+        await expectTranslated(wrapper.find("span#load-invalid-first-invalid"), "Review inputs", "Examiner les entrées",
             "Analise as entradas", store);
 
-        expectTranslated(wrapper.find("span#load-invalid-action-suffix"),
+        await expectTranslated(wrapper.find("span#load-invalid-action-suffix"),
             "step. Please also submit a troubleshooting request.",
             "étape. Veuillez également soumettre une demande de dépannage.",
             "etapa. Envie também uma solicitação de solução de problemas.", store);
 
-        expectTranslated(wrapper.find("p#load-invalid-steps-rollback-info"),
+        await expectTranslated(wrapper.find("p#load-invalid-steps-rollback-info"),
             "Rollback will be done in a new version - the current project version state will be preserved.",
             "Revenir en arrière sera effectuée dans une nouvelle version - l'état actuel de la version du projet sera conservé.",
             "Reverter será feita em uma nova versão - o estado da versão atual do projeto será preservado.", store);
 
         const retryBtn = wrapper.find("button#retry-load");
-        expectTranslated(retryBtn, "Retry", "Refaire", "Tentar novamente", store);
-        expectTranslated(retryBtn, "Retry", "Refaire", "Tentar novamente", store, "aria-label");
+        await expectTranslated(retryBtn, "Retry", "Refaire", "Tentar novamente", store);
+        await expectTranslated(retryBtn, "Retry", "Refaire", "Tentar novamente", store, "aria-label");
 
         const rollbackBtn = wrapper.find("button#rollback-load");
-        expectTranslated(rollbackBtn, "Rollback", "Revenir en arrière", "Reverter", store);
-        expectTranslated(rollbackBtn, "Rollback", "Revenir en arrière", "Reverter", store, "aria-label");
+        await expectTranslated(rollbackBtn, "Rollback", "Revenir en arrière", "Reverter", store);
+        await expectTranslated(rollbackBtn, "Rollback", "Revenir en arrière", "Reverter", store, "aria-label");
     });
 
-    it("can display expected translations for rollback information when user is guest", () => {
+    it("can display expected translations for rollback information when user is guest", async () => {
         const wrapper = getWrapper([2, 3], true);
         const store = wrapper.vm.$store;
-        expectTranslated(wrapper.find("p#load-invalid-steps-rollback-info-guest"),
+        await expectTranslated(wrapper.find("p#load-invalid-steps-rollback-info-guest"),
             "Rollback will result in a loss of all project data from subsequent steps.",
             "Revenir en arrière entraînera la perte de toutes les données du projet des étapes suivantes.",
             "Reverter resultará na perda de todos os dados do projeto das etapas subsequentes.", store);
     });
 
 
-    it("can display Projects page link translations", () => {
+    it("can display Projects page link translations", async () => {
         const wrapper = getWrapper([1]);
         const store = wrapper.vm.$store;
-        expectTranslated(wrapper.find("#load-invalid-projects-prefix"), "You can also go back to",
+        await expectTranslated(wrapper.find("#load-invalid-projects-prefix"), "You can also go back to",
             "Vous pouvez également revenir à la page", "Você também pode voltar para a página", store);
-        expectTranslated(wrapper.find("#load-invalid-projects-link"), "Projects", "Projets", "Projetos"
+        await expectTranslated(wrapper.find("#load-invalid-projects-link"), "Projects", "Projets", "Projetos"
             , store);
-        expectTranslated(wrapper.find("#load-invalid-projects-suffix"),
+        await expectTranslated(wrapper.find("#load-invalid-projects-suffix"),
             "page - if you do this, you can try to load this project again later.",
             "- si vous faites cela, vous pouvez essayer de charger à nouveau ce projet plus tard.",
             "- se você fizer isso, você pode tentar carregar este projeto novamente mais tarde.", store);

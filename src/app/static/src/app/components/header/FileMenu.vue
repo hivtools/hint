@@ -1,11 +1,11 @@
 <template>
     <div style="flex:auto">
         <drop-down text="file">
-            <a class="dropdown-item" href="#"
-               @mousedown="$refs.loadZip.click()">
+            <p class="dropdown-item mb-0" tabindex="0"
+               @click="$refs.loadZip.click()">
                 <span v-translate="'loadZip'"></span>
-                <upload-icon size="20" class="icon"></upload-icon>
-            </a>
+                <vue-feather type="upload" size="20" class="icon ml-1"></vue-feather>
+            </p>
             <input id="upload-zip" v-translate:aria-label="'selectFile'"
                    type="file"
                    style="display: none;" ref="loadZip"
@@ -14,12 +14,12 @@
             <span v-if="loadJsonFeatureSwitch">
                 <a class="dropdown-item" tabindex="0" v-on:mousedown="save">
                     <span><span class="pr-1" v-translate="'save'"></span>JSON</span>
-                    <download-icon size="20" class="icon"></download-icon>
+                    <vue-feather type="download" size="20" class="icon"></vue-feather>
                 </a>
                 <a style="display:none" ref="save"></a>
-                <a class="dropdown-item" ref="load" href="#" v-on:mousedown="$refs.loadJson.click()">
+                <a class="dropdown-item" ref="load" href="#" v-on:mousedown="handleLoadJson">
                     <span><span class="pr-1" v-translate="'load'"></span>JSON</span>
-                    <upload-icon size="20" class="icon"></upload-icon>
+                    <vue-feather type="upload" size="20" class="icon"></vue-feather>
                 </a>
                 <input id="upload-file" v-translate:aria-label="'selectFile'"
                        type="file"
@@ -42,12 +42,10 @@
     </div>
 </template>
 <script lang="ts">
-
-    import Vue from "vue";
     import {serialiseState} from "../../localStorageManager";
     import {BaselineState} from "../../store/baseline/baseline";
     import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
-    import {DownloadIcon, UploadIcon} from "vue-feather-icons";
+    import VueFeather from "vue-feather";
     import {LocalSessionFile} from "../../types";
     import {addCheckSum, getFormData, mapActionByName, mapStateProp} from "../../utils";
     import {ValidateInputResponse} from "../../generated";
@@ -55,32 +53,13 @@
     import {mapGetterByName} from "../../utils";
     import UploadNewProject from "../load/UploadNewProject.vue";
     import {switches} from "../../featureSwitches"
+    import { defineComponent } from "vue";
 
     interface Data {
         projectNameJson: boolean,
         projectNameZip: boolean,
         fileToLoad: File | null
         loadJsonFeatureSwitch: boolean
-    }
-
-    interface Methods {
-        save: (e: Event) => void;
-        loadJson: () => void;
-        loadZip: () => void;
-        loadAction: (file: File) => void;
-        preparingRehydrate: (file: FormData) => void
-        cancelLoadZip: () => void;
-        cancelLoadJson: () => void;
-        handleLoadJson: () => void
-        handleLoadZip: () => void
-        clearLoadJsonInput: () => void,
-        clearLoadZipInput: () => void
-    }
-
-    interface Computed {
-        baselineFiles: BaselineFiles
-        surveyAndProgramFiles: SurveyAndProgramFiles,
-        isGuest: boolean
     }
 
     interface BaselineFiles {
@@ -99,8 +78,21 @@
         return file ? {hash: file.hash, filename: file.filename} : null
     };
 
-    export default Vue.extend<Data, Methods, Computed, "title">({
-        props: ["title"],
+    export default defineComponent({
+        props: {
+            title: {
+                type: String,
+                required: true
+            }
+        },
+        mounted() {
+            const handleLoadJson = () => {
+                (this.$refs.loadJson as any).click()
+            };
+            return {
+                handleLoadJson
+            }
+        },
         data(): Data {
             return {
                 projectNameJson: false,
@@ -203,8 +195,7 @@
             }
         },
         components: {
-            UploadIcon,
-            DownloadIcon,
+            VueFeather,
             DropDown,
             UploadNewProject
         }
