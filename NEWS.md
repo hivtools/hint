@@ -1,3 +1,7 @@
+# hint 2.39.0
+
+* Break calibrate result response into data and metadata
+
 # hint 2.38.1
 
 * Improve Load Failed dialog guidance

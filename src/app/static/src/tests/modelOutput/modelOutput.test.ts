@@ -2,7 +2,7 @@ import {modelOutputGetters} from "../../app/store/modelOutput/modelOutput";
 import {
     mockBaselineState, mockCalibrateResultResponse, mockModelCalibrateState, mockModelOutputState,
     mockRootState, mockComparisonPlotResponse,
-    mockShapeResponse
+    mockShapeResponse, mockCalibrateMetadataResponse
 } from "../mocks";
 import {Filter} from "../../app/types";
 
@@ -15,7 +15,7 @@ describe("modelOutput module", () => {
         {id: "area", column_id: "area_id", label: "Area", options: [], use_shape_regions: true},
     ];
 
-    const modelCalibrateResponse = mockCalibrateResultResponse({
+    const modelCalibrateMetadataResponse = mockCalibrateMetadataResponse({
         plottingMetadata: {
             barchart: {
                 filters,
@@ -110,7 +110,7 @@ describe("modelOutput module", () => {
         }),
         modelOutput: mockModelOutputState(),
         modelCalibrate: mockModelCalibrateState({
-            result: modelCalibrateResponse,
+            metadata: modelCalibrateMetadataResponse,
             comparisonPlotResult: comparisonPlotResponse
         })
     });
@@ -118,7 +118,7 @@ describe("modelOutput module", () => {
     it("gets barchart indicators", async () => {
         const result = modelOutputGetters.barchartIndicators(mockModelOutputState(), null, rootState);
         expect(result.length).toEqual(2);
-        expect(result).toBe(modelCalibrateResponse.plottingMetadata.barchart.indicators);
+        expect(result).toBe(modelCalibrateMetadataResponse.plottingMetadata.barchart.indicators);
     });
 
 
@@ -141,7 +141,7 @@ describe("modelOutput module", () => {
 
     it("gets bubble plot indicators", async () => {
         const result = modelOutputGetters.bubblePlotIndicators(mockModelOutputState(), null, rootState);
-        expect(result).toBe(modelCalibrateResponse.plottingMetadata.choropleth.indicators);
+        expect(result).toBe(modelCalibrateMetadataResponse.plottingMetadata.choropleth.indicators);
     });
 
     it("gets bubble plot filters", async () => {
@@ -151,7 +151,7 @@ describe("modelOutput module", () => {
 
     it("gets choropleth indicators", async () => {
         const result = modelOutputGetters.choroplethIndicators(mockModelOutputState(), null, rootState);
-        expect(result).toBe(modelCalibrateResponse.plottingMetadata.choropleth.indicators);
+        expect(result).toBe(modelCalibrateMetadataResponse.plottingMetadata.choropleth.indicators);
     });
 
     it("gets choropleth filters", async () => {
@@ -207,7 +207,7 @@ describe("modelOutput module", () => {
                 {id: "id1", label: "label 1", children: [{id: "child1", label: "child label 1"}]}
             ]
         });
-        expect(filters[1]).toStrictEqual(modelCalibrateResponse.plottingMetadata.barchart.filters[0]);
-        expect(filters[2]).toStrictEqual(modelCalibrateResponse.plottingMetadata.barchart.filters[1]);
+        expect(filters[1]).toStrictEqual(modelCalibrateMetadataResponse.plottingMetadata.barchart.filters[0]);
+        expect(filters[2]).toStrictEqual(modelCalibrateMetadataResponse.plottingMetadata.barchart.filters[1]);
     }
 });
