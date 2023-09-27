@@ -14,7 +14,7 @@ export interface ModelOutputState {
 
 export const modelOutputGetters = {
     barchartIndicators: (state: ModelOutputState, getters: any, rootState: RootState): BarchartIndicator[] => {
-        return rootState.modelCalibrate.result!.plottingMetadata.barchart.indicators;
+        return rootState.modelCalibrate.metadata!.plottingMetadata.barchart.indicators;
     },
     comparisonPlotIndicators: (state: ModelOutputState, getters: any, rootState: RootState): BarchartIndicator[] => {
         return rootState.modelCalibrate.comparisonPlotResult?.plottingMetadata.barchart.indicators || [];
@@ -29,13 +29,13 @@ export const modelOutputGetters = {
         return outputPlotFilters(rootState, "comparisonPlotResult");
     },
     bubblePlotIndicators: (state: ModelOutputState, getters: any, rootState: RootState): ChoroplethIndicatorMetadata[] => {
-        return rootState.modelCalibrate.result!.plottingMetadata.choropleth.indicators;
+        return rootState.modelCalibrate.metadata!.plottingMetadata.choropleth.indicators;
     },
     bubblePlotFilters: (state: ModelOutputState, getters: any, rootState: RootState): Filter[] => {
         return outputPlotFilters(rootState);
     },
     choroplethIndicators: (state: ModelOutputState, getters: any, rootState: RootState): ChoroplethIndicatorMetadata[] => {
-        return rootState.modelCalibrate.result!.plottingMetadata.choropleth.indicators;
+        return rootState.modelCalibrate.metadata!.plottingMetadata.choropleth.indicators;
     },
     choroplethFilters: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): DisplayFilter[] => {
         const outputFilters = outputPlotFilters(rootState) as Filter[];
@@ -54,7 +54,7 @@ export const modelOutputGetters = {
     }
 };
 
-const outputPlotFilters = (rootState: RootState, resultName: "result" | "comparisonPlotResult" = "result") => {
+const outputPlotFilters = (rootState: RootState, resultName: "metadata" | "comparisonPlotResult" = "metadata") => {
     let filters = [...(rootState.modelCalibrate[resultName]?.plottingMetadata?.barchart.filters || [])];
     const area = filters.find((f: any) => f.id == "area");
     if (area && area.use_shape_regions) {

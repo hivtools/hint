@@ -173,11 +173,12 @@ describe("ModelCalibrate mutations", () => {
         expect(state.comparisonPlotResult).toStrictEqual({payload});
     });
 
-    it("sets and clears warnings", () => {
+    it("sets and clears metadata", () => {
         const testState = mockModelCalibrateState();
-        const warnings = [mockWarning()]
-        mutations.WarningsFetched(testState, {payload: warnings});
+        const metadata = {plottingMetadata: "Test metadata", warnings: [mockWarning()]}
+        mutations.MetadataFetched(testState, {payload: metadata});
         expect(testState.warnings).toEqual([mockWarning()]);
+        expect(testState.metadata).toEqual(metadata);
         mutations.ClearWarnings(testState);
         expect(testState.warnings).toEqual([]);
     });
