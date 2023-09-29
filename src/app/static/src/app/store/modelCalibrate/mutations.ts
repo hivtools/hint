@@ -51,7 +51,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     },
 
     [ModelCalibrateMutation.ModelCalibrateOptionsFetched](state: ModelCalibrateState, action: PayloadWithType<DynamicFormMeta>) {
-        const newForm = state.optionsFormMeta.controlSections.length
+        const newForm = state.optionsFormMeta.controlSections?.length
             ? {...updateForm(state.optionsFormMeta, action.payload)}
             : constructOptionsFormMetaFromData(state, action.payload)
         state.optionsFormMeta = newForm;
