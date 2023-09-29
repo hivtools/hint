@@ -1,6 +1,5 @@
 <template>
     <div id="model-options">
-        <!-- <div>sidojfaiosdfj</div> -->
         <div v-if="loading" class="text-center">
             <loading-spinner size="lg"></loading-spinner>
             <h2 id="loading-message" v-translate="'loadingOptions'"></h2>
