@@ -7,6 +7,7 @@ import {
     mockWarning,
 } from "../mocks";
 import {VersionInfo, ComparisonPlotResponse} from "../../app/generated";
+import {DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 
 describe("ModelCalibrate mutations", () => {
     afterEach(() => {
@@ -210,6 +211,41 @@ describe("ModelCalibrate mutations", () => {
                 }]
             }]};
         expect(state.optionsFormMeta).toStrictEqual(expected);
+    });
+
+    it("ModelCalibrateOptionsFetched preserves selected values when reloading", () => {
+        const optionsFormMeta = {controlSections: [{
+                label: "Calibrate section",
+                controlGroups: [{
+                    "label": "Adjust to spectrum PLHIV",
+                    "controls": [{
+                        "name": "spectrum_plhiv_calibration_level",
+                        "type": "select",
+                        "options": [{"id": "none", "label": "None"}, {"id": "national", "label": "National"}],
+                        "value": "national"
+                    }]
+                }]
+            }]};
+        const state = mockModelCalibrateState({fetching: true,
+            optionsFormMeta: optionsFormMeta as DynamicFormMeta});
+
+        const payload = {controlSections: [{
+                label: "Calibrate section",
+                controlGroups: [{
+                    "label": "Adjust to spectrum PLHIV",
+                    "controls": [{
+                        "name": "spectrum_plhiv_calibration_level",
+                        "type": "select",
+                        "options": [{"id": "none", "label": "None"}, {"id": "national", "label": "National"}],
+                        "value": "none"
+                    }]
+                }]
+            }]};
+
+
+        mutations[ModelCalibrateMutation.ModelCalibrateOptionsFetched](state, {payload});
+        expect(state.fetching).toBe(false);
+        expect(state.optionsFormMeta).toStrictEqual(optionsFormMeta);
     });
 
     it("PollingForStatusStarted sets statusPollId", () => {
