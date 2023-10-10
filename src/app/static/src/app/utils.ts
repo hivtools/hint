@@ -23,7 +23,7 @@ import {RootState} from "./root";
 import {initialStepperState} from "./store/stepper/stepper";
 import {LoadState} from "./store/load/state";
 import {initialModelRunState} from "./store/modelRun/modelRun";
-import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
+import {initialModelCalibrateState, ModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
 import {AxiosResponse} from "axios";
 import { ComputedGetter } from 'vue';
 
@@ -528,7 +528,7 @@ export const constructRehydrateProjectState = async (context: ActionContext<Load
     return {files, savedState}
 }
 
-export const constructOptionsFormMetaFromData = (state: ModelOptionsState, meta: DynamicFormMeta): DynamicFormMeta => {
+export const constructOptionsFormMetaFromData = (state: ModelOptionsState | ModelCalibrateState, meta: DynamicFormMeta): DynamicFormMeta => {
     const stateContainsOptions = Object.keys(state.options).length > 0
     if (stateContainsOptions) {
         meta.controlSections.forEach(newSection => {
