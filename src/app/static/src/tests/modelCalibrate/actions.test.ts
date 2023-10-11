@@ -228,7 +228,9 @@ describe("ModelCalibrate actions", () => {
         expect(commit.mock.calls[2][0]).toBe("Calibrated");
         expect(commit.mock.calls[3][0]).toEqual({
             type: ModelCalibrateMutation.CalibrateResultFetched,
-            payload: "TEST"
+            payload: {
+                data: "TEST"
+            }
         });
         expect(commit.mock.calls[4][0]).toBe("Ready");
         expect(dispatch.mock.calls[0][0]).toBe("getCalibratePlot");
