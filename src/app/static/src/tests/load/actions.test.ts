@@ -363,7 +363,7 @@ describe("Load actions", () => {
         const rootGetters = {isGuest: true};
         const fileContents = addCheckSum(JSON.stringify({
             files: "TEST FILES",
-            state: {"version": "2.1.0", stepper: {}}
+            state: {"version": "3.0.0", stepper: {}}
         }));
         await actions.setFiles({commit, state, dispatch, rootState, rootGetters} as any,
             {savedFileContents: fileContents}
@@ -405,7 +405,7 @@ describe("Load actions", () => {
                     }
                 ]
             },
-            "version": "2.1.0"
+            "version": "3.0.0"
         });
     });
 
