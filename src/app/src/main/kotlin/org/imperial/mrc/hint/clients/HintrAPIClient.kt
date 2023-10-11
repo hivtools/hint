@@ -11,9 +11,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
-import org.jooq.tools.json.JSONObject
 import org.springframework.http.HttpStatus
-import java.sql.SQLException
 
 interface HintrAPIClient
 {
@@ -157,36 +155,9 @@ class HintrFuelAPIClient(
         return get("calibrate/result/metadata/${id}")
     }
 
-    @Suppress("ReturnCount")
     override fun getCalibrateResultData(id: String): ResponseEntity<String>
     {
-        val dataPathRes = get("calibrate/result/path/${id}")
-        val conn = getDBConnFromPathResponse(dataPathRes)
-        if (conn == null) {
-            return getResponseEntity(
-                null,
-                "failure",
-                HttpStatus.BAD_REQUEST,
-                "Failed to fetch result"
-            )
-        }
-        try {
-            val plotData = getDataFromQuery(conn, null)
-            val plotDataObj = JSONObject(mapOf("data" to plotData))
-            return getResponseEntity(
-                plotDataObj,
-                "success",
-                HttpStatus.OK,
-                null
-            )
-        } catch (err: SQLException) {
-            return getResponseEntity(
-                null,
-                "failure",
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                err.message
-            )
-        }
+        return get("calibrate/result/path/${id}")
     }
 
     override fun getCalibratePlot(id: String): ResponseEntity<String>

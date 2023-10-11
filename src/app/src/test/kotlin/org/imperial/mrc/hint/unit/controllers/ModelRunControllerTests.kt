@@ -10,7 +10,6 @@ import org.imperial.mrc.hint.controllers.ModelRunController
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.anyString
 import org.springframework.http.ResponseEntity
 
 class ModelRunControllerTests
@@ -84,73 +83,6 @@ class ModelRunControllerTests
     }
 
     @Test
-    fun `can submit calibrate`()
-    {
-        val modelCalibrationOptions = ModelOptions(mapOf(), mapOf())
-        val mockAPIClient = mock<HintrAPIClient> {
-            on { calibrateSubmit("testId", modelCalibrationOptions) } doReturn mockResponse
-        }
-        val sut = ModelRunController(mock(), mockAPIClient)
-
-        val result = sut.calibrateSubmit("testId", modelCalibrationOptions)
-        assertThat(result).isSameAs(mockResponse)
-
-    }
-
-    @Test
-    fun `can get calibrate status`()
-    {
-        val mockFileManager = mock<FileManager>()
-        val mockAPIClient = mock<HintrAPIClient> {
-            on { getCalibrateStatus("testId") } doReturn mockResponse
-        }
-
-        val sut = ModelRunController(mockFileManager, mockAPIClient)
-
-        val result = sut.calibrateStatus("testId")
-        assertThat(result).isSameAs(mockResponse)
-    }
-
-    @Test
-    fun `can get calibrate result metadata`()
-    {
-        val mockFileManager = mock<FileManager>()
-        val mockAPIClient = mock<HintrAPIClient> {
-            on { getCalibrateResultMetadata("testId") } doReturn mockResponse
-        }
-        val sut = ModelRunController(mockFileManager, mockAPIClient)
-
-        val result = sut.calibrateResultMetadata("testId")
-        assertThat(result).isSameAs(mockResponse)
-    }
-
-    @Test
-    fun `can get calibrate result data`()
-    {
-        val mockFileManager = mock<FileManager>()
-        val mockAPIClient = mock<HintrAPIClient> {
-            on { getCalibrateResultData("testId") } doReturn mockResponse
-        }
-        val sut = ModelRunController(mockFileManager, mockAPIClient)
-
-        val result = sut.calibrateResultData("testId")
-        assertThat(result).isSameAs(mockResponse)
-    }
-
-    @Test
-    fun `can get calibrate plot`()
-    {
-        val mockFileManager = mock<FileManager>()
-        val mockAPIClient = mock<HintrAPIClient> {
-            on { getCalibratePlot("testId") } doReturn mockResponse
-        }
-        val sut = ModelRunController(mockFileManager, mockAPIClient)
-
-        val result = sut.calibratePlot("testId")
-        assertThat(result).isSameAs(mockResponse)
-    }
-
-    @Test
     fun `can get comparison plot`()
     {
         val mockFileManager = mock<FileManager>()
@@ -180,16 +112,6 @@ class ModelRunControllerTests
         assertThat(result).isSameAs(mockResponse)
     }
 
-    @Test
-    fun `can get calibration options`()
-    {
-        val mockAPIClient = mock<HintrAPIClient> {
-            on { getModelCalibrationOptions(anyString()) } doReturn mockResponse
-        }
-        val sut = ModelRunController(mock(), mockAPIClient)
-        val result = sut.calibrationOptions("MWI")
-        assertThat(result).isSameAs(mockResponse)
-    }
 
     @Test
     fun `can cancel`()

@@ -109,13 +109,13 @@ abstract class SecureIntegrationTests : CleanDatabaseTests()
     protected fun waitForCalibrationResult(modelId: String): String
     {
         val entity = getModelRunEntity(getMockCalibrateModelOptions())
-        val responseEntity = testRestTemplate.postForEntity<String>("/model/calibrate/submit/$modelId", entity)
+        val responseEntity = testRestTemplate.postForEntity<String>("/calibrate/submit/$modelId", entity)
         val id = ObjectMapper().readValue<JsonNode>(responseEntity.body!!)["data"]["id"].textValue()
 
         do
         {
             Thread.sleep(500)
-            val statusResponse = testRestTemplate.getForEntity<String>("/model/calibrate/status/$id")
+            val statusResponse = testRestTemplate.getForEntity<String>("/calibrate/status/$id")
         } while (statusResponse.body!!.contains("\"status\":\"RUNNING\"")
                 || statusResponse.body!!.contains("\"status\":\"PENDING\""))
 

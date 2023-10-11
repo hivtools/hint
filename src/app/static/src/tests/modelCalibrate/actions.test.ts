@@ -34,7 +34,7 @@ describe("ModelCalibrate actions", () => {
             baseline: mockBaselineState({iso3: "MWI"})
         }
         const state = mockModelCalibrateState();
-        mockAxios.onGet("/model/calibrate/options/MWI").reply(200, mockSuccess("TEST", "v1"));
+        mockAxios.onGet("/calibrate/options/MWI").reply(200, mockSuccess("TEST", "v1"));
 
         await actions.fetchModelCalibrateOptions({commit, state, rootState: root} as any);
 
@@ -55,7 +55,7 @@ describe("ModelCalibrate actions", () => {
             modelRun: mockModelRunState({modelRunId: "123A"})
         });
         const mockOptions = {"param_1": "value 1"};
-        const url = `model/calibrate/submit/123A`;
+        const url = `calibrate/submit/123A`;
         mockAxios.onPost(url).reply(200, mockSuccess("TEST"));
         const freezeSpy = jest.spyOn(freezer, "deepFreeze");
         await actions.submit({commit, dispatch, state, rootState: root} as any, mockOptions);
@@ -84,7 +84,7 @@ describe("ModelCalibrate actions", () => {
         });
 
         const testError = mockError("TEST ERROR");
-        mockAxios.onPost(`/model/calibrate/submit/123A`).reply(400, mockFailure("TEST ERROR"));
+        mockAxios.onPost(`/calibrate/submit/123A`).reply(400, mockFailure("TEST ERROR"));
         await actions.submit({commit, dispatch, state, rootState: root} as any, {});
 
         expect(commit.mock.calls.length).toBe(2);
@@ -96,7 +96,7 @@ describe("ModelCalibrate actions", () => {
     });
 
     it("poll commits status when successfully fetched", (done) => {
-        mockAxios.onGet(`/model/calibrate/status/1234`)
+        mockAxios.onGet(`/calibrate/status/1234`)
             .reply(200, mockSuccess("TEST DATA"));
 
         const commit = jest.fn();
@@ -118,7 +118,7 @@ describe("ModelCalibrate actions", () => {
     });
 
     it("poll commits error when unsuccessful fetch", (done) => {
-        mockAxios.onGet(`/model/calibrate/status/1234`)
+        mockAxios.onGet(`/calibrate/status/1234`)
             .reply(500, mockFailure("Test Error"));
 
         const commit = jest.fn();
@@ -142,7 +142,7 @@ describe("ModelCalibrate actions", () => {
     });
 
     it("poll dispatches getResult when status done", (done) => {
-        mockAxios.onGet(`/model/calibrate/status/1234`)
+        mockAxios.onGet(`/calibrate/status/1234`)
             .reply(200, mockSuccess("TEST DATA"));
 
         const commit = jest.fn();
@@ -187,9 +187,9 @@ describe("ModelCalibrate actions", () => {
             data: "TEST"
         }
         const mockResponse = mockSuccess(testResult);
-        mockAxios.onGet(`/model/calibrate/result/metadata/1234`)
+        mockAxios.onGet(`/calibrate/result/metadata/1234`)
             .reply(200, mockResponse);
-        mockAxios.onGet(`/model/calibrate/result/data/1234`)
+        mockAxios.onGet(`/calibrate/result/data/1234`)
             .reply(200, mockResultDataResponse);
 
         const commit = jest.fn();
@@ -258,7 +258,7 @@ describe("ModelCalibrate actions", () => {
                 outputSummary: {description: "summary output info"}
             }
         };
-        mockAxios.onGet(`/model/calibrate/result/metadata/1234`)
+        mockAxios.onGet(`/calibrate/result/metadata/1234`)
             .reply(200, mockSuccess(testResult));
 
         const commit = jest.fn();
@@ -278,9 +278,9 @@ describe("ModelCalibrate actions", () => {
     });
 
     it("getResult commits error when unsuccessful data fetch", async () => {
-        mockAxios.onGet(`/model/calibrate/result/data/1234`)
+        mockAxios.onGet(`/calibrate/result/data/1234`)
             .reply(500, mockFailure("Test Error"));
-        mockAxios.onGet(`/model/calibrate/result/metadata/1234`)
+        mockAxios.onGet(`/calibrate/result/metadata/1234`)
             .reply(200, mockSuccess("OK"));
 
         const commit = jest.fn();
@@ -309,7 +309,7 @@ describe("ModelCalibrate actions", () => {
     });
 
     it("getResult does not fetch when status is not done", async () => {
-        mockAxios.onGet(`/model/calibrate/result/1234`)
+        mockAxios.onGet(`/calibrate/result/1234`)
             .reply(200, mockSuccess("Test result"));
 
         const commit = jest.fn();
@@ -332,7 +332,7 @@ describe("ModelCalibrate actions", () => {
 
     it("getCalibratePlot fetches the calibrate plot data and sets it when successful", async () => {
         const testResult = {data: "TEST DATA"};
-        mockAxios.onGet(`/model/calibrate/plot/1234`)
+        mockAxios.onGet(`/calibrate/plot/1234`)
             .reply(200, mockSuccess(testResult));
 
         const commit = jest.fn();
@@ -355,7 +355,7 @@ describe("ModelCalibrate actions", () => {
 
     it("getCalibratePlot commits error with unsuccessful fetch", async () => {
         const testResult = {data: "TEST DATA"};
-        mockAxios.onGet(`/model/calibrate/plot/1234`)
+        mockAxios.onGet(`/calibrate/plot/1234`)
             .reply(500, mockFailure("Test Error"));
 
         const commit = jest.fn();
