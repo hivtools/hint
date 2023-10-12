@@ -47,19 +47,13 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         return jsonArray
     }
 
-    @Suppress("SwallowedException")
-    private fun getDataFromQuery(conn: Connection, userQuery: String?): JSONArray {
+    private fun getDataFromQuery(conn: Connection): JSONArray {
         try {
             var query = DEFAULT_QUERY
-            if (userQuery != null) {
-                query = userQuery
-            }
             val stmt: Statement = conn.createStatement()
             val resultSet = stmt.executeQuery(query)
             val jsonArray = convertToJSONArray(resultSet)
             return jsonArray
-        } catch (e: SQLException) {
-            throw CalibrateDataException("Invalid query")
         } finally {
             conn.close()
         }
@@ -81,7 +75,7 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
     override fun getDataFromPath(path: String): JSONObject
     {
         val conn = getDBConnFromPathResponse(path)
-        val plotData = getDataFromQuery(conn, null)
+        val plotData = getDataFromQuery(conn)
         return JSONObject(mapOf("data" to plotData))
     }
 }

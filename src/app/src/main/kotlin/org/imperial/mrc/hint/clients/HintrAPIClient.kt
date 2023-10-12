@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody
-import org.springframework.http.HttpStatus
 
 interface HintrAPIClient
 {
