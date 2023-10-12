@@ -56,6 +56,6 @@ class CalibrateTests: SecureIntegrationTests()
         val responseEntity = testRestTemplate.getForEntity<String>("/calibrate/result/data/1234")
         assertError(responseEntity,
             HttpStatus.BAD_REQUEST,
-            "OTHER_ERROR", "Invalid ID")
+            "OTHER_ERROR", "Failed to fetch result")
     }
 }

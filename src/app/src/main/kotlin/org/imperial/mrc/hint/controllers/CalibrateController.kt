@@ -48,7 +48,7 @@ class CalibrateController(val apiClient: HintrAPIClient, val calibrateDataReposi
     {
         val res = apiClient.getCalibrateResultData(id)
         if (res.statusCode != HttpStatus.OK) {
-            throw CalibrateDataException("Invalid ID")
+            throw CalibrateDataException("Failed to fetch result")
         }
         val jsonBody = ObjectMapper().readTree(res.body?.toString())
         val path = jsonBody.get("data").get("path").textValue()
