@@ -49,7 +49,7 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
 
     private fun getDataFromQuery(conn: Connection): JSONArray {
         try {
-            var query = DEFAULT_QUERY
+            val query = DEFAULT_QUERY
             val stmt: Statement = conn.createStatement()
             val resultSet = stmt.executeQuery(query)
             val jsonArray = convertToJSONArray(resultSet)
