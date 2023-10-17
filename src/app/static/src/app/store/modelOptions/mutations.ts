@@ -2,8 +2,9 @@ import {MutationTree} from 'vuex';
 import {ModelOptionsState} from "./modelOptions";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {PayloadWithType} from "../../types";
-import {constructOptionsFormMetaFromData, updateForm} from "../../utils";
+import {writeOptionsIntoForm} from "../../utils";
 import {VersionInfo, Error, ModelOptionsValidate} from "../../generated";
+import {Control, ControlWithOptions, Option} from "../../../../../../../../vue-next-dynamic-form/src/types";
 
 
 export enum ModelOptionsMutation {
@@ -66,11 +67,8 @@ export const mutations: MutationTree<ModelOptionsState> = {
     },
 
     [ModelOptionsMutation.ModelOptionsFetched](state: ModelOptionsState, action: PayloadWithType<DynamicFormMeta>) {
-
-        const newForm = state.optionsFormMeta.controlSections.length
-            ? {...updateForm(state.optionsFormMeta, action.payload)}
-            : constructOptionsFormMetaFromData(state, action.payload)
-        state.valid = state.valid && JSON.stringify(newForm) == JSON.stringify(state.optionsFormMeta);
+        const newForm = writeOptionsIntoForm(state.options, action.payload)
+        state.valid = state.valid && checkOptionsValid(newForm);
         state.optionsFormMeta = newForm;
         state.fetching = false;
     },
@@ -81,6 +79,54 @@ export const mutations: MutationTree<ModelOptionsState> = {
     },
 
     [ModelOptionsMutation.SetModelOptionsVersion](state: ModelOptionsState, action: PayloadWithType<VersionInfo>) {
-        state.version = action.payload
+        state.version = action.payload;
     }
 };
+
+function checkOptionsValid(formMeta: DynamicFormMeta): boolean {
+    let valid = true
+    formMeta.controlSections.forEach(section => {
+        section.controlGroups.forEach(group => {
+            group.controls.forEach(control => {
+                // We could go further and check that if it is null or empty that this isn't
+                // a required control but just assuming this for now seems ok
+                if (control.value != null && control.value != "" && hasOptions(control)) {
+                    valid = valid && checkControlOptionValid(control)
+                }
+            })
+        })
+    })
+    return valid
+}
+
+function hasOptions(control: Control): control is ControlWithOptions {
+    return control.type === "select" || control.type === "multiselect"
+}
+
+function checkControlOptionValid(control: ControlWithOptions): boolean {
+    let valid = true;
+
+    const options = getAllOptions(control)
+    const value = control.value
+    // Check string and array types, otherwise we assume valid
+    if (typeof value === 'string') {
+        valid = options.includes(value)
+    } else if (Array.isArray(value)) {
+        valid = value.every(item => options.includes(item))
+    }
+
+    return valid
+}
+
+function getAllOptions(control: ControlWithOptions): string[] {
+    const options= control.options.map(option => getOptions(option))
+    return options.flat()
+}
+
+function getOptions(option: Option): string[] {
+    const options = [option.id]
+    if (option.children !== undefined) {
+        options.concat(...option.children.map(child => getOptions(child)))
+    }
+    return options
+}

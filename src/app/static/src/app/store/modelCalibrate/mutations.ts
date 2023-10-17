@@ -2,7 +2,7 @@ import {MutationTree} from 'vuex';
 import {ModelCalibrateState} from "./modelCalibrate";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {PayloadWithType} from "../../types";
-import {constructOptionsFormMetaFromData, updateForm} from "../../utils";
+import {writeOptionsIntoForm} from "../../utils";
 import {
     CalibrateMetadataResponse,
     CalibrateResultResponse,
@@ -12,6 +12,7 @@ import {
     Error,
     VersionInfo, Warning
 } from "../../generated";
+import {Control, ControlWithOptions, Option} from "../../../../../../../../vue-next-dynamic-form/src/types";
 
 export enum ModelCalibrateMutation {
     FetchingModelCalibrateOptions = "FetchingModelCalibrateOptions",
@@ -51,10 +52,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     },
 
     [ModelCalibrateMutation.ModelCalibrateOptionsFetched](state: ModelCalibrateState, action: PayloadWithType<DynamicFormMeta>) {
-        const newForm = state.optionsFormMeta.controlSections.length
-            ? {...updateForm(state.optionsFormMeta, action.payload)}
-            : constructOptionsFormMetaFromData(state, action.payload)
-        state.optionsFormMeta = newForm;
+        state.optionsFormMeta = writeOptionsIntoForm(state.options, action.payload);
         state.fetching = false;
     },
 

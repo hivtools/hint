@@ -14,8 +14,8 @@ import {Error, FilterOption, NestedFilterOption, ProjectRehydrateResultResponse,
 import moment, {utc} from 'moment';
 import {
     DynamicControlGroup,
-    DynamicControlSection,
-    DynamicFormMeta
+    DynamicControlSection, DynamicFormData,
+    DynamicFormMeta, MultiSelectControl, NumberControl, SelectControl
 } from "@reside-ic/vue-next-dynamic-form";
 import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
 import {ModelOptionsState} from "./store/modelOptions/modelOptions";
@@ -368,27 +368,21 @@ export const validateEmail = (test: string): boolean => {
 
 export const versionLabel = (version: Version) => `v${version.versionNumber}`;
 
-export const updateForm = (oldForm: DynamicFormMeta, newForm: DynamicFormMeta): DynamicFormMeta => {
-    const selectedOptions = {} as Dict<string | string[] | number | null | undefined>;
-    oldForm.controlSections.forEach((oldSection) => {
-        oldSection.controlGroups.forEach(oldGroup => {
-            oldGroup.controls.forEach(oldControl => {
-                selectedOptions[oldControl.name] = oldControl.value;
+export const writeOptionsIntoForm = (options: DynamicFormData, optionsForm: DynamicFormMeta): DynamicFormMeta => {
+    const hasOptions = Object.keys(options).length > 0;
+    if (hasOptions) {
+        optionsForm.controlSections.forEach(section => {
+            section.controlGroups.forEach(group => {
+                group.controls.forEach(control => {
+                    if (control.name in options) {
+                        control.value = options[control.name];
+                    }
+                });
             });
         });
-    });
+    }
 
-    newForm.controlSections.forEach(newSection => {
-        newSection.controlGroups.forEach(newGroup => {
-            newGroup.controls.forEach(newControl => {
-                if (newControl.name in selectedOptions) {
-                    newControl.value = selectedOptions[newControl.name];
-                }
-            });
-        });
-    });
-
-    return newForm
+    return optionsForm
 };
 
 export function getFilenameFromImportUrl(url: string) {
@@ -526,23 +520,6 @@ export const constructRehydrateProjectState = async (context: ActionContext<Load
     }
 
     return {files, savedState}
-}
-
-export const constructOptionsFormMetaFromData = (state: ModelOptionsState | ModelCalibrateState, meta: DynamicFormMeta): DynamicFormMeta => {
-    const stateContainsOptions = Object.keys(state.options).length > 0
-    if (stateContainsOptions) {
-        meta.controlSections.forEach(newSection => {
-            newSection.controlGroups.forEach(newGroup => {
-                newGroup.controls.forEach(newControl => {
-                    if (newControl.name in state.options) {
-                        newControl.value = state.options[newControl.name];
-                    }
-                });
-            });
-        });
-    }
-
-    return meta
 }
 
 export const flatMapControlSections = (sections: DynamicControlSection[]): DynamicControlGroup[] => {

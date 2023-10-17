@@ -103,8 +103,9 @@ describe("Model run options mutations", () => {
 
         const state = mockModelOptionsState({
             fetching: true,
-            optionsFormMeta: testForm
+            options: testOptions
         });
+
 
         const expected: DynamicFormMeta = {
             controlSections: [
@@ -140,25 +141,14 @@ describe("Model run options mutations", () => {
         expect(state.fetching).toBe(false);
     });
 
-    it("sets valid to false if updated form differs from existing", () => {
+    it("sets valid to false if updated form has an invalid value", () => {
 
         const state = mockModelOptionsState({
             valid: true,
-            optionsFormMeta: testForm
-        });
-
-        mutations.ModelOptionsFetched(state, {payload: newForm});
-        expect(state.valid).toBe(false);
-    });
-
-    it("sets valid to false if state does not contain controlSections and options exists", () => {
-        const state = mockModelOptionsState({
-            valid: true,
-            optionsFormMeta: {controlSections: []},
             options: {"n1": 200, "multiselect": ["30", "40"]}
         });
 
-        mutations.ModelOptionsFetched(state, { payload: newForm });
+        mutations.ModelOptionsFetched(state, {payload: newForm});
         expect(state.valid).toBe(false);
         expect(state.optionsFormMeta).toEqual({
             "controlSections":
@@ -192,51 +182,40 @@ describe("Model run options mutations", () => {
                                             }
                                         ], "label": "g1"
                                 }, {
-                                    "controls":
-                                        [
-                                            {
-                                                "name": "i1",
-                                                "required": true,
-                                                "type": "number"
-                                            }
-                                        ],
-                                    "label": "new_group"
-                                }
+                                "controls":
+                                    [
+                                        {
+                                            "name": "i1",
+                                            "required": true,
+                                            "type": "number"
+                                        }
+                                    ],
+                                "label": "new_group"
+                            }
                             ],
                         "label": "general"
                     }, {
-                        "controlGroups":
-                            [
-                                {
-                                    "controls": [],
-                                    "label": "g2"
-                                }
-                            ],
-                        "label": "survey"
-                    }]
+                    "controlGroups":
+                        [
+                            {
+                                "controls": [],
+                                "label": "g2"
+                            }
+                        ],
+                    "label": "survey"
+                }]
         })
     });
 
-    it("sets valid to false if updated form matches the existing form but the state is not valid to begin with", () => {
+    it("sets valid to false if options are valid but the state is not valid to begin with", () => {
 
         const state = mockModelOptionsState({
             valid: false,
-            optionsFormMeta: testForm
+            options: testOptions
         });
 
-        mutations.ModelOptionsFetched(state, {payload: testForm});
+        mutations.ModelOptionsFetched(state, {payload: newForm});
         expect(state.valid).toBe(false);
-    });
-
-    it("does not set valid to false if updated form is identical to existing", () => {
-
-        const state = mockModelOptionsState({
-            valid: true,
-            optionsFormMeta: testForm
-        });
-
-        mutations.ModelOptionsFetched(state, {payload: testForm});
-        expect(state.valid).toBe(true);
     });
 
     it("sets fetching to true", () => {
@@ -245,23 +224,10 @@ describe("Model run options mutations", () => {
         expect(state.fetching).toBe(true);
     });
 
-    const testForm = {
-        controlSections: [
-            {
-                label: "general",
-                controlGroups: [
-                    {
-                        label: "g1",
-                        controls: [{...mockControl, name: "n1", value: 20}]
-                    },
-                    {
-                        label: "g2",
-                        controls: [{...mockControl, name: "n2", value: 10}]
-                    }
-                ]
-            }
-        ]
-    };
+    const testOptions = {
+        n1: 20,
+        n2: 10
+    }
 
     const newForm: DynamicFormMeta = {
         controlSections: [
