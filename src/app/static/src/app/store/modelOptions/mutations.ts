@@ -66,7 +66,7 @@ export const mutations: MutationTree<ModelOptionsState> = {
     },
 
     [ModelOptionsMutation.ModelOptionsFetched](state: ModelOptionsState, action: PayloadWithType<DynamicFormMeta>) {
-        const newForm = writeOptionsIntoForm(state.options, action.payload)
+        const newForm = writeOptionsIntoForm(state.options, action.payload);
         state.valid = state.valid && checkOptionsValid(newForm);
         state.optionsFormMeta = newForm;
         state.fetching = false;
@@ -83,51 +83,51 @@ export const mutations: MutationTree<ModelOptionsState> = {
 };
 
 function checkOptionsValid(formMeta: DynamicFormMeta): boolean {
-    let valid = true
+    let valid = true;
     formMeta.controlSections.forEach(section => {
         section.controlGroups.forEach(group => {
             group.controls.forEach(control => {
                 // We could go further and check that if it is null or empty that this isn't
                 // a required control but just assuming this for now seems ok
                 if (control.value != null && control.value != "" && hasOptions(control)) {
-                    valid = valid && checkControlOptionValid(control)
+                    valid = valid && checkControlOptionValid(control);
                 }
             })
         })
     })
-    return valid
+    return valid;
 }
 
-type ControlWithOptions = SelectControl | MultiSelectControl
+type ControlWithOptions = SelectControl | MultiSelectControl;
 
 function hasOptions(control: Control): control is ControlWithOptions {
-    return control.type === "select" || control.type === "multiselect"
+    return control.type === "select" || control.type === "multiselect";
 }
 
 function checkControlOptionValid(control: ControlWithOptions): boolean {
     let valid = true;
 
     const options = getAllOptions(control)
-    const value = control.value
+    const value = control.value;
     // Check string and array types, otherwise we assume valid
     if (typeof value === 'string') {
-        valid = options.includes(value)
+        valid = options.includes(value);
     } else if (Array.isArray(value)) {
-        valid = value.every(item => options.includes(item))
+        valid = value.every(item => options.includes(item));
     }
 
-    return valid
+    return valid;
 }
 
 function getAllOptions(control: ControlWithOptions): string[] {
-    const options= control.options.map((option: Option) => getOptions(option))
-    return options.flat()
+    const options= control.options.map((option: Option) => getOptions(option));
+    return options.flat();
 }
 
 function getOptions(option: Option): string[] {
-    const options = [option.id]
+    const options = [option.id];
     if (option.children !== undefined) {
-        options.concat(...option.children.map((child: Option) => getOptions(child)))
+        options.concat(...option.children.map((child: Option) => getOptions(child)));
     }
-    return options
+    return options;
 }
