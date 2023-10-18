@@ -1,10 +1,9 @@
 import {MutationTree} from 'vuex';
 import {ModelOptionsState} from "./modelOptions";
-import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
+import {Control, SelectControl, MultiSelectControl, Option, DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {PayloadWithType} from "../../types";
 import {writeOptionsIntoForm} from "../../utils";
 import {VersionInfo, Error, ModelOptionsValidate} from "../../generated";
-import {Control, ControlWithOptions, Option} from "../../../../../../../../vue-next-dynamic-form/src/types";
 
 
 export enum ModelOptionsMutation {
@@ -99,6 +98,8 @@ function checkOptionsValid(formMeta: DynamicFormMeta): boolean {
     return valid
 }
 
+type ControlWithOptions = SelectControl | MultiSelectControl
+
 function hasOptions(control: Control): control is ControlWithOptions {
     return control.type === "select" || control.type === "multiselect"
 }
@@ -119,14 +120,14 @@ function checkControlOptionValid(control: ControlWithOptions): boolean {
 }
 
 function getAllOptions(control: ControlWithOptions): string[] {
-    const options= control.options.map(option => getOptions(option))
+    const options= control.options.map((option: Option) => getOptions(option))
     return options.flat()
 }
 
 function getOptions(option: Option): string[] {
     const options = [option.id]
     if (option.children !== undefined) {
-        options.concat(...option.children.map(child => getOptions(child)))
+        options.concat(...option.children.map((child: Option) => getOptions(child)))
     }
     return options
 }
