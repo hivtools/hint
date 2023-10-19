@@ -999,17 +999,157 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
+    it("can submit AGYW download request, commits and starts polling", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const downloadId = {downloadId: "1"};
+
+        const root = mockRootState({
+            modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"})
+        });
+
+        const state = mockDownloadResultsState();
+
+        mockAxios.onPost(`download/submit/agyw/calibrate1`)
+            .reply(200, mockSuccess(downloadId));
+
+        await actions.prepareAgywTool({commit, state, dispatch, rootState: root} as any);
+
+        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls[0][0]["type"]).toBe("SetFetchingDownloadId")
+        expect(commit.mock.calls[0][0]["payload"]).toEqual(DOWNLOAD_TYPE.AGYW)
+        expect(commit.mock.calls[1][0]["type"]).toBe("PreparingAgywTool")
+        expect(commit.mock.calls[1][0]["payload"]).toEqual(downloadId)
+        expect(mockAxios.history.post.length).toBe(1);
+        expect(mockAxios.history.post[0]["url"]).toBe("download/submit/agyw/calibrate1");
+
+        expect(dispatch.mock.calls.length).toBe(1)
+        expect(dispatch.mock.calls[0]).toEqual(["poll", DOWNLOAD_TYPE.AGYW])
+    });
+
+    it("prepare AGYW does not do anything if downloadId is already present", async () => {
+        const commit = jest.fn();
+        const state = mockDownloadResultsState({
+            agyw: mockDownloadResultsDependency({downloadId: "1"})
+        });
+
+        await actions.prepareAgywTool({commit, state} as any);
+        expect(mockAxios.history.post.length).toBe(0);
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
+    it("renders AGYW download error", async () => {
+        await rendersDownloadErrorAsExpected(actions.downloadAgywTool, "AgywDownloadError")
+    });
+
+    it("downloads AGYW report", async () => {
+        await downloadReportAsExpected(actions.downloadAgywTool, "AgywDownloadError")
+    });
+
+    it("prepare AGYW does not do anything if fetchingDownloadId is set", async () => {
+        const commit = jest.fn();
+        const state = mockDownloadResultsState({
+            agyw: mockDownloadResultsDependency({fetchingDownloadId: true})
+        });
+
+        await actions.prepareAgywTool({commit, state} as any);
+        expect(mockAxios.history.get.length).toBe(0);
+        expect(commit.mock.calls.length).toBe(0);
+    });
+
+    it("can invoke AGYW poll action, gets pollId, commits PollingStatusStarted",  (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const root = mockRootState({
+            modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
+        });
+
+        const state = mockDownloadResultsState({
+            agyw: mockDownloadResultsDependency({downloadId: "1"})
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(200, mockSuccess(RunningStatusResponse));
+
+        actions.poll({commit, state, dispatch, rootState: root} as any, DOWNLOAD_TYPE.AGYW);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(2);
+            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.AGYW)
+
+            expect(commit.mock.calls[1][0]["type"]).toBe("AgywStatusUpdated")
+            expect(commit.mock.calls[1][0]["payload"]).toEqual(RunningStatusResponse)
+            done()
+
+        }, 2100)
+    });
+
+    it("does not start polling for AGYW download status when submission is unsuccessful", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const root = mockRootState({
+            modelCalibrate: mockModelCalibrateState({calibrateId: "calibrate1"}),
+        });
+
+        const state = mockDownloadResultsState();
+
+        mockAxios.onPost(`download/submit/agyw/calibrate1`)
+            .reply(500, mockFailure("TEST FAILED"));
+
+        await actions.prepareAgywTool({commit, state, dispatch, rootState: root} as any);
+
+        expect(commit.mock.calls[1][0]).toStrictEqual({
+            type: "AgywError",
+            payload: mockError("TEST FAILED")
+        });
+    });
+
+    it("does not continue to poll AGYW status when unsuccessful",  (done) => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+
+        const state = mockDownloadResultsState({
+            agyw: mockDownloadResultsDependency({downloadId: "1"})
+        });
+
+        mockAxios.onGet(`download/status/1`)
+            .reply(500, mockFailure("TEST FAILED"));
+
+        actions.poll({commit, state, dispatch, rootState: mockRootState()} as any, DOWNLOAD_TYPE.AGYW);
+
+        setTimeout(() => {
+            expect(commit.mock.calls.length).toBe(2)
+
+            expect(commit.mock.calls[0][0]["type"]).toBe("PollingStatusStarted")
+            expect(commit.mock.calls[0][0]["payload"].pollId).toBeGreaterThan(-1)
+            expect(commit.mock.calls[0][0]["payload"].downloadType).toEqual(DOWNLOAD_TYPE.AGYW)
+
+            expect(commit.mock.calls[1][0]).toStrictEqual({
+                type: "AgywError",
+                payload: mockError("TEST FAILED")
+            });
+
+            done()
+
+        }, 2100)
+    });
+
     it("can prepare all outputs", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
         await actions.prepareOutputs({commit, dispatch} as any);
 
-        expect(dispatch.mock.calls.length).toBe(4);
+        expect(dispatch.mock.calls.length).toBe(5);
         expect(dispatch.mock.calls[0][0]).toBe("prepareCoarseOutput");
         expect(dispatch.mock.calls[1][0]).toBe("prepareSummaryReport");
         expect(dispatch.mock.calls[2][0]).toBe("prepareSpectrumOutput");
         expect(dispatch.mock.calls[3][0]).toBe("prepareComparisonOutput");
+        expect(dispatch.mock.calls[4][0]).toBe("prepareAgywTool");
     });
 });
 
@@ -1094,7 +1234,8 @@ const downloadContext = () => {
         comparison: mockDownloadResultsDependency({downloadId: "1"}),
         summary: mockDownloadResultsDependency({downloadId: "1"}),
         coarseOutput: mockDownloadResultsDependency({downloadId: "1"}),
-        spectrum: mockDownloadResultsDependency({downloadId: "1"})
+        spectrum: mockDownloadResultsDependency({downloadId: "1"}),
+        agyw: mockDownloadResultsDependency({downloadId: "1"}),
     });
 
     return {commit, root, state}

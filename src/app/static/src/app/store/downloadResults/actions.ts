@@ -12,12 +12,14 @@ export interface DownloadResultsActions {
     prepareSpectrumOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareCoarseOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareComparisonOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
+    prepareAgywTool: (store: ActionContext<DownloadResultsState, RootState>) => void
     prepareOutputs: (store: ActionContext<DownloadResultsState, RootState>) => void
     poll: (store: ActionContext<DownloadResultsState, RootState>, downloadType: string) => void
     downloadComparisonReport: (store: ActionContext<DownloadResultsState, RootState>) => void
     downloadSpectrumOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
     downloadSummaryReport: (store: ActionContext<DownloadResultsState, RootState>) => void
     downloadCoarseOutput: (store: ActionContext<DownloadResultsState, RootState>) => void
+    downloadAgywTool: (store: ActionContext<DownloadResultsState, RootState>) => void
 }
 
 export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResultsActions = {
@@ -28,7 +30,8 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             dispatch("prepareCoarseOutput"),
             dispatch("prepareSummaryReport"),
             dispatch("prepareSpectrumOutput"),
-            dispatch("prepareComparisonOutput")
+            dispatch("prepareComparisonOutput"),
+            dispatch("prepareAgywTool")
         ]);
     },
 
@@ -66,6 +69,15 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
             .ignoreSuccess()
             .withError(DownloadResultsMutation.CoarseOutputDownloadError)
             .download(`download/result/${state.coarseOutput.downloadId}`)
+    },
+
+    async downloadAgywTool(context) {
+        const {state, commit} = context
+        commit({type: DownloadResultsMutation.AgywDownloadError, payload: null})
+        await api(context)
+            .ignoreSuccess()
+            .withError(DownloadResultsMutation.AgywDownloadError)
+            .download(`download/result/${state.agyw.downloadId}`)
     },
 
     async prepareCoarseOutput(context) {
@@ -132,6 +144,22 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
         }
     },
 
+    async prepareAgywTool(context) {
+        const {state, dispatch, rootState, commit} = context
+        if (!state.agyw.downloadId && !state.agyw.fetchingDownloadId) {
+            commit({type: "SetFetchingDownloadId", payload: DOWNLOAD_TYPE.AGYW});
+            const calibrateId = rootState.modelCalibrate.calibrateId
+            const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
+                .withSuccess(DownloadResultsMutation.PreparingAgywTool)
+                .withError(DownloadResultsMutation.AgywError)
+                .postAndReturn(`download/submit/agyw/${calibrateId}`, {})
+
+            if (response) {
+                await dispatch("poll", DOWNLOAD_TYPE.AGYW)
+            }
+        }
+    },
+
     async poll(context, downloadType) {
         const {commit} = context;
         const id = setInterval(() => {
@@ -144,6 +172,8 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
                 getSummaryReportStatus(context)
             } else if (downloadType === DOWNLOAD_TYPE.COMPARISON) {
                 getComparisonOutputStatus(context)
+            } else if (downloadType === DOWNLOAD_TYPE.AGYW) {
+                getAgywDownloadStatus(context)
             }
         }, 2000);
 
@@ -229,6 +259,15 @@ export const getComparisonOutputStatus = async function (context: ActionContext<
             });
         });
     }
+};
+
+export const getAgywDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
+    const {state, dispatch, rootState, commit} = context;
+    const downloadId = state.agyw.downloadId;
+    const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
+        .withSuccess(DownloadResultsMutation.AgywStatusUpdated)
+        .withError(DownloadResultsMutation.AgywError)
+        .get<ModelStatusResponse>(`download/status/${downloadId}`);
 };
 
 const getADRUploadMetadata = async function (response: ResponseWithType<ModelStatusResponse>, dispatch: Dispatch) {
