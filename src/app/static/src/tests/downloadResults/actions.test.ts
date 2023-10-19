@@ -7,6 +7,7 @@ import {
 import {actions} from "../../app/store/downloadResults/actions";
 import {DOWNLOAD_TYPE} from "../../app/types";
 import {DownloadStatusResponse} from "../../app/generated";
+import {switches} from "../../app/featureSwitches";
 
 const RunningStatusResponse: DownloadStatusResponse = {
     id: "db0c4957aea4b32c507ac02d63930110",
@@ -1138,18 +1139,28 @@ describe(`download Results actions`, () => {
         }, 2100)
     });
 
-    it("can prepare all outputs", async () => {
+    it("can prepare all outputs and optionally AGYW", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
 
-        await actions.prepareOutputs({commit, dispatch} as any);
+        switches.agywDownload = false;
+        actions.prepareOutputs({commit, dispatch} as any);
 
-        expect(dispatch.mock.calls.length).toBe(5);
+        expect(dispatch.mock.calls.length).toBe(4);
         expect(dispatch.mock.calls[0][0]).toBe("prepareCoarseOutput");
         expect(dispatch.mock.calls[1][0]).toBe("prepareSummaryReport");
         expect(dispatch.mock.calls[2][0]).toBe("prepareSpectrumOutput");
         expect(dispatch.mock.calls[3][0]).toBe("prepareComparisonOutput");
-        expect(dispatch.mock.calls[4][0]).toBe("prepareAgywTool");
+
+        switches.agywDownload = true;
+        actions.prepareOutputs({commit, dispatch} as any);
+
+        expect(dispatch.mock.calls.length).toBe(9);
+        expect(dispatch.mock.calls[4][0]).toBe("prepareCoarseOutput");
+        expect(dispatch.mock.calls[5][0]).toBe("prepareSummaryReport");
+        expect(dispatch.mock.calls[6][0]).toBe("prepareSpectrumOutput");
+        expect(dispatch.mock.calls[7][0]).toBe("prepareComparisonOutput");
+        expect(dispatch.mock.calls[8][0]).toBe("prepareAgywTool");
     });
 });
 

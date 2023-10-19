@@ -26,13 +26,22 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async prepareOutputs(context) {
         const {dispatch} = context
-        await Promise.all([
-            dispatch("prepareCoarseOutput"),
-            dispatch("prepareSummaryReport"),
-            dispatch("prepareSpectrumOutput"),
-            dispatch("prepareComparisonOutput"),
-            dispatch("prepareAgywTool")
-        ]);
+        if (switches.agywDownload) {
+            await Promise.all([
+                dispatch("prepareCoarseOutput"),
+                dispatch("prepareSummaryReport"),
+                dispatch("prepareSpectrumOutput"),
+                dispatch("prepareComparisonOutput"),
+                dispatch("prepareAgywTool"),
+            ]);
+        } else {
+            await Promise.all([
+                dispatch("prepareCoarseOutput"),
+                dispatch("prepareSummaryReport"),
+                dispatch("prepareSpectrumOutput"),
+                dispatch("prepareComparisonOutput"),
+            ]);
+        }
     },
 
     async downloadComparisonReport(context) {
