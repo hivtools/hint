@@ -1,5 +1,7 @@
 package org.imperial.mrc.hint.controllers
 
+import org.imperial.mrc.hint.FileManager
+import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -7,7 +9,8 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 @RestController
 @RequestMapping("/download")
-class DownloadController(val apiClient: HintrAPIClient)
+class DownloadController(val apiClient: HintrAPIClient,
+                         protected val fileManager: FileManager)
 {
     @PostMapping("/submit/{type}/{id}")
     @ResponseBody
@@ -16,7 +19,16 @@ class DownloadController(val apiClient: HintrAPIClient)
             @PathVariable("id") id: String,
             @RequestBody projectPayload: Map<String, Any?>? = null): ResponseEntity<String>
     {
-        return apiClient.downloadOutputSubmit(type, id, projectPayload)
+        var payload = projectPayload?.toMutableMap()
+        if (type == "agyw") {
+            val file = fileManager.getFile(FileType.PJNZ)
+            if (payload != null) {
+                payload["pjnz"] = file
+            } else {
+                payload = mapOf("pjnz" to file).toMutableMap()
+            }
+        }
+        return apiClient.downloadOutputSubmit(type, id, payload)
     }
 
     @GetMapping("/status/{id}")
