@@ -19,16 +19,13 @@ class DownloadController(val apiClient: HintrAPIClient,
             @PathVariable("id") id: String,
             @RequestBody projectPayload: Map<String, Any?>? = null): ResponseEntity<String>
     {
-        var payload = projectPayload?.toMutableMap()
         if (type == "agyw") {
             val file = fileManager.getFile(FileType.PJNZ)
-            if (payload != null) {
-                payload["pjnz"] = file
-            } else {
-                payload = mapOf("pjnz" to file).toMutableMap()
-            }
+            val payload = projectPayload?.toMutableMap() ?: mutableMapOf()
+            payload["pjnz"] = file
+            return apiClient.downloadOutputSubmit(type, id, payload)
         }
-        return apiClient.downloadOutputSubmit(type, id, payload)
+        return apiClient.downloadOutputSubmit(type, id, projectPayload)
     }
 
     @GetMapping("/status/{id}")
