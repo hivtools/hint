@@ -3,12 +3,14 @@ import {Control, DynamicFormMeta, MultiSelectControl, Option, SelectControl} fro
 type ControlWithOptions = SelectControl | MultiSelectControl;
 export function checkOptionsValid(formMeta: DynamicFormMeta): boolean {
     return formMeta.controlSections.every(section => {
-        section.controlGroups.every(group => {
-            group.controls.every(control => {
+        return section.controlGroups.every(group => {
+            return group.controls.every(control => {
                 // We could go further and check that if it is null or empty that this isn't
                 // a required control but just assuming this for now seems ok
                 if (control.value != null && control.value != "" && hasOptions(control)) {
-                    checkControlOptionValid(control);
+                    return checkControlOptionValid(control);
+                } else {
+                    return true;
                 }
             })
         })

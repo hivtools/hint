@@ -154,7 +154,7 @@ describe("Model run options mutations", () => {
                 }
             ]
         };
-        mutations.ModelOptionsFetched(state, {payload: newForm});
+        mutations.ModelOptionsFetched(state, {payload: newForm()});
         expect(state.optionsFormMeta).toStrictEqual(expected);
         expect(state.fetching).toBe(false);
     });
@@ -166,7 +166,7 @@ describe("Model run options mutations", () => {
             options: {"n1": 200, "multiselect": ["30", "40"]}
         });
 
-        mutations.ModelOptionsFetched(state, {payload: newForm});
+        mutations.ModelOptionsFetched(state, {payload: newForm()});
         expect(state.valid).toBe(false);
         expect(state.optionsFormMeta).toEqual({
             "controlSections":
@@ -255,7 +255,7 @@ describe("Model run options mutations", () => {
             options: testOptions
         });
 
-        mutations.ModelOptionsFetched(state, {payload: newForm});
+        mutations.ModelOptionsFetched(state, {payload: newForm()});
         expect(state.valid).toBe(false);
     });
 
@@ -272,37 +272,39 @@ describe("Model run options mutations", () => {
         children: "opt2",
     }
 
-    const newForm: DynamicFormMeta = {
-        controlSections: [
-            {
-                label: "general",
-                controlGroups: [
-                    {
-                        label: "g1",
-                        controls: [
-                            {...mockControl, name: "n1", value: 2},
-                            {...mockControl, name: "new_control"},
-                            {...mockSelectControl, name: "select"},
-                            {...mockChildrenSelect, name: "children"},
-                            {...mockMultiSelectControl, name: "multiselect", value: ["10", "20"]}
-                        ]
-                    },
-                    {
-                        label: "new_group",
-                        controls: [{...mockControl}]
-                    }
-                ]
-            },
-            {
-                label: "survey",
-                controlGroups: [
-                    {
-                        label: "g2",
-                        controls: []
-                    }
-                ]
-            }
-        ]
-    };
+    function newForm(): DynamicFormMeta {
+        return {
+            controlSections: [
+                {
+                    label: "general",
+                    controlGroups: [
+                        {
+                            label: "g1",
+                            controls: [
+                                {...mockControl, name: "n1", value: 2},
+                                {...mockControl, name: "new_control"},
+                                {...mockSelectControl, name: "select"},
+                                {...mockChildrenSelect, name: "children"},
+                                {...mockMultiSelectControl, name: "multiselect", value: ["10", "20"]}
+                            ]
+                        },
+                        {
+                            label: "new_group",
+                            controls: [{...mockControl}]
+                        }
+                    ]
+                },
+                {
+                    label: "survey",
+                    controlGroups: [
+                        {
+                            label: "g2",
+                            controls: []
+                        }
+                    ]
+                }
+            ]
+        } as DynamicFormMeta
+    }
 
 });
