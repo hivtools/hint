@@ -1,6 +1,6 @@
 import {mockError, mockModelOptionsState, mockWarning} from "../mocks";
 import {ModelOptionsMutation, mutations} from "../../app/store/modelOptions/mutations";
-import {DynamicFormMeta, MultiSelectControl, NumberControl} from "@reside-ic/vue-next-dynamic-form";
+import {DynamicFormMeta, MultiSelectControl, NumberControl, SelectControl} from "@reside-ic/vue-next-dynamic-form";
 import {VersionInfo} from "../../app/generated";
 
 describe("Model run options mutations", () => {
@@ -89,6 +89,23 @@ describe("Model run options mutations", () => {
         required: true
     };
 
+    const mockSelectControl: SelectControl = {
+        name: "selectControl",
+        type: "select",
+        required: false,
+        options: [
+            { id: "10", label: "10" },
+            { id: "20", label: "20" }
+        ]
+    };
+
+    const mockChildrenSelect: SelectControl = {
+        name: "childrenSelect",
+        type: "select",
+        required: false,
+        options: [{id: "opt1", label: "l1", children: [{id: "opt2", label: "l2"}]}]
+    };
+
     const mockMultiSelectControl: MultiSelectControl = {
         name: "control",
         type: "multiselect",
@@ -106,7 +123,6 @@ describe("Model run options mutations", () => {
             options: testOptions
         });
 
-
         const expected: DynamicFormMeta = {
             controlSections: [
                 {
@@ -117,6 +133,8 @@ describe("Model run options mutations", () => {
                             controls: [
                                 {...mockControl, name: "n1", value: 20},
                                 {...mockControl, name: "new_control"},
+                                {...mockSelectControl, name: "select", value: "20"},
+                                {...mockChildrenSelect, name: "children", value: "opt2"},
                                 {...mockMultiSelectControl, name: "multiselect", value: ["10", "20"]}
                             ]
                         }, {
@@ -169,6 +187,29 @@ describe("Model run options mutations", () => {
                                                 "name": "new_control",
                                                 "required": true,
                                                 "type": "number"
+                                            },
+                                            {
+                                                "name": "select",
+                                                "required": false,
+                                                "type": "select",
+                                                "options": [
+                                                    {id: "10", label: "10"},
+                                                    {id: "20", label: "20"}
+                                                ]
+                                            },
+                                            {
+                                                "name": "children",
+                                                "required": false,
+                                                "type": "select",
+                                                "options": [
+                                                    {
+                                                        id: "opt1",
+                                                        label: "l1",
+                                                        children: [
+                                                            {id: "opt2", label: "l2"}
+                                                        ]
+                                                    }
+                                                ]
                                             },
                                             {
                                                 "name": "multiselect",
@@ -226,7 +267,9 @@ describe("Model run options mutations", () => {
 
     const testOptions = {
         n1: 20,
-        n2: 10
+        n2: 10,
+        select: "20",
+        children: "opt2",
     }
 
     const newForm: DynamicFormMeta = {
@@ -239,6 +282,8 @@ describe("Model run options mutations", () => {
                         controls: [
                             {...mockControl, name: "n1", value: 2},
                             {...mockControl, name: "new_control"},
+                            {...mockSelectControl, name: "select"},
+                            {...mockChildrenSelect, name: "children"},
                             {...mockMultiSelectControl, name: "multiselect", value: ["10", "20"]}
                         ]
                     },

@@ -2,19 +2,17 @@ import {Control, DynamicFormMeta, MultiSelectControl, Option, SelectControl} fro
 
 type ControlWithOptions = SelectControl | MultiSelectControl;
 export function checkOptionsValid(formMeta: DynamicFormMeta): boolean {
-    let valid = true;
-    formMeta.controlSections.forEach(section => {
-        section.controlGroups.forEach(group => {
-            group.controls.forEach(control => {
+    return formMeta.controlSections.every(section => {
+        section.controlGroups.every(group => {
+            group.controls.every(control => {
                 // We could go further and check that if it is null or empty that this isn't
                 // a required control but just assuming this for now seems ok
                 if (control.value != null && control.value != "" && hasOptions(control)) {
-                    valid = valid && checkControlOptionValid(control);
+                    checkControlOptionValid(control);
                 }
             })
         })
     })
-    return valid;
 }
 
 function hasOptions(control: Control): control is ControlWithOptions {
@@ -43,7 +41,7 @@ function getAllOptions(control: ControlWithOptions): string[] {
 
 function getOptions(option: Option): string[] {
     const options = [option.id];
-    if (option.children !== undefined) {
+    if (option.children !== undefined && option.children.length > 0) {
         options.concat(...option.children.map((child: Option) => getOptions(child)));
     }
     return options;
