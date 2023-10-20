@@ -26,22 +26,13 @@ export const actions: ActionTree<DownloadResultsState, RootState> & DownloadResu
 
     async prepareOutputs(context) {
         const {dispatch} = context
-        if (switches.agywDownload) {
-            await Promise.all([
-                dispatch("prepareCoarseOutput"),
-                dispatch("prepareSummaryReport"),
-                dispatch("prepareSpectrumOutput"),
-                dispatch("prepareComparisonOutput"),
-                dispatch("prepareAgywTool"),
-            ]);
-        } else {
-            await Promise.all([
-                dispatch("prepareCoarseOutput"),
-                dispatch("prepareSummaryReport"),
-                dispatch("prepareSpectrumOutput"),
-                dispatch("prepareComparisonOutput"),
-            ]);
-        }
+        await Promise.all([
+            dispatch("prepareCoarseOutput"),
+            dispatch("prepareSummaryReport"),
+            dispatch("prepareSpectrumOutput"),
+            dispatch("prepareComparisonOutput"),
+            ...switches.agywDownload ? [dispatch("prepareAgywTool")] : []
+        ])
     },
 
     async downloadComparisonReport(context) {
@@ -271,9 +262,9 @@ export const getComparisonOutputStatus = async function (context: ActionContext<
 };
 
 export const getAgywDownloadStatus = async function (context: ActionContext<DownloadResultsState, RootState>): Promise<void> {
-    const {state, dispatch, rootState, commit} = context;
+    const {state} = context;
     const downloadId = state.agyw.downloadId;
-    const response = await api<DownloadResultsMutation, DownloadResultsMutation>(context)
+    await api<DownloadResultsMutation, DownloadResultsMutation>(context)
         .withSuccess(DownloadResultsMutation.AgywStatusUpdated)
         .withError(DownloadResultsMutation.AgywError)
         .get<ModelStatusResponse>(`download/status/${downloadId}`);
