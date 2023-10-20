@@ -27,7 +27,6 @@
     import { RootState } from "../root";
     import { Language } from "../store/translations/locales";
     import { Warning } from "../generated";
-    import { Dict } from "../types";
     import { PropType, defineComponent, nextTick } from "vue";
 
     export default defineComponent({
@@ -142,6 +141,3 @@
         }
     })
 </script>
-
-
-
