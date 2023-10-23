@@ -159,7 +159,6 @@ describe("Survey and programme component", () => {
             }
         });
         const choro = wrapper.findComponent(Choropleth);
-        expect(choro.props().includeFilters).toBe(false);
         expect(choro.props().areaFilterId).toBe("area");
         expect(choro.props().chartdata).toBe("TEST DATA");
         expect(choro.props().roundFormatOutput).toBe(false);
@@ -498,4 +497,3 @@ describe("Survey and programme component", () => {
     });
 
 });
-

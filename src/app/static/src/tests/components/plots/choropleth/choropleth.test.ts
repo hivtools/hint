@@ -47,7 +47,6 @@ const props = {
             area: []
         }
     },
-    includeFilters: true,
     colourScales: {
         prevalence: {
             type: ScaleType.Custom,
@@ -89,11 +88,6 @@ describe("Choropleth component", () => {
         expect(wrapper.findAllComponents(Filters).length).toBe(1);
 
         //TODO: ADD TEST THAT MODIFIES AREA FILTER FOR DISPLAY IN FILTERS
-    });
-
-    it("does not render filters if includeFilters is false", () => {
-        const wrapper = getWrapper({includeFilters: false});
-        expect(wrapper.findAllComponents(Filters).length).toBe(0);
     });
 
     it("renders color legend", () => {

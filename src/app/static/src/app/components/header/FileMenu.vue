@@ -12,18 +12,20 @@
                    @change="loadZip" accept=".zip">
 
             <span v-if="loadJsonFeatureSwitch">
-                <a class="dropdown-item" tabindex="0" v-on:mousedown="save">
-                    <span><span class="pr-1" v-translate="'save'"></span>JSON</span>
-                    <vue-feather type="download" size="20" class="icon"></vue-feather>
+                <a class="dropdown-item mb-0" tabindex="0" v-on:mousedown="save">
+                <span><span class="pr-1" v-translate="'save'"></span>JSON</span>
+                <vue-feather type="download" size="20" class="icon ml-1"></vue-feather>
                 </a>
                 <a style="display:none" ref="save"></a>
-                <a class="dropdown-item" ref="load" href="#" v-on:mousedown="handleLoadJson">
-                    <span><span class="pr-1" v-translate="'load'"></span>JSON</span>
-                    <vue-feather type="upload" size="20" class="icon"></vue-feather>
-                </a>
+                <p class="dropdown-item mb-0" tabindex="0"
+                   @click="$refs.loadJson.click()">
+                <span><span class="pr-1" v-translate="'load'"></span>JSON</span>
+                <vue-feather type="upload" size="20" class="icon ml-1"></vue-feather>
+                </p>
                 <input id="upload-file" v-translate:aria-label="'selectFile'"
                        type="file"
-                       style="display: none;" ref="loadJson" v-on:change="loadJson" accept=".json">
+                       style="display: none;" ref="loadJson"
+                       @change="loadJson" accept=".json">
             </span>
         </drop-down>
 

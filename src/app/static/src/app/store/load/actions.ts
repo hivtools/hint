@@ -12,7 +12,11 @@ import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
 import {currentHintVersion} from "../../hintVersion";
 import {initialStepperState} from "../stepper/stepper";
-import {CalibrateResultResponse, ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generated";
+import {
+    ModelStatusResponse,
+    ProjectRehydrateResultResponse,
+    ProjectState
+} from "../../generated";
 import {DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 
@@ -74,8 +78,11 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
         if (!rootGetters.isGuest) {
             await (dispatch("projects/createProject", {name: state.projectName || null}, {root: true}));
-            savedState.projects.currentProject = rootState.projects.currentProject;
-            savedState.projects.currentVersion = rootState.projects.currentVersion;
+            savedState.projects = {
+                currentProject: rootState.projects.currentProject,
+                currentVersion: rootState.projects.currentVersion,
+                previousProjects: []
+            } as any
         }
 
         await getFilesAndLoad(context, files, savedState);
@@ -226,4 +233,3 @@ const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormDa
         return options
     }, {})
 }
-
