@@ -1,10 +1,13 @@
 <template>
     <div class="row">
-        <filters-comp class="col-md-3" v-if="includeFilters"
-                 :filters="filters"
-                 :selectedFilterOptions="selections.selectedFilterOptions"
-                 @update:filters="onFilterSelectionsChange"></filters-comp>
-        <div id="chart" :class="includeFilters ? 'col-md-9' : 'col-md-12'">
+        <div class="col-md-3">
+            <slot/>
+            <filters-comp
+                          :filters="filters"
+                          :selectedFilterOptions="selections.selectedFilterOptions"
+                          @update:filters="onFilterSelectionsChange"></filters-comp>
+        </div>
+        <div id="chart" class="col-md-9">
             <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds">
                 <template v-for="feature in currentFeatures" :key="feature.properties.area_id">
                     <l-geo-json :geojson="feature"
@@ -139,10 +142,6 @@
             },
             areaFilterId: {
                 type: String,
-                required: true
-            },
-            includeFilters: {
-                type: Boolean,
                 required: true
             },
             roundFormatOutput: {

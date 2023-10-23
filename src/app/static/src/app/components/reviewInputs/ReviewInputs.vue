@@ -17,47 +17,39 @@
             </ul>
         </div>
         <template v-if="selectedTab === 0">
-            <div class="row">
-                <div :class="showChoropleth ? 'col-md-3' : 'col-sm-6 col-md-8'" class="upload-section">
+            <div v-if="showChoropleth">
+                <choropleth :chartdata="data"
+                            :filters="filters"
+                            :features="features"
+                            :feature-levels="featureLevels"
+                            :indicators="sapIndicatorsMetadata"
+                            :selections="plottingSelections"
+                            :round-format-output="false"
+                            :area-filter-id="areaFilterId"
+                            :colour-scales="selectedSAPColourScales"
+                            @update:selections="updateChoroplethSelections({payload: $event})"
+                            @update-colour-scales="updateSAPColourScales({payload: [selectedDataType, $event]})">
                     <div v-if="showChoropleth" id="data-source" class="form-group">
                         <h4 id="data-source-header" v-translate="'dataSource'"></h4>
                         <hint-tree-select
-                                :multiple="false"
-                                :clearable="false"
-                                :options="dataSourceOptions"
-                                :model-value="`${selectedDataType}`"
-                                @update:model-value="selectDataSource">
+                            :multiple="false"
+                            :clearable="false"
+                            :options="dataSourceOptions"
+                            :model-value="`${selectedDataType}`"
+                            @update:model-value="selectDataSource">
                         </hint-tree-select>
                     </div>
-                    <filters v-if="showChoropleth"
-                            :filters="filters"
-                            :selectedFilterOptions="plottingSelections.selectedFilterOptions"
-                            @update:filters="updateChoroplethSelections({payload: {selectedFilterOptions: $event}})"></filters>
-                </div>
-                <div v-if="showChoropleth" class="col-md-9">
-                    <choropleth :chartdata="data"
-                                :filters="filters"
-                                :features="features"
-                                :feature-levels="featureLevels"
-                                :indicators="sapIndicatorsMetadata"
-                                :selections="plottingSelections"
-                                :include-filters="false"
-                                :round-format-output="false"
-                                :area-filter-id="areaFilterId"
-                                :colour-scales="selectedSAPColourScales"
-                                @update:selections="updateChoroplethSelections({payload: $event})"
-                                @update-colour-scales="updateSAPColourScales({payload: [selectedDataType, $event]})"></choropleth>
-                    <div>
-                        <area-indicators-table :table-data="data"
-                                            :area-filter-id="areaFilterId"
-                                            :filters="filters"
-                                            :countryAreaFilterOption="countryAreaFilterOption"
-                                            :indicators="filterTableIndicators"
-                                            :selections="plottingSelections"
-                                            :round-format-output="false"
-                                            :selectedFilterOptions="plottingSelections.selectedFilterOptions"
-                        ></area-indicators-table>
-                    </div>
+                </choropleth>
+                <div>
+                    <area-indicators-table :table-data="data"
+                                           :area-filter-id="areaFilterId"
+                                           :filters="filters"
+                                           :countryAreaFilterOption="countryAreaFilterOption"
+                                           :indicators="filterTableIndicators"
+                                           :selections="plottingSelections"
+                                           :round-format-output="false"
+                                           :selectedFilterOptions="plottingSelections.selectedFilterOptions">
+                    </area-indicators-table>
                 </div>
             </div>
         </template>
@@ -74,26 +66,16 @@
 <script lang="ts">
     import HintTreeSelect from "../HintTreeSelect.vue";
     import i18next from "i18next";
-    import {mapGetters, mapMutations, mapState} from "vuex";
+    import {mapMutations} from "vuex";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import AreaIndicatorsTable from "../plots/table/AreaIndicatorsTable.vue";
-    import Filters from "../plots/Filters.vue";
-    import {
-        Filter,
-        GenericChartMetadataResponse,
-        LevelLabel,
-        PartialFileUploadProps
-    } from "../../types";
+    import {LevelLabel} from "../../types";
     import {RootState} from "../../root";
-    import {DataType, SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
+    import {SurveyAndProgramState} from "../../store/surveyAndProgram/surveyAndProgram";
     import {Feature} from "geojson";
     import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
     import {mapActionByName, mapGettersByNames, mapStateProp, mapRootStateProps} from "../../utils";
-    import {
-        ChoroplethSelections,
-        PlottingSelectionsState,
-        ScaleSelections
-    } from "../../store/plottingSelections/plottingSelections";
+    import {PlottingSelectionsState} from "../../store/plottingSelections/plottingSelections";
     import {BaselineState} from "../../store/baseline/baseline";
     import {Language} from "../../store/translations/locales";
     import GenericChart from "../genericChart/GenericChart.vue";
@@ -189,7 +171,6 @@
         },
         components: {
             Choropleth,
-            Filters,
             AreaIndicatorsTable,
             HintTreeSelect,
             GenericChart
