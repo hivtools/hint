@@ -28,13 +28,15 @@
         </drop-down>
 
         <div id="project-zip">
-            <upload-new-project :open-modal="projectNameZip"
+            <upload-new-project input-id="project-name-input-zip"
+                                :open-modal="projectNameZip"
                                 :submit-load="handleLoadZip"
                                 :cancel-load="cancelLoadZip"/>
         </div>
 
-        <div id="project-json">
-            <upload-new-project :open-modal="projectNameJson"
+        <div id="project-json" v-if="loadJsonFeatureSwitch">
+            <upload-new-project input-id="project-name-input-json"
+                                :open-modal="projectNameJson"
                                 :submit-load="handleLoadJson"
                                 :cancel-load="cancelLoadJson"/>
         </div>
