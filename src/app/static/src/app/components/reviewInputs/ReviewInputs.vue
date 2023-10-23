@@ -29,7 +29,7 @@
                             :colour-scales="selectedSAPColourScales"
                             @update:selections="updateChoroplethSelections({payload: $event})"
                             @update-colour-scales="updateSAPColourScales({payload: [selectedDataType, $event]})">
-                    <div v-if="showChoropleth" id="data-source" class="form-group">
+                    <div id="data-source" class="form-group">
                         <h4 id="data-source-header" v-translate="'dataSource'"></h4>
                         <hint-tree-select
                             :multiple="false"

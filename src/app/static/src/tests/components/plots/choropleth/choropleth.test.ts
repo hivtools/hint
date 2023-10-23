@@ -63,6 +63,9 @@ const getWrapper = (customPropsData: any = {}) => {
         props: {...props, ...customPropsData},
         global: {
             plugins: [store]
+        },
+        slots: {
+            default: "slot content"
         }
     });
 };
@@ -609,4 +612,9 @@ describe("Choropleth component", () => {
         await wrapper.setProps({ ...props, selections: { ...props.selections, detail: 3 }});
         expect(spy.mock.calls.length).toBe(1);
     });
+
+    it("renders slot content", async() => {
+        const wrapper = getWrapper()
+        expect(wrapper.html()).toContain("slot content")
+    })
 });

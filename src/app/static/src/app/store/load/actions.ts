@@ -179,7 +179,7 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
                     name: state.projectName,
                     isUploaded: true
                 }, {root: true});
-                
+            
             savedState.projects!.currentProject = rootState.projects.currentProject
             savedState.projects!.currentVersion = rootState.projects.currentVersion
 
