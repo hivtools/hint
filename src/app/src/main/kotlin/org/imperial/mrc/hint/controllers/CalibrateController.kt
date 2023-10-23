@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity
 import org.imperial.mrc.hint.db.CalibrateDataRepository
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.models.ModelOptions
+import org.imperial.mrc.hint.models.SuccessResponse
+import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.exceptions.CalibrateDataException
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.HttpStatus
@@ -53,7 +55,7 @@ class CalibrateController(val apiClient: HintrAPIClient, val calibrateDataReposi
         val jsonBody = ObjectMapper().readTree(res.body?.toString())
         val path = jsonBody.get("data").get("path").textValue()
         val resObj = calibrateDataRepository.getDataFromPath(path)
-        return ResponseEntity.ok(resObj.toString())
+        return SuccessResponse(resObj).asResponseEntity()
     }
 
     @GetMapping("/plot/{id}")

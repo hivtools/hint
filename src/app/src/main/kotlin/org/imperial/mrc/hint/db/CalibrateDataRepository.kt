@@ -5,6 +5,7 @@ import org.jooq.tools.json.JSONObject
 import org.springframework.stereotype.Component
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.imperial.mrc.hint.exceptions.CalibrateDataException
+// import org.imperial.mrc.hint.models.CalibrateResultRow
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.Statement
@@ -47,13 +48,16 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         return jsonArray
     }
 
-    private fun getDataFromQuery(conn: Connection): JSONArray {
+    @Suppress("SwallowedException")
+    private fun getDataFromConnection(conn: Connection): JSONArray {
         try {
             val query = DEFAULT_QUERY
             val stmt: Statement = conn.createStatement()
             val resultSet = stmt.executeQuery(query)
             val jsonArray = convertToJSONArray(resultSet)
             return jsonArray
+        } catch (e: SQLException) {
+            throw CalibrateDataException("Could not execute query")
         } finally {
             conn.close()
         }
@@ -74,8 +78,9 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
 
     override fun getDataFromPath(path: String): JSONObject
     {
-        val conn = getDBConnFromPathResponse(path)
-        val plotData = getDataFromQuery(conn)
-        return JSONObject(mapOf("data" to plotData))
+        getDBConnFromPathResponse(path).use { conn ->
+            val plotData = getDataFromConnection(conn)
+            return JSONObject(mapOf("data" to plotData))
+        }
     }
 }
