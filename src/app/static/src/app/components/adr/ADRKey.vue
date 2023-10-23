@@ -2,8 +2,7 @@
     <div class="row mb-2">
         <div class="col-8">
             <div class="d-flex d-inline-block">
-                <label for="key"
-                       class="font-weight-bold align-self-center col-form-label"
+                <label class="font-weight-bold align-self-center col-form-label"
                        v-translate="'adrKey'">
                 </label>
                 <div class="align-self-center pl-2">
