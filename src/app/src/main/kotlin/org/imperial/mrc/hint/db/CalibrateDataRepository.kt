@@ -5,6 +5,8 @@ import org.jooq.tools.json.JSONObject
 import org.springframework.stereotype.Component
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.imperial.mrc.hint.exceptions.CalibrateDataException
+import org.imperial.mrc.hint.models.CalibrateResultRow
+import org.imperial.mrc.hint.models.CalibrateResultRowKeys
 // import org.imperial.mrc.hint.models.CalibrateResultRow
 import java.sql.Connection
 import java.sql.DriverManager
@@ -27,35 +29,42 @@ FROM data"""
 
 interface CalibrateDataRepository
 {
-    fun getDataFromPath(path: String): JSONObject
+    fun getDataFromPath(path: String): JSONArray
 }
 
 @Component
 class JooqCalibrateDataRepository: CalibrateDataRepository
 {
 
-    private fun convertToJSONArray(resultSet: ResultSet): JSONArray {
-        val jsonArray = JSONArray()
+    private fun convertToArrayList(resultSet: ResultSet): ArrayList<CalibrateResultRow> {
+        val list: ArrayList<CalibrateResultRow> = arrayListOf()
         while (resultSet.next()) {
-            val obj = JSONObject()
-            val totalRows = resultSet.metaData.columnCount
-            for (i in 0 until totalRows) {
-                obj[resultSet.metaData.getColumnLabel(i + 1)
-                    .lowercase(Locale.getDefault())] = resultSet.getObject(i + 1)
-            }
-            jsonArray.add(obj)
+            val row = CalibrateResultRow(
+                resultSet.getString("indicator"),
+                resultSet.getString("calendar_quarter"),
+                resultSet.getString("age_group"),
+                resultSet.getString("sex"),
+                resultSet.getString("area_id"),
+                resultSet.getFloat("mode"),
+                resultSet.getFloat("mean"),
+                resultSet.getFloat("lower"),
+                resultSet.getFloat("upper")
+            )
+            list.add(row)
         }
-        return jsonArray
+        return list
     }
 
     @Suppress("SwallowedException")
-    private fun getDataFromConnection(conn: Connection): JSONArray {
+    private fun getDataFromConnection(conn: Connection): List<Map<CalibrateResultRowKeys, Any>> {
         try {
             val query = DEFAULT_QUERY
             val stmt: Statement = conn.createStatement()
             val resultSet = stmt.executeQuery(query)
-            val jsonArray = convertToJSONArray(resultSet)
-            return jsonArray
+            val arrayList = convertToArrayList(resultSet)
+            return arrayList.map { row ->
+                row.toMap()
+            }
         } catch (e: SQLException) {
             throw CalibrateDataException("Could not execute query")
         } finally {
@@ -76,11 +85,11 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         return conn
     }
 
-    override fun getDataFromPath(path: String): JSONObject
+    override fun getDataFromPath(path: String): JSONArray
     {
         getDBConnFromPathResponse(path).use { conn ->
             val plotData = getDataFromConnection(conn)
-            return JSONObject(mapOf("data" to plotData))
+            return JSONArray(plotData)
         }
     }
 }

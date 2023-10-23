@@ -18,7 +18,7 @@ class CalibrateControllerTests
 {
     private val mockResponse = mock<ResponseEntity<String>>()
     private val modelRunOptions = ModelOptions(mapOf(), mapOf())
-    private val mockDataFromPath = JSONObject(mapOf("data" to "testData"))
+    private val mockDataFromPath = JSONArray(listOf("testData"))
 
     @Test
     fun `can submit calibrate`()
@@ -73,7 +73,9 @@ class CalibrateControllerTests
         val sut = CalibrateController(mockAPIClient, mockCalibrateDataRepository)
 
         val result = sut.calibrateResultData("testId")
-        assertThat(result.body?.toString()).isEqualTo("{\"data\":\"testData\"}")
+        assertThat(result.body?.toString()).isEqualTo(
+            "{\"data\":[\"testData\"],\"errors\":[],\"status\":\"success\"}"
+        )
     }
 
     @Test

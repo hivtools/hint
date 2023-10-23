@@ -29,8 +29,7 @@ class CalibrateDataRepositoryTests
         "sex" to "sex_test",
         "upper" to 1.0f
     ))
-    val expectedData = JSONArray(listOf(expectedDataObj))
-    val expectedPlotData = JSONObject(mapOf("data" to expectedData))
+    val expectedPlotData = JSONArray(listOf(expectedDataObj))
     val path = "/src/test/resources/duckdb/test.duckdb"
 
     @Autowired
