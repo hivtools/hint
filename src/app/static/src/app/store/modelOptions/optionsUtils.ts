@@ -37,8 +37,7 @@ function checkControlOptionValid(control: ControlWithOptions): boolean {
 }
 
 function getAllOptions(control: ControlWithOptions): string[] {
-    const options= control.options.map((option: Option) => getOptions(option));
-    return options.flat();
+    return control.options.flatMap((option: Option) => getOptions(option));
 }
 
 function getOptions(option: Option): string[] {
