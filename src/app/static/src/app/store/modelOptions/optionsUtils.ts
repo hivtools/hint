@@ -42,7 +42,7 @@ function getAllOptions(control: ControlWithOptions): string[] {
 
 function getOptions(option: Option): string[] {
     const options = [option.id];
-    if (option.children !== undefined && option.children.length > 0) {
+    if (option.children && option.children.length > 0) {
         options.concat(...option.children.map((child: Option) => getOptions(child)));
     }
     return options;
