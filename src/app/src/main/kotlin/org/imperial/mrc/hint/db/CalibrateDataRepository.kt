@@ -6,8 +6,6 @@ import org.springframework.stereotype.Component
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.imperial.mrc.hint.exceptions.CalibrateDataException
 import org.imperial.mrc.hint.models.CalibrateResultRow
-import org.imperial.mrc.hint.models.CalibrateResultRowKeys
-// import org.imperial.mrc.hint.models.CalibrateResultRow
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.Statement
@@ -56,19 +54,15 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
     }
 
     @Suppress("SwallowedException")
-    private fun getDataFromConnection(conn: Connection): List<Map<CalibrateResultRowKeys, Any>> {
+    private fun getDataFromConnection(conn: Connection): ArrayList<CalibrateResultRow> {
         try {
             val query = DEFAULT_QUERY
             val stmt: Statement = conn.createStatement()
             val resultSet = stmt.executeQuery(query)
             val arrayList = convertToArrayList(resultSet)
-            return arrayList.map { row ->
-                row.toMap()
-            }
+            return arrayList
         } catch (e: SQLException) {
-            throw CalibrateDataException("Could not execute query")
-        } finally {
-            conn.close()
+            throw CalibrateDataException("queryExecutionFailed", arrayOf(e.message ?: ""))
         }
     }
 
@@ -80,7 +74,7 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         try {
             conn = DriverManager.getConnection("jdbc:duckdb:.${path}", readOnlyProp)
         } catch (e: SQLException) {
-            throw CalibrateDataException("Could not connect to database")
+            throw CalibrateDataException("databaseConnectionFailed", arrayOf(e.message ?: ""))
         }
         return conn
     }

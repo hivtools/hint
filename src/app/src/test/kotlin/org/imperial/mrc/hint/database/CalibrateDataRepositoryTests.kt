@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.imperial.mrc.hint.db.CalibrateDataRepository
 import org.imperial.mrc.hint.exceptions.CalibrateDataException
+import org.imperial.mrc.hint.models.CalibrateResultRow
 import org.junit.jupiter.api.Test
 import org.jooq.tools.json.JSONObject
 import org.jooq.tools.json.JSONArray
@@ -18,18 +19,17 @@ import com.fasterxml.jackson.databind.ObjectMapper
 @SpringBootTest
 class CalibrateDataRepositoryTests
 {
-    val expectedDataObj = JSONObject(mapOf(
-        "age_group" to "age_group_test",
-        "area_id" to "area_id_test",
-        "calendar_quarter" to "calendar_quarter_test",
-        "indicator" to "indicator_test",
-        "lower" to 0.1111f,
-        "mean" to 0.5556f,
-        "mode" to 0.2222f,
-        "sex" to "sex_test",
-        "upper" to 1.0f
-    ))
-    val expectedPlotData = JSONArray(listOf(expectedDataObj))
+    val expectedRow = JSONArray(listOf(CalibrateResultRow(
+        "indicator_test",
+        "calendar_quarter_test",
+        "age_group_test",
+        "sex_test",
+        "area_id_test",
+        0.2222,
+        0.5555,
+        0.1111,
+        0.9999
+    )))
     val path = "/src/test/resources/duckdb/test.duckdb"
 
     @Autowired
@@ -40,8 +40,8 @@ class CalibrateDataRepositoryTests
     {
         val plotData = sut.getDataFromPath(path)
         val plotDataTree = ObjectMapper().readTree(plotData.toString())
-        val expectedPlotDataTree = ObjectMapper().readTree(expectedPlotData.toString())
-        assert(plotDataTree.equals(expectedPlotDataTree))
+        val expectedTree = ObjectMapper().readTree(expectedRow.toString())
+        assert(plotDataTree.equals(expectedTree))
     }
 
     @Test
@@ -50,6 +50,6 @@ class CalibrateDataRepositoryTests
         assertThatThrownBy {
             sut.getDataFromPath("/src/test/resources/duckdb/test1.duckdb")
         }.isInstanceOf(CalibrateDataException::class.java)
-            .hasMessageContaining("Could not connect to database")
+            .hasMessageContaining("databaseConnectionFailed")
     }
 }
