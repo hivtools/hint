@@ -37,13 +37,12 @@ function checkControlOptionValid(control: ControlWithOptions): boolean {
 }
 
 function getAllOptions(control: ControlWithOptions): string[] {
-    const options= control.options.map((option: Option) => getOptions(option));
-    return options.flat();
+    return control.options.flatMap((option: Option) => getOptions(option));
 }
 
 function getOptions(option: Option): string[] {
     const options = [option.id];
-    if (option.children !== undefined && option.children.length > 0) {
+    if (option.children && option.children.length > 0) {
         options.concat(...option.children.map((child: Option) => getOptions(child)));
     }
     return options;
