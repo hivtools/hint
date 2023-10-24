@@ -67,9 +67,8 @@ export const mutations: MutationTree<ModelOptionsState> = {
     },
 
     [ModelOptionsMutation.ModelOptionsFetched](state: ModelOptionsState, action: PayloadWithType<DynamicFormMeta>) {
-        const newForm = writeOptionsIntoForm(state.options, action.payload);
-        state.valid = state.valid && checkOptionsValid(newForm);
-        state.optionsFormMeta = newForm;
+        writeOptionsIntoForm(state.options, action.payload);
+        state.valid = state.valid && checkOptionsValid(state.optionsFormMeta);
         state.fetching = false;
     },
 

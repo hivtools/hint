@@ -368,7 +368,7 @@ export const validateEmail = (test: string): boolean => {
 
 export const versionLabel = (version: Version) => `v${version.versionNumber}`;
 
-export const writeOptionsIntoForm = (options: DynamicFormData, optionsForm: DynamicFormMeta): DynamicFormMeta => {
+export const writeOptionsIntoForm = (options: DynamicFormData, optionsForm: DynamicFormMeta) => {
     const hasOptions = Object.keys(options).length > 0;
     if (hasOptions) {
         optionsForm.controlSections.forEach(section => {
@@ -381,8 +381,6 @@ export const writeOptionsIntoForm = (options: DynamicFormData, optionsForm: Dyna
             });
         });
     }
-
-    return optionsForm
 };
 
 export function getFilenameFromImportUrl(url: string) {

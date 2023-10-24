@@ -51,7 +51,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     },
 
     [ModelCalibrateMutation.ModelCalibrateOptionsFetched](state: ModelCalibrateState, action: PayloadWithType<DynamicFormMeta>) {
-        state.optionsFormMeta = writeOptionsIntoForm(state.options, action.payload);
+        writeOptionsIntoForm(state.options, action.payload);
         state.fetching = false;
     },
 
