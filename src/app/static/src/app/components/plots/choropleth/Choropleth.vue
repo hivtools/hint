@@ -7,7 +7,8 @@
         <div id="chart" :class="includeFilters ? 'col-md-9' : 'col-md-12'">
             <l-map ref="map" style="height: 800px; width: 100%" @ready="updateBounds">
                 <template v-for="feature in currentFeatures" :key="feature.properties.area_id">
-                    <l-geo-json :geojson="feature"
+                    <l-geo-json :ref="feature.properties.area_id"
+                                :geojson="feature"
                                 :options="options"
                                 :optionsStyle="() => {return {...style, fillColor: getColor(feature)}}">
                     </l-geo-json>
@@ -59,7 +60,7 @@
 
     interface Data {
         style: any,
-        fullIndicatorRanges: Dict<NumericRange>
+        fullIndicatorRanges: Dict<NumericRange>,
     }
 
     interface Methods {
@@ -293,42 +294,9 @@
                 }
             },
             options() {
-                const featureIndicators = this.featureIndicators;
-                let format = "";
-                let scale = 1;
-                let accuracy: number | null = null;
-                if (this.colorIndicator) {
-                    format = this.colorIndicator.format;
-                    scale = this.colorIndicator.scale;
-                    accuracy = this.colorIndicator.accuracy;
-                }
                 return {
                     onEachFeature: (feature: Feature, layer: Layer) => {
-                        const area_id = feature.properties && feature.properties["area_id"];
-                        const area_name = feature.properties && feature.properties["area_name"];
-
-                        const values = featureIndicators[area_id];
-                        const value = values && values!.value;
-                        const lower_value = values && values!.lower_value;
-                        const upper_value = values && values!.upper_value;
-
-                        const stringVal = (value || value === 0) ? value.toString() : "";
-                        const stringLower = (lower_value || lower_value === 0) ? lower_value.toString() : "";
-                        const stringUpper = (upper_value || upper_value === 0) ? upper_value.toString() : "";
-
-                        if (stringVal && stringLower) {
-                            layer.bindTooltip(`<div>
-                                <strong>${area_name}</strong>
-                                <br/>${ formatOutput(stringVal, format, scale, accuracy, this.roundFormatOutput)}
-                                <br/>(${formatOutput(stringLower, format, scale, accuracy, this.roundFormatOutput) + " - " +
-                            formatOutput(stringUpper, format, scale, accuracy, this.roundFormatOutput)})
-                            </div>`);
-                        } else {
-                            layer.bindTooltip(`<div>
-                                <strong>${area_name}</strong>
-                                <br/>${formatOutput(stringVal, format, scale, accuracy, this.roundFormatOutput)}
-                            </div>`);
-                        }
+                        layer.bindTooltip(this.tooltipContent(feature))
                     }
                 }
             }
@@ -406,6 +374,65 @@
             },
             normalizeIndicators(node: ChoroplethIndicatorMetadata) {
                 return {id: node.indicator, label: node.name};
+            },
+            tooltipContent(feature: Feature): string {
+                let format = "";
+                let scale = 1;
+                let accuracy: number | null = null;
+                if (this.colorIndicator) {
+                    format = this.colorIndicator.format;
+                    scale = this.colorIndicator.scale;
+                    accuracy = this.colorIndicator.accuracy;
+                }
+
+                console.log("updating each feature");
+                console.log(feature.properties);
+                const area_id = feature.properties && feature.properties["area_id"];
+                const area_name = feature.properties && feature.properties["area_name"];
+
+                const values = this.featureIndicators[area_id];
+                const value = values && values!.value;
+                const lower_value = values && values!.lower_value;
+                const upper_value = values && values!.upper_value;
+
+                const stringVal = (value || value === 0) ? value.toString() : "";
+                const stringLower = (lower_value || lower_value === 0) ? lower_value.toString() : "";
+                const stringUpper = (upper_value || upper_value === 0) ? upper_value.toString() : "";
+
+                if (stringVal && stringLower) {
+                    return `<div>
+                        <strong>${area_name}</strong>
+                        <br/>${ formatOutput(stringVal, format, scale, accuracy, this.roundFormatOutput)}
+                        <br/>(${formatOutput(stringLower, format, scale, accuracy, this.roundFormatOutput) + " - " +
+                        formatOutput(stringUpper, format, scale, accuracy, this.roundFormatOutput)})
+                    </div>`;
+                } else {
+                    return `<div>
+                        <strong>${area_name}</strong>
+                        <br/>${formatOutput(stringVal, format, scale, accuracy, this.roundFormatOutput)}
+                    </div>`;
+                }
+            },
+            updateTooltips() {
+                if (this.initialised) {
+                    this.currentFeatures.forEach((feature: Feature) => {
+                        let properties = feature.properties
+                        if (!properties) {
+                            return
+                        }
+
+                        let geojsonLayer = this.$refs[properties.area_id] as any;
+                        // geojsonLayer here will return multiple because we have programmatically created
+                        // the refs so vue returns an array as there "could" be more than 1 item which
+                        // matches this ref. But we know from our construction above that
+                        // there is always 1 with this area ID, so we rely on that.
+                        if (geojsonLayer && geojsonLayer[0].leafletObject) {
+                            geojsonLayer[0].leafletObject.eachLayer((layer: Layer) => {
+                                layer.setTooltipContent(this.tooltipContent(geojsonLayer[0].geojson))
+                            })
+                        }
+                    })
+                }
             }
         },
         watch: {
@@ -421,6 +448,7 @@
         },
         updated() {
             this.updateBounds();
+            // this.updateTooltips();
         },
     });
 </script>
