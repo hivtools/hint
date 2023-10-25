@@ -35,8 +35,8 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
 {
 
     private fun convertToArrayList(resultSet: ResultSet): List<CalibrateResultRow> {
-            return resultSet.use {
-            generateSequence {
+            resultSet.use {
+            return generateSequence {
                 if (it.next()) {
                     CalibrateResultRow(
                         it.getString("indicator"),
