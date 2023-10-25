@@ -2,15 +2,11 @@ package org.imperial.mrc.hint.controllers
 
 import org.springframework.web.bind.annotation.*
 import org.springframework.http.ResponseEntity
-import org.imperial.mrc.hint.db.CalibrateDataRepository
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
-import org.imperial.mrc.hint.exceptions.CalibrateDataException
 import org.imperial.mrc.hint.service.CalibrateDataService
-import com.fasterxml.jackson.databind.ObjectMapper
-import org.springframework.http.HttpStatus
 
 @RestController
 @RequestMapping("/calibrate")

@@ -1,16 +1,13 @@
 package org.imperial.mrc.hint.db
 
 import org.jooq.tools.json.JSONArray
-import org.jooq.tools.json.JSONObject
 import org.springframework.stereotype.Component
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.imperial.mrc.hint.exceptions.CalibrateDataException
 import org.imperial.mrc.hint.models.CalibrateResultRow
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.Statement
 import java.util.Properties
-import java.util.Locale
 import java.sql.ResultSet
 import java.sql.SQLException
 
