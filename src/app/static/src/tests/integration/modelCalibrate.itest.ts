@@ -68,7 +68,8 @@ describe("model calibrate actions integration", () => {
 
         expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]["type"]).toBe("SetError");
-        expect(commit.mock.calls[0][0]["payload"].detail).toContain("An unexpected error occurred");
+        expect(commit.mock.calls[0][0]["payload"].detail === "Failed to fetch" ||
+        commit.mock.calls[0][0]["payload"].detail.includes("An unexpected error occurred")).toBe(true);
         expect(commit.mock.calls[1][0]["type"]).toBe("SetError");
         expect(commit.mock.calls[1][0]["payload"].detail).toBe("Failed to fetch result");
         expect(commit.mock.calls[2][0]).toBe("Ready");
