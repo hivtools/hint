@@ -35,22 +35,25 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
 {
 
     private fun convertToArrayList(resultSet: ResultSet): ArrayList<CalibrateResultRow> {
-        val list: ArrayList<CalibrateResultRow> = arrayListOf()
-        while (resultSet.next()) {
-            val row = CalibrateResultRow(
-                resultSet.getString("indicator"),
-                resultSet.getString("calendar_quarter"),
-                resultSet.getString("age_group"),
-                resultSet.getString("sex"),
-                resultSet.getString("area_id"),
-                resultSet.getFloat("mode"),
-                resultSet.getFloat("mean"),
-                resultSet.getFloat("lower"),
-                resultSet.getFloat("upper")
-            )
-            list.add(row)
+               resultSet.use {
+            generateSequence {
+                if (it.next()) {
+                    CalibrateResultRow(
+                        it.getString("indicator"),
+                        it.getString("calendar_quarter"),
+                        it.getString("age_group"),
+                        it.getString("sex"),
+                        it.getString("area_id"),
+                        it.getFloat("mode"),
+                        it.getFloat("mean"),
+                        it.getFloat("lower"),
+                        it.getFloat("upper")
+                    )
+                } else {
+                    null
+                }
+            }.toList()
         }
-        return list
     }
 
     @Suppress("SwallowedException")
