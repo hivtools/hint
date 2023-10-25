@@ -22,11 +22,11 @@ class CalibrateDataRepositoryTests
         0.9999
     )))
     val path = "/src/test/resources/duckdb/test.duckdb"
+    val sut = JooqCalibrateDataRepository()
 
     @Test
     fun `can get data from duckdb path`()
     {
-        val sut = JooqCalibrateDataRepository()
         val plotData = sut.getDataFromPath(path)
         val plotDataTree = ObjectMapper().readTree(plotData.toString())
         val expectedTree = ObjectMapper().readTree(expectedRow.toString())
@@ -36,7 +36,6 @@ class CalibrateDataRepositoryTests
     @Test
     fun `throws error if connection is invalid`()
     {
-        val sut = JooqCalibrateDataRepository()
         assertThatThrownBy {
             sut.getDataFromPath("/src/test/resources/duckdb/test1.duckdb")
         }.isInstanceOf(SQLException::class.java)
