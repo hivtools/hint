@@ -1,19 +1,12 @@
 package org.imperial.mrc.hint.database
 
-import org.springframework.test.context.ActiveProfiles
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.ResponseEntity
-import org.imperial.mrc.hint.db.CalibrateDataRepository
-import org.imperial.mrc.hint.exceptions.CalibrateDataException
+import org.imperial.mrc.hint.db.JooqCalibrateDataRepository
 import org.imperial.mrc.hint.models.CalibrateResultRow
 import org.junit.jupiter.api.Test
-import org.jooq.tools.json.JSONObject
 import org.jooq.tools.json.JSONArray
-import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import com.fasterxml.jackson.databind.ObjectMapper
+import java.sql.SQLException
 
 class CalibrateDataRepositoryTests
 {
@@ -30,12 +23,10 @@ class CalibrateDataRepositoryTests
     )))
     val path = "/src/test/resources/duckdb/test.duckdb"
 
-    @Autowired
-    private lateinit var sut: CalibrateDataRepository
-
     @Test
     fun `can get data from duckdb path`()
     {
+        val sut = JooqCalibrateDataRepository()
         val plotData = sut.getDataFromPath(path)
         val plotDataTree = ObjectMapper().readTree(plotData.toString())
         val expectedTree = ObjectMapper().readTree(expectedRow.toString())
@@ -45,9 +36,10 @@ class CalibrateDataRepositoryTests
     @Test
     fun `throws error if connection is invalid`()
     {
+        val sut = JooqCalibrateDataRepository()
         assertThatThrownBy {
             sut.getDataFromPath("/src/test/resources/duckdb/test1.duckdb")
-        }.isInstanceOf(CalibrateDataException::class.java)
-            .hasMessageContaining("databaseConnectionFailed")
+        }.isInstanceOf(SQLException::class.java)
+            .hasMessageContaining("database does not exist")
     }
 }

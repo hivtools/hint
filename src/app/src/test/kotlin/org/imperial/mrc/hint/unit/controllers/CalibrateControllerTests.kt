@@ -63,13 +63,9 @@ class CalibrateControllerTests
     @Test
     fun `can get calibrate result data`()
     {
-        val dataObj = JSONObject(mapOf("path" to "testPath"))
-        val resObj = JSONObject(mapOf("data" to dataObj))
-        val mockAPIClient = mock<HintrAPIClient> {
-            on { getCalibrateResultData("testId") } doReturn ResponseEntity.ok(resObj.toString())
-        }
+        val mockAPIClient = mock<HintrAPIClient>()
         val mockCalibrateDataService = mock<CalibrateDataService> {
-            on { getCalibrateData("testPath") } doReturn mockDataFromPath
+            on { getCalibrateData("testId") } doReturn mockDataFromPath
         }
         val sut = CalibrateController(mockAPIClient, mockCalibrateDataService)
 

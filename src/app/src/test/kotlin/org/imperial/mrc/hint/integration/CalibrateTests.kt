@@ -54,8 +54,7 @@ class CalibrateTests: SecureIntegrationTests()
     fun `can get calibrate result data`()
     {
         val responseEntity = testRestTemplate.getForEntity<String>("/calibrate/result/data/1234")
-        assertError(responseEntity,
-            HttpStatus.BAD_REQUEST,
-            "OTHER_ERROR", "Failed to fetch result")
+        assertThat(responseEntity.statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR)
+        assert(responseEntity.body!!.contains("An unexpected error occurred"))
     }
 }
