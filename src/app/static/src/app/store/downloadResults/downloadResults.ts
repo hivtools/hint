@@ -9,6 +9,7 @@ export interface DownloadResultsState {
     coarseOutput: DownloadResultsDependency
     summary: DownloadResultsDependency
     comparison: DownloadResultsDependency
+    agyw: DownloadResultsDependency
 }
 
 export const initialDownloadResults = {
@@ -27,7 +28,8 @@ export const initialDownloadResultsState = (): DownloadResultsState => {
         spectrum: {...initialDownloadResults},
         coarseOutput: {...initialDownloadResults},
         summary: {...initialDownloadResults},
-        comparison: {...initialDownloadResults}
+        comparison: {...initialDownloadResults},
+        agyw: {...initialDownloadResults},
     }
 }
 

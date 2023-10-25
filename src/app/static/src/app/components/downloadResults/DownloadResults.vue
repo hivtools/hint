@@ -36,6 +36,13 @@
                               :file="comparison"/>
                     <error-alert v-if="comparison.downloadError" :error="comparison.downloadError"></error-alert>
                 </div>
+                <div id="agyw-download" v-if="agywSwitch">
+                    <download :translate-key="translation.agyw"
+                              @trigger-download="downloadAgywTool"
+                              :disabled="!agyw.downloadId || agyw.preparing"
+                              :file="agyw"/>
+                    <error-alert v-if="agyw.downloadError" :error="agyw.downloadError"></error-alert>
+                </div>
             </div>
             <div id="upload" v-if="hasUploadPermission" class="col-sm">
                 <h4 v-translate="'uploadFileToAdr'"></h4>
@@ -96,7 +103,8 @@
 
     interface Data {
         uploadModalOpen: boolean,
-        comparisonSwitch: boolean
+        comparisonSwitch: boolean,
+        agywSwitch: boolean,
     }
 
     export default defineComponent({
@@ -104,7 +112,8 @@
         data() {
             return {
                 uploadModalOpen: false,
-                comparisonSwitch: switches.comparisonOutput
+                comparisonSwitch: switches.comparisonOutput,
+                agywSwitch: switches.agywDownload,
             }
         },
         computed: {
@@ -113,7 +122,8 @@
                 spectrum: ((state: DownloadResultsState) => state.spectrum),
                 summary: ((state: DownloadResultsState) => state.summary),
                 coarseOutput: ((state: DownloadResultsState) => state.coarseOutput),
-                comparison: ((state: DownloadResultsState) => state.comparison)
+                comparison: ((state: DownloadResultsState) => state.comparison),
+                agyw: ((state: DownloadResultsState) => state.agyw),
             }),
             ...mapStateProps("adrUpload", {
                 uploading: ((state: ADRUploadState) => state.uploading),
@@ -140,11 +150,13 @@
                     spectrum: {header: 'exportOutputs', button: 'export'},
                     coarse: {header: 'downloadCoarseOutput', button: 'download'},
                     summary: {header: 'downloadSummaryReport', button: 'download'},
-                    comparison: {header: 'downloadComparisonReport', button: 'download'}
+                    comparison: {header: 'downloadComparisonReport', button: 'download'},
+                    agyw: {header: 'downloadAgywTool', button: 'download'},
                 }
             },
             isPreparing(): boolean {
-                return this.summary.preparing || this.spectrum.preparing || this.coarseOutput.preparing || this.comparison.preparing
+                return this.summary.preparing || this.spectrum.preparing || this.coarseOutput.preparing ||
+                    this.comparison.preparing || this.agyw.preparing
             }
         },
         methods: {
@@ -158,7 +170,8 @@
             downloadComparisonReport: mapActionByName("downloadResults", "downloadComparisonReport"),
             downloadSpectrumOutput: mapActionByName("downloadResults", "downloadSpectrumOutput"),
             downloadSummaryReport: mapActionByName("downloadResults", "downloadSummaryReport"),
-            downloadCoarseOutput: mapActionByName("downloadResults", "downloadCoarseOutput")
+            downloadCoarseOutput: mapActionByName("downloadResults", "downloadCoarseOutput"),
+            downloadAgywTool: mapActionByName("downloadResults", "downloadAgywTool"),
         },
         mounted() {
             this.getUserCanUpload();
