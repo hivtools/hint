@@ -522,7 +522,7 @@ describe("utils", () => {
             ]
         };
 
-        const result = writeOptionsIntoForm(options, newForm);
-        expect(result).toStrictEqual(expectedResult);
+        writeOptionsIntoForm(options, newForm);
+        expect(newForm).toStrictEqual(expectedResult);
     });
 });
