@@ -1,17 +1,26 @@
-import {Control, DynamicFormMeta, MultiSelectControl, Option, SelectControl} from "@reside-ic/vue-next-dynamic-form";
+import {
+    Control,
+    DynamicFormMeta,
+    MultiSelectControl,
+    NumberControl,
+    Option,
+    SelectControl
+} from "@reside-ic/vue-next-dynamic-form";
 
 type ControlWithOptions = SelectControl | MultiSelectControl;
 export function checkOptionsValid(formMeta: DynamicFormMeta): boolean {
     return formMeta.controlSections.every(section => {
         return section.controlGroups.every(group => {
             return group.controls.every(control => {
-                // We could go further and check that if it is null or empty that this isn't
-                // a required control but just assuming this for now seems ok
-                if (control.value != null && control.value != "" && hasOptions(control)) {
-                    return checkControlOptionValid(control);
-                } else {
-                    return true;
+                let valid = true;
+                if (control.value === null || control.value === "") {
+                    valid = !control.required
+                } else if (isNumberControl(control)) {
+                    valid = checkNumberControlValid(control);
+                } else if (hasOptions(control)) {
+                    valid = checkControlOptionValid(control);
                 }
+                return valid
             })
         })
     })
@@ -21,10 +30,27 @@ function hasOptions(control: Control): control is ControlWithOptions {
     return control.type === "select" || control.type === "multiselect";
 }
 
+function isNumberControl(control: Control): control is NumberControl {
+    return control.type == "number"
+}
+
+function checkNumberControlValid(control: NumberControl): boolean {
+    let valid = true;
+
+    if (control.min !== undefined && typeof control.value === "number") {
+        valid = valid && control.value > control.min
+    }
+    if (control.max !== undefined && typeof control.value === "number") {
+        valid = valid && control.value < control.max
+    }
+
+    return valid;
+}
+
 function checkControlOptionValid(control: ControlWithOptions): boolean {
     let valid = true;
 
-    const options = getAllOptions(control)
+    const options = getAllOptionIds(control)
     const value = control.value;
     // Check string and array types, otherwise we assume valid
     if (typeof value === 'string') {
@@ -36,14 +62,14 @@ function checkControlOptionValid(control: ControlWithOptions): boolean {
     return valid;
 }
 
-function getAllOptions(control: ControlWithOptions): string[] {
-    return control.options.flatMap((option: Option) => getOptions(option));
+function getAllOptionIds(control: ControlWithOptions): string[] {
+    return control.options.flatMap((option: Option) => getOptionIds(option));
 }
 
-function getOptions(option: Option): string[] {
-    const options = [option.id];
+function getOptionIds(option: Option): string[] {
+    const option_ids = [option.id];
     if (option.children && option.children.length > 0) {
-        options.concat(...option.children.map((child: Option) => getOptions(child)));
+        option_ids.push(...option.children.flatMap((child: Option) => getOptionIds(child)));
     }
-    return options;
+    return option_ids;
 }
