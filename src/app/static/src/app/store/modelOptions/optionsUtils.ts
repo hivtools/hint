@@ -13,7 +13,7 @@ export function checkOptionsValid(formMeta: DynamicFormMeta): boolean {
         return section.controlGroups.every(group => {
             return group.controls.every(control => {
                 let valid = true;
-                if (control.value === null || control.value === "") {
+                if (!control.value || control.value === "") {
                     valid = !control.required
                 } else if (isNumberControl(control)) {
                     valid = checkNumberControlValid(control);
