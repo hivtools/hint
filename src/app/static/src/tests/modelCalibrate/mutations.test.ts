@@ -1,7 +1,13 @@
 import {expectAllMutationsDefined} from "../testHelpers";
 import {ModelCalibrateMutation, mutations} from "../../app/store/modelCalibrate/mutations";
-import {mockCalibrateResultResponse, mockError, mockModelCalibrateState, mockWarning,} from "../mocks";
+import {
+    mockCalibrateResultResponse,
+    mockError,
+    mockModelCalibrateState,
+    mockWarning,
+} from "../mocks";
 import {VersionInfo, ComparisonPlotResponse} from "../../app/generated";
+import {DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 
 describe("ModelCalibrate mutations", () => {
     afterEach(() => {
@@ -135,6 +141,111 @@ describe("ModelCalibrate mutations", () => {
         const options = { "testOption": "testValue" };
         mutations[ModelCalibrateMutation.SetOptionsData](state, {payload: options});
         expect(state.options).toBe(options);
+    });
+
+    it("recovers selected calibrate options from state when reloading from model output", () => {
+        // In this scenario we have recovered calibration options from the state JSON in
+        // the uploaded model output but, we've not fetched the form data yet.
+        const options = {"spectrum_plhiv_calibration_level": "national"}
+        const state = mockModelCalibrateState({options: options});
+        const payload = {controlSections: [{
+            label: "Calibrate section",
+            controlGroups: [{
+                "label": "Adjust to spectrum PLHIV",
+                "controls": [{
+                    "name": "spectrum_plhiv_calibration_level",
+                    "type": "select",
+                    "options": [{"id": "none", "label": "None"}, {"id": "national", "label": "National"}],
+                    "value": "none"
+                }]
+            }]
+        }]};
+
+        mutations[ModelCalibrateMutation.ModelCalibrateOptionsFetched](state, {payload: payload});
+
+        const expected = {controlSections: [{
+                label: "Calibrate section",
+                controlGroups: [{
+                    "label": "Adjust to spectrum PLHIV",
+                    "controls": [{
+                        "name": "spectrum_plhiv_calibration_level",
+                        "type": "select",
+                        "options": [{"id": "none", "label": "None"}, {"id": "national", "label": "National"}],
+                        "value": "national"
+                    }]
+                }]
+            }]};
+        expect(state.optionsFormMeta).toStrictEqual(expected);
+    });
+
+    it("invalid option in state is still set when loading from output zip", () => {
+        // In this scenario we have recovered calibration options from the state JSON in
+        // the uploaded model output but, we've not fetched the form data yet.
+        const options = {"spectrum_plhiv_calibration_level": "unknown"}
+        const state = mockModelCalibrateState({options: options});
+        const payload = {controlSections: [{
+                label: "Calibrate section",
+                controlGroups: [{
+                    "label": "Adjust to spectrum PLHIV",
+                    "controls": [{
+                        "name": "spectrum_plhiv_calibration_level",
+                        "type": "select",
+                        "options": [{"id": "none", "label": "None"}, {"id": "national", "label": "National"}],
+                        "value": "none"
+                    }]
+                }]
+            }]};
+
+        mutations[ModelCalibrateMutation.ModelCalibrateOptionsFetched](state, {payload: payload});
+
+        const expected = {controlSections: [{
+                label: "Calibrate section",
+                controlGroups: [{
+                    "label": "Adjust to spectrum PLHIV",
+                    "controls": [{
+                        "name": "spectrum_plhiv_calibration_level",
+                        "type": "select",
+                        "options": [{"id": "none", "label": "None"}, {"id": "national", "label": "National"}],
+                        "value": "unknown"
+                    }]
+                }]
+            }]};
+        expect(state.optionsFormMeta).toStrictEqual(expected);
+    });
+
+    it("ModelCalibrateOptionsFetched preserves selected values when reloading", () => {
+        const optionsFormMeta = {controlSections: [{
+                label: "Calibrate section",
+                controlGroups: [{
+                    "label": "Adjust to spectrum PLHIV",
+                    "controls": [{
+                        "name": "spectrum_plhiv_calibration_level",
+                        "type": "select",
+                        "options": [{"id": "none", "label": "None"}, {"id": "national", "label": "National"}],
+                        "value": "national"
+                    }]
+                }]
+            }]};
+        const state = mockModelCalibrateState({fetching: true,
+            optionsFormMeta: optionsFormMeta as DynamicFormMeta});
+
+        const payload = {controlSections: [{
+                label: "Calibrate section",
+                controlGroups: [{
+                    "label": "Adjust to spectrum PLHIV",
+                    "controls": [{
+                        "name": "spectrum_plhiv_calibration_level",
+                        "type": "select",
+                        "options": [{"id": "none", "label": "None"}, {"id": "national", "label": "National"}],
+                        "value": "none"
+                    }]
+                }]
+            }]};
+
+
+        mutations[ModelCalibrateMutation.ModelCalibrateOptionsFetched](state, {payload});
+        expect(state.fetching).toBe(false);
+        expect(state.optionsFormMeta).toStrictEqual(optionsFormMeta);
     });
 
     it("PollingForStatusStarted sets statusPollId", () => {
