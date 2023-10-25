@@ -62,7 +62,7 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
             val arrayList = convertToArrayList(resultSet)
             return arrayList
         } catch (e: SQLException) {
-            throw CalibrateDataException("queryExecutionFailed", arrayOf(e.message ?: ""))
+            throw CalibrateDataException("queryExecutionFailed")
         }
     }
 
@@ -74,7 +74,7 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         try {
             conn = DriverManager.getConnection("jdbc:duckdb:.${path}", readOnlyProp)
         } catch (e: SQLException) {
-            throw CalibrateDataException("databaseConnectionFailed", arrayOf(e.message ?: ""))
+            throw CalibrateDataException("databaseConnectionFailed")
         }
         return conn
     }
