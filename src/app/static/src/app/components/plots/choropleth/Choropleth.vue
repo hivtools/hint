@@ -385,8 +385,6 @@
                     accuracy = this.colorIndicator.accuracy;
                 }
 
-                console.log("updating each feature");
-                console.log(feature.properties);
                 const area_id = feature.properties && feature.properties["area_id"];
                 const area_name = feature.properties && feature.properties["area_name"];
 
@@ -421,18 +419,21 @@
                             return
                         }
 
-                        let geojsonLayer = this.$refs[properties.area_id] as any;
-                        // geojsonLayer here will return multiple because we have programmatically created
+                        let geojson = this.$refs[properties.area_id] as any;
+                        // geojson here will return multiple because we have programmatically created
                         // the refs so vue returns an array as there "could" be more than 1 item which
                         // matches this ref. But we know from our construction above that
                         // there is always 1 with this area ID, so we rely on that.
-                        if (geojsonLayer && geojsonLayer[0].leafletObject) {
-                            geojsonLayer[0].leafletObject.eachLayer((layer: Layer) => {
-                                layer.setTooltipContent(this.tooltipContent(geojsonLayer[0].geojson))
+                        if (geojson && geojson[0].leafletObject) {
+                            geojson[0].leafletObject.eachLayer((layer: Layer) => {
+                                this.setLayerTooltipContent(layer, geojson[0].geojson)
                             })
                         }
                     })
                 }
+            },
+            setLayerTooltipContent(layer: Layer, feature: Feature) {
+                layer.setTooltipContent(this.tooltipContent(feature))
             }
         },
         watch: {
@@ -448,7 +449,7 @@
         },
         updated() {
             this.updateBounds();
-            // this.updateTooltips();
+            this.updateTooltips();
         },
     });
 </script>
