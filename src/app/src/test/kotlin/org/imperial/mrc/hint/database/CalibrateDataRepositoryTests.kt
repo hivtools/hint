@@ -15,8 +15,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import com.fasterxml.jackson.databind.ObjectMapper
 
-@ActiveProfiles(profiles = ["test"])
-@SpringBootTest
 class CalibrateDataRepositoryTests
 {
     val expectedRow = JSONArray(listOf(CalibrateResultRow(

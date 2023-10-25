@@ -8,12 +8,13 @@ import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.models.SuccessResponse
 import org.imperial.mrc.hint.models.asResponseEntity
 import org.imperial.mrc.hint.exceptions.CalibrateDataException
+import org.imperial.mrc.hint.service.CalibrateDataService
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.HttpStatus
 
 @RestController
 @RequestMapping("/calibrate")
-class CalibrateController(val apiClient: HintrAPIClient, val calibrateDataRepository: CalibrateDataRepository)
+class CalibrateController(val apiClient: HintrAPIClient, val calibrateDataService: CalibrateDataService)
 {
     @GetMapping("/options/{iso3}")
     @ResponseBody
@@ -48,14 +49,8 @@ class CalibrateController(val apiClient: HintrAPIClient, val calibrateDataReposi
     @ResponseBody
     fun calibrateResultData(@PathVariable("id") id: String): ResponseEntity<String>
     {
-        val res = apiClient.getCalibrateResultData(id)
-        if (res.statusCode != HttpStatus.OK) {
-            throw CalibrateDataException("Failed to fetch result")
-        }
-        val jsonBody = ObjectMapper().readTree(res.body?.toString())
-        val path = jsonBody.get("data").get("path").textValue()
-        val resObj = calibrateDataRepository.getDataFromPath(path)
-        return SuccessResponse(resObj).asResponseEntity()
+        val dataObj = calibrateDataService.getCalibrateData(id)
+        return SuccessResponse(dataObj).asResponseEntity()
     }
 
     @GetMapping("/plot/{id}")

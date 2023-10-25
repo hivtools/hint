@@ -34,8 +34,8 @@ interface CalibrateDataRepository
 class JooqCalibrateDataRepository: CalibrateDataRepository
 {
 
-    private fun convertToArrayList(resultSet: ResultSet): ArrayList<CalibrateResultRow> {
-               resultSet.use {
+    private fun convertToArrayList(resultSet: ResultSet): List<CalibrateResultRow> {
+            return resultSet.use {
             generateSequence {
                 if (it.next()) {
                     CalibrateResultRow(
@@ -57,7 +57,7 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
     }
 
     @Suppress("SwallowedException")
-    private fun getDataFromConnection(conn: Connection): ArrayList<CalibrateResultRow> {
+    private fun getDataFromConnection(conn: Connection): List<CalibrateResultRow> {
         try {
             val query = DEFAULT_QUERY
             val stmt: Statement = conn.createStatement()
@@ -73,12 +73,7 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
     private fun getDBConnFromPathResponse(path: String): Connection {   
         val readOnlyProp = Properties()
         readOnlyProp.setProperty("duckdb.read_only", "true")
-        var conn: Connection
-        try {
-            conn = DriverManager.getConnection("jdbc:duckdb:.${path}", readOnlyProp)
-        } catch (e: SQLException) {
-            throw CalibrateDataException("databaseConnectionFailed")
-        }
+        val conn = DriverManager.getConnection("jdbc:duckdb:.${path}", readOnlyProp)
         return conn
     }
 

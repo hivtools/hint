@@ -5,6 +5,7 @@ import org.imperial.mrc.hint.models.ModelOptions
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.controllers.CalibrateController
 import org.imperial.mrc.hint.db.CalibrateDataRepository
+import org.imperial.mrc.hint.service.CalibrateDataService
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.isNotNull
@@ -67,10 +68,10 @@ class CalibrateControllerTests
         val mockAPIClient = mock<HintrAPIClient> {
             on { getCalibrateResultData("testId") } doReturn ResponseEntity.ok(resObj.toString())
         }
-        val mockCalibrateDataRepository = mock<CalibrateDataRepository> {
-            on { getDataFromPath("testPath") } doReturn mockDataFromPath
+        val mockCalibrateDataService = mock<CalibrateDataService> {
+            on { getCalibrateData("testPath") } doReturn mockDataFromPath
         }
-        val sut = CalibrateController(mockAPIClient, mockCalibrateDataRepository)
+        val sut = CalibrateController(mockAPIClient, mockCalibrateDataService)
 
         val result = sut.calibrateResultData("testId")
         assertThat(result.body?.toString()).isEqualTo(
