@@ -363,10 +363,10 @@ class JooqVersionRepository(private val dsl: DSLContext) : VersionRepository
 
     private fun getNextVersionNumber(projectId: Int?): Int
     {
-        val max = dsl.select(PROJECT_VERSION.VERSION_NUMBER.max())
+        val max = dsl.select(DSL.max(PROJECT_VERSION.VERSION_NUMBER))
                 .from(PROJECT_VERSION)
                 .where(PROJECT_VERSION.PROJECT_ID.eq(projectId))
-                .fetchOne(PROJECT_VERSION.VERSION_NUMBER.max())
+                .fetchOne(DSL.max(PROJECT_VERSION.VERSION_NUMBER))
         return (max ?: 0) + 1
     }
 
