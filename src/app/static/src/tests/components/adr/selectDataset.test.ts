@@ -476,6 +476,24 @@ describe("select dataset", () => {
             "Tente novamente", store);
     });
 
+    it("renders special message on receiving no ADR account error", async () => {
+        const store = getStore({}, {adrError:
+                mockError("User 'auth0|653940667eca3315286f891a' has not yet logged into ADR")});
+        const rendered = mountWithTranslate(SelectDataset, store, {
+            global: {
+                plugins: [store]
+            },
+        });
+        await rendered.findAll("button")[0].trigger("click");
+
+        const modal = rendered.findComponent(Modal);
+        expect(modal.props("open")).toBe(true);
+        await expectTranslatedWithStoreType(modal.find("#fetch-error div"),
+            "Cannot fetch datasets from the ADR as you do not yet have an account. Please login to the ADR with your Auth0 credentials and then return here and try again.",
+            "Impossible d'obtenir des ensembles de données de l'EIM car vous n'avez pas encore de compte. Veuillez vous connecter à l'ADR avec vos identifiants Auth0, puis revenez ici et réessayez.",
+            "Não é possível obter conjuntos de dados do ADR porque ainda não tem uma conta. Inicie sessão no ADR com as suas credenciais Auth0 e, em seguida, regresse aqui e tente novamente", store);
+    });
+
     it("Try again button invokes getDatasets action", async () => {
         const store = getStore({}, {adrError: mockError("test error")});
         const rendered = mountWithTranslate(SelectDataset, store, {

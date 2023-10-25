@@ -33,6 +33,20 @@ For more information about developing the front-end see [src/app/static/README](
 
 For more information on Generic Chart, see [/docs/GenericChart.md](https://github.com/mrc-ide/hint/blob/mrc-2537/docs/GenericChart.md)
 
+#### Run up app with Auth0 authentication
+
+By default, when running up the app locally we use our own authentication system. On production we are using Auth0 to manage users and enable SSO with the ADR. Sometimes it can be useful to run up the local app using Auth0 authentication, so we can develop or test those slightly different UIs. To run locally with Auth0
+
+1. Read the secrets from vault `vault read secret/hint/oauth2/development` if you want to use the production auth0 tenant with dev ADR.
+2. Place these into the `config.properties` at `./src/app/src/main/resources/config.properties` in the following way
+   1. `oauth2_client_id` to be the `id` value
+   2. `oauth2_client_secret` to be the `secret` value
+   3. `oauth2_client_url` to be the `url` value
+   4. `oauth2_client_audience` to be the `audience` value
+   5. `oauth2_client_adr_server_url` to be the `adr_server_url` value
+3. Set the `oauth2_login_method` in `config.properties` to true
+4. Ensure that you do not commit the secret to github
+
 ### Testing
 
 Ensure dependencies are running and then execute tests on the command line or through IntelliJ
