@@ -161,7 +161,6 @@ export const getResultData = async function (context: ActionContext<ModelCalibra
         .get<CalibrateDataResponse>(`calibrate/result/data/${calibrateId}`);
 
     if (response) {
-        console.log(response)
         commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: response});
     }
 }
