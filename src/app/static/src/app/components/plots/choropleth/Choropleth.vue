@@ -296,7 +296,10 @@
             options() {
                 return {
                     onEachFeature: (feature: Feature, layer: Layer) => {
-                        layer.bindTooltip(this.tooltipContent(feature))
+                        const tooltip = this.tooltipContent(feature)
+                        if (tooltip) {
+                            layer.bindTooltip(tooltip)
+                        }
                     }
                 }
             }
@@ -397,17 +400,22 @@
                 const stringLower = (lower_value || lower_value === 0) ? lower_value.toString() : "";
                 const stringUpper = (upper_value || upper_value === 0) ? upper_value.toString() : "";
 
-                if (stringVal && stringLower) {
+                if (stringLower && stringUpper) {
                     return `<div>
                         <strong>${area_name}</strong>
                         <br/>${ formatOutput(stringVal, format, scale, accuracy, this.roundFormatOutput)}
                         <br/>(${formatOutput(stringLower, format, scale, accuracy, this.roundFormatOutput) + " - " +
                         formatOutput(stringUpper, format, scale, accuracy, this.roundFormatOutput)})
                     </div>`;
-                } else {
+                } else if (stringVal) {
                     return `<div>
                         <strong>${area_name}</strong>
                         <br/>${formatOutput(stringVal, format, scale, accuracy, this.roundFormatOutput)}
+                    </div>`;
+                } else {
+                    return `<div>
+                        <strong>${area_name}</strong>
+                        <br/>No data available for this area
                     </div>`;
                 }
             },
@@ -433,7 +441,12 @@
                 }
             },
             setLayerTooltipContent(layer: Layer, feature: Feature) {
-                layer.setTooltipContent(this.tooltipContent(feature))
+                const tooltip = this.tooltipContent(feature)
+                if (tooltip) {
+                    layer.bindTooltip(tooltip)
+                } else {
+                    layer.unbindTooltip()
+                }
             }
         },
         watch: {
