@@ -184,14 +184,16 @@ export interface PollingStarted {
 export interface SelectedADRUploadFiles {
     summary: any,
     spectrum: any,
-    coarseOutput?: any
+    coarseOutput?: any,
+    agyw?: any,
 }
 
 export enum DOWNLOAD_TYPE {
     SPECTRUM = "Spectrum",
     COARSE = "CoarseOutput",
     SUMMARY = "Summary",
-    COMPARISON = "Comparison"
+    COMPARISON = "Comparison",
+    AGYW = "AGYW",
 }
 
 export interface GenericChartTableConfig {

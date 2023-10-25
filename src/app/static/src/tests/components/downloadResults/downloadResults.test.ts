@@ -2,7 +2,8 @@ import {shallowMount, mount, VueWrapper} from '@vue/test-utils';
 import Vuex, {Store} from 'vuex';
 import {
     mockADRState,
-    mockADRUploadState, mockDownloadResultsDependency,
+    mockADRUploadState,
+    mockDownloadResultsDependency,
     mockDownloadResultsState,
     mockModelCalibrateState
 } from "../../mocks";
@@ -26,6 +27,7 @@ describe("Download Results component", () => {
     const mockDownloadSpectrumReport = jest.fn()
     const mockDownloadCoarseReport = jest.fn()
     const mockDownloadSummaryReport = jest.fn()
+    const mockDownloadAgywTool = jest.fn()
 
     afterEach(() => {
         jest.useRealTimers();
@@ -73,7 +75,8 @@ describe("Download Results component", () => {
                         downloadComparisonReport: mockDownloadComparisonReport,
                         downloadSpectrumOutput: mockDownloadSpectrumReport,
                         downloadSummaryReport: mockDownloadSummaryReport,
-                        downloadCoarseOutput: mockDownloadCoarseReport
+                        downloadCoarseOutput: mockDownloadCoarseReport,
+                        downloadAgywTool: mockDownloadAgywTool,
                     }
                 }
             }
@@ -611,6 +614,105 @@ describe("Download Results component", () => {
         });
 
         rendersReportDownloadErrors(store, "#coarse-output-download")
+    });
+
+    it("cannot download AGYW output while preparing", async () => {
+        const store = createStore({}, jest.fn(), {}, {
+            agyw: mockDownloadResultsDependency({
+                preparing: true,
+                downloadId: "1"
+            })
+        });
+
+        const wrapper = mount(DownloadResults,
+            {
+                global: {
+                    plugins: [store],
+                    stubs: ["upload-modal"],
+                },
+                data() {
+                    return {
+                        agywSwitch: true
+                    }
+                }
+            });
+
+        const button = wrapper.find("#agyw-download").find("button")
+        expect(button.attributes().disabled).toBe("");
+    });
+
+    it("cannot download AGYW output if downloadId does not exist", async () => {
+        const store = createStore();
+        const wrapper = mount(DownloadResults,
+            {
+                global: {
+                    plugins: [store],
+                    stubs: ["upload-modal"],
+                },
+                data() {
+                    return {
+                        agywSwitch: true
+                    }
+                }
+            });
+
+        const button = wrapper.find("#agyw-download").find("button")
+        expect(button.attributes().disabled).toBe("");
+    });
+
+    it("can download AGYW file once prepared", async () => {
+        const store = createStore({}, jest.fn(), {}, {
+            agyw: mockDownloadResultsDependency({
+                preparing: false,
+                complete: true,
+                error: null,
+                downloadId: "123"
+            })
+        });
+        const wrapper = mount(DownloadResults,
+            {
+                global: {
+                    plugins: [store],
+                    stubs: ["upload-modal"],
+                },
+                data() {
+                    return {
+                        agywSwitch: true
+                    }
+                }
+            });
+        const button = wrapper.find("#agyw-download").find("button");
+        expect(button.attributes().disabled).toBeUndefined();
+        await button.trigger("click")
+        expect(mockDownloadAgywTool).toHaveBeenCalledTimes(1)
+    });
+
+    it("can display error message for agyw download file when errored", async () => {
+        const error = {error: "ERR", detail: "agyw error"}
+        const store = createStore({}, jest.fn(), {}, {
+            agyw: mockDownloadResultsDependency({
+                preparing: false,
+                complete: true,
+                error,
+                downloadId: "123"
+            })
+        });
+        const wrapper = mount(DownloadResults,
+            {
+                global: {
+                    plugins: [store],
+                    stubs: ["upload-modal"],
+                },
+                data() {
+                    return {
+                        agywSwitch: true
+                    }
+                }
+            });
+        const agywWrapper = wrapper.find("#agyw-download");
+        const button = agywWrapper.find("button");
+        expect(button.attributes().disabled).toBeUndefined();
+        expect(agywWrapper.findComponent(ErrorAlert).props("error")).toEqual(error)
     });
 });
 
