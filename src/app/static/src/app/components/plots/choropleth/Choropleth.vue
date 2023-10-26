@@ -397,19 +397,25 @@
                 const stringLower = (lower_value || lower_value === 0) ? lower_value.toString() : "";
                 const stringUpper = (upper_value || upper_value === 0) ? upper_value.toString() : "";
 
-                if (stringVal && stringLower) {
-                    return `<div>
+                if (stringVal && stringLower && stringUpper) {
+                    const tooltip = `<div>
                         <strong>${area_name}</strong>
                         <br/>${ formatOutput(stringVal, format, scale, accuracy, this.roundFormatOutput)}
                         <br/>(${formatOutput(stringLower, format, scale, accuracy, this.roundFormatOutput) + " - " +
                         formatOutput(stringUpper, format, scale, accuracy, this.roundFormatOutput)})
                     </div>`;
-                } else {
-                    return `<div>
+                } else if (stringVal) {
+                    const tooltip = `<div>
                         <strong>${area_name}</strong>
                         <br/>${formatOutput(stringVal, format, scale, accuracy, this.roundFormatOutput)}
                     </div>`;
+                } else {
+                    const tooltip = `<div>
+                        <strong>${area_name}</strong>
+                        No data available
+                        </div>`
                 }
+                return tooltip
             },
             updateTooltips() {
                 if (this.initialised) {
