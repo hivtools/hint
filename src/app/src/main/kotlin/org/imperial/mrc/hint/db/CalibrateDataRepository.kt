@@ -8,7 +8,6 @@ import java.sql.DriverManager
 import java.sql.Statement
 import java.util.Properties
 import java.sql.ResultSet
-import java.sql.SQLException
 
 const val DEFAULT_QUERY = """SELECT
 age_group,area_id,
@@ -52,7 +51,6 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         }
     }
 
-    @Suppress("SwallowedException")
     private fun getDataFromConnection(conn: Connection): List<CalibrateResultRow> {
         val query = DEFAULT_QUERY
         val stmt: Statement = conn.createStatement()
@@ -61,7 +59,6 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         return arrayList
     }
 
-    @Suppress("SwallowedException")
     private fun getDBConnFromPathResponse(path: String): Connection {   
         val readOnlyProp = Properties()
         readOnlyProp.setProperty("duckdb.read_only", "true")
