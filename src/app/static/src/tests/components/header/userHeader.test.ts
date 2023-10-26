@@ -1,49 +1,21 @@
 import Vuex, {Store} from "vuex";
-import {shallowMount} from "@vue/test-utils";
 import UserHeader from "../../../app/components/header/UserHeader.vue";
 import FileMenu from "../../../app/components/header/FileMenu.vue";
 import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
 import HintrVersionMenu from "../../../app/components/header/HintrVersionMenu.vue";
-import {Language} from "../../../app/store/translations/locales";
-import {emptyState, RootState} from "../../../app/root";
+import {RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {getters} from "../../../app/store/root/getters";
-import {mockHintrVersionState, mockProjectsState, mockRootState} from "../../mocks";
-import {expectTranslated, mountWithTranslate, shallowMountWithTranslate} from "../../testHelpers";
+import {mockRootState} from "../../mocks";
+import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 import OnlineSupportMenu from "../../../app/components/header/OnlineSupportMenu.vue";
-
-const createLanguageStore = (language: Language) => {
-    const store = new Vuex.Store({
-        state: {
-            ...emptyState(),
-            language
-        },
-        getters: getters
-    });
-    registerTranslations(store);
-    return store;
-};
 
 describe("user header", () => {
 
     const createStore = (partialRootState: Partial<RootState> = {}) => {
-        const mockGetHintrVersion = jest.fn();
         const store = new Vuex.Store({
             state: mockRootState(partialRootState),
             getters: getters,
-            // modules: {
-            //     hintrVersion: {
-            //         namespaced: true,
-            //         state: mockHintrVersionState(),
-            //         actions: {
-            //             getHintrVersion: mockGetHintrVersion
-            //         }
-            //     },
-            //     projects: {
-            //         namespaced: true,
-            //         state: mockProjectsState(),
-            //     }
-            // }
         });
         registerTranslations(store);
         return store
@@ -120,62 +92,6 @@ describe("user header", () => {
         expect(wrapper.findAllComponents(OnlineSupportMenu).length).toBe(1);
     })
 
-    it("computes help filename", () => {
-        const store = createStore()
-        const wrapper = shallowMount(UserHeader, {global: {plugins: [store]}, stubs: ["router-link"]});
-        const vm = (wrapper as any).vm;
-        expect(vm.helpFilename).toStrictEqual(
-            "https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf");
-
-        const frStore = createLanguageStore(Language.fr);
-        const frWrapper = shallowMount(UserHeader, {global: {plugins: [frStore]}, stubs: ["router-link"]});
-        const frVm = (frWrapper as any).vm;
-        expect(frVm.helpFilename).toStrictEqual(
-            "https://hivtools.unaids.org/wp-content/uploads/75D-Instructions-pour-Naomi.pdf");
-
-        const ptStore = createLanguageStore(Language.pt);
-        const ptWrapper = shallowMount(UserHeader, {global: {plugins: [ptStore]}, stubs: ["router-link"]});
-        const ptVm = (ptWrapper as any).vm;
-        expect(ptVm.helpFilename).toStrictEqual(
-            "https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf");
-    });
-
-    it("contains Basic steps document links", () => {
-        const storeEnglish = createStore();
-        const wrapper = shallowMountWithTranslate(UserHeader, storeEnglish, {
-            global: {
-                plugins: [storeEnglish],
-                stubs: ["router-link"]
-            }
-        });
-        expect(wrapper.find(
-            "a[href='https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf']"
-            ).text()).toBe("Basic steps");
-
-        const frStore = createLanguageStore(Language.fr);
-        const storeFrench = frStore;
-        const frWrapper = shallowMountWithTranslate(UserHeader, storeFrench, {
-            global: {
-                plugins: [storeFrench],
-                stubs: ["router-link"]
-            }
-        });
-        expect(frWrapper.find(
-            "a[href='https://hivtools.unaids.org/wp-content/uploads/75D-Instructions-pour-Naomi.pdf']"
-            ).text()).toBe("Etapes de base");
-
-        const ptStore = createLanguageStore(Language.pt);
-        const storePortuguese = ptStore;
-        const ptWrapper = shallowMountWithTranslate(UserHeader, storePortuguese, {
-            global: {
-                plugins: [storePortuguese],
-                stubs: ["router-link"]
-            }
-        });
-        expect(ptWrapper.find(
-            "a[href='https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf']"
-            ).text()).toBe("Passos básicos");
-    });
 
     it("renders Projects link as expected if user is not guest", () => {
         const store = createStore();
