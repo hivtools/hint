@@ -10,6 +10,7 @@ export interface PlottingSelectionsState {
     comparisonPlot: BarchartSelections,
     barchart: BarchartSelections,
     bubble: BubblePlotSelections,
+    table: TableSelections,
     sapChoropleth: ChoroplethSelections,
     outputChoropleth: ChoroplethSelections,
     colourScales: ColourScalesState,
@@ -41,6 +42,11 @@ export interface ChoroplethSelections {
     indicatorId: string,
     selectedFilterOptions: Dict<FilterOption[]>,
     detail: number
+}
+
+export interface TableSelections {
+    preset: string,
+    selectedFilterOptions: Dict<FilterOption[]>,
 }
 
 export interface ColourScalesState {
@@ -108,6 +114,13 @@ export const initialChorplethSelections = (): ChoroplethSelections => {
     };
 };
 
+export const initialTableSelections = (): TableSelections => {
+    return {
+        preset: "",
+        selectedFilterOptions: {},
+    };
+};
+
 export const initialScaleSettings = (): ScaleSettings => {
     return {
         type: ScaleType.DynamicFiltered,
@@ -139,6 +152,7 @@ export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
         comparisonPlot: initialComparisonPlotSelections(),
         barchart: initialBarchartSelections(),
         bubble: initialBubblePlotSelections(),
+        table: initialTableSelections(),
         sapChoropleth: initialChorplethSelections(),
         outputChoropleth: initialChorplethSelections(),
         colourScales: initialColourScalesState(),
