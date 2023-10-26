@@ -116,6 +116,10 @@
                 </div>
                 <error-alert v-if="!!comparisonPlotError" :error="comparisonPlotError"></error-alert>
             </div>
+
+            <div v-if="selectedTab === 'table'" id="table-container" class="col-md-12">
+                <output-table></output-table>
+            </div>
         </div>
     </div>
 </template>
@@ -124,6 +128,7 @@
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import BubblePlot from "../plots/bubble/BubblePlot.vue";
     import AreaIndicatorsTable from "../plots/table/AreaIndicatorsTable.vue";
+    import OutputTable from "../outputTable/OutputTable.vue"
     import {BarchartIndicator, Filter, FilterConfig, FilterOption} from "../../vue-chart/src/bar/types";
     import {BarChartWithFilters} from "../../vue-chart/src";
     import ErrorAlert from "../ErrorAlert.vue";
@@ -157,7 +162,8 @@
     } from "../plots/utils";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
     import i18next from "i18next";
-import { defineComponent } from "vue";
+    import { defineComponent } from "vue";
+    import { switches } from "../../featureSwitches";
 
     const namespace = 'filteredData';
 
@@ -228,6 +234,12 @@ import { defineComponent } from "vue";
                 tabs.push("bubble");
             }
             tabs.push("comparison");
+
+            if (switches.tableTab) {
+                tabs.push("table")
+            }
+
+            console.log(switches)
 
             return {
                 tabs: tabs,
@@ -344,7 +356,8 @@ import { defineComponent } from "vue";
             BubblePlot,
             Choropleth,
             AreaIndicatorsTable,
-            ErrorAlert
+            ErrorAlert,
+            OutputTable
         }
     })
 </script>

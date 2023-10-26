@@ -4,11 +4,13 @@ const modelCalibratePlot = !urlParams.get('modelCalibratePlot');
 const comparisonOutput = !urlParams.get('comparisonOutput');
 const agywDownload = !!urlParams.get('agywDownload');
 const loadJson = !!urlParams.get('loadJson');
+const tableTab = !!urlParams.get('tableTab')
 
 export const switches = {
     modelBugReport,
     modelCalibratePlot,
     comparisonOutput,
     agywDownload,
-    loadJson
+    loadJson,
+    tableTab
 };
