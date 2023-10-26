@@ -2,7 +2,6 @@ package org.imperial.mrc.hint.db
 
 import org.jooq.tools.json.JSONArray
 import org.springframework.stereotype.Component
-import org.imperial.mrc.hint.exceptions.CalibrateDataException
 import org.imperial.mrc.hint.models.CalibrateResultRow
 import java.sql.Connection
 import java.sql.DriverManager
@@ -55,15 +54,11 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
 
     @Suppress("SwallowedException")
     private fun getDataFromConnection(conn: Connection): List<CalibrateResultRow> {
-        try {
-            val query = DEFAULT_QUERY
-            val stmt: Statement = conn.createStatement()
-            val resultSet = stmt.executeQuery(query)
-            val arrayList = convertToArrayList(resultSet)
-            return arrayList
-        } catch (e: SQLException) {
-            throw CalibrateDataException("queryExecutionFailed")
-        }
+        val query = DEFAULT_QUERY
+        val stmt: Statement = conn.createStatement()
+        val resultSet = stmt.executeQuery(query)
+        val arrayList = convertToArrayList(resultSet)
+        return arrayList
     }
 
     @Suppress("SwallowedException")
