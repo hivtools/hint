@@ -207,7 +207,7 @@
                 // after authenticating with Auth0 before they have logged into the ADR at all.
                 // In this scenario they do not have an ADR account yet, so need to login there first for the
                 // fetch datasets to work.
-                if (this.adrError && this.adrError.detail && this.adrError.detail.match("has not yet logged into ADR")) {
+                if (this.adrError?.detail?.match("has not yet logged into ADR")) {
                     errorKey = "errorFetchingDatasetsFromADRNoAccount";
                 }
                 return errorKey;
