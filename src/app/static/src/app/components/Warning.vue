@@ -1,7 +1,7 @@
 <template>
     <div v-if="warnings.length > 0">
         <h5 class="alert-heading pt-2">
-            <vue-feather type="alert-triangle" size="1.0" class="custom-class mr-1 mb-1"></vue-feather>
+            <vue-feather type="alert-triangle" size="1.0rem" class="custom-class mr-1 mb-1 align-middle"></vue-feather>
             <span v-translate="headerText(origin)"></span>
         </h5>
         <!-- The outer styled divs are the visible window of warnings and inside them are the 
