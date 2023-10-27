@@ -24,8 +24,10 @@
                 </p>
                 <input id="upload-file" v-translate:aria-label="'selectFile'"
                        type="file"
-                       style="display: none;" ref="loadJson"
-                       @change="loadJson" accept=".json">
+                       style="display: none;"
+                       ref="loadJson"
+                       @change="loadJson"
+                       accept=".json">
             </span>
         </drop-down>
 
