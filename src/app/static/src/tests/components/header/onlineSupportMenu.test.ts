@@ -9,7 +9,6 @@ import {
     expectTranslated,
     expectErrorReportOpen,
     mountWithTranslate,
-    shallowMountWithTranslate
 } from "../../testHelpers";
 import DropDown from "../../../app/components/header/DropDown.vue";
 import { createRouter, createWebHashHistory } from 'vue-router'
@@ -103,11 +102,11 @@ describe("Online support menu", () => {
         expect(wrapper.findAllComponents(ErrorReport).length).toBe(1);
         expect(wrapper.findComponent(ErrorReport).props("open")).toBe(false);
 
-        const link = wrapper.findAll(".dropdown-item")[1];
+        const link = wrapper.findAll(".dropdown-item")[2];
 
         await expectTranslated(link, "Troubleshooting request", "Demande de dépannage", "Solicitação de solução de problemas", store as any);
 
-        await expectErrorReportOpen(wrapper, 1)
+        await expectErrorReportOpen(wrapper, 2)
     });
 
     it("can render section on error report widget", async () => {
@@ -122,7 +121,7 @@ describe("Online support menu", () => {
 
         expect(wrapper.findComponent(ErrorReport).props("open")).toBe(false);
 
-        await expectErrorReportOpen(wrapper, 1)
+        await expectErrorReportOpen(wrapper, 2)
 
         const options = wrapper.findComponent(ErrorReport).findAll("option")
         expect(options.length).toBe(10)
@@ -188,7 +187,7 @@ describe("Online support menu", () => {
             "Autre",
             "De outros",
             store)
-});
+    });
 
     it("selects current step by default", async () => {
         const store = createStore();
@@ -198,7 +197,7 @@ describe("Online support menu", () => {
             }
         });
 
-        await expectErrorReportOpen(wrapper, 1)
+        await expectErrorReportOpen(wrapper, 2)
 
         expect((wrapper.findComponent(ErrorReport).find("select#section").element as HTMLSelectElement).value)
             .toBe("uploadInputs")
@@ -212,7 +211,7 @@ describe("Online support menu", () => {
             }
         });
 
-        await expectErrorReportOpen(wrapper, 1)
+        await expectErrorReportOpen(wrapper, 2)
 
         wrapper.findComponent(ErrorReport).vm.$emit("send",
             {
@@ -282,7 +281,7 @@ describe("Online support menu", () => {
         await wrapper.setData({errorReportOpen: false});
         await router.push("/projects");
         await router.isReady();
-        await expectErrorReportOpen(wrapper, 1)
+        await expectErrorReportOpen(wrapper, 2)
         expect(wrapper.findComponent(ErrorReport).props("open")).toBe(true);
         expect((wrapper.find("#section").element as HTMLSelectElement).value).toBe("projects")
     });
