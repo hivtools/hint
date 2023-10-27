@@ -2,7 +2,8 @@
     <div class="row mb-2">
         <div class="col-8">
             <div class="d-flex d-inline-block">
-                <label class="font-weight-bold align-self-center col-form-label"
+                <label for="key"
+                       class="font-weight-bold align-self-center col-form-label"
                        v-translate="'adrKey'">
                 </label>
                 <div class="align-self-center pl-2">
@@ -32,7 +33,7 @@
                     </div>
                     <div class="input-group"
                          style="margin-top: -8px; min-width: 390px"
-                         v-if="editing">
+                         v-show="editing">
                         <input id="key"
                                ref="keyInput"
                                class="form-control"
