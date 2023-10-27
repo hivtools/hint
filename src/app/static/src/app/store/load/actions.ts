@@ -78,11 +78,13 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
         if (!rootGetters.isGuest) {
             await (dispatch("projects/createProject", {name: state.projectName || null}, {root: true}));
-            savedState.projects = {
-                currentProject: rootState.projects.currentProject,
-                currentVersion: rootState.projects.currentVersion,
-                previousProjects: []
-            } as any
+            if (!savedState.projects) {
+                savedState.projects = {
+                    currentProject: rootState.projects.currentProject,
+                    currentVersion: rootState.projects.currentVersion,
+                    previousProjects: []
+                } as any
+            }
         }
 
         await getFilesAndLoad(context, files, savedState);
