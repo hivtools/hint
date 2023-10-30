@@ -14,11 +14,6 @@
                 </span>
                 <hintr-version-menu class="pr-2 mr-2 border-right"/>
                 <online-support-menu class="pr-2 mr-2 border-right"/>
-                <a :href="helpFilename"
-                   target="_blank"
-                   class="pr-2 mr-2 border-right"
-                   v-translate="'help'">
-                </a>
                 <a v-if="!isGuest" href="/logout" class="pr-2 mr-2 border-right" v-translate="'logout'">
                 </a>
                 <a v-if="isGuest" href="/login" class="pr-2 mr-2 border-right" v-translate="'logIn'">
@@ -41,13 +36,6 @@
 
     export default defineComponent({
         computed: {
-            helpFilename: mapStateProp<RootState, string>(null,
-                (state: RootState) => {
-                    if (state.language == Language.fr) {
-                        return HelpFile.french;
-                    }
-                    return HelpFile.english;
-                }),
             ...mapGetters(["isGuest"])
         },
         props: {

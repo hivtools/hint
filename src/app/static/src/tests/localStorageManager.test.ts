@@ -18,7 +18,7 @@ import {
     mockRelease,
     mockStepperState,
     mockSurveyAndProgramState,
-    mockComparisonPlotResponse
+    mockComparisonPlotResponse, mockRootState
 } from "./mocks";
 import {localStorageManager, serialiseState} from "../app/localStorageManager";
 import {RootState} from "../app/root";
@@ -100,8 +100,7 @@ describe("LocalStorageManager", () => {
             }),
             projects: mockProjectsState(),
             hintrVersion: mockHintrVersionState(),
-            errors: mockErrorsState(),
-            language: Language.en
+            errors: mockErrorsState()
         } as RootState;
 
         const result = serialiseState(mockRoot);
@@ -123,8 +122,7 @@ describe("LocalStorageManager", () => {
                 selectedDataType: DataType.Survey,
                 warnings: [{text: "test warning", locations: ["review_inputs"]}]
             },
-            hintrVersion: mockHintrVersionState(),
-            language: Language.en
+            hintrVersion: mockHintrVersionState()
         });
     });
 
@@ -170,8 +168,7 @@ describe("LocalStorageManager", () => {
                 warnings: [{text: "test warning", locations: ["review_inputs"]}]
             },
             hintrVersion: mockHintrVersionState(),
-            stepper: mockStepperState(),
-            language: Language.en
+            stepper: mockStepperState()
         });
     });
 
@@ -214,11 +211,11 @@ describe("LocalStorageManager", () => {
     it("can set and get language from local storage", () => {
         const spy = jest.spyOn(Storage.prototype, "setItem");
 
-        const testState = {language: Language.pt};
-        localStorageManager.savePartialState(testState, false);
+        localStorageManager.saveLanguage(Language.pt);
 
-        expect(localStorageManager.getState(false)?.language).toBe(Language.pt)
-        expect(spy.mock.calls[0][1]).toBe(JSON.stringify(testState))
+        expect(localStorageManager.getLanguage()).toBe(Language.pt)
+
+        expect(spy.mock.calls[0][1]).toBe(Language.pt)
     });
 
     it("can initiate default language from store", () => {
@@ -231,7 +228,7 @@ describe("LocalStorageManager", () => {
     });
 
     it("can get from local storage", () => {
-        const testState = {baseline: mockBaselineState()};
+        const testState = {baseline: mockBaselineState(), language: Language.pt};
         localStorageManager.savePartialState(testState, false);
         const spy = jest.spyOn(Storage.prototype, "getItem");
 
@@ -241,7 +238,7 @@ describe("LocalStorageManager", () => {
     });
 
     it("can get from local storage in Data Exploration mode", () => {
-        const testState = {baseline: mockBaselineState()};
+        const testState = {baseline: mockBaselineState(), language: Language.pt}
         localStorageManager.savePartialState(testState, true);
         const spy = jest.spyOn(Storage.prototype, "getItem");
 

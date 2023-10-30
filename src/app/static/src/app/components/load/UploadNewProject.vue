@@ -1,8 +1,8 @@
 <template>
     <div id="load-project-name">
         <modal id="load" :open="openModal">
-            <label class="h5" for="project-name-input" v-translate="'enterProjectName'"></label>
-            <input id="project-name-input"
+            <label class="h5" :for="inputId" v-translate="'enterProjectName'"></label>
+            <input :id="inputId"
                    type="text"
                    class="form-control"
                    v-translate:placeholder="'projectName'"
@@ -44,6 +44,10 @@
         extends: ProjectsMixin,
         name: "UploadNewProject",
         props: {
+            inputId: {
+                type: String,
+                required: true
+            },
             openModal: {
                 type: Boolean,
                 required: true

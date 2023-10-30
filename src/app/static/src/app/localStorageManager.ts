@@ -1,6 +1,7 @@
 import {RootState} from "./root";
 import {currentHintVersion} from "./hintVersion";
 import {DataExplorationState} from "./store/dataExploration/dataExploration";
+import {Language} from "./store/translations/locales";
 
 const getAppStateKey = (dataExplorationMode: boolean) => {
     const appType = dataExplorationMode ? "hintAppState_explore" : "hintAppState";
@@ -27,8 +28,7 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
             plottingSelections,
             surveyAndProgram,
             stepper: state.stepper,
-            hintrVersion: state.hintrVersion,
-            language: state.language
+            hintrVersion: state.hintrVersion
         }
 
     } else {
@@ -54,8 +54,7 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
                 comparisonPlotResult: null
             },
             stepper: rootState.stepper,
-            hintrVersion: state.hintrVersion,
-            language: state.language
+            hintrVersion: state.hintrVersion
         };
     }
 };
@@ -63,6 +62,15 @@ export const serialiseState = (state: DataExplorationState): Partial<RootState> 
 declare const currentUser: string;
 
 export class LocalStorageManager {
+
+    saveLanguage = (lang: Language) => {
+        localStorage.setItem("language", lang);
+    }
+
+    getLanguage = (): Language => {
+        const storedLang = localStorage.getItem("language")
+        return storedLang ? storedLang as Language : Language.en;
+    }
 
     saveState = (state: DataExplorationState) => {
         const partialState = serialiseState(state);
@@ -83,7 +91,12 @@ export class LocalStorageManager {
         const appStateKey = getAppStateKey(dataExplorationMode);
         const item = window.localStorage.getItem(appStateKey);
         if (item) {
-            return JSON.parse(item) as Partial<RootState>;
+            const partialRootState = JSON.parse(item) as Partial<RootState>;
+            /**
+             * For smooth compatibility, code uses local storage persisted language state,
+             * and default to English if needed.
+             */
+            return {...partialRootState, language: this.getLanguage()}
         } else {
             return null;
         }

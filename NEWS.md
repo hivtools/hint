@@ -1,3 +1,7 @@
+# hint 3.3.0
+
+* Keep user's language preference outside project state
+
 # hint 2.39.0
 
 * Break calibrate result response into data and metadata

@@ -57,7 +57,7 @@
         },
         watch: {
             modelValue: {
-                handler: function(newVal, oldVal) {
+                handler: function(newVal) {
                     // Multi-select component already seems to work fine so we want to
                     // not re-render those. We only want to re-render if:
                     // newVal === null : to replace value with "Not used" in treeselect

@@ -127,7 +127,6 @@ describe("Survey and programme component", () => {
         });
 
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
-        expect(wrapper.findAll("filters-stub").length).toBe(1);
         expect(wrapper.findComponent(GenericChart).exists()).toBe(false);
     });
 
@@ -159,7 +158,6 @@ describe("Survey and programme component", () => {
             }
         });
         const choro = wrapper.findComponent(Choropleth);
-        expect(choro.props().includeFilters).toBe(false);
         expect(choro.props().areaFilterId).toBe("area");
         expect(choro.props().chartdata).toBe("TEST DATA");
         expect(choro.props().roundFormatOutput).toBe(false);
@@ -260,39 +258,6 @@ describe("Survey and programme component", () => {
         expect(wrapper.findComponent(GenericChart).exists()).toBe(false);
     });
 
-    it("renders filters as expected", () => {
-        const store = createStore({
-            selectedDataType: DataType.Survey,
-            survey: {
-                "data": "TEST DATA",
-                "filters": {
-                    "year": "TEST YEAR FILTERS"
-                }
-            } as any,
-        });
-        const wrapper = shallowMountWithTranslate(ReviewInputs, store, {
-            global: {
-                plugins: [store]
-            }
-        });
-        const filters = wrapper.findComponent(Filters);
-        expect(filters.props().filters[0]).toStrictEqual({
-            id: "area",
-            column_id: "area_id",
-            label: "area",
-            allowMultiple: true,
-            options: [{id: "region 1"}, {id: "region 2"}]
-        });
-        expect(filters.props().filters[1]).toStrictEqual({
-            id: "year",
-            column_id: "year",
-            label: "year",
-            allowMultiple: false,
-            options: "TEST YEAR FILTERS"
-        });
-        expect(filters.props().selectedFilterOptions).toBe("TEST SELECTIONS");
-    });
-
     it("updates state when choropleth selections change", async () => {
         const store = createStore();
         const wrapper = shallowMountWithTranslate(ReviewInputs, store, {
@@ -318,9 +283,10 @@ describe("Survey and programme component", () => {
 
     it("renders data source header as expected", () => {
         const store = createStore();
-        const wrapper = shallowMountWithTranslate(ReviewInputs, store, {
+        const wrapper = mountWithTranslate(ReviewInputs, store, {
             global: {
-                plugins: [store]
+                plugins: [store],
+                stubs: ["filters", "l-map", "area-indicators-table", "generic-chart"]
             }
         });
         const header = wrapper.find("#data-source h4");
@@ -343,12 +309,12 @@ describe("Survey and programme component", () => {
     });
 
     async function expectDataSource(state: Partial<SurveyAndProgramState>, englishName: string, frenchName: string,
-                              portugueseName: string, id: string) {
+                                    portugueseName: string, id: string) {
         const store = createStore(state);
         const wrapper = mountWithTranslate(ReviewInputs, store, {
             global: {
                 plugins: [store],
-                stubs: ["filters", "choropleth", "area-indicators-table", "generic-chart"]
+                stubs: ["filters", "l-map", "area-indicators-table", "generic-chart"]
             }
         });
         let options = wrapper.findComponent(Treeselect).props("options");
@@ -376,7 +342,7 @@ describe("Survey and programme component", () => {
         const wrapper = mountWithTranslate(ReviewInputs, store, {
             global: {
                 plugins: [store],
-                stubs: ["filters", "choropleth", "area-indicators-table", "generic-chart"]
+                stubs: ["filters", "l-map", "area-indicators-table", "generic-chart"]
             }
         });
 
@@ -399,7 +365,7 @@ describe("Survey and programme component", () => {
         expect(dataSourceSelect.props("modelValue")).toBe("1");
         expect((wrapper.vm as any).selectedDataType).toBe(DataType.Program);
 
-        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+        expect(wrapper.findAll("l-map-stub").length).toBe(1);
     });
 
     it("computes selectedDataType", () => {
@@ -498,4 +464,3 @@ describe("Survey and programme component", () => {
     });
 
 });
-

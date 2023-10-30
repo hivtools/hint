@@ -33,7 +33,7 @@
                     </div>
                     <div class="input-group"
                          style="margin-top: -8px; min-width: 390px"
-                         v-if="editing">
+                         v-show="editing">
                         <input id="key"
                                ref="keyInput"
                                class="form-control"

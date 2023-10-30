@@ -38,6 +38,5 @@ export const actions: ActionTree<ModelOptionsState, RootState> & ModelOptionsAct
             .postAndReturn<ModelOptionsValidate>("/model/validate/options/", {options, version})
             
         commit(ModelOptionsMutation.Validated);
-        
     }
 };
