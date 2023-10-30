@@ -140,8 +140,7 @@ describe("File menu", () => {
                 modelRun: mockModelRunState(),
                 modelCalibrate: {result: null, calibratePlotResult: null, comparisonPlotResult: null},
                 metadata: mockMetadataState(),
-                surveyAndProgram: {selectedDataType: null, warnings: []},
-                language: Language.en
+                surveyAndProgram: {selectedDataType: null, warnings: []}
             },
             files: {
                 pjnz: {hash: "2csv", filename: "2.csv"},
