@@ -2,6 +2,7 @@ package org.imperial.mrc.hint.unit.controllers
 
 import org.junit.jupiter.api.Test
 import org.imperial.mrc.hint.models.ModelOptions
+import org.imperial.mrc.hint.models.CalibrateResultRow
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.controllers.CalibrateController
 import org.imperial.mrc.hint.db.CalibrateDataRepository
@@ -9,6 +10,7 @@ import org.imperial.mrc.hint.service.CalibrateDataService
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.isNotNull
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.springframework.http.ResponseEntity
 import org.mockito.ArgumentMatchers.anyString
@@ -19,7 +21,12 @@ class CalibrateControllerTests
 {
     private val mockResponse = mock<ResponseEntity<String>>()
     private val modelRunOptions = ModelOptions(mapOf(), mapOf())
-    private val mockDataFromPath = JSONArray(listOf("testData"))
+    private val mockResultRow = CalibrateResultRow(
+        "testIndicator", "testCalendarQuarter", "testAgeGroup", "testSex",
+        "testAreaId", 1, 2, 3, 4
+    )
+    private val mockDataFromPath = listOf(mockResultRow)
+    private val mockJsonDataFromPath = ObjectMapper().writeValueAsString(JSONArray(mockDataFromPath))
 
     @Test
     fun `can submit calibrate`()
@@ -71,7 +78,7 @@ class CalibrateControllerTests
 
         val result = sut.calibrateResultData("testId")
         assertThat(result.body?.toString()).isEqualTo(
-            "{\"data\":[\"testData\"],\"errors\":[],\"status\":\"success\"}"
+            "{\"data\":$mockJsonDataFromPath,\"errors\":[],\"status\":\"success\"}"
         )
     }
 

@@ -28,7 +28,7 @@ class CalibrateDataRepositoryTests
     fun `can get data from duckdb path`()
     {
         val plotData = sut.getDataFromPath(path)
-        val plotDataTree = ObjectMapper().readTree(plotData.toString())
+        val plotDataTree = ObjectMapper().readTree(JSONArray(plotData).toString())
         val expectedTree = ObjectMapper().readTree(expectedRow.toString())
         assert(plotDataTree.equals(expectedTree))
     }

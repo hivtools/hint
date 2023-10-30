@@ -22,7 +22,7 @@ FROM data"""
 
 interface CalibrateDataRepository
 {
-    fun getDataFromPath(path: String): JSONArray
+    fun getDataFromPath(path: String): List<CalibrateResultRow>
 }
 
 @Component
@@ -66,11 +66,10 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         return conn
     }
 
-    override fun getDataFromPath(path: String): JSONArray
+    override fun getDataFromPath(path: String): List<CalibrateResultRow>
     {
         getDBConnFromPathResponse(path).use { conn ->
-            val plotData = getDataFromConnection(conn)
-            return JSONArray(plotData)
+            return getDataFromConnection(conn)
         }
     }
 }
