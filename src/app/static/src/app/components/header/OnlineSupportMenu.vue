@@ -2,9 +2,14 @@
     <div id="divclass">
         <drop-down text="support" :right="true" :delay="true" style="flex: none">
             <a class="dropdown-item"
-               :href="faqLocation"
+               :href="helpFilename"
                target="_blank"
-               v-translate="'faq'">
+               v-translate="'help'">
+            </a>
+            <a class="dropdown-item"
+               :href="helpVideoLocation"
+               target="_blank"
+               v-translate="'helpVideoLink'">
             </a>
             <a class="dropdown-item"
                @click="toggleErrorReportModal"
@@ -58,7 +63,7 @@
 <script lang="ts">
     import DropDown from "./DropDown.vue";
     import i18next from "i18next";
-    import {mapActionByName, mapStateProp} from "../../utils";
+    import {HelpFile, mapActionByName, mapStateProp} from "../../utils";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import ErrorReport from "../ErrorReport.vue";
@@ -93,17 +98,16 @@
             support(): string {
                 return i18next.t("support", this.currentLanguage)
             },
-            troubleFilename: mapStateProp<RootState, string>(null,
+            helpVideoLocation(): string {
+                return "https://www.youtube.com/@naomi-unaids"
+            },
+            helpFilename: mapStateProp<RootState, string>(null,
                 (state: RootState) => {
-                    let filename = "index-en.html";
                     if (state.language == Language.fr) {
-                        filename = "index-fr.html";
+                        return HelpFile.french;
                     }
-                    return filename;
+                    return HelpFile.english;
                 }),
-            faqLocation(): string {
-                return "https://mrc-ide.github.io/naomi-troubleshooting/" + this.troubleFilename;
-            }
         },
         methods: {
             generateErrorReport: mapActionByName(null,

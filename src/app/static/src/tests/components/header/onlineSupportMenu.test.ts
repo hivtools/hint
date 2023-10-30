@@ -5,19 +5,21 @@ import {emptyState} from "../../../app/root";
 import {mutations} from "../../../app/store/root/mutations";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {Language} from "../../../app/store/translations/locales";
-import {expectTranslated, expectErrorReportOpen, mountWithTranslate} from "../../testHelpers";
+import {
+    expectTranslated,
+    expectErrorReportOpen,
+    mountWithTranslate,
+} from "../../testHelpers";
 import DropDown from "../../../app/components/header/DropDown.vue";
-import VueRouter, { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import ErrorReport from "../../../app/components/ErrorReport.vue";
 import {mockErrorsState, mockProjectsState, mockStepperState} from "../../mocks";
 import {StepperState} from "../../../app/store/stepper/stepper";
-import { nextTick } from "vue";
 
 const router = createRouter({
     routes: [],
     history: createWebHashHistory()
 });
-
 
 describe("Online support menu", () => {
 
@@ -27,9 +29,13 @@ describe("Online support menu", () => {
 
     const mockGenerateErrorReport = jest.fn()
 
-    const createStore = (stepperState: Partial<StepperState> = {}) => {
+    const createStore = (stepperState: Partial<StepperState> = {},
+                         language: Language = Language.en) => {
         const store = new Vuex.Store({
-            state: emptyState(),
+            state: {
+                ...emptyState(),
+                language
+            },
             actions: {
                 generateErrorReport: mockGenerateErrorReport
             },
@@ -84,60 +90,6 @@ describe("Online support menu", () => {
             "Apoio online", store as any);
     });
 
-    it("renders FAQ menu-item text", async () => {
-        const store = createStore();
-        const wrapper = mountWithTranslate(OnlineSupportMenu, store, {
-            global: {
-                plugins: [store, router]
-            }
-        });
-
-        const link = wrapper.findAll(".dropdown-item")[0];
-        await expectTranslated(link, "FAQ", "FAQ", "Perguntas Frequentes", store as any);
-        expect(link.attributes("target")).toBe("_blank");
-    });
-
-    it("renders FAQ menu-item link href when language is English", () => {
-        const store = createStore();
-        const wrapper = mount(OnlineSupportMenu, {
-            global: {
-                plugins: [store, router]
-            }
-        });
-
-        const link = wrapper.findAll(".dropdown-item")[0];
-        expect(link.attributes("href")).toBe("https://mrc-ide.github.io/naomi-troubleshooting/index-en.html");
-    });
-
-    it("renders FAQ menu-item link href when lang is French", async () => {
-        const store = createStore();
-        store.state.language = Language.fr;
-        await nextTick();
-        const wrapper = mount(OnlineSupportMenu, {
-            global: {
-                plugins: [store, router]
-            }
-        });
-
-        const link = wrapper.findAll(".dropdown-item")[0];
-        expect(link.attributes("href")).toBe("https://mrc-ide.github.io/naomi-troubleshooting/index-fr.html");
-    });
-
-    it("renders FAQ menu-item link href when language is Portuguese", async () => {
-        const store = createStore();
-        store.state.language = Language.pt;
-        await nextTick();
-        const wrapper = mount(OnlineSupportMenu, {
-            global: {
-                plugins: [store, router]
-            }
-        });
-
-        const link = wrapper.findAll(".dropdown-item")[0];
-        // This will eventually link to Portuguese language FAQ doc, but using English doc for now
-        expect(link.attributes("href")).toBe("https://mrc-ide.github.io/naomi-troubleshooting/index-en.html");
-    });
-
     it("renders error report widget", async () => {
 
         const store = createStore();
@@ -150,11 +102,11 @@ describe("Online support menu", () => {
         expect(wrapper.findAllComponents(ErrorReport).length).toBe(1);
         expect(wrapper.findComponent(ErrorReport).props("open")).toBe(false);
 
-        const link = wrapper.findAll(".dropdown-item")[1];
+        const link = wrapper.findAll(".dropdown-item")[2];
 
         await expectTranslated(link, "Troubleshooting request", "Demande de dépannage", "Solicitação de solução de problemas", store as any);
 
-        await expectErrorReportOpen(wrapper, 1)
+        await expectErrorReportOpen(wrapper, 2)
     });
 
     it("can render section on error report widget", async () => {
@@ -169,7 +121,7 @@ describe("Online support menu", () => {
 
         expect(wrapper.findComponent(ErrorReport).props("open")).toBe(false);
 
-        await expectErrorReportOpen(wrapper, 1)
+        await expectErrorReportOpen(wrapper, 2)
 
         const options = wrapper.findComponent(ErrorReport).findAll("option")
         expect(options.length).toBe(10)
@@ -235,7 +187,7 @@ describe("Online support menu", () => {
             "Autre",
             "De outros",
             store)
-});
+    });
 
     it("selects current step by default", async () => {
         const store = createStore();
@@ -245,7 +197,7 @@ describe("Online support menu", () => {
             }
         });
 
-        await expectErrorReportOpen(wrapper, 1)
+        await expectErrorReportOpen(wrapper, 2)
 
         expect((wrapper.findComponent(ErrorReport).find("select#section").element as HTMLSelectElement).value)
             .toBe("uploadInputs")
@@ -259,7 +211,7 @@ describe("Online support menu", () => {
             }
         });
 
-        await expectErrorReportOpen(wrapper, 1)
+        await expectErrorReportOpen(wrapper, 2)
 
         wrapper.findComponent(ErrorReport).vm.$emit("send",
             {
@@ -329,7 +281,7 @@ describe("Online support menu", () => {
         await wrapper.setData({errorReportOpen: false});
         await router.push("/projects");
         await router.isReady();
-        await expectErrorReportOpen(wrapper, 1)
+        await expectErrorReportOpen(wrapper, 2)
         expect(wrapper.findComponent(ErrorReport).props("open")).toBe(true);
         expect((wrapper.find("#section").element as HTMLSelectElement).value).toBe("projects")
     });
@@ -366,6 +318,59 @@ describe("Online support menu", () => {
         const link = links[0]
         expect(link.attributes("to")).toBe("/privacy");
         await expectTranslated(link, "Privacy", "Vie privée", "Privacidade", store as any);
+    });
+
+    it("computes help filename", () => {
+        const store = createStore()
+        const wrapper = shallowMount(OnlineSupportMenu, {global: {plugins: [store, router]}});
+        const vm = (wrapper as any).vm;
+        expect(vm.helpFilename).toStrictEqual(
+            "https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf");
+
+        const frStore = createStore({}, Language.fr);
+        const frWrapper = shallowMount(OnlineSupportMenu, {global: {plugins: [frStore, router]}});
+        const frVm = (frWrapper as any).vm;
+        expect(frVm.helpFilename).toStrictEqual(
+            "https://hivtools.unaids.org/wp-content/uploads/75D-Instructions-pour-Naomi.pdf");
+
+        const ptStore = createStore({}, Language.pt);
+        const ptWrapper = shallowMount(OnlineSupportMenu, {global: {plugins: [ptStore, router]}});
+        const ptVm = (ptWrapper as any).vm;
+        expect(ptVm.helpFilename).toStrictEqual(
+            "https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf");
+    });
+
+    it("contains Basic steps document links", () => {
+        const storeEnglish = createStore();
+        const wrapper = mountWithTranslate(OnlineSupportMenu, storeEnglish, {
+            global: {
+                plugins: [storeEnglish, router]
+            }
+        });
+
+        expect(wrapper.find(
+            "a[href='https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf']"
+        ).text()).toBe("Basic steps");
+
+        const frStore = createStore({}, Language.fr);
+        const frWrapper = mountWithTranslate(OnlineSupportMenu, frStore, {
+            global: {
+                plugins: [frStore, router]
+            }
+        });
+        expect(frWrapper.find(
+            "a[href='https://hivtools.unaids.org/wp-content/uploads/75D-Instructions-pour-Naomi.pdf']"
+        ).text()).toBe("Etapes de base");
+
+        const ptStore = createStore({}, Language.pt);
+        const ptWrapper = mountWithTranslate(OnlineSupportMenu, ptStore, {
+            global: {
+                plugins: [ptStore, router]
+            }
+        });
+        expect(ptWrapper.find(
+            "a[href='https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf']"
+        ).text()).toBe("Passos básicos");
     });
 
 });
