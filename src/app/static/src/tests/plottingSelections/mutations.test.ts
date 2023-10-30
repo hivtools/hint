@@ -66,6 +66,18 @@ describe("Plotting selections mutations", () => {
         });
     });
 
+    it("updates Table selections", () => {
+        const testState = mockPlottingSelections();
+        const newTableSelections = {
+            preset: "testPreset"
+        };
+        mutations.updateTableSelections(testState, {payload: newTableSelections});
+        expect(testState.table).toStrictEqual({
+            preset: "testPreset",
+            selectedFilterOptions: {}
+        });
+    });
+
     const testScales = {
         prevalence: {
             type: ScaleType.Default

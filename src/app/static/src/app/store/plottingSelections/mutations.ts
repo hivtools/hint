@@ -3,7 +3,7 @@ import {
     PlottingSelectionsState,
     BarchartSelections,
     BubblePlotSelections,
-    ChoroplethSelections, ScaleSelections
+    ChoroplethSelections, ScaleSelections, TableSelections
 } from "./plottingSelections";
 import {PayloadWithType} from "../../types";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
@@ -17,7 +17,8 @@ export enum PlottingSelectionsMutations {
     updateOutputChoroplethSelections = "updateOutputChoroplethSelections",
     updateSAPColourScales = "updateSAPColourScales",
     updateOutputColourScales = "updateOutputColourScales",
-    updateOutputBubbleSizeScales = "updateOutputBubbleSizeScales"
+    updateOutputBubbleSizeScales = "updateOutputBubbleSizeScales",
+    updateTableSelections = "updateTableSelections"
 }
 
 export const mutations: MutationTree<PlottingSelectionsState> = {
@@ -32,6 +33,9 @@ export const mutations: MutationTree<PlottingSelectionsState> = {
     },
     [PlottingSelectionsMutations.updateBubblePlotSelections](state: PlottingSelectionsState, action: PayloadWithType<Partial<BubblePlotSelections>>) {
         state.bubble = {...state.bubble, ...action.payload};
+    },
+    [PlottingSelectionsMutations.updateTableSelections](state: PlottingSelectionsState, action: PayloadWithType<Partial<TableSelections>>) {
+        state.table = {...state.table, ...action.payload};
     },
     [PlottingSelectionsMutations.updateSAPChoroplethSelections](state: PlottingSelectionsState, action: PayloadWithType<Partial<ChoroplethSelections>>) {
         state.sapChoropleth = {...state.sapChoropleth, ...action.payload}
