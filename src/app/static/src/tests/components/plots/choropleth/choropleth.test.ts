@@ -63,7 +63,6 @@ const props = {
             area: []
         }
     },
-    includeFilters: true,
     colourScales: {
         prevalence: {
             type: ScaleType.Custom,
@@ -80,6 +79,9 @@ const getWrapper = (customPropsData: any = {}) => {
         props: {...props, ...customPropsData},
         global: {
             plugins: [store]
+        },
+        slots: {
+            default: "slot content"
         }
     });
 };
@@ -105,11 +107,6 @@ describe("Choropleth component", () => {
         expect(wrapper.findAllComponents(Filters).length).toBe(1);
 
         //TODO: ADD TEST THAT MODIFIES AREA FILTER FOR DISPLAY IN FILTERS
-    });
-
-    it("does not render filters if includeFilters is false", () => {
-        const wrapper = getWrapper({includeFilters: false});
-        expect(wrapper.findAllComponents(Filters).length).toBe(0);
     });
 
     it("renders color legend", () => {
@@ -668,6 +665,11 @@ describe("Choropleth component", () => {
         // applying any update
         await wrapper.setProps({ ...props, selections: { ...props.selections, detail: 3 }});
         expect(spy.mock.calls.length).toBe(1);
+    });
+
+    it("renders slot content", async() => {
+        const wrapper = getWrapper()
+        expect(wrapper.html()).toContain("slot content")
     });
 
     it("triggers updateTooltips when component is updated", async () => {

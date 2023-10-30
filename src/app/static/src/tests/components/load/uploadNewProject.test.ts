@@ -62,6 +62,7 @@ describe("uploadNewProject", () => {
     const getWrapper = (props = {}, store: Store<RootState> = getStore()) => {
         return mountWithTranslate(UploadNewProject, store, {
             props: {
+                inputId: "input-id",
                 openModal: false,
                 submitLoad: mockSubmitFunction,
                 cancelLoad: mockCancelFunction,
@@ -125,33 +126,33 @@ describe("uploadNewProject", () => {
 
         const confirmButton = wrapper.find("#confirm-load-project");
         expect((confirmButton.element as HTMLButtonElement).disabled).toBe(true);
-        await wrapper.find("#project-name-input").setValue("test");
+        await wrapper.find("#input-id").setValue("test");
         expect(mockMutations.SetProjectName.mock.calls[0][1]).toBe("test")
         expect((wrapper.vm as any).$data.uploadProjectName).toBe("test")
         expect((confirmButton.element as HTMLButtonElement).disabled).toBe(false);
     });
 
     it("clicking confirm load to project button invokes action", async () => {
-        const wrapper = getWrapper({openModal: true})
+        const wrapper = getWrapper({inputId: "input-id", openModal: true})
 
-        await wrapper.find("#project-name-input").setValue("new project");
+        await wrapper.find("#input-id").setValue("new project");
         await wrapper.find("#confirm-load-project").trigger("click");
         expect(mockSubmitFunction.mock.calls.length).toEqual(1);
     });
 
     it("can trigger cancelLoad action", async () => {
-        const wrapper = getWrapper({openModal: true})
+        const wrapper = getWrapper({inputId: "input-id", openModal: true})
 
-        wrapper.find("#project-name-input").setValue("new project");
+        await wrapper.find("#input-id").setValue("new project");
         await wrapper.find("#cancel-load-project").trigger("click");
         expect(mockCancelFunction.mock.calls.length).toEqual(1);
     });
 
     it("can display error message when new project name is invalid", async () => {
-        const wrapper = getWrapper({openModal: true})
+        const wrapper = getWrapper({inputId: "input-id", openModal: true})
         const store = wrapper.vm.$store
 
-        await wrapper.find("#project-name-input").setValue("proj1");
+        await wrapper.find("#input-id").setValue("proj1");
         await expectTranslated(wrapper.find(".invalid-feedback"),
             "Please choose a unique name",
             "Veuillez choisire un nom unique",

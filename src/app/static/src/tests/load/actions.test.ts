@@ -229,7 +229,8 @@ describe("Load actions", () => {
                 version: currentHintVersion,
                 projects: {
                     currentProject: "TEST PROJECT",
-                    currentVersion: "TEST VERSION"
+                    currentVersion: "TEST VERSION",
+                    previousProjects: []
                 },
                 stepper: {
                     steps: [

@@ -10,7 +10,7 @@ import {
     CalibrateSubmitResponse,
     ComparisonPlotResponse,
     Error,
-    VersionInfo, Warning
+    VersionInfo,
 } from "../../generated";
 
 export enum ModelCalibrateMutation {
