@@ -1,4 +1,4 @@
-package org.imperial.mrc.hint.service
+package org.imperial.mrc.hint.unit.service
 
 import org.junit.jupiter.api.Test
 import com.nhaarman.mockito_kotlin.*
@@ -6,6 +6,7 @@ import org.mockito.ArgumentMatchers.anyString
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.CalibrateDataRepository
 import org.imperial.mrc.hint.models.CalibrateResultRow
+import org.imperial.mrc.hint.service.CalibrateDataService
 import org.springframework.http.ResponseEntity
 import org.jooq.tools.json.JSONArray
 
