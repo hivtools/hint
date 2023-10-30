@@ -38,10 +38,10 @@ function checkNumberControlValid(control: NumberControl): boolean {
     let valid = true;
 
     if (control.min !== undefined && typeof control.value === "number") {
-        valid = valid && control.value > control.min
+        valid = valid && control.value >= control.min
     }
     if (control.max !== undefined && typeof control.value === "number") {
-        valid = valid && control.value < control.max
+        valid = valid && control.value <= control.max
     }
 
     return valid;
