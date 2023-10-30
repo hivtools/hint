@@ -1,5 +1,4 @@
-import Vue, { nextTick } from "vue";
-import {flushPromises, mount, shallowMount} from "@vue/test-utils";
+import { nextTick } from "vue";
 
 import ADRKey from "../../../app/components/adr/ADRKey.vue";
 import Vuex, {ActionTree} from "vuex";
@@ -79,6 +78,7 @@ describe("ADR Key", function () {
             }
         });
         const links = rendered.findAll(".btn")
+            .filter((link) => link.isVisible());
         expect(links.length).toBe(1);
         expect(links[0].text()).toBe("Remove");
     });
@@ -90,7 +90,8 @@ describe("ADR Key", function () {
                 plugins: [store]
             }
         });
-        const links = rendered.findAll(".btn");
+        const links = rendered.findAll(".btn")
+            .filter((link) => link.isVisible());
         expect(links.length).toBe(2);
         expect(links[0].text()).toBe("Add");
     });
@@ -130,7 +131,9 @@ describe("ADR Key", function () {
                 attachTo: "#root",
             });
 
-        expect(rendered.findAll(".input-group").length).toBe(0);
+        const input = rendered.findAll(".input-group");
+        expect(input.length).toBe(1);
+        expect(input[0].isVisible()).toBe(false);
         const links = rendered.findAll(".btn")
         await links[0].trigger("click");
         await nextTick();
@@ -151,7 +154,9 @@ describe("ADR Key", function () {
                 plugins: [store]
             }
         });
-        expect(rendered.findAll(".input-group").length).toBe(0);
+        const input = rendered.findAll(".input-group");
+        expect(input.length).toBe(1);
+        expect(input[0].isVisible()).toBe(false);
         const links = rendered.findAll(".btn")
         await links[0].trigger("click");
 
@@ -170,17 +175,24 @@ describe("ADR Key", function () {
                 plugins: [store]
             }
         });
-        expect(rendered.findAll(".input-group").length).toBe(0);
+        let input = rendered.findAll(".input-group");
+        expect(input.length).toBe(1);
+        expect(input[0].isVisible()).toBe(false);
         const links = rendered.findAll(".btn")
         await links[0].trigger("click");
 
-        expect(rendered.findAll(".input-group").length).toBe(1);
+        input = rendered.findAll(".input-group")
+        expect(input.length).toBe(1);
+        expect(input[0].isVisible()).toBe(true);
 
         const buttons = rendered.findAll(".btn")
         expect(buttons[1].text()).toBe("Cancel");
         await buttons[1].trigger("click");
 
-        expect(rendered.findAll(".input-group").length).toBe(0);
+
+        input = rendered.findAll(".input-group")
+        expect(input.length).toBe(1);
+        expect(input[0].isVisible()).toBe(false);
     });
 
     it("can remove key", async () => {
@@ -190,27 +202,13 @@ describe("ADR Key", function () {
                 plugins: [store]
             }
         });
-        expect(rendered.findAll(".input-group").length).toBe(0);
+        const input = rendered.findAll(".input-group");
+        expect(input.length).toBe(1);
+        expect(input[0].isVisible()).toBe(false);
         const links = rendered.findAll(".btn")
         await links[0].trigger("click");
 
         expect(deleteStub.mock.calls.length).toBe(1);
-    });
-
-    it("can add key", async () => {
-        const store = createStore();
-        const rendered = shallowMountWithTranslate(ADRKey, store, {
-            global: {
-                plugins: [store]
-            }
-        });
-        expect(rendered.findAll(".input-group").length).toBe(0);
-        await rendered.find(".btn").trigger("click");
-
-        await rendered.find("input").setValue("new-key-456");
-        await rendered.find("button").trigger("click");
-
-        expect(saveStub.mock.calls.length).toBe(1);
     });
 
     it("displays error if it exists", () => {

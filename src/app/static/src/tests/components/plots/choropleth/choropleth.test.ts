@@ -13,7 +13,13 @@ import MapEmptyFeature from "../../../../app/components/plots/MapEmptyFeature.vu
 import ResetMap from "../../../../app/components/plots/ResetMap.vue";
 import {ChoroplethIndicatorMetadata} from "../../../../app/generated";
 import { mountWithTranslate } from "../../../testHelpers";
-import { nextTick } from "vue";
+import {Layer} from "leaflet";
+import {Feature} from "geojson";
+
+const mockSetTooltipContent = jest.fn();
+const mockLayer = {
+    setTooltipContent: mockSetTooltipContent
+} as any;
 
 jest.mock("@vue-leaflet/vue-leaflet", () => {
     const LMap = {
@@ -25,7 +31,17 @@ jest.mock("@vue-leaflet/vue-leaflet", () => {
     const LGeoJson = {
         template: `<div id='l-geo-json-mock'><slot></slot></div>`,
         props: {
-            geojson: Object
+            geojson: Object,
+        },
+
+        data() {
+            return {
+                leafletObject: {
+                    eachLayer: (callback: (layer: Layer) => void) => {
+                        callback(mockLayer)
+                    }
+                }
+            }
         }
     }
     return { LMap, LControl, LGeoJson }
@@ -47,7 +63,6 @@ const props = {
             area: []
         }
     },
-    includeFilters: true,
     colourScales: {
         prevalence: {
             type: ScaleType.Custom,
@@ -64,6 +79,9 @@ const getWrapper = (customPropsData: any = {}) => {
         props: {...props, ...customPropsData},
         global: {
             plugins: [store]
+        },
+        slots: {
+            default: "slot content"
         }
     });
 };
@@ -89,11 +107,6 @@ describe("Choropleth component", () => {
         expect(wrapper.findAllComponents(Filters).length).toBe(1);
 
         //TODO: ADD TEST THAT MODIFIES AREA FILTER FOR DISPLAY IN FILTERS
-    });
-
-    it("does not render filters if includeFilters is false", () => {
-        const wrapper = getWrapper({includeFilters: false});
-        expect(wrapper.findAllComponents(Filters).length).toBe(0);
     });
 
     it("renders color legend", () => {
@@ -575,10 +588,10 @@ describe("Choropleth component", () => {
 
         onEachFeatureFunction(mockFeature, mockLayer);
         expect(mockLayer.bindTooltip.mock.calls[0][0]).toEqual(`<div>
-                                <strong>Area 1</strong>
-                                <br/>1.00%
-                                <br/>(1.00% - 10.00%)
-                            </div>`);
+                        <strong>Area 1</strong>
+                        <br/>1.00%
+                        <br/>(1.00% - 10.00%)
+                    </div>`);
 
         const mockZeroValueFeature = {
             properties: {
@@ -589,10 +602,48 @@ describe("Choropleth component", () => {
 
         onEachFeatureFunction(mockZeroValueFeature, mockLayer);
         expect(mockLayer.bindTooltip.mock.calls[1][0]).toEqual(`<div>
-                                <strong>Area 2</strong>
-                                <br/>0.00%
-                            </div>`);
+                        <strong>Area 2</strong>
+                        <br/>0.00%
+                    </div>`);
 
+    });
+
+    it("updateTooltips sets tooltip content on all visible layers", async () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+
+        const spy = jest.spyOn(wrapper.vm as any, "setLayerTooltipContent");
+
+        vm.updateTooltips();
+
+        // There are 2 visible features in test data
+        expect(spy.mock.calls.length).toBe(2);
+        expect((spy.mock.calls[0][1] as any).properties.area_id).toEqual("MWI_4_1")
+        expect((spy.mock.calls[1][1] as any).properties.area_id).toEqual("MWI_4_2")
+    });
+
+    it("setLayerTooltipContent updates tooltip content for layer", () => {
+        const wrapper = getWrapper();
+        const vm = wrapper.vm as any;
+
+        const mockSetTooltipContent = jest.fn();
+        const mockLayer = {
+            setTooltipContent: mockSetTooltipContent
+        } as any;
+        const mockFeature = {
+            properties: {
+                area_id: "MWI_3_1",
+                area_name: "Area 1"
+            }
+        } as any;
+
+        vm.setLayerTooltipContent(mockLayer, mockFeature);
+        expect(mockSetTooltipContent.mock.calls.length).toBe(1);
+        expect(mockSetTooltipContent.mock.calls[0][0]).toEqual(`<div>
+                        <strong>Area 1</strong>
+                        <br/>1.00%
+                        <br/>(1.00% - 10.00%)
+                    </div>`);
     });
 
     it('render round format output props correctly', () => {
@@ -610,6 +661,20 @@ describe("Choropleth component", () => {
     it("triggers updateBounds when component is updated", async () => {
         const wrapper = getWrapper();
         const spy = jest.spyOn(wrapper.vm as any, "updateBounds");
+        expect(spy.mock.calls.length).toBe(0);
+        // applying any update
+        await wrapper.setProps({ ...props, selections: { ...props.selections, detail: 3 }});
+        expect(spy.mock.calls.length).toBe(1);
+    });
+
+    it("renders slot content", async() => {
+        const wrapper = getWrapper()
+        expect(wrapper.html()).toContain("slot content")
+    });
+
+    it("triggers updateTooltips when component is updated", async () => {
+        const wrapper = getWrapper();
+        const spy = jest.spyOn(wrapper.vm as any, "updateTooltips");
         expect(spy.mock.calls.length).toBe(0);
         // applying any update
         await wrapper.setProps({ ...props, selections: { ...props.selections, detail: 3 }});
