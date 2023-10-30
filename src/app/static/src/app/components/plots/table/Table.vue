@@ -5,12 +5,16 @@
             <b-form-group class="mb-0">
                 <b-input-group size="sm">
                     <b-form-input
-                        v-model="filter"
+                        :model-value="filter"
                         type="search"
                         id="filterInput"
+                        @update:model-value="changeFilter"
                         :placeholder="translate('typeSearch')"></b-form-input>
                     <b-input-group-append>
-                        <b-button :disabled="!filter" @click="filter = ''" v-translate="'clearText'"></b-button>
+                        <b-button :disabled="!filter"
+                        @click="filter = ''"
+                        v-translate="'clearText'"
+                        size="sm"></b-button>
                     </b-input-group-append>
                 </b-input-group>
             </b-form-group>
@@ -18,12 +22,11 @@
                 striped hover
                 :fields="fields"
                 :items="filteredData"
-                :sort-by.sync="sortBy"
-                :sort-desc.sync="sortDesc"
                 :filter="filter"
+                :filterable="[]"
                 responsive="sm"
                 show-empty>
-                <template v-for="(_, slot) in $scopedSlots" v-slot:[slot]="props">
+                <template v-for="(_, slot) in $slots" v-slot:[slot]="props">
                     <slot :name="slot" v-bind="props" />
                 </template>
             </b-table>
@@ -33,50 +36,38 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import i18next from "i18next";
     import {mapStateProp} from "../../../utils";
-    import {BButton, BFormGroup, BFormInput, BInputGroup, BInputGroupAppend, BTable} from 'bootstrap-vue';
+    import {BButton, BFormGroup, BFormInput, BInputGroup, BInputGroupAppend, BTable} from 'bootstrap-vue-next';
     import {RootState} from "../../../root";
     import {Language} from "../../../store/translations/locales";
     import {Field} from "../../../types";
+    import { PropType, defineComponent } from "vue";
 
-    interface Props {
-        filteredData: any[],
-        fields: Field[]
-    }
-
-    interface Methods {
-        translator: string
-    }
-
-    interface Computed {
-        currentLanguage: Language
-    }
-
-    const props = {
-        filteredData: {
-            type: Array
-        },
-        fields: {
-            type: Array
-        }
-    };
-
-    export default Vue.extend<unknown, unknown, Computed, Props>({
+    export default defineComponent({
         name: "table-view",
-        props: props,
+        props: {
+            filteredData: {
+                type: Array as PropType<any[]>,
+                required: true
+            },
+            fields: {
+                type: Array as PropType<Field[]>,
+                required: true
+            }
+        },
         data() {
             return {
-                sortBy: '',
-                sortDesc: false,
-                filter: null
+                filter: ""
             }
         },
         methods: {
             translate(word: string) {
                 return i18next.t(word, {lng: this.currentLanguage})
             },
+            changeFilter(filter: string) {
+                this.filter = filter;
+            }
         },
         computed: {
             currentLanguage: mapStateProp<RootState, Language>(null,

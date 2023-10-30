@@ -2,7 +2,7 @@
     <div>
         <div class="row">
             <div class="col">
-                <ul class="nav nav-tabs col-md-12">
+                <ul class="nav nav-tabs col-md-12 p-0">
                     <li v-for="tab in tabs" class="nav-item" :key="tab">
                         <a class="nav-link"
                            :class="selectedTab === tab ? 'active' :  ''"
@@ -24,7 +24,7 @@
                     :include-filters="true"
                     area-filter-id="area"
                     :colour-scales="colourScales"
-                    @update="updateOutputChoroplethSelections({payload: $event})"
+                    @update:selections="updateOutputChoroplethSelections({payload: $event})"
                     @update-colour-scales="updateOutputColourScales({payload: $event})"></choropleth>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
@@ -49,7 +49,8 @@
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
                     :no-data-message="noChartData"
-                    @update="updateBarchartSelectionsAndXAxisOrder"></bar-chart-with-filters>
+                    :show-error-bars="true"
+                    @update:selections="updateBarchartSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <area-indicators-table class="col-md-9"
@@ -59,7 +60,6 @@
                                            :countryAreaFilterOption="countryAreaFilterOption"
                                            :indicators="filteredBarchartIndicators"
                                            :selections="barchartSelections"
-
                                            :selectedFilterOptions="barchartSelections.selectedFilterOptions"
                     ></area-indicators-table>
                 </div>
@@ -72,7 +72,7 @@
                              area-filter-id="area"
                              :colour-scales="colourScales"
                              :size-scales="bubbleSizeScales"
-                             @update="updateBubblePlotSelections({payload: $event})"
+                             @update:selections="updateBubblePlotSelections({payload: $event})"
                              @update-colour-scales="updateOutputColourScales({payload: $event})"
                              @update-size-scales="updateOutputBubbleSizeScales({payload: $event})"></bubble-plot>
                 <div class="row mt-2">
@@ -99,7 +99,8 @@
                     :formatFunction="formatBarchartValue"
                     :showRangesInTooltips="true"
                     :no-data-message="noChartData"
-                    @update="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
+                    :show-error-bars="true"
+                    @update:selections="updateComparisonPlotSelectionsAndXAxisOrder"></bar-chart-with-filters>
                 <div class="row mt-2">
                     <div class="col-md-3"></div>
                     <area-indicators-table class="col-md-9"
@@ -120,14 +121,12 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import Choropleth from "../plots/choropleth/Choropleth.vue";
     import BubblePlot from "../plots/bubble/BubblePlot.vue";
     import AreaIndicatorsTable from "../plots/table/AreaIndicatorsTable.vue";
-    import {BarchartIndicator, Filter, FilterConfig, FilterOption} from "@reside-ic/vue-charts/src/bar/types";
-    import {BarChartWithFilters} from "@reside-ic/vue-charts";
+    import {BarchartIndicator, Filter, FilterConfig, FilterOption} from "../../vue-chart/src/bar/types";
+    import {BarChartWithFilters} from "../../vue-chart/src";
     import ErrorAlert from "../ErrorAlert.vue";
-
     import {
         mapGettersByNames,
         mapMutationByName,
@@ -149,7 +148,7 @@
     import {inactiveFeatures} from "../../main";
     import {RootState} from "../../root";
     import {LevelLabel} from "../../types";
-    import {ChoroplethIndicatorMetadata,} from "../../generated";
+    import {ChoroplethIndicatorMetadata, Error,} from "../../generated";
     import {
         formatOutput, 
         filterConfig,
@@ -158,18 +157,20 @@
     } from "../plots/utils";
     import {ModelCalibrateState} from "../../store/modelCalibrate/modelCalibrate";
     import i18next from "i18next";
+import { defineComponent } from "vue";
 
     const namespace = 'filteredData';
 
     interface Data {
-        tabs: string[]
+        tabs: string[],
+        areaFilterId: string
     }
 
     interface Methods {
         tabSelected: (tab: string) => void
         updateBarchartSelections: (data: { payload: BarchartSelections }) => void
         updateComparisonPlotSelections: (data: { payload: BarchartSelections }) => void
-        updateBubblePlotSelections: (data: BubblePlotSelections) => void
+        updateBubblePlotSelections: (data: { payload: BubblePlotSelections}) => void
         updateOutputColourScales: (colourScales: ScaleSelections) => void
         updateOutputBubbleSizeScales: (colourScales: ScaleSelections) => void
         formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => string
@@ -188,8 +189,8 @@
         comparisonPlotIndicators: BarchartIndicator[],
         chartdata: any,
         comparisonPlotData: any
-        barchartSelections: BarchartSelections,
-        comparisonPlotSelections: BarchartSelections,
+        barchartSelections: BarchartSelections& {detail: null},
+        comparisonPlotSelections: BarchartSelections & {detail: null},
         bubblePlotSelections: BubblePlotSelections,
         choroplethSelections: ChoroplethSelections,
         selectedTab: string,
@@ -213,9 +214,9 @@
         comparisonPlotDefaultSelections: UnadjustedBarchartSelections[]
     }
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponent({
         name: "ModelOutput",
-        created() {
+        beforeMount() {
             if (!this.selectedTab) {
                 this.tabSelected(this.tabs[0]);
             }
@@ -239,22 +240,22 @@
                 "bubblePlotFilters", "bubblePlotIndicators",
                 "choroplethFilters", "choroplethIndicators",
                 "countryAreaFilterOption", "comparisonPlotIndicators",
-                "comparisonPlotFilters", "comparisonPlotDefaultSelections"]),
-            ...mapStateProps<PlottingSelectionsState, keyof Computed>("plottingSelections", {
-                barchartSelections: state => state.barchart,
-                comparisonPlotSelections: state => state.comparisonPlot,
-                bubblePlotSelections: state => state.bubble,
-                choroplethSelections: state => state.outputChoropleth,
-                colourScales: state => state.colourScales.output,
-                bubbleSizeScales: state => state.bubbleSizeScales.output
+                "comparisonPlotFilters", "comparisonPlotDefaultSelections"] as const),
+            ...mapStateProps("plottingSelections", {
+                barchartSelections: (state: PlottingSelectionsState) => state.barchart,
+                comparisonPlotSelections: (state: PlottingSelectionsState) => state.comparisonPlot as BarchartSelections & {detail: null},
+                bubblePlotSelections: (state: PlottingSelectionsState) => state.bubble,
+                choroplethSelections: (state: PlottingSelectionsState) => state.outputChoropleth,
+                colourScales: (state: PlottingSelectionsState) => state.colourScales.output,
+                bubbleSizeScales: (state: PlottingSelectionsState) => state.bubbleSizeScales.output
             }),
-            ...mapStateProps<BaselineState, keyof Computed>("baseline", {
-                    features: state => state.shape!.data.features as Feature[],
-                    featureLevels: state => state.shape!.filters.level_labels || []
+            ...mapStateProps("baseline", {
+                    features: (state: BaselineState) => state.shape!.data.features as Feature[],
+                    featureLevels: (state: BaselineState) => state.shape!.filters.level_labels || []
                 }
             ),
-            ...mapStateProps<ModelCalibrateState, keyof Computed>("modelCalibrate", {
-                comparisonPlotError: state => state.comparisonPlotError
+            ...mapStateProps("modelCalibrate", {
+                comparisonPlotError: (state: ModelCalibrateState) => state.comparisonPlotError
             }),
             filteredChoroplethIndicators() {
                 return this.choroplethIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.choroplethSelections.indicatorId)
@@ -279,7 +280,7 @@
                 return state.comparisonPlotResult ? state.comparisonPlotResult.data : [];
             }),
             barchartSelections() {
-                return this.$store.state.plottingSelections.barchart
+                return {...this.$store.state.plottingSelections.barchart, detail: null}
             },
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
@@ -300,20 +301,20 @@
             },
         },
         methods: {
-            ...mapMutationsByNames<keyof Methods>("plottingSelections",
+            ...mapMutationsByNames("plottingSelections",
                 ["updateBarchartSelections", "updateComparisonPlotSelections", "updateBubblePlotSelections",
-                "updateOutputChoroplethSelections", "updateOutputColourScales", "updateOutputBubbleSizeScales"]),
+                "updateOutputChoroplethSelections", "updateOutputColourScales", "updateOutputBubbleSizeScales"] as const),
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected),
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
             },
-            updateBarchartSelectionsAndXAxisOrder(data) {
+            updateBarchartSelectionsAndXAxisOrder(data: BarchartSelections) {
                 updateSelectionsAndXAxisOrder(data, this.barchartSelections, this.barchartFlattenedXAxisFilterOptionIds, this.updateBarchartSelections)
             },
-            updateComparisonPlotSelectionsAndXAxisOrder(data) {
+            updateComparisonPlotSelectionsAndXAxisOrder(data: BarchartSelections) {
                 if (data.indicatorId && data.indicatorId !== this.comparisonPlotSelections.indicatorId) {
                     const selections = this.comparisonPlotDefaultSelections
-                        .find(selection => selection.indicator_id === data.indicatorId)
+                        .find((selection: UnadjustedBarchartSelections) => selection.indicator_id === data.indicatorId)
 
                     if (selections) {
                         const comparisonSelections = {

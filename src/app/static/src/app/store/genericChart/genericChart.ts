@@ -1,3 +1,4 @@
+import { Error } from './../../generated.d';
 import {GenericChartDataset, GenericChartMetadataResponse} from "../../types";
 import {Module} from "vuex";
 import {actions} from "./actions";

@@ -29,15 +29,18 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue"
     import Modal from "../Modal.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
+    import { defineComponent, PropType } from "vue";
 
-    export default Vue.extend({
+    export default defineComponent({
         name: "UploadProgress",
         props: {
             openModal: Boolean,
-            cancel: Function
+            cancel: {
+                type: Function as PropType<(payload: MouseEvent) => void>,
+                required: true
+            }
         },
         components: {
             LoadingSpinner,

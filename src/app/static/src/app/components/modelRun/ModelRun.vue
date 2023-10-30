@@ -5,9 +5,10 @@
                 :disabled="running"
                 v-translate="'fitModel'">
         </button>
-        <h4 v-if="complete" class="mt-3" id="model-run-complete" v-translate="'fittingComplete'">
+        <div v-if="complete" class="mt-3 d-flex align-items-center mr-2" id="model-run-complete">
+            <h4 v-translate="'fittingComplete'"></h4>
             <tick color="#e31837" width="20px"></tick>
-        </h4>
+        </div>
         <modal :open="running">
             <progress-bar v-for="phase in phases"
                           :key="phase.name"
@@ -32,7 +33,6 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import {ModelRunState} from "../../store/modelRun/modelRun";
     import Modal from "../Modal.vue";
     import Tick from "../Tick.vue";
@@ -44,66 +44,36 @@
         mapMutationByName
     } from "../../utils";
     import ErrorAlert from "../ErrorAlert.vue";
-    import {ProgressPhase} from "../../generated";
     import ProgressBar from "../progress/ProgressBar.vue";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import {ModelRunMutation} from "../../store/modelRun/mutations";
-
-    interface ComputedState {
-        runId: string
-        pollId: number
-        phases: ProgressPhase[]
-    }
-
-    interface ComputedGetters {
-        running: boolean
-        complete: boolean
-    }
-
-     interface Data {
-        showReRunConfirmation: boolean
-    }
-
-    interface Computed extends ComputedGetters, ComputedState {
-        editsRequireConfirmation: boolean
-    }
-
-    interface Methods {
-        handleRun: () => void;
-        confirmReRun: () => void;
-        cancelReRun: () => void;
-        run: () => void;
-        poll: (runId: string) => void;
-        cancelRun: () => void;
-        runModelWithParams: () => void;
-        clearResult: () => void;
-    }
+    import { defineComponent } from "vue";
 
     const namespace = 'modelRun';
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponent({
         name: "ModelRun",
-        data(): Data {
+        data() {
             return {
                 showReRunConfirmation: false
             }
         },
         computed: {
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
-            ...mapStateProps<ModelRunState, keyof ComputedState>(namespace, {
-                runId: state => state.modelRunId,
-                pollId: state => state.statusPollId,
-                errors: state => state.errors,
-                phases: state => {
+            ...mapStateProps(namespace, {
+                runId: (state: ModelRunState) => state.modelRunId,
+                pollId: (state: ModelRunState) => state.statusPollId,
+                errors: (state: ModelRunState) => state.errors,
+                phases: (state: ModelRunState) => {
                     const progress = state.status.progress || [];
                     return progress.map((item, index) => ({...item, name: `${index + 1}. ${item.name}`}))
                 }
             }),
-            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["running", "complete"])
+            ...mapGettersByNames(namespace, ["running", "complete"] as const)
         },
         methods: {
-            ...mapActionsByNames<keyof Methods>(namespace, ["run", "poll", "cancelRun"]),
+            ...mapActionsByNames(namespace, ["run", "poll", "cancelRun"] as const),
             clearResult: mapMutationByName(namespace, ModelRunMutation.ClearResult),
             handleRun(){
                 if (this.editsRequireConfirmation){
@@ -126,7 +96,7 @@
                 }
             }
         },
-        created() {
+        beforeMount() {
             if (this.runId && this.pollId == -1 && this.running) {
                 this.poll(this.runId);
             }

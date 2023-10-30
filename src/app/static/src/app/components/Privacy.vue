@@ -32,7 +32,9 @@
 </template>
 
 <script lang="ts">
-    export default {
-        name: "Privacy"
-    }
+    import { defineComponent } from 'vue';
+
+    export default defineComponent({
+        name: 'Privacy',
+    });
 </script>

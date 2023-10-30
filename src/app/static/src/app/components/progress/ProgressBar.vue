@@ -10,21 +10,17 @@
 
 <script lang="ts">
 
-    import Vue from "vue";
-    import {BProgress, BProgressBar} from "bootstrap-vue";
+    import {BProgress, BProgressBar} from "bootstrap-vue-next";
     import Tick from "../Tick.vue";
     import {ProgressPhase} from "../../generated";
+    import { PropType, defineComponent } from "vue";
 
-    interface Computed {
-        isDeterminate: boolean
-        value: number
-        title: string
-        cssClass: string
-    }
-
-    export default Vue.extend<unknown, unknown, Computed, { phase: ProgressPhase }>({
+    export default defineComponent({
         props: {
-            phase: Object
+            phase: {
+                type: Object as PropType<ProgressPhase>,
+                required: true
+            }
         },
         computed: {
             isDeterminate: function () {

@@ -112,15 +112,28 @@ class ModelRunControllerTests
     }
 
     @Test
-    fun `can get calibrate result`()
+    fun `can get calibrate result metadata`()
     {
         val mockFileManager = mock<FileManager>()
         val mockAPIClient = mock<HintrAPIClient> {
-            on { getCalibrateResult("testId") } doReturn mockResponse
+            on { getCalibrateResultMetadata("testId") } doReturn mockResponse
         }
         val sut = ModelRunController(mockFileManager, mockAPIClient)
 
-        val result = sut.calibrateResult("testId")
+        val result = sut.calibrateResultMetadata("testId")
+        assertThat(result).isSameAs(mockResponse)
+    }
+
+    @Test
+    fun `can get calibrate result data`()
+    {
+        val mockFileManager = mock<FileManager>()
+        val mockAPIClient = mock<HintrAPIClient> {
+            on { getCalibrateResultData("testId") } doReturn mockResponse
+        }
+        val sut = ModelRunController(mockFileManager, mockAPIClient)
+
+        val result = sut.calibrateResultData("testId")
         assertThat(result).isSameAs(mockResponse)
     }
 

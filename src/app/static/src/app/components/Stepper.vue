@@ -1,16 +1,15 @@
 <template>
     <div>
         <div class="row">
-            <template v-for="step in steps">
-                <step :key="step.number"
-                      :active="isActive(step.number)"
+            <template v-for="step in steps" :key="step.number">
+                <step :active="isActive(step.number)"
                       :number="step.number"
                       :text-key="step.textKey"
                       :enabled="isEnabled(step.number)"
                       :complete="isComplete(step.number)"
                       @jump="jump">
                 </step>
-                <div class="col step-connector" v-if="step.number < steps.length"
+                <div class="col step-connector mt-2" v-if="step.number < steps.length"
                      :key="step.number + 'conn'"
                      :class="[{'enabled': isEnabled(step.number + 1)}]">
                     <hr/>
@@ -49,9 +48,7 @@
 </template>
 
 <script lang="ts">
-
-    import Vue from "vue";
-    import {mapActions, mapGetters} from "vuex";
+    import {mapActions} from "vuex";
     import AdrIntegration from "./adr/ADRIntegration.vue";
     import Step from "./Step.vue";
     import UploadInputs from "./uploadInputs/UploadInputs.vue";
@@ -67,8 +64,8 @@
     import {LoadingState, LoadState} from "../store/load/state";
     import ModelOptions from "./modelOptions/ModelOptions.vue";
     import VersionStatus from "./projects/VersionStatus.vue";
-    import {mapGettersByNames, mapStateProp, mapStateProps, mapMutationByName} from "../utils";
-    import {Project, StepperNavigationProps, StepWarnings} from "../types";
+    import {mapGettersByNames, mapStateProp, mapStateProps, mapMutationByName, mapGetterByName} from "../utils";
+    import {StepperNavigationProps, StepWarnings} from "../types";
     import {ProjectsState} from "../store/projects/projects";
     import {RootState} from "../root";
     import StepperNavigation from "./StepperNavigation.vue";
@@ -77,50 +74,39 @@
     import {ModelCalibrateMutation} from "../store/modelCalibrate/mutations";
     import {GenericChartMutation} from "../store/genericChart/mutations";
     import {SurveyAndProgramMutation} from "../store/surveyAndProgram/mutations";
-
-    interface ComputedState {
-        activeStep: number,
-        steps: StepDescription[],
-        currentProject: Project | null
-        projectLoading: boolean,
-        updatingLanguage: boolean,
-        navigationProps: StepperNavigationProps,
-        activeStepTextKey: string,
-        activeStepWarnings: StepWarnings
-    }
-
-    interface ComputedGetters {
-        ready: boolean,
-        complete: boolean,
-        loadingFromFile: boolean,
-        loading: boolean,
-        warnings: (stepName: string) => StepWarnings,
-    }
+    import { defineComponent } from "vue";
 
     const namespace = 'stepper';
 
-    export default Vue.extend<unknown, any, ComputedState & ComputedGetters, unknown>({
+    const readyCompleteGetters = ["ready", "complete"] as const
+    interface ReadyCompleteGetters {
+        ready: boolean,
+        complete: boolean[]
+    }
+
+    export default defineComponent({
         computed: {
-            ...mapStateProps<StepperState, keyof ComputedState>(namespace, {
-                activeStep: state => state.activeStep,
-                steps: state => state.steps
+            ...mapStateProps(namespace, {
+                activeStep: (state: StepperState) => state.activeStep,
+                steps: (state: StepperState) => state.steps
             }),
-            ...mapStateProps<LoadState, keyof ComputedState>("load", {
-                loadingFromFile: state => [LoadingState.SettingFiles, LoadingState.UpdatingState].includes(state.loadingState)
+            ...mapStateProps("load", {
+                loadingFromFile: (state: LoadState) => [LoadingState.SettingFiles, LoadingState.UpdatingState].includes(state.loadingState)
             }),
-            ...mapStateProps<ProjectsState, keyof ComputedState>("projects", {
-                currentProject: state => state.currentProject,
-                projectLoading: state => state.loading
+            ...mapStateProps("projects", {
+                currentProject: (state: ProjectsState) => state.currentProject,
+                projectLoading: (state: ProjectsState) => state.loading
             }),
             updatingLanguage: mapStateProp<RootState, boolean>(null,
                 (state: RootState) => state.updatingLanguage
             ),
-            ...mapGettersByNames<keyof ComputedGetters>(namespace, ["ready", "complete"]),
-            loading: function () {
+            ...mapGettersByNames<typeof readyCompleteGetters, ReadyCompleteGetters>(namespace, readyCompleteGetters),
+            loading: function (): boolean {
                 return this.loadingFromFile || this.updatingLanguage || !this.ready;
             },
-            ...mapGetters(["isGuest", "warnings"]),
-            navigationProps: function() {
+            isGuest: mapGetterByName<boolean>(null, "isGuest"),
+            warnings: mapGetterByName<(stepName: string) => StepWarnings>(null, "warnings"),
+            navigationProps(): StepperNavigationProps {
                 return {
                     back: this.back,
                     backDisabled: this.activeStep === 1,
@@ -128,10 +114,10 @@
                     nextDisabled: this.activeContinue(this.activeStep)
                 };
             },
-            activeStepTextKey: function() {
-                return this.steps.find((step: StepDescription) => step.number === this.activeStep).textKey;
+            activeStepTextKey(): string {
+                return this.steps.find((step: StepDescription) => step.number === this.activeStep)!.textKey;
             },
-            activeStepWarnings: function() {
+            activeStepWarnings(): StepWarnings {
                 return this.warnings(this.activeStepTextKey);
             }
         },
@@ -162,7 +148,7 @@
                 }
                 return !this.isComplete(activeStep)
             },
-            clearReviewInputsWarnings: function() {
+            clearReviewInputsWarnings() {
                 this.clearSurveyAndProgramWarnings()
                 this.clearGenericChartWarnings()
             },
@@ -185,7 +171,7 @@
             clearGenericChartWarnings: mapMutationByName("genericChart", GenericChartMutation.ClearWarnings),
             clearSurveyAndProgramWarnings: mapMutationByName("surveyAndProgram", SurveyAndProgramMutation.ClearWarnings)
         },
-        created() {
+        beforeMount() {
             //redirect to Projects if logged in with no currentProject
             if ((!this.isGuest) && (this.currentProject == null) && (!this.projectLoading)) {
                 this.$router.push('/projects');

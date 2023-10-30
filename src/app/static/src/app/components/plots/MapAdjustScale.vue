@@ -75,41 +75,34 @@ import {ScaleType} from "../../store/plottingSelections/plottingSelections";
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import {ScaleSettings, ScaleType} from "../../store/plottingSelections/plottingSelections";
     import i18next from "i18next";
+    import { PropType, defineComponent } from "vue";
 
-    interface Props {
-        name: string,
-        show: boolean,
-        scale: ScaleSettings,
-        step: number,
-        metadata: any
-    }
 
-    interface Computed {
-        disableCustom: boolean,
-        invalidMsg: string | null,
-        scaleText: string,
-        scaleTypeGroup: string
-    }
-
-    interface Data {
-        scaleToAdjust: ScaleSettings
-    }
-
-    interface Methods {
-        update: () => void
-    }
-
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent({
         name: "MapAdjustScale",
         props: {
-            name: String,
-            show: Boolean,
-            scale: Object,
-            step: Number,
-            metadata: Object
+            name: {
+                type: String,
+                required: true
+            },
+            show: {
+                type: Boolean,
+                required: true
+            },
+            scale: {
+                type: Object as PropType<ScaleSettings>,
+                required: true
+            },
+            step: {
+                type: Number,
+                required: true
+            },
+            metadata: {
+                type: Object as PropType<any>,
+                required: false
+            }
         },
         data(): any {
             return {

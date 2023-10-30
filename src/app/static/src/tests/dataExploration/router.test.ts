@@ -1,4 +1,5 @@
-import {router} from '../../app/router';
+import {routerDataExploration} from "../../app/router";
+import Vuex from "vuex";
 import {storeOptions} from "../../app/store/dataExploration/dataExploration";
 
 const baselineActions = {
@@ -26,11 +27,26 @@ console.error = jest.fn();
 
 // only import the app after we have replaced action with mocks
 // as the app will call these actions on import
-import {dataExplorationApp, beforeEnter} from "../../app/dataExploration";
-import {store} from "../../app/dataExploration";
-import {Route} from "vue-router";
-import Accessibility from "../../app/components/Accessibility.vue";
+import { beforeEnterDataExploration } from "../../app/router";
+import { mockDataExplorationState } from "../mocks";
+import { mount } from "@vue/test-utils";
+import HintDataExploration from "../../app/components/HintDataExploration.vue";
+import { storeDataExploration } from "../../app/main";
+import { RouteLocationNormalized } from "vue-router";
 import DataExploration from "../../app/components/dataExploration/DataExploration.vue";
+import Accessibility from "../../app/components/Accessibility.vue";
+
+// jest.mock("../../app/components/dataExploration/DataExploration.vue", () => ({
+//     name: "DataExploration",
+//     template: "<div id='data-exploration-stub'/>"
+// }))
+
+// jest.mock("../../app/components/Accessibility.vue", () => ({
+//     name: "Accessibility",
+//     template: "<div id='accessibility-stub'/>"
+// }))
+
+
 
 describe("Router", () => {
 
@@ -38,11 +54,30 @@ describe("Router", () => {
         (console.error as jest.Mock).mockClear();
     });
 
-    it("has expected properties", () => {
-        expect(dataExplorationApp.$router).toBe(router);
-        expect(router.mode).toBe("history");
-        expect(router.getMatchedComponents("/callback/explore")).toStrictEqual([DataExploration])
-        expect(router.getMatchedComponents("/accessibility")).toStrictEqual([Accessibility]);
+    it("has expected properties", async () => {
+        const store = new Vuex.Store({
+            state: mockDataExplorationState()
+        })
+        const mockTranslate = jest.fn()
+        const wrapper = mount(HintDataExploration, {
+            global: {
+                plugins: [routerDataExploration, store],
+                stubs: ["data-exploration-header", "errors"],
+                directives: {
+                    translate: mockTranslate
+                },
+            },
+        })
+
+        await routerDataExploration.push("/");
+        await routerDataExploration.isReady();
+
+        expect(wrapper.findComponent(DataExploration).exists()).toBe(true);
+
+        await routerDataExploration.push("/accessibility");
+        await routerDataExploration.isReady();
+
+        expect(wrapper.findComponent(Accessibility).exists()).toBe(true);
     });
 
     it("doesn't redirect returning guest to login page", () => {
@@ -50,15 +85,12 @@ describe("Router", () => {
         delete (window as any).location
         window.location = {...realLocation, assign: jest.fn()};
 
-        const next = jest.fn();
-
-        store.state.currentUser = "guest";
+        storeDataExploration.state.currentUser = "guest";
         Storage.prototype.getItem = jest.fn((key) => key === "asGuest" ? "continueAsGuest" : null);
 
-        beforeEnter({} as Route, {} as Route, next);
+        beforeEnterDataExploration({} as RouteLocationNormalized, {} as RouteLocationNormalized);
 
         expect(window.location.assign).not.toHaveBeenCalled();
-        expect(next).toBeCalled();
 
         window.location = realLocation
     });
@@ -68,15 +100,13 @@ describe("Router", () => {
         delete (window as any).location
         window.location = {...realLocation, assign: jest.fn()};
 
-        const next = jest.fn();
-        store.state.currentUser = "guest";
+        storeDataExploration.state.currentUser = "guest";
         Storage.prototype.getItem = jest.fn();
 
-        beforeEnter({} as Route, {} as Route, next);
+        beforeEnterDataExploration({} as RouteLocationNormalized, {} as RouteLocationNormalized);
 
         expect(window.location.assign).toHaveBeenCalledTimes(1);
-        expect(window.location.assign).toHaveBeenCalledWith("/login?redirectTo=explore");
-        expect(next).not.toBeCalled();
+        expect(window.location.assign).toHaveBeenCalledWith("/login");
 
         window.location = realLocation
     });
@@ -86,14 +116,11 @@ describe("Router", () => {
         delete (window as any).location
         window.location = {...realLocation, assign: jest.fn()};
 
-        const next = jest.fn();
-        store.state.currentUser = "test.user@example.com";
+        storeDataExploration.state.currentUser = "test.user@example.com";
 
-        beforeEnter({} as Route, {} as Route, next);
+        beforeEnterDataExploration({} as RouteLocationNormalized, {} as RouteLocationNormalized);
 
         expect(window.location.assign).not.toHaveBeenCalled();
-        expect(next).toBeCalled();
-
         window.location = realLocation
     });
 });

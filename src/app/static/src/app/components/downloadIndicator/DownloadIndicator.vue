@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="indicator-download">
         <download-button
             :name="'downloadIndicator'"
             :disabled="downloadingIndicator"
@@ -8,12 +8,12 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import DownloadButton from "./DownloadButton.vue";
     import {DownloadIndicatorPayload} from "../../types";
     import {appendCurrentDateTime, mapActionByName, mapStateProps} from "../../utils";
     import {BaselineState} from "../../store/baseline/baseline";
     import {DownloadIndicatorState} from "../../store/downloadIndicator/downloadIndicator";
+    import { defineComponent } from "vue";
 
     const namespace = "downloadIndicator";
 
@@ -23,7 +23,7 @@
     }
 
     interface Props {
-        filteredData: unknown[] | null
+        filteredData?: unknown[] | null
         unfilteredData: unknown[]
     }
 
@@ -33,22 +33,28 @@
         downloadingIndicator: boolean
     }
 
-    export default Vue.extend<unknown, Methods, Computed, Props>({
+    export default defineComponent({
         name: "downloadIndicator",
         components: {
             DownloadButton
         },
         props: {
-            unfilteredData: Array,
-            filteredData: Array
+            unfilteredData: {
+                type: Array,
+                required: true
+            },
+            filteredData: {
+                type: Array,
+                required: false
+            }
         },
         computed: {
-            ...mapStateProps<BaselineState, keyof Computed>("baseline", {
-                iso3: state => state.iso3,
-                country: state => state.country
+            ...mapStateProps("baseline", {
+                iso3: (state: BaselineState) => state.iso3,
+                country: (state: BaselineState) => state.country
             }),
-            ...mapStateProps<DownloadIndicatorState, keyof Computed>(namespace, {
-                downloadingIndicator: state => state.downloadingIndicator
+            ...mapStateProps(namespace, {
+                downloadingIndicator: (state: DownloadIndicatorState) => state.downloadingIndicator
             })
         },
         methods: {

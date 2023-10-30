@@ -20,6 +20,10 @@ export enum DownloadResultsMutation {
     ComparisonOutputStatusUpdated = "ComparisonOutputStatusUpdated",
     ComparisonDownloadError = "ComparisonDownloadError",
     ComparisonError = "ComparisonError",
+    PreparingAgywTool = "PreparingAgywTool",
+    AgywError = "AgywError",
+    AgywStatusUpdated = "AgywStatusUpdated",
+    AgywDownloadError = "AgywDownloadError",
     SetFetchingDownloadId = "SetFetchingDownloadId",
     PollingStatusStarted = "PollingStatusStarted",
     ResetIds = "ResetIds",
@@ -168,6 +172,10 @@ export const mutations: MutationTree<DownloadResultsState> = {
                 state.comparison = {...state.comparison, fetchingDownloadId: true}
                 break
             }
+            case DOWNLOAD_TYPE.AGYW: {
+                state.agyw = {...state.agyw, fetchingDownloadId: true}
+                break
+            }
         }
     },
 
@@ -197,15 +205,47 @@ export const mutations: MutationTree<DownloadResultsState> = {
                 state.comparison.statusPollId = action.payload.pollId
                 break
             }
+            case DOWNLOAD_TYPE.AGYW: {
+                state.agyw.statusPollId = action.payload.pollId
+                break;
+            }
         }
     },
 
     [DownloadResultsMutation.ResetIds](state: DownloadResultsState) {
-        const files = [state.spectrum, state.summary, state.coarseOutput, state.comparison];
+        const files = [state.spectrum, state.summary, state.coarseOutput,
+            state.comparison, state.agyw];
         files.forEach((file) => {
             file.downloadId = "";
             window.clearInterval(file.statusPollId);
             file.statusPollId = -1
         })
-    }
+    },
+
+    [DownloadResultsMutation.PreparingAgywTool](state: DownloadResultsState, action: PayloadWithType<DownloadSubmitResponse>) {
+        const downloadId = action.payload.id
+        state.agyw = {...state.agyw, downloadId, preparing: true, complete: false, error: null, fetchingDownloadId: false}
+    },
+
+    [DownloadResultsMutation.AgywError](state: DownloadResultsState, action: PayloadWithType<Error>) {
+        state.agyw.error = action.payload
+        state.agyw.preparing = false;
+        state.agyw.fetchingDownloadId = false;
+        window.clearInterval(state.agyw.statusPollId);
+        state.agyw.statusPollId = -1;
+    },
+
+    [DownloadResultsMutation.AgywStatusUpdated](state: DownloadResultsState, action: PayloadWithType<DownloadStatusResponse>) {
+        if (action.payload.done) {
+            state.agyw.complete = true;
+            state.agyw.preparing = false;
+            window.clearInterval(state.agyw.statusPollId);
+            state.agyw.statusPollId = -1;
+        }
+        state.agyw.error = null;
+    },
+
+    [DownloadResultsMutation.AgywDownloadError](state: DownloadResultsState, action: PayloadWithType<Error | null>) {
+        state.agyw.downloadError = action.payload;
+    },
 };

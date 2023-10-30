@@ -1,7 +1,7 @@
 import {actions, getCalibrateStatus} from "../../app/store/modelCalibrate/actions";
-import {isDynamicFormMeta} from "@reside-ic/vue-dynamic-form";
 import {rootState} from "./integrationTest";
 import {Language} from "../../app/store/translations/locales";
+import { isDynamicFormMeta } from "@reside-ic/vue-next-dynamic-form";
 
 describe("model calibrate actions integration", () => {
 
@@ -56,6 +56,7 @@ describe("model calibrate actions integration", () => {
 
     it("can get calibrate result", async () => {
         const commit = jest.fn();
+        const dispatch = jest.fn();
         const state = {
             calibrateId: "123",
             status: {
@@ -63,12 +64,14 @@ describe("model calibrate actions integration", () => {
                 success: true
             }
         } as any;
-        await actions.getResult({commit, state, rootState} as any);
+        await actions.getResult({commit, dispatch, state, rootState} as any);
 
-        expect(commit.mock.calls.length).toBe(2);
+        expect(commit.mock.calls.length).toBe(3);
         expect(commit.mock.calls[0][0]["type"]).toBe("SetError");
         expect(commit.mock.calls[0][0]["payload"].detail).toBe("Failed to fetch result");
-        expect(commit.mock.calls[1][0]).toBe("Ready");
+        expect(commit.mock.calls[1][0]["type"]).toBe("SetError");
+        expect(commit.mock.calls[1][0]["payload"].detail).toBe("Failed to fetch result");
+        expect(commit.mock.calls[2][0]).toBe("Ready");
     });
 
     it("can get calibrate plot", async () => {

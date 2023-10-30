@@ -43,7 +43,7 @@ describe(`download results actions integration`, () => {
         expect(commit.mock.calls[1][0]["payload"].detail).toBe("Failed to fetch result");
     })
 
-    it(`can poll summary report for status update`, async (done) => {
+    it(`can poll summary report for status update`, (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const root = {
@@ -53,7 +53,7 @@ describe(`download results actions integration`, () => {
 
         const state = {summary: {downloadId: 123}}
 
-        await actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.SUMMARY);
+        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.SUMMARY);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2);
@@ -127,7 +127,7 @@ describe(`download results actions integration`, () => {
         expect(commit.mock.calls[1][0]["payload"].detail).toBe("Failed to fetch result");
     })
 
-    it(`can poll spectrum output for status update`, async (done) => {
+    it(`can poll spectrum output for status update`, (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const root = {
@@ -137,7 +137,7 @@ describe(`download results actions integration`, () => {
 
         const state = {spectrum: {downloadId: 123}}
 
-        await actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.SPECTRUM);
+        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.SPECTRUM);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2);
@@ -169,7 +169,7 @@ describe(`download results actions integration`, () => {
         expect(commit.mock.calls[1][0]["payload"].detail).toBe("Failed to fetch result");
     })
 
-    it(`can poll coarseOutput for status update`, async (done) => {
+    it(`can poll coarseOutput for status update`, (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const root = {
@@ -179,7 +179,7 @@ describe(`download results actions integration`, () => {
 
         const state = {coarseOutput: {downloadId: 123}}
 
-        await actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COARSE);
+        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COARSE);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2);
@@ -211,7 +211,7 @@ describe(`download results actions integration`, () => {
         expect(commit.mock.calls[1][0]["payload"].detail).toBe("Failed to fetch result");
     })
 
-    it(`can poll comparison output for status update`, async (done) => {
+    it(`can poll comparison output for status update`, (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const root = {
@@ -221,7 +221,7 @@ describe(`download results actions integration`, () => {
 
         const state = {comparison: {downloadId: 123}}
 
-        await actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON);
+        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2);
@@ -236,7 +236,7 @@ describe(`download results actions integration`, () => {
         }, 3100)
     })
 
-    it(`does not poll comparison output for status update when downloadId is empty`, async (done) => {
+    it(`does not poll comparison output for status update when downloadId is empty`, (done) => {
         const commit = jest.fn();
         const dispatch = jest.fn();
         const root = {
@@ -246,7 +246,7 @@ describe(`download results actions integration`, () => {
 
         const state = {comparison: {downloadId: ""}}
 
-        await actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON);
+        actions.poll({commit, dispatch, state, rootState: root} as any, DOWNLOAD_TYPE.COMPARISON);
 
         setTimeout(() => {
             expect(commit.mock.calls.length).toBe(2);

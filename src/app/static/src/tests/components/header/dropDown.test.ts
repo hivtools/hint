@@ -1,8 +1,9 @@
-import {shallowMount} from "@vue/test-utils";
+import {flushPromises, shallowMount} from "@vue/test-utils";
 import DropDown from "../../../app/components/header/DropDown.vue";
 import Vuex from "vuex";
 import {emptyState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
+import { shallowMountWithTranslate } from "../../testHelpers";
 
 describe("Drop down", () => {
     const store = new Vuex.Store({
@@ -10,33 +11,88 @@ describe("Drop down", () => {
     });
     registerTranslations(store);
 
-    it("toggles dropdown on click", () => {
-        const wrapper = shallowMount(DropDown, {store, propsData: {text: "text"}});
+    it("toggles dropdown on click", async () => {
+        const wrapper = shallowMountWithTranslate(DropDown, store, {
+            global: {
+                plugins: [store]
+            }, props: {text: "text"}
+        });
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
-        wrapper.find(".dropdown-toggle").trigger("click");
+        await wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
-    });
-
-    it("closes dropdown on blur", () => {
-        const wrapper = shallowMount(DropDown, {store, propsData: {text: "text", delay: false}});
-        wrapper.find(".dropdown-toggle").trigger("click");
-        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
-        wrapper.find(".dropdown-toggle").trigger("blur");
+        await wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
     });
 
-    it("closes dropdown on blur after delay when 'delay' prop is true", (done) => {
-        const wrapper = shallowMount(DropDown, {store, propsData: {text: "text", delay: true}});
-        wrapper.find(".dropdown-toggle").trigger("click");
+    it("closes dropdown on blur", async () => {
+        const wrapper = shallowMountWithTranslate(DropDown, store, {
+            global: {
+                plugins: [store]
+            }, props: {text: "text", delay: false}
+        });
+        await wrapper.find(".dropdown-toggle").trigger("click");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
-        wrapper.find(".dropdown-toggle").trigger("blur");
+        await wrapper.find(".dropdown-toggle").trigger("blur");
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
+    });
+
+    it("closes dropdown on blur after delay when 'delay' prop is true", async () => {
+        const wrapper = shallowMountWithTranslate(DropDown, store, {
+            global: {
+                plugins: [store]
+            }, props: {text: "text", delay: true}
+        });
+        await wrapper.find(".dropdown-toggle").trigger("click");
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+        await wrapper.find(".dropdown-toggle").trigger("blur");
         expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
 
-        setTimeout(() => {
-            expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
-            done();
-        }, 1100);
+        await new Promise((r) => setTimeout(r, 110));
+
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
+    });
+
+    it("closes dropdown on mouseleave from menu with delay", async () => {
+        const wrapper = shallowMountWithTranslate(DropDown, store, {
+            global: {
+                plugins: [store]
+            }, props: {text: "text", delay: true}
+        });
+        await wrapper.find(".dropdown-toggle").trigger("click");
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+        await wrapper.find(".dropdown-menu").trigger("mouseleave");
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+
+        await new Promise((r) => setTimeout(r, 110));
+
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
+    });
+
+    it("menu stays open when mouse is over the menu", async () => {
+        const wrapper = shallowMountWithTranslate(DropDown, store, {
+            global: {
+                plugins: [store]
+            }, props: {text: "text", delay: true}
+        });
+        await wrapper.find(".dropdown-toggle").trigger("click");
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+        await wrapper.find(".dropdown-menu").trigger("mouseenter");
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+
+        await new Promise((r) => setTimeout(r, 110));
+
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+    });
+
+    it("menu closes when you click on menu item", async () => {
+        const wrapper = shallowMountWithTranslate(DropDown, store, {
+            global: {
+                plugins: [store]
+            }, props: {text: "text", delay: true}
+        });
+        await wrapper.find(".dropdown-toggle").trigger("click");
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu", "show"]);
+        await wrapper.find(".dropdown-menu").trigger("click");
+        expect(wrapper.find(".dropdown-menu").classes()).toStrictEqual(["dropdown-menu"]);
     });
 });

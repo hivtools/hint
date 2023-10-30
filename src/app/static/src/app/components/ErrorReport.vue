@@ -92,56 +92,28 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue"
-    import {mapActionByName, mapGetterByName, mapStateProp, validateEmail, emailRegex} from "../utils";
+    import {mapGetterByName, mapStateProp, validateEmail, emailRegex} from "../utils";
     import Modal from "./Modal.vue";
-    import {ErrorReportManualDetails} from "../types";
     import ErrorAlert from "./ErrorAlert.vue";
-    import {VTooltip} from 'v-tooltip';
     import i18next from "i18next";
     import {Language} from "../store/translations/locales";
     import {Error} from "../generated";
     import { ErrorsState } from "../store/errors/errors";
     import LoadingSpinner from "./LoadingSpinner.vue";
     import {DataExplorationState} from "../store/dataExploration/dataExploration";
+    import { defineComponent } from "vue";
 
-
-    interface Methods {
-        sendErrorReport: () => void
-        cancelErrorReport: () => void
-        resetData: () => void
-        close: () => void
-        checkValidEmail: () => void
-    }
-
-    interface Computed {
-        currentLanguage: Language,
-        isGuest: boolean
-        disabled: boolean,
-        tooltipText: string,
-        errorReportError: Error | null
-        sendingErrorReport: boolean
-        pattern: RegExp
-    }
-
-    interface Props {
-        open: boolean
-    }
-
-    interface Data extends ErrorReportManualDetails {
-        showFeedback: boolean
-        validEmail: boolean
-    }
-
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default defineComponent({
         components: {
             ErrorAlert,
             Modal,
             LoadingSpinner
         },
-        directives: {tooltip: VTooltip},
         props: {
-            open: Boolean
+            open: {
+                type: Boolean,
+                required: true
+            }
         },
         name: "ErrorReport",
         data: function () {

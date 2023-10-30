@@ -5,13 +5,13 @@
             <h2 id="loading-message" v-translate="'loadingOptions'"></h2>
         </div>
         <dynamic-form v-if="!loading && !hasOptionsError"
-                      v-model="modelOptions"
+                      v-model:formMeta="modelOptions"
                       :submit-text="validateText"
                       @confirm="confirmEditing"
                       @submit="handleValidation"
                       :required-text="requiredText"
                       :select-text="selectText"></dynamic-form>
-        <error-alert v-if="hasOptionsError" :error="optionsError"></error-alert>
+        <error-alert v-if="hasOptionsError" :error="optionsError || {detail: ' ', error: ' '}"></error-alert>
         <div v-if="validating" id="validating" class="mt-3">
             <loading-spinner size="xs"></loading-spinner>
             <span v-translate="'validating'"></span>
@@ -20,7 +20,7 @@
             <span v-translate="'optionsValid'"></span>
             <tick color="#e31837" width="20px"></tick>
         </h4>
-        <error-alert v-if="hasValidateError" :error="validateError"></error-alert>
+        <error-alert v-if="hasValidateError" :error="validateError || {detail: ' ', error: ' '}"></error-alert>
         <reset-confirmation :continue-editing="continueEditing"
                             :cancel-editing="cancelEditing"
                             :open="showConfirmation"></reset-confirmation>
@@ -28,10 +28,9 @@
 
 </template>
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponent } from "vue";
     import i18next from "i18next";
-    import {DynamicFormData, DynamicFormMeta, DynamicForm} from "@reside-ic/vue-dynamic-form";
-
+    import {DynamicFormData, DynamicFormMeta, DynamicForm} from "@reside-ic/vue-next-dynamic-form";
     import LoadingSpinner from "../LoadingSpinner.vue";
     import Tick from "../Tick.vue";
 
@@ -39,41 +38,13 @@
     import {ModelOptionsMutation} from "../../store/modelOptions/mutations";
     import {ModelOptionsState} from "../../store/modelOptions/modelOptions";
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
-    import {StepDescription} from "../../store/stepper/stepper";
     import {RootState} from "../../root";
     import {Language} from "../../store/translations/locales";
     import ErrorAlert from "../ErrorAlert.vue";
 
-    interface Methods {
-        fetchOptions: () => void
-        validate: (data: DynamicFormData) => void
-        handleValidation: (data: DynamicFormData) => void
-        unValidate: () => void
-        update: (data: DynamicFormMeta) => void
-        cancelEditing: () => void
-        continueEditing: () => void
-        confirmEditing: (e: Event) => void
-    }
-
-    interface Computed {
-        modelOptions: DynamicFormMeta
-        loading: boolean
-        valid: boolean
-        errorMessage: string
-        editsRequireConfirmation: boolean
-        currentLanguage: Language
-        selectText: string
-        requiredText: string
-        validateText: string
-    }
-
-    interface Data {
-        showConfirmation: boolean
-    }
-
     const namespace = "modelOptions";
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default defineComponent({
         data() {
             return {
                 showConfirmation: false
@@ -81,24 +52,24 @@
         },
         name: "ModelOptions",
         computed: {
-            ...mapStateProps<ModelOptionsState, keyof Computed>(namespace, {
-                loading: state => state.fetching,
-                valid: state => state.valid,
-                validating: state => state.validating,
-                validateError: state => state.validateError,
-                hasValidateError: state => !!state.validateError,
-                hasOptionsError: state => !!state.optionsError,
-                optionsError: state => state.optionsError
+            ...mapStateProps(namespace, {
+                loading: (state: ModelOptionsState) => state.fetching,
+                valid: (state: ModelOptionsState) => state.valid,
+                validating: (state: ModelOptionsState) => state.validating,
+                validateError: (state: ModelOptionsState) => state.validateError,
+                hasValidateError: (state: ModelOptionsState) => !!state.validateError,
+                hasOptionsError: (state: ModelOptionsState) => !!state.optionsError,
+                optionsError: (state: ModelOptionsState) => state.optionsError
             }),
             currentLanguage: mapStateProp<RootState, Language>(null,
                 (state: RootState) => state.language),
-            selectText() {
+            selectText(): string {
                 return i18next.t("select", {lng: this.currentLanguage})
             },
-            requiredText() {
+            requiredText(): string {
                 return i18next.t("required", {lng: this.currentLanguage})
             },
-            validateText() {
+            validateText(): string {
                 return i18next.t("validate", {lng: this.currentLanguage})
             },
             editsRequireConfirmation: mapGetterByName("stepper", "editsRequireConfirmation"),
@@ -106,8 +77,8 @@
                 get() {
                     return this.$store.state.modelOptions.optionsFormMeta
                 },
-                set(value: DynamicFormMeta) {
-                    this.update(value);
+                set(newVal: DynamicFormMeta) {
+                    this.update(newVal)
                 }
             }
         },
@@ -129,7 +100,7 @@
             unValidate: mapMutationByName(namespace, ModelOptionsMutation.UnValidate),
             fetchOptions: mapActionByName(namespace, "fetchModelRunOptions"),
             validate: mapActionByName(namespace, "validateModelOptions"),
-            handleValidation(options) {
+            handleValidation(options: DynamicFormData) {
                 if (options) {
                     this.validate(options)
                 }

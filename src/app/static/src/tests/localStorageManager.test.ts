@@ -47,6 +47,7 @@ describe("LocalStorageManager", () => {
         error: null,
         fetching: false,
         generatingCalibrationPlot: false,
+        metadata: null,
         comparisonPlotResult: null,
         options: {},
         optionsFormMeta: {

@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex">
-        <div v-if="selectedDataset" style="margin-top: 8px">
-            <span class="font-weight-bold"
+        <div v-if="selectedDataset" class="mt-2">
+            <span class="font-weight-bold mr-1"
                   v-translate="'selectedDataset'"
                   id="selectedDatasetSpan">
             </span>
@@ -12,11 +12,12 @@
                 {{ selectedDataset.title }}
             </a>
             <span class="color-red">
-                <info-icon size="20"
+                <vue-feather type="info"
+                           size="20"
                            v-if="outOfDateMessage"
                            v-tooltip="outOfDateMessage"
-                           style="vertical-align: text-bottom">
-                </info-icon>
+                           class="align-text-bottom">
+                </vue-feather>
             </span>
         </div>
         <button v-if="outOfDateMessage"
@@ -33,19 +34,19 @@
             <h4 v-if="!loading" v-translate="'browseADR'"></h4>
             <p v-if="loading" v-translate="'importingFiles'"></p>
             <div v-if="!loading">
-                <label for="datasetSelector" class="font-weight-bold" v-translate="'datasets'"></label>
-                <tree-select id="datasetSelector"
+                <label class="font-weight-bold" v-translate="'datasets'"></label>
+                <hint-tree-select id="datasetSelector"
                              :multiple="false"
                              :searchable="true"
                              :options="datasetOptions"
                              :placeholder="select"
                              :disabled="fetchingDatasets"
                              v-model="newDatasetId">
-                    <label slot="option-label"
-                           slot-scope="{ node }"
-                           v-html="node.raw.customLabel">
-                    </label>
-                </tree-select>
+                    <template v-slot:option-label="{node}">
+                        <label v-html="node.raw.customLabel">
+                        </label>
+                    </template>
+                </hint-tree-select>
                 <select-release :dataset-id="newDatasetId" :open="open"
                                 @selected-dataset-release="updateDatasetRelease"
                                 @valid="updateValid">
@@ -94,7 +95,7 @@
 <script lang="ts">
     import i18next from "i18next";
     import {Language} from "../../store/translations/locales";
-    import TreeSelect from "@riophae/vue-treeselect";
+    import HintTreeSelect from "../HintTreeSelect.vue";
     import {
         mapActionByName,
         mapGetterByName,
@@ -108,65 +109,16 @@
     import {BaselineState} from "../../store/baseline/baseline";
     import {
         Dataset,
-        DatasetResource,
         DatasetResourceSet,
         Release, Step
     } from "../../types";
-    import {InfoIcon} from "vue-feather-icons";
-    import {VTooltip} from "v-tooltip";
+    import VueFeather from "vue-feather";
     import {ADRState} from "../../store/adr/adr";
     import {Error} from "../../generated";
     import ResetConfirmation from "../resetConfirmation/ResetConfirmation.vue";
     import SelectRelease from "./SelectRelease.vue";
-    import {GetDatasetPayload} from "../../store/adr/actions";
     import ResetConfirmationMixin from "../resetConfirmation/ResetConfirmationMixin";
-
-    interface Methods {
-        getDatasets: () => void;
-        getDataset: (payload: GetDatasetPayload) => void;
-        importDataset: () => void;
-        toggleModal: () => void;
-        importPJNZ: (url: string) => Promise<void>;
-        importShape: (url: string) => Promise<void>;
-        importPopulation: (url: string) => Promise<void>;
-        importSurvey: (url: string) => Promise<void>;
-        importProgram: (url: string) => Promise<void>;
-        importANC: (url: string) => Promise<void>;
-        deleteBaselineFiles: () => Promise<void>;
-        refresh: () => void;
-        refreshDatasetMetadata: () => void;
-        markResourcesUpdated: () => void;
-        startPolling: () => void;
-        stopPolling: () => void;
-        confirmImport: () => void;
-        continueEditing: () => void;
-        cancelEditing: () => void;
-        updateDatasetRelease: (release: Release) => void;
-        updateValid: (valid: boolean) => void;
-        preSelectDataset: () => void;
-    }
-
-    interface Computed {
-        datasets: any[];
-        selectedRelease: Release | null;
-        releaseName: string | null;
-        releaseURL: string;
-        fetchingDatasets: boolean;
-        adrError: Error | null;
-        datasetOptions: any[];
-        selectedDataset: Dataset | null;
-        selectText: string;
-        outOfDateMessage: string;
-        outOfDateResources: { [k in keyof DatasetResourceSet]?: true };
-        hasShapeFile: boolean;
-        currentLanguage: Language;
-        select: string;
-        disableImport: boolean;
-        hasPjnzFile: boolean;
-        hasPopulationFile: boolean;
-        selectedDatasetAvailableResources: { [k in keyof DatasetResourceSet]?: DatasetResource | null }
-        selectedDatasetIsRefreshed: boolean
-    }
+    import { defineComponent } from "vue";
 
     interface Data {
         open: boolean;
@@ -190,8 +142,9 @@
 
     const namespace = "adr";
 
-    export default ResetConfirmationMixin.extend<Data, Methods, Computed, unknown>({
-        data() {
+    export default defineComponent({
+        extends: ResetConfirmationMixin,
+        data(): Data {
             return {
                 open: false,
                 showConfirmation: false,
@@ -205,13 +158,12 @@
         },
         components: {
             Modal,
-            TreeSelect,
+            HintTreeSelect,
             LoadingSpinner,
-            InfoIcon,
+            VueFeather,
             ResetConfirmation,
             SelectRelease
         },
-        directives: {tooltip: VTooltip},
         computed: {
             hasShapeFile: mapStateProp<BaselineState, boolean>(
                 "baseline",
@@ -257,7 +209,7 @@
                 return new URL(this.selectedDataset!.url).origin + '/dataset/' + this.selectedDataset!.id + '?activity_id=' + this.selectedRelease!.activity_id;
             },
             datasetOptions() {
-                return this.datasets.map((d) => ({
+                return this.datasets.map((d: any) => ({
                     id: d.id,
                     label: d.title,
                     customLabel: `${d.title}
@@ -425,7 +377,7 @@
             },
             preSelectDataset() {
                 const selectedDatasetId = this.selectedDataset?.id
-                if (selectedDatasetId && this.datasets.some(dataset => dataset.id === selectedDatasetId)) {
+                if (selectedDatasetId && this.datasets.some((dataset: any) => dataset.id === selectedDatasetId)) {
                     this.newDatasetId = selectedDatasetId;
                 }
             },
@@ -458,10 +410,10 @@
                     window.clearInterval(this.pollingId);
                 }
             },
-            updateDatasetRelease(release) {
+            updateDatasetRelease(release: Release) {
                 this.newDatasetRelease = release;
             },
-            updateValid(valid) {
+            updateValid(valid: boolean) {
                 this.valid = valid;
             }
         },
@@ -476,7 +428,7 @@
             this.refreshDatasetMetadata();
             this.startPolling();
         },
-        beforeDestroy() {
+        beforeUnmount() {
             this.stopPolling();
         },
     });

@@ -64,7 +64,7 @@ export interface Filter {
 }
 
 export interface DisplayFilter extends Filter {
-    allowMultiple: boolean
+    allowMultiple?: boolean
 }
 
 export interface NumericRange {
@@ -184,14 +184,16 @@ export interface PollingStarted {
 export interface SelectedADRUploadFiles {
     summary: any,
     spectrum: any,
-    coarseOutput?: any
+    coarseOutput?: any,
+    agyw?: any,
 }
 
 export enum DOWNLOAD_TYPE {
     SPECTRUM = "Spectrum",
     COARSE = "CoarseOutput",
     SUMMARY = "Summary",
-    COMPARISON = "Comparison"
+    COMPARISON = "Comparison",
+    AGYW = "AGYW",
 }
 
 export interface GenericChartTableConfig {

@@ -79,11 +79,18 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
         return apiClient.getCalibrateStatus(id)
     }
 
-    @GetMapping("/calibrate/result/{id}")
+    @GetMapping("/calibrate/result/metadata/{id}")
     @ResponseBody
-    fun calibrateResult(@PathVariable("id") id: String): ResponseEntity<String>
+    fun calibrateResultMetadata(@PathVariable("id") id: String): ResponseEntity<String>
     {
-        return apiClient.getCalibrateResult(id)
+        return apiClient.getCalibrateResultMetadata(id)
+    }
+
+    @GetMapping("/calibrate/result/data/{id}")
+    @ResponseBody
+    fun calibrateResultData(@PathVariable("id") id: String): ResponseEntity<String>
+    {
+        return apiClient.getCalibrateResultData(id)
     }
 
     @GetMapping("/calibrate/plot/{id}")

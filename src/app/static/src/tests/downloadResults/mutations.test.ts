@@ -47,6 +47,7 @@ describe(`download results mutations`, () => {
         expect(state.spectrum.error).toBe(null);
         expect(state.coarseOutput.error).toBe(null);
         expect(state.comparison.error).toEqual(null);
+        expect(state.agyw.error).toEqual(null);
         expect(state.summary.statusPollId).toBe(-1);
         expect(clearInterval.mock.calls[0][0]).toBe(1);
     });
@@ -123,6 +124,7 @@ describe(`download results mutations`, () => {
         expect(state.coarseOutput.error).toBe(null);
         expect(state.summary.error).toBe(null);
         expect(state.comparison.error).toEqual(null);
+        expect(state.agyw.error).toEqual(null);
         expect(clearInterval.mock.calls[0][0]).toBe(123);
     });
 
@@ -200,6 +202,7 @@ describe(`download results mutations`, () => {
         expect(state.spectrum.error).toBe(null);
         expect(state.summary.error).toBe(null);
         expect(state.comparison.error).toEqual(null);
+        expect(state.agyw.error).toEqual(null);
         expect(clearInterval.mock.calls[0][0]).toBe(123);
     });
 
@@ -330,6 +333,77 @@ describe(`download results mutations`, () => {
         expect(clearInterval.mock.calls[0][0]).toBe(123);
     });
 
+    it("sets AGYW download started on PreparingAgywTool", () => {
+        const state = mockDownloadResultsState();
+        mutations[DownloadResultsMutation.PreparingAgywTool](state, {payload: downloadStartedPayload});
+        expect(state.agyw.preparing).toBe(true);
+        expect(state.agyw.downloadId).toBe("P123");
+        expect(state.agyw.complete).toBe(false);
+        expect(state.agyw.error).toBe(null);
+    });
+
+    it("sets AGYW download error on AgywError", () => {
+        jest.useFakeTimers();
+        const clearInterval = jest.spyOn(window, "clearInterval");
+        const state = mockDownloadResultsState({
+            agyw: mockDownloadResultsDependency({statusPollId: 123})
+        });
+        mutations[DownloadResultsMutation.AgywError](state, {payload: error});
+        expect(state.agyw.preparing).toBe(false);
+        expect(state.agyw.error).toEqual(errorMsg);
+        expect(state.coarseOutput.error).toBe(null);
+        expect(state.summary.error).toBe(null);
+        expect(state.spectrum.error).toBe(null);
+        expect(state.comparison.error).toEqual(null);
+        expect(clearInterval.mock.calls[0][0]).toBe(123);
+    });
+
+    it("sets AGYW download error", () => {
+        const state = mockDownloadResultsState();
+        mutations[DownloadResultsMutation.AgywDownloadError](state, {payload: error});
+        expect(state.agyw.downloadError).toEqual(errorMsg);
+    });
+
+    it("sets poll started for AGYW download on PollingStatusStarted", () => {
+        const state = mockDownloadResultsState();
+        const payload = {pollId: 123, downloadType: DOWNLOAD_TYPE.AGYW}
+        mutations[DownloadResultsMutation.PollingStatusStarted](state, {payload: payload});
+        expect(state.agyw.statusPollId).toBeGreaterThan(-1);
+    });
+
+    it("sets fetchingDownloadId for AGYW download on SetFetchingDownloadId", () => {
+        const state = mockDownloadResultsState();
+        const payload = DOWNLOAD_TYPE.AGYW
+        mutations[DownloadResultsMutation.SetFetchingDownloadId](state, {payload: payload});
+        expect(state.agyw.fetchingDownloadId).toBe(true);
+    });
+
+    it("set AGYW status to complete, clears interval on AgywStatusUpdated", () => {
+        jest.useFakeTimers();
+        const clearInterval = jest.spyOn(window, "clearInterval");
+        const state = mockDownloadResultsState({
+            agyw: {
+                preparing: true,
+                complete: false,
+                error: mockError(),
+                statusPollId: 123,
+                downloadId: "111",
+                downloadError: mockError("test"),
+                fetchingDownloadId: false,
+                metadataError: null
+            }
+        });
+        mutations[DownloadResultsMutation.AgywStatusUpdated](state, {payload: CompleteStatusResponse});
+        expect(state.agyw.complete).toBe(true);
+        expect(state.agyw.preparing).toBe(false);
+        expect(state.agyw.error).toBe(null);
+        expect(state.agyw.error).toBe(null);
+        expect(state.agyw.metadataError).toBe(null);
+        expect(state.agyw.statusPollId).toBe(-1);
+        expect(state.agyw.downloadId).toBe("111");
+        expect(clearInterval.mock.calls[0][0]).toBe(123);
+    });
+
     it("resets download ids", () => {
         jest.useFakeTimers();
         const clearInterval = jest.spyOn(window, "clearInterval");
@@ -337,20 +411,28 @@ describe(`download results mutations`, () => {
         const state = mockDownloadResultsState({
             spectrum: mockDownloadResultsDependency({downloadId: "1", statusPollId: 1}),
             summary: mockDownloadResultsDependency({downloadId: "2", statusPollId: 2}),
-            coarseOutput: mockDownloadResultsDependency({downloadId: "3", statusPollId: 3})
+            coarseOutput: mockDownloadResultsDependency({downloadId: "3", statusPollId: 3}),
+            comparison: mockDownloadResultsDependency({downloadId: "4", statusPollId: 4}),
+            agyw: mockDownloadResultsDependency({downloadId: "5", statusPollId: 5}),
         })
         mutations[DownloadResultsMutation.ResetIds](state);
         expect(state.spectrum.downloadId).toBe("");
         expect(state.summary.downloadId).toBe("");
         expect(state.coarseOutput.downloadId).toBe("");
+        expect(state.comparison.downloadId).toBe("");
+        expect(state.agyw.downloadId).toBe("");
 
         expect(state.spectrum.statusPollId).toBe(-1);
         expect(state.summary.statusPollId).toBe(-1);
         expect(state.coarseOutput.statusPollId).toBe(-1);
+        expect(state.comparison.statusPollId).toBe(-1);
+        expect(state.agyw.statusPollId).toBe(-1);
 
         expect(clearInterval.mock.calls[0][0]).toBe(1);
         expect(clearInterval.mock.calls[1][0]).toBe(2);
         expect(clearInterval.mock.calls[2][0]).toBe(3);
+        expect(clearInterval.mock.calls[3][0]).toBe(4);
+        expect(clearInterval.mock.calls[4][0]).toBe(5);
     })
 
 });

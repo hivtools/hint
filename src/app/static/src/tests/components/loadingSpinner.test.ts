@@ -11,7 +11,7 @@ describe("Loading spinner", () => {
 
     it("is 40px when xs", () => {
         const wrapper = shallowMount(LoadingSpinner, {
-            propsData: {
+            props: {
                 size: "xs"
             }
         });
@@ -21,7 +21,7 @@ describe("Loading spinner", () => {
 
     it("is 100px when sm", () => {
         const wrapper = shallowMount(LoadingSpinner, {
-            propsData: {
+            props: {
                 size: "sm"
             }
         });
@@ -31,7 +31,7 @@ describe("Loading spinner", () => {
 
     it("gets size as class", () => {
         const wrapper = shallowMount(LoadingSpinner, {
-            propsData: {
+            props: {
                 size: "xs"
             }
         });

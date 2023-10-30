@@ -12,8 +12,12 @@ import {localStorageManager} from "../../localStorageManager";
 import {router} from "../../router";
 import {currentHintVersion} from "../../hintVersion";
 import {initialStepperState} from "../stepper/stepper";
-import {ModelStatusResponse, ProjectRehydrateResultResponse} from "../../generated";
-import {DynamicFormData} from "@reside-ic/vue-dynamic-form";
+import {
+    ModelStatusResponse,
+    ProjectRehydrateResultResponse,
+    ProjectState
+} from "../../generated";
+import {DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
 import {ModelCalibrateState} from "../modelCalibrate/modelCalibrate";
 
 export type LoadActionTypes = "SettingFiles" | "UpdatingState" | "LoadSucceeded" | "ClearLoadError" | "PreparingRehydrate" | "SaveProjectName" | "RehydrateStatusUpdated" | "RehydratePollingStarted" | "RehydrateResult" | "SetProjectName" | "RehydrateCancel"
@@ -74,8 +78,11 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
         if (!rootGetters.isGuest) {
             await (dispatch("projects/createProject", {name: state.projectName || null}, {root: true}));
-            savedState.projects.currentProject = rootState.projects.currentProject;
-            savedState.projects.currentVersion = rootState.projects.currentVersion;
+            savedState.projects = {
+                currentProject: rootState.projects.currentProject,
+                currentVersion: rootState.projects.currentVersion,
+                previousProjects: []
+            } as any
         }
 
         await getFilesAndLoad(context, files, savedState);
@@ -87,13 +94,12 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
 
         const completeLoad = () => {
             getFilesAndLoad(context, versionDetails.files, JSON.parse(versionDetails.state));
-        }
+        };
 
         const home = "/";
-        if (router.currentRoute.path === home) {
-            completeLoad();
-        } else {
-            router.push(home, completeLoad);
+        completeLoad();
+        if (router.currentRoute.value.path !== home) {
+            router.push(home);
         }
     },
 
@@ -102,8 +108,22 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         //storage then reload the page, to follow exactly the same fetch and reload procedure as session page refresh
         //NB load state is not included in the saved state, so we will default back to NotLoading on page reload.
 
-        // Backwards compatibility fix: projects which calibrated before bug fix in mrc-3126 have empty calibrate options
+
         const {modelCalibrate} = savedState
+
+        // Backward compatibility fix: projects which calibrated before mrc-4538 have metadata embedded in result
+        if (modelCalibrate?.result && modelCalibrate.result.plottingMetadata) {
+            savedState = {
+                ...savedState,
+                modelCalibrate: {
+                    ...modelCalibrate,
+                    metadata: modelCalibrate.result.plottingMetadata,
+                    warnings: modelCalibrate.result.warnings
+                }
+            }
+        }
+
+        // Backwards compatibility fix: projects which calibrated before bug fix in mrc-3126 have empty calibrate options
         if (modelCalibrate?.result && Object.keys(modelCalibrate.options).length === 0) {
             savedState = {
                 ...savedState,
@@ -159,7 +179,7 @@ const getRehydrateResult = async (context: ActionContext<LoadState, RootState>) 
                     name: state.projectName,
                     isUploaded: true
                 }, {root: true});
-                
+            
             savedState.projects!.currentProject = rootState.projects.currentProject
             savedState.projects!.currentVersion = rootState.projects.currentVersion
 
@@ -213,4 +233,3 @@ const getCalibrateOptions = (modelCalibrate: ModelCalibrateState): DynamicFormDa
         return options
     }, {})
 }
-

@@ -3,7 +3,7 @@ import LoadErrorModal from "../../../app/components/load/LoadErrorModal.vue"
 import Vuex from "vuex";
 import {emptyState, RootState} from "../../../app/root";
 import {LoadingState} from "../../../app/store/load/state";
-import {expectHasTranslationKey, expectTranslated} from "../../testHelpers";
+import {expectHasTranslationKey, expectTranslated, mountWithTranslate} from "../../testHelpers";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 
 const mockClearLoadError = jest.fn();
@@ -39,9 +39,11 @@ describe("loadErrorModal", () => {
     const getWrapper = (hasError: boolean =  true, loadError: string = "Test Error Message") => {
         const store = getStore(hasError, loadError);
         return mount(LoadErrorModal, {
-            store,
-            directives: {
-                translate: mockTranslate
+            global: {
+                plugins: [store],
+                directives: {
+                    translate: mockTranslate
+                }
             }
         })
     }
@@ -78,7 +80,7 @@ describe("loadErrorModal", () => {
                 "id": "ok-load-error",
                 "type": "button"
             })
-        expectHasTranslationKey(okButton, "ok", "aria-label");
+        expectHasTranslationKey(okButton, mockTranslate, "ok", "aria-label");
         expect(mockClearLoadError.mock.calls.length).toBe(0)
         await okButton.trigger("click")
         expect(mockClearLoadError.mock.calls.length).toBe(1)
@@ -89,7 +91,11 @@ describe("loadErrorModal translations", () => {
     const getWrapper = (hasError: boolean =  true, loadError: string = "Test Error Message", invalidSteps: number[] = [])  => {
         const store = getStore(hasError, loadError);
         registerTranslations(store);
-        return mount(LoadErrorModal, { store });
+        return mountWithTranslate(LoadErrorModal, store, {
+            global: {
+                plugins: [store]
+            }
+        });
     };
 
     it("can display expected translations when there is load error", () => {

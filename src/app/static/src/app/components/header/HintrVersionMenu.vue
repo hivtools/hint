@@ -15,24 +15,15 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import {HintrVersionResponse} from "../../generated";
     import {RootState} from "../../root";
     import {mapActionByName, mapStateProp} from "../../utils";
     import DropDown from "./DropDown.vue";
     import {currentHintVersion} from "../../hintVersion";
-
-    interface Computed {
-        hintrVersions: HintrVersionResponse;
-        hintVersion: string
-    }
-
-    interface Methods {
-        showHintrVersion: () => void;
-    }
+    import { defineComponent } from "vue";
 
     const namespace = "hintrVersion";
-    export default Vue.extend<unknown, Methods, Computed, unknown>({
+    export default defineComponent({
 
         computed: {
             hintrVersions: mapStateProp<RootState, HintrVersionResponse>(

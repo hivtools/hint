@@ -1,15 +1,16 @@
 import {MutationTree} from 'vuex';
 import {ModelCalibrateState} from "./modelCalibrate";
-import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {PayloadWithType} from "../../types";
-import {updateForm} from "../../utils";
+import {writeOptionsIntoForm} from "../../utils";
 import {
+    CalibrateMetadataResponse,
     CalibrateResultResponse,
     CalibrateStatusResponse,
     CalibrateSubmitResponse,
     ComparisonPlotResponse,
     Error,
-    VersionInfo, Warning
+    VersionInfo,
 } from "../../generated";
 
 export enum ModelCalibrateMutation {
@@ -29,10 +30,10 @@ export enum ModelCalibrateMutation {
     ComparisonPlotStarted = "ComparisonPlotStarted",
     SetPlotData = "SetPlotData",
     SetComparisonPlotData = "SetComparisonPlotData",
-    WarningsFetched = "WarningsFetched",
     CalibrateResultFetched = "CalibrateResultFetched",
     ClearWarnings = "ClearWarnings",
-    ResetIds = "ResetIds"
+    ResetIds = "ResetIds",
+    MetadataFetched = "MetadataFetched"
 }
 
 export const ModelCalibrateUpdates = [
@@ -50,8 +51,8 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     },
 
     [ModelCalibrateMutation.ModelCalibrateOptionsFetched](state: ModelCalibrateState, action: PayloadWithType<DynamicFormMeta>) {
-        const newForm = {...updateForm(state.optionsFormMeta, action.payload)};
-        state.optionsFormMeta = newForm;
+        writeOptionsIntoForm(state.options, action.payload);
+        state.optionsFormMeta = action.payload;
         state.fetching = false;
     },
 
@@ -129,8 +130,10 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.statusPollId = action.payload;
     },
 
-    [ModelCalibrateMutation.WarningsFetched](state: ModelCalibrateState, action: PayloadWithType<Warning[]>) {
-        state.warnings = action.payload
+    [ModelCalibrateMutation.MetadataFetched](state: ModelCalibrateState,
+                                             action: PayloadWithType<CalibrateMetadataResponse>) {
+        state.warnings = action.payload.warnings
+        state.metadata = action.payload
     },
 
     [ModelCalibrateMutation.ClearWarnings](state: ModelCalibrateState) {

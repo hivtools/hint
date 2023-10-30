@@ -16,11 +16,16 @@
     </div>
 </template>
 <script lang="ts">
-    import Vue from "vue"
+    import { defineComponent } from "vue";
 
-    export default Vue.extend({
+    export default defineComponent({
         name: "Modal",
-        props: ["open"],
+        props: {
+            open: {
+                type: Boolean,
+                required: true
+            }
+        },
         computed: {
             style: function () {
                 return {display: this.open ? "block" : "none"}

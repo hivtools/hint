@@ -14,39 +14,24 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import { defineComponent } from "vue";
     import {ErrorsState} from "../store/errors/errors";
     import {mapMutationByName, mapStateProps} from "../utils";
     import {ErrorsMutation} from "../store/errors/mutations";
-    import {Error} from "../generated"
 
     const namespace = "errors";
 
-    interface Props {
-        title: string
-    }
-
-    interface Methods {
-        dismissAll: () => void
-    }
-
-    interface ComputedState {
-        errors: Error[]
-    }
-
-    interface Computed extends ComputedState {
-        hasErrors: boolean
-
-    }
-
-    export default Vue.extend<unknown, Methods, Computed, Props>({
+    export default defineComponent({
         name: "Errors",
         props: {
-            title: String
+            title: {
+                type: String,
+                required: false
+            }
         },
         computed: {
-            ...mapStateProps<ErrorsState, keyof ComputedState>(namespace, {
-                errors: state => {
+            ...mapStateProps(namespace, {
+                errors: (state: ErrorsState) => {
                     const messages = state.errors.map(e => e.detail ? e.detail : e.error);
                     return Array.from(new Set(messages))
                 }

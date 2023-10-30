@@ -87,12 +87,21 @@ class ModelRunTests : SecureIntegrationTests()
     }
 
     @Test
-    fun `can get calibrate result`()
+    fun `can get calibrate result metadata`()
     {
-        val responseEntity = testRestTemplate.getForEntity<String>("/model/calibrate/result/1234")
+        val responseEntity = testRestTemplate.getForEntity<String>("/model/calibrate/result/metadata/1234")
         assertError(responseEntity,
                 HttpStatus.BAD_REQUEST,
                 "FAILED_TO_RETRIEVE_RESULT", "Failed to fetch result")
+    }
+
+    @Test
+    fun `can get calibrate result data`()
+    {
+        val responseEntity = testRestTemplate.getForEntity<String>("/model/calibrate/result/data/1234")
+        assertError(responseEntity,
+            HttpStatus.BAD_REQUEST,
+            "FAILED_TO_RETRIEVE_RESULT", "Failed to fetch result")
     }
 
     @Test

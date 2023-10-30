@@ -1,39 +1,31 @@
 <template>
     <div v-if="display" class="text-muted small pl-1">
-        <span class="float-right">
+        <span class="small float-right">
             <span v-translate="'project'"></span>: {{ projectName }} {{ versionLabel }}
         </span><br/>
-        <span v-if="time" class="float-right">
+        <span v-if="time" class="small float-right">
             <span v-translate="'lastSaved'"></span> {{ formattedTime }}
-            <check-icon size="14" class="mb-1"></check-icon>
+            <vue-feather type="check" size="14" class="align-middle mb-1"></vue-feather>
         </span>
     </div>
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
     import {ProjectsState} from "../../store/projects/projects";
     import {mapStateProp} from "../../utils";
-    import {CheckIcon} from "vue-feather-icons";
+    import VueFeather from "vue-feather";
     import moment from 'moment';
     import {versionLabel} from "../../utils";
+    import { defineComponent } from "vue";
 
     const namespace = "projects";
 
-    interface Computed {
-        time: Date | null,
-        projectName: string | null,
-        versionLabel: string | null,
-        display: boolean,
-        formattedTime: string
-    }
-
-    export default Vue.extend<unknown, unknown, Computed, unknown>({
+    export default defineComponent({
         computed: {
-            display: function () {
+            display(): boolean {
                 return !!this.projectName;
             },
-            formattedTime: function () {
+            formattedTime(): string {
                 return this.time ? moment(this.time).format('HH:mm') : '';
             },
             time: mapStateProp<ProjectsState, Date | null>(namespace, state => state.versionTime),
@@ -43,7 +35,7 @@
                 state.currentVersion ? versionLabel(state.currentVersion) : null)
         },
         components: {
-            CheckIcon
+            VueFeather
         }
     });
 </script>

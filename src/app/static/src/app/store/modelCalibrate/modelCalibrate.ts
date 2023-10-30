@@ -1,9 +1,16 @@
 import {Module} from "vuex";
 import {ReadyState, RootState, WarningsState} from "../../root";
-import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {mutations} from "./mutations";
 import {actions} from "./actions";
-import {VersionInfo, Error, CalibrateStatusResponse, CalibrateResultResponse, ComparisonPlotResponse} from "../../generated";
+import {
+    VersionInfo,
+    Error,
+    CalibrateStatusResponse,
+    CalibrateResultResponse,
+    ComparisonPlotResponse,
+    CalibrateDataResponse, PlottingMetadataResponse, CalibrateMetadataResponse
+} from "../../generated";
 import {BarchartIndicator, Filter} from "../../types";
 import {BarchartSelections, PlottingSelectionsState} from "../plottingSelections/plottingSelections";
 
@@ -19,10 +26,11 @@ export interface ModelCalibrateState extends ReadyState, WarningsState {
     generatingCalibrationPlot: boolean
     calibratePlotResult: any,
     comparisonPlotResult: ComparisonPlotResponse | null,
-    result: CalibrateResultResponse | null
+    result: CalibrateDataResponse | CalibrateResultResponse | null
     version: VersionInfo
     error: Error | null
-    comparisonPlotError: Error | null
+    comparisonPlotError: Error | null,
+    metadata: CalibrateMetadataResponse | null
 }
 
 export const initialModelCalibrateState = (): ModelCalibrateState => {
@@ -43,7 +51,8 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
         error: null,
         comparisonPlotError: null,
-        warnings: []
+        warnings: [],
+        metadata: null
     }
 };
 

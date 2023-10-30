@@ -12,13 +12,12 @@ import {
     constructUploadFile,
     constructUploadFileWithResourceName,
     getFilenameFromImportUrl,
-    updateForm,
     formatToLocalISODateTime,
     readStream,
-    extractFilenameFrom
+    extractFilenameFrom, writeOptionsIntoForm
 } from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
-import {DynamicFormMeta} from "@reside-ic/vue-dynamic-form";
+import {DynamicFormMeta, DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
 import {AxiosResponse} from "axios";
 
 describe("utils", () => {
@@ -389,59 +388,12 @@ describe("utils", () => {
         expect(getFilenameFromImportUrl("http://a/b.csv?c=d")).toBe("b.csv");
     });
 
-    it("updateForm merges old and new form metadata as expected", () => {
-        const oldForm: DynamicFormMeta = {
-            controlSections:[
-                {
-                    label: "old-section-1",
-                    controlGroups: [
-                        {
-                            label: "old-group-1-1",
-                            controls: [
-                                {
-                                    name: "control-1",
-                                    type: "number",
-                                    required: true,
-                                    value: 1
-                                },
-                                {
-                                    name: "control-2",
-                                    type: "select",
-                                    required: true,
-                                    value: 2
-                                }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    label: "section-2",
-                    controlGroups: [
-                        {
-                            label: "group-2-1",
-                            controls: [
-                                {
-                                    name: "control-3",
-                                    type: "number",
-                                    required: false,
-                                    value: 3
-                                }
-                            ]
-                        },
-                        {
-                            label: "group-2-2",
-                            controls: [
-                                {
-                                    name: "control-4",
-                                    type: "select",
-                                    required: false,
-                                    value: 4
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
+    it("writeOptionsIntoForm writes options into form metadata as expected", () => {
+        const options: DynamicFormData = {
+            "control-1": 1,
+            "control-2": 2,
+            "control-3": 3,
+            "control-4": 4
         };
 
         // Changes from oldForm:
@@ -570,7 +522,7 @@ describe("utils", () => {
             ]
         };
 
-        const result = updateForm(oldForm, newForm);
-        expect(result).toStrictEqual(expectedResult);
+        writeOptionsIntoForm(options, newForm);
+        expect(newForm).toStrictEqual(expectedResult);
     });
 });

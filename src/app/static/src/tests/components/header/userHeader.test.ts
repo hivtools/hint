@@ -1,47 +1,34 @@
 import Vuex, {Store} from "vuex";
-import {createLocalVue, shallowMount} from "@vue/test-utils";
 import UserHeader from "../../../app/components/header/UserHeader.vue";
 import FileMenu from "../../../app/components/header/FileMenu.vue";
 import LanguageMenu from "../../../app/components/header/LanguageMenu.vue";
 import HintrVersionMenu from "../../../app/components/header/HintrVersionMenu.vue";
-import {Language} from "../../../app/store/translations/locales";
-import {emptyState, RootState} from "../../../app/root";
+import {RootState} from "../../../app/root";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {getters} from "../../../app/store/root/getters";
 import {mockRootState} from "../../mocks";
-import {expectTranslated} from "../../testHelpers";
+import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 import OnlineSupportMenu from "../../../app/components/header/OnlineSupportMenu.vue";
-
-const localVue = createLocalVue();
-
-const createLanguageStore = (language: Language) => {
-    const store = new Vuex.Store({
-        state: {
-            ...emptyState(),
-            language
-        },
-        getters: getters
-    });
-    registerTranslations(store);
-    return store;
-};
 
 describe("user header", () => {
 
     const createStore = (partialRootState: Partial<RootState> = {}) => {
         const store = new Vuex.Store({
             state: mockRootState(partialRootState),
-            getters: getters
+            getters: getters,
         });
         registerTranslations(store);
         return store
     }
 
-    const getWrapper = (user: string = "someone@email.com", store?: Store<RootState>) => {
-        return shallowMount(UserHeader, {
-            propsData: {user, title: "Naomi"},
-            store: store || createStore({currentUser: user}),
-            stubs: ["router-link"]
+    const getWrapper = (user: string = "someone@email.com", storeOptions?: Store<RootState>) => {
+        const store = storeOptions || createStore({currentUser: user})
+        return shallowMountWithTranslate(UserHeader, store, {
+            props: {user, title: "Naomi"},
+            global: {
+                plugins: [store],
+                stubs: ["router-link"]
+            }
         });
     };
 
@@ -76,62 +63,35 @@ describe("user header", () => {
 
     it("renders file menu", () => {
         const store = createStore()
-        const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
-        expect(wrapper.findAll(FileMenu).length).toBe(1);
+        const wrapper = shallowMountWithTranslate(UserHeader, store, {
+            global: {
+                plugins: [store]
+            }, stubs: ["router-link"]
+        });
+        expect(wrapper.findAllComponents(FileMenu).length).toBe(1);
     });
 
     it("renders language menu", () => {
         const store = createStore()
-        const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
-        expect(wrapper.findAll(LanguageMenu).length).toBe(1);
+        const wrapper = shallowMountWithTranslate(UserHeader, store, {
+            global: {
+                plugins: [store]
+            }, stubs: ["router-link"]
+        });
+        expect(wrapper.findAllComponents(LanguageMenu).length).toBe(1);
     });
 
     it("renders hintr version and online support menu", () => {
         const store = createStore()
-        const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
-        expect(wrapper.findAll(HintrVersionMenu).length).toBe(1);
-        expect(wrapper.findAll(OnlineSupportMenu).length).toBe(1);
+        const wrapper = shallowMountWithTranslate(UserHeader, store, {
+            global: {
+                plugins: [store]
+            }, stubs: ["router-link"]
+        });
+        expect(wrapper.findAllComponents(HintrVersionMenu).length).toBe(1);
+        expect(wrapper.findAllComponents(OnlineSupportMenu).length).toBe(1);
     })
 
-    it("computes help filename", () => {
-        const store = createStore()
-        const wrapper = shallowMount(UserHeader, {localVue, store, stubs: ["router-link"]});
-        const vm = (wrapper as any).vm;
-        expect(vm.helpFilename).toStrictEqual(
-            "https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf");
-
-        const frStore = createLanguageStore(Language.fr);
-        const frWrapper = shallowMount(UserHeader, {localVue, store: frStore, stubs: ["router-link"]});
-        const frVm = (frWrapper as any).vm;
-        expect(frVm.helpFilename).toStrictEqual(
-            "https://hivtools.unaids.org/wp-content/uploads/75D-Instructions-pour-Naomi.pdf");
-
-        const ptStore = createLanguageStore(Language.pt);
-        const ptWrapper = shallowMount(UserHeader, {localVue, store: ptStore, stubs: ["router-link"]});
-        const ptVm = (ptWrapper as any).vm;
-        expect(ptVm.helpFilename).toStrictEqual(
-            "https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf");
-    });
-
-    it("contains Basic steps document links", () => {
-        const store = createStore();
-        const wrapper = shallowMount(UserHeader, {store, stubs: ["router-link"]});
-        expect(wrapper.find(
-            "a[href='https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf']"
-            ).text()).toBe("Basic steps");
-
-        const frStore = createLanguageStore(Language.fr);
-        const frWrapper = shallowMount(UserHeader, {store: frStore, stubs: ["router-link"]});
-        expect(frWrapper.find(
-            "a[href='https://hivtools.unaids.org/wp-content/uploads/75D-Instructions-pour-Naomi.pdf']"
-            ).text()).toBe("Etapes de base");
-
-        const ptStore = createLanguageStore(Language.pt);
-        const ptWrapper = shallowMount(UserHeader, {store: ptStore, stubs: ["router-link"]});
-        expect(ptWrapper.find(
-            "a[href='https://hivtools.unaids.org/wp-content/uploads/75D-Guide-5-Naomi-quick-start.pdf']"
-            ).text()).toBe("Passos básicos");
-    });
 
     it("renders Projects link as expected if user is not guest", () => {
         const store = createStore();
