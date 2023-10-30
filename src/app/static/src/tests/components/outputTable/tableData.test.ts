@@ -1,9 +1,9 @@
 import { shallowMount } from "@vue/test-utils";
-import Table from "../../../app/components/outputTable/Table.vue";
+import TableData from "../../../app/components/outputTable/TableData.vue";
 
 describe("Output Table display table tests", () => {
     const getWrapper = () => {
-        return shallowMount(Table)
+        return shallowMount(TableData)
     };
 
     it("renders as expected", () => {

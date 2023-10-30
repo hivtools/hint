@@ -239,8 +239,6 @@
                 tabs.push("table")
             }
 
-            console.log(switches)
-
             return {
                 tabs: tabs,
                 areaFilterId: "area"

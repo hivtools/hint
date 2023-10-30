@@ -1,7 +1,7 @@
 import { shallowMount } from "@vue/test-utils";
 import OutputTable from "../../../app/components/outputTable/OutputTable.vue";
-import Filters from "../../../app/components/outputTable/Filters.vue";
-import Table from "../../../app/components/outputTable/Table.vue";
+import TableFilters from "../../../app/components/outputTable/TableFilters.vue";
+import TableData from "../../../app/components/outputTable/TableData.vue";
 
 describe("Output Table tests", () => {
     const getWrapper = () => {
@@ -10,7 +10,7 @@ describe("Output Table tests", () => {
 
     it("renders as expected", () => {
         const wrapper = getWrapper();
-        expect(wrapper.findComponent(Filters).exists()).toBe(true);
-        expect(wrapper.findComponent(Table).exists()).toBe(true);
+        expect(wrapper.findComponent(TableFilters).exists()).toBe(true);
+        expect(wrapper.findComponent(TableData).exists()).toBe(true);
     });
 });

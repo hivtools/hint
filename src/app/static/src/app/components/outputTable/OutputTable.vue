@@ -1,15 +1,15 @@
 <template>
     <div class="row">
         <div class="col-md-3">
-            <filters></filters>
+            <table-filters></table-filters>
         </div>
         <div id="chart" class="col-md-9">
-            <table-comp></table-comp>
+            <table-data></table-data>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-    import Filters from "./Filters.vue"
-    import TableComp from "./Table.vue"
+    import TableFilters from "./TableFilters.vue";
+    import TableData from "./TableData.vue"
 </script>
