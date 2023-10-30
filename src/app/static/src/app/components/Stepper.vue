@@ -65,7 +65,7 @@
     import ModelOptions from "./modelOptions/ModelOptions.vue";
     import VersionStatus from "./projects/VersionStatus.vue";
     import {mapGettersByNames, mapStateProp, mapStateProps, mapMutationByName, mapGetterByName} from "../utils";
-    import {Project, StepperNavigationProps, StepWarnings} from "../types";
+    import {StepperNavigationProps, StepWarnings} from "../types";
     import {ProjectsState} from "../store/projects/projects";
     import {RootState} from "../root";
     import StepperNavigation from "./StepperNavigation.vue";

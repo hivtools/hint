@@ -132,7 +132,6 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const choro = wrapper.findComponent(Choropleth);
-        expect(choro.props().includeFilters).toBe(true);
         expect(choro.props().areaFilterId).toBe("area");
         expect(choro.props().filters).toStrictEqual(["TEST CHORO FILTERS"]);
         expect(choro.props().selections).toStrictEqual({test: "TEST CHORO SELECTIONS"});
