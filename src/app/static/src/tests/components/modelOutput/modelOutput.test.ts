@@ -1,4 +1,3 @@
-import {VueWrapper, shallowMount} from '@vue/test-utils';
 import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import {
@@ -18,11 +17,11 @@ import BarChartWithFilters from '../../../app/vue-chart/src/bar/BarChartWithFilt
 import {ModelOutputState} from "../../../app/store/modelOutput/modelOutput";
 import Choropleth from "../../../app/components/plots/choropleth/Choropleth.vue";
 import BubblePlot from "../../../app/components/plots/bubble/BubblePlot.vue";
+import OutputTable from "../../../app/components/outputTable/OutputTable.vue"
 import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 import {BarchartIndicator, Filter} from "../../../app/types";
 import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
-import { nextTick } from 'vue';
 
 function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"], comparisonPlotFilters: any = ["TEST COMPARISON FILTERS"], comparisonPlotError: any = null) {
     const store = new Vuex.Store({
@@ -122,6 +121,11 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
 declare let currentUser: string;
 currentUser = "guest";
 
+// will be easy to just remove this once feature switch enabled
+jest.mock("../../../app/featureSwitches",() => {
+    return {switches: {tableTab: true}}
+});
+
 describe("ModelOutput component", () => {
     beforeAll(async () => {
         inactiveFeatures.splice(0, inactiveFeatures.length);
@@ -166,6 +170,14 @@ describe("ModelOutput component", () => {
         expect(barchart.props().showRangesInTooltips).toBe(true);
         expect(barchart.props().noDataMessage).toBe("No data are available for the selected combination." +
             " Please review the combination of filter values selected.");
+    });
+
+    it("renders table", () => {
+        const store = getStore({selectedTab: "table"});
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
+        const table = wrapper.findComponent(OutputTable);
+        expect(table.exists()).toBe(true);
+
     });
 
     it("renders comparison plot", () => {
@@ -223,7 +235,7 @@ describe("ModelOutput component", () => {
                 plugins: [store]
             }
         });
-        expect(wrapper.findAll(".nav-link").length).toBe(4);
+        expect(wrapper.findAll(".nav-link").length).toBe(5);
 
         expect(wrapper.find(".nav-link.active").text()).toBe("Map");
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
@@ -233,6 +245,8 @@ describe("ModelOutput component", () => {
 
         expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
         expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
+
+        expect(wrapper.findAll("#table-container").length).toBe(0);
 
         //should invoke mutation
         await wrapper.findAll(".nav-link")[1].trigger("click");
@@ -248,6 +262,8 @@ describe("ModelOutput component", () => {
         expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
         expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
 
+        expect(wrapper.findAll("#table-container").length).toBe(0);
+
         await wrapper.findAll(".nav-link")[2].trigger("click");
 
         expect(wrapper.find(".nav-link.active").text()).toBe("Bubble Plot");
@@ -259,6 +275,8 @@ describe("ModelOutput component", () => {
 
         expect(wrapper.findAll("#bubble-plot-container").length).toBe(1);
         expect(wrapper.findAll("bubble-plot-stub").length).toBe(1);
+
+        expect(wrapper.findAll("#table-container").length).toBe(0);
 
         await wrapper.findAll(".nav-link")[3].trigger("click");
 
@@ -272,6 +290,22 @@ describe("ModelOutput component", () => {
 
         expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
         expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
+
+        expect(wrapper.findAll("#table-container").length).toBe(0);
+
+        await wrapper.findAll(".nav-link")[4].trigger("click");
+
+        expect(wrapper.find(".nav-link.active").text()).toBe("Table");
+        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
+
+        expect(wrapper.find("#barchart-container").exists()).toBe(false);
+        expect(wrapper.find("#comparison-container").exists()).toBe(false);
+
+        expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
+        expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
+
+        expect(wrapper.findAll("#table-container").length).toBe(1);
     });
 
     it("computes chartdata", () => {
