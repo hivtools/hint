@@ -38,9 +38,9 @@
 </template>
 
 <script lang="ts">
-    import {Feature} from "geojson";
-    import {LGeoJson, LMap} from "@vue-leaflet/vue-leaflet";
-    import {GeoJSON, Layer, GeoJSONOptions} from "leaflet";
+    import {Feature, MultiPolygon, Polygon} from "geojson";
+    import {LGeoJson, LMap, LPolygon} from "@vue-leaflet/vue-leaflet";
+    import L, {GeoJSON, Layer, GeoJSONOptions} from "leaflet";
     import MapControl from "../MapControl.vue";
     import MapLegend from "../MapLegend.vue";
     import FiltersComp from "../Filters.vue";
@@ -295,7 +295,47 @@
             options() {
                 return {
                     onEachFeature: (feature: Feature, layer: Layer) => {
-                        layer.bindTooltip(this.tooltipContent(feature))
+                        console.log(feature)
+                        console.log(layer)
+                        const geometry = feature.geometry as MultiPolygon
+
+                        let largestPolygon: number[][] = geometry.coordinates[0][0];
+                        let largestArea: number = this.calculatePolygonArea(largestPolygon);
+
+                        for (let i = 1; i < geometry.coordinates.length; i++) {
+                            const polygon: number[][] = geometry.coordinates[i][0];
+                            const area: number = this.calculatePolygonArea(polygon);
+                            if (area > largestArea) {
+                                largestPolygon = polygon;
+                                largestArea = area;
+                            }
+                            const areaName = feature.properties?.["area_name"];
+                            console.log(areaName);
+                            console.log("area is: " + area);
+                            console.log("largest area is " + largestArea);
+                        }
+
+                        if (largestPolygon.length > 0) {
+                            const numPoints = largestPolygon.length;
+
+                            let sumLat = 0;
+                            let sumLng = 0;
+
+                            for (const point of largestPolygon) {
+                                sumLat += point[1];
+                                sumLng += point[0];
+                            }
+
+                            const centreLat = sumLat / numPoints;
+                            const centreLng = sumLng / numPoints;
+
+                            const centre = [centreLat, centreLng] as L.LatLngExpression;
+
+                            const tooltip = L.tooltip()
+                                    .setContent(this.tooltipContent(feature))
+                                    .setLatLng(centre);
+                            layer.bindTooltip(tooltip);
+                        }
                     }
                 }
             }
@@ -433,7 +473,19 @@
             },
             setLayerTooltipContent(layer: Layer, feature: Feature) {
                 layer.setTooltipContent(this.tooltipContent(feature))
-            }
+            },
+            calculatePolygonArea(polygon: number[][]): number {
+                // Gets area of a polygon using shoelace formula
+                // https://en.wikipedia.org/wiki/Shoelace_formula
+                let area = 0;
+                for (let i = 0; i < polygon.length - 1; i++) {
+                    const p1: number[] = polygon[i];
+                    const p2: number[] = polygon[i + 1];
+                    area += (p2[0] + p1[0]) * (p2[1] - p1[1]);
+                }
+                area = Math.abs(area) / 2;
+                return area;
+            },
         },
         watch: {
                 filters: function () {
