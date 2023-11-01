@@ -7,6 +7,7 @@ import org.imperial.mrc.hint.FileType
 import org.imperial.mrc.hint.clients.HintrAPIClient
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.exceptions.AdrException
 import org.imperial.mrc.hint.md5sum
 import org.imperial.mrc.hint.models.*
 import org.imperial.mrc.hint.security.Encryption
@@ -94,14 +95,23 @@ class ADRController(private val encryption: Encryption,
             "$url&hide_inaccessible_resources=true"
         }
         val response = adr.get(url)
-        return if (response.statusCode != HttpStatus.OK)
+        if (response.statusCode != HttpStatus.OK)
         {
-            response
+            var errorKey = "adrFetchingDatasetsError"
+            if (response.body?.contains("has not yet logged into ADR") == true)
+            {
+                errorKey = "adrFetchingDatasetsNoAccountError"
+            }
+            throw AdrException(
+                errorKey,
+                response.statusCode,
+                url
+            )
         }
         else
         {
             val data = objectMapper.readTree(response.body!!)["data"]["results"]
-            SuccessResponse(data.filter { it["resources"].count() > 0 }).asResponseEntity()
+            return SuccessResponse(data.filter { it["resources"].count() > 0 }).asResponseEntity()
         }
     }
 

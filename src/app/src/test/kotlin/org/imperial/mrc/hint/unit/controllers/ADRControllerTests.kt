@@ -13,6 +13,8 @@ import org.imperial.mrc.hint.controllers.ADRController
 import org.imperial.mrc.hint.controllers.HintrController
 import org.imperial.mrc.hint.db.UserRepository
 import org.imperial.mrc.hint.db.VersionRepository
+import org.imperial.mrc.hint.exceptions.AdrException
+import org.imperial.mrc.hint.helpers.TranslationAssert
 import org.imperial.mrc.hint.md5sum
 import org.imperial.mrc.hint.models.VersionFileWithPath
 import org.imperial.mrc.hint.security.Encryption
@@ -203,7 +205,7 @@ class ADRControllerTests : HintrControllerTests()
     }
 
     @Test
-    fun `passes error responses along`()
+    fun `throws generic error message if unexpected error`()
     {
         val badResponse = ResponseEntity<String>(HttpStatus.BAD_REQUEST)
         val expectedUrl = "package_search?q=type:adr-schema&rows=1000&include_private=true&hide_inaccessible_resources=true"
@@ -224,8 +226,41 @@ class ADRControllerTests : HintrControllerTests()
                 mockSession,
                 mock(),
                 mock())
-        val result = sut.getDatasets()
-        assertThat(result).isEqualTo(badResponse)
+        TranslationAssert.assertThatThrownBy { sut.getDatasets() }
+            .isInstanceOf(AdrException::class.java)
+            .matches { (it as AdrException).httpStatus == HttpStatus.BAD_REQUEST }
+            .hasTranslatedMessage("There was an error fetching datasets from ADR.")
+    }
+
+    @Test
+    fun `returns more specific error message if cause known`()
+    {
+        val badResponse = ResponseEntity<String>(
+            "User 'auth0|6502e7f40954910c0ee93263' has not yet logged into ADR",
+            HttpStatus.BAD_REQUEST)
+        val expectedUrl = "package_search?q=type:adr-schema&rows=1000&include_private=true&hide_inaccessible_resources=true"
+        val mockClient = mock<ADRClient> {
+            on { get(expectedUrl) } doReturn badResponse
+        }
+        val mockBuilder = mock<ADRService> {
+            on { build() } doReturn mockClient
+        }
+        val sut = ADRController(
+            mock(),
+            mock(),
+            mockBuilder,
+            objectMapper,
+            mockProperties,
+            mock(),
+            mock(),
+            mockSession,
+            mock(),
+            mock())
+        TranslationAssert.assertThatThrownBy { sut.getDatasets() }
+            .isInstanceOf(AdrException::class.java)
+            .matches { (it as AdrException).httpStatus == HttpStatus.BAD_REQUEST }
+            .hasTranslatedMessage("Cannot fetch datasets from the ADR as you do not yet have an " +
+                    "account. Please login to the ADR with your Auth0 credentials and then return here and try again.")
     }
 
     @Test
