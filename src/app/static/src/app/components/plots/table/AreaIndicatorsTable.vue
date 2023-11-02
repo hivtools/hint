@@ -148,6 +148,7 @@
                     displayRows[key][`${indicator}_lower`] = lower ? formatOutput(lower, format, scale, accuracy, this.roundFormatOutput) : '';
                     displayRows[key][`${indicator}_upper`] = upper ? formatOutput(upper, format, scale, accuracy, this.roundFormatOutput) : '';
                 });
+                console.log(Object.values(displayRows));
                 return Object.values(displayRows);
             },
             generatedFields() {
