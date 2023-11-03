@@ -30,19 +30,19 @@ export default defineComponent({
     },
 
     methods: {
-        percentFormatter(sex: string) {
+        percentFormatterGetter(col_name: string) {
             return ((params: any) => {
-                return this.formatPercent(params.value) + ' (' +
-                this.formatPercent(params.data["prevalence_lower_" + sex]) + ' - ' +
-                this.formatPercent(params.data["prevalence_upper_" + sex]) + ')'
+                return this.formatPercent(params.data[col_name])
             })
         },
+        percentFormatter(params: any) {
+            return this.formatPercent(params.value)
+        },
         formatPercent(value: number) {
-            return Math.round(value * 100) / 100 + '%'
+            return Math.round(value * 100) / 100
         },
         onGridReady(params: AgGridEvent) {
             this.gridApi = params.api;
-            this.gridColumnApi = params.columnApi;
         },
         exportData() {
             this.gridApi?.exportDataAsCsv();
@@ -52,21 +52,48 @@ export default defineComponent({
     data: function() {
         return {
             columnDefs: [
-                {headerName: "Area", field: "areaLabel"},
-                {headerName: "Both", field: "prevalence_both", valueFormatter: this.percentFormatter('both')},
-                {headerName: "Male", field: "prevalence_male", valueFormatter: this.percentFormatter('male')},
-                {headerName: "Female", field: "prevalence_female", valueFormatter: this.percentFormatter('female')},
+                {headerName: "Area", field: "areaLabel", flex: 1.5},
+                {
+                    headerName: "Both",
+                    children: [
+                        {
+                            field: "prevalence_both",
+                            headerName: "Mean",
+                            valueGetter: this.percentFormatterGetter("prevalence_both"),
+                            filter: "agNumberColumnFilter",
+                        },
+                        { field: "prevalence_lower_both", headerName: "Lower", sortable: false, valueFormatter: this.percentFormatter },
+                        { field: "prevalence_upper_both", headerName: "Upper", sortable: false, valueFormatter: this.percentFormatter },
+                    ]
+                },
+                {
+                    headerName: "Male",
+                    children: [
+                        { field: "prevalence_male", headerName: "Mean", valueFormatter: this.percentFormatter },
+                        { field: "prevalence_lower_male", headerName: "Lower", sortable: false, valueFormatter: this.percentFormatter },
+                        { field: "prevalence_upper_male", headerName: "Upper", sortable: false, valueFormatter: this.percentFormatter },
+                    ]
+                },
+                {
+                    headerName: "Female",
+                    children: [
+                        { field: "prevalence_female", headerName: "Mean", valueFormatter: this.percentFormatter },
+                        { field: "prevalence_lower_female", headerName: "Lower", sortable: false, valueFormatter: this.percentFormatter},
+                        { field: "prevalence_upper_female", headerName: "Upper", sortable: false, valueFormatter: this.percentFormatter },
+                    ]
+                },
             ],
             gridApi: ref(),
-            gridColumnApi: ref(),
             defaultColDef: {
                 filter: true,
+                floatingFilter: true,
                 unSortIcon: true,
                 sortable: true,
                 flex: 1,
                 minWidth: 75,
                 useValueFormatterForExport: false,
                 suppressMovable: true,
+                suppressMenu: true
             },
             gridOptions: {
                 paginationAutoPageSize: true,
