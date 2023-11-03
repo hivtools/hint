@@ -30,19 +30,23 @@ export default defineComponent({
     },
 
     methods: {
+        percentGetter(sex: string) {
+            return ((params: any) => {
+                return this.formatPercent(params.data["prevalence_" + sex])
+            })
+        },
         percentFormatter(sex: string) {
             return ((params: any) => {
-                return this.formatPercent(params.value) + ' (' +
+                return params.value + ' (' +
                 this.formatPercent(params.data["prevalence_lower_" + sex]) + ' - ' +
                 this.formatPercent(params.data["prevalence_upper_" + sex]) + ')'
             })
         },
         formatPercent(value: number) {
-            return Math.round(value * 100) / 100 + '%'
+            return Math.round(value * 100) / 100
         },
         onGridReady(params: AgGridEvent) {
             this.gridApi = params.api;
-            this.gridColumnApi = params.columnApi;
         },
         exportData() {
             this.gridApi?.exportDataAsCsv();
@@ -52,15 +56,32 @@ export default defineComponent({
     data: function() {
         return {
             columnDefs: [
-                {headerName: "Area", field: "areaLabel"},
-                {headerName: "Both", field: "prevalence_both", valueFormatter: this.percentFormatter('both')},
-                {headerName: "Male", field: "prevalence_male", valueFormatter: this.percentFormatter('male')},
-                {headerName: "Female", field: "prevalence_female", valueFormatter: this.percentFormatter('female')},
+                {
+                    headerName: "Area",
+                    field: "areaLabel",
+                    filter: 'agTextColumnFilter'
+                },
+                {
+                    headerName: "Both",
+                    valueGetter: this.percentGetter('both'),
+                    valueFormatter: this.percentFormatter('both'),
+                },
+                {
+                    headerName: "Male",
+                    valueGetter: this.percentGetter('male'),
+                    valueFormatter: this.percentFormatter('male'),
+                },
+                {
+                    headerName: "Female",
+                    valueGetter: this.percentGetter('female'),
+                    valueFormatter: this.percentFormatter('female'),
+                },
             ],
             gridApi: ref(),
-            gridColumnApi: ref(),
             defaultColDef: {
-                filter: true,
+                filter: 'agNumberColumnFilter',
+                floatingFilter: true,
+                suppressMenu: true,
                 unSortIcon: true,
                 sortable: true,
                 flex: 1,
