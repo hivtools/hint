@@ -1,5 +1,8 @@
 <template>
     <div>
+        <div style="margin: 10px 0;">
+            <button @click="exportData">Download CSV export file</button>
+        </div>
         <ag-grid-vue
                 style="height: 600px"
                 class="ag-theme-alpine"
@@ -7,14 +10,16 @@
                 :columnDefs="columnDefs"
                 :rowData="rowData"
                 :grid-options="gridOptions"
+                @grid-ready="onGridReady"
         >
         </ag-grid-vue>
     </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { ref, defineComponent } from "vue";
 import { AgGridVue } from "ag-grid-vue3";
+import { AgGridEvent } from "ag-grid-community";
 import "ag-grid-community/styles//ag-grid.css";
 import "ag-grid-community/styles//ag-theme-alpine.css";
 
@@ -35,7 +40,13 @@ export default defineComponent({
         formatPercent(value: number) {
             return Math.round(value * 100) / 100 + '%'
         },
-
+        onGridReady(params: AgGridEvent) {
+            this.gridApi = params.api;
+            this.gridColumnApi = params.columnApi;
+        },
+        exportData() {
+            this.gridApi?.exportDataAsCsv();
+        }
     },
 
     data: function() {
@@ -46,13 +57,16 @@ export default defineComponent({
                 {headerName: "Male", field: "prevalence_male", valueFormatter: this.percentFormatter('male')},
                 {headerName: "Female", field: "prevalence_female", valueFormatter: this.percentFormatter('female')},
             ],
+            gridApi: ref(),
+            gridColumnApi: ref(),
             defaultColDef: {
                 filter: true,
-                floatingFilter: true,
                 unSortIcon: true,
                 sortable: true,
                 flex: 1,
                 minWidth: 75,
+                useValueFormatterForExport: false,
+                suppressMovable: true,
             },
             gridOptions: {
                 paginationAutoPageSize: true,
