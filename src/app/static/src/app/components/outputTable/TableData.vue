@@ -30,15 +30,24 @@ export default defineComponent({
     },
 
     methods: {
-        percentFormatterGetter(col_name: string) {
+        percentGetter(sex: string) {
             return ((params: any) => {
-                return this.formatPercent(params.data[col_name])
+                return this.formatPercent(params.data["prevalence_" + sex])
             })
         },
-        percentFormatter(params: any) {
-            return this.formatPercent(params.value)
+        percentFormatter(sex: string) {
+            return ((params: any) => {
+                return params.value + ' (' +
+                    this.formatPercent(params.data["prevalence_lower_" + sex]) + ' - ' +
+                    this.formatPercent(params.data["prevalence_upper_" + sex]) + ')'
+            })
         },
         formatPercent(value: number) {
+            // I think in prod we'll want to use our consistent formatter. Just put this here for prototype.
+            // One thing which might be a bit fiddly is where we show the units. If we put the unit (e.g. here
+            // prevalence is a %) in the column header then users can just filter like a number
+            // If we want to put that in each cell then we're going to have to work out how to get
+            // the filtering working
             return Math.round(value * 100) / 100
         },
         onGridReady(params: AgGridEvent) {
@@ -52,50 +61,53 @@ export default defineComponent({
     data: function() {
         return {
             columnDefs: [
-                {headerName: "Area", field: "areaLabel", flex: 1.5},
+                {
+                    headerName: "Area",
+                    field: "areaLabel",
+                    // Override default filter type
+                    filter: 'agTextColumnFilter'
+                },
                 {
                     headerName: "Both",
-                    children: [
-                        {
-                            field: "prevalence_both",
-                            headerName: "Mean",
-                            valueGetter: this.percentFormatterGetter("prevalence_both"),
-                            filter: "agNumberColumnFilter",
-                        },
-                        { field: "prevalence_lower_both", headerName: "Lower", sortable: false, valueFormatter: this.percentFormatter },
-                        { field: "prevalence_upper_both", headerName: "Upper", sortable: false, valueFormatter: this.percentFormatter },
-                    ]
+                    // The getter here sets the value in the table, this is the value which is filtered,
+                    // and which gets downloaded from the export
+                    valueGetter: this.percentGetter('both'),
+                    // The formatter separately adds the lower and upper uncertainty ranges
+                    // this is just for display and doesn't affect filtering
+                    valueFormatter: this.percentFormatter('both'),
                 },
                 {
                     headerName: "Male",
-                    children: [
-                        { field: "prevalence_male", headerName: "Mean", valueFormatter: this.percentFormatter },
-                        { field: "prevalence_lower_male", headerName: "Lower", sortable: false, valueFormatter: this.percentFormatter },
-                        { field: "prevalence_upper_male", headerName: "Upper", sortable: false, valueFormatter: this.percentFormatter },
-                    ]
+                    valueGetter: this.percentGetter('male'),
+                    valueFormatter: this.percentFormatter('male'),
                 },
                 {
                     headerName: "Female",
-                    children: [
-                        { field: "prevalence_female", headerName: "Mean", valueFormatter: this.percentFormatter },
-                        { field: "prevalence_lower_female", headerName: "Lower", sortable: false, valueFormatter: this.percentFormatter},
-                        { field: "prevalence_upper_female", headerName: "Upper", sortable: false, valueFormatter: this.percentFormatter },
-                    ]
+                    valueGetter: this.percentGetter('female'),
+                    valueFormatter: this.percentFormatter('female'),
                 },
             ],
             gridApi: ref(),
             defaultColDef: {
-                filter: true,
+                // Set the default filter type
+                filter: 'agNumberColumnFilter',
+                // Floating filter adds the dedicated row for filtering at the bottom
                 floatingFilter: true,
+                // suppressMenu hides the filter menu which showed on the column title
+                // this just avoids duplication of filtering UI as we have floating turned on
+                // there are some cases where other thing show in the menu but not for our example
+                suppressMenu: true,
+                // Show an icon when the column is not sorted
                 unSortIcon: true,
+                // Make column sortable
                 sortable: true,
                 flex: 1,
                 minWidth: 75,
-                useValueFormatterForExport: false,
+                // Stop the columns from being draggable to rearrange order or remove them
                 suppressMovable: true,
-                suppressMenu: true
             },
             gridOptions: {
+                // Turn on pagination!
                 paginationAutoPageSize: true,
                 pagination: true
             },
