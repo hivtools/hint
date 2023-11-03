@@ -43,6 +43,11 @@ export default defineComponent({
             })
         },
         formatPercent(value: number) {
+            // I think in prod we'll want to use our consistent formatter. Just put this here for prototype.
+            // One thing which might be a bit fiddly is where we show the units. If we put the unit (e.g. here
+            // prevalence is a %) in the column header then users can just filter like a number
+            // If we want to put that in each cell then we're going to have to work out how to get
+            // the filtering working
             return Math.round(value * 100) / 100
         },
         onGridReady(params: AgGridEvent) {
@@ -59,11 +64,16 @@ export default defineComponent({
                 {
                     headerName: "Area",
                     field: "areaLabel",
+                    // Override default filter type
                     filter: 'agTextColumnFilter'
                 },
                 {
                     headerName: "Both",
+                    // The getter here sets the value in the table, this is the value which is filtered,
+                    // and which gets downloaded from the export
                     valueGetter: this.percentGetter('both'),
+                    // The formatter separately adds the lower and upper uncertainty ranges
+                    // this is just for display and doesn't affect filtering
                     valueFormatter: this.percentFormatter('both'),
                 },
                 {
@@ -79,17 +89,25 @@ export default defineComponent({
             ],
             gridApi: ref(),
             defaultColDef: {
+                // Set the default filter type
                 filter: 'agNumberColumnFilter',
+                // Floating filter adds the dedicated row for filtering at the bottom
                 floatingFilter: true,
+                // suppressMenu hides the filter menu which showed on the column title
+                // this just avoids duplication of filtering UI as we have floating turned on
+                // there are some cases where other thing show in the menu but not for our example
                 suppressMenu: true,
+                // Show an icon when the column is not sorted
                 unSortIcon: true,
+                // Make column sortable
                 sortable: true,
                 flex: 1,
                 minWidth: 75,
-                useValueFormatterForExport: false,
+                // Stop the columns from being draggable to rearrange order or remove them
                 suppressMovable: true,
             },
             gridOptions: {
+                // Turn on pagination!
                 paginationAutoPageSize: true,
                 pagination: true
             },
