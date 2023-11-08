@@ -13,6 +13,7 @@ import org.imperial.mrc.hint.models.*
 import org.imperial.mrc.hint.security.Encryption
 import org.imperial.mrc.hint.security.Session
 import org.imperial.mrc.hint.service.ADRService
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -39,6 +40,8 @@ class ADRController(private val encryption: Encryption,
                     request: HttpServletRequest) :
         HintrController(fileManager, apiClient, session, versionRepository, request)
 {
+
+    private val logger = LoggerFactory.getLogger(ADRController::class.java);
 
     companion object
     {
@@ -102,6 +105,8 @@ class ADRController(private val encryption: Encryption,
             {
                 errorKey = "adrFetchingDatasetsNoAccountError"
             }
+            val message = response.body
+            logger.error(message)
             throw AdrException(
                 errorKey,
                 response.statusCode,
