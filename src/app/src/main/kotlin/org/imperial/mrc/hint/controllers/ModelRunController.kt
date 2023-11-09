@@ -57,49 +57,6 @@ class ModelRunController(val fileManager: FileManager, val apiClient: HintrAPICl
         return apiClient.getModelRunOptions(allFiles)
     }
 
-    @GetMapping("/calibrate/options/{iso3}")
-    @ResponseBody
-    fun calibrationOptions(@PathVariable("iso3") iso3: String): ResponseEntity<String>
-    {
-        return apiClient.getModelCalibrationOptions(iso3)
-    }
-
-    @PostMapping("/calibrate/submit/{id}")
-    @ResponseBody
-    fun calibrateSubmit(@PathVariable("id") runId: String, @RequestBody modelCalibrateOptions: ModelOptions):
-            ResponseEntity<String>
-    {
-        return apiClient.calibrateSubmit(runId, modelCalibrateOptions)
-    }
-
-    @GetMapping("/calibrate/status/{id}")
-    @ResponseBody
-    fun calibrateStatus(@PathVariable("id") id: String): ResponseEntity<String>
-    {
-        return apiClient.getCalibrateStatus(id)
-    }
-
-    @GetMapping("/calibrate/result/metadata/{id}")
-    @ResponseBody
-    fun calibrateResultMetadata(@PathVariable("id") id: String): ResponseEntity<String>
-    {
-        return apiClient.getCalibrateResultMetadata(id)
-    }
-
-    @GetMapping("/calibrate/result/data/{id}")
-    @ResponseBody
-    fun calibrateResultData(@PathVariable("id") id: String): ResponseEntity<String>
-    {
-        return apiClient.getCalibrateResultData(id)
-    }
-
-    @GetMapping("/calibrate/plot/{id}")
-    @ResponseBody
-    fun calibratePlot(@PathVariable("id") id: String): ResponseEntity<String>
-    {
-        return apiClient.getCalibratePlot(id)
-    }
-
     @GetMapping("/comparison/plot/{id}")
     @ResponseBody
     fun comparisonPlot(@PathVariable("id") id: String): ResponseEntity<String>

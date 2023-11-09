@@ -156,7 +156,7 @@ class HintrFuelAPIClient(
 
     override fun getCalibrateResultData(id: String): ResponseEntity<String>
     {
-        return get("calibrate/result/data/${id}")
+        return get("calibrate/result/path/${id}")
     }
 
     override fun getCalibratePlot(id: String): ResponseEntity<String>
