@@ -64,7 +64,7 @@ class CalibrateDataRepositoryTests
     {
         assertThatThrownBy {
             sut.getDataFromPath(path, "dangerous_indicator")
-        }.isInstanceOf(Exception::class.java)
+        }.isInstanceOf(SQLException::class.java)
             .hasMessageContaining("Invalid indicator selection")
     }
 

@@ -8,6 +8,7 @@ import java.sql.DriverManager
 import java.sql.Statement
 import java.util.Properties
 import java.sql.ResultSet
+import java.sql.SQLException
 
 const val INDICATOR_QUERY = """
 SELECT DISTINCT indicator FROM data
@@ -95,7 +96,7 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
             if (indicator in validIndicators) {
                 query = getIndicatorQuery(indicator)
             } else {
-                throw Exception("Invalid indicator selection")
+                throw SQLException("Invalid indicator selection")
             }
         }
         val stmt: Statement = conn.createStatement()
