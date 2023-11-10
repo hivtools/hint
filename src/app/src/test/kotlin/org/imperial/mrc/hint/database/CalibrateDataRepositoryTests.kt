@@ -5,6 +5,7 @@ import org.imperial.mrc.hint.models.CalibrateResultRow
 import org.junit.jupiter.api.Test
 import org.jooq.tools.json.JSONArray
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.assertj.core.api.Assertions.assertThat
 import com.fasterxml.jackson.databind.ObjectMapper
 import java.sql.SQLException
 
@@ -60,12 +61,10 @@ class CalibrateDataRepositoryTests
     }
 
     @Test
-    fun `throws exception if invalid indicator`()
+    fun `returns empty data if invalid indicator`()
     {
-        assertThatThrownBy {
-            sut.getDataFromPath(path, "dangerous_indicator")
-        }.isInstanceOf(SQLException::class.java)
-            .hasMessageContaining("Invalid indicator selection")
+        assertThat(sut.getDataFromPath(path, "dangerous_indicator"))
+            .isEqualTo(listOf<CalibrateResultRow>())
     }
 
     @Test
