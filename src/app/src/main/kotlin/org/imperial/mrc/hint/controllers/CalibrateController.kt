@@ -41,11 +41,13 @@ class CalibrateController(val apiClient: HintrAPIClient, val calibrateDataServic
         return apiClient.getCalibrateResultMetadata(id)
     }
 
-    @GetMapping("/result/data/{id}")
+    @GetMapping("/result/data/{id}/{indicator}")
     @ResponseBody
-    fun calibrateResultData(@PathVariable("id") id: String): ResponseEntity<String>
+    fun calibrateResultData(
+        @PathVariable("id") id: String,
+        @PathVariable("indicator") indicator: String): ResponseEntity<String>
     {
-        val dataObj = calibrateDataService.getCalibrateData(id)
+        val dataObj = calibrateDataService.getCalibrateData(id, indicator)
         return SuccessResponse(dataObj).asResponseEntity()
     }
 

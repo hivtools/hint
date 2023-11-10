@@ -29,12 +29,12 @@ class CalibrateDataServiceTests
         }
 
         val mockCalibrateDataRepo = mock<CalibrateDataRepository> {
-            on { getDataFromPath("testPath") } doReturn listOf(mockResultRow)
+            on { getDataFromPath("testPath", "all") } doReturn listOf(mockResultRow)
         }
 
         val sut = CalibrateDataService(mockClient, mockCalibrateDataRepo)
 
-        val dataObj = sut.getCalibrateData("anyPath")
+        val dataObj = sut.getCalibrateData("anyPath", "all")
 
         assert(dataObj[0] == mockResultRow)
     }
