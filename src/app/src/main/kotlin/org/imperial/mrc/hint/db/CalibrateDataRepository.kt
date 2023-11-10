@@ -66,18 +66,6 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         }
     }
 
-    private fun convertIndicatorToList(resultSet: ResultSet): List<String> {
-        resultSet.use {
-            return generateSequence {
-                if (it.next()) {
-                    it.getString("indicator")
-                } else {
-                    null
-                }
-            }.toList()
-        }
-    }
-
     private fun getDataFromConnection(
         conn: Connection,
         indicator: String): List<CalibrateResultRow> {
