@@ -458,7 +458,7 @@ describe("select dataset", () => {
     });
 
     it("renders message and button on error fetching datasets", async () => {
-        const store = getStore({}, {adrError: mockError("test error")});
+        const store = getStore({}, {adrError: mockError("error text")});
         const rendered = mountWithTranslate(SelectDataset, store, {
             global: {
                 plugins: [store]
@@ -468,10 +468,7 @@ describe("select dataset", () => {
 
         const modal = rendered.findComponent(Modal);
         expect(modal.props("open")).toBe(true);
-        await expectTranslatedWithStoreType(modal.find("#fetch-error div"),
-            "There was an error fetching datasets from ADR",
-            "Une erreur s'est produite lors de la récupération des ensembles de données à partir d'ADR",
-            "Ocorreu um erro ao obter conjuntos de dados do ADR", store);
+        expect(modal.find("#fetch-error div").text()).toBe("error text");
         await expectTranslatedWithStoreType(modal.find("#fetch-error button"), "Try again", "Réessayer",
             "Tente novamente", store);
     });
