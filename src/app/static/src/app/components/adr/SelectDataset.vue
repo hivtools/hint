@@ -58,7 +58,7 @@
                     <span v-translate="'loadingDatasets'"></span>
                 </div>
                 <div v-if="adrError" id="fetch-error">
-                    <div v-translate="'errorFetchingDatasetsFromADR'"></div>
+                    <div v-if="adrError.detail">{{adrError.detail}}</div>
                     <button @click="getDatasets"
                             class="btn btn-red float-right"
                             v-translate="'tryAgain'">

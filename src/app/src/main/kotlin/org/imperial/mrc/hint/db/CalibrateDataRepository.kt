@@ -9,10 +9,18 @@ import java.sql.Statement
 import java.util.Properties
 import java.sql.ResultSet
 import java.sql.SQLException
+import java.sql.PreparedStatement
 
-const val INDICATOR_QUERY = """
-SELECT DISTINCT indicator FROM data
-"""
+const val INDICATOR_QUERY = """SELECT
+age_group,area_id,
+calendar_quarter,
+indicator,
+ROUND(lower, 4) AS lower,
+ROUND(mean, 4) AS mean,
+ROUND(mode, 4) AS mode,
+sex,
+ROUND(upper, 4) AS upper
+FROM data WHERE indicator=?"""
 
 const val DEFAULT_QUERY = """SELECT
 age_group,area_id,
@@ -58,49 +66,20 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         }
     }
 
-    private fun convertIndicatorToList(resultSet: ResultSet): List<String> {
-        resultSet.use {
-            return generateSequence {
-                if (it.next()) {
-                    it.getString("indicator")
-                } else {
-                    null
-                }
-            }.toList()
-        }
-    }
-
-    private fun getIndicatorQuery(indicator: String): String {
-        return """SELECT
-        age_group,area_id,
-        calendar_quarter,
-        indicator,
-        ROUND(lower, 4) AS lower,
-        ROUND(mean, 4) AS mean,
-        ROUND(mode, 4) AS mode,
-        sex,
-        ROUND(upper, 4) AS upper
-        FROM data WHERE indicator='$indicator'"""
-    }
-
     private fun getDataFromConnection(
         conn: Connection,
         indicator: String): List<CalibrateResultRow> {
-        val query: String
+        val resultSet: ResultSet
         if (indicator == "all") {
-            query = DEFAULT_QUERY
+            val query = DEFAULT_QUERY
+            val stmt: Statement = conn.createStatement()
+            resultSet = stmt.executeQuery(query)
         } else {
-            val indicatorStmt: Statement = conn.createStatement()
-            val indicatorResultSet = indicatorStmt.executeQuery(INDICATOR_QUERY)
-            val validIndicators = convertIndicatorToList(indicatorResultSet)
-            if (indicator in validIndicators) {
-                query = getIndicatorQuery(indicator)
-            } else {
-                throw SQLException("Invalid indicator selection")
-            }
+            val stmt: PreparedStatement = conn.prepareStatement(INDICATOR_QUERY)
+            stmt.setString(1, indicator)
+            resultSet = stmt.executeQuery()
         }
-        val stmt: Statement = conn.createStatement()
-        val resultSet = stmt.executeQuery(query)
+        
         val arrayList = convertDataToArrayList(resultSet)
         return arrayList
     }
