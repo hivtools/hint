@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus
 
 interface CalibrateService
 {
-    fun getCalibrateData(id: String): List<CalibrateResultRow>
+    fun getCalibrateData(
+        id: String,
+        indicator: String): List<CalibrateResultRow>
 }
 
 @Service
@@ -19,11 +21,13 @@ class CalibrateDataService(
     private val calibrateDataRepository: CalibrateDataRepository
 ) : CalibrateService
 {
-    override fun getCalibrateData(id: String): List<CalibrateResultRow>
+    override fun getCalibrateData(
+        id: String,
+        indicator: String): List<CalibrateResultRow>
     {
         val res = apiClient.getCalibrateResultData(id)
         val jsonBody = ObjectMapper().readTree(res.body?.toString())
         val path = jsonBody.get("data").get("path").textValue()
-        return calibrateDataRepository.getDataFromPath(path)
+        return calibrateDataRepository.getDataFromPath(path, indicator)
     }
 }

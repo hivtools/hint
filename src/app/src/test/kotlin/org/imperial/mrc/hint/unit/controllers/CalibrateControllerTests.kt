@@ -72,11 +72,11 @@ class CalibrateControllerTests
     {
         val mockAPIClient = mock<HintrAPIClient>()
         val mockCalibrateDataService = mock<CalibrateDataService> {
-            on { getCalibrateData("testId") } doReturn mockDataFromPath
+            on { getCalibrateData("testId", "all") } doReturn mockDataFromPath
         }
         val sut = CalibrateController(mockAPIClient, mockCalibrateDataService)
 
-        val result = sut.calibrateResultData("testId")
+        val result = sut.calibrateResultData("testId", "all")
         assertThat(result.body?.toString()).isEqualTo(
             "{\"data\":$mockJsonDataFromPath,\"errors\":[],\"status\":\"success\"}"
         )

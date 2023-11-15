@@ -8,6 +8,19 @@ import java.sql.DriverManager
 import java.sql.Statement
 import java.util.Properties
 import java.sql.ResultSet
+import java.sql.SQLException
+import java.sql.PreparedStatement
+
+const val INDICATOR_QUERY = """SELECT
+age_group,area_id,
+calendar_quarter,
+indicator,
+ROUND(lower, 4) AS lower,
+ROUND(mean, 4) AS mean,
+ROUND(mode, 4) AS mode,
+sex,
+ROUND(upper, 4) AS upper
+FROM data WHERE indicator=?"""
 
 const val DEFAULT_QUERY = """SELECT
 age_group,area_id,
@@ -22,14 +35,16 @@ FROM data"""
 
 interface CalibrateDataRepository
 {
-    fun getDataFromPath(path: String): List<CalibrateResultRow>
+    fun getDataFromPath(
+        path: String,
+        indicator: String): List<CalibrateResultRow>
 }
 
 @Component
 class JooqCalibrateDataRepository: CalibrateDataRepository
 {
 
-    private fun convertToArrayList(resultSet: ResultSet): List<CalibrateResultRow> {
+    private fun convertDataToArrayList(resultSet: ResultSet): List<CalibrateResultRow> {
             resultSet.use {
             return generateSequence {
                 if (it.next()) {
@@ -51,11 +66,21 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         }
     }
 
-    private fun getDataFromConnection(conn: Connection): List<CalibrateResultRow> {
-        val query = DEFAULT_QUERY
-        val stmt: Statement = conn.createStatement()
-        val resultSet = stmt.executeQuery(query)
-        val arrayList = convertToArrayList(resultSet)
+    private fun getDataFromConnection(
+        conn: Connection,
+        indicator: String): List<CalibrateResultRow> {
+        val resultSet: ResultSet
+        if (indicator == "all") {
+            val query = DEFAULT_QUERY
+            val stmt: Statement = conn.createStatement()
+            resultSet = stmt.executeQuery(query)
+        } else {
+            val stmt: PreparedStatement = conn.prepareStatement(INDICATOR_QUERY)
+            stmt.setString(1, indicator)
+            resultSet = stmt.executeQuery()
+        }
+        
+        val arrayList = convertDataToArrayList(resultSet)
         return arrayList
     }
 
@@ -66,10 +91,12 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
         return conn
     }
 
-    override fun getDataFromPath(path: String): List<CalibrateResultRow>
+    override fun getDataFromPath(
+        path: String,
+        indicator: String): List<CalibrateResultRow>
     {
         getDBConnFromPathResponse(path).use { conn ->
-            return getDataFromConnection(conn)
+            return getDataFromConnection(conn, indicator)
         }
     }
 }

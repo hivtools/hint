@@ -158,7 +158,7 @@ export const getResultData = async function (context: ActionContext<ModelCalibra
         .ignoreSuccess()
         .withError(ModelCalibrateMutation.SetError)
         .freezeResponse()
-        .get<CalibrateDataResponse>(`calibrate/result/data/${calibrateId}`);
+        .get<CalibrateDataResponse>(`calibrate/result/data/${calibrateId}/all`);
 
     if (response) {
         commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: response});
