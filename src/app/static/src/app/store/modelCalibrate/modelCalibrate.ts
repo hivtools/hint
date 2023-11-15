@@ -9,10 +9,10 @@ import {
     CalibrateStatusResponse,
     CalibrateResultResponse,
     ComparisonPlotResponse,
-    CalibrateDataResponse, PlottingMetadataResponse, CalibrateMetadataResponse
+    CalibrateDataResponse, CalibrateMetadataResponse
 } from "../../generated";
-import {BarchartIndicator, Filter} from "../../types";
-import {BarchartSelections, PlottingSelectionsState} from "../plottingSelections/plottingSelections";
+import {BarchartIndicator, BubbleIndicatorValues, Dict, Filter} from "../../types";
+import {BarchartSelections, IndicatorSelections} from "../plottingSelections/plottingSelections";
 
 export interface ModelCalibrateState extends ReadyState, WarningsState {
     optionsFormMeta: DynamicFormMeta
@@ -26,12 +26,14 @@ export interface ModelCalibrateState extends ReadyState, WarningsState {
     generatingCalibrationPlot: boolean
     calibratePlotResult: any,
     comparisonPlotResult: ComparisonPlotResponse | null,
-    result: CalibrateDataResponse | CalibrateResultResponse | null
+    result: CalibrateData,
     version: VersionInfo
     error: Error | null
     comparisonPlotError: Error | null,
     metadata: CalibrateMetadataResponse | null
 }
+
+export type CalibrateData = Dict<CalibrateDataResponse["data"]>;
 
 export const initialModelCalibrateState = (): ModelCalibrateState => {
     return {
@@ -47,7 +49,7 @@ export const initialModelCalibrateState = (): ModelCalibrateState => {
         generatingCalibrationPlot: false,
         calibratePlotResult: null,
         comparisonPlotResult: null,
-        result: null,
+        result: {},
         version: {hintr: "unknown", naomi: "unknown", rrq: "unknown"},
         error: null,
         comparisonPlotError: null,
@@ -65,6 +67,18 @@ export const modelCalibrateGetters = {
     },
     calibratePlotDefaultSelections: (state: ModelCalibrateState): BarchartSelections => {
         return state.calibratePlotResult!.plottingMetadata.barchart.defaults;
+    },
+    calibrateData: (state: ModelCalibrateState) => (indicators: IndicatorSelections) => {
+
+        // const res: CalibrateDataResponse["data"] = []
+        // if (state.result) {
+        //     indicators.forEach(indicator => {
+        //         console.log(state.result[indicator] instanceof Array)
+        //         res.push(...(state.result[indicator] as any))
+        //     })
+        // }
+
+        return (state.result && Object.keys(state.result).length > 0 && indicators?.length > 0) ? state.result[indicators[0]] : []
     }
 };
 

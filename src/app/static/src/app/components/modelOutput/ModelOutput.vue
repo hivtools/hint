@@ -137,13 +137,13 @@
         mapMutationByName,
         mapMutationsByNames,
         mapStateProp,
-        mapStateProps,mapActionByName
+        mapStateProps, mapActionByName, mapGetterByName
     } from "../../utils";
     import {
         BarchartSelections,
         BubblePlotSelections,
         ChoroplethSelections, ScaleSelections,
-        PlottingSelectionsState, UnadjustedBarchartSelections
+        PlottingSelectionsState, UnadjustedBarchartSelections, IndicatorSelections
     } from "../../store/plottingSelections/plottingSelections";
     import {ModelOutputState} from "../../store/modelOutput/modelOutput";
     import {ModelOutputMutation} from "../../store/modelOutput/mutations";
@@ -257,7 +257,8 @@
                 bubblePlotSelections: (state: PlottingSelectionsState) => state.bubble,
                 choroplethSelections: (state: PlottingSelectionsState) => state.outputChoropleth,
                 colourScales: (state: PlottingSelectionsState) => state.colourScales.output,
-                bubbleSizeScales: (state: PlottingSelectionsState) => state.bubbleSizeScales.output
+                bubbleSizeScales: (state: PlottingSelectionsState) => state.bubbleSizeScales.output,
+                activeIndicators: (state: PlottingSelectionsState) => state.activeIndicators,
             }),
             ...mapStateProps("baseline", {
                     features: (state: BaselineState) => state.shape!.data.features as Feature[],
@@ -283,9 +284,11 @@
                 return this.comparisonPlotIndicators.filter((val: BarchartIndicator) => val.indicator === this.comparisonPlotSelections.indicatorId)
             },
             selectedTab: mapStateProp<ModelOutputState, string>("modelOutput", state => state.selectedTab),
-            chartdata: mapStateProp<ModelCalibrateState, any>("modelCalibrate", state => {
-                return state.result ? state.result.data : [];
-            }),
+            chartdata(): any {
+                const data = this.chartDataGetter(this.activeIndicators?.indicators);
+                return data ? data : [];
+            },
+            chartDataGetter: mapGetterByName<(indicators: IndicatorSelections) => any>("modelCalibrate", "calibrateData"),
             comparisonPlotData: mapStateProp<ModelCalibrateState, any>("modelCalibrate", state => {
                 return state.comparisonPlotResult ? state.comparisonPlotResult.data : [];
             }),
@@ -312,8 +315,9 @@
         },
         methods: {
             ...mapMutationsByNames("plottingSelections",
-                ["updateBarchartSelections", "updateComparisonPlotSelections", "updateBubblePlotSelections",
+                ["updateComparisonPlotSelections", "updateBubblePlotSelections",
                 "updateOutputChoroplethSelections", "updateOutputColourScales", "updateOutputBubbleSizeScales"] as const),
+            updateBarchartSelections: mapActionByName<BarchartSelections>("plottingSelections", "updateBarchartSelections"),
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected),
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
@@ -348,6 +352,7 @@
         },
         mounted() {
             this.prepareOutputDownloads();
+            this.updateBarchartSelections({payload: this.barchartSelections});
         },
         components: {
             BarChartWithFilters,

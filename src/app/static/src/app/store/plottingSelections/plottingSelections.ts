@@ -1,5 +1,6 @@
 import {FilterOption} from "../../generated";
 import {Module} from "vuex";
+import {actions} from "./actions";
 import {mutations} from "./mutations";
 import {getters} from "./getters";
 import {Dict} from "../../types";
@@ -14,7 +15,8 @@ export interface PlottingSelectionsState {
     sapChoropleth: ChoroplethSelections,
     outputChoropleth: ChoroplethSelections,
     colourScales: ColourScalesState,
-    bubbleSizeScales: BubbleSizeScalesState
+    bubbleSizeScales: BubbleSizeScalesState,
+    activeIndicators: ActiveIndicatorsState,
 }
 
 export interface BarchartSelections {
@@ -60,9 +62,15 @@ export interface BubbleSizeScalesState {
     output: ScaleSelections
 }
 
+export interface ActiveIndicatorsState {
+    indicators: IndicatorSelections
+}
+
 export enum ScaleType {Default, Custom, DynamicFull, DynamicFiltered}
 
 export type ScaleSelections = Dict<ScaleSettings>;
+
+export type IndicatorSelections = string[];
 
 export interface ScaleSettings {
     type: ScaleType
@@ -145,6 +153,12 @@ export const initialBubbleSizeScalesState = (): BubbleSizeScalesState => {
     }
 };
 
+export const initialActiveIndicatorsState = (): ActiveIndicatorsState => {
+    return {
+        "indicators": []
+    }
+};
+
 
 export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
     return {
@@ -156,7 +170,8 @@ export const initialPlottingSelectionsState = (): PlottingSelectionsState => {
         sapChoropleth: initialChorplethSelections(),
         outputChoropleth: initialChorplethSelections(),
         colourScales: initialColourScalesState(),
-        bubbleSizeScales: initialBubbleSizeScalesState()
+        bubbleSizeScales: initialBubbleSizeScalesState(),
+        activeIndicators: initialActiveIndicatorsState(),
     }
 };
 
@@ -167,8 +182,7 @@ export const plottingSelections = (existingState: Partial<DataExplorationState> 
         namespaced,
         state: {...initialPlottingSelectionsState(), ...existingState && existingState.plottingSelections},
         mutations,
-        getters
+        getters,
+        actions
     }
 };
-
-

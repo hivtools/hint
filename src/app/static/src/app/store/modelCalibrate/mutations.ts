@@ -4,6 +4,7 @@ import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form
 import {PayloadWithType} from "../../types";
 import {writeOptionsIntoForm} from "../../utils";
 import {
+    CalibrateDataResponse,
     CalibrateMetadataResponse,
     CalibrateResultResponse,
     CalibrateStatusResponse,
@@ -12,6 +13,7 @@ import {
     Error,
     VersionInfo,
 } from "../../generated";
+import {CalibrateResultWithType} from "./actions";
 
 export enum ModelCalibrateMutation {
     FetchingModelCalibrateOptions = "FetchingModelCalibrateOptions",
@@ -140,8 +142,8 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.warnings = [];
     },
 
-    [ModelCalibrateMutation.CalibrateResultFetched](state: ModelCalibrateState, action: PayloadWithType<CalibrateResultResponse>) {
-        state.result = action.payload
+    [ModelCalibrateMutation.CalibrateResultFetched](state: ModelCalibrateState, action: PayloadWithType<CalibrateResultWithType>) {
+        state.result[action.payload.indicatorId] = action.payload.data
     },
 
     [ModelCalibrateMutation.ResetIds](state: ModelCalibrateState) {

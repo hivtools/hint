@@ -3,7 +3,7 @@ import {
     PlottingSelectionsState,
     BarchartSelections,
     BubblePlotSelections,
-    ChoroplethSelections, ScaleSelections, TableSelections
+    ChoroplethSelections, ScaleSelections, TableSelections, IndicatorSelections
 } from "./plottingSelections";
 import {PayloadWithType} from "../../types";
 import {DataType} from "../surveyAndProgram/surveyAndProgram";
@@ -18,7 +18,8 @@ export enum PlottingSelectionsMutations {
     updateSAPColourScales = "updateSAPColourScales",
     updateOutputColourScales = "updateOutputColourScales",
     updateOutputBubbleSizeScales = "updateOutputBubbleSizeScales",
-    updateTableSelections = "updateTableSelections"
+    updateTableSelections = "updateTableSelections",
+    updateActiveIndicators = "updateActiveIndicators",
 }
 
 export const mutations: MutationTree<PlottingSelectionsState> = {
@@ -64,5 +65,8 @@ export const mutations: MutationTree<PlottingSelectionsState> = {
     },
     [PlottingSelectionsMutations.updateOutputBubbleSizeScales](state: PlottingSelectionsState, action: PayloadWithType<ScaleSelections>) {
         state.bubbleSizeScales.output = action.payload;
+    },
+    [PlottingSelectionsMutations.updateActiveIndicators](state: PlottingSelectionsState, action: PayloadWithType<IndicatorSelections>) {
+        state.activeIndicators.indicators = action.payload;
     }
 };

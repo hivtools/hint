@@ -112,16 +112,16 @@ export const actions: ActionTree<LoadState, RootState> & LoadActions = {
         const {modelCalibrate} = savedState
 
         // Backward compatibility fix: projects which calibrated before mrc-4538 have metadata embedded in result
-        if (modelCalibrate?.result && modelCalibrate.result.plottingMetadata) {
-            savedState = {
-                ...savedState,
-                modelCalibrate: {
-                    ...modelCalibrate,
-                    metadata: modelCalibrate.result.plottingMetadata,
-                    warnings: modelCalibrate.result.warnings
-                }
-            }
-        }
+        // if (modelCalibrate?.result && modelCalibrate.result.plottingMetadata) {
+        //     savedState = {
+        //         ...savedState,
+        //         modelCalibrate: {
+        //             ...modelCalibrate,
+        //             metadata: modelCalibrate.result.plottingMetadata,
+        //             warnings: modelCalibrate.result.warnings
+        //         }
+        //     }
+        // }
 
         // Backwards compatibility fix: projects which calibrated before bug fix in mrc-3126 have empty calibrate options
         if (modelCalibrate?.result && Object.keys(modelCalibrate.options).length === 0) {
