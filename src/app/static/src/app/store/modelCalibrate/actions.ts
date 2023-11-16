@@ -36,7 +36,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
             .withSuccess(ModelCalibrateMutation.ModelCalibrateOptionsFetched)
             .ignoreErrors()
-            .get<DynamicFormMeta>(`model/calibrate/options/${rootState.baseline.iso3}`);
+            .get<DynamicFormMeta>(`calibrate/options/${rootState.baseline.iso3}`);
 
         if (response) {
             commit({type: ModelCalibrateMutation.SetModelCalibrateOptionsVersion, payload: response.version});
@@ -53,7 +53,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
             .withSuccess(ModelCalibrateMutation.CalibrateStarted)
             .withError(ModelCalibrateMutation.SetError)
-            .postAndReturn<ModelSubmitResponse>(`model/calibrate/submit/${modelRunId}`, {options, version});
+            .postAndReturn<ModelSubmitResponse>(`calibrate/submit/${modelRunId}`, {options, version});
 
         if (response) {
             commit({type: `downloadResults/${DownloadResultsMutation.ResetIds}`}, {root: true});
@@ -93,7 +93,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
             .ignoreSuccess()
             .withError(ModelCalibrateMutation.SetError)
             .freezeResponse()
-            .get<ModelResultResponse>(`model/calibrate/plot/${calibrateId}`);
+            .get<ModelResultResponse>(`calibrate/plot/${calibrateId}`);
 
         if (response) {
             commit(ModelCalibrateMutation.SetPlotData, response.data);
@@ -135,7 +135,7 @@ export const getResultMetadata = async function (context: ActionContext<ModelCal
         .ignoreSuccess()
         .withError(ModelCalibrateMutation.SetError)
         .freezeResponse()
-        .get<CalibrateMetadataResponse>(`model/calibrate/result/metadata/${calibrateId}`);
+        .get<CalibrateMetadataResponse>(`calibrate/result/metadata/${calibrateId}`);
 
     if (response) {
         const data = response.data;
@@ -158,11 +158,10 @@ export const getResultData = async function (context: ActionContext<ModelCalibra
         .ignoreSuccess()
         .withError(ModelCalibrateMutation.SetError)
         .freezeResponse()
-        .get<CalibrateDataResponse>(`model/calibrate/result/data/${calibrateId}`);
+        .get<CalibrateDataResponse>(`calibrate/result/data/${calibrateId}/all`);
 
     if (response) {
-        const data = response.data;
-        commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: data});
+        commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: response});
     }
 }
 
@@ -172,7 +171,7 @@ export const getCalibrateStatus = async function (context: ActionContext<ModelCa
     return api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
         .withSuccess(ModelCalibrateMutation.CalibrateStatusUpdated)
         .withError(ModelCalibrateMutation.SetError)
-        .get<ModelStatusResponse>(`model/calibrate/status/${calibrateId}`)
+        .get<ModelStatusResponse>(`calibrate/status/${calibrateId}`)
         .then(() => {
             if (state.status && state.status.done) {
                 dispatch("getResult");

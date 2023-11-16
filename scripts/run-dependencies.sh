@@ -30,15 +30,18 @@ docker run --rm -d \
 docker run --rm -d --network=$NETWORK --name $REDIS --network-alias=redis redis
 
 mkdir -p $HERE/../src/app/uploads
+mkdir -p $HERE/../src/app/results
 
 docker run --rm -d \
   --network=$NETWORK \
   --name=$API \
   -p 8888:8888 \
   -v $HERE/../src/app/uploads:/uploads \
+  -v $HERE/../src/app/results:/results \
   -e REDIS_URL=redis://redis:6379 \
   -e USE_MOCK_MODEL=true \
-  $HINTR_IMAGE
+  $HINTR_IMAGE \
+  --results-dir=/results
 
 # Need to give the database a little time to initialise before we can run the migration
 docker exec -it $DB wait-for-db

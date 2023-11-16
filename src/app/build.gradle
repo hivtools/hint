@@ -55,6 +55,7 @@ dependencies {
     implementation "org.simplejavamail:simple-java-mail:6.5.0"
     implementation 'jakarta.mail:jakarta.mail-api:1.6.7'
     implementation 'com.sun.activation:jakarta.activation:2.0.1'
+    implementation 'org.duckdb:duckdb_jdbc:0.9.1'
 
     implementation project(":databaseInterface")
 
