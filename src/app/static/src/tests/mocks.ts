@@ -376,6 +376,9 @@ export const mockCalibrateResultResponse = (props: Partial<CalibrateResultRespon
                 indicators: [], filters: []
             }
         },
+        tableMetadata: {
+            presets: []
+        },
         uploadMetadata: {
             outputSummary: {description: "Naomi output files"},
             outputZip: {description:"Naomi output files"}
@@ -407,6 +410,9 @@ export const mockCalibrateMetadataResponse = (props: Partial<CalibrateMetadataRe
             choropleth: {
                 indicators: [], filters: []
             }
+        },
+        tableMetadata: {
+            presets: []
         },
         warnings: [],
         ...props
