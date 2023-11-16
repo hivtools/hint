@@ -183,14 +183,9 @@ describe("ModelCalibrate actions", () => {
             warnings: [mockWarning()]
         };
 
-        const mockResultDataResponse = {
-            data: "TEST"
-        }
         const mockResponse = mockSuccess(testResult);
         mockAxios.onGet(`/calibrate/result/metadata/1234`)
             .reply(200, mockResponse);
-        mockAxios.onGet(`/calibrate/result/data/1234/all`)
-            .reply(200, mockResultDataResponse);
 
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -205,7 +200,7 @@ describe("ModelCalibrate actions", () => {
 
         await actions.getResult({commit, state, rootState, dispatch} as any);
 
-        expect(commit.mock.calls.length).toBe(5);
+        expect(commit.mock.calls.length).toBe(4);
         expect(commit.mock.calls[0][0]).toStrictEqual({
             type: "MetadataFetched",
             payload: testResult
@@ -226,13 +221,7 @@ describe("ModelCalibrate actions", () => {
         expect(options.length).toBe(2);
 
         expect(commit.mock.calls[2][0]).toBe("Calibrated");
-        expect(commit.mock.calls[3][0]).toEqual({
-            type: ModelCalibrateMutation.CalibrateResultFetched,
-            payload: {
-                data: "TEST"
-            }
-        });
-        expect(commit.mock.calls[4][0]).toBe("Ready");
+        expect(commit.mock.calls[3][0]).toBe("Ready");
         expect(dispatch.mock.calls[0][0]).toBe("getCalibratePlot");
         expect(dispatch.mock.calls[1][0]).toBe("getComparisonPlot");
 

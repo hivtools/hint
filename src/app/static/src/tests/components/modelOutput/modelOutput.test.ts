@@ -22,6 +22,8 @@ import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 import {BarchartIndicator, Filter} from "../../../app/types";
 import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
+import {ModelRunMutation} from "../../../app/store/modelRun/mutations";
+import {IndicatorSelections} from "../../../app/store/plottingSelections/plottingSelections";
 
 function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"], comparisonPlotFilters: any = ["TEST COMPARISON FILTERS"], comparisonPlotError: any = null) {
     const store = new Vuex.Store({
@@ -44,11 +46,13 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                 namespaced: true,
                 state: mockModelCalibrateState(
                     {
-                        result: mockCalibrateResultResponse({data: ["TEST DATA"] as any}),
                         comparisonPlotResult: mockComparisonPlotResponse({data: ["TEST COMPARISON DATA"] as any}),
                         comparisonPlotError
                     }
-                )
+                ),
+                getters: {
+                    calibrateData: jest.fn().mockReturnValue((indicators: IndicatorSelections) => ["TEST CALIBRATE DATA"])
+                }
             },
             modelOutput: {
                 namespaced: true,
@@ -104,7 +108,10 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                     },
                     ...partialSelections
                 },
-                mutations: plottingSelectionMutations
+                mutations: plottingSelectionMutations,
+                actions: {
+                    updateBarchartSelections: jest.fn()
+                }
             },
             downloadResults: {
                 namespaced: true,
@@ -162,7 +169,7 @@ describe("ModelOutput component", () => {
         const vm = wrapper.vm as any;
 
         const barchart = wrapper.findComponent(BarChartWithFilters);
-        expect(barchart.props().chartData).toStrictEqual(["TEST DATA"]);
+        expect(barchart.props().chartData).toStrictEqual(["TEST CALIBRATE DATA"]);
         expect(barchart.props().filterConfig).toBe(vm.barchartFilterConfig);
         expect(barchart.props().indicators).toStrictEqual(["TEST BARCHART INDICATORS"]);
         expect(barchart.props().selections).toBe(vm.barchartSelections);
@@ -317,7 +324,7 @@ describe("ModelOutput component", () => {
         });
         const vm = (wrapper as any).vm;
 
-        expect(vm.chartdata).toStrictEqual(["TEST DATA"]);
+        expect(vm.chartdata).toStrictEqual(["TEST CALIBRATE DATA"]);
     });
 
     it("computes barchart selections", () => {
@@ -924,7 +931,7 @@ describe("ModelOutput component", () => {
         expect(table.props().filters).toStrictEqual(["TEST CHORO FILTERS"]);
         expect(table.props().selections).toStrictEqual({test: "TEST CHORO SELECTIONS"});
         expect(table.props().indicators).toStrictEqual(["TEST CHORO INDICATORS"]);
-        expect(table.props().tableData).toStrictEqual(["TEST DATA"]);
+        expect(table.props().tableData).toStrictEqual(["TEST CALIBRATE DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
     });
 
@@ -956,7 +963,7 @@ describe("ModelOutput component", () => {
         expect(table.props().filters).toStrictEqual(["TEST BUBBLE FILTERS"]);
         expect(table.props().selections).toStrictEqual({test: "TEST BUBBLE SELECTIONS"});
         expect(table.props().indicators).toStrictEqual(["TEST BUBBLE INDICATORS", "TEST BUBBLE INDICATORS"]);
-        expect(table.props().tableData).toStrictEqual(["TEST DATA"]);
+        expect(table.props().tableData).toStrictEqual(["TEST CALIBRATE DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
     });
 
@@ -1015,7 +1022,7 @@ describe("ModelOutput component", () => {
                 age: [{id: "a1", label: "0-4"}]
             }
         });
-        expect(table.props().tableData).toStrictEqual(["TEST DATA"]);
+        expect(table.props().tableData).toStrictEqual(["TEST CALIBRATE DATA"]);
         expect(table.props().countryAreaFilterOption).toStrictEqual({TEST: "TEST countryAreaFilterOption"});
         expect(table.props().translateFilterLabels).toBe(true);
     });
