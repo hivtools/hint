@@ -21,6 +21,9 @@ import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 import {BarchartIndicator, Filter} from "../../../app/types";
 import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
+import {mount} from "@vue/test-utils";
+import Hint from "../../../app/components/Hint.vue";
+import DataExploration from "../../../app/components/dataExploration/DataExploration.vue";
 
 function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"], comparisonPlotFilters: any = ["TEST COMPARISON FILTERS"], comparisonPlotError: any = null) {
     const store = new Vuex.Store({
@@ -105,7 +108,8 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                 },
                 mutations: plottingSelectionMutations,
                 actions: {
-                    updateBarchartSelections: jest.fn()
+                    updateBarchartSelections: jest.fn(),
+                    getResultData: jest.fn()
                 }
             },
             downloadResults: {
@@ -1116,5 +1120,19 @@ describe("ModelOutput component", () => {
         indicator.scale = 10;
         indicator.accuracy = 100;
         expect((wrapper.vm as any).formatBarchartValue(4231, indicator)).toBe("42300");
+    });
+
+    it("triggers download if data not available for indicator on mount", () => {
+        const mockGetResultData = jest.fn();
+        ModelOutput.methods!.getResultData = mockGetResultData;
+        const store = getStore();
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
+            global: {
+                plugins: [store]
+            }
+        });
+
+        expect(mockGetResultData.mock.calls.length).toBe(1);
+        expect(mockGetResultData.mock.calls[0][0]).toBe("TestIndicator");
     });
 });

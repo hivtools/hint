@@ -316,6 +316,7 @@
                 "updateOutputChoroplethSelections", "updateOutputColourScales", "updateOutputBubbleSizeScales"] as const),
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected),
             updateBarchartSelections: mapActionByName<BarchartSelections>("plottingSelections", "updateBarchartSelections"),
+            getResultData: mapActionByName<ModelCalibrateState>("modelCalibrate", "getResultData"),
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
             },
@@ -349,7 +350,8 @@
         },
         mounted() {
             this.prepareOutputDownloads();
-            this.updateBarchartSelections({payload: this.barchartSelections});
+            const current_indicator = this.barchartSelections.indicatorId
+            this.getResultData(current_indicator);
         },
         components: {
             BarChartWithFilters,

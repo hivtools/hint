@@ -272,4 +272,19 @@ describe("ModelCalibrate mutations", () => {
         mutations[ModelCalibrateMutation.ResetIds](state);
         expect(state.statusPollId).toEqual(-1);
     });
+
+    it("accumulates result data", () => {
+        const state = mockModelCalibrateState();
+        const data1 = { "data": [{indicator: "plhiv", value: 1}]};
+        mutations[ModelCalibrateMutation.CalibrateResultFetched](state, {payload: data1});
+        expect(state.result).toBe(data1);
+
+        const data2 = { "data": [{indicator: "plhiv", value: 2}]};
+        mutations[ModelCalibrateMutation.CalibrateResultFetched](state, {payload: data2});
+        const expected = { "data": [
+                {indicator: "plhiv", value: 1},
+                {indicator: "plhiv", value: 2}
+            ]};
+        expect(state.result).toStrictEqual(expected);
+    });
 });
