@@ -1,5 +1,5 @@
 import {Payload} from "vuex";
-import {Error, FilterOption, VersionInfo, Warning} from "./generated";
+import {CalibrateDataResponse, Error, FilterOption, VersionInfo, Warning} from "./generated";
 import {Language} from "./store/translations/locales";
 
 export interface PayloadWithType<T> extends Payload {
@@ -375,4 +375,9 @@ export enum Step {
 
 export interface PollingState {
     statusPollId: number
+}
+
+export interface CalibrateResultWithType {
+    data: CalibrateDataResponse["data"];
+    indicatorId: string;
 }

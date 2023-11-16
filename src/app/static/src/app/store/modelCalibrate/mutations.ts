@@ -1,7 +1,7 @@
 import {MutationTree} from 'vuex';
 import {ModelCalibrateState} from "./modelCalibrate";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
-import {PayloadWithType} from "../../types";
+import {CalibrateResultWithType, PayloadWithType} from "../../types";
 import {writeOptionsIntoForm} from "../../utils";
 import {
     CalibrateMetadataResponse,
@@ -146,7 +146,15 @@ export const mutations: MutationTree<ModelCalibrateState> = {
 
     [ModelCalibrateMutation.ResetIds](state: ModelCalibrateState) {
         stopPolling(state)
-    }
+    },
+
+    [ModelCalibrateMutation.CalibrateResultFetched](state: ModelCalibrateState, action: PayloadWithType<CalibrateResultWithType>) {
+        if (!state.result) {
+            state.result = action.payload
+        } else {
+            state.result.data = [...state.result.data, ...action.payload.data]
+        }
+    },
 };
 
 const stopPolling = (state: ModelCalibrateState) => {

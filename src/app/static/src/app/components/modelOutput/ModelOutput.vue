@@ -312,9 +312,10 @@
         },
         methods: {
             ...mapMutationsByNames("plottingSelections",
-                ["updateBarchartSelections", "updateComparisonPlotSelections", "updateBubblePlotSelections",
+                ["updateComparisonPlotSelections", "updateBubblePlotSelections",
                 "updateOutputChoroplethSelections", "updateOutputColourScales", "updateOutputBubbleSizeScales"] as const),
             tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected),
+            updateBarchartSelections: mapActionByName<BarchartSelections>("plottingSelections", "updateBarchartSelections"),
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
             },
@@ -348,6 +349,7 @@
         },
         mounted() {
             this.prepareOutputDownloads();
+            this.updateBarchartSelections({payload: this.barchartSelections});
         },
         components: {
             BarChartWithFilters,

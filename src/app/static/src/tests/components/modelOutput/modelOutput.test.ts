@@ -1,8 +1,7 @@
 import Vuex from 'vuex';
 import ModelOutput from "../../../app/components/modelOutput/ModelOutput.vue";
 import {
-    mockBaselineState,
-    mockCalibrateResultResponse,
+    mockBaselineState, mockCalibrateResultResponse,
     mockComparisonPlotResponse,
     mockError,
     mockModelCalibrateState,
@@ -104,7 +103,10 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                     },
                     ...partialSelections
                 },
-                mutations: plottingSelectionMutations
+                mutations: plottingSelectionMutations,
+                actions: {
+                    updateBarchartSelections: jest.fn()
+                }
             },
             downloadResults: {
                 namespaced: true,
