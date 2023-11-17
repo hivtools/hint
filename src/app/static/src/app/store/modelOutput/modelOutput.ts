@@ -48,6 +48,23 @@ export const modelOutputGetters = {
             }
         });
     },
+    tableFilters: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): DisplayFilter[] => {
+        const outputFilters = outputPlotFilters(rootState) as Filter[];
+        const currentPreset = rootState.plottingSelections.table.preset;
+        const presetMetadata = rootState.modelCalibrate.metadata?.tableMetadata.presets;
+        const currentPresentMetadata = presetMetadata?.find(p => p.label === currentPreset);
+        if (currentPreset && currentPresentMetadata && presetMetadata) {
+            return outputFilters.map(f => {
+                return {
+                    ...f,
+                    allowMultiple: f.id === currentPresentMetadata.column || f.id === currentPresentMetadata.row,
+                    options: f.options
+                }
+            });
+        } else {
+            return []
+        }
+    },
     countryAreaFilterOption: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): FilterOption => {
         const outputFilters = outputPlotFilters(rootState) as Filter[];
         return outputFilters[0].options[0]

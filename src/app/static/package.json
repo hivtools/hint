@@ -104,7 +104,7 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
-    "@reside-ic/vue-nested-multiselect": "0.0.5",
+    "@reside-ic/vue-nested-multiselect": "0.0.11",
     "@reside-ic/vue-next-dynamic-form": "^1.1.5",
     "@reside-ic/vue3-treeselect": "^1.0.18",
     "@types/chart.js": "^2.9.14",
