@@ -141,7 +141,7 @@ describe("ModelOutput component", () => {
     });
 
     it("renders choropleth", async () => {
-        const store = getStore();
+        const store = getStore({selectedTab: ModelOutputTabs.Map});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const choro = wrapper.findComponent(Choropleth);
@@ -153,7 +153,7 @@ describe("ModelOutput component", () => {
     });
 
     it("renders bubble plot", () => {
-        const store = getStore({selectedTab: "bubble"});
+        const store = getStore({selectedTab: ModelOutputTabs.Bubble});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const bubble = wrapper.findComponent(BubblePlot);
@@ -166,7 +166,7 @@ describe("ModelOutput component", () => {
     });
 
     it("renders barchart", () => {
-        const store = getStore({selectedTab: "bar"});
+        const store = getStore({selectedTab: ModelOutputTabs.Bar});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
         const vm = wrapper.vm as any;
 
@@ -182,7 +182,7 @@ describe("ModelOutput component", () => {
     });
 
     it("renders table", () => {
-        const store = getStore({selectedTab: "table"});
+        const store = getStore({selectedTab: ModelOutputTabs.Table});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
         const table = wrapper.findComponent(OutputTable);
         expect(table.exists()).toBe(true);
@@ -190,7 +190,7 @@ describe("ModelOutput component", () => {
     });
 
     it("renders comparison plot", () => {
-        const store = getStore({selectedTab: "comparison"});
+        const store = getStore({selectedTab: ModelOutputTabs.Comparison});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
         const vm = wrapper.vm as any;
 
@@ -209,14 +209,14 @@ describe("ModelOutput component", () => {
 
     it("renders comparison plot error", () => {
         const error = mockError("comparison plot error occurred")
-        const store = getStore({selectedTab: "comparison"}, {}, {}, [], [], error);
+        const store = getStore({selectedTab: ModelOutputTabs.Comparison}, {}, {}, [], [], error);
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
         expect(wrapper.findAllComponents(ErrorAlert).length).toBe(1);
         expect(wrapper.findComponent(ErrorAlert).props().error).toStrictEqual(error);
     });
 
     it("does not render comparison plot if no there are no comparison plot indicators", () => {
-        const store = getStore({selectedTab: "comparison"}, {comparisonPlotIndicators: jest.fn().mockReturnValue([])});
+        const store = getStore({selectedTab: ModelOutputTabs.Comparison}, {comparisonPlotIndicators: jest.fn().mockReturnValue([])});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
         expect(wrapper.findAllComponents(BarChartWithFilters).length).toBe(1);
     });
@@ -230,7 +230,7 @@ describe("ModelOutput component", () => {
     });
 
     it("gets selected tab from state", () => {
-        const store = getStore({selectedTab: "bar"});
+        const store = getStore({selectedTab: ModelOutputTabs.Bar});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const activeTab = wrapper.find("a.active");
@@ -246,75 +246,101 @@ describe("ModelOutput component", () => {
         });
         expect(wrapper.findAll(".nav-link").length).toBe(5);
 
-        expect(wrapper.find(".nav-link.active").text()).toBe("Map");
-        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+        expect(wrapper.find(".nav-link.active").text()).toBe("Bar");
 
-        expect(wrapper.find("#barchart-container").exists()).toBe(false);
+        expect(wrapper.findAll("#barchart-container").length).toBe(1);
+        expect(wrapper.find("#barchart-container").classes()).toEqual(["col-md-12"]);
+        expect(wrapper.findAllComponents(BarChartWithFilters).length).toBe(1);
+
+        expect(wrapper.find("#table-container").exists()).toBe(false);
+        expect(wrapper.find("output-table-stub").exists()).toBe(false);
+
+        expect(wrapper.find("#choropleth-container").exists()).toBe(false);
+        expect(wrapper.find("choropleth-stub").exists()).toBe(false);
+
         expect(wrapper.find("#comparison-container").exists()).toBe(false);
+        expect(wrapper.find("barchart-stub").exists()).toBe(false);
 
-        expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
-        expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
-
-        expect(wrapper.findAll("#table-container").length).toBe(0);
+        expect(wrapper.find("#bubble-plot-container").exists()).toBe(false);
+        expect(wrapper.find("bubble-plot-stub").exists()).toBe(false);
 
         //should invoke mutation
         await wrapper.findAll(".nav-link")[1].trigger("click");
 
-        expect(wrapper.find(".nav-link.active").text()).toBe("Bar");
-        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
-        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
+        expect(wrapper.find(".nav-link.active").text()).toBe("Table");
 
-        expect(wrapper.find("#barchart-container").classes()).toEqual(["col-md-12"]);
-        expect(wrapper.findAllComponents(BarChartWithFilters).length).toBe(1);
+        expect(wrapper.find("#barchart-container").exists()).toBe(false);
+        expect(wrapper.find("barchart-stub").exists()).toBe(false);
+
+        expect(wrapper.findAll("#table-container").length).toBe(1);
+        expect(wrapper.findAll("output-table-stub").length).toBe(1);
+
+        expect(wrapper.find("#choropleth-container").exists()).toBe(false);
+        expect(wrapper.find("choropleth-stub").exists()).toBe(false);
+
         expect(wrapper.find("#comparison-container").exists()).toBe(false);
+        expect(wrapper.find("barchart-stub").exists()).toBe(false);
 
-        expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
-        expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
-
-        expect(wrapper.findAll("#table-container").length).toBe(0);
+        expect(wrapper.find("#bubble-plot-container").exists()).toBe(false);
+        expect(wrapper.find("bubble-plot-stub").exists()).toBe(false);
 
         await wrapper.findAll(".nav-link")[2].trigger("click");
 
-        expect(wrapper.find(".nav-link.active").text()).toBe("Bubble Plot");
-        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
-        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
+        expect(wrapper.find(".nav-link.active").text()).toBe("Map");
 
         expect(wrapper.find("#barchart-container").exists()).toBe(false);
+        expect(wrapper.find("barchart-stub").exists()).toBe(false);
+
+        expect(wrapper.find("#table-container").exists()).toBe(false);
+        expect(wrapper.find("output-table-stub").exists()).toBe(false);
+
+        expect(wrapper.findAll("#choropleth-container").length).toBe(1);
+        expect(wrapper.findAll("choropleth-stub").length).toBe(1);
+
         expect(wrapper.find("#comparison-container").exists()).toBe(false);
+        expect(wrapper.find("barchart-stub").exists()).toBe(false);
 
-        expect(wrapper.findAll("#bubble-plot-container").length).toBe(1);
-        expect(wrapper.findAll("bubble-plot-stub").length).toBe(1);
-
-        expect(wrapper.findAll("#table-container").length).toBe(0);
+        expect(wrapper.find("#bubble-plot-container").exists()).toBe(false);
+        expect(wrapper.find("bubble-plot-stub").exists()).toBe(false);
 
         await wrapper.findAll(".nav-link")[3].trigger("click");
 
         expect(wrapper.find(".nav-link.active").text()).toBe("Comparison");
-        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
-        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
 
         expect(wrapper.find("#barchart-container").exists()).toBe(false);
+        expect(wrapper.find("barchart-stub").exists()).toBe(false);
+
+        expect(wrapper.find("#table-container").exists()).toBe(false);
+        expect(wrapper.find("output-table-stub").exists()).toBe(false);
+
+        expect(wrapper.find("#choropleth-container").exists()).toBe(false);
+        expect(wrapper.find("choropleth-stub").exists()).toBe(false);
+
+        expect(wrapper.findAll("#comparison-container").length).toBe(1);
         expect(wrapper.find("#comparison-container").classes()).toEqual(["col-md-12"]);
         expect(wrapper.findAllComponents(BarChartWithFilters).length).toBe(1);
 
-        expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
-        expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
-
-        expect(wrapper.findAll("#table-container").length).toBe(0);
+        expect(wrapper.find("#bubble-plot-container").exists()).toBe(false);
+        expect(wrapper.find("bubble-plot-stub").exists()).toBe(false);
 
         await wrapper.findAll(".nav-link")[4].trigger("click");
 
-        expect(wrapper.find(".nav-link.active").text()).toBe("Table");
-        expect(wrapper.findAll("choropleth-filters-stub").length).toBe(0);
-        expect(wrapper.findAll("choropleth-stub").length).toBe(0);
+        expect(wrapper.find(".nav-link.active").text()).toBe("Bubble");
 
         expect(wrapper.find("#barchart-container").exists()).toBe(false);
+        expect(wrapper.find("barchart-stub").exists()).toBe(false);
+
+        expect(wrapper.find("#table-container").exists()).toBe(false);
+        expect(wrapper.find("output-table-stub").exists()).toBe(false);
+
+        expect(wrapper.find("#choropleth-container").exists()).toBe(false);
+        expect(wrapper.find("choropleth-stub").exists()).toBe(false);
+
         expect(wrapper.find("#comparison-container").exists()).toBe(false);
+        expect(wrapper.find("barchart-stub").exists()).toBe(false);
 
-        expect(wrapper.findAll("#bubble-plot-container").length).toBe(0);
-        expect(wrapper.findAll("bubble-plot-stub").length).toBe(0);
-
-        expect(wrapper.findAll("#table-container").length).toBe(1);
+        expect(wrapper.findAll("#bubble-plot-container").length).toBe(1);
+        expect(wrapper.findAll("bubble-plot-stub").length).toBe(1);
     });
 
     it("computes chartdata", () => {
@@ -481,7 +507,7 @@ describe("ModelOutput component", () => {
     });
 
     it("commits updated colour scale from choropleth", () => {
-        const store = getStore();
+        const store = getStore({selectedTab: ModelOutputTabs.Map});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {
             global: {
                 plugins: [store]
@@ -495,7 +521,7 @@ describe("ModelOutput component", () => {
     });
 
     it("commits updated colour scale from bubble plot", () => {
-        const store = getStore({selectedTab: "bubble"});
+        const store = getStore({selectedTab: ModelOutputTabs.Bubble});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {
             global: {
                 plugins: [store]
@@ -509,7 +535,7 @@ describe("ModelOutput component", () => {
     });
 
     it("commits updated size scale from bubble plot", () => {
-        const store = getStore({selectedTab: "bubble"});
+        const store = getStore({selectedTab: ModelOutputTabs.Bubble});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {
             global: {
                 plugins: [store]
@@ -533,7 +559,7 @@ describe("ModelOutput component", () => {
                 ]
             }
         ]
-        const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
+        const store = getStore({selectedTab: ModelOutputTabs.Bar}, {}, {}, testBarchartFilters);
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {
             global: {
                 plugins: [store]
@@ -574,7 +600,7 @@ describe("ModelOutput component", () => {
                 ]
             }
         ]
-        const store = getStore({selectedTab: "comparison"}, {}, {}, testComparisonPlotFilters);
+        const store = getStore({selectedTab: ModelOutputTabs.Comparison}, {}, {}, testComparisonPlotFilters);
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {
             global: {
                 plugins: [store]
@@ -615,7 +641,7 @@ describe("ModelOutput component", () => {
                 ]
             }
         ]
-        const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
+        const store = getStore({selectedTab: ModelOutputTabs.Bar}, {}, {}, testBarchartFilters);
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {
             global: {
                 plugins: [store]
@@ -655,7 +681,7 @@ describe("ModelOutput component", () => {
                 ]
             }
         ]
-        const store = getStore({selectedTab: "bar"}, {}, {}, testComparisonPlotFilters);
+        const store = getStore({selectedTab: ModelOutputTabs.Bar}, {}, {}, testComparisonPlotFilters);
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {
             global: {
                 plugins: [store]
@@ -686,7 +712,7 @@ describe("ModelOutput component", () => {
 
     it("commits updated selections from barchart as normal if no barchart filters are provided", () => {
         const testBarchartFilters: Filter[] = []
-        const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
+        const store = getStore({selectedTab: ModelOutputTabs.Bar}, {}, {}, testBarchartFilters);
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {
             global: {
                 plugins: [store]
@@ -718,7 +744,7 @@ describe("ModelOutput component", () => {
 
     it("commits updated selections from comparison plot as normal if no barchart filters are provided", () => {
         const testComparisonPlotFilters: Filter[] = []
-        const store = getStore({selectedTab: "bar"}, {}, {}, testComparisonPlotFilters);
+        const store = getStore({selectedTab: ModelOutputTabs.Bar}, {}, {}, testComparisonPlotFilters);
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {
             global: {
                 plugins: [store]
@@ -765,7 +791,7 @@ describe("ModelOutput component", () => {
             }
         ]
 
-        const store = getStore({selectedTab: "comparison"}, {
+        const store = getStore({selectedTab: ModelOutputTabs.Comparison}, {
             comparisonPlotDefaultSelections: jest.fn().mockReturnValue(comparisonDefaultSelections)
         }, {});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {
@@ -803,7 +829,7 @@ describe("ModelOutput component", () => {
             }
         ]
 
-        const store = getStore({selectedTab: "comparison"}, {
+        const store = getStore({selectedTab: ModelOutputTabs.Comparison}, {
             comparisonPlotDefaultSelections: jest.fn().mockReturnValue(comparisonDefaultSelections)
         }, {});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {
@@ -835,7 +861,7 @@ describe("ModelOutput component", () => {
                 ]
             }
         ]
-        const store = getStore({selectedTab: "bar"}, {}, {}, testBarchartFilters);
+        const store = getStore({selectedTab: ModelOutputTabs.Bar}, {}, {}, testBarchartFilters);
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {
             global: {
                 plugins: [store]
@@ -886,7 +912,7 @@ describe("ModelOutput component", () => {
                 ]
             }
         ]
-        const store = getStore({selectedTab: "bar"}, {}, {}, testComparisonPlotFilters);
+        const store = getStore({selectedTab: ModelOutputTabs.Bar}, {}, {}, testComparisonPlotFilters);
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {
             global: {
                 plugins: [store]
@@ -925,7 +951,7 @@ describe("ModelOutput component", () => {
     });
 
     it("renders choropleth table", () => {
-        const store = getStore({selectedTab: "map"});
+        const store = getStore({selectedTab: ModelOutputTabs.Map});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const table = wrapper.findComponent(AreaIndicatorsTable);
@@ -938,7 +964,8 @@ describe("ModelOutput component", () => {
     });
 
     it("renders choropleth table with correct indicator props", () => {
-        const store = getStore({}, {
+        const store = getStore({selectedTab: ModelOutputTabs.Map},
+            {
                 choroplethIndicators: jest.fn().mockReturnValue(
                     [
                         {"indicator": "prevalence", "indicator_value": "2"},
@@ -957,7 +984,7 @@ describe("ModelOutput component", () => {
     });
 
     it("renders bubble plot table", () => {
-        const store = getStore({selectedTab: "bubble"});
+        const store = getStore({selectedTab: ModelOutputTabs.Bubble});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const table = wrapper.findComponent(AreaIndicatorsTable);
@@ -972,7 +999,7 @@ describe("ModelOutput component", () => {
     it("renders bubble plot table with correct indicator props", () => {
         const store = getStore(
             {
-                selectedTab: "bubble"
+                selectedTab: ModelOutputTabs.Bubble
             },
             {
                 bubblePlotIndicators: jest.fn().mockReturnValue(
@@ -1008,7 +1035,7 @@ describe("ModelOutput component", () => {
     });
 
     it("renders barchart table", () => {
-        const store = getStore({selectedTab: "bar"});
+        const store = getStore({selectedTab: ModelOutputTabs.Bar});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const table = wrapper.findComponent(AreaIndicatorsTable);
@@ -1030,7 +1057,7 @@ describe("ModelOutput component", () => {
     });
 
     it("renders barchart table with correct indicator props", () => {
-        const store = getStore({selectedTab: "bar"}, {
+        const store = getStore({selectedTab: ModelOutputTabs.Bar}, {
                 barchartIndicators: jest.fn().mockReturnValue(
                     [
                         {"indicator": "prevalence", "indicator_value": "2"},
@@ -1053,7 +1080,7 @@ describe("ModelOutput component", () => {
     });
 
     it("renders comparison plot table", () => {
-        const store = getStore({selectedTab: "comparison"});
+        const store = getStore({selectedTab: ModelOutputTabs.Comparison});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const table = wrapper.findComponent(AreaIndicatorsTable);
@@ -1075,7 +1102,7 @@ describe("ModelOutput component", () => {
     });
 
     it("renders comparison plot table with correct indicator props", () => {
-        const store = getStore({selectedTab: "comparison"}, {
+        const store = getStore({selectedTab: ModelOutputTabs.Comparison}, {
             comparisonPlotIndicators: jest.fn().mockReturnValue(
                 [
                     {"indicator": "prevalence", "indicator_value": "2"},
