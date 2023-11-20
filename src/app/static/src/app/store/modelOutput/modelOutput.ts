@@ -3,6 +3,7 @@ import {RootState} from "../../root";
 import {BarchartIndicator, DisplayFilter, Filter} from "../../types";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {mutations} from "./mutations";
+import {actions} from "./actions";
 import {rootOptionChildren} from "../../utils";
 import {UnadjustedBarchartSelections} from "../plottingSelections/plottingSelections";
 
@@ -84,6 +85,7 @@ export const modelOutput = (existingState: Partial<RootState> | null): Module<Mo
         namespaced,
         state: {...initialModelOutputState(), ...existingState && existingState.modelOutput},
         getters: modelOutputGetters,
-        mutations
+        mutations,
+        actions
     };
 };

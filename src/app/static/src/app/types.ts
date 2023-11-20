@@ -381,3 +381,11 @@ export interface CalibrateResultWithType {
     data: CalibrateDataResponse["data"];
     indicatorId: string;
 }
+
+export enum ModelOutputTabs {
+    Map = "map",
+    Bar = "bar",
+    Bubble = "bubble",
+    Comparison = "comparison",
+    Table = "table"
+}

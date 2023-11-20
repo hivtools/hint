@@ -8,7 +8,9 @@ import {
     mockShapeResponse
 } from "../../mocks";
 import {mutations as modelOutputMutations} from "../../../app/store/modelOutput/mutations";
+import {actions as modelOutputActions} from "../../../app/store/modelOutput/actions";
 import {mutations as plottingSelectionMutations} from "../../../app/store/plottingSelections/mutations";
+import {actions as plottingSelectionActions} from "../../../app/store/plottingSelections/actions";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
 import {inactiveFeatures} from "../../../app/main";
@@ -24,6 +26,7 @@ import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import {mount} from "@vue/test-utils";
 import Hint from "../../../app/components/Hint.vue";
 import DataExploration from "../../../app/components/dataExploration/DataExploration.vue";
+import {nextTick} from "vue";
 
 function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"], comparisonPlotFilters: any = ["TEST COMPARISON FILTERS"], comparisonPlotError: any = null) {
     const store = new Vuex.Store({
@@ -50,7 +53,10 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                         comparisonPlotResult: mockComparisonPlotResponse({data: ["TEST COMPARISON DATA"] as any}),
                         comparisonPlotError
                     }
-                )
+                ),
+                actions: {
+                    getResultData: jest.fn()
+                }
             },
             modelOutput: {
                 namespaced: true,
@@ -71,7 +77,8 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                     comparisonPlotDefaultSelections: jest.fn().mockReturnValue(["TEST comparisonPlotDefaultSelections"]),
                     ...partialGetters
                 },
-                mutations: modelOutputMutations
+                mutations: modelOutputMutations,
+                actions: modelOutputActions
             },
             plottingSelections: {
                 namespaced: true,
@@ -107,10 +114,7 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                     ...partialSelections
                 },
                 mutations: plottingSelectionMutations,
-                actions: {
-                    updateBarchartSelections: jest.fn(),
-                    getResultData: jest.fn()
-                }
+                actions: plottingSelectionActions
             },
             downloadResults: {
                 namespaced: true,
@@ -137,7 +141,7 @@ describe("ModelOutput component", () => {
         inactiveFeatures.splice(0, inactiveFeatures.length);
     });
 
-    it("renders choropleth", () => {
+    it("renders choropleth", async () => {
         const store = getStore();
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
@@ -745,7 +749,7 @@ describe("ModelOutput component", () => {
         expect(store.state.plottingSelections.comparisonPlot).toStrictEqual(expectedComparisonPlotSelections);
     });
 
-    it("commits default selections from comparison plot when indicator changes", () => {
+    it("commits default selections from comparison plot when indicator changes", async () => {
 
         const comparisonDefaultSelections = [
             {
@@ -778,6 +782,10 @@ describe("ModelOutput component", () => {
         };
 
         comparisonPlot.vm.$emit("update:selections", comparisonPlotSelections);
+
+        await nextTick();
+        await nextTick();
+
         expect(currentComparisonPlotSelections.xAxisId).toBe("age")
         expect(store.state.plottingSelections.comparisonPlot)
             .toStrictEqual({
@@ -1120,19 +1128,5 @@ describe("ModelOutput component", () => {
         indicator.scale = 10;
         indicator.accuracy = 100;
         expect((wrapper.vm as any).formatBarchartValue(4231, indicator)).toBe("42300");
-    });
-
-    it("triggers download if data not available for indicator on mount", () => {
-        const mockGetResultData = jest.fn();
-        ModelOutput.methods!.getResultData = mockGetResultData;
-        const store = getStore();
-        const wrapper = shallowMountWithTranslate(ModelOutput, store, {
-            global: {
-                plugins: [store]
-            }
-        });
-
-        expect(mockGetResultData.mock.calls.length).toBe(1);
-        expect(mockGetResultData.mock.calls[0][0]).toBe("TestIndicator");
     });
 });
