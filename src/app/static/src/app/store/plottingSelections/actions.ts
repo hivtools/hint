@@ -42,9 +42,6 @@ export const actions: ActionTree<PlottingSelectionsState, DataExplorationState> 
     async updateComparisonPlotSelections(context, payload) {
         const {commit, dispatch} = context;
         const indicatorId = payload.payload.indicatorId;
-        console.debug("indicator id")
-        console.debug(indicatorId)
-        console.debug(payload.payload)
         await dispatch("modelCalibrate/getResultData", indicatorId, {root:true});
         commit({type: PlottingSelectionsMutations.updateComparisonPlotSelections, payload: payload.payload});
     }

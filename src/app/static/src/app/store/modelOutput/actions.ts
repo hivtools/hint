@@ -13,8 +13,6 @@ export const actions: ActionTree<ModelOutputState, DataExplorationState> & Model
     async updateSelectedTab(context, tab) {
         const {commit, rootState, dispatch} = context;
 
-        console.debug("running updateSelectedTab")
-
         const currentIndicators: string[] = [];
         switch (tab) {
             case ModelOutputTabs.Bar:

@@ -156,7 +156,6 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
     }
 };
 
-
 export const getResultMetadata = async function (context: ActionContext<ModelCalibrateState, RootState>) {
     const {commit, dispatch, state} = context;
     const calibrateId = state.calibrateId;
