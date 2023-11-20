@@ -11,7 +11,6 @@ export interface PlottingSelectionsActions {
     updateBarchartSelections: (store: ActionContext<PlottingSelectionsState, DataExplorationState>, payload: PayloadWithType<BarchartSelections>) => void
     updateChoroplethSelections: (store: ActionContext<PlottingSelectionsState, DataExplorationState>, payload: PayloadWithType<Partial<ChoroplethSelections>>) => void
     updateBubblePlotSelections: (store: ActionContext<PlottingSelectionsState, DataExplorationState>, payload: PayloadWithType<Partial<BubblePlotSelections>>) => void
-    updateComparisonPlotSelections: (store: ActionContext<PlottingSelectionsState, DataExplorationState>, payload: PayloadWithType<BarchartSelections>) => void
 }
 
 export const actions: ActionTree<PlottingSelectionsState, DataExplorationState> & PlottingSelectionsActions = {
@@ -37,12 +36,5 @@ export const actions: ActionTree<PlottingSelectionsState, DataExplorationState> 
         if (colourIndicatorId) await dispatch("modelCalibrate/getResultData", colourIndicatorId, {root:true});
         if (sizeIndicatorId) await dispatch("modelCalibrate/getResultData", sizeIndicatorId, {root:true});
         commit({type: PlottingSelectionsMutations.updateBubblePlotSelections, payload: payload.payload});
-    },
-
-    async updateComparisonPlotSelections(context, payload) {
-        const {commit, dispatch} = context;
-        const indicatorId = payload.payload.indicatorId;
-        await dispatch("modelCalibrate/getResultData", indicatorId, {root:true});
-        commit({type: PlottingSelectionsMutations.updateComparisonPlotSelections, payload: payload.payload});
     }
 };

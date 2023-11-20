@@ -20,13 +20,12 @@ import Choropleth from "../../../app/components/plots/choropleth/Choropleth.vue"
 import BubblePlot from "../../../app/components/plots/bubble/BubblePlot.vue";
 import OutputTable from "../../../app/components/outputTable/OutputTable.vue"
 import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
-import {BarchartIndicator, Filter} from "../../../app/types";
+import {BarchartIndicator, Filter, ModelOutputTabs} from "../../../app/types";
 import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
 import {mount} from "@vue/test-utils";
 import Hint from "../../../app/components/Hint.vue";
 import DataExploration from "../../../app/components/dataExploration/DataExploration.vue";
-import {nextTick} from "vue";
 
 function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"], comparisonPlotFilters: any = ["TEST COMPARISON FILTERS"], comparisonPlotError: any = null) {
     const store = new Vuex.Store({
@@ -782,10 +781,6 @@ describe("ModelOutput component", () => {
         };
 
         comparisonPlot.vm.$emit("update:selections", comparisonPlotSelections);
-
-        await nextTick();
-        await nextTick();
-
         expect(currentComparisonPlotSelections.xAxisId).toBe("age")
         expect(store.state.plottingSelections.comparisonPlot)
             .toStrictEqual({

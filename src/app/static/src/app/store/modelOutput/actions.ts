@@ -23,7 +23,8 @@ export const actions: ActionTree<ModelOutputState, DataExplorationState> & Model
                 currentIndicators.push(rootState.plottingSelections.bubble.sizeIndicatorId);
                 break;
             case ModelOutputTabs.Comparison:
-                currentIndicators.push(rootState.plottingSelections.comparisonPlot.indicatorId);
+                // Comparison plot data is fetched separately immediately after calibration is complete
+                // We don't need to retrieve slices of it here.
                 break;
             case ModelOutputTabs.Map:
                 currentIndicators.push(rootState.plottingSelections.outputChoropleth.indicatorId);

@@ -120,27 +120,4 @@ describe("PlottingSelection actions", () => {
         expect(commit.mock.calls[1][0].type).toBe(PlottingSelectionsMutations.updateBubblePlotSelections);
         expect(commit.mock.calls[1][0].payload).toBe(bubbleSelections2);
     });
-
-    it("updateComparisonPlotSelections dispatches data action and commits mutation", async () => {
-        const commit = jest.fn();
-        const dispatch = jest.fn();
-        const comparisonSelections = {
-            indicatorId: "test-indicator",
-            xAxisId: "age",
-            disaggregateById: "test-disagg",
-            selectedFilterOptions: {
-                testFilter: []
-            }
-        } as BarchartSelections;
-
-        await actions.updateComparisonPlotSelections({commit, dispatch} as any, {payload: comparisonSelections} as any);
-
-        expect(dispatch.mock.calls.length).toBe(1);
-        expect(dispatch.mock.calls[0][0]).toBe("modelCalibrate/getResultData");
-        expect(dispatch.mock.calls[0][1]).toBe("test-indicator");
-
-        expect(commit.mock.calls.length).toBe(1);
-        expect(commit.mock.calls[0][0].type).toBe(PlottingSelectionsMutations.updateComparisonPlotSelections);
-        expect(commit.mock.calls[0][0].payload).toBe(comparisonSelections);
-    });
 });

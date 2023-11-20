@@ -225,15 +225,17 @@
             this.tabSelected(tab);
         },
         data: () => {
-            const tabs: (keyof Translations)[] = [ModelOutputTabs.Map, ModelOutputTabs.Bar];
+            const tabs: (keyof Translations)[] = [ModelOutputTabs.Bar];
+
+            if (switches.tableTab) {
+                tabs.push(ModelOutputTabs.Table);
+            }
+
+            tabs.push(ModelOutputTabs.Map);
+            tabs.push(ModelOutputTabs.Comparison);
 
             if (!inactiveFeatures.includes("BubblePlot")) {
                 tabs.push(ModelOutputTabs.Bubble);
-            }
-            tabs.push(ModelOutputTabs.Comparison);
-
-            if (switches.tableTab) {
-                tabs.push(ModelOutputTabs.Table)
             }
 
             return {
@@ -312,12 +314,11 @@
         },
         methods: {
             ...mapMutationsByNames("plottingSelections",
-                ["updateOutputColourScales", "updateOutputBubbleSizeScales"] as const),
+                ["updateComparisonPlotSelections", "updateOutputColourScales", "updateOutputBubbleSizeScales"] as const),
             tabSelected: mapActionByName<keyof Methods>("modelOutput", "updateSelectedTab"),
             updateBarchartSelections: mapActionByName<BarchartSelections>("plottingSelections", "updateBarchartSelections"),
             updateOutputChoroplethSelections: mapActionByName<ChoroplethSelections>("plottingSelections", "updateChoroplethSelections"),
             updateBubblePlotSelections: mapActionByName<BubblePlotSelections>("plottingSelections", "updateBubblePlotSelections"),
-            updateComparisonPlotSelections: mapActionByName<BarchartSelections>("plottingSelections", "updateComparisonPlotSelections"),
             getResultData: mapActionByName<ModelCalibrateState>("modelCalibrate", "getResultData"),
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();

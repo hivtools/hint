@@ -75,9 +75,7 @@ describe("ModelOutput actions", () => {
 
         await actions.updateSelectedTab({commit, rootState, dispatch} as any, ModelOutputTabs.Comparison);
 
-        expect(dispatch.mock.calls.length).toBe(1);
-        expect(dispatch.mock.calls[0][0]).toBe("modelCalibrate/getResultData");
-        expect(dispatch.mock.calls[0][1]).toBe("comparison-indicator");
+        expect(dispatch.mock.calls.length).toBe(0);
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0].type).toBe(ModelOutputMutation.TabSelected);
