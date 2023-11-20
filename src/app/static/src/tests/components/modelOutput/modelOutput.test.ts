@@ -221,20 +221,20 @@ describe("ModelOutput component", () => {
         expect(wrapper.findAllComponents(BarChartWithFilters).length).toBe(1);
     });
 
-    it("if no selected tab in state, defaults to select Map tab", () => {
+    it("if no selected tab in state, defaults to select Barchart tab", () => {
         const store = getStore();
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const activeTab = wrapper.find("a.active");
-        expectTranslated(activeTab, "Map", "Carte", "Mapa", store);
+        expectTranslated(activeTab, "Bar", "Barre", "Bar", store);
     });
 
     it("gets selected tab from state", () => {
-        const store = getStore({selectedTab: ModelOutputTabs.Bar});
+        const store = getStore({selectedTab: ModelOutputTabs.Map});
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
 
         const activeTab = wrapper.find("a.active");
-        expectTranslated(activeTab, "Bar", "Barre", "Bar", store);
+        expectTranslated(activeTab, "Map", "Carte", "Mapa", store);
     });
 
     it("can change tabs", async () => {
