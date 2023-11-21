@@ -1,6 +1,7 @@
 import { nextTick } from "vue";
 import FilterSelect from "../../src/bar/FilterSelect.vue";
 import {shallowMount} from "@vue/test-utils";
+import {mountWithTranslate} from "../../../../tests/testHelpers";
 
 const defaultProps = () => {
     return {
@@ -129,5 +130,15 @@ describe("FilterSelect component", () => {
         await wrapper.setProps({isXAxis: false, isDisaggregateBy: false});
 
         expect(wrapper.emitted("update:filter-select")![0][0]).toStrictEqual([{id: "fo1", label: "option 1"}]);
+    });
+
+    it("updates selected before triggering update event when changed via value change", async () => {
+        const  wrapper = getWrapper({
+            isXAxis: true,
+            value: [{id: "fo1", label: "option 1"}, {id: "fo2", label: "option 2"}]
+        });
+
+        await wrapper.setProps({ value: [{id: "fo2", label: "option 2"}], isXAxis: false })
+        expect(wrapper.emitted("update:filter-select")![0][0]).toStrictEqual([{id: "fo2", label: "option 2"}]);
     });
 });

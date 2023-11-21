@@ -91,6 +91,9 @@
             deselect(node: FilterOption) {
                 this.selected = this.selected.filter((n: any) => n.id != node.id);
                 this.$emit("update:filter-select", this.selected);
+            },
+            updateValue() {
+                this.selected = (this.isXAxis || this.isDisaggregateBy) ? this.value : [this.value[0]]
             }
         },
         computed: {
@@ -110,9 +113,13 @@
         },
         watch: {
             value() {
-                this.selected = (this.isXAxis || this.isDisaggregateBy) ? this.value : [this.value[0]]
+                this.updateValue();
             },
             isXAxisOrDisagg() {
+                // Make sure "selected" data has been updated from the latest "value"
+                // This avoids a potential issue with ordering where this is run before
+                // value watcher above is run
+                this.updateValue()
                 if (!this.isXAxisOrDisagg) {
                     //When we go from multi-select to single-select, update 'selected'
                     if (this.selected.length > 1) {
