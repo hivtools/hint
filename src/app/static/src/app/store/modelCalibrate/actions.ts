@@ -126,7 +126,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const {commit, state} = context;
         const calibrateId = state.calibrateId;
 
-        if (!state.status.done) {
+        if (!state.status.done || !indicatorId) {
             // Don't try to fetch data if the calibration hasn't finished
             return
         }
