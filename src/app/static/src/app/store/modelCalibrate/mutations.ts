@@ -140,10 +140,6 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.warnings = [];
     },
 
-    [ModelCalibrateMutation.CalibrateResultFetched](state: ModelCalibrateState, action: PayloadWithType<CalibrateResultResponse>) {
-        state.result = action.payload
-    },
-
     [ModelCalibrateMutation.ResetIds](state: ModelCalibrateState) {
         stopPolling(state)
     },
