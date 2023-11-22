@@ -127,9 +127,12 @@ describe("FilterSelect component", () => {
         vm.deselect({id: "fo2", label: "option 2"});
         await nextTick();
 
-        await wrapper.setProps({isXAxis: false, isDisaggregateBy: false});
+        expect(wrapper.emitted("update:filter-select")!.length).toBe(1)
+        expect(wrapper.emitted("update:filter-select")![0][0]).toStrictEqual([]);
 
-        expect(wrapper.emitted("update:filter-select")![0][0]).toStrictEqual([{id: "fo1", label: "option 1"}]);
+        await wrapper.setProps({isXAxis: false, isDisaggregateBy: false});
+        expect(wrapper.emitted("update:filter-select")!.length).toBe(2)
+        expect(wrapper.emitted("update:filter-select")![1][0]).toStrictEqual([{id: "fo2", label: "option 2"}]);
     });
 
     it("updates selected before triggering update event when changed via value change", async () => {
