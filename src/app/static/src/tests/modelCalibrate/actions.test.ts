@@ -311,7 +311,8 @@ describe("ModelCalibrate actions", () => {
                 success: true,
                 done: true
             } as any,
-            result: mockCalibrateResultResponse()
+            result: mockCalibrateResultResponse(),
+            fetchedIndicators: new Set(["mock"])
         });
 
         await actions.getResultData({commit, state, rootState, dispatch} as any, "prevalence");

@@ -132,9 +132,9 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         }
 
         let indicatorKnown = false;
-        if (state.result) {
-            indicatorKnown = state.result.data.some(row => {
-                return row.indicator === indicatorId
+        if (state.fetchedIndicators) {
+            indicatorKnown = Array.from(state.fetchedIndicators).some(indicator => {
+                return indicator === indicatorId
             })
         }
 

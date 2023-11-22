@@ -55,6 +55,7 @@ describe("LocalStorageManager", () => {
         },
         ready: false,
         result: null,
+        fetchedIndicators: null,
         status: {},
         statusPollId: -1,
         version: {
@@ -88,6 +89,7 @@ describe("LocalStorageManager", () => {
             modelOutput: mockModelOutputState(),
             modelCalibrate: mockModelCalibrateState({
                 result: mockCalibrateResultResponse(),
+                fetchedIndicators: new Set<string>(),
                 calibratePlotResult: {data: "test calibrate plot result"},
                 comparisonPlotResult: mockComparisonPlotResponse()
             }),

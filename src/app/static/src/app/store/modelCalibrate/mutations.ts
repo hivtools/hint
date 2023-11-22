@@ -146,9 +146,14 @@ export const mutations: MutationTree<ModelCalibrateState> = {
 
     [ModelCalibrateMutation.CalibrateResultFetched](state: ModelCalibrateState, action: PayloadWithType<CalibrateResultWithType>) {
         if (!state.result) {
-            state.result = structuredClone(action.payload);
+            state.result = structuredClone({data: action.payload.data});
         } else {
             state.result.data.push(...action.payload.data);
+        }
+        if (!state.fetchedIndicators) {
+            state.fetchedIndicators = new Set<string>([action.payload.indicatorId]);
+        } else {
+            state.fetchedIndicators.add(action.payload.indicatorId);
         }
     },
 };
