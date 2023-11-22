@@ -1,7 +1,8 @@
 import { nextTick } from "vue";
 import FilterSelect from "../../src/bar/FilterSelect.vue";
 import {shallowMount} from "@vue/test-utils";
-import {mountWithTranslate} from "../../../../tests/testHelpers";
+import Vuex from "vuex";
+import {RootState, storeOptions} from "../../../root";
 
 const defaultProps = () => {
     return {
@@ -130,9 +131,13 @@ describe("FilterSelect component", () => {
         expect(wrapper.emitted("update:filter-select")!.length).toBe(1)
         expect(wrapper.emitted("update:filter-select")![0][0]).toStrictEqual([]);
 
+        // In production the event above would commit a mutation which clears the value, simulating that here
+        // for the testing
+        await wrapper.setProps({value: []});
+
         await wrapper.setProps({isXAxis: false, isDisaggregateBy: false});
         expect(wrapper.emitted("update:filter-select")!.length).toBe(2)
-        expect(wrapper.emitted("update:filter-select")![1][0]).toStrictEqual([{id: "fo2", label: "option 2"}]);
+        expect(wrapper.emitted("update:filter-select")![1][0]).toStrictEqual([{id: "fo1", label: "option 1"}]);
     });
 
     it("updates selected before triggering update event when changed via value change", async () => {
@@ -142,6 +147,6 @@ describe("FilterSelect component", () => {
         });
 
         await wrapper.setProps({ value: [{id: "fo2", label: "option 2"}], isXAxis: false })
-        expect(wrapper.emitted("update:filter-select")![0][0]).toStrictEqual([{id: "fo2", label: "option 2"}]);
+        expect(wrapper.emitted("update:filter-select")![0][0]).toStrictEqual([{id: "fo", label: "option 2"}]);
     });
 });
