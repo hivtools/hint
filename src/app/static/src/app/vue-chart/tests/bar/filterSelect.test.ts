@@ -147,6 +147,6 @@ describe("FilterSelect component", () => {
         });
 
         await wrapper.setProps({ value: [{id: "fo2", label: "option 2"}], isXAxis: false })
-        expect(wrapper.emitted("update:filter-select")![0][0]).toStrictEqual([{id: "fo", label: "option 2"}]);
+        expect(wrapper.emitted("update:filter-select")![0][0]).toStrictEqual([{id: "fo2", label: "option 2"}]);
     });
 });
