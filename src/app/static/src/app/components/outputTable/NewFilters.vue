@@ -39,8 +39,6 @@
                 const newSelectedFilterOptions = {...this.selectedFilterOptions};
                 newSelectedFilterOptions[filter.id] = selectedOptions;
 
-                console.log(newSelectedFilterOptions)
-
                 this.$emit("update:filters", newSelectedFilterOptions);
             },
         }
