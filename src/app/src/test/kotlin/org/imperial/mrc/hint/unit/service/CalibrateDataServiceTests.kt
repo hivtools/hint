@@ -18,7 +18,7 @@ class CalibrateDataServiceTests
 
     private val mockResultRow = CalibrateResultRow(
         "testIndicator", "testCalendarQuarter", "testAgeGroup", "testSex",
-        "testAreaId", 1, 2, 3, 4
+        "testAreaId", 1, 2, 3, 4, 5
     )
 
     @Test

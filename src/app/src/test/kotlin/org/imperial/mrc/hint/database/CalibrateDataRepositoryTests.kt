@@ -21,7 +21,8 @@ class CalibrateDataRepositoryTests
             0.2222,
             0.5555,
             0.1111,
-            0.9999
+            0.9999,
+            1
         ),
         CalibrateResultRow(
             "indicator_test_2",
@@ -32,7 +33,8 @@ class CalibrateDataRepositoryTests
             0.3333,
             0.8888,
             0.6666,
-            0.4444
+            0.4444,
+            2
         ),
     ))
     val expectedRowIndicator2 = JSONArray(listOf(
@@ -45,7 +47,8 @@ class CalibrateDataRepositoryTests
             0.3333,
             0.8888,
             0.6666,
-            0.4444
+            0.4444,
+            2
         )
     ))
     val path = "/src/test/resources/duckdb/test.duckdb"

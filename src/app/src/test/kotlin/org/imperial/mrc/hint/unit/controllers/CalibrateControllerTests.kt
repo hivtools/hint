@@ -23,7 +23,7 @@ class CalibrateControllerTests
     private val modelRunOptions = ModelOptions(mapOf(), mapOf())
     private val mockResultRow = CalibrateResultRow(
         "testIndicator", "testCalendarQuarter", "testAgeGroup", "testSex",
-        "testAreaId", 1, 2, 3, 4
+        "testAreaId", 1, 2, 3, 4, 5
     )
     private val mockDataFromPath = listOf(mockResultRow)
     private val mockJsonDataFromPath = ObjectMapper().writeValueAsString(JSONArray(mockDataFromPath))
