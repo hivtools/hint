@@ -6,7 +6,6 @@
                                :multiple="filter.allowMultiple"
                                :label="filter.label"
                                :options="filter.options"
-                               :disabled="filter.options.length===0"
                                @update:filter-select="onFilterSelect(filter, $event)"></new-filter-select>
         </div>
     </div>
@@ -38,8 +37,6 @@
             onFilterSelect(filter: DisplayFilter, selectedOptions: FilterOption[]) {
                 const newSelectedFilterOptions = {...this.selectedFilterOptions};
                 newSelectedFilterOptions[filter.id] = selectedOptions;
-
-                console.log(newSelectedFilterOptions)
 
                 this.$emit("update:filters", newSelectedFilterOptions);
             },

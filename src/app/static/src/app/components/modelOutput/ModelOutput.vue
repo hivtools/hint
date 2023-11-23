@@ -228,15 +228,16 @@
             }
         },
         data: () => {
-            const tabs: (keyof Translations)[] = ["map", "bar"];
-
-            if (!inactiveFeatures.includes("BubblePlot")) {
-                tabs.push("bubble");
-            }
-            tabs.push("comparison");
+            const tabs: (keyof Translations)[] = ["bar"];
 
             if (switches.tableTab) {
                 tabs.push("table")
+            }
+            tabs.push("map");
+            tabs.push("comparison");
+
+            if (!inactiveFeatures.includes("BubblePlot")) {
+                tabs.push("bubble");
             }
 
             return {

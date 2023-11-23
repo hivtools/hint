@@ -88,7 +88,9 @@
             input(nodes: FilterOption[] | FilterOption) {
                 if (!this.disabled) {
                     if (!this.multiple) {
-                        this.$emit("update:filter-select", [nodes]);
+                        if ((nodes as FilterOption).id !== this.treeselectValue) {
+                            this.$emit("update:filter-select", [nodes]);
+                        }
                     } else {
                         this.$emit("update:filter-select", nodes);
                     }

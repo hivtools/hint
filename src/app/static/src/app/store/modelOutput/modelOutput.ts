@@ -49,16 +49,15 @@ export const modelOutputGetters = {
         });
     },
     tableFilters: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): DisplayFilter[] => {
-        const outputFilters = outputPlotFilters(rootState) as Filter[];
+        const outputFilters = outputPlotFilters(rootState, "table");
         const currentPreset = rootState.plottingSelections.table.preset;
         const presetMetadata = rootState.modelCalibrate.metadata?.tableMetadata.presets;
-        const currentPresentMetadata = presetMetadata?.find(p => p.label === currentPreset);
-        if (currentPreset && currentPresentMetadata && presetMetadata) {
+        const currentPresetMetadata = presetMetadata?.find(p => p.defaults.id === currentPreset);
+        if (currentPreset && currentPresetMetadata && presetMetadata) {
             return outputFilters.map(f => {
                 return {
                     ...f,
-                    allowMultiple: f.id === currentPresentMetadata.column || f.id === currentPresentMetadata.row,
-                    options: f.options
+                    allowMultiple: f.column_id === currentPresetMetadata.defaults.row || f.column_id === currentPresetMetadata.defaults.column
                 }
             });
         } else {
@@ -71,8 +70,20 @@ export const modelOutputGetters = {
     }
 };
 
-const outputPlotFilters = (rootState: RootState, resultName: "metadata" | "comparisonPlotResult" = "metadata") => {
-    let filters = [...(rootState.modelCalibrate[resultName]?.plottingMetadata?.barchart.filters || [])];
+const outputPlotFilters = (rootState: RootState, resultName: "metadata" | "comparisonPlotResult" | "table" = "metadata") => {
+    let filters: any[];
+    if (resultName !== "table") {
+        filters = [...(rootState.modelCalibrate[resultName]?.plottingMetadata?.barchart.filters || [])];
+    } else {
+        const currentPreset = rootState.plottingSelections.table.preset;
+        const presetMetadata = rootState.modelCalibrate.metadata?.tableMetadata.presets;
+        const currentPresetMetadata = presetMetadata?.find(p => p.defaults.id === currentPreset);
+        if (currentPreset && presetMetadata && currentPresetMetadata) {
+            filters = [...(currentPresetMetadata?.filters || [])];
+        } else {
+            filters = [];
+        }
+    }
     const area = filters.find((f: any) => f.id == "area");
     if (area && area.use_shape_regions) {
         const regions: FilterOption[] = rootState.baseline.shape!.filters!.regions ?
