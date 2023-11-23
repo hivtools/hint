@@ -46,6 +46,7 @@ export interface ChoroplethSelections {
 
 export interface TableSelections {
     preset: string,
+    indicator: string,
     selectedFilterOptions: Dict<FilterOption[]>,
 }
 
@@ -117,6 +118,7 @@ export const initialChorplethSelections = (): ChoroplethSelections => {
 export const initialTableSelections = (): TableSelections => {
     return {
         preset: "",
+        indicator: "",
         selectedFilterOptions: {},
     };
 };
