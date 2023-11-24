@@ -50,10 +50,10 @@ function checkNumberControlValid(control: NumberControl): boolean {
 function checkControlOptionValid(control: ControlWithOptions): boolean {
     let valid = true;
 
-    const options = getAllOptionIds(control)
+    const options = getAllOptionIds(control);
     const value = control.value;
     // Check string and array types, otherwise we assume valid
-    if (typeof value === 'string') {
+    if (typeof value === 'string' && value) {
         valid = options.includes(value);
     } else if (Array.isArray(value)) {
         valid = value.every(item => options.includes(item));
@@ -63,6 +63,9 @@ function checkControlOptionValid(control: ControlWithOptions): boolean {
 }
 
 function getAllOptionIds(control: ControlWithOptions): string[] {
+    if (!control.options) {
+        return [];
+    }
     return control.options.flatMap((option: Option) => getOptionIds(option));
 }
 
