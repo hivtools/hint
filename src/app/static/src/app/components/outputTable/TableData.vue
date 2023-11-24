@@ -1,5 +1,5 @@
 <template>
-    <table-display :data="filteredData"/>
+    <table-reshape-data :data="filteredData"/>
 </template>
 
 <script lang="ts">
@@ -7,11 +7,11 @@ import { computed, defineComponent } from 'vue';
 import { RootState } from '../../root';
 import { useStore } from 'vuex';
 import { Filter } from '../../generated';
-import TableDisplay from './TableDisplay.vue';
+import TableReshapeData from './TableReshapeData.vue';
 
 export default defineComponent({
     components: {
-        TableDisplay
+        TableReshapeData
     },
     setup() {
         const store = useStore<RootState>();
