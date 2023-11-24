@@ -26,12 +26,16 @@ export function checkOptionsValid(formMeta: DynamicFormMeta): boolean {
     })
 }
 
-function hasOptions(control: Control): control is ControlWithOptions {
+export function hasOptions(control: Control): control is ControlWithOptions {
     return control.type === "select" || control.type === "multiselect";
 }
 
-function isNumberControl(control: Control): control is NumberControl {
-    return control.type == "number"
+export function isMultiselectControl(control: Control): control is MultiSelectControl {
+    return control.type === "multiselect";
+}
+
+export function isNumberControl(control: Control): control is NumberControl {
+    return control.type == "number";
 }
 
 function checkNumberControlValid(control: NumberControl): boolean {

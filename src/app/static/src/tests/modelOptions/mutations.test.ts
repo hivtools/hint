@@ -305,6 +305,7 @@ describe("Model run options mutations", () => {
                                     name: "multiselect",
                                     type: "multiselect",
                                     required: true,
+                                    options: [],
                                     value: []
                                 }
                             ]

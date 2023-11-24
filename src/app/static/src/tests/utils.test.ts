@@ -14,7 +14,7 @@ import {
     getFilenameFromImportUrl,
     formatToLocalISODateTime,
     readStream,
-    extractFilenameFrom, writeOptionsIntoForm
+    extractFilenameFrom, parseAndFillForm
 } from "../app/utils";
 import {NestedFilterOption} from "../app/generated";
 import {DynamicFormMeta, DynamicFormData} from "@reside-ic/vue-next-dynamic-form";
@@ -388,7 +388,7 @@ describe("utils", () => {
         expect(getFilenameFromImportUrl("http://a/b.csv?c=d")).toBe("b.csv");
     });
 
-    it("writeOptionsIntoForm writes options into form metadata as expected", () => {
+    it("parseAndFillForm writes options into form metadata as expected", () => {
         const options: DynamicFormData = {
             "control-1": 1,
             "control-2": 2,
@@ -464,6 +464,7 @@ describe("utils", () => {
         // Old values are removed if they are not in new metadata
         // New values are added if they were not previously present
         // New control config (required etc) is used
+        // Empty options array is added if missing for select or multiselect control
         const expectedResult = {
             controlSections:[
                 {
@@ -475,6 +476,7 @@ describe("utils", () => {
                                 {
                                     name: "control-1",
                                     type: "select",
+                                    options: [],
                                     required: false,
                                     value: 1
                                 }
@@ -491,6 +493,7 @@ describe("utils", () => {
                                 {
                                     name: "control-3",
                                     type: "select",
+                                    options: [],
                                     required: true,
                                     value: 3
                                 }
@@ -503,6 +506,7 @@ describe("utils", () => {
                                     name: "control-4",
                                     type: "select",
                                     required: true,
+                                    options: [],
                                     value: 4
                                 },
                                 {
@@ -522,7 +526,68 @@ describe("utils", () => {
             ]
         };
 
-        writeOptionsIntoForm(options, newForm);
+        parseAndFillForm(options, newForm);
+        expect(newForm).toStrictEqual(expectedResult);
+    });
+
+    it("parseAndFillForm writes options and value where missing", () => {
+        const newForm = {
+            controlSections:[
+                {
+                    label: "section",
+                    controlGroups: [
+                        {
+                            label: "group",
+                            controls: [
+                                {
+                                    name: "control-1",
+                                    type: "multiselect",
+                                    required: false,
+                                    value: ""
+                                },
+                                {
+                                    name: "control-2",
+                                    type: "select",
+                                    required: false,
+                                    value: ""
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        } as any;
+
+        const expectedResult: DynamicFormMeta = {
+            controlSections:[
+                {
+                    label: "section",
+                    controlGroups: [
+                        {
+                            label: "group",
+                            controls: [
+                                {
+                                    name: "control-1",
+                                    type: "multiselect",
+                                    required: false,
+                                    options: [],
+                                    value: []
+                                },
+                                {
+                                    name: "control-2",
+                                    type: "select",
+                                    required: false,
+                                    options: [],
+                                    value: ""
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        parseAndFillForm({}, newForm);
         expect(newForm).toStrictEqual(expectedResult);
     });
 });
