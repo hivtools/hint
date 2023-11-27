@@ -14,6 +14,11 @@ import TableReshapeData from './TableReshapeData.vue';
 import DownloadButton from '../downloadIndicator/DownloadButton.vue';
 import { exportService } from '../../dataExportService';
 
+// defines the order of headers on the excel download
+const header = [ "area_id", "area_name", "area_level",
+    "parent_area_id", "indicator", "calendar_quarter",
+    "age_group", "sex", "mode", "mean", "upper", "lower" ];
+
 export default defineComponent({
     components: {
         TableReshapeData,
@@ -75,28 +80,10 @@ export default defineComponent({
         };
 
         const handleDownload = () => {
-
-            const fullData = getFullData(filteredData.value);
-
-            const data = {
-                filteredData: fullData,
-                unfilteredData: []
-            }
-            exportService({
-                data,
-                filename: "BestFile.xlsx",
-                options: {
-                    header: [
-                        "area_id", "area_name",
-                        "area_level", "parent_area_id",
-                        "indicator", "calendar_quarter",
-                        "age_group", "sex", "mode",
-                        "mean", "upper", "lower"
-                    ]
-                }
-            })
-            .addFilteredData()
-            .download();
+            const data = { filteredData: getFullData(filteredData.value), unfilteredData: [] };
+            exportService({ data, filename: "BestFile.xlsx", options: { header }})
+                .addFilteredData()
+                .download();
         };
         return {
             filteredData,
