@@ -25,7 +25,7 @@ import {initialModelRunState} from "./store/modelRun/modelRun";
 import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
 import {AxiosResponse} from "axios";
 import { ComputedGetter } from 'vue';
-import {isMultiselectControl, hasOptions} from "./store/modelOptions/optionsUtils";
+import {isMultiselectControl, isDropdown} from "./store/modelOptions/optionsUtils";
 
 export type ComputedWithType<T> = () => T;
 
@@ -382,7 +382,7 @@ export const parseAndFillForm = (options: DynamicFormData, optionsForm: DynamicF
                     control.value = options[control.name];
                 }
                 // Ensure options exist
-                if (hasOptions(control) && !control.options) {
+                if (isDropdown(control) && !control.options) {
                     control.options = [];
                 }
                 // Ensure value is a valid type for multiselect

@@ -17,7 +17,7 @@ export function checkOptionsValid(formMeta: DynamicFormMeta): boolean {
                     valid = !control.required
                 } else if (isNumberControl(control)) {
                     valid = checkNumberControlValid(control);
-                } else if (hasOptions(control)) {
+                } else if (isDropdown(control)) {
                     valid = checkControlOptionValid(control);
                 }
                 return valid
@@ -26,7 +26,7 @@ export function checkOptionsValid(formMeta: DynamicFormMeta): boolean {
     })
 }
 
-export function hasOptions(control: Control): control is ControlWithOptions {
+export function isDropdown(control: Control): control is ControlWithOptions {
     return control.type === "select" || control.type === "multiselect";
 }
 
