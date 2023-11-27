@@ -73,7 +73,7 @@ export default defineComponent({
             return filter?.options.find(option => option.id === optionId);
         };
 
-        const getFilterDefaults = (preset: Preset) => {
+        const getCurrentPresetColumnDefaults = (preset: Preset) => {
             const defaultSels = Object.fromEntries(filters.value.map(f => {
                 if (f.id === preset.defaults.column || f.id === preset.defaults.row) {
                     return [f.id, f.options]
@@ -83,7 +83,7 @@ export default defineComponent({
             return defaultSels
         };
 
-        const getPresetFilters = (selectedFilterOptions: Record<string, string[]>) => {
+        const getPresetSelectedOptions = (selectedFilterOptions: Record<string, string[]>) => {
             const presetFilterSelection = {} as Dict<FilterOption[]>
             for (const presetFilter in selectedFilterOptions) {
                 const options = selectedFilterOptions[presetFilter];
@@ -100,14 +100,14 @@ export default defineComponent({
             updateTableSelections({ preset: presetOption.id });
 
             const payload = {
-                selectedFilterOptions: getFilterDefaults(currentPreset)
+                selectedFilterOptions: getCurrentPresetColumnDefaults(currentPreset)
             } as TableSelections;
 
             if (currentPreset?.defaults.selected_filter_options) {
                 
                 const newPresetSelections = {
                     ...payload.selectedFilterOptions,
-                    ...getPresetFilters(currentPreset.defaults.selected_filter_options)
+                    ...getPresetSelectedOptions(currentPreset.defaults.selected_filter_options)
                 }
                 payload.selectedFilterOptions = newPresetSelections;
             }
