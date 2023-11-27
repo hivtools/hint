@@ -19,7 +19,8 @@ ROUND(lower, 4) AS lower,
 ROUND(mean, 4) AS mean,
 ROUND(mode, 4) AS mode,
 sex,
-ROUND(upper, 4) AS upper
+ROUND(upper, 4) AS upper,
+area_level,
 FROM data WHERE indicator=?"""
 
 const val DEFAULT_QUERY = """SELECT
@@ -30,7 +31,8 @@ ROUND(lower, 4) AS lower,
 ROUND(mean, 4) AS mean,
 ROUND(mode, 4) AS mode,
 sex,
-ROUND(upper, 4) AS upper
+ROUND(upper, 4) AS upper,
+area_level,
 FROM data"""
 
 interface CalibrateDataRepository
@@ -57,7 +59,8 @@ class JooqCalibrateDataRepository: CalibrateDataRepository
                         it.getFloat("mode"),
                         it.getFloat("mean"),
                         it.getFloat("lower"),
-                        it.getFloat("upper")
+                        it.getFloat("upper"),
+                        it.getInt("area_level")
                     )
                 } else {
                     null
