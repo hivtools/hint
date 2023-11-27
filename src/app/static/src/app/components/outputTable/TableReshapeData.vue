@@ -46,6 +46,7 @@ export default defineComponent({
                 const reshapedData: any[] = [];
                 const rowKey = presetMetadata.value.row;
                 let rowOptions: FilterOption[] = [];
+                // If rows are per area, generate pseudo filter options from all features in shape data
                 if (rowKey === "area_id") {
                     if (features.value) {
                         rowOptions = features.value.map(f => {
