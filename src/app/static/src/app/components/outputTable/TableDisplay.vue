@@ -16,7 +16,6 @@ import "ag-grid-community/styles//ag-grid.css";
 import "ag-grid-community/styles//ag-theme-alpine.css";
 import { useStore } from "vuex";
 import { RootState } from "../../root";
-import DownloadButton from "../downloadIndicator/DownloadButton.vue";
 import { formatOutput } from "../plots/utils";
 
 const defaultColDef = {
@@ -46,8 +45,7 @@ export default defineComponent({
         headerName: String
     },
     components: {
-        AgGridVue,
-        DownloadButton
+        AgGridVue
     },
     setup(props) {
         const gridApi = ref<AgGridEvent | null>(null);
