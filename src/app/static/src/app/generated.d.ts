@@ -185,6 +185,20 @@ export interface CalibrateMetadataResponse {
       }[];
     };
   };
+  tableMetadata: {
+    presets: {
+      label: string;
+      column: string;
+      row: string;
+      selected_filter_options?: {
+        /**
+         * This interface was referenced by `undefined`'s JSON-Schema definition
+         * via the `patternProperty` "^.*$".
+         */
+        [k: string]: string[];
+      };
+    }[];
+  };
   warnings: {
     text: string;
     locations: (
@@ -351,6 +365,20 @@ export interface CalibrateResultResponse {
         use_shape_regions?: boolean | null;
       }[];
     };
+  };
+  tableMetadata: {
+    presets: {
+      label: string;
+      column: string;
+      row: string;
+      selected_filter_options?: {
+        /**
+         * This interface was referenced by `undefined`'s JSON-Schema definition
+         * via the `patternProperty` "^.*$".
+         */
+        [k: string]: string[];
+      };
+    }[];
   };
   warnings: {
     text: string;
@@ -1525,6 +1553,21 @@ export type SurveyResponseData = {
   ci_upper: number | null;
   [k: string]: any;
 }[];
+export interface TableMetadata {
+  presets: TablePreset[];
+}
+export interface TablePreset {
+  label: string;
+  column: string;
+  row: string;
+  selected_filter_options?: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^.*$".
+     */
+    [k: string]: string[];
+  };
+}
 export type URI = string;
 export interface ValidateBaselineRequest {
   pjnz: string | null;
