@@ -172,14 +172,14 @@ describe("Output Table display table tests", () => {
                 mean_male: 2
             }
         };
-        expect(vm.getValue("male")(params)).toBe("200%");
+        expect(vm.getValue("male")(params)).toBe(2);
     });
 
     it("getFormat works as expected", async () => {
         const wrapper = getWrapper();
         const vm = wrapper.vm as any;
         const params = {
-            value: "200%",
+            value: 2,
             data: {
                 upper_male: 3,
                 lower_male: 1

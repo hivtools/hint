@@ -84,13 +84,13 @@ export default defineComponent({
             return formatOutput(value, cfg.format || "", cfg.scale, cfg.accuracy);
         };
         const getValue = (sex: string) => {
-            return (params: any) => formatValue(params.data["mean_" + sex]);
+            return (params: any) => params.data["mean_" + sex];
         };
         const getFormat = (sex: string) => {
             return (params: any) => {
                 const sexSelections = selections.value.selectedFilterOptions["sex"].map(op => op.id);
                 if (!sexSelections.includes(sex)) return "";
-                const mean = params.value;
+                const mean = formatValue(params.value);
                 const lower = formatValue(params.data["lower_" + sex]);
                 const upper = formatValue(params.data["upper_" + sex]);
                 return `${mean} (${lower} - ${upper})`;
