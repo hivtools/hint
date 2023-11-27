@@ -14,7 +14,7 @@ import {
     ModelSubmitResponse
 } from "../../generated";
 import {switches} from "../../featureSwitches";
-import {Dict} from "../../types";
+import {CalibrateResultWithType, Dict} from "../../types";
 import {DownloadResultsMutation} from "../downloadResults/mutations";
 import {PlottingSelectionsMutations} from "../plottingSelections/mutations";
 
@@ -26,6 +26,7 @@ export interface ModelCalibrateActions {
     getCalibratePlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getComparisonPlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
     resumeCalibrate: (store: ActionContext<ModelCalibrateState, RootState>) => void
+    getResultData: (store: ActionContext<ModelCalibrateState, RootState>, indicator: string) => void
 }
 
 export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrateActions = {
@@ -74,12 +75,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         const {commit, state} = context;
 
         if (state.status.done) {
-            const actions = [
-                getResultMetadata(context),
-                getResultData(context)
-            ];
-
-            await Promise.all(actions);
+            await getResultMetadata(context);
         }
         commit(ModelCalibrateMutation.Ready);
     },
@@ -124,6 +120,39 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         if (state.calibrating && !state.complete && state.calibrateId) {
             await dispatch("poll");
         }
+    },
+
+    async getResultData(context, indicatorId) {
+        const {commit, state} = context;
+        const calibrateId = state.calibrateId;
+
+        if (!state.status.done || !indicatorId) {
+            // Don't try to fetch data if the calibration hasn't finished
+            return
+        }
+
+        let indicatorKnown = false;
+        if (state.fetchedIndicators) {
+            indicatorKnown = Array.from(state.fetchedIndicators).some(indicator => {
+                return indicator === indicatorId
+            })
+        }
+
+        if (!indicatorKnown) {
+            const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
+                .ignoreSuccess()
+                .withError(ModelCalibrateMutation.SetError)
+                .freezeResponse()
+                .get<CalibrateDataResponse["data"]>(`calibrate/result/data/${calibrateId}/${indicatorId}`);
+
+            if (response) {
+                const payload = {
+                    data: response.data,
+                    indicatorId: indicatorId
+                } as CalibrateResultWithType
+                commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: payload});
+            }
+        }
     }
 };
 
@@ -147,21 +176,6 @@ export const getResultMetadata = async function (context: ActionContext<ModelCal
             dispatch("getCalibratePlot");
         }
         await dispatch("getComparisonPlot");
-    }
-}
-
-export const getResultData = async function (context: ActionContext<ModelCalibrateState, RootState>) {
-    const {commit, state} = context;
-    const calibrateId = state.calibrateId;
-
-    const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
-        .ignoreSuccess()
-        .withError(ModelCalibrateMutation.SetError)
-        .freezeResponse()
-        .get<CalibrateDataResponse>(`calibrate/result/data/${calibrateId}/all`);
-
-    if (response) {
-        commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: response});
     }
 }
 

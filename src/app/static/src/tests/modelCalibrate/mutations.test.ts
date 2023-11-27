@@ -51,7 +51,9 @@ describe("ModelCalibrate mutations", () => {
         const state = mockModelCalibrateState({
             error: mockError("TEST ERROR"),
             complete: true,
-            status: ["TEST STATUS"] as any
+            status: ["TEST STATUS"] as any,
+            result: {data: "TEST DATA"} as any,
+            fetchedIndicators: new Set<string>(["prev"])
         });
         const payload = {id: "123"} as any;
         mutations[ModelCalibrateMutation.CalibrateStarted](state, {payload});
@@ -63,6 +65,8 @@ describe("ModelCalibrate mutations", () => {
         expect(state.generatingCalibrationPlot).toBe(false);
         expect(state.calibratePlotResult).toBe(null);
         expect(state.comparisonPlotResult).toBe(null);
+        expect(state.result).toBe(null);
+        expect(state.fetchedIndicators).toStrictEqual(new Set<string>());
     });
 
     it("CalibrateStatusUpdate sets status, resets error", () => {
@@ -260,16 +264,54 @@ describe("ModelCalibrate mutations", () => {
         expect(testState.warnings).toEqual([]);
     });
 
-    it("sets model calibrate result", () => {
-        const testState = mockModelCalibrateState();
-        const result = mockCalibrateResultResponse()
-        mutations[ModelCalibrateMutation.CalibrateResultFetched](testState, {payload: result});
-        expect(testState.result).toEqual(result);
-    });
-
     it("resets polling id", () => {
         const state = mockModelCalibrateState({statusPollId: 1000});
         mutations[ModelCalibrateMutation.ResetIds](state);
         expect(state.statusPollId).toEqual(-1);
+    });
+
+    it("accumulates result data", () => {
+        const state = mockModelCalibrateState();
+        const data1 = {data: [{indicator: "plhiv", value: 1}]}
+        const dataWithType1 = {
+            ...data1,
+            indicatorId: "plhiv"
+        };
+        mutations[ModelCalibrateMutation.CalibrateResultFetched](state, {payload: dataWithType1});
+        expect(state.result).toStrictEqual(data1);
+        expect(state.fetchedIndicators).toStrictEqual(new Set(["plhiv"]));
+
+        const data2 = {data: [{indicator: "plhiv", value: 2}]}
+        const dataWithType2 = {
+            ...data2,
+            indicatorId: "plhiv"
+        };
+        mutations[ModelCalibrateMutation.CalibrateResultFetched](state, {payload: dataWithType2});
+
+        const expected = {
+            data: [
+                {indicator: "plhiv", value: 1},
+                {indicator: "plhiv", value: 2}
+            ]
+        };
+        expect(state.result).toStrictEqual(expected);
+        expect(state.fetchedIndicators).toStrictEqual(new Set(["plhiv"]));
+
+        const data3 = {data: [{indicator: "prevalence", value: 3}]}
+        const dataWithType3 = {
+            ...data3,
+            indicatorId: "prevalence"
+        };
+        mutations[ModelCalibrateMutation.CalibrateResultFetched](state, {payload: dataWithType3});
+
+        const expected2 = {
+            data: [
+                {indicator: "plhiv", value: 1},
+                {indicator: "plhiv", value: 2},
+                {indicator: "prevalence", value: 3}
+            ]
+        };
+        expect(state.result).toStrictEqual(expected2);
+        expect(state.fetchedIndicators).toStrictEqual(new Set(["plhiv", "prevalence"]));
     });
 });
