@@ -265,6 +265,62 @@ describe("Model run options mutations", () => {
         expect(state.fetching).toBe(true);
     });
 
+    it("handled receiving a form with no options", () => {
+        // Added to deal with regression mrc-4734 where hintr was returning controls
+        // with no valid options.
+        const state = mockModelOptionsState({
+            fetching: true,
+            valid: true,
+        });
+
+        const payload = {
+            controlSections: [
+                {
+                    label: "general",
+                    controlGroups: [
+                        {
+                            label: "g1",
+                            controls: [
+                                {
+                                    name: "multiselect",
+                                    type: "multiselect",
+                                    required: true,
+                                    value: []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        } as any
+        const expected = {
+            controlSections: [
+                {
+                    label: "general",
+                    controlGroups: [
+                        {
+                            label: "g1",
+                            controls: [
+                                {
+                                    name: "multiselect",
+                                    type: "multiselect",
+                                    required: true,
+                                    options: [],
+                                    value: []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        } as any;
+
+        mutations.ModelOptionsFetched(state, {payload: payload});
+        expect(state.optionsFormMeta).toStrictEqual(expected);
+        expect(state.fetching).toBe(false);
+        expect(state.valid).toBe(true);
+    });
+
     const testOptions = {
         n1: 20,
         n2: 10,
