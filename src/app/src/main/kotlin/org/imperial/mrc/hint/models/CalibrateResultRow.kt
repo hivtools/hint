@@ -14,4 +14,6 @@ data class CalibrateResultRow(
     val mode: Number,
     val mean: Number,
     val lower: Number,
-    val upper: Number)
+    val upper: Number,
+    @field:JsonProperty("area_level")
+    val areaLevel: Int)

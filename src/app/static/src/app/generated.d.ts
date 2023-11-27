@@ -185,6 +185,20 @@ export interface CalibrateMetadataResponse {
       }[];
     };
   };
+  tableMetadata: {
+    presets: {
+      label: string;
+      column: string;
+      row: string;
+      selected_filter_options?: {
+        /**
+         * This interface was referenced by `undefined`'s JSON-Schema definition
+         * via the `patternProperty` "^.*$".
+         */
+        [k: string]: string[];
+      };
+    }[];
+  };
   warnings: {
     text: string;
     locations: (
@@ -193,7 +207,8 @@ export interface CalibrateMetadataResponse {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
   [k: string]: any;
 }
@@ -266,6 +281,10 @@ export interface CalibratePlotRow {
   calendar_quarter: string;
   indicator: string;
   mean: number | null;
+  [k: string]: any;
+}
+export interface CalibrateResultPathResponse {
+  path: string;
   [k: string]: any;
 }
 export interface CalibrateResultResponse {
@@ -347,6 +366,20 @@ export interface CalibrateResultResponse {
       }[];
     };
   };
+  tableMetadata: {
+    presets: {
+      label: string;
+      column: string;
+      row: string;
+      selected_filter_options?: {
+        /**
+         * This interface was referenced by `undefined`'s JSON-Schema definition
+         * via the `patternProperty` "^.*$".
+         */
+        [k: string]: string[];
+      };
+    }[];
+  };
   warnings: {
     text: string;
     locations: (
@@ -355,7 +388,8 @@ export interface CalibrateResultResponse {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
   [k: string]: any;
 }
@@ -373,7 +407,8 @@ export interface CalibrateStatusResponse {
         name: string;
         helpText?: string;
       }
-    | string)[];
+    | string
+  )[];
 }
 export interface CalibrateSubmitRequest {
   options: {
@@ -604,7 +639,8 @@ export interface DownloadStatusResponse {
         name: string;
         helpText?: string;
       }
-    | string)[];
+    | string
+  )[];
 }
 export interface DownloadSubmitRequest {
   notes?: {
@@ -665,10 +701,18 @@ export interface DownloadSubmitRequest {
       [k: string]: any;
     };
   };
+  pjnz?: {
+    path: string | null;
+    hash: string;
+    filename: string;
+    fromADR?: boolean;
+    resource_url?: string | null;
+  };
 }
 export interface DownloadSubmitResponse {
   id: string;
 }
+export type ErrorCode = string;
 export interface Error {
   error: string;
   detail: string | null;
@@ -676,7 +720,6 @@ export interface Error {
   job_id?: string;
   [k: string]: any;
 }
-export type ErrorCode = string;
 export interface File {
   path: string | null;
   filename: string;
@@ -826,7 +869,8 @@ export interface InputTimeSeriesResponse {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
 }
 export interface InputTimeSeriesRow {
@@ -868,7 +912,8 @@ export interface ModelOptionsValidate {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
 }
 export interface ModelOptionsValidateRequest {
@@ -943,7 +988,8 @@ export interface ModelResultResponse {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
   [k: string]: any;
 }
@@ -1361,7 +1407,8 @@ export interface ProjectRehydrateStatusResponse {
         name: string;
         helpText?: string;
       }
-    | string)[];
+    | string
+  )[];
 }
 export interface ProjectRehydrateSubmitRequest {
   file: {
@@ -1506,6 +1553,21 @@ export type SurveyResponseData = {
   ci_upper: number | null;
   [k: string]: any;
 }[];
+export interface TableMetadata {
+  presets: TablePreset[];
+}
+export interface TablePreset {
+  label: string;
+  column: string;
+  row: string;
+  selected_filter_options?: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^.*$".
+     */
+    [k: string]: string[];
+  };
+}
 export type URI = string;
 export interface ValidateBaselineRequest {
   pjnz: string | null;
@@ -1630,7 +1692,8 @@ export interface ProgrammeResponse {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
 }
 export interface AncResponse {
@@ -1673,7 +1736,8 @@ export interface AncResponse {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
 }
 export interface SurveyResponse {
@@ -1723,7 +1787,8 @@ export interface SurveyResponse {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
 }
 export interface ValidateSurveyAndProgrammeRequest {
@@ -1751,5 +1816,6 @@ export interface Warning {
     | "model_fit"
     | "model_calibrate"
     | "review_output"
-    | "download_results")[];
+    | "download_results"
+  )[];
 }

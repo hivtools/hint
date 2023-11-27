@@ -13,7 +13,8 @@ class CalibrateResultRowTests
         "sex" to "sex_test",
         "area_id" to "area_id_test",
         "mean" to 1, "upper" to 1,
-        "mode" to 1, "lower" to 1
+        "mode" to 1, "lower" to 1,
+        "area_level" to 1
     )
     val expectedJsonString = ObjectMapper().writeValueAsString(expectedJsonMap)
     val expectedJson = ObjectMapper().readTree(expectedJsonString)
@@ -27,7 +28,7 @@ class CalibrateResultRowTests
             "age_group_test",
             "sex_test",
             "area_id_test",
-            1, 1, 1, 1
+            1, 1, 1, 1, 1
         )
         val jsonRow = ObjectMapper().writeValueAsString(row)
         val json = ObjectMapper().readTree(jsonRow)
