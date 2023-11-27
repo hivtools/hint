@@ -3,6 +3,7 @@ import TableData from "../../../app/components/outputTable/TableData.vue";
 import Vuex from "vuex";
 import { mockModelCalibrateState, mockPlottingSelections } from "../../mocks";
 import TableReshapeData from "../../../app/components/outputTable/TableReshapeData.vue";
+import DownloadButton from "../../../app/components/downloadIndicator/DownloadButton.vue";
 
 const mockFilters = [{
     id: "filter1",
@@ -92,5 +93,14 @@ describe("Output Table display table tests", () => {
 
         const wrapper3 = getWrapper("pop2", "op2");
         expect(wrapper3.findComponent(TableReshapeData).props("data")).toStrictEqual([]);
+    });
+
+    it("download button renders as expected", () => {
+        const wrapper = getWrapper("pop", "op1");
+        expect(wrapper.findComponent(TableReshapeData).exists()).toBe(true);
+        const downloadButton = wrapper.findComponent(DownloadButton);
+        expect(downloadButton.exists()).toBe(true);
+        expect(downloadButton.props("name")).toBe("downloadFilteredData");
+        expect(downloadButton.props("disabled")).toBe(false);
     });
 });

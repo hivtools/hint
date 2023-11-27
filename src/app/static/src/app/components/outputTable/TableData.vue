@@ -1,5 +1,8 @@
 <template>
     <table-reshape-data :data="filteredData"/>
+    <download-button :name="'downloadFilteredData'"
+                     :disabled="false"
+                     @click="handleDownload"/>
 </template>
 
 <script lang="ts">
@@ -8,10 +11,13 @@ import { RootState } from '../../root';
 import { useStore } from 'vuex';
 import { Filter } from '../../generated';
 import TableReshapeData from './TableReshapeData.vue';
+import DownloadButton from '../downloadIndicator/DownloadButton.vue';
+import { exportService } from '../../dataExportService';
 
 export default defineComponent({
     components: {
-        TableReshapeData
+        TableReshapeData,
+        DownloadButton
     },
     setup() {
         const store = useStore<RootState>();
@@ -27,6 +33,7 @@ export default defineComponent({
             });
             return idToDataId;
         });
+        const features = computed(() => store.state.baseline.shape?.data.features || []);
 
         const filteredData = computed(() => {
             const result = store.state.modelCalibrate.result;
@@ -57,8 +64,45 @@ export default defineComponent({
                 return filteredData
             }
         });
+
+        const getFullData = (filteredData: any[]) => {
+            return filteredData.map(d => {
+                const feature = features.value.find(f => f.properties.area_id === d.area_id);
+                return {
+                    ...d,
+                    area_name: feature?.properties.area_name || "",
+                    parent_area_id: feature?.properties.parent_area_id || ""
+                }
+            });
+        };
+
+        const handleDownload = () => {
+
+            const fullData = getFullData(filteredData.value);
+
+            const data = {
+                filteredData: fullData,
+                unfilteredData: []
+            }
+            exportService({
+                data,
+                filename: "BestFile.xlsx",
+                options: {
+                    header: [
+                        "area_id", "area_name",
+                        "area_level", "parent_area_id",
+                        "indicator", "calendar_quarter",
+                        "age_group", "sex", "mode",
+                        "mean", "upper", "lower"
+                    ]
+                }
+            })
+            .addFilteredData()
+            .download();
+        };
         return {
-            filteredData
+            filteredData,
+            handleDownload
         } 
     }
 });
