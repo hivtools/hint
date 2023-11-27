@@ -72,7 +72,7 @@ export default defineComponent({
             return filter?.options.find(option => option.id === optionId);
         };
 
-        const getDefaultSelections = (preset: Preset) => {
+        const getCurrentPresetColumnDefaults = (preset: Preset) => {
             const defaultSels = Object.fromEntries(filters.value.map(f => {
                 if (f.id === preset.defaults.column || f.id === preset.defaults.row) {
                     return [f.id, f.options]
@@ -82,6 +82,16 @@ export default defineComponent({
             return defaultSels
         };
 
+        const getPresetSelectedOptions = (selectedFilterOptions: Record<string, string[]>) => {
+            const presetFilterSelection = {} as Dict<FilterOption[]>
+            for (const presetFilter in selectedFilterOptions) {
+                const options = selectedFilterOptions[presetFilter];
+                const filterOptions = options.map(option => toFilterOption(presetFilter, option)).filter(f => f !== undefined) as FilterOption[];
+                presetFilterSelection[presetFilter] = filterOptions;
+            }
+            return presetFilterSelection;
+        };
+
         const changePresetSelection = (presetOption: Partial<FilterOption>) => {
             const currentPreset = presets.value?.find(p => p.defaults.id === presetOption.id);
             if (!currentPreset) return;
@@ -89,20 +99,14 @@ export default defineComponent({
             updateTableSelections({ preset: presetOption.id });
 
             const payload = {
-                selectedFilterOptions: getDefaultSelections(currentPreset)
+                selectedFilterOptions: getCurrentPresetColumnDefaults(currentPreset)
             } as TableSelections;
 
             if (currentPreset?.defaults.selected_filter_options) {
-                const selectedFilterOptions = currentPreset.defaults.selected_filter_options;
-                const presetFilterSelection = {} as Dict<FilterOption[]>
-                for (const presetFilter in selectedFilterOptions) {
-                    const options = selectedFilterOptions[presetFilter];
-                    const filterOptions = options.map(option => toFilterOption(presetFilter, option)).filter(f => f !== undefined) as FilterOption[];
-                    presetFilterSelection[presetFilter] = filterOptions;
-                }
+                
                 const newPresetSelections = {
-                    ...getDefaultSelections(currentPreset),
-                    ...presetFilterSelection
+                    ...payload.selectedFilterOptions,
+                    ...getPresetSelectedOptions(currentPreset.defaults.selected_filter_options)
                 }
                 payload.selectedFilterOptions = newPresetSelections;
             }
