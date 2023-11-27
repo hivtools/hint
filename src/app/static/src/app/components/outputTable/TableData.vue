@@ -30,32 +30,30 @@ export default defineComponent({
 
         const filteredData = computed(() => {
             const result = store.state.modelCalibrate.result;
-            if (!result) {
-                return []
-            } else {
-                const data = result.data;
-                const selectedOptions = selections.value.selectedFilterOptions;
-                const filterKeys = Object.keys(selectedOptions);
-                const selectedOptionIds: Record<string, (string | number)[]> = {};
-                for (const k in selectedOptions) {
-                    if (k === "area_level") {
-                        selectedOptionIds[k] = selectedOptions[k].map(op => parseInt(op.id));
-                    } else {
-                        selectedOptionIds[k] = selectedOptions[k].map(op => op.id);
-                    }
+            if (!result) return []
+
+            const data = result.data;
+            const selectedOptions = selections.value.selectedFilterOptions;
+            const filterKeys = Object.keys(selectedOptions);
+            const selectedOptionIds: Record<string, (string | number)[]> = {};
+            for (const k in selectedOptions) {
+                if (k === "area_level") {
+                    selectedOptionIds[k] = selectedOptions[k].map(op => parseInt(op.id));
+                } else {
+                    selectedOptionIds[k] = selectedOptions[k].map(op => op.id);
                 }
-                const filteredData = [];
-                for (let i = 0; i < data.length; i++) {
-                    const row = data[i];
-                    if (row.indicator !== selections.value.indicator) continue;
-                    const valid = filterKeys.every(key => {
-                        return selectedOptionIds[key].includes(row[filtersIdToDataId.value[key]]);
-                    })
-                    if (!valid) continue;
-                    filteredData.push(row);
-                }
-                return filteredData
             }
+            const filteredData = [];
+            for (let i = 0; i < data.length; i++) {
+                const row = data[i];
+                if (row.indicator !== selections.value.indicator) continue;
+                const includeRow = filterKeys.every(key => {
+                    return selectedOptionIds[key].includes(row[filtersIdToDataId.value[key]]);
+                })
+                if (!includeRow) continue;
+                filteredData.push(row);
+            }
+            return filteredData
         });
         return {
             filteredData
