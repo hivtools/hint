@@ -66,19 +66,14 @@ describe("model calibrate actions integration", () => {
         } as any;
         await actions.getResult({commit, dispatch, state, rootState} as any);
 
-        expect(commit.mock.calls.length).toBe(3);
+        expect(commit.mock.calls.length).toBe(2);
 
         expect(commit.mock.calls[0][0]["type"]).toBe("SetError");
-        const detail1 = commit.mock.calls[0][0]["payload"].detail
-        expect(detail1 === "Failed to fetch result" ||
-        detail1.includes("An unexpected error occurred")).toBe(true);
+        const detail = commit.mock.calls[0][0]["payload"].detail
+        expect(detail === "Failed to fetch result" ||
+            detail.includes("An unexpected error occurred")).toBe(true);
 
-        expect(commit.mock.calls[1][0]["type"]).toBe("SetError");
-        const detail2 = commit.mock.calls[1][0]["payload"].detail
-        expect(detail2 === "Failed to fetch result" ||
-        detail2.includes("An unexpected error occurred")).toBe(true);
-
-        expect(commit.mock.calls[2][0]).toBe("Ready");
+        expect(commit.mock.calls[1][0]).toBe("Ready");
     });
 
     it("can get calibrate plot", async () => {

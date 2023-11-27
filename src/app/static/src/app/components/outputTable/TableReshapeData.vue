@@ -43,9 +43,10 @@ export default defineComponent({
         const reshapedData = computed(() => {
             const data = props.data;
             if (presetMetadata.value && data) {
-                const reshapedData: any[] = [];
+                const tableData: any[] = [];
                 const rowKey = presetMetadata.value.row;
                 let rowOptions: FilterOption[] = [];
+                // If rows are per area, generate pseudo filter options from all features in shape data
                 if (rowKey === "area_id") {
                     if (features.value) {
                         rowOptions = features.value.map(f => {
@@ -60,21 +61,21 @@ export default defineComponent({
                     const currentRow = data[i];
                     const rowVal = currentRow[rowKey];
                     const rowLabel = rowOptions.find(op => op.id === rowVal)?.label;
-                    const index = reshapedData.findIndex(d => d.label === rowLabel);
+                    const index = tableData.findIndex(d => d.label === rowLabel);
                     if (index === -1) {
-                        reshapedData.push({
+                        tableData.push({
                             "label": rowLabel,
                             [`mean_${currentRow[columnKey]}`]: currentRow.mean,
                             [`upper_${currentRow[columnKey]}`]: currentRow.upper,
                             [`lower_${currentRow[columnKey]}`]: currentRow.lower,
                         })
                     } else {
-                        reshapedData[index][`mean_${currentRow[columnKey]}`] = currentRow.mean;
-                        reshapedData[index][`upper_${currentRow[columnKey]}`] = currentRow.upper;
-                        reshapedData[index][`lower_${currentRow[columnKey]}`] = currentRow.lower;
+                        tableData[index][`mean_${currentRow[columnKey]}`] = currentRow.mean;
+                        tableData[index][`upper_${currentRow[columnKey]}`] = currentRow.upper;
+                        tableData[index][`lower_${currentRow[columnKey]}`] = currentRow.lower;
                     }
                 }
-                return reshapedData;
+                return tableData;
             }
             return [];
         });
