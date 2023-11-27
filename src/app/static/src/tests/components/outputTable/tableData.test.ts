@@ -111,7 +111,7 @@ describe("Output Table display table tests", () => {
     });
 
     it("download button renders as expected", () => {
-        const wrapper = getWrapper("pop", "op1");
+        const wrapper = getWrapper("pop", "op1", 1);
         expect(wrapper.findComponent(TableReshapeData).exists()).toBe(true);
         const downloadButton = wrapper.findComponent(DownloadButton);
         expect(downloadButton.exists()).toBe(true);
