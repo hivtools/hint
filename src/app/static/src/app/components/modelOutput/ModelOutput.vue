@@ -13,7 +13,7 @@
             </div>
         </div>
         <div class="row mt-2">
-            <div v-if="selectedTab==='map'" id="choropleth-container" class="col-md-12">
+            <div v-if="selectedTab === modelOutputTabs.Map" id="choropleth-container" class="col-md-12">
                 <choropleth
                     :chartdata="chartdata"
                     :filters="choroplethFilters"
@@ -40,7 +40,7 @@
                 </div>
             </div>
 
-            <div v-if="selectedTab==='bar'" id="barchart-container" class="col-md-12">
+            <div v-if="selectedTab === modelOutputTabs.Bar" id="barchart-container" class="col-md-12">
                 <bar-chart-with-filters
                     :chart-data="chartdata"
                     :filter-config="barchartFilterConfig"
@@ -65,7 +65,7 @@
                 </div>
             </div>
 
-            <div v-if="selectedTab==='bubble'" id="bubble-plot-container" class="col-md-12">
+            <div v-if="selectedTab === modelOutputTabs.Bubble" id="bubble-plot-container" class="col-md-12">
                 <bubble-plot :chartdata="chartdata" :features="features" :featureLevels="featureLevels"
                              :filters="bubblePlotFilters" :indicators="bubblePlotIndicators"
                              :selections="bubblePlotSelections"
@@ -89,7 +89,7 @@
                 </div>
             </div>
 
-            <div v-if="selectedTab==='comparison'" id="comparison-container" class="col-md-12">
+            <div v-if="selectedTab === modelOutputTabs.Comparison" id="comparison-container" class="col-md-12">
                 <bar-chart-with-filters
                     :chart-data="comparisonPlotData"
                     :filter-config="comparisonPlotFilterConfig"
@@ -117,7 +117,7 @@
                 <error-alert v-if="!!comparisonPlotError" :error="comparisonPlotError"></error-alert>
             </div>
 
-            <div v-if="selectedTab === 'table'" id="table-container" class="col-md-12">
+            <div v-if="selectedTab === modelOutputTabs.Table" id="table-container" class="col-md-12">
                 <output-table></output-table>
             </div>
         </div>
@@ -134,7 +134,6 @@
     import ErrorAlert from "../ErrorAlert.vue";
     import {
         mapGettersByNames,
-        mapMutationByName,
         mapMutationsByNames,
         mapStateProp,
         mapStateProps,mapActionByName
@@ -146,13 +145,12 @@
         PlottingSelectionsState, UnadjustedBarchartSelections
     } from "../../store/plottingSelections/plottingSelections";
     import {ModelOutputState} from "../../store/modelOutput/modelOutput";
-    import {ModelOutputMutation} from "../../store/modelOutput/mutations";
     import {Feature} from "geojson";
     import {BaselineState} from "../../store/baseline/baseline";
     import {Language, Translations} from "../../store/translations/locales";
     import {inactiveFeatures} from "../../main";
     import {RootState} from "../../root";
-    import {LevelLabel} from "../../types";
+    import {LevelLabel, ModelOutputTabs} from "../../types";
     import {ChoroplethIndicatorMetadata, Error,} from "../../generated";
     import {
         formatOutput, 
@@ -168,12 +166,12 @@
     const namespace = 'filteredData';
 
     interface Data {
-        tabs: string[],
+        tabs: ModelOutputTabs[],
         areaFilterId: string
     }
 
     interface Methods {
-        tabSelected: (tab: string) => void
+        tabSelected: (tab: ModelOutputTabs) => void
         updateBarchartSelections: (data: { payload: BarchartSelections }) => void
         updateComparisonPlotSelections: (data: { payload: BarchartSelections }) => void
         updateBubblePlotSelections: (data: { payload: BubblePlotSelections}) => void
@@ -199,7 +197,7 @@
         comparisonPlotSelections: BarchartSelections & {detail: null},
         bubblePlotSelections: BubblePlotSelections,
         choroplethSelections: ChoroplethSelections,
-        selectedTab: string,
+        selectedTab: ModelOutputTabs,
         features: Feature[],
         featureLevels: LevelLabel[]
         currentLanguage: Language,
@@ -223,28 +221,32 @@
     export default defineComponent({
         name: "ModelOutput",
         beforeMount() {
-            if (!this.selectedTab) {
-                this.tabSelected(this.tabs[0]);
-            }
+            const tab = this.selectedTab ? this.selectedTab : this.tabs[0]
+            this.tabSelected(tab);
         },
         data: () => {
-            const tabs: (keyof Translations)[] = ["map", "bar"];
-
-            if (!inactiveFeatures.includes("BubblePlot")) {
-                tabs.push("bubble");
-            }
-            tabs.push("comparison");
+            const tabs: (keyof Translations)[] = [ModelOutputTabs.Bar];
 
             if (switches.tableTab) {
-                tabs.push("table")
+                tabs.push(ModelOutputTabs.Table);
+            }
+
+            tabs.push(ModelOutputTabs.Map);
+            tabs.push(ModelOutputTabs.Comparison);
+
+            if (!inactiveFeatures.includes("BubblePlot")) {
+                tabs.push(ModelOutputTabs.Bubble);
             }
 
             return {
                 tabs: tabs,
                 areaFilterId: "area"
-            }
+            } as Data
         },
         computed: {
+            modelOutputTabs() {
+                return ModelOutputTabs
+            },
             ...mapGettersByNames("modelOutput", [
                 "barchartFilters", "barchartIndicators",
                 "bubblePlotFilters", "bubblePlotIndicators",
@@ -312,9 +314,12 @@
         },
         methods: {
             ...mapMutationsByNames("plottingSelections",
-                ["updateBarchartSelections", "updateComparisonPlotSelections", "updateBubblePlotSelections",
-                "updateOutputChoroplethSelections", "updateOutputColourScales", "updateOutputBubbleSizeScales"] as const),
-            tabSelected: mapMutationByName<keyof Methods>("modelOutput", ModelOutputMutation.TabSelected),
+                ["updateComparisonPlotSelections", "updateOutputColourScales", "updateOutputBubbleSizeScales"] as const),
+            tabSelected: mapActionByName<keyof Methods>("modelOutput", "updateSelectedTab"),
+            updateBarchartSelections: mapActionByName<BarchartSelections>("plottingSelections", "updateBarchartSelections"),
+            updateOutputChoroplethSelections: mapActionByName<ChoroplethSelections>("plottingSelections", "updateChoroplethSelections"),
+            updateBubblePlotSelections: mapActionByName<BubblePlotSelections>("plottingSelections", "updateBubblePlotSelections"),
+            getResultData: mapActionByName<ModelCalibrateState>("modelCalibrate", "getResultData"),
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
             },
