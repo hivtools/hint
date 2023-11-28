@@ -1,8 +1,7 @@
-import { flushPromises, shallowMount } from "@vue/test-utils";
+import { shallowMount } from "@vue/test-utils";
 import TableFilters from "../../../app/components/outputTable/TableFilters.vue";
 import Vuex from "vuex";
 import { mockModelCalibrateState, mockPlottingSelections } from "../../mocks";
-import { PlottingSelectionsMutations } from "../../../app/store/plottingSelections/mutations";
 import { SingleSelect } from "@reside-ic/vue-nested-multiselect";
 import NewFilters from "../../../app/components/outputTable/NewFilters.vue";
 
@@ -23,8 +22,8 @@ describe("Output Table filters tests", () => {
             plottingSelections: {
                 namespaced: true,
                 state: mockPlottingSelections(),
-                mutations: {
-                    [PlottingSelectionsMutations.updateTableSelections]: mockUpdateTableSelections
+                actions: {
+                    updateTableSelections: mockUpdateTableSelections
                 }
             },
             modelCalibrate: {
