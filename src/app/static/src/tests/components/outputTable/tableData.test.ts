@@ -1,9 +1,21 @@
+const mockAddFilteredData = jest.fn();
+const mockDownload = jest.fn();
+const mockExportService = jest.fn().mockReturnValue({
+    addFilteredData: mockAddFilteredData.mockReturnValue({
+        download: mockDownload
+    })
+});
+
 import { shallowMount } from "@vue/test-utils";
 import TableData from "../../../app/components/outputTable/TableData.vue";
 import Vuex from "vuex";
-import { mockModelCalibrateState, mockPlottingSelections } from "../../mocks";
+import { mockBaselineState, mockModelCalibrateState, mockPlottingSelections } from "../../mocks";
 import TableReshapeData from "../../../app/components/outputTable/TableReshapeData.vue";
 import DownloadButton from "../../../app/components/downloadIndicator/DownloadButton.vue";
+
+jest.mock("../../../app/dataExportService", () => {
+    return { exportService: mockExportService };
+});
 
 const mockFilters = [
     {
@@ -75,6 +87,13 @@ describe("Output Table display table tests", () => {
                         }
                     }
                 })
+            },
+            baseline: {
+                namespaced: true,
+                state: mockBaselineState({
+                    country: "test_country",
+                    iso3: "ABC"
+                })
             }
         }
     });
@@ -117,5 +136,20 @@ describe("Output Table display table tests", () => {
         expect(downloadButton.exists()).toBe(true);
         expect(downloadButton.props("name")).toBe("downloadFilteredData");
         expect(downloadButton.props("disabled")).toBe(false);
+    });
+
+    it("handle download works as expected", () => {
+        const wrapper = getWrapper("pop", "op1", 1);
+        const downloadButton = wrapper.findComponent(DownloadButton);
+        downloadButton.vm.$emit("click");
+        expect(mockExportService.mock.calls[0][0].data).toStrictEqual({filteredData: [], unfilteredData: []});
+        expect(mockExportService.mock.calls[0][0].filename).toContain("ABC_naomi_table-data_");
+        expect(mockExportService.mock.calls[0][0].options).toStrictEqual({
+            header: ["area_id", "area_name", "area_level", "parent_area_id",
+                    "indicator", "calendar_quarter", "age_group", "sex",
+                    "mode", "mean", "upper", "lower"]
+        });
+        expect(mockAddFilteredData.mock.calls.length).toBe(1);
+        expect(mockDownload.mock.calls.length).toBe(1);
     });
 });

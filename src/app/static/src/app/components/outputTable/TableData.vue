@@ -13,6 +13,7 @@ import { Filter } from '../../generated';
 import TableReshapeData from './TableReshapeData.vue';
 import DownloadButton from '../downloadIndicator/DownloadButton.vue';
 import { exportService } from '../../dataExportService';
+import { appendCurrentDateTime } from '../../utils';
 
 // defines the order of headers on the excel download
 const header = [ "area_id", "area_name", "area_level",
@@ -80,15 +81,18 @@ export default defineComponent({
         };
 
         const handleDownload = () => {
+            const prefix = store.state.baseline.iso3 || store.state.baseline.country;
             const data = { filteredData: getFullData(filteredData.value), unfilteredData: [] };
-            exportService({ data, filename: "BestFile.xlsx", options: { header }})
+            const filename = `${prefix}_naomi_table-data_${appendCurrentDateTime()}.xlsx`;
+            exportService({ data, filename, options: { header }})
                 .addFilteredData()
                 .download();
         };
+
         return {
             filteredData,
             handleDownload
-        } 
+        };
     }
 });
 </script>
