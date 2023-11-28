@@ -187,15 +187,29 @@ export interface CalibrateMetadataResponse {
   };
   tableMetadata: {
     presets: {
-      label: string;
-      column: string;
-      row: string;
-      selected_filter_options?: {
-        /**
-         * This interface was referenced by `undefined`'s JSON-Schema definition
-         * via the `patternProperty` "^.*$".
-         */
-        [k: string]: string[];
+      filters: {
+        id: string;
+        column_id: string;
+        label: string;
+        options: {
+          label: string;
+          id: string;
+          description?: string;
+        }[];
+        use_shape_regions?: boolean | null;
+      }[];
+      defaults: {
+        id: string;
+        label: string;
+        column: string;
+        row: string;
+        selected_filter_options?: {
+          /**
+           * This interface was referenced by `undefined`'s JSON-Schema definition
+           * via the `patternProperty` "^.*$".
+           */
+          [k: string]: string[];
+        };
       };
     }[];
   };
@@ -368,15 +382,29 @@ export interface CalibrateResultResponse {
   };
   tableMetadata: {
     presets: {
-      label: string;
-      column: string;
-      row: string;
-      selected_filter_options?: {
-        /**
-         * This interface was referenced by `undefined`'s JSON-Schema definition
-         * via the `patternProperty` "^.*$".
-         */
-        [k: string]: string[];
+      filters: {
+        id: string;
+        column_id: string;
+        label: string;
+        options: {
+          label: string;
+          id: string;
+          description?: string;
+        }[];
+        use_shape_regions?: boolean | null;
+      }[];
+      defaults: {
+        id: string;
+        label: string;
+        column: string;
+        row: string;
+        selected_filter_options?: {
+          /**
+           * This interface was referenced by `undefined`'s JSON-Schema definition
+           * via the `patternProperty` "^.*$".
+           */
+          [k: string]: string[];
+        };
       };
     }[];
   };
@@ -1557,6 +1585,21 @@ export interface TableMetadata {
   presets: TablePreset[];
 }
 export interface TablePreset {
+  filters: {
+    id: string;
+    column_id: string;
+    label: string;
+    options: {
+      label: string;
+      id: string;
+      description?: string;
+    }[];
+    use_shape_regions?: boolean | null;
+  }[];
+  defaults: TableDefaults;
+}
+export interface TableDefaults {
+  id: string;
   label: string;
   column: string;
   row: string;
