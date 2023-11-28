@@ -110,6 +110,9 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                     bubbleSizeScales: {
                         output: {test: "TEST OUTPUT BUBBLE SIZE SCALES"} as any
                     },
+                    table: {
+                        indicator: "TestIndicator"
+                    },
                     ...partialSelections
                 },
                 mutations: plottingSelectionMutations,
