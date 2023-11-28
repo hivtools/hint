@@ -15,17 +15,17 @@ import moment, {utc} from 'moment';
 import {
     DynamicControlGroup,
     DynamicControlSection, DynamicFormData,
-    DynamicFormMeta, MultiSelectControl, NumberControl, SelectControl
+    DynamicFormMeta
 } from "@reside-ic/vue-next-dynamic-form";
 import {DataType} from "./store/surveyAndProgram/surveyAndProgram";
-import {ModelOptionsState} from "./store/modelOptions/modelOptions";
 import {RootState} from "./root";
 import {initialStepperState} from "./store/stepper/stepper";
 import {LoadState} from "./store/load/state";
 import {initialModelRunState} from "./store/modelRun/modelRun";
-import {initialModelCalibrateState, ModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
+import {initialModelCalibrateState} from "./store/modelCalibrate/modelCalibrate";
 import {AxiosResponse} from "axios";
 import { ComputedGetter } from 'vue';
+import {isMultiselectControl, isDropdown} from "./store/modelOptions/optionsUtils";
 
 export type ComputedWithType<T> = () => T;
 
@@ -368,19 +368,30 @@ export const validateEmail = (test: string): boolean => {
 
 export const versionLabel = (version: Version) => `v${version.versionNumber}`;
 
-export const writeOptionsIntoForm = (options: DynamicFormData, optionsForm: DynamicFormMeta) => {
-    const hasOptions = Object.keys(options).length > 0;
-    if (hasOptions) {
-        optionsForm.controlSections.forEach(section => {
-            section.controlGroups.forEach(group => {
-                group.controls.forEach(control => {
-                    if (control.name in options) {
-                        control.value = options[control.name];
-                    }
-                });
+// Parse the form payload by ensuring that types are adhered to here
+// If select or multiselect => ensure options exist
+// If multiselect => make sure value is valid
+// Then write in current options from state
+export const parseAndFillForm = (options: DynamicFormData, optionsForm: DynamicFormMeta) => {
+    const stateHasOptions = Object.keys(options).length > 0;
+    optionsForm.controlSections.forEach(section => {
+        section.controlGroups.forEach(group => {
+            group.controls.forEach(control => {
+                // Write existing option into controls
+                if (stateHasOptions && control.name in options) {
+                    control.value = options[control.name];
+                }
+                // Ensure options exist
+                if (isDropdown(control) && !control.options) {
+                    control.options = [];
+                }
+                // Ensure value is a valid type for multiselect
+                if (isMultiselectControl(control) && !control.value) {
+                    control.value = [];
+                }
             });
         });
-    }
+    });
 };
 
 export function getFilenameFromImportUrl(url: string) {
