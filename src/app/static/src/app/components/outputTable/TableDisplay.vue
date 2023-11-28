@@ -52,6 +52,22 @@ export default defineComponent({
         const gridApi = ref<AgGridEvent | null>(null);
 
         const ensureColumnsWideEnough = (event: AgGridEvent) => {
+            /*
+                We auto size all columns to make sure our data fits in it however,
+                the columns go to the minimum required width so sometimes we have
+                a very narrow table. We would like the table to fill at least the
+                whole screen.
+
+                To fix this we use the autosize feature, then get all the widths
+                of the column (these are the minimum widths required for each
+                column). Size columns to fit resizes columns to fit the screen
+                (using this in isolation means that the columns just equally space
+                out and the data may not fit).
+                
+                We use the minimum widths that auto size gives us to have the
+                columns fill the screen while also being the minWidth to fit all
+                the data inside.
+            */
             event.columnApi.autoSizeAllColumns();
             const columns = event.columnApi.getAllGridColumns();
             const columnLimits = columns.map(col => {
