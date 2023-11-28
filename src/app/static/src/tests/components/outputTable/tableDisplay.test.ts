@@ -71,13 +71,26 @@ const data = [
 
 describe("Output Table display table tests", () => {
     const createStore = () => new Vuex.Store({
+        getters: {
+            ["modelOutput/tableFilters"]: jest.fn().mockReturnValue([{
+                column_id: "sex",
+                id: "sex"
+            }])
+        },
         modules: {
             modelCalibrate: {
                 namespaced: true,
                 state: mockModelCalibrateState({
                     metadata: {
                         tableMetadata: {
-                            presets: []
+                            presets: [
+                                {
+                                    defaults: {
+                                        id: "preset1",
+                                        column: "sex",
+                                    } as any
+                                } as any
+                            ]
                         },
                         plottingMetadata: {
                             barchart: {indicators: [], filters: []},
@@ -109,7 +122,7 @@ describe("Output Table display table tests", () => {
                             rowFilter: [{id: "rowOp2", label: "rowOption2"}],
                             area: [{id: "place1", label: "Place1"}],
                             age: [{id: "ageOp1", label: "ageOption1"}],
-                            sex: [{id: "male", label: "Male"}]
+                            sex: [{id: "male", label: "Male"}, {id: "female", label: "Female"}]
                         }
                     }
                 })
@@ -154,14 +167,16 @@ describe("Output Table display table tests", () => {
 
         expect(wrapper.findComponent(AgGridVue).props("defaultColDef")).toStrictEqual(defaultColDef);
         expect(wrapper.findComponent(AgGridVue).props("rowData")).toStrictEqual(data);
-        expect(wrapper.findComponent(AgGridVue).props("columnDefs")[0]).toStrictEqual({
+        const columnDefs = wrapper.findComponent(AgGridVue).props("columnDefs");
+        expect(columnDefs.length).toBe(3);
+        expect(columnDefs[0]).toStrictEqual({
             field: "label",
             filter: "agTextColumnFilter",
-            headerName: "Header"
+            headerName: "Header",
+            pinned: "left"
         });
-        expect(wrapper.findComponent(AgGridVue).props("columnDefs")[1].headerName).toBe("Both");
-        expect(wrapper.findComponent(AgGridVue).props("columnDefs")[2].headerName).toBe("Male");
-        expect(wrapper.findComponent(AgGridVue).props("columnDefs")[3].headerName).toBe("Female");
+        expect(columnDefs[1].headerName).toBe("Male");
+        expect(columnDefs[2].headerName).toBe("Female");
     });
 
     it("getValue works as expected", async () => {

@@ -17,6 +17,7 @@ import "ag-grid-community/styles//ag-theme-alpine.css";
 import { useStore } from "vuex";
 import { RootState } from "../../root";
 import { formatOutput } from "../plots/utils";
+import { DisplayFilter } from "../../types";
 
 const defaultColDef = {
     // Set the default filter type
@@ -66,6 +67,8 @@ export default defineComponent({
 
         const store = useStore<RootState>();
         const selections = computed(() => store.state.plottingSelections.table);
+        const presets = computed(() => store.state.modelCalibrate.metadata?.tableMetadata.presets);
+        const filters = computed<DisplayFilter[]>(() => store.getters["modelOutput/tableFilters"] || []);
 
         const indicatorFormatConfig = computed(() => {
             const indicators = store.state.modelCalibrate.metadata?.plottingMetadata.choropleth.indicators;
@@ -98,32 +101,28 @@ export default defineComponent({
         };
 
         const columnDefs = computed(() => {
+            if (!presets.value) return [];
+            const currentPreset = presets.value.find(p => p.defaults.id === selections.value.preset)!;
+            const columnFilter = filters.value.find(f => f.column_id === currentPreset.defaults.column);
+            if (!columnFilter) return [];
+            const columnSelections = selections.value.selectedFilterOptions[columnFilter.id];
+            const columnHeaders = columnSelections.map(selection => {
+                return {
+                    headerName: selection.label,
+                    valueGetter: getValue(selection.id),
+                    valueFormatter: getFormat(selection.id)
+                }
+            });
+
             return [
                 {
                     headerName: props.headerName,
                     field: "label",
                     // Override default filter type
-                    filter: 'agTextColumnFilter'
+                    filter: 'agTextColumnFilter',
+                    pinned: "left"
                 },
-                {
-                    headerName: "Both",
-                    // The getter here sets the value in the table, this is the value which is filtered,
-                    // and which gets downloaded from the export
-                    valueGetter: getValue('both'),
-                    // The formatter separately adds the lower and upper uncertainty ranges
-                    // this is just for display and doesn't affect filtering
-                    valueFormatter: getFormat('both')
-                },
-                {
-                    headerName: "Male",
-                    valueGetter: getValue('male'),
-                    valueFormatter: getFormat('male')
-                },
-                {
-                    headerName: "Female",
-                    valueGetter: getValue('female'),
-                    valueFormatter: getFormat('female')
-                },
+                ...columnHeaders
             ];
         });
 
