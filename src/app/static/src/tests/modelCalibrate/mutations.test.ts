@@ -51,7 +51,9 @@ describe("ModelCalibrate mutations", () => {
         const state = mockModelCalibrateState({
             error: mockError("TEST ERROR"),
             complete: true,
-            status: ["TEST STATUS"] as any
+            status: ["TEST STATUS"] as any,
+            result: {data: "TEST DATA"} as any,
+            fetchedIndicators: new Set<string>(["prev"])
         });
         const payload = {id: "123"} as any;
         mutations[ModelCalibrateMutation.CalibrateStarted](state, {payload});
@@ -63,6 +65,8 @@ describe("ModelCalibrate mutations", () => {
         expect(state.generatingCalibrationPlot).toBe(false);
         expect(state.calibratePlotResult).toBe(null);
         expect(state.comparisonPlotResult).toBe(null);
+        expect(state.result).toBe(null);
+        expect(state.fetchedIndicators).toStrictEqual(new Set<string>());
     });
 
     it("CalibrateStatusUpdate sets status, resets error", () => {
