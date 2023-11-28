@@ -1,11 +1,10 @@
 import {MutationTree} from 'vuex';
 import {ModelCalibrateState} from "./modelCalibrate";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
-import {PayloadWithType} from "../../types";
-import {writeOptionsIntoForm} from "../../utils";
+import {CalibrateResultWithType, PayloadWithType} from "../../types";
+import {parseAndFillForm} from "../../utils";
 import {
     CalibrateMetadataResponse,
-    CalibrateResultResponse,
     CalibrateStatusResponse,
     CalibrateSubmitResponse,
     ComparisonPlotResponse,
@@ -51,7 +50,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     },
 
     [ModelCalibrateMutation.ModelCalibrateOptionsFetched](state: ModelCalibrateState, action: PayloadWithType<DynamicFormMeta>) {
-        writeOptionsIntoForm(state.options, action.payload);
+        parseAndFillForm(state.options, action.payload);
         state.optionsFormMeta = action.payload;
         state.fetching = false;
     },
@@ -69,6 +68,8 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.calibratePlotResult = null;
         state.comparisonPlotResult = null;
         state.error = null;
+        state.fetchedIndicators = new Set<string>();
+        state.result = null;
         state.status = {} as CalibrateStatusResponse;
     },
 
@@ -140,13 +141,22 @@ export const mutations: MutationTree<ModelCalibrateState> = {
         state.warnings = [];
     },
 
-    [ModelCalibrateMutation.CalibrateResultFetched](state: ModelCalibrateState, action: PayloadWithType<CalibrateResultResponse>) {
-        state.result = action.payload
-    },
-
     [ModelCalibrateMutation.ResetIds](state: ModelCalibrateState) {
         stopPolling(state)
-    }
+    },
+
+    [ModelCalibrateMutation.CalibrateResultFetched](state: ModelCalibrateState, action: PayloadWithType<CalibrateResultWithType>) {
+        if (!state.result) {
+            state.result = structuredClone({data: action.payload.data});
+        } else {
+            state.result.data.push(...action.payload.data);
+        }
+        if (!state.fetchedIndicators) {
+            state.fetchedIndicators = new Set<string>([action.payload.indicatorId]);
+        } else {
+            state.fetchedIndicators.add(action.payload.indicatorId);
+        }
+    },
 };
 
 const stopPolling = (state: ModelCalibrateState) => {

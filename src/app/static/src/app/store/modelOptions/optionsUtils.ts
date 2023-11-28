@@ -17,7 +17,7 @@ export function checkOptionsValid(formMeta: DynamicFormMeta): boolean {
                     valid = !control.required
                 } else if (isNumberControl(control)) {
                     valid = checkNumberControlValid(control);
-                } else if (hasOptions(control)) {
+                } else if (isDropdown(control)) {
                     valid = checkControlOptionValid(control);
                 }
                 return valid
@@ -26,12 +26,16 @@ export function checkOptionsValid(formMeta: DynamicFormMeta): boolean {
     })
 }
 
-function hasOptions(control: Control): control is ControlWithOptions {
+export function isDropdown(control: Control): control is ControlWithOptions {
     return control.type === "select" || control.type === "multiselect";
 }
 
-function isNumberControl(control: Control): control is NumberControl {
-    return control.type == "number"
+export function isMultiselectControl(control: Control): control is MultiSelectControl {
+    return control.type === "multiselect";
+}
+
+export function isNumberControl(control: Control): control is NumberControl {
+    return control.type == "number";
 }
 
 function checkNumberControlValid(control: NumberControl): boolean {
@@ -50,10 +54,10 @@ function checkNumberControlValid(control: NumberControl): boolean {
 function checkControlOptionValid(control: ControlWithOptions): boolean {
     let valid = true;
 
-    const options = getAllOptionIds(control)
+    const options = getAllOptionIds(control);
     const value = control.value;
     // Check string and array types, otherwise we assume valid
-    if (typeof value === 'string') {
+    if (typeof value === 'string' && value) {
         valid = options.includes(value);
     } else if (Array.isArray(value)) {
         valid = value.every(item => options.includes(item));
@@ -63,6 +67,9 @@ function checkControlOptionValid(control: ControlWithOptions): boolean {
 }
 
 function getAllOptionIds(control: ControlWithOptions): string[] {
+    if (!control.options) {
+        return [];
+    }
     return control.options.flatMap((option: Option) => getOptionIds(option));
 }
 

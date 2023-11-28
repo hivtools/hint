@@ -4,6 +4,7 @@ import {mutations} from "./mutations";
 import {getters} from "./getters";
 import {Dict} from "../../types";
 import {DataExplorationState} from "../dataExploration/dataExploration";
+import {actions} from "./actions";
 
 export interface PlottingSelectionsState {
     calibratePlot: BarchartSelections,
@@ -167,8 +168,7 @@ export const plottingSelections = (existingState: Partial<DataExplorationState> 
         namespaced,
         state: {...initialPlottingSelectionsState(), ...existingState && existingState.plottingSelections},
         mutations,
-        getters
+        getters,
+        actions
     }
 };
-
-
