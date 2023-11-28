@@ -30,7 +30,7 @@ export const actions: ActionTree<ModelOutputState, DataExplorationState> & Model
                 currentIndicators.push(rootState.plottingSelections.outputChoropleth.indicatorId);
                 break;
             case ModelOutputTabs.Table:
-                // TODO: Add table selections here
+                currentIndicators.push(rootState.plottingSelections.table.indicator);
                 break;
             default:
                 break;
