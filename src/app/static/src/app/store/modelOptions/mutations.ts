@@ -1,8 +1,8 @@
 import {MutationTree} from 'vuex';
 import {ModelOptionsState} from "./modelOptions";
-import {Control, SelectControl, MultiSelectControl, Option, DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
+import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {PayloadWithType} from "../../types";
-import {writeOptionsIntoForm} from "../../utils";
+import {parseAndFillForm} from "../../utils";
 import {checkOptionsValid} from "./optionsUtils";
 import {VersionInfo, Error, ModelOptionsValidate} from "../../generated";
 
@@ -67,7 +67,7 @@ export const mutations: MutationTree<ModelOptionsState> = {
     },
 
     [ModelOptionsMutation.ModelOptionsFetched](state: ModelOptionsState, action: PayloadWithType<DynamicFormMeta>) {
-        writeOptionsIntoForm(state.options, action.payload);
+        parseAndFillForm(state.options, action.payload);
         state.optionsFormMeta = action.payload;
         state.valid = state.valid && checkOptionsValid(state.optionsFormMeta);
         state.fetching = false;

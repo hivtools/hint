@@ -41,6 +41,13 @@ describe("ModelOutput actions", () => {
                     selectedFilterOptions: {
                         testFilter: []
                     }
+                },
+                table: {
+                    indicator: "table-indicator",
+                    preset: "test-preset",
+                    selectedFilterOptions: {
+                        testFilter: []
+                    }
                 }
             }),
         });
@@ -93,5 +100,18 @@ describe("ModelOutput actions", () => {
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0].type).toBe(ModelOutputMutation.TabSelected);
         expect(commit.mock.calls[0][0].payload).toBe(ModelOutputTabs.Map);
+
+        dispatch.mockReset();
+        commit.mockReset();
+
+        await actions.updateSelectedTab({commit, rootState, dispatch} as any, ModelOutputTabs.Table);
+
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("modelCalibrate/getResultData");
+        expect(dispatch.mock.calls[0][1]).toBe("table-indicator");
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0].type).toBe(ModelOutputMutation.TabSelected);
+        expect(commit.mock.calls[0][0].payload).toBe(ModelOutputTabs.Table);
     });
 });

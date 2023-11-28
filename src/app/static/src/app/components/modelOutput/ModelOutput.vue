@@ -319,7 +319,6 @@
             updateBarchartSelections: mapActionByName<BarchartSelections>("plottingSelections", "updateBarchartSelections"),
             updateOutputChoroplethSelections: mapActionByName<ChoroplethSelections>("plottingSelections", "updateChoroplethSelections"),
             updateBubblePlotSelections: mapActionByName<BubblePlotSelections>("plottingSelections", "updateBubblePlotSelections"),
-            getResultData: mapActionByName<ModelCalibrateState>("modelCalibrate", "getResultData"),
             formatBarchartValue: (value: string | number, indicator: BarchartIndicator) => {
                 return formatOutput(value, indicator.format, indicator.scale, indicator.accuracy).toString();
             },

@@ -2,10 +2,9 @@ import {MutationTree} from 'vuex';
 import {ModelCalibrateState} from "./modelCalibrate";
 import {DynamicFormData, DynamicFormMeta} from "@reside-ic/vue-next-dynamic-form";
 import {CalibrateResultWithType, PayloadWithType} from "../../types";
-import {writeOptionsIntoForm} from "../../utils";
+import {parseAndFillForm} from "../../utils";
 import {
     CalibrateMetadataResponse,
-    CalibrateResultResponse,
     CalibrateStatusResponse,
     CalibrateSubmitResponse,
     ComparisonPlotResponse,
@@ -51,7 +50,7 @@ export const mutations: MutationTree<ModelCalibrateState> = {
     },
 
     [ModelCalibrateMutation.ModelCalibrateOptionsFetched](state: ModelCalibrateState, action: PayloadWithType<DynamicFormMeta>) {
-        writeOptionsIntoForm(state.options, action.payload);
+        parseAndFillForm(state.options, action.payload);
         state.optionsFormMeta = action.payload;
         state.fetching = false;
     },
