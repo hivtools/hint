@@ -31,8 +31,8 @@
 
     const lineColor = "rgb(51, 51, 51)";
     const largeChangeHighlight = "rgb(255, 51, 51)";
-    const missingHighlight = "rgb(211, 211, 211)";
-    const missingLargeChangeHighlight = "rgb(255, 177, 177)";
+    const missingHighlight = "rgb(220,220,220)";
+    const missingLargeChangeHighlight = "rgb(255,214,214)";
 
     type Data = {
         area_hierarchy: string,
@@ -43,7 +43,8 @@
         plot?: string,
         quarter?: string,
         time_period: string,
-        value?: number
+        value?: number,
+        missing_ids?: string[] | null
     }
 
     type ChartData = { data: Data[] } | null
@@ -101,11 +102,55 @@
                 await drawFunc(el as HTMLElement, drawData.data, drawData.layout, {...config as any});
                 this.rendering = false;
             },
+            getTooltipTemplate: function(plotData: (Data | null)[], areaName: string) {
+                const tooltip = "%{x}, %{y}" + areaName;
+                return plotData.map((entry: Data | null) => {
+                    let missingIdsText = "";
+                    if (entry && entry.missing_ids && entry.missing_ids.length) {
+                        // If the area ID matches the missing_id then this is a synthetic value we have appended
+                        // rather than an aggregate with some missing data. Show this with a slightly different
+                        // message
+                        if (entry.missing_ids.length == 1 && entry.missing_ids[0] == entry.area_id) {
+                            missingIdsText = "<br>This value is missing from the uploaded data"
+                        } else {
+                            missingIdsText = "<br>Aggregate value missing data for " + entry.missing_ids.length.toString() + " regions";
+                        }
+                    }
+                    // Empty <extra></extra> tag removes the part of the hover where trace name is displayed in
+                    // contrasting colour. See https://plotly.com/python/hover-text-and-formatting/
+                    return tooltip + missingIdsText + "<extra></extra>";
+                })
+            },
+            getScatterPoints: function(plotData: (Data | null)[], areaName: string, index: number,
+                                       baseColour: string, missingColour: string) {
+                const hoverTemplate = this.getTooltipTemplate(plotData, areaName);
+                const points: any = {
+                    name: areaName,
+                    showlegend: false,
+                    x: plotData.map(x => x?.time_period),
+                    y: plotData.map(x => x?.value ),
+                    xaxis: `x${index+1}`,
+                    yaxis: `y${index+1}`,
+                    type: "scatter",
+                    marker: {
+                    color: plotData.map(x => x?.missing_ids?.length ? missingColour : baseColour),
+                        line: {
+                        width: 0.5,
+                            color: baseColour
+                    },
+                },
+                    line: {
+                        color: baseColour
+                    },
+                    hovertemplate: hoverTemplate
+                }
+                return points
+            },
             getData: async function() {
                 if (!this.chartData) {
                     return {data: [], layout: {}}
                 }
-                const dataByArea: Record<string, any[]> = {};
+                const dataByArea: Record<string, Data[]> = {};
                 this.chartData.data.forEach(dataPoint => {
                     const areaId = dataPoint.area_id;
                     if (areaId in dataByArea) {
@@ -126,25 +171,23 @@
                 data.sequence = true;
                 data.keepSingleton = true;
                 areaIds.forEach((id, index) => {
-                    const areaData = dataByArea[id];
-                    console.log(areaData);
-                    const values = areaData.map(data => data.value);
+                    const areaData: Data[] = dataByArea[id];
 
                     const highlightedLineIndexes: boolean[] = [];
-                    for (let i = 1; i < values.length; i++) {
-                        const thisVal = values[i];
-                        const prevVal = values[i - 1];
+                    for (let i = 1; i < areaData.length; i++) {
+                        const thisVal = areaData[i].value;
+                        const prevVal = areaData[i - 1].value;
 
-                        const isHighlighted = !!((thisVal !== null && prevVal !== null && thisVal > 0)
+                        // Using != to check for null and undefined
+                        const isHighlighted = !!((thisVal != null && prevVal != null && thisVal > 0)
                         && (thisVal > 1.25 * prevVal || thisVal < 0.75 * prevVal));
 
                         highlightedLineIndexes.push(isHighlighted);
                     }
-                    console.log(highlightedLineIndexes);
 
                     const highlightsRequired = highlightedLineIndexes.some(v => v);
-                    
-                    let highlightXAndY: any[][] = [[], []];
+
+                    let highlight: (Data | null)[] = [];
                     if (highlightsRequired) {
                         const interpolateIndexes: boolean[] = [];
                         for (let i = 0; i < highlightedLineIndexes.length - 1; i++) {
@@ -153,107 +196,26 @@
                             interpolateIndexes.push(interpolate)
                         }
 
-                        const interpolationRequired = !(interpolateIndexes.every(v => v === false));
-
-                        const highlightY: any[] = [];
-                        for (let i = 0; i < values.length; i++) {
+                        for (let i = 0; i < areaData.length; i++) {
                             const isHighlighted = (i === 0 && highlightedLineIndexes[0])
                             || (i === highlightedLineIndexes.length && highlightedLineIndexes[i - 1])
                             || (i > 0 && i < highlightedLineIndexes.length && (highlightedLineIndexes[i - 1] || highlightedLineIndexes[i]));
 
-                            const markerVal = isHighlighted ? values[i] : null;
-                            highlightY.push(markerVal);
+                            const dataPoint = isHighlighted ? areaData[i] : null;
+                            highlight.push(dataPoint);
                             if (interpolateIndexes[i]) {
-                                highlightY.push(null);
+                                highlight.push(null);
                             }
                         }
-
-                        let highlightX: any[] = [];
-                        const localTimePeriods = dataByArea[id].map(x => x.time_period);
-                        if (!interpolationRequired) {
-                            highlightX = localTimePeriods
-                        } else {
-                            for (let i = 0; i < values.length; i++) {
-                                highlightX.push(localTimePeriods[i]);
-                                if (interpolateIndexes[i]) {
-                                    highlightX.push(null);
-                                }
-                            }
-                        }
-
-                        highlightXAndY = [highlightX, highlightY]
                     }
 
                     const areaHierarchy = dataByArea[id][0].area_hierarchy;
-                    const areaHierarchyTooltip = areaHierarchy ? "<br>" + areaHierarchy : "";
-                    const missingIds = dataByArea[id].map(x => x.missing_ids);
-                    missingIds.map((ids, index) => {
-                        if (ids) {
-                            console.log("missing for " + ids)
-                            console.log("<br>Aggregate value missing data for " + missingIds[index].length.toString() + " regions");
-                        }
-                    })
-                    const tooltip = "%{x}, %{y}" + areaHierarchyTooltip;
-                    const hoverTemplate = missingIds.map((ids, index) => {
-                        let missingIdsText = "";
-                        if (ids) {
-                            missingIdsText = "<br>Aggregate value missing data for " + missingIds[index].length.toString() + " regions";
-                        }
-                        return tooltip + missingIdsText + "<extra></extra>";
-                    })
+                    const areaName = areaHierarchy ? "<br>" + areaHierarchy : "";
 
-
-                    const normalColorPoints: any = {
-                        name: dataByArea[id][0].area_name,
-                        showlegend: false,
-                        x: dataByArea[id].map(x => x.time_period),
-                        y: dataByArea[id].map(x => x.value),
-                        xaxis: `x${index+1}`,
-                        yaxis: `y${index+1}`,
-                        type: "scatter",
-                        marker: {
-                            color: dataByArea[id].map(x => x.missing_ids?.length ? missingHighlight : lineColor),
-                            line: {
-                                width: 1,
-                                color: lineColor
-                            },
-                        },
-                        line: {
-                            color: lineColor
-                        },
-                        hovertemplate: hoverTemplate
-                    }
-                    console.log("normal color points")
-                    console.log(normalColorPoints)
-                    normalColorPoints.x.sequence = true;
-                    normalColorPoints.y.sequence = true;
-
-                    console.log(highlightXAndY)
-
-                    const highlightedPoints: any = {
-                        name: dataByArea[id][0].area_name,
-                        showlegend: false,
-                        x: highlightXAndY[0],
-                        y: highlightXAndY[1],
-                        xaxis: `x${index+1}`,
-                        yaxis: `y${index+1}`,
-                        type: "scatter",
-                        marker: {
-                            color: dataByArea[id].map(x => x.missing_ids?.length ? missingLargeChangeHighlight : largeChangeHighlight),
-                            line: {
-                                width: 1,
-                                color: largeChangeHighlight
-                            },
-                        },
-                        line: {
-                            color: largeChangeHighlight
-                        },
-                        hovertemplate: hoverTemplate
-                    };
-                    console.log("highlighted color points")
-                    console.log(highlightedPoints)
-                    highlightedPoints.x.sequence = true;
-                    highlightedPoints.y.sequence = true;
+                    const normalColorPoints = this.getScatterPoints(dataByArea[id], areaName, index,
+                            lineColor, missingHighlight);
+                    const highlightedPoints = this.getScatterPoints(highlight, areaName, index,
+                            largeChangeHighlight, missingLargeChangeHighlight);
 
                     data.push(normalColorPoints);
                     data.push(highlightedPoints);
