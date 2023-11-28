@@ -193,7 +193,8 @@ export interface CalibrateMetadataResponse {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
   [k: string]: any;
 }
@@ -266,6 +267,10 @@ export interface CalibratePlotRow {
   calendar_quarter: string;
   indicator: string;
   mean: number | null;
+  [k: string]: any;
+}
+export interface CalibrateResultPathResponse {
+  path: string;
   [k: string]: any;
 }
 export interface CalibrateResultResponse {
@@ -355,7 +360,8 @@ export interface CalibrateResultResponse {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
   [k: string]: any;
 }
@@ -373,7 +379,8 @@ export interface CalibrateStatusResponse {
         name: string;
         helpText?: string;
       }
-    | string)[];
+    | string
+  )[];
 }
 export interface CalibrateSubmitRequest {
   options: {
@@ -604,7 +611,8 @@ export interface DownloadStatusResponse {
         name: string;
         helpText?: string;
       }
-    | string)[];
+    | string
+  )[];
 }
 export interface DownloadSubmitRequest {
   notes?: {
@@ -665,10 +673,18 @@ export interface DownloadSubmitRequest {
       [k: string]: any;
     };
   };
+  pjnz?: {
+    path: string | null;
+    hash: string;
+    filename: string;
+    fromADR?: boolean;
+    resource_url?: string | null;
+  };
 }
 export interface DownloadSubmitResponse {
   id: string;
 }
+export type ErrorCode = string;
 export interface Error {
   error: string;
   detail: string | null;
@@ -676,7 +692,6 @@ export interface Error {
   job_id?: string;
   [k: string]: any;
 }
-export type ErrorCode = string;
 export interface File {
   path: string | null;
   filename: string;
@@ -741,6 +756,7 @@ export type InputTimeSeriesData = {
   time_period: string;
   quarter: string;
   area_hierarchy: string;
+  missing_ids?: string[] | null;
 }[];
 export interface InputTimeSeriesDefaults {
   selected_filter_options: {
@@ -790,6 +806,7 @@ export interface InputTimeSeriesResponse {
     time_period: string;
     quarter: string;
     area_hierarchy: string;
+    missing_ids?: string[] | null;
   }[];
   metadata: {
     columns: {
@@ -826,7 +843,8 @@ export interface InputTimeSeriesResponse {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
 }
 export interface InputTimeSeriesRow {
@@ -839,6 +857,7 @@ export interface InputTimeSeriesRow {
   time_period: string;
   quarter: string;
   area_hierarchy: string;
+  missing_ids?: string[] | null;
 }
 export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
 export interface LevelLabels {
@@ -868,7 +887,8 @@ export interface ModelOptionsValidate {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
 }
 export interface ModelOptionsValidateRequest {
@@ -943,7 +963,8 @@ export interface ModelResultResponse {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
   [k: string]: any;
 }
@@ -1361,7 +1382,8 @@ export interface ProjectRehydrateStatusResponse {
         name: string;
         helpText?: string;
       }
-    | string)[];
+    | string
+  )[];
 }
 export interface ProjectRehydrateSubmitRequest {
   file: {
@@ -1630,7 +1652,8 @@ export interface ProgrammeResponse {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
 }
 export interface AncResponse {
@@ -1673,7 +1696,8 @@ export interface AncResponse {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
 }
 export interface SurveyResponse {
@@ -1723,7 +1747,8 @@ export interface SurveyResponse {
       | "model_fit"
       | "model_calibrate"
       | "review_output"
-      | "download_results")[];
+      | "download_results"
+    )[];
   }[];
 }
 export interface ValidateSurveyAndProgrammeRequest {
@@ -1751,5 +1776,6 @@ export interface Warning {
     | "model_fit"
     | "model_calibrate"
     | "review_output"
-    | "download_results")[];
+    | "download_results"
+  )[];
 }

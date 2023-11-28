@@ -30,7 +30,9 @@
     };
 
     const lineColor = "rgb(51, 51, 51)";
-    const highlightColor = "rgb(255, 51, 51)";
+    const largeChangeHighlight = "rgb(255, 51, 51)";
+    const missingHighlight = "rgb(211, 211, 211)";
+    const missingLargeChangeHighlight = "rgb(255, 177, 177)";
 
     type Data = {
         area_hierarchy: string,
@@ -125,6 +127,7 @@
                 data.keepSingleton = true;
                 areaIds.forEach((id, index) => {
                     const areaData = dataByArea[id];
+                    console.log(areaData);
                     const values = areaData.map(data => data.value);
 
                     const highlightedLineIndexes: boolean[] = [];
@@ -137,11 +140,12 @@
 
                         highlightedLineIndexes.push(isHighlighted);
                     }
+                    console.log(highlightedLineIndexes);
 
-                    const noHighlightsRequired = highlightedLineIndexes.every(v => v === false);
+                    const highlightsRequired = highlightedLineIndexes.some(v => v);
                     
                     let highlightXAndY: any[][] = [[], []];
-                    if (!noHighlightsRequired) {
+                    if (highlightsRequired) {
                         const interpolateIndexes: boolean[] = [];
                         for (let i = 0; i < highlightedLineIndexes.length - 1; i++) {
                             const interpolate = !!((i > 0)
@@ -182,7 +186,22 @@
 
                     const areaHierarchy = dataByArea[id][0].area_hierarchy;
                     const areaHierarchyTooltip = areaHierarchy ? "<br>" + areaHierarchy : "";
-                    const hoverTemplate = "%{x}, %{y}" + areaHierarchyTooltip + "<extra></extra>";
+                    const missingIds = dataByArea[id].map(x => x.missing_ids);
+                    missingIds.map((ids, index) => {
+                        if (ids) {
+                            console.log("missing for " + ids)
+                            console.log("<br>Aggregate value missing data for " + missingIds[index].length.toString() + " regions");
+                        }
+                    })
+                    const tooltip = "%{x}, %{y}" + areaHierarchyTooltip;
+                    const hoverTemplate = missingIds.map((ids, index) => {
+                        let missingIdsText = "";
+                        if (ids) {
+                            missingIdsText = "<br>Aggregate value missing data for " + missingIds[index].length.toString() + " regions";
+                        }
+                        return tooltip + missingIdsText + "<extra></extra>";
+                    })
+
 
                     const normalColorPoints: any = {
                         name: dataByArea[id][0].area_name,
@@ -192,13 +211,24 @@
                         xaxis: `x${index+1}`,
                         yaxis: `y${index+1}`,
                         type: "scatter",
+                        marker: {
+                            color: dataByArea[id].map(x => x.missing_ids?.length ? missingHighlight : lineColor),
+                            line: {
+                                width: 1,
+                                color: lineColor
+                            },
+                        },
                         line: {
                             color: lineColor
                         },
                         hovertemplate: hoverTemplate
                     }
+                    console.log("normal color points")
+                    console.log(normalColorPoints)
                     normalColorPoints.x.sequence = true;
                     normalColorPoints.y.sequence = true;
+
+                    console.log(highlightXAndY)
 
                     const highlightedPoints: any = {
                         name: dataByArea[id][0].area_name,
@@ -208,11 +238,20 @@
                         xaxis: `x${index+1}`,
                         yaxis: `y${index+1}`,
                         type: "scatter",
+                        marker: {
+                            color: dataByArea[id].map(x => x.missing_ids?.length ? missingLargeChangeHighlight : largeChangeHighlight),
+                            line: {
+                                width: 1,
+                                color: largeChangeHighlight
+                            },
+                        },
                         line: {
-                            color: highlightColor
+                            color: largeChangeHighlight
                         },
                         hovertemplate: hoverTemplate
                     };
+                    console.log("highlighted color points")
+                    console.log(highlightedPoints)
                     highlightedPoints.x.sequence = true;
                     highlightedPoints.y.sequence = true;
 
