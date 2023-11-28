@@ -21,7 +21,6 @@ import { useStore } from "vuex";
 import { computed, defineComponent, onMounted } from "vue";
 import { RootState } from "../../root";
 import { Dict, DisplayFilter } from "../../types";
-import { PlottingSelectionsMutations } from "../../store/plottingSelections/mutations";
 import { TableSelections } from "../../store/plottingSelections/plottingSelections";
 import { CalibrateMetadataResponse, FilterOption } from "../../generated";
 import NewFilters from "./NewFilters.vue";
@@ -53,9 +52,9 @@ export default defineComponent({
             }) || [];
         });
         
-        const updateTableSelections = (payload: Partial<TableSelections>) => {
-            store.commit(
-                `plottingSelections/${PlottingSelectionsMutations.updateTableSelections}`,
+        const updateTableSelections = async (payload: Partial<TableSelections>) => {
+            await store.dispatch(
+                `plottingSelections/updateTableSelections`,
                 { payload }
             );
         };
