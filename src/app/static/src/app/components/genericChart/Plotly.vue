@@ -14,6 +14,10 @@
     import { PropType, defineComponent } from "vue";
     import { Dict } from "../../types";
     import { PlotColours } from "./utils"
+    import i18next from "i18next";
+    import {mapStateProp} from "../../utils";
+    import {RootState} from "../../root";
+    import {Language} from "../../store/translations/locales";
 
     const config = {
         responsive: false,
@@ -86,9 +90,15 @@
                     height: '100%',
                     visibility: this.rendering ? 'hidden' : 'visible'
                 } as any;
-            }
+            },
+            currentLanguage: mapStateProp<RootState, Language>(null,
+                (state: RootState) => state.language)
         },
         methods: {
+            translate(word: string, args: any = null) {
+                console.log(this.currentLanguage)
+                return i18next.t(word, {...args, lng: this.currentLanguage})
+            },
             drawChart: async function() {
                 this.rendering = true;
                 const el = this.$refs.chart;
@@ -108,9 +118,10 @@
                         // rather than an aggregate with some missing data. Show this with a slightly different
                         // message
                         if (entry.missing_ids.length == 1 && entry.missing_ids[0] == entry.area_id) {
-                            missingIdsText = "<br>This value is missing from the uploaded data"
+                            missingIdsText = "<br>" + this.translate("timeSeriesMissingValue")
                         } else {
-                            missingIdsText = "<br>Aggregate value missing data for " + entry.missing_ids.length.toString() + " regions";
+                            missingIdsText = "<br>" + this.translate("timeSeriesMissingAggregate",
+                                {count: entry.missing_ids.length.toString()});
                         }
                     }
                     // Empty <extra></extra> tag removes the part of the hover where trace name is displayed in
