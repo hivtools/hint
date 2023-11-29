@@ -13,6 +13,7 @@
     import LoadingSpinner from "../LoadingSpinner.vue";
     import { PropType, defineComponent } from "vue";
     import { Dict } from "../../types";
+    import { PlotColours } from "./utils"
 
     const config = {
         responsive: false,
@@ -28,11 +29,6 @@
             'zoomOut2d'
         ]
     };
-
-    const lineColor = "rgb(51, 51, 51)";
-    const largeChangeHighlight = "rgb(255, 51, 51)";
-    const missingHighlight = "rgb(220,220,220)";
-    const missingLargeChangeHighlight = "rgb(255,214,214)";
 
     type Data = {
         area_hierarchy: string,
@@ -133,12 +129,12 @@
                     yaxis: `y${index+1}`,
                     type: "scatter",
                     marker: {
-                    color: plotData.map(x => x?.missing_ids?.length ? missingColour : baseColour),
+                        color: plotData.map(x => x?.missing_ids?.length ? missingColour : baseColour),
                         line: {
-                        width: 0.5,
+                            width: 0.5,
                             color: baseColour
+                        },
                     },
-                },
                     line: {
                         color: baseColour
                     },
@@ -213,9 +209,9 @@
                     const areaName = areaHierarchy ? "<br>" + areaHierarchy : "";
 
                     const normalColorPoints = this.getScatterPoints(dataByArea[id], areaName, index,
-                            lineColor, missingHighlight);
+                            PlotColours.DEFAULT, PlotColours.MISSING);
                     const highlightedPoints = this.getScatterPoints(highlight, areaName, index,
-                            largeChangeHighlight, missingLargeChangeHighlight);
+                            PlotColours.LARGE_CHANGE, PlotColours.LARGE_CHANGE_MISSING);
 
                     data.push(normalColorPoints);
                     data.push(highlightedPoints);

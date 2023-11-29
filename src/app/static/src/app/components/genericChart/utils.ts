@@ -1,6 +1,13 @@
 import {DatasetFilterConfig, Dict, DisplayFilter, GenericChartColumn} from "../../types";
 import {FilterOption} from "../../generated";
 
+export const PlotColours = Object.freeze({
+    DEFAULT: "rgb(51, 51, 51)",
+    LARGE_CHANGE: "rgb(255, 51, 51)",
+    MISSING: "rgb(220,220,220)",
+    LARGE_CHANGE_MISSING: "rgb(255,214,214)"
+});
+
 export const filterData = (
     unfilteredData: Dict<unknown>[],
     filters: DisplayFilter[],

@@ -10,6 +10,7 @@ import * as plotly from "plotly.js-basic-dist";
 import Vue, { nextTick } from "vue";
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import Plotly from "../../../app/components/genericChart/Plotly.vue";
+import {PlotColours} from "../../../app/components/genericChart/utils";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
@@ -66,8 +67,15 @@ const layoutData = {
 const expectedData = (xval = "date11", yval = 1) => {
     const expectedData = [
         {
-            hovertemplate: "%{x}, %{y}<br>hierarchy11<extra></extra>",
-            line: {color: "rgb(51, 51, 51)"},
+            hovertemplate: Array(2).fill("%{x}, %{y}<br>hierarchy11<extra></extra>"),
+            line: {color: PlotColours.DEFAULT},
+            marker: {
+                color: Array(2).fill(PlotColours.DEFAULT),
+                line: {
+                    color: PlotColours.DEFAULT,
+                    width: 0.5
+                }
+            },
             name: "name11",
             showlegend: false,
             type: "scatter",
@@ -77,8 +85,15 @@ const expectedData = (xval = "date11", yval = 1) => {
             yaxis: "y1"
         },
         {
-            hovertemplate: "%{x}, %{y}<br>hierarchy11<extra></extra>",
-            line: {color: "rgb(255, 51, 51)"},
+            hovertemplate: Array(2).fill("%{x}, %{y}<br>hierarchy11<extra></extra>"),
+            line: {color: PlotColours.LARGE_CHANGE},
+            marker: {
+                color: Array(2).fill(PlotColours.LARGE_CHANGE),
+                line: {
+                    color: PlotColours.LARGE_CHANGE,
+                    width: 0.5
+                }
+            },
             name: "name11",
             showlegend: false,
             type: "scatter",
@@ -88,8 +103,15 @@ const expectedData = (xval = "date11", yval = 1) => {
             yaxis: "y1"
         },
         {
-            hovertemplate: "%{x}, %{y}<br>hierarchy21<extra></extra>",
-            line: {color: "rgb(51, 51, 51)"},
+            hovertemplate: Array(2).fill("%{x}, %{y}<br>hierarchy21<extra></extra>"),
+            line: {color: PlotColours.DEFAULT},
+            marker: {
+                color: Array(2).fill(PlotColours.DEFAULT),
+                line: {
+                    color: PlotColours.DEFAULT,
+                    width: 0.5
+                }
+            },
             name: "name21",
             showlegend: false,
             type: "scatter",
@@ -99,8 +121,15 @@ const expectedData = (xval = "date11", yval = 1) => {
             yaxis: "y2"
         },
         {
-            hovertemplate: "%{x}, %{y}<br>hierarchy21<extra></extra>",
-            line: {color: "rgb(255, 51, 51)"},
+            hovertemplate: Array(2).fill("%{x}, %{y}<br>hierarchy21<extra></extra>"),
+            line: {color: PlotColours.LARGE_CHANGE},
+            marker: {
+                color: Array(2).fill(PlotColours.LARGE_CHANGE),
+                line: {
+                    color: PlotColours.LARGE_CHANGE,
+                    width: 0.5
+                }
+            },
             name: "name21",
             showlegend: false,
             type: "scatter",
@@ -458,7 +487,7 @@ describe("Plotly", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
+                "line": {"color": PlotColours.DEFAULT},
                 "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
             },
             {
@@ -469,7 +498,7 @@ describe("Plotly", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
+                "line": {"color": PlotColours.LARGE_CHANGE},
                 "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
             },
             {
@@ -480,7 +509,7 @@ describe("Plotly", () => {
                 "xaxis": "x2",
                 "yaxis": "y2",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
+                "line": {"color": PlotColours.DEFAULT},
                 "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
             },
             {
@@ -491,7 +520,7 @@ describe("Plotly", () => {
                 "xaxis": "x2",
                 "yaxis": "y2",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
+                "line": {"color": PlotColours.LARGE_CHANGE},
                 "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
             },
             {
@@ -502,7 +531,7 @@ describe("Plotly", () => {
                 "xaxis": "x3",
                 "yaxis": "y3",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
+                "line": {"color": PlotColours.DEFAULT},
                 "hovertemplate": "%{x}, %{y}<br>Northern/Rumphi<extra></extra>"
             },
             {
@@ -513,7 +542,7 @@ describe("Plotly", () => {
                 "xaxis": "x3",
                 "yaxis": "y3",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
+                "line": {"color": PlotColours.LARGE_CHANGE},
                 "hovertemplate": "%{x}, %{y}<br>Northern/Rumphi<extra></extra>"
             },
             {
@@ -524,7 +553,7 @@ describe("Plotly", () => {
                 "xaxis": "x4",
                 "yaxis": "y4",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
+                "line": {"color": PlotColours.DEFAULT},
                 "hovertemplate": "%{x}, %{y}<br>Northern/Mzuzu City<extra></extra>"
             },
             {
@@ -535,7 +564,7 @@ describe("Plotly", () => {
                 "xaxis": "x4",
                 "yaxis": "y4",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
+                "line": {"color": PlotColours.LARGE_CHANGE},
                 "hovertemplate": "%{x}, %{y}<br>Northern/Mzuzu City<extra></extra>"
             }
         ]));
@@ -694,7 +723,7 @@ describe("Plotly", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
+                "line": {"color": PlotColours.DEFAULT},
                 "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
             },
             {
@@ -705,7 +734,7 @@ describe("Plotly", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
+                "line": {"color": PlotColours.LARGE_CHANGE},
                 "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
             },
             {
@@ -716,7 +745,7 @@ describe("Plotly", () => {
                 "xaxis": "x2",
                 "yaxis": "y2",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
+                "line": {"color": PlotColours.DEFAULT},
                 "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
             },
             {
@@ -727,7 +756,7 @@ describe("Plotly", () => {
                 "xaxis": "x2",
                 "yaxis": "y2",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
+                "line": {"color": PlotColours.LARGE_CHANGE},
                 "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
             },
             {
@@ -738,7 +767,7 @@ describe("Plotly", () => {
                 "xaxis": "x3",
                 "yaxis": "y3",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
+                "line": {"color": PlotColours.DEFAULT},
                 "hovertemplate": "%{x}, %{y}<br>Southern/Chitipa<extra></extra>"
             },
             {
@@ -749,7 +778,7 @@ describe("Plotly", () => {
                 "xaxis": "x3",
                 "yaxis": "y3",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
+                "line": {"color": PlotColours.LARGE_CHANGE},
                 "hovertemplate": "%{x}, %{y}<br>Southern/Chitipa<extra></extra>"
             }
         ]));
@@ -842,7 +871,7 @@ describe("Plotly", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
+                "line": {"color": PlotColours.DEFAULT},
                 "hovertemplate": "%{x}, %{y}<extra></extra>"
             },
             {
@@ -853,7 +882,7 @@ describe("Plotly", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
+                "line": {"color": PlotColours.LARGE_CHANGE},
                 "hovertemplate": "%{x}, %{y}<extra></extra>"
             }
         ]));
