@@ -14,6 +14,7 @@
         </div>
         <div class="row mt-2">
             <div v-if="selectedTab === modelOutputTabs.Map" id="choropleth-container" class="col-md-12">
+                <loading-tab :loading="loading.map"/>
                 <choropleth
                     :chartdata="chartdata"
                     :filters="choroplethFilters"
@@ -41,6 +42,7 @@
             </div>
 
             <div v-if="selectedTab === modelOutputTabs.Bar" id="barchart-container" class="col-md-12">
+                <loading-tab :loading="loading.bar"/>
                 <bar-chart-with-filters
                     :chart-data="chartdata"
                     :filter-config="barchartFilterConfig"
@@ -66,6 +68,7 @@
             </div>
 
             <div v-if="selectedTab === modelOutputTabs.Bubble" id="bubble-plot-container" class="col-md-12">
+                <loading-tab :loading="loading.bubble"/>
                 <bubble-plot :chartdata="chartdata" :features="features" :featureLevels="featureLevels"
                              :filters="bubblePlotFilters" :indicators="bubblePlotIndicators"
                              :selections="bubblePlotSelections"
@@ -90,6 +93,7 @@
             </div>
 
             <div v-if="selectedTab === modelOutputTabs.Comparison" id="comparison-container" class="col-md-12">
+                <loading-tab :loading="loading.comparison"/>
                 <bar-chart-with-filters
                     :chart-data="comparisonPlotData"
                     :filter-config="comparisonPlotFilterConfig"
@@ -118,6 +122,7 @@
             </div>
 
             <div v-if="selectedTab === modelOutputTabs.Table" id="table-container" class="col-md-12">
+                <loading-tab :loading="loading.table"/>
                 <output-table></output-table>
             </div>
         </div>
@@ -162,6 +167,7 @@
     import i18next from "i18next";
     import { defineComponent } from "vue";
     import { switches } from "../../featureSwitches";
+    import LoadingTab from "./LoadingTab.vue";
 
     const namespace = 'filteredData';
 
@@ -269,6 +275,9 @@
             ...mapStateProps("modelCalibrate", {
                 comparisonPlotError: (state: ModelCalibrateState) => state.comparisonPlotError
             }),
+            ...mapStateProps("modelOutput", {
+                loading: (state: ModelOutputState) => state.loading
+            }),
             filteredChoroplethIndicators() {
                 return this.choroplethIndicators.filter((val: ChoroplethIndicatorMetadata) => val.indicator === this.choroplethSelections.indicatorId)
             },
@@ -348,7 +357,12 @@
                         this.updateComparisonPlotSelections)
                 }
             },
-            prepareOutputDownloads: mapActionByName("downloadResults", "prepareOutputs")
+            prepareOutputDownloads: mapActionByName("downloadResults", "prepareOutputs"),
+            handleClick(event: Event) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                event.stopPropagation();
+            }
         },
         mounted() {
             this.prepareOutputDownloads();
@@ -359,7 +373,8 @@
             Choropleth,
             AreaIndicatorsTable,
             ErrorAlert,
-            OutputTable
+            OutputTable,
+            LoadingTab
         }
     })
 </script>

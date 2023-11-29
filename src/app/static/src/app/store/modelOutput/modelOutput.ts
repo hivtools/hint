@@ -1,6 +1,6 @@
 import {Module} from "vuex";
 import {RootState} from "../../root";
-import {BarchartIndicator, DisplayFilter, Filter} from "../../types";
+import {BarchartIndicator, DisplayFilter, Filter, ModelOutputTabs} from "../../types";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {mutations} from "./mutations";
 import {actions} from "./actions";
@@ -10,7 +10,10 @@ import {UnadjustedBarchartSelections} from "../plottingSelections/plottingSelect
 const namespaced = true;
 
 export interface ModelOutputState {
-    selectedTab: string
+    selectedTab: string,
+    loading: {
+        [k in ModelOutputTabs]: boolean
+    }
 }
 
 export const modelOutputGetters = {
@@ -110,7 +113,14 @@ const outputPlotFilters = (rootState: RootState, resultName: "metadata" | "compa
 
 export const initialModelOutputState = (): ModelOutputState => {
     return {
-        selectedTab: ""
+        selectedTab: "",
+        loading: {
+            map: false,
+            bar: false,
+            comparison: false,
+            table: false,
+            bubble: false
+        }
     }
 };
 
