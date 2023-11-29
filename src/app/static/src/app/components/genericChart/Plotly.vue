@@ -98,8 +98,9 @@
                 await drawFunc(el as HTMLElement, drawData.data, drawData.layout, {...config as any});
                 this.rendering = false;
             },
-            getTooltipTemplate: function(plotData: (Data | null)[], areaName: string) {
-                const tooltip = "%{x}, %{y}" + areaName;
+            getTooltipTemplate: function(plotData: (Data | null)[], areaHierarchy: string) {
+                const hierarchyText = areaHierarchy ? "<br>" + areaHierarchy : "";
+                const tooltip = "%{x}, %{y}" + hierarchyText;
                 return plotData.map((entry: Data | null) => {
                     let missingIdsText = "";
                     if (entry && entry.missing_ids && entry.missing_ids.length) {
@@ -117,9 +118,9 @@
                     return tooltip + missingIdsText + "<extra></extra>";
                 })
             },
-            getScatterPoints: function(plotData: (Data | null)[], areaName: string, index: number,
-                                       baseColour: string, missingColour: string) {
-                const hoverTemplate = this.getTooltipTemplate(plotData, areaName);
+            getScatterPoints: function(plotData: (Data | null)[], areaName: string, areaHierarchy: string,
+                                       index: number, baseColour: string, missingColour: string) {
+                const hoverTemplate = this.getTooltipTemplate(plotData, areaHierarchy);
                 const points: any = {
                     name: areaName,
                     showlegend: false,
@@ -164,8 +165,6 @@
                 const lastXAxisVal = timePeriods[timePeriods.length - 1];
 
                 const data: any = [];
-                data.sequence = true;
-                data.keepSingleton = true;
                 areaIds.forEach((id, index) => {
                     const areaData: Data[] = dataByArea[id];
 
@@ -206,12 +205,11 @@
                     }
 
                     const areaHierarchy = dataByArea[id][0].area_hierarchy;
-                    const areaName = areaHierarchy ? "<br>" + areaHierarchy : "";
 
-                    const normalColorPoints = this.getScatterPoints(dataByArea[id], areaName, index,
-                            PlotColours.DEFAULT, PlotColours.MISSING);
-                    const highlightedPoints = this.getScatterPoints(highlight, areaName, index,
-                            PlotColours.LARGE_CHANGE, PlotColours.LARGE_CHANGE_MISSING);
+                    const normalColorPoints = this.getScatterPoints(dataByArea[id], dataByArea[id][0].area_name,
+                        areaHierarchy, index, PlotColours.DEFAULT, PlotColours.MISSING);
+                    const highlightedPoints = this.getScatterPoints(highlight, dataByArea[id][0].area_name,
+                        areaHierarchy, index, PlotColours.LARGE_CHANGE, PlotColours.LARGE_CHANGE_MISSING);
 
                     data.push(normalColorPoints);
                     data.push(highlightedPoints);
@@ -239,9 +237,6 @@
                         }
                     })
                 };
-
-                baseLayout.annotations.sequence = true;
-                baseLayout.annotations.keepSingleton = true;
 
                 for (let i = 0; i < areaIds.length; i++) {
                     const row = Math.floor(i/this.layoutData.subplots.columns);
