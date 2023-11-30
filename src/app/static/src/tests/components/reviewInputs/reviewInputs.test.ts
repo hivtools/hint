@@ -101,9 +101,9 @@ describe("Survey and programme component", () => {
         const tabItems = wrapper.findAll("li.nav-item a");
         expect(tabItems.length).toBe(2);
         expect(tabItems[0].classes()).toContain("active");
-        expectTranslated(tabItems[0], "Map", "Carte", "Mapa", store);
         expect(tabItems[1].classes()).not.toContain("active");
-        expectTranslated(tabItems[1], "Time series", "Séries chronologiques", "Séries temporais", store);
+        expectTranslated(tabItems[0], "Time series", "Séries chronologiques", "Séries temporais", store);
+        expectTranslated(tabItems[1], "Map", "Carte", "Mapa", store);
     });
 
     it("does not render time series tab when anc or program dataset is not available", () => {
@@ -118,12 +118,15 @@ describe("Survey and programme component", () => {
         expect(tabItems[0].text()).not.toBe("Time series");
     });
 
-    it("renders choropleth controls if there is a selected data type and selectedTab is 0", () => {
+    it("renders choropleth controls if there is a selected data type and selectedTab is 1", () => {
         const store = createStore({selectedDataType: DataType.Survey});
+        const data = () => {
+            return {selectedTab: 1};
+        };
         const wrapper = shallowMountWithTranslate(ReviewInputs, store, {
             global: {
                 plugins: [store]
-            }
+            }, data
         });
 
         expect(wrapper.findAll("choropleth-stub").length).toBe(1);
@@ -132,10 +135,13 @@ describe("Survey and programme component", () => {
 
     it("does not render choropleth controls if there is no selected data type", () => {
         const store = createStore({selectedDataType: null});
+        const data = () => {
+            return {selectedTab: 1};
+        };
         const wrapper = shallowMountWithTranslate(ReviewInputs, store, {
             global: {
                 plugins: [store]
-            }
+            }, data
         });
 
         expect(wrapper.findAll("choropleth-stub").length).toBe(0);
@@ -152,10 +158,13 @@ describe("Survey and programme component", () => {
                 }
             } as any,
         });
+        const data = () => {
+            return {selectedTab: 1};
+        };
         const wrapper = shallowMountWithTranslate(ReviewInputs, store, {
             global: {
                 plugins: [store]
-            }
+            }, data
         });
         const choro = wrapper.findComponent(Choropleth);
         expect(choro.props().areaFilterId).toBe("area");
@@ -196,17 +205,14 @@ describe("Survey and programme component", () => {
         }, {
             genericChartMetadata
         });
-        const data = () => {
-            return {selectedTab: 1};
-        };
         const wrapper = shallowMountWithTranslate(ReviewInputs, store, {
             global: {
                 plugins: [store]
-            }, data
+            }
         });
         const tabItems = wrapper.findAll("li.nav-item a");
-        expect(tabItems[0].classes()).not.toContain("active");
-        expect(tabItems[1].classes()).toContain("active");
+        expect(tabItems[0].classes()).toContain("active");
+        expect(tabItems[1].classes()).not.toContain("active");
 
         const genericChart  = wrapper.findComponent(GenericChart);
         expect(genericChart.props("chartId")).toBe("input-time-series");
@@ -218,13 +224,10 @@ describe("Survey and programme component", () => {
 
     it("does not render generic chart component if generic chart metadata does not exist", () => {
         const store = createStore();
-        const data = ()  => {
-            return {selectedTab: 1}
-        };
         const wrapper = shallowMountWithTranslate(ReviewInputs, store, {
             global: {
                 plugins: [store]
-            }, data
+            }
         });
         expect(wrapper.findComponent(GenericChart).exists()).toBe(false);
         expect(wrapper.findComponent(Choropleth).exists()).toBe(false);
@@ -248,14 +251,14 @@ describe("Survey and programme component", () => {
         await tabItems[1].trigger("click");
         expect(tabItems[0].classes()).not.toContain("active");
         expect(tabItems[1].classes()).toContain("active");
-        expect(wrapper.findComponent(Choropleth).exists()).toBe(false);
-        expect(wrapper.findComponent(GenericChart).exists()).toBe(true);
+        expect(wrapper.findComponent(GenericChart).exists()).toBe(false);
+        expect(wrapper.findComponent(Choropleth).exists()).toBe(true);
 
         await tabItems[0].trigger("click");
         expect(tabItems[0].classes()).toContain("active");
         expect(tabItems[1].classes()).not.toContain("active");
-        expect(wrapper.findComponent(Choropleth).exists()).toBe(true);
-        expect(wrapper.findComponent(GenericChart).exists()).toBe(false);
+        expect(wrapper.findComponent(GenericChart).exists()).toBe(true);
+        expect(wrapper.findComponent(Choropleth).exists()).toBe(false);
     });
 
     it("updates state when choropleth selections change", async () => {
@@ -283,11 +286,14 @@ describe("Survey and programme component", () => {
 
     it("renders data source header as expected", () => {
         const store = createStore();
+        const data = () => {
+            return {selectedTab: 1};
+        };
         const wrapper = mountWithTranslate(ReviewInputs, store, {
             global: {
                 plugins: [store],
                 stubs: ["filters", "l-map", "area-indicators-table", "generic-chart"]
-            }
+            }, data
         });
         const header = wrapper.find("#data-source h4");
         expectTranslated(header, "Data source", "Source de données", "Fonte de dados", store);
@@ -311,11 +317,14 @@ describe("Survey and programme component", () => {
     async function expectDataSource(state: Partial<SurveyAndProgramState>, englishName: string, frenchName: string,
                                     portugueseName: string, id: string) {
         const store = createStore(state);
+        const data = () => {
+            return {selectedTab: 1};
+        };
         const wrapper = mountWithTranslate(ReviewInputs, store, {
             global: {
                 plugins: [store],
                 stubs: ["filters", "l-map", "area-indicators-table", "generic-chart"]
-            }
+            }, data
         });
         let options = wrapper.findComponent(Treeselect).props("options");
         expect(options).toStrictEqual([{id, label: englishName}]);
@@ -339,11 +348,14 @@ describe("Survey and programme component", () => {
                 program: mockProgramResponse(),
                 selectedDataType: DataType.Program
             });
+        const data = () => {
+            return {selectedTab: 1};
+        };
         const wrapper = mountWithTranslate(ReviewInputs, store, {
             global: {
                 plugins: [store],
                 stubs: ["filters", "l-map", "area-indicators-table", "generic-chart"]
-            }
+            }, data
         });
 
         const dataSourceSelect = wrapper.findComponent(HintTreeSelect);
@@ -423,10 +435,13 @@ describe("Survey and programme component", () => {
                 }
             } as any,
         });
+        const data = () => {
+            return {selectedTab: 1};
+        };
         const wrapper = shallowMountWithTranslate(ReviewInputs, store, {
             global: {
                 plugins: [store]
-            }
+            }, data
         });
         const table = wrapper.findComponent(AreaIndicatorsTable);
         expect(table.props().areaFilterId).toBe("area");

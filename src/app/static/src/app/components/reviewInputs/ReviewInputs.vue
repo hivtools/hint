@@ -2,21 +2,21 @@
     <div>
         <div>
             <ul class="nav nav-tabs col-12 mb-3 p-0">
-                <li class="nav-item">
-                    <a class="nav-link"
-                       :class="{'active': selectedTab === 0}"
-                       v-translate="'map'"
-                       v-on:click="selectTab(0)"></a>
-                </li>
                 <li class="nav-item" v-if="availableDatasetIds.length">
                     <a class="nav-link"
-                       :class="{'active': selectedTab === 1}"
+                       :class="{'active': selectedTab === 0}"
                        v-translate="'timeSeries'"
+                       v-on:click="selectTab(0)"></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       :class="{'active': selectedTab === 1}"
+                       v-translate="'map'"
                        v-on:click="selectTab(1)"></a>
                 </li>
             </ul>
         </div>
-        <template v-if="selectedTab === 0">
+        <template v-if="selectedTab === 1">
             <div v-if="showChoropleth">
                 <choropleth :chartdata="data"
                             :filters="filters"
@@ -53,7 +53,7 @@
                 </div>
             </div>
         </template>
-        <template v-else-if="selectedTab === 1">
+        <template v-else-if="selectedTab === 0">
             <generic-chart v-if="genericChartMetadata"
                            chart-id="input-time-series"
                            chart-height="600px"
@@ -85,8 +85,8 @@
     const namespace = 'surveyAndProgram';
 
     enum Tab {
-        Map = 0,
-        TimeSeries = 1
+        TimeSeries = 0,
+        Map = 1
     }
 
     export default defineComponent({
@@ -94,7 +94,7 @@
         data() {
             return {
                 areaFilterId: "area",
-                selectedTab: Tab.Map
+                selectedTab: Tab.TimeSeries
             };
         },
         computed: {
