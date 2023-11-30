@@ -15,6 +15,7 @@ import registerTranslations from "../../../app/store/translations/registerTransl
 import {emptyState} from "../../../app/root";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
+import {Language} from "../../../app/store/translations/locales";
 
 const chartData = (xval = "date11", yval = 1) => {
     const chartData = {
@@ -1035,7 +1036,8 @@ describe("Plotly", () => {
 
         const { data: chartData, ...layoutData } = testData
         const props = { chartData: {data: chartData}, layoutData } as any;
-        const wrapper = shallowMount(Plotly, { props, store });
+        store.state.language = Language.en;
+        const wrapper = shallowMountWithTranslate(Plotly, store, {global: {plugins: [store]}, props});
         const result = await (wrapper.vm as any).getData();
 
         expect(result.data).toStrictEqual([

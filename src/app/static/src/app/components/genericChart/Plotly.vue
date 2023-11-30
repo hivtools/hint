@@ -96,7 +96,6 @@
         },
         methods: {
             translate(word: string, args: any = null) {
-                console.log(this.currentLanguage)
                 return i18next.t(word, {...args, lng: this.currentLanguage})
             },
             drawChart: async function() {
