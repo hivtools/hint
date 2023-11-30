@@ -108,7 +108,7 @@
                             missingIdsText = "<br>" + this.translate("timeSeriesMissingValue")
                         } else {
                             missingIdsText = "<br>" + this.translate("timeSeriesMissingAggregate",
-                                {count: entry.missing_ids.length.toString()});
+                                {count: entry.missing_ids.length});
                         }
                     }
                     // Empty <extra></extra> tag removes the part of the hover where trace name is displayed in
