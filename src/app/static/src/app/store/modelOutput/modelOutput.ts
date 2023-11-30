@@ -50,13 +50,13 @@ export const modelOutputGetters = {
         });
     },
     tableFilters: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): DisplayFilter[] => {
-        const outputFilters = outputPlotFilters(rootState, "table");
+        const outputFilters = outputPlotFilters(rootState, "table") as DisplayFilter[];
         const currentPresetMetadata = getPresetMetadata(rootState);
         if (currentPresetMetadata) {
             return outputFilters.map(f => {
                 return {
                     ...f,
-                    allowMultiple: f.column_id === currentPresetMetadata.defaults.row || f.column_id === currentPresetMetadata.defaults.column
+                    allowMultiple: f.column_id === currentPresetMetadata.defaults.row.id || f.column_id === currentPresetMetadata.defaults.column.id
                 }
             });
         } else {

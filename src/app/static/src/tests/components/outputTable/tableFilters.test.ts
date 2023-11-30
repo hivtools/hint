@@ -34,10 +34,16 @@ describe("Output Table filters tests", () => {
                             presets: [
                                 {
                                     defaults: {
-                                        column: "col",
+                                        column: {
+                                            id: "col",
+                                            label: "colLabel"
+                                        },
                                         id: "preset1",
                                         label: "Label",
-                                        row: "row"
+                                        row: {
+                                            id: "row",
+                                            label: "rowLabel"
+                                        }
                                     },
                                     filters: [{
                                         column_id: "filter_test_col",
@@ -48,10 +54,16 @@ describe("Output Table filters tests", () => {
                                 },
                                 {
                                     defaults: {
-                                        column: "col2",
+                                        column: {
+                                            id: "col2",
+                                            label: "colLabel2"
+                                        },
                                         id: "preset2",
                                         label: "Label2",
-                                        row: "row2",
+                                        row: {
+                                            id: "row2",
+                                            label: "rowLabel2"
+                                        },
                                         selected_filter_options: {
                                             id: ["op2"]
                                         }

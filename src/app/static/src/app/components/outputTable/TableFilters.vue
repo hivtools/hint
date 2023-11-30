@@ -74,7 +74,7 @@ export default defineComponent({
 
         const getCurrentPresetColumnDefaults = (preset: Preset) => {
             const defaultSels = Object.fromEntries(filters.value.map(f => {
-                if (f.id === preset.defaults.column || f.id === preset.defaults.row) {
+                if (f.id === preset.defaults.column.id || f.id === preset.defaults.row.id) {
                     return [f.id, f.options]
                 }
                 return [f.id, [f.options[0]]]

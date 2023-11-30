@@ -45,8 +45,14 @@ describe("Output Table display table tests", () => {
                             presets: [{
                                 defaults: {
                                     id: "preset1",
-                                    column: "col_filter",
-                                    row: rowId,
+                                    column: {
+                                        id: "col_filter",
+                                        label: "colLabel"
+                                    },
+                                    row: {
+                                        id: rowId,
+                                        label: rowId + "Label"
+                                    },
                                     label: "Cool Preset"
                                 },
                                 filters: mockFilters
@@ -183,12 +189,6 @@ describe("Output Table display table tests", () => {
 
     it("computes correct label", () => {
         const wrapper = getWrapper("row_filter");
-        expect(wrapper.findComponent(TableDisplay).props("headerName")).toBe("");
-
-        const wrapper1 = getWrapper("area_id");
-        expect(wrapper1.findComponent(TableDisplay).props("headerName")).toBe("Area");
-
-        const wrapper2 = getWrapper("age_group");
-        expect(wrapper2.findComponent(TableDisplay).props("headerName")).toBe("Age");
+        expect(wrapper.findComponent(TableDisplay).props("headerName")).toBe("row_filterLabel");
     });
 });
