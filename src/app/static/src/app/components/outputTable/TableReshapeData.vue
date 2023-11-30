@@ -44,7 +44,7 @@ export default defineComponent({
             const data = props.data;
             if (presetMetadata.value && data) {
                 const tableData: any[] = [];
-                const rowKey = presetMetadata.value.row;
+                const rowKey = presetMetadata.value.row.id;
                 let rowOptions: FilterOption[] = [];
                 // If rows are per area, generate pseudo filter options from all features in shape data
                 if (rowKey === "area_id") {
@@ -56,7 +56,7 @@ export default defineComponent({
                 } else {
                     rowOptions = selections.value.selectedFilterOptions[filterDataIdtoId.value[rowKey]];
                 }
-                const columnKey = presetMetadata.value.column;
+                const columnKey = presetMetadata.value.column.id;
                 for (let i = 0; i < data.length; i++) {
                     const currentRow = data[i];
                     const rowVal = currentRow[rowKey];
@@ -80,9 +80,7 @@ export default defineComponent({
             return [];
         });
 
-        const tableLabelHeader = computed(() => {
-            return presetMetadata.value?.row === "age_group" ? "Age" : presetMetadata.value?.row === "area_id" ? "Area" : "";
-        });
+        const tableLabelHeader = computed(() => presetMetadata.value?.row.label || "");
 
         return {
             reshapedData,

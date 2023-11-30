@@ -119,7 +119,7 @@ export default defineComponent({
         const columnDefs = computed(() => {
             if (!presets.value) return [];
             const currentPreset = presets.value.find(p => p.defaults.id === selections.value.preset)!;
-            const columnFilter = filters.value.find(f => f.column_id === currentPreset.defaults.column);
+            const columnFilter = filters.value.find(f => f.column_id === currentPreset.defaults.column.id);
             if (!columnFilter) return [];
             const columnSelections = selections.value.selectedFilterOptions[columnFilter.id];
             const columnHeaders = columnSelections.map(selection => {

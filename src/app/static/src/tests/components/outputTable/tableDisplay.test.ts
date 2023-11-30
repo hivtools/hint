@@ -87,7 +87,9 @@ describe("Output Table display table tests", () => {
                                 {
                                     defaults: {
                                         id: "preset1",
-                                        column: "sex",
+                                        column: {
+                                            id: "sex"
+                                        },
                                     } as any
                                 } as any
                             ]

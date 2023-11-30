@@ -56,9 +56,15 @@ describe("modelOutput module", () => {
             presets: [
                 {
                     defaults: {
-                        column: "age_group_id",
+                        column: {
+                            id: "age_group_id",
+                            label: "Age group"
+                        },
                         id: "preset_id",
-                        row: "quarter_id",
+                        row: {
+                            id: "quarter_id",
+                            label: "Quarter"
+                        },
                         label: "Preset ID"
                     },
                     filters

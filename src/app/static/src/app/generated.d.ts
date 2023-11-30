@@ -201,8 +201,14 @@ export interface CalibrateMetadataResponse {
       defaults: {
         id: string;
         label: string;
-        column: string;
-        row: string;
+        column: {
+          id: string;
+          label: string;
+        };
+        row: {
+          id: string;
+          label: string;
+        };
         selected_filter_options?: {
           /**
            * This interface was referenced by `undefined`'s JSON-Schema definition
@@ -396,8 +402,14 @@ export interface CalibrateResultResponse {
       defaults: {
         id: string;
         label: string;
-        column: string;
-        row: string;
+        column: {
+          id: string;
+          label: string;
+        };
+        row: {
+          id: string;
+          label: string;
+        };
         selected_filter_options?: {
           /**
            * This interface was referenced by `undefined`'s JSON-Schema definition
@@ -812,6 +824,7 @@ export type InputTimeSeriesData = {
   time_period: string;
   quarter: string;
   area_hierarchy: string;
+  missing_ids?: string[] | null;
 }[];
 export interface InputTimeSeriesDefaults {
   selected_filter_options: {
@@ -861,6 +874,7 @@ export interface InputTimeSeriesResponse {
     time_period: string;
     quarter: string;
     area_hierarchy: string;
+    missing_ids?: string[] | null;
   }[];
   metadata: {
     columns: {
@@ -911,6 +925,7 @@ export interface InputTimeSeriesRow {
   time_period: string;
   quarter: string;
   area_hierarchy: string;
+  missing_ids?: string[] | null;
 }
 export type InputType = "pjnz" | "shape" | "population" | "survey" | "programme" | "anc";
 export interface LevelLabels {
@@ -1054,7 +1069,7 @@ export interface SelectControl {
   required: boolean;
   value?: string;
   helpText?: string;
-  options?: {
+  options: {
     id: string;
     label: string;
     children?: {
@@ -1069,7 +1084,7 @@ export interface MultiselectControl {
   required: boolean;
   value?: string[] | string;
   helpText?: string;
-  options?: {
+  options: {
     id: string;
     label: string;
     children?: {
@@ -1601,8 +1616,14 @@ export interface TablePreset {
 export interface TableDefaults {
   id: string;
   label: string;
-  column: string;
-  row: string;
+  column: {
+    id: string;
+    label: string;
+  };
+  row: {
+    id: string;
+    label: string;
+  };
   selected_filter_options?: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition

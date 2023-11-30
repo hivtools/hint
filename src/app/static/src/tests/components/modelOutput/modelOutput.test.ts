@@ -138,11 +138,6 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
 declare let currentUser: string;
 currentUser = "guest";
 
-// will be easy to just remove this once feature switch enabled
-jest.mock("../../../app/featureSwitches",() => {
-    return {switches: {tableTab: true}}
-});
-
 describe("ModelOutput component", () => {
     beforeAll(async () => {
         inactiveFeatures.splice(0, inactiveFeatures.length);
