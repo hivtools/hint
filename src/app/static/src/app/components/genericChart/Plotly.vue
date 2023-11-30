@@ -112,7 +112,7 @@
                 const tooltip = "%{x}, %{y}" + hierarchyText;
                 return plotData.map((entry: Data | null) => {
                     let missingIdsText = "";
-                    if (entry && entry.missing_ids && entry.missing_ids.length) {
+                    if (entry?.missing_ids?.length) {
                         // If the area ID matches the missing_id then this is a synthetic value we have appended
                         // rather than an aggregate with some missing data. Show this with a slightly different
                         // message
