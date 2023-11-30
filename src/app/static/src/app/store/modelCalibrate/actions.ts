@@ -14,9 +14,15 @@ import {
     ModelSubmitResponse
 } from "../../generated";
 import {switches} from "../../featureSwitches";
-import {CalibrateResultWithType, Dict} from "../../types";
+import {CalibrateResultWithType, Dict, ModelOutputTabs} from "../../types";
 import {DownloadResultsMutation} from "../downloadResults/mutations";
 import {PlottingSelectionsMutations} from "../plottingSelections/mutations";
+import { ModelOutputMutation } from "../modelOutput/mutations";
+
+type ResultDataPayload = {
+    indicatorId: string,
+    tab: ModelOutputTabs
+}
 
 export interface ModelCalibrateActions {
     fetchModelCalibrateOptions: (store: ActionContext<ModelCalibrateState, RootState>) => void
@@ -26,7 +32,7 @@ export interface ModelCalibrateActions {
     getCalibratePlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
     getComparisonPlot: (store: ActionContext<ModelCalibrateState, RootState>) => void
     resumeCalibrate: (store: ActionContext<ModelCalibrateState, RootState>) => void
-    getResultData: (store: ActionContext<ModelCalibrateState, RootState>, indicator: string) => void
+    getResultData: (store: ActionContext<ModelCalibrateState, RootState>, payload: ResultDataPayload) => void
 }
 
 export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrateActions = {
@@ -122,7 +128,8 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         }
     },
 
-    async getResultData(context, indicatorId) {
+    async getResultData(context, payload) {
+        const {indicatorId, tab} = payload;
         const {commit, state} = context;
         const calibrateId = state.calibrateId;
 
@@ -139,12 +146,12 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
         }
 
         if (!indicatorKnown) {
+            commit(`modelOutput/${ModelOutputMutation.SetTabLoading}`, {payload:{tab, loading: true}}, {root: true});
             const response = await api<ModelCalibrateMutation, ModelCalibrateMutation>(context)
                 .ignoreSuccess()
                 .withError(ModelCalibrateMutation.SetError)
                 .freezeResponse()
                 .get<CalibrateDataResponse["data"]>(`calibrate/result/data/${calibrateId}/${indicatorId}`);
-
             if (response) {
                 const payload = {
                     data: response.data,
@@ -152,6 +159,7 @@ export const actions: ActionTree<ModelCalibrateState, RootState> & ModelCalibrat
                 } as CalibrateResultWithType
                 commit({type: ModelCalibrateMutation.CalibrateResultFetched, payload: payload});
             }
+            commit(`modelOutput/${ModelOutputMutation.SetTabLoading}`, {payload:{tab, loading: false}}, {root: true});
         }
     }
 };

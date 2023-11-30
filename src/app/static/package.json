@@ -104,13 +104,15 @@
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
-    "@reside-ic/vue-nested-multiselect": "0.0.5",
+    "@reside-ic/vue-nested-multiselect": "0.0.15",
     "@reside-ic/vue-next-dynamic-form": "^1.1.5",
     "@reside-ic/vue3-treeselect": "^1.0.18",
     "@types/chart.js": "^2.9.14",
     "@types/chartjs-plugin-annotation": "^0.5.2",
     "@types/geojson": "^7946.0.7",
     "@types/plotly.js-basic-dist": "^1.54.0",
+    "ag-grid-community": "^30.2.1",
+    "ag-grid-vue3": "^30.2.1",
     "bootstrap-vue-next": "^0.8.7",
     "chart.js": "^4.1.1",
     "chartjs-plugin-annotation": "^3.0.1",

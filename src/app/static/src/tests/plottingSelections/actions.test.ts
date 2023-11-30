@@ -1,8 +1,9 @@
 import {actions} from "../../app/store/plottingSelections/actions";
 import {PlottingSelectionsMutations} from "../../app/store/plottingSelections/mutations";
 import {
-    BarchartSelections, BubblePlotSelections, ChoroplethSelections,
+    BarchartSelections, BubblePlotSelections, ChoroplethSelections, TableSelections,
 } from "../../app/store/plottingSelections/plottingSelections";
+import { ModelOutputTabs } from "../../app/types";
 
 describe("PlottingSelection actions", () => {
 
@@ -22,7 +23,7 @@ describe("PlottingSelection actions", () => {
 
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("modelCalibrate/getResultData");
-        expect(dispatch.mock.calls[0][1]).toBe("test-indicator");
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({indicatorId: "test-indicator", tab: ModelOutputTabs.Bar})
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0].type).toBe(PlottingSelectionsMutations.updateBarchartSelections);
@@ -40,7 +41,7 @@ describe("PlottingSelection actions", () => {
 
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("modelCalibrate/getResultData");
-        expect(dispatch.mock.calls[0][1]).toBe("test-indicator");
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({indicatorId: "test-indicator", tab: ModelOutputTabs.Map})
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0].type).toBe(PlottingSelectionsMutations.updateOutputChoroplethSelections);
@@ -65,6 +66,42 @@ describe("PlottingSelection actions", () => {
         expect(commit.mock.calls[0][0].payload).toBe(choroplethSelections);
     });
 
+    it("updateTableSelection dispatches data action and commits mutation", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const tableSelections = {
+            indicator: "test-indicator",
+        } as Partial<TableSelections>;
+
+        await actions.updateTableSelections({commit, dispatch} as any, {payload: tableSelections} as any);
+
+        expect(dispatch.mock.calls.length).toBe(1);
+        expect(dispatch.mock.calls[0][0]).toBe("modelCalibrate/getResultData");
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({indicatorId: "test-indicator", tab: ModelOutputTabs.Table})
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0].type).toBe(PlottingSelectionsMutations.updateTableSelections);
+        expect(commit.mock.calls[0][0].payload).toBe(tableSelections);
+    });
+
+    it("updateTableSelection doesn't dispatch action if indicator not in update", async () => {
+        const commit = jest.fn();
+        const dispatch = jest.fn();
+        const tableSelections = {
+            selectedFilterOptions: {
+                testFilter: []
+            }
+        } as Partial<TableSelections>;
+
+        await actions.updateTableSelections({commit, dispatch} as any, {payload: tableSelections} as any);
+
+        expect(dispatch.mock.calls.length).toBe(0);
+
+        expect(commit.mock.calls.length).toBe(1);
+        expect(commit.mock.calls[0][0].type).toBe(PlottingSelectionsMutations.updateTableSelections);
+        expect(commit.mock.calls[0][0].payload).toBe(tableSelections);
+    });
+
     it("updateBubblePlotSelections dispatches data action and commits mutation", async () => {
         const commit = jest.fn();
         const dispatch = jest.fn();
@@ -77,9 +114,9 @@ describe("PlottingSelection actions", () => {
 
         expect(dispatch.mock.calls.length).toBe(2);
         expect(dispatch.mock.calls[0][0]).toBe("modelCalibrate/getResultData");
-        expect(dispatch.mock.calls[0][1]).toBe("colour-indicator");
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({indicatorId: "colour-indicator", tab: ModelOutputTabs.Bubble})
         expect(dispatch.mock.calls[1][0]).toBe("modelCalibrate/getResultData");
-        expect(dispatch.mock.calls[1][1]).toBe("size-indicator");
+        expect(dispatch.mock.calls[1][1]).toStrictEqual({indicatorId: "size-indicator", tab: ModelOutputTabs.Bubble})
 
         expect(commit.mock.calls.length).toBe(1);
         expect(commit.mock.calls[0][0].type).toBe(PlottingSelectionsMutations.updateBubblePlotSelections);
@@ -114,7 +151,7 @@ describe("PlottingSelection actions", () => {
 
         expect(dispatch.mock.calls.length).toBe(1);
         expect(dispatch.mock.calls[0][0]).toBe("modelCalibrate/getResultData");
-        expect(dispatch.mock.calls[0][1]).toBe("size-indicator");
+        expect(dispatch.mock.calls[0][1]).toStrictEqual({indicatorId: "size-indicator", tab: ModelOutputTabs.Bubble})
 
         expect(commit.mock.calls.length).toBe(2);
         expect(commit.mock.calls[1][0].type).toBe(PlottingSelectionsMutations.updateBubblePlotSelections);

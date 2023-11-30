@@ -73,6 +73,7 @@ describe("Plotting selections mutations", () => {
         };
         mutations.updateTableSelections(testState, {payload: newTableSelections});
         expect(testState.table).toStrictEqual({
+            indicator: "",
             preset: "testPreset",
             selectedFilterOptions: {}
         });

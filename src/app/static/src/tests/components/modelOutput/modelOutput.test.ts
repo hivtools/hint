@@ -23,9 +23,7 @@ import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
 import {BarchartIndicator, Filter, ModelOutputTabs} from "../../../app/types";
 import AreaIndicatorsTable from "../../../app/components/plots/table/AreaIndicatorsTable.vue";
 import ErrorAlert from "../../../app/components/ErrorAlert.vue";
-import {mount} from "@vue/test-utils";
-import Hint from "../../../app/components/Hint.vue";
-import DataExploration from "../../../app/components/dataExploration/DataExploration.vue";
+import LoadingTab from '../../../app/components/modelOutput/LoadingTab.vue';
 
 function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGetters = {}, partialSelections = {}, barchartFilters: any = ["TEST BAR FILTERS"], comparisonPlotFilters: any = ["TEST COMPARISON FILTERS"], comparisonPlotError: any = null) {
     const store = new Vuex.Store({
@@ -61,6 +59,13 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                 namespaced: true,
                 state: {
                     selectedTab: "",
+                    loading: {
+                        map: false,
+                        bar: false,
+                        comparison: false,
+                        bubble: false,
+                        table: false
+                    },
                     ...modelOutputState,
                 },
                 getters: {
@@ -109,6 +114,9 @@ function getStore(modelOutputState: Partial<ModelOutputState> = {}, partialGette
                     },
                     bubbleSizeScales: {
                         output: {test: "TEST OUTPUT BUBBLE SIZE SCALES"} as any
+                    },
+                    table: {
+                        indicator: "TestIndicator"
                     },
                     ...partialSelections
                 },
@@ -213,6 +221,22 @@ describe("ModelOutput component", () => {
         const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
         expect(wrapper.findAllComponents(ErrorAlert).length).toBe(1);
         expect(wrapper.findComponent(ErrorAlert).props().error).toStrictEqual(error);
+    });
+
+    it("renders loading component when loading state true", () => {
+        const store = getStore({
+            selectedTab: ModelOutputTabs.Map,
+            loading: {
+                map: true,
+                comparison: false,
+                table: false,
+                bar: false,
+                bubble: false
+            }
+        });
+        const wrapper = shallowMountWithTranslate(ModelOutput, store, {global: {plugins: [store]}});
+        expect(wrapper.find("#choropleth-container").findComponent(LoadingTab).exists()).toBe(true);
+        expect(wrapper.findAllComponents(LoadingTab).length).toBe(1);
     });
 
     it("does not render comparison plot if no there are no comparison plot indicators", () => {

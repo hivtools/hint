@@ -1,6 +1,6 @@
 import {Module} from "vuex";
 import {RootState} from "../../root";
-import {BarchartIndicator, DisplayFilter, Filter} from "../../types";
+import {BarchartIndicator, DisplayFilter, Filter, ModelOutputTabs} from "../../types";
 import {ChoroplethIndicatorMetadata, FilterOption} from "../../generated";
 import {mutations} from "./mutations";
 import {actions} from "./actions";
@@ -10,7 +10,10 @@ import {UnadjustedBarchartSelections} from "../plottingSelections/plottingSelect
 const namespaced = true;
 
 export interface ModelOutputState {
-    selectedTab: string
+    selectedTab: string,
+    loading: {
+        [k in ModelOutputTabs]: boolean
+    }
 }
 
 export const modelOutputGetters = {
@@ -49,14 +52,48 @@ export const modelOutputGetters = {
             }
         });
     },
+    tableFilters: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): DisplayFilter[] => {
+        const outputFilters = outputPlotFilters(rootState, "table");
+        const currentPresetMetadata = getPresetMetadata(rootState);
+        if (currentPresetMetadata) {
+            return outputFilters.map(f => {
+                return {
+                    ...f,
+                    allowMultiple: f.column_id === currentPresetMetadata.defaults.row || f.column_id === currentPresetMetadata.defaults.column
+                }
+            });
+        } else {
+            return []
+        }
+    },
     countryAreaFilterOption: (state: ModelOutputState, getters: any, rootState: RootState, rootGetters: any): FilterOption => {
         const outputFilters = outputPlotFilters(rootState) as Filter[];
         return outputFilters[0].options[0]
     }
 };
 
-const outputPlotFilters = (rootState: RootState, resultName: "metadata" | "comparisonPlotResult" = "metadata") => {
-    let filters = [...(rootState.modelCalibrate[resultName]?.plottingMetadata?.barchart.filters || [])];
+const getPresetMetadata = (rootState: RootState) => {
+    const currentPreset = rootState.plottingSelections.table.preset;
+    const presetMetadata = rootState.modelCalibrate.metadata?.tableMetadata.presets;
+    const currentPresetMetadata = presetMetadata?.find(p => p.defaults.id === currentPreset);
+    if (currentPreset && presetMetadata && currentPresetMetadata) {
+        return currentPresetMetadata;
+    }
+    return null;
+};
+
+const outputPlotFilters = (rootState: RootState, resultName: "metadata" | "comparisonPlotResult" | "table" = "metadata") => {
+    let filters: any[];
+    if (resultName === "table") {
+        const currentPresetMetadata = getPresetMetadata(rootState);
+        if (currentPresetMetadata) {
+            filters = [...(currentPresetMetadata?.filters || [])];
+        } else {
+            filters = [];
+        }
+    } else {
+        filters = [...(rootState.modelCalibrate[resultName]?.plottingMetadata?.barchart.filters || [])];
+    }
     const area = filters.find((f: any) => f.id == "area");
     if (area && area.use_shape_regions) {
         const regions: FilterOption[] = rootState.baseline.shape!.filters!.regions ?
@@ -76,7 +113,14 @@ const outputPlotFilters = (rootState: RootState, resultName: "metadata" | "compa
 
 export const initialModelOutputState = (): ModelOutputState => {
     return {
-        selectedTab: ""
+        selectedTab: "",
+        loading: {
+            [ModelOutputTabs.Map]: false,
+            [ModelOutputTabs.Bar]: false,
+            [ModelOutputTabs.Comparison]: false,
+            [ModelOutputTabs.Table]: false,
+            [ModelOutputTabs.Bubble]: false
+        }
     }
 };
 

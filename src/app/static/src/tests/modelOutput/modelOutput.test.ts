@@ -51,6 +51,19 @@ describe("modelOutput module", () => {
                 indicators: []
             }
 
+        },
+        tableMetadata: {
+            presets: [
+                {
+                    defaults: {
+                        column: "age_group_id",
+                        id: "preset_id",
+                        row: "quarter_id",
+                        label: "Preset ID"
+                    },
+                    filters
+                }
+            ]
         }
     });
 
@@ -112,7 +125,14 @@ describe("modelOutput module", () => {
         modelCalibrate: mockModelCalibrateState({
             metadata: modelCalibrateMetadataResponse,
             comparisonPlotResult: comparisonPlotResponse
-        })
+        }),
+        plottingSelections: {
+            table: {
+                indicator: "",
+                preset: "preset_id",
+                selectedFilterOptions: {}
+            }
+        } as any
     });
 
     it("gets barchart indicators", async () => {
@@ -177,6 +197,37 @@ describe("modelOutput module", () => {
             column_id: "quarter_id",
             label: "Quarter",
             allowMultiple: false,
+            options: []
+        });
+    });
+
+    it("gets table filters", () => {
+        const result = modelOutputGetters.tableFilters(mockModelOutputState(), null, rootState, null);
+        expect(result.length).toEqual(3);
+        expect(result[0]).toStrictEqual({
+            id: "area",
+            column_id: "area_id",
+            label: "Area",
+            use_shape_regions: true,
+            allowMultiple: false,
+            options: [{
+                id: "id1",
+                label: "label 1",
+                children: [{id: "child1", label: "child label 1"}]
+            }]
+        });
+        expect(result[1]).toStrictEqual({
+            id: "age",
+            column_id: "age_group_id",
+            label: "Age",
+            allowMultiple: true,
+            options: []
+        });
+        expect(result[2]).toStrictEqual({
+            id: "quarter",
+            column_id: "quarter_id",
+            label: "Quarter",
+            allowMultiple: true,
             options: []
         });
     });

@@ -10,6 +10,7 @@ export interface ExportService {
 export class DataExportService implements ExportService {
     private readonly _data: DownloadIndicatorDataset
     private readonly _filename: string
+    private readonly _options: any
 
     private readonly _workbook: XLSX.WorkBook;
 
@@ -17,10 +18,16 @@ export class DataExportService implements ExportService {
         this._filename = payload.filename
         this._data = payload.data
         this._workbook = XLSX.utils.book_new();
+        this._options = payload.options;
     }
 
     addFilteredData = (): ExportService => {
-        const worksheet = XLSX.utils.json_to_sheet(this._data.filteredData);
+        let worksheet;
+        if (this._options) {
+            worksheet = XLSX.utils.json_to_sheet(this._data.filteredData, this._options);
+        } else {
+            worksheet = XLSX.utils.json_to_sheet(this._data.filteredData);
+        }
         XLSX.utils.book_append_sheet(this._workbook, worksheet, "filtered data");
         return this;
     }
