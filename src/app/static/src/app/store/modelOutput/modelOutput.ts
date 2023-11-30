@@ -115,11 +115,11 @@ export const initialModelOutputState = (): ModelOutputState => {
     return {
         selectedTab: "",
         loading: {
-            map: false,
-            bar: false,
-            comparison: false,
-            table: false,
-            bubble: false
+            [ModelOutputTabs.Map]: false,
+            [ModelOutputTabs.Bar]: false,
+            [ModelOutputTabs.Comparison]: false,
+            [ModelOutputTabs.Table]: false,
+            [ModelOutputTabs.Bubble]: false
         }
     }
 };
