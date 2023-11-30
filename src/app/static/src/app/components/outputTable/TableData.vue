@@ -69,7 +69,7 @@ export default defineComponent({
             return filteredData
         });
 
-        const getFullData = (filteredData: any[]) => {
+        const getDownloadData = (filteredData: any[]) => {
             return filteredData.map(d => {
                 const feature = features.value.find(f => f.properties.area_id === d.area_id);
                 return {
