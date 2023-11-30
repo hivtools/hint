@@ -193,18 +193,22 @@ const expectedLayout = (rows: number, xval = "date11") => {
             zeroline: false
         },
         yaxis1: {
-            autorange: true,
+            range: [
+                -0.2,
+                2.2
+            ],
             domain: [ NaN, NaN ],
-            rangemode: "tozero",
             tickfont: { color: "grey" },
             tickformat: undefined,
             type: "linear",
             zeroline: false
         },
         yaxis2: {
-            autorange: true,
+            range: [
+                -0.4,
+                4.4
+            ],
             domain: [ NaN, NaN ],
-            rangemode: "tozero",
             tickfont: { color: "grey" },
             tickformat: undefined,
             type: "linear",
@@ -451,11 +455,12 @@ describe("Plotly", () => {
     };
 
     const expectYAxis = (domainStart: number, domainEnd: number, actual: any) => {
-        expect(Object.keys(actual)).toStrictEqual(["rangemode", "zeroline", "tickformat", "tickfont", "domain", "autorange", "type"]);
-        expect(actual.rangemode).toBe("tozero");
+        expect(Object.keys(actual)).toStrictEqual(["zeroline", "tickformat", "tickfont", "domain", "range", "type"]);
         expect(actual.zeroline).toBe(false);
         expect(actual.tickformat).toBe(".0f");
         expect(actual.tickfont).toStrictEqual({"color": "grey"});
+        expect(actual.range[0]).toBeLessThan(0);
+        expect(actual.range[1]).toBeGreaterThan(2663);
         expect(actual.domain[0]).toBeCloseTo(domainStart, 8);
         expect(actual.domain[1]).toBeCloseTo(domainEnd, 8);
     };
