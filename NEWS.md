@@ -1,3 +1,7 @@
+# hint 3.5.0
+
+* Add new table tab to Model Outputs page
+
 # hint 3.3.0
 
 * Keep user's language preference outside project state
