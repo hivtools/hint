@@ -82,7 +82,7 @@ export default defineComponent({
 
         const handleDownload = () => {
             const prefix = store.state.baseline.iso3 || store.state.baseline.country;
-            const data = { filteredData: getFullData(filteredData.value), unfilteredData: [] };
+            const data = { filteredData: getDownloadData(filteredData.value), unfilteredData: [] };
             const filename = `${prefix}_naomi_table-data_${appendCurrentDateTime()}.xlsx`;
             exportService({ data, filename, options: { header }})
                 .addFilteredData()
