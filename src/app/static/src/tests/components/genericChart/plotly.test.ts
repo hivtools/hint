@@ -10,10 +10,12 @@ import * as plotly from "plotly.js-basic-dist";
 import Vue, { nextTick } from "vue";
 import { flushPromises, shallowMount } from "@vue/test-utils";
 import Plotly from "../../../app/components/genericChart/Plotly.vue";
+import {PlotColours} from "../../../app/components/genericChart/utils";
 import registerTranslations from "../../../app/store/translations/registerTranslations";
 import {emptyState} from "../../../app/root";
 import LoadingSpinner from "../../../app/components/LoadingSpinner.vue";
 import {expectTranslated, shallowMountWithTranslate} from "../../testHelpers";
+import {Language} from "../../../app/store/translations/locales";
 
 const chartData = (xval = "date11", yval = 1) => {
     const chartData = {
@@ -66,8 +68,15 @@ const layoutData = {
 const expectedData = (xval = "date11", yval = 1) => {
     const expectedData = [
         {
-            hovertemplate: "%{x}, %{y}<br>hierarchy11<extra></extra>",
-            line: {color: "rgb(51, 51, 51)"},
+            hovertemplate: Array(2).fill("%{x}, %{y}<br>hierarchy11<extra></extra>"),
+            line: {color: PlotColours.DEFAULT},
+            marker: {
+                color: Array(2).fill(PlotColours.DEFAULT),
+                line: {
+                    color: PlotColours.DEFAULT,
+                    width: 0.5
+                }
+            },
             name: "name11",
             showlegend: false,
             type: "scatter",
@@ -77,8 +86,15 @@ const expectedData = (xval = "date11", yval = 1) => {
             yaxis: "y1"
         },
         {
-            hovertemplate: "%{x}, %{y}<br>hierarchy11<extra></extra>",
-            line: {color: "rgb(255, 51, 51)"},
+            hovertemplate: Array(2).fill("%{x}, %{y}<br>hierarchy11<extra></extra>"),
+            line: {color: PlotColours.LARGE_CHANGE},
+            marker: {
+                color: Array(2).fill(PlotColours.LARGE_CHANGE),
+                line: {
+                    color: PlotColours.LARGE_CHANGE,
+                    width: 0.5
+                }
+            },
             name: "name11",
             showlegend: false,
             type: "scatter",
@@ -88,8 +104,15 @@ const expectedData = (xval = "date11", yval = 1) => {
             yaxis: "y1"
         },
         {
-            hovertemplate: "%{x}, %{y}<br>hierarchy21<extra></extra>",
-            line: {color: "rgb(51, 51, 51)"},
+            hovertemplate: Array(2).fill("%{x}, %{y}<br>hierarchy21<extra></extra>"),
+            line: {color: PlotColours.DEFAULT},
+            marker: {
+                color: Array(2).fill(PlotColours.DEFAULT),
+                line: {
+                    color: PlotColours.DEFAULT,
+                    width: 0.5
+                }
+            },
             name: "name21",
             showlegend: false,
             type: "scatter",
@@ -99,8 +122,15 @@ const expectedData = (xval = "date11", yval = 1) => {
             yaxis: "y2"
         },
         {
-            hovertemplate: "%{x}, %{y}<br>hierarchy21<extra></extra>",
-            line: {color: "rgb(255, 51, 51)"},
+            hovertemplate: Array(2).fill("%{x}, %{y}<br>hierarchy21<extra></extra>"),
+            line: {color: PlotColours.LARGE_CHANGE},
+            marker: {
+                color: Array(2).fill(PlotColours.LARGE_CHANGE),
+                line: {
+                    color: PlotColours.LARGE_CHANGE,
+                    width: 0.5
+                }
+            },
             name: "name21",
             showlegend: false,
             type: "scatter",
@@ -110,16 +140,6 @@ const expectedData = (xval = "date11", yval = 1) => {
             yaxis: "y2"
         },
     ] as any;
-    expectedData["sequence"] = true;
-    expectedData["keepSingleton"] = true;
-    expectedData[0]["x"]["sequence"] = true;
-    expectedData[0]["y"]["sequence"] = true;
-    expectedData[1]["x"]["sequence"] = true;
-    expectedData[1]["y"]["sequence"] = true;
-    expectedData[2]["x"]["sequence"] = true;
-    expectedData[2]["y"]["sequence"] = true;
-    expectedData[3]["x"]["sequence"] = true;
-    expectedData[3]["y"]["sequence"] = true;
     return expectedData
 }
 
@@ -173,26 +193,28 @@ const expectedLayout = (rows: number, xval = "date11") => {
             zeroline: false
         },
         yaxis1: {
-            autorange: true,
+            range: [
+                -0.2,
+                2.2
+            ],
             domain: [ NaN, NaN ],
-            rangemode: "tozero",
             tickfont: { color: "grey" },
             tickformat: undefined,
             type: "linear",
             zeroline: false
         },
         yaxis2: {
-            autorange: true,
+            range: [
+                -0.4,
+                4.4
+            ],
             domain: [ NaN, NaN ],
-            rangemode: "tozero",
             tickfont: { color: "grey" },
             tickformat: undefined,
             type: "linear",
             zeroline: false
         },
     } as any
-    expectedLayout.annotations["sequence"] = true;
-    expectedLayout.annotations["keepSingleton"] = true;
     return expectedLayout
 };
 
@@ -433,11 +455,12 @@ describe("Plotly", () => {
     };
 
     const expectYAxis = (domainStart: number, domainEnd: number, actual: any) => {
-        expect(Object.keys(actual)).toStrictEqual(["rangemode", "zeroline", "tickformat", "tickfont", "domain", "autorange", "type"]);
-        expect(actual.rangemode).toBe("tozero");
+        expect(Object.keys(actual)).toStrictEqual(["zeroline", "tickformat", "tickfont", "domain", "range", "type"]);
         expect(actual.zeroline).toBe(false);
         expect(actual.tickformat).toBe(".0f");
         expect(actual.tickfont).toStrictEqual({"color": "grey"});
+        expect(actual.range[0]).toBeLessThan(0);
+        expect(actual.range[1]).toBeGreaterThan(2663);
         expect(actual.domain[0]).toBeCloseTo(domainStart, 8);
         expect(actual.domain[1]).toBeCloseTo(domainEnd, 8);
     };
@@ -447,9 +470,8 @@ describe("Plotly", () => {
         const props = { chartData: {data: chartData}, layoutData } as any;
         const wrapper = shallowMount(Plotly, { props, store });
         const data = (await (wrapper.vm as any).getData()).data
-        // Some arrays output from jsonata have an additional 'sequence' value so jest's toEqual with array literal fails -
-        // but these serialize to the same string
-        expect(JSON.stringify(data)).toBe(JSON.stringify([
+
+        expect(data).toStrictEqual([
             {
                 "name": "Chitipa",
                 "showlegend": false,
@@ -458,8 +480,15 @@ describe("Plotly", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
+                "line": {"color": PlotColours.DEFAULT},
+                "marker": {
+                    "color": Array(2).fill(PlotColours.DEFAULT),
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.DEFAULT
+                    }
+                },
+                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
             },
             {
                 "name": "Chitipa",
@@ -469,8 +498,15 @@ describe("Plotly", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
+                "line": {"color": PlotColours.LARGE_CHANGE},
+                "marker": {
+                    "color": Array(2).fill(PlotColours.LARGE_CHANGE),
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.LARGE_CHANGE
+                    }
+                },
+                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
             },
             {
                 "name": "Karonga",
@@ -480,8 +516,15 @@ describe("Plotly", () => {
                 "xaxis": "x2",
                 "yaxis": "y2",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
+                "line": {"color": PlotColours.DEFAULT},
+                "marker": {
+                    "color": Array(2).fill(PlotColours.DEFAULT),
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.DEFAULT
+                    }
+                },
+                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Northern/Karonga<extra></extra>")
             },
             {
                 "name": "Karonga",
@@ -491,8 +534,15 @@ describe("Plotly", () => {
                 "xaxis": "x2",
                 "yaxis": "y2",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
+                "line": {"color": PlotColours.LARGE_CHANGE},
+                "marker": {
+                    "color": Array(2).fill(PlotColours.LARGE_CHANGE),
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.LARGE_CHANGE
+                    }
+                },
+                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Northern/Karonga<extra></extra>")
             },
             {
                 "name": "Rumphi",
@@ -502,8 +552,15 @@ describe("Plotly", () => {
                 "xaxis": "x3",
                 "yaxis": "y3",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<br>Northern/Rumphi<extra></extra>"
+                "line": {"color": PlotColours.DEFAULT},
+                "marker": {
+                    "color": Array(2).fill(PlotColours.DEFAULT),
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.DEFAULT
+                    }
+                },
+                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Northern/Rumphi<extra></extra>")
             },
             {
                 "name": "Rumphi",
@@ -513,8 +570,15 @@ describe("Plotly", () => {
                 "xaxis": "x3",
                 "yaxis": "y3",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<br>Northern/Rumphi<extra></extra>"
+                "line": {"color": PlotColours.LARGE_CHANGE},
+                "marker": {
+                    "color": [],
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.LARGE_CHANGE
+                    }
+                },
+                "hovertemplate": []
             },
             {
                 "name": "Mzuzu City",
@@ -524,8 +588,15 @@ describe("Plotly", () => {
                 "xaxis": "x4",
                 "yaxis": "y4",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<br>Northern/Mzuzu City<extra></extra>"
+                "line": {"color": PlotColours.DEFAULT},
+                "marker": {
+                    "color": [PlotColours.DEFAULT],
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.DEFAULT
+                    }
+                },
+                "hovertemplate": ["%{x}, %{y}<br>Northern/Mzuzu City<extra></extra>"]
             },
             {
                 "name": "Mzuzu City",
@@ -535,10 +606,17 @@ describe("Plotly", () => {
                 "xaxis": "x4",
                 "yaxis": "y4",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<br>Northern/Mzuzu City<extra></extra>"
+                "line": {"color": PlotColours.LARGE_CHANGE},
+                "marker": {
+                    "color": [],
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.LARGE_CHANGE
+                    }
+                },
+                "hovertemplate": []
             }
-        ]));
+        ]);
     });
 
     it("evaluates top level layout properties as expected", async () => {
@@ -685,7 +763,7 @@ describe("Plotly", () => {
         const wrapper = shallowMount(Plotly, { props, store });
         const result = await (wrapper.vm as any).getData();
 
-        expect(JSON.stringify(result.data)).toBe(JSON.stringify([
+        expect(result.data).toStrictEqual([
             {
                 "name": "Chitipa",
                 "showlegend": false,
@@ -694,8 +772,15 @@ describe("Plotly", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
+                "line": {"color": PlotColours.DEFAULT},
+                "marker": {
+                    "color": Array(2).fill(PlotColours.DEFAULT),
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.DEFAULT
+                    }
+                },
+                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
             },
             {
                 "name": "Chitipa",
@@ -705,8 +790,15 @@ describe("Plotly", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
+                "line": {"color": PlotColours.LARGE_CHANGE},
+                "marker": {
+                    "color": Array(2).fill(PlotColours.LARGE_CHANGE),
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.LARGE_CHANGE
+                    }
+                },
+                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Northern/Chitipa<extra></extra>")
             },
             {
                 "name": "Karonga",
@@ -716,8 +808,15 @@ describe("Plotly", () => {
                 "xaxis": "x2",
                 "yaxis": "y2",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
+                "line": {"color": PlotColours.DEFAULT},
+                "marker": {
+                    "color": Array(2).fill(PlotColours.DEFAULT),
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.DEFAULT
+                    }
+                },
+                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Northern/Karonga<extra></extra>")
             },
             {
                 "name": "Karonga",
@@ -727,8 +826,15 @@ describe("Plotly", () => {
                 "xaxis": "x2",
                 "yaxis": "y2",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<br>Northern/Karonga<extra></extra>"
+                "line": {"color": PlotColours.LARGE_CHANGE},
+                "marker": {
+                    "color": Array(2).fill(PlotColours.LARGE_CHANGE),
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.LARGE_CHANGE
+                    }
+                },
+                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Northern/Karonga<extra></extra>")
             },
             {
                 "name": "Chitipa",
@@ -738,8 +844,15 @@ describe("Plotly", () => {
                 "xaxis": "x3",
                 "yaxis": "y3",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<br>Southern/Chitipa<extra></extra>"
+                "line": {"color": PlotColours.DEFAULT},
+                "marker": {
+                    "color": Array(2).fill(PlotColours.DEFAULT),
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.DEFAULT
+                    }
+                },
+                "hovertemplate": Array(2).fill("%{x}, %{y}<br>Southern/Chitipa<extra></extra>")
             },
             {
                 "name": "Chitipa",
@@ -749,13 +862,20 @@ describe("Plotly", () => {
                 "xaxis": "x3",
                 "yaxis": "y3",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<br>Southern/Chitipa<extra></extra>"
+                "line": {"color": PlotColours.LARGE_CHANGE},
+                "marker": {
+                    "color": [],
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.LARGE_CHANGE
+                    }
+                },
+                "hovertemplate": []
             }
-        ]));
+        ]);
 
         const layout = result.layout;
-        expect(JSON.stringify(layout.annotations)).toBe(JSON.stringify([
+        expect(layout.annotations).toStrictEqual([
             {
                 "text": "Chitipa (MWI_4_1_demo)",
                 "textfont": {},
@@ -789,7 +909,7 @@ describe("Plotly", () => {
                 "yanchor": "middle",
                 "yref": "y3 domain"
             }
-        ]));
+        ]);
 
         expect(layout.xaxis1).toStrictEqual(expectedXAxis);
         expect(layout.xaxis2).toStrictEqual(expectedXAxis);
@@ -833,7 +953,7 @@ describe("Plotly", () => {
         const wrapper = shallowMount(Plotly, { props, store });
         const result = await (wrapper.vm as any).getData();
 
-        expect(JSON.stringify(result.data)).toBe(JSON.stringify([
+        expect(result.data).toStrictEqual([
             {
                 "name": "Malawi",
                 "showlegend": false,
@@ -842,8 +962,15 @@ describe("Plotly", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(51, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<extra></extra>"
+                "line": {"color": PlotColours.DEFAULT},
+                "marker": {
+                    "color": Array(2).fill(PlotColours.DEFAULT),
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.DEFAULT
+                    }
+                },
+                "hovertemplate": Array(2).fill("%{x}, %{y}<extra></extra>")
             },
             {
                 "name": "Malawi",
@@ -853,9 +980,118 @@ describe("Plotly", () => {
                 "xaxis": "x1",
                 "yaxis": "y1",
                 "type": "scatter",
-                "line": {"color": "rgb(255, 51, 51)"},
-                "hovertemplate": "%{x}, %{y}<extra></extra>"
+                "line": {"color": PlotColours.LARGE_CHANGE},
+                "marker": {
+                    "color": Array(2).fill(PlotColours.LARGE_CHANGE),
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.LARGE_CHANGE
+                    }
+                },
+                "hovertemplate": Array(2).fill("%{x}, %{y}<extra></extra>")
             }
-        ]));
+        ]);
+    });
+
+    it("adds tooltip and styling when values are missing", async () => {
+        const testData = {
+            "data": [
+                {
+                    "area_id": "MWI_1_1_demo",
+                    "area_name": "Malawi",
+                    "area_hierarchy": "Northern/Chitipa",
+                    "time_period": "2011 Q4",
+                    "value": 2116,
+                    "missing_ids": []
+                },
+                {
+                    "area_id": "MWI_1_1_demo",
+                    "area_name": "Malawi",
+                    "area_hierarchy": "Northern/Chitipa",
+                    "time_period": "2012 Q4",
+                    "value": 2116,
+                    "missing_ids": ["MWI_1_1_demo"]
+                },
+                {
+                    "area_id": "MWI_1_1_demo",
+                    "area_name": "Malawi",
+                    "area_hierarchy": "Northern/Chitipa",
+                    "time_period": "2013 Q4",
+                    "value": 4663,
+                    "missing_ids": ["MWI_1_2_demo", "MWI_1_3_demo"]
+                },
+                {
+                    "area_id": "MWI_1_1_demo",
+                    "area_name": "Malawi",
+                    "area_hierarchy": "Northern/Chitipa",
+                    "time_period": "2014 Q4",
+                    "value": 5567,
+                    "missing_ids": ["MWI_1_2_demo", "MWI_1_3_demo", "MWI_1_4_demo", "MWI_1_5_demo", "MWI_1_6_demo"]
+                }
+            ],
+            "subplots": {
+                "columns": 2,
+                "distinctColumn": "area_name",
+                "heightPerRow": 100,
+                "subplotsPerPage": 99,
+                "rows": 2
+            },
+            "yAxisFormat": ".0f"
+        };
+
+        const { data: chartData, ...layoutData } = testData
+        const props = { chartData: {data: chartData}, layoutData } as any;
+        store.state.language = Language.en;
+        const wrapper = shallowMountWithTranslate(Plotly, store, {global: {plugins: [store]}, props});
+        const result = await (wrapper.vm as any).getData();
+
+        expect(result.data).toStrictEqual([
+            {
+                "name": "Malawi",
+                "showlegend": false,
+                "x": ["2011 Q4", "2012 Q4", "2013 Q4", "2014 Q4"],
+                "y": [2116, 2116, 4663, 5567],
+                "xaxis": "x1",
+                "yaxis": "y1",
+                "type": "scatter",
+                "line": {"color": PlotColours.DEFAULT},
+                "marker": {
+                    "color": [PlotColours.DEFAULT, PlotColours.MISSING, PlotColours.MISSING, PlotColours.MISSING],
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.DEFAULT
+                    }
+                },
+                "hovertemplate": [
+                    "%{x}, %{y}<br>Northern/Chitipa<extra></extra>",
+                    "%{x}, %{y}<br>Northern/Chitipa<br>This value is missing from the uploaded data<extra></extra>",
+                    "%{x}, %{y}<br>Northern/Chitipa<br>Aggregate value missing data for 2 regions<extra></extra>",
+                    "%{x}, %{y}<br>Northern/Chitipa<br>Aggregate value missing data for 5 regions<extra></extra>"
+                ]
+            },
+            {
+                "name": "Malawi",
+                "showlegend": false,
+                "x": [undefined, "2012 Q4", "2013 Q4", undefined],
+                "y": [undefined, 2116, 4663, undefined],
+                "xaxis": "x1",
+                "yaxis": "y1",
+                "type": "scatter",
+                "line": {"color": PlotColours.LARGE_CHANGE},
+                "marker": {
+                    "color": [PlotColours.LARGE_CHANGE, PlotColours.LARGE_CHANGE_MISSING, PlotColours.LARGE_CHANGE_MISSING, PlotColours.LARGE_CHANGE],
+                    "line": {
+                        "width": 0.5,
+                        "color": PlotColours.LARGE_CHANGE
+                    }
+                },
+                "hovertemplate": [
+                    "%{x}, %{y}<br>Northern/Chitipa<extra></extra>",
+                    "%{x}, %{y}<br>Northern/Chitipa<br>This value is missing from the uploaded data<extra></extra>",
+                    "%{x}, %{y}<br>Northern/Chitipa<br>Aggregate value missing data for 2 regions<extra></extra>",
+                    "%{x}, %{y}<br>Northern/Chitipa<extra></extra>"
+                ],
+            }
+        ]);
     });
 });

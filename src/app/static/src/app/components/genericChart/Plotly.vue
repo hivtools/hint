@@ -13,6 +13,12 @@
     import LoadingSpinner from "../LoadingSpinner.vue";
     import { PropType, defineComponent } from "vue";
     import { Dict } from "../../types";
+    import { PlotColours } from "./utils"
+    import i18next from "i18next";
+    import {mapStateProp} from "../../utils";
+    import {RootState} from "../../root";
+    import {Language} from "../../store/translations/locales";
+    import {InputTimeSeriesRow, InputTimeSeriesData} from "../../../app/generated";
 
     const config = {
         responsive: false,
@@ -29,22 +35,7 @@
         ]
     };
 
-    const lineColor = "rgb(51, 51, 51)";
-    const highlightColor = "rgb(255, 51, 51)";
-
-    type Data = {
-        area_hierarchy: string,
-        area_id: string,
-        area_level?: number,
-        area_name: string,
-        page?: number,
-        plot?: string,
-        quarter?: string,
-        time_period: string,
-        value?: number
-    }
-
-    type ChartData = { data: Data[] } | null
+    type ChartData = { data: InputTimeSeriesData } | null
 
     type Subplots = {
         columns: number,
@@ -87,9 +78,14 @@
                     height: '100%',
                     visibility: this.rendering ? 'hidden' : 'visible'
                 } as any;
-            }
+            },
+            currentLanguage: mapStateProp<RootState, Language>(null,
+                (state: RootState) => state.language)
         },
         methods: {
+            translate(word: string, args: any = null) {
+                return i18next.t(word, {...args, lng: this.currentLanguage})
+            },
             drawChart: async function() {
                 this.rendering = true;
                 const el = this.$refs.chart;
@@ -99,11 +95,57 @@
                 await drawFunc(el as HTMLElement, drawData.data, drawData.layout, {...config as any});
                 this.rendering = false;
             },
+            getTooltipTemplate: function(plotData: (InputTimeSeriesRow | null)[], areaHierarchy: string) {
+                const hierarchyText = areaHierarchy ? "<br>" + areaHierarchy : "";
+                const tooltip = "%{x}, %{y}" + hierarchyText;
+                return plotData.map((entry: InputTimeSeriesRow | null) => {
+                    let missingIdsText = "";
+                    if (entry?.missing_ids?.length) {
+                        // If the area ID matches the missing_id then this is a synthetic value we have appended
+                        // rather than an aggregate with some missing data. Show this with a slightly different
+                        // message
+                        if (entry.missing_ids.length == 1 && entry.missing_ids[0] == entry.area_id) {
+                            missingIdsText = "<br>" + this.translate("timeSeriesMissingValue")
+                        } else {
+                            missingIdsText = "<br>" + this.translate("timeSeriesMissingAggregate",
+                                {count: entry.missing_ids.length});
+                        }
+                    }
+                    // Empty <extra></extra> tag removes the part of the hover where trace name is displayed in
+                    // contrasting colour. See https://plotly.com/python/hover-text-and-formatting/
+                    return tooltip + missingIdsText + "<extra></extra>";
+                })
+            },
+            getScatterPoints: function(plotData: (InputTimeSeriesRow | null)[], areaName: string, areaHierarchy: string,
+                                       index: number, baseColour: string, missingColour: string) {
+                const hoverTemplate = this.getTooltipTemplate(plotData, areaHierarchy);
+                const points: any = {
+                    name: areaName,
+                    showlegend: false,
+                    x: plotData.map(x => x?.time_period),
+                    y: plotData.map(x => x?.value ),
+                    xaxis: `x${index+1}`,
+                    yaxis: `y${index+1}`,
+                    type: "scatter",
+                    marker: {
+                        color: plotData.map(x => x?.missing_ids?.length ? missingColour : baseColour),
+                        line: {
+                            width: 0.5,
+                            color: baseColour
+                        },
+                    },
+                    line: {
+                        color: baseColour
+                    },
+                    hovertemplate: hoverTemplate
+                }
+                return points
+            },
             getData: async function() {
                 if (!this.chartData) {
                     return {data: [], layout: {}}
                 }
-                const dataByArea: Record<string, any[]> = {};
+                const dataByArea: Record<string, InputTimeSeriesData> = {};
                 this.chartData.data.forEach(dataPoint => {
                     const areaId = dataPoint.area_id;
                     if (areaId in dataByArea) {
@@ -121,27 +163,25 @@
                 const lastXAxisVal = timePeriods[timePeriods.length - 1];
 
                 const data: any = [];
-                data.sequence = true;
-                data.keepSingleton = true;
                 areaIds.forEach((id, index) => {
-                    const areaData = dataByArea[id];
-                    const values = areaData.map(data => data.value);
+                    const areaData: InputTimeSeriesData = dataByArea[id];
 
                     const highlightedLineIndexes: boolean[] = [];
-                    for (let i = 1; i < values.length; i++) {
-                        const thisVal = values[i];
-                        const prevVal = values[i - 1];
+                    for (let i = 1; i < areaData.length; i++) {
+                        const thisVal = areaData[i].value;
+                        const prevVal = areaData[i - 1].value;
 
-                        const isHighlighted = !!((thisVal !== null && prevVal !== null && thisVal > 0)
+                        // Using != to check for null and undefined
+                        const isHighlighted = !!((thisVal != null && prevVal != null && thisVal > 0)
                         && (thisVal > 1.25 * prevVal || thisVal < 0.75 * prevVal));
 
                         highlightedLineIndexes.push(isHighlighted);
                     }
 
-                    const noHighlightsRequired = highlightedLineIndexes.every(v => v === false);
-                    
-                    let highlightXAndY: any[][] = [[], []];
-                    if (!noHighlightsRequired) {
+                    const highlightsRequired = highlightedLineIndexes.some(v => v);
+
+                    let highlight: (InputTimeSeriesRow | null)[] = [];
+                    if (highlightsRequired) {
                         const interpolateIndexes: boolean[] = [];
                         for (let i = 0; i < highlightedLineIndexes.length - 1; i++) {
                             const interpolate = !!((i > 0)
@@ -149,72 +189,25 @@
                             interpolateIndexes.push(interpolate)
                         }
 
-                        const interpolationRequired = !(interpolateIndexes.every(v => v === false));
-
-                        const highlightY: any[] = [];
-                        for (let i = 0; i < values.length; i++) {
+                        for (let i = 0; i < areaData.length; i++) {
                             const isHighlighted = (i === 0 && highlightedLineIndexes[0])
                             || (i === highlightedLineIndexes.length && highlightedLineIndexes[i - 1])
                             || (i > 0 && i < highlightedLineIndexes.length && (highlightedLineIndexes[i - 1] || highlightedLineIndexes[i]));
 
-                            const markerVal = isHighlighted ? values[i] : null;
-                            highlightY.push(markerVal);
+                            const dataPoint = isHighlighted ? areaData[i] : null;
+                            highlight.push(dataPoint);
                             if (interpolateIndexes[i]) {
-                                highlightY.push(null);
+                                highlight.push(null);
                             }
                         }
-
-                        let highlightX: any[] = [];
-                        const localTimePeriods = dataByArea[id].map(x => x.time_period);
-                        if (!interpolationRequired) {
-                            highlightX = localTimePeriods
-                        } else {
-                            for (let i = 0; i < values.length; i++) {
-                                highlightX.push(localTimePeriods[i]);
-                                if (interpolateIndexes[i]) {
-                                    highlightX.push(null);
-                                }
-                            }
-                        }
-
-                        highlightXAndY = [highlightX, highlightY]
                     }
 
                     const areaHierarchy = dataByArea[id][0].area_hierarchy;
-                    const areaHierarchyTooltip = areaHierarchy ? "<br>" + areaHierarchy : "";
-                    const hoverTemplate = "%{x}, %{y}" + areaHierarchyTooltip + "<extra></extra>";
 
-                    const normalColorPoints: any = {
-                        name: dataByArea[id][0].area_name,
-                        showlegend: false,
-                        x: dataByArea[id].map(x => x.time_period),
-                        y: dataByArea[id].map(x => x.value),
-                        xaxis: `x${index+1}`,
-                        yaxis: `y${index+1}`,
-                        type: "scatter",
-                        line: {
-                            color: lineColor
-                        },
-                        hovertemplate: hoverTemplate
-                    }
-                    normalColorPoints.x.sequence = true;
-                    normalColorPoints.y.sequence = true;
-
-                    const highlightedPoints: any = {
-                        name: dataByArea[id][0].area_name,
-                        showlegend: false,
-                        x: highlightXAndY[0],
-                        y: highlightXAndY[1],
-                        xaxis: `x${index+1}`,
-                        yaxis: `y${index+1}`,
-                        type: "scatter",
-                        line: {
-                            color: highlightColor
-                        },
-                        hovertemplate: hoverTemplate
-                    };
-                    highlightedPoints.x.sequence = true;
-                    highlightedPoints.y.sequence = true;
+                    const normalColorPoints = this.getScatterPoints(dataByArea[id], dataByArea[id][0].area_name,
+                        areaHierarchy, index, PlotColours.DEFAULT, PlotColours.MISSING);
+                    const highlightedPoints = this.getScatterPoints(highlight, dataByArea[id][0].area_name,
+                        areaHierarchy, index, PlotColours.LARGE_CHANGE, PlotColours.LARGE_CHANGE_MISSING);
 
                     data.push(normalColorPoints);
                     data.push(highlightedPoints);
@@ -243,13 +236,10 @@
                     })
                 };
 
-                baseLayout.annotations.sequence = true;
-                baseLayout.annotations.keepSingleton = true;
-
                 for (let i = 0; i < areaIds.length; i++) {
                     const row = Math.floor(i/this.layoutData.subplots.columns);
+                    const maxOfData = Math.max(...dataByArea[areaIds[i]].map(d => d.value || 0));
                     baseLayout[`yaxis${i + 1}`] = {
-                        "rangemode": "tozero",
                         "zeroline": false,
                         "tickformat": this.layoutData.yAxisFormat,
                         "tickfont": {
@@ -259,7 +249,7 @@
                             1 - (row/this.layoutData.subplots.rows),
                             1 - ((row/this.layoutData.subplots.rows) + subPlotHeight)
                         ],
-                        "autorange": true,
+                        "range": [-maxOfData * 0.1, maxOfData * 1.1],
                         "type": "linear"
                     };
                     baseLayout[`xaxis${i + 1}`] = {
